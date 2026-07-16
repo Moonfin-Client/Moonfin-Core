@@ -9,30 +9,30 @@ class AppLocalizationsSl extends AppLocalizations {
   AppLocalizationsSl([String locale = 'sl']) : super(locale);
 
   @override
-  String get appTitle => 'Mesečeva plavutka';
+  String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => 'NASTAVITVE RAČUNA';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => 'Jezik vmesnika';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => 'Privzeto sistemsko';
 
   @override
   String get signIn => 'Prijavite se';
 
   @override
-  String get empty => 'Empty';
+  String get empty => 'Prazno';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Povezovanje s strežnikom $serverName';
   }
 
   @override
-  String get quickConnect => 'Hitra povezava';
+  String get quickConnect => 'Quick Connect';
 
   @override
   String get password => 'Geslo';
@@ -61,12 +61,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect ni na voljo: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect ni na voljo ($status): $detail';
   }
 
   @override
@@ -80,7 +80,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin različica $version';
   }
 
   @override
@@ -107,7 +107,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Ali želite odstraniti »$serverName« s seznama strežnikov?';
   }
 
   @override
@@ -142,62 +142,62 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsAppearanceTheme => 'Tema aplikacije';
 
   @override
-  String get detailScreenStyle => 'Detail screen style';
+  String get detailScreenStyle => 'Slog zaslona s podrobnostmi';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
+      'Klasični je izvirna sredinska postavitev Moonfin. Sodobni je odzivna filmska postavitev.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Classic';
+  String get detailScreenStyleMoonfin => 'Klasični';
 
   @override
-  String get detailScreenStyleModern => 'Modern';
+  String get detailScreenStyleModern => 'Sodobni';
 
   @override
-  String get expandedTabs => 'Expanded Tabs';
+  String get expandedTabs => 'Razširjeni zavihki';
 
   @override
   String get expandedTabsSubtitle =>
-      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
+      'Samodejno prikaži vsebino zavihka med brskanjem po zavihkih. Izklopite, če želite zavihke odpirati in zapirati ročno.';
 
   @override
-  String get showTechnicalDetails => 'Show Technical Details?';
+  String get showTechnicalDetails => 'Prikaz tehničnih podrobnosti?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Show codec, resolution, and stream information in banner summary';
+      'Prikaži kodek, ločljivost in podatke o pretoku v povzetku pasice';
 
   @override
-  String get recommendationSystem => 'Recommendation System';
+  String get recommendationSystem => 'Sistem priporočil';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'Uporabite algoritem Moonfin priporoča za lokalno knjižnico ali spletne metrike podobnosti TMDb. Opomba: spletna priporočila zahtevajo integracijo Seerr.';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin Recommends';
+  String get recommendationSystemMoonfin => 'Moonfin priporoča';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb Similarity';
+  String get recommendationSystemTmdb => 'Podobnost TMDb';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Apply Parental Rating Cap?';
+      'Uporaba omejitve starševske ocene?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limit Moonfin Recommends suggestions by parental rating of target media';
+      'Omeji predloge funkcije Moonfin priporoča glede na starševsko oceno ciljne vsebine';
 
   @override
-  String get interfaceStyle => 'Interface Style';
+  String get interfaceStyle => 'Slog vmesnika';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic matches your device. Choose Apple or Material to force a look.';
+      'Samodejni se prilagodi vaši napravi. Izberite Apple ali Material, če želite vsiliti videz.';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => 'Samodejni';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -206,41 +206,42 @@ class AppLocalizationsSl extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Glass Quality';
+  String get glassQuality => 'Kakovost stekla';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+      'Samodejna izbere najboljši učinek stekla za to napravo. Polna vsili pravo zabrisanost, Zmanjšana uporabi lahko steklo, ki varčuje z močjo GPU.';
 
   @override
-  String get glassQualityAuto => 'Auto';
+  String get glassQualityAuto => 'Samodejna';
 
   @override
-  String get glassQualityFull => 'Full';
+  String get glassQualityFull => 'Polna';
 
   @override
-  String get glassQualityReduced => 'Reduced';
+  String get glassQualityReduced => 'Zmanjšana';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'Preklapljajte med Moonfin in Neon Pulse brez ponovnega zagona aplikacije';
 
   @override
-  String get customThemeTitle => 'Custom Theme';
+  String get customThemeTitle => 'Tema po meri';
 
   @override
   String get customThemeSubtitle =>
-      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+      'Teme po meri spremenijo vizualne elemente po celotnem Moonfinu. Izberite možnost, ki ustreza vašemu slogu.';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme =>
+      'Prednostno uporabi sistemsko tipkovnico';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Za vnos besedila privzeto uporabi način vnosa vaše naprave';
 
   @override
-  String get themeMoonfin => 'Mesečeva plavutka';
+  String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle =>
@@ -254,18 +255,18 @@ class AppLocalizationsSl extends AppLocalizations {
       'Oblikovanje Synthwave z magenta sijajem, cian besedilom in močnejšim kromiranim kontrastom';
 
   @override
-  String get themeGlass => 'Glass';
+  String get themeGlass => 'Steklo';
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      'Slog tekočega stekla z drsečim gradientnim ozadjem, motnimi površinami in modrim poudarkom Apple';
 
   @override
-  String get theme8BitHero => '8-bit Hero';
+  String get theme8BitHero => '8-bitni junak';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
+      'Retro slog pikselske grafike z izrazito paleto, oglatimi robovi, ostrimi sencami in pikselsko pisavo';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -315,7 +316,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Povezava z $target ni mogoča';
   }
 
   @override
@@ -328,35 +329,35 @@ class AppLocalizationsSl extends AppLocalizations {
   String get exit => 'Izhod';
 
   @override
-  String get gameMenu => 'Menu';
+  String get gameMenu => 'Meni';
 
   @override
-  String get gamePaused => 'Paused';
+  String get gamePaused => 'Zaustavljeno';
 
   @override
-  String get gameSaveState => 'Save state';
+  String get gameSaveState => 'Shrani stanje';
 
   @override
-  String get games => 'Games';
+  String get games => 'Igre';
 
   @override
-  String get gameLoadState => 'Load state';
+  String get gameLoadState => 'Naloži stanje';
 
   @override
-  String get gameFastForward => 'Fast-forward';
+  String get gameFastForward => 'Hitro naprej';
 
   @override
-  String get gameEmulatorSettings => 'Emulator settings';
+  String get gameEmulatorSettings => 'Nastavitve emulatorja';
 
   @override
-  String get gameNoCoreOptions => 'This core has no adjustable options.';
+  String get gameNoCoreOptions => 'To jedro nima nastavljivih možnosti.';
 
   @override
-  String get gameHoldToOpenMenu => 'Hold to open menu';
+  String get gameHoldToOpenMenu => 'Pridržite za odpiranje menija';
 
   @override
   String get gamePlaybackUnsupported =>
-      'Game playback is not supported on this device yet.';
+      'Igranje iger na tej napravi še ni podprto.';
 
   @override
   String get noHomeRowsLoaded =>
@@ -379,13 +380,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String get schedule => 'Urnik';
 
   @override
-  String get series => 'serija';
+  String get series => 'Serije';
 
   @override
   String get noItemsFound => 'Ni elementov';
 
   @override
-  String get home => 'domov';
+  String get home => 'Domov';
 
   @override
   String get browseAll => 'Prebrskaj vse';
@@ -430,7 +431,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Mape ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -438,7 +439,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count elementov';
   }
 
   @override
@@ -455,7 +456,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count elementov';
   }
 
   @override
@@ -496,7 +497,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Žanri';
   }
 
   @override
@@ -509,7 +510,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get albumArtists => 'Izvajalci albuma';
 
   @override
-  String get artists => 'Umetniki';
+  String get artists => 'Izvajalci';
 
   @override
   String get bookmarks => 'Zaznamki';
@@ -534,17 +535,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return 'pred $count min';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return 'pred $count h';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return 'pred $count d';
   }
 
   @override
@@ -555,7 +556,7 @@ class AppLocalizationsSl extends AppLocalizations {
       'Izberite, katere vsebinske vire želite prikazati v Odkrivanju.';
 
   @override
-  String get apply => 'Prijavite se';
+  String get apply => 'Uporabi';
 
   @override
   String get openLink => 'Odprite povezavo';
@@ -579,7 +580,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count naslovov';
   }
 
   @override
@@ -604,7 +605,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get listen => 'poslušaj';
 
   @override
-  String get resume => 'Nadaljevanje';
+  String get resume => 'Nadaljuj';
 
   @override
   String get failedToLoadLibrary => 'Nalaganje knjižnice ni uspelo';
@@ -666,17 +667,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count avtorjev';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count žanrov';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent % dokončano';
   }
 
   @override
@@ -693,7 +694,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count naslovov, urejenih za brskanje s poudarkom na branju.';
   }
 
   @override
@@ -730,7 +731,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Ni rezultatov: $label';
   }
 
   @override
@@ -749,7 +750,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get readStatus => 'Preberi';
 
   @override
-  String get watched => 'Gledal';
+  String get watched => 'Ogledano';
 
   @override
   String get unread => 'Neprebrano';
@@ -767,43 +768,45 @@ class AppLocalizationsSl extends AppLocalizations {
   String get books => 'knjige';
 
   @override
-  String get latestBooks => 'Latest Books';
+  String get latestBooks => 'Najnovejše knjige';
 
   @override
-  String get latestAudiobooks => 'Latest Audiobooks';
+  String get latestAudiobooks => 'Najnovejše zvočne knjige';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count books',
-      one: '1 book',
+      other: '$count knjig',
+      few: '$count knjige',
+      two: '$count knjigi',
+      one: '1 knjiga',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Book';
+  String get bookFormatBook => 'Knjiga';
 
   @override
-  String get bookFormatAudiobook => 'Audiobook';
+  String get bookFormatAudiobook => 'Zvočna knjiga';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% read';
+    return '$percent % prebrano';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time left';
+    return 'še $time';
   }
 
   @override
-  String get bookHeroRead => 'Read';
+  String get bookHeroRead => 'Beri';
 
   @override
-  String get bookHeroListen => 'Listen';
+  String get bookHeroListen => 'Poslušaj';
 
   @override
   String get author => 'Avtor';
@@ -841,12 +844,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count razdelkov';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Prva izdaja $year';
   }
 
   @override
@@ -861,7 +864,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count knjig';
   }
 
   @override
@@ -872,7 +875,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count avtorjev';
   }
 
   @override
@@ -880,8 +883,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: '$count zvočnih knjig',
+      few: '$count zvočne knjige',
+      two: '$count zvočni knjigi',
+      one: '1 zvočna knjiga',
     );
     return '$_temp0';
   }
@@ -917,7 +922,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get nextUp => 'Naprej';
 
   @override
-  String get seasons => 'letni časi';
+  String get seasons => 'Sezone';
 
   @override
   String get chapters => 'Poglavja';
@@ -929,7 +934,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get movies => 'Filmi';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Glasbeni videi';
 
   @override
   String get other => 'drugo';
@@ -948,7 +953,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Disk $number';
   }
 
   @override
@@ -972,7 +977,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Izdano $year';
   }
 
   @override
@@ -983,52 +988,54 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count sezon',
+      few: '$count sezone',
+      two: '$count sezoni',
+      one: '1 sezona',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Konec ob $time';
   }
 
   @override
-  String get items => 'Items';
+  String get items => 'Elementi';
 
   @override
-  String get extras => 'Extras';
+  String get extras => 'Dodatki';
 
   @override
-  String get behindTheScenes => 'Behind the Scenes';
+  String get behindTheScenes => 'Izza kulis';
 
   @override
-  String get deletedScenes => 'Deleted Scenes';
+  String get deletedScenes => 'Izbrisani prizori';
 
   @override
-  String get featurettes => 'Featurettes';
+  String get featurettes => 'Kratki dokumentarci';
 
   @override
-  String get interviews => 'Interviews';
+  String get interviews => 'Intervjuji';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'Prizori';
 
   @override
-  String get shorts => 'Shorts';
+  String get shorts => 'Kratki filmi';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'Napovedniki';
 
   @override
   String timeRemaining(String time) {
-    return '$time remaining';
+    return 'še $time';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return 'Konec čez $time';
   }
 
   @override
@@ -1042,11 +1049,11 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Nadaljuj od $position';
   }
 
   @override
-  String get play => 'Igraj';
+  String get play => 'Predvajaj';
 
   @override
   String get startOver => 'Začni znova';
@@ -1070,7 +1077,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get version => 'Različica';
 
   @override
-  String get cast => 'Cast';
+  String get cast => 'Predvajaj v napravi';
 
   @override
   String get trailer => 'Napovednik';
@@ -1142,7 +1149,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Ali želite izbrisati prenesene skladbe za »$title«?';
   }
 
   @override
@@ -1157,17 +1164,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Ni naloženih elementov: $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Prenašanje $title ($count elementov)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Ali ste prepričani, da želite izbrisati »$name« s strežnika? Tega dejanja ni mogoče razveljaviti.';
   }
 
   @override
@@ -1178,7 +1185,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Nepodprta oblika knjige: .$extension';
   }
 
   @override
@@ -1188,7 +1195,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get subtitleTrack => 'Skladba s podnapisi';
 
   @override
-  String get none => 'Noben';
+  String get none => 'Brez';
 
   @override
   String get downloadSubtitlesLabel => 'Prenesi podnapise ...';
@@ -1204,7 +1211,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Podnapisi preneseni in izbrani: $name';
   }
 
   @override
@@ -1213,7 +1220,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Za jezik $language ni najdenih oddaljenih podnapisov.';
   }
 
   @override
@@ -1221,7 +1228,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Različica $number';
   }
 
   @override
@@ -1243,7 +1250,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Prenašanje $name ($quality)...';
   }
 
   @override
@@ -1251,7 +1258,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Ali želite izbrisati lokalne datoteke za $typeLabel?\n\nS tem boste sprostili prostor v shrambi. Pozneje jih lahko znova prenesete.';
   }
 
   @override
@@ -1267,25 +1274,25 @@ class AppLocalizationsSl extends AppLocalizations {
   String get director => 'DIREKTOR';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => 'REŽISERJI';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => 'SCENARIST';
 
   @override
-  String get writers => 'PISATELJICE';
+  String get writers => 'SCENARISTI';
 
   @override
   String get studio => 'GARSONJERA';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count več';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count epizod';
   }
 
   @override
@@ -1295,12 +1302,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Epizoda $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Poglavje $number';
   }
 
   @override
@@ -1308,8 +1315,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count skladb',
+      few: '$count skladbe',
+      two: '$count skladbi',
+      one: '1 skladba',
     );
     return '$_temp0';
   }
@@ -1319,25 +1328,27 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count poglavij',
+      few: '$count poglavja',
+      two: '$count poglavji',
+      one: '1 poglavje',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Rojstvo $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Smrt $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Starost $age';
   }
 
   @override
@@ -1350,17 +1361,17 @@ class AppLocalizationsSl extends AppLocalizations {
   String get shuffle => 'Naključno';
 
   @override
-  String get shuffleAllMusic => 'Shuffle all music';
+  String get shuffleAllMusic => 'Naključno predvajaj vso glasbo';
 
   @override
-  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+  String get carSignInPrompt => 'Prijavite se v Moonfin na telefonu';
 
   @override
-  String get carServerUnreachable => 'Can\'t reach your server';
+  String get carServerUnreachable => 'Strežnik ni dosegljiv';
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count prenosov';
   }
 
   @override
@@ -1368,7 +1379,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '${count}ch';
+    return '$count kan.';
   }
 
   @override
@@ -1379,32 +1390,32 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Dejanje oddaljenih podnapisov ($action) za tega uporabnika zahteva dovoljenje Jellyfin za upravljanje podnapisov.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Tega elementa ni bilo mogoče najti na strežniku za dejanje oddaljenih podnapisov ($action).';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Dejanje oddaljenih podnapisov ($action) ni uspelo: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Dejanje oddaljenih podnapisov ($action) ni uspelo (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Dejanja $action za oddaljene podnapise ni bilo mogoče izvesti.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'vse prenesene epizode za »$name«';
   }
 
   @override
@@ -1436,17 +1447,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return 'Dejanje $label ni uspelo: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Glasnosti predvajanja na napravi ni bilo mogoče nastaviti: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return 'Upravljanje $label';
   }
 
   @override
@@ -1463,7 +1474,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Ustavi $label';
   }
 
   @override
@@ -1471,7 +1482,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Skladba $number';
   }
 
   @override
@@ -1488,14 +1499,14 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds sekund';
   }
 
   @override
   String get longPressToUnlock => 'Dolgo pritisnite za odklepanje';
 
   @override
-  String get off => 'Izključeno';
+  String get off => 'Izklopljeno';
 
   @override
   String streamTypeFallback(String streamType, int number) {
@@ -1507,7 +1518,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String bitrateValueMbps(int mbps) {
-    return '$mbps Mbps';
+    return '$mbps Mb/s';
   }
 
   @override
@@ -1518,12 +1529,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String delayMinusMs(int value) {
-    return '-${value}ms';
+    return '-$value ms';
   }
 
   @override
   String delayPlusMs(int value) {
-    return '+${value}ms';
+    return '+$value ms';
   }
 
   @override
@@ -1557,7 +1568,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get transcodeReasons => 'Razlogi za prekodiranje';
 
   @override
-  String get player => 'Igralec';
+  String get player => 'Predvajalnik';
 
   @override
   String get container => 'Posoda';
@@ -1581,7 +1592,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get videoBitrate => 'Bitna hitrost videa';
 
   @override
-  String get track => 'Track';
+  String get track => 'Skladba';
 
   @override
   String get channels => 'Kanali';
@@ -1603,12 +1614,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return 'Napaka seje $protocol';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Podrobnosti knjige ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -1617,7 +1628,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Te oblike (.$extension) še ni mogoče prikazati v aplikaciji.';
   }
 
   @override
@@ -1630,17 +1641,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Bralnika v aplikaciji ni bilo mogoče odpreti: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Zaznamek je na mestu $label že shranjen.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Zaznamek dodan: $label';
   }
 
   @override
@@ -1652,7 +1663,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Stran $number';
   }
 
   @override
@@ -1663,12 +1674,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'Oblika: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent % prebrano';
   }
 
   @override
@@ -1691,7 +1702,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Ponastavi povečavo (${zoom}x)';
   }
 
   @override
@@ -1714,7 +1725,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Stanja branja ni bilo mogoče posodobiti: $error';
   }
 
   @override
@@ -1746,7 +1757,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Ta platforma ne podpira vgrajenega pogona za dokumente za datoteke $extension.';
   }
 
   @override
@@ -1785,7 +1796,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Sporeda ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -1796,22 +1807,22 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Next: $time  $title';
+    return 'Sledi: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m left';
+    return 'še $minutes min';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h left';
+    return 'še $hours h';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m left';
+    return 'še $hours h $minutes min';
   }
 
   @override
@@ -1835,29 +1846,29 @@ class AppLocalizationsSl extends AppLocalizations {
   String get favoriteChannel => 'Najljubši kanal';
 
   @override
-  String get record => 'Record';
+  String get record => 'Snemaj';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Prekliči snemanje';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Snemanje oddaje je načrtovano';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Snemanje preklicano';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Posnetka ni mogoče ustvariti';
 
   @override
-  String get watch => 'Pazi';
+  String get watch => 'Glej';
 
   @override
   String get close => 'Zapri';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Predvajanje $name ni uspelo';
   }
 
   @override
@@ -1883,11 +1894,11 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Ali želite preklicati načrtovano snemanje »$name«?';
   }
 
   @override
-  String get no => 'št';
+  String get no => 'Ne';
 
   @override
   String get yesCancel => 'Da, Prekliči';
@@ -1911,7 +1922,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Ali želite ustaviti snemanje »$name«?';
   }
 
   @override
@@ -1926,12 +1937,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Ni rezultatov za »$query«';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Iskanje ni uspelo: $error';
   }
 
   @override
@@ -1972,12 +1983,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Ali želite odstraniti »$name« in pripadajoče datoteke?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count skladb';
   }
 
   @override
@@ -1988,12 +1999,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Albuma ni bilo mogoče naložiti: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Za album $name ni najdenih prenesenih skladb.';
   }
 
   @override
@@ -2010,7 +2021,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Ali želite odstraniti »$name«?';
   }
 
   @override
@@ -2025,7 +2036,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Epizoda $number';
   }
 
   @override
@@ -2039,7 +2050,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Sezona $number';
   }
 
   @override
@@ -2055,7 +2066,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Ali želite izbrisati vse prenesene epizode v $season?';
   }
 
   @override
@@ -2063,8 +2074,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count epizod',
+      few: '$count epizode',
+      two: '$count epizodi',
+      one: '1 epizoda',
     );
     return '$_temp0';
   }
@@ -2099,7 +2112,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Ali želite izbrisati $count prenesenih elementov?';
   }
 
   @override
@@ -2113,7 +2126,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'od omejitve $limit';
   }
 
   @override
@@ -2156,7 +2169,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get mediaRequestIntegration => 'Integracija medijske zahteve';
 
   @override
-  String get switchServer => 'Switch Server';
+  String get switchServer => 'Zamenjaj strežnik';
 
   @override
   String get signOut => 'Odjava';
@@ -2198,7 +2211,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count možnosti';
   }
 
   @override
@@ -2292,11 +2305,11 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'Detail pages, home rows, and volume';
+      'Strani s podrobnostmi, vrstice na domači strani in glasnost';
 
   @override
   String percentValue(int value) {
-    return '$value%';
+    return '$value %';
   }
 
   @override
@@ -2307,18 +2320,18 @@ class AppLocalizationsSl extends AppLocalizations {
       'Igrajte med brskanjem po začetnem zaslonu';
 
   @override
-  String get loopThemeMusic => 'Loop Theme Music';
+  String get loopThemeMusic => 'Ponavljaj tematsko glasbo';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'Repeat the track instead of playing it once';
+      'Skladbo predvajaj v zanki namesto enkrat';
 
   @override
   String get detailsBackgroundBlur => 'Zameglitev ozadja podrobnosti';
 
   @override
   String pixelValue(int value) {
-    return '${value}px';
+    return '$value px';
   }
 
   @override
@@ -2334,23 +2347,23 @@ class AppLocalizationsSl extends AppLocalizations {
   String get playerZoomMode => 'Način povečave predvajalnika';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => 'Kolesce miške';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      'Izberite, kaj se zgodi ob drsenju s kolescem miške nad videom med predvajanjem.';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => 'Izklopljeno';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => 'Iskanje (naprej/nazaj)';
 
   @override
-  String get scrollWheelActionVolume => 'Volume';
+  String get scrollWheelActionVolume => 'Glasnost';
 
   @override
-  String get playerTooltipVolume => 'Volume';
+  String get playerTooltipVolume => 'Glasnost';
 
   @override
   String get fit => 'Fit';
@@ -2359,13 +2372,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String get autoCrop => 'Samodejno obrezovanje';
 
   @override
-  String get stretch => 'Stretch';
+  String get stretch => 'Raztegni';
 
   @override
   String get refreshRateSwitching => 'Preklop hitrosti osveževanja';
 
   @override
-  String get disabled => 'Onemogočen';
+  String get disabled => 'Onemogočeno';
 
   @override
   String get scaleOnTv => 'Lestvica na TV';
@@ -2404,37 +2417,39 @@ class AppLocalizationsSl extends AppLocalizations {
   String get defaultAudioLanguage => 'Privzeti jezik zvoka';
 
   @override
-  String get fallbackAudioLanguage => 'Fallback Audio Language';
+  String get fallbackAudioLanguage => 'Nadomestni jezik zvoka';
 
   @override
-  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+  String get preferDefaultAudioTrack =>
+      'Prednostno uporabi privzeto zvočno sled';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Prefer original audio track over localized dub.';
+      'Prednostno uporabi izvirno zvočno sled namesto lokalizirane sinhronizacije.';
 
   @override
-  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+  String get preferAudioDescription =>
+      'Prednostno uporabi sledi z zvočnim opisom';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Prefer audio description tracks over normal tracks.';
+      'Prednostno uporabi sledi z zvočnim opisom namesto običajnih sledi.';
 
   @override
-  String get transcodingAudio => 'Transcoding (Audio)';
+  String get transcodingAudio => 'Prekodiranje (zvok)';
 
   @override
-  String get directStreamRemux => 'Direct Stream (Remux)';
+  String get directStreamRemux => 'Neposredni pretok (remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Transcoding (Bitrate or Resolution)';
+      'Prekodiranje (bitna hitrost ali ločljivost)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+  String get transcodingVideoAndAudio => 'Prekodiranje (video in zvok)';
 
   @override
-  String get transcodingVideo => 'Transcoding (Video)';
+  String get transcodingVideo => 'Prekodiranje (video)';
 
   @override
   String get autoServerDefault => 'Samodejno (privzeto za strežnik)';
@@ -2473,7 +2488,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get arabic => 'arabščina';
 
   @override
-  String get hindi => 'Hindi';
+  String get hindi => 'Hindijščina';
 
   @override
   String get dutch => 'nizozemščina';
@@ -2511,27 +2526,28 @@ class AppLocalizationsSl extends AppLocalizations {
       'Omogoči zvok TrueHD (morda ne deluje na vseh platformah)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Način zvočnega izhoda';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      'Izberite, kako se zvok dekodira. AVR Passthrough pošilja surove pretoke Dolby/DTS v vaš sprejemnik, Samodejno ali Downmix dekodirata lokalno.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Nadomestni zvočni kodek';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      'Izberite ciljno obliko za prekodiranje večkanalnega zvoka, kadar izvornega pretoka ni mogoče predvajati neposredno ali posredovati naprej.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto =>
+      'Samodejno zaznaj\n(priporočeno)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(privzeto)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2540,26 +2556,27 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(brez izgub)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(samo stereo)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(učinkovit)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(brez izgub)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => 'Največje število zvočnih kanalov';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      'Nastavite največje število kanalov vaše zvočne postavitve. Večkanalni pretoki, ki presegajo to omejitev, bodo zmiksani ali prekodirani.';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto =>
+      'Samodejno zaznaj\n(privzeto za strojno opremo)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2571,7 +2588,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Kvadrofonija';
 
   @override
   String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
@@ -2586,67 +2603,67 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (napredno)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'Passthrough kodekov';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Omogočite samo oblike, ki jih podpira vaš AVR ali naprava HDMI.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'Passthrough EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'Passthrough EAC3 JOC (Atmos)';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'Passthrough DTS Core';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'Passthrough TrueHD Atmos';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Pošlji bitni tok Dolby Digital Plus (EAC3) v zunanji dekodirnik.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Pošlji bitni tok Dolby Atmos prek EAC3 (JOC) v zunanji dekodirnik.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Pošlji bitni tok DTS-HD MA (vključno z jedrom DTS) v zunanji dekodirnik.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Pošlji bitni tok Dolby TrueHD z metapodatki Atmos v zunanji dekodirnik.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => 'Zaznane zvočne zmožnosti';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Posnetek zmožnosti med izvajanjem še ni na voljo.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Pot';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Dekodiranje';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'Pot za zvok HD';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2661,50 +2678,50 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Zvočnik';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Headphones';
+  String get settingsAudioRouteHeadphones => 'Slušalke';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '${count}ch PCM';
+    return '$count kan. PCM';
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnostika';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Raven videa';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Obseg videa';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Kodek podnapisov';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Dovoljeni zvočni kodeki';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'Zvočni kodeki HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'Zvočni kodeki HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'passthrough audio-spdif';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Aktivna zvočna pot';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Podpora za zvok HD na poti';
 
   @override
   String get nightMode => 'Nočni način';
@@ -2753,7 +2770,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '${value}s';
+    return '$value s';
   }
 
   @override
@@ -2768,7 +2785,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Po $episodes epizodah / $hours h';
   }
 
   @override
@@ -2809,7 +2826,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get selectMpvConf => 'Izberite mpv.conf';
 
   @override
-  String get pathToMpvConf => '/path/to/mpv.conf';
+  String get pathToMpvConf => '/pot/do/mpv.conf';
 
   @override
   String get subtitleStyleDescription =>
@@ -2843,45 +2860,45 @@ class AppLocalizationsSl extends AppLocalizations {
   String get subtitleCustomizationDescription => 'Prilagodite videz podnapisov';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => 'Način podnapisov';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => 'Označeni';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => 'Vedno';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => 'Tujejezični';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => 'Vsiljeni';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+      'Predvaja sledi, ki so v metapodatkih predstavnostne datoteke interno označene kot »default« ali »forced«.';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+      'Samodejno naloži in prikaže podnapise ob vsakem zagonu videa.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+      'Samodejno vklopi podnapise, če je privzeta zvočna sled v tujem jeziku.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+      'Naloži samo podnapise, ki so izrecno označeni z zastavico »forced«.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+      'Popolnoma onemogoči samodejno nalaganje podnapisov.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => 'Nadomestni jezik podnapisov';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => 'Pretok podnapisov';
 
   @override
   String get subtitlePreviewText => 'Hitra rjava lisica skoči čez lenega psa';
@@ -2915,7 +2932,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get green => 'zelena';
 
   @override
-  String get cyan => 'Cyan';
+  String get cyan => 'Cian';
 
   @override
   String get red => 'Rdeča';
@@ -2940,17 +2957,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Nastavitve profila $profile so naložene.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Nastavitev profila $profile ni bilo mogoče naložiti.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Lokalne nastavitve so sinhronizirane s profilom $profile.';
   }
 
   @override
@@ -2989,11 +3006,11 @@ class AppLocalizationsSl extends AppLocalizations {
   String get wifiOnlyDownloads => 'Prenosi samo za WiFi';
 
   @override
-  String get reportDownloadsActivity => 'Show downloads on the server';
+  String get reportDownloadsActivity => 'Prikaži prenose na strežniku';
 
   @override
   String get reportDownloadsActivitySubtitle =>
-      'Let the server admin see your transcoded downloads in the dashboard';
+      'Skrbniku strežnika omogoči, da v nadzorni plošči vidi vaše prekodirane prenose';
 
   @override
   String get onlyDownloadOnWifi => 'Prenesite samo, ko ste povezani z WiFi';
@@ -3030,7 +3047,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get clearAllDownloads => 'Počisti vse prenose';
 
   @override
-  String get original => 'Original';
+  String get original => 'Izvirna';
 
   @override
   String get changeDownloadLocation => 'Spremenite lokacijo prenosa';
@@ -3085,10 +3102,11 @@ class AppLocalizationsSl extends AppLocalizations {
   String get showLibrariesInToolbar => 'Prikaži knjižnice v orodni vrstici';
 
   @override
-  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
+  String get navbarAlwaysExpanded =>
+      'Vedno prikaži oznake v navigacijski vrstici';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'Prikaži gumb Seerr';
 
   @override
   String get navbarOpacity => 'Neprosojnost krmarne vrstice';
@@ -3106,7 +3124,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get purple => 'Vijolična';
 
   @override
-  String get teal => 'Teal';
+  String get teal => 'Modrozelena';
 
   @override
   String get navy => 'Mornarica';
@@ -3163,18 +3181,19 @@ class AppLocalizationsSl extends AppLocalizations {
   String get showFolderBrowsingOption => 'Pokaži možnost brskanja po mapah';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => 'Združi elemente v zbirke';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+      'Med brskanjem po knjižnicah skrij elemente, ki pripadajo zbirki';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle =>
+      'Obvestilo o združevanju knjižnice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+      'Za uporabo te nastavitve poskrbite, da sta v nastavitvah prikaza vaše knjižnice na strežniku Jellyfin ali Emby omogočeni možnosti »Group movies into collections« in/ali »Group shows into collections«.';
 
   @override
   String get libraryVisibility => 'Vidnost knjižnice';
@@ -3203,7 +3222,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count izbranih';
   }
 
   @override
@@ -3233,13 +3252,13 @@ class AppLocalizationsSl extends AppLocalizations {
       'Izbirajte med različnimi slogi medijske vrstice ali pa medijsko vrstico izklopite';
 
   @override
-  String get mediaBarModeMoonfin => 'Mesečeva plavutka';
+  String get mediaBarModeMoonfin => 'Moonfin';
 
   @override
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => 'Izključeno';
+  String get mediaBarModeOff => 'Izklopljeno';
 
   @override
   String get enableMediaBar => 'Omogoči vrstico z mediji';
@@ -3287,10 +3306,11 @@ class AppLocalizationsSl extends AppLocalizations {
       'Samodejno predvajanje napovednikov v medijski vrstici po 3 sekundah';
 
   @override
-  String get trailerAudio => 'Trailer Audio';
+  String get trailerAudio => 'Zvok napovednikov';
 
   @override
-  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+  String get enableTrailerAudio =>
+      'Omogoči zvok napovednikov v predstavnostni vrstici';
 
   @override
   String get episodePreview => 'Predogled epizode';
@@ -3367,10 +3387,11 @@ class AppLocalizationsSl extends AppLocalizations {
   String get combineBothRows => 'Združite obe vrstici v en sam domači del';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => 'Razširjene vrstice na domači strani';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription =>
+      'Omeji domačo stran na 1 vrstico naenkrat';
 
   @override
   String get perRowImageType => 'Vrsta slike na vrstico';
@@ -3385,7 +3406,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get lastUser => 'Zadnji uporabnik';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => 'Trenutni uporabnik';
 
   @override
   String get alwaysAuthenticate => 'Vedno preveri pristnost';
@@ -3492,10 +3513,10 @@ class AppLocalizationsSl extends AppLocalizations {
       'Prikaz ure med ohranjevalnikom zaslona';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => 'Statična';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => 'Odbijajoča se';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritiki)';
@@ -3565,7 +3586,7 @@ class AppLocalizationsSl extends AppLocalizations {
       'Omogočite in preuredite vire ocen, prikazane v celotni aplikaciji';
 
   @override
-  String get pluginLabel => 'Plugin';
+  String get pluginLabel => 'Vtičnik Moonbase';
 
   @override
   String get pluginDetected => 'Vtičnik zaznan';
@@ -3583,7 +3604,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nRazličica: $version';
   }
 
   @override
@@ -3637,7 +3658,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get networks => 'Omrežja';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'Vrstice za odkrivanje Seerr';
 
   @override
   String get resetRowsToDefaults => 'Ponastavi vrstice na privzete';
@@ -3660,44 +3681,43 @@ class AppLocalizationsSl extends AppLocalizations {
   String get hideAdultContent => 'Skrij vsebino za odrasle v rezultatih';
 
   @override
-  String get seerrNotificationsSection => 'Notifications';
+  String get seerrNotificationsSection => 'Obvestila';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'New request notifications';
+  String get seerrNotifyNewRequestsTitle => 'Obvestila o novih zahtevah';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'Alert me when someone submits a request';
+      'Obvesti me, ko nekdo odda zahtevo';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Request updates';
+  String get seerrNotifyLibraryAddedTitle => 'Posodobitve zahtev';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Approved, declined, and added to your library';
+      'Odobreno, zavrnjeno in dodano v vašo knjižnico';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Issue updates';
+  String get seerrNotifyIssuesTitle => 'Posodobitve težav';
 
   @override
-  String get seerrNotifyIssuesSubtitle =>
-      'New issues, replies, and resolutions';
+  String get seerrNotifyIssuesSubtitle => 'Nove težave, odgovori in rešitve';
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Prijavljeni kot: $username';
   }
 
   @override
-  String get discoverRows => 'Odkrijte vrstice';
+  String get discoverRows => 'Stran za odkrivanje Seerr';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Povlecite za prerazporeditev. Omogoči ali onemogoči vrstice. Omogočen vrstni red se sinhronizira z vtičnikom Moonfin.';
+      'Omogočite vrstice, ki jih želite videti na glavni strani Seerr. Povlecite za prerazporeditev. Prilagojeni vrstni red se sinhronizira z vtičnikom Moonbase.';
 
   @override
   String get discoverRowsDescription =>
-      'Povlecite za prerazporeditev. Omogoči ali onemogoči vrstice.';
+      'Omogočite vrstice, ki jih želite videti na glavni strani Seerr. Povlecite za prerazporeditev. Prilagojeni vrstni red se sinhronizira z vtičnikom Moonbase.';
 
   @override
   String get enabled => 'Omogočeno';
@@ -3710,7 +3730,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Različica $version';
   }
 
   @override
@@ -3761,7 +3781,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Na voljo je posodobitev: v$version';
   }
 
   @override
@@ -3773,7 +3793,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'Različica v$version je na voljo';
   }
 
   @override
@@ -3827,16 +3847,16 @@ class AppLocalizationsSl extends AppLocalizations {
   }
 
   @override
-  String get imageCacheLimit => 'Image cache limit';
+  String get imageCacheLimit => 'Omejitev predpomnilnika slik';
 
   @override
-  String get clearImageCache => 'Clear image cache';
+  String get clearImageCache => 'Počisti predpomnilnik slik';
 
   @override
-  String get imageCacheCleared => 'Image cache cleared';
+  String get imageCacheCleared => 'Predpomnilnik slik je počiščen';
 
   @override
-  String get clear => 'jasno';
+  String get clear => 'Počisti';
 
   @override
   String get browse => 'Prebrskaj';
@@ -3852,15 +3872,15 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Downloading · $percent%';
+    return 'Prenašanje · $percent %';
   }
 
   @override
-  String get seerrImportingStatus => 'Importing';
+  String get seerrImportingStatus => 'Uvažanje';
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count elementov';
   }
 
   @override
@@ -3880,7 +3900,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Zahteval $name';
   }
 
   @override
@@ -3897,12 +3917,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Ali želite preklicati zahtevo za »$title«?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Ali želite preklicati $count zahtev za »$title«?';
   }
 
   @override
@@ -3917,12 +3937,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Proračun: $amount \$';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Prihodek: $amount \$';
   }
 
   @override
@@ -3932,7 +3952,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Zahtevaj $type';
   }
 
   @override
@@ -3968,7 +3988,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'starost $age';
   }
 
   @override
@@ -3999,148 +4019,146 @@ class AppLocalizationsSl extends AppLocalizations {
   String get deletedStatus => 'Izbrisano';
 
   @override
-  String get failedStatus => 'Failed';
+  String get failedStatus => 'Neuspešno';
 
   @override
-  String get processingStatus => 'Processing';
+  String get processingStatus => 'V obdelavi';
 
   @override
   String modifiedByName(String name) {
-    return 'Modified by $name';
+    return 'Spremenil $name';
   }
 
   @override
-  String get completedStatus => 'Completed';
+  String get completedStatus => 'Zaključeno';
 
   @override
-  String get requestErrorDuplicate => 'This title was already requested';
+  String get requestErrorDuplicate => 'Ta naslov je bil že zahtevan';
 
   @override
-  String get requestErrorQuota => 'Request limit reached';
+  String get requestErrorQuota => 'Dosežena je omejitev zahtev';
 
   @override
-  String get requestErrorBlocklisted => 'This title is blocklisted';
+  String get requestErrorBlocklisted => 'Ta naslov je na seznamu blokiranih';
 
   @override
-  String get requestErrorNoSeasons => 'No seasons left to request';
+  String get requestErrorNoSeasons => 'Ni več sezon, ki bi jih lahko zahtevali';
 
   @override
-  String get requestErrorPermission =>
-      'You don\'t have permission to make this request';
+  String get requestErrorPermission => 'Nimate dovoljenja za to zahtevo';
 
   @override
-  String get seerrRequestsTitle => 'Requests';
+  String get seerrRequestsTitle => 'Zahteve';
 
   @override
-  String get seerrIssuesTitle => 'Issues';
+  String get seerrIssuesTitle => 'Težave';
 
   @override
-  String get sortNewest => 'Newest';
+  String get sortNewest => 'Najnovejše';
 
   @override
-  String get sortLastModified => 'Last Modified';
+  String get sortLastModified => 'Nazadnje spremenjeno';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => 'Ni težav';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit movie requests remaining';
+    return 'Na voljo je še $remaining od $limit zahtev za filme';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit season requests remaining';
+    return 'Na voljo je še $remaining od $limit zahtev za sezone';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Part of $name';
+    return 'Del zbirke $name';
   }
 
   @override
-  String get viewCollection => 'View Collection';
+  String get viewCollection => 'Prikaži zbirko';
 
   @override
-  String get requestCollection => 'Request Collection';
+  String get requestCollection => 'Zahtevaj zbirko';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total movies · $available available';
+    return '$total filmov · $available na voljo';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Request $count movies';
+    return 'Zahtevaj $count filmov';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Requesting $current of $total...';
+    return 'Pošiljanje zahteve $current od $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Requested $count movies';
+    return 'Zahtevanih $count filmov';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Requested $ok of $total movies';
+    return 'Zahtevanih $ok od $total filmov';
   }
 
   @override
-  String get collectionAllRequested =>
-      'All movies are already available or requested';
+  String get collectionAllRequested => 'Vsi filmi so že na voljo ali zahtevani';
 
   @override
-  String get reportIssue => 'Report Issue';
+  String get reportIssue => 'Prijavi težavo';
 
   @override
   String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'Audio';
+  String get issueTypeAudio => 'Zvok';
 
   @override
-  String get whatsWrong => 'What\'s wrong?';
+  String get whatsWrong => 'V čem je težava?';
 
   @override
-  String get allEpisodes => 'All Episodes';
+  String get allEpisodes => 'Vse epizode';
 
   @override
-  String get episode => 'Episode';
+  String get episode => 'Epizoda';
 
   @override
-  String get openStatus => 'Open';
+  String get openStatus => 'Odprto';
 
   @override
-  String get resolvedStatus => 'Resolved';
+  String get resolvedStatus => 'Rešeno';
 
   @override
-  String get resolveAction => 'Resolve';
+  String get resolveAction => 'Reši';
 
   @override
-  String get reopenAction => 'Reopen';
+  String get reopenAction => 'Znova odpri';
 
   @override
   String reportedByName(String name) {
-    return 'Reported by $name';
+    return 'Prijavil $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comments';
+    return '$count komentarjev';
   }
 
   @override
-  String get addComment => 'Add a comment';
+  String get addComment => 'Dodaj komentar';
 
   @override
-  String get deleteIssueConfirm => 'Delete this issue?';
+  String get deleteIssueConfirm => 'Ali želite izbrisati to težavo?';
 
   @override
-  String get submitReport => 'Submit Report';
+  String get submitReport => 'Pošlji prijavo';
 
   @override
   String get tmdbScore => 'Rezultat TMDB';
@@ -4155,7 +4173,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get revenueLabel => 'Prihodki';
 
   @override
-  String get runtimeLabel => 'Runtime';
+  String get runtimeLabel => 'Trajanje';
 
   @override
   String get budgetLabel => 'Proračun';
@@ -4164,7 +4182,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get originalLanguageLabel => 'Izvirni jezik';
 
   @override
-  String get seasonsLabel => 'letni časi';
+  String get seasonsLabel => 'Sezone';
 
   @override
   String get episodesLabel => 'Epizode';
@@ -4233,7 +4251,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get networking => 'Mreženje';
 
   @override
-  String get next => 'Naprej';
+  String get next => 'Naslednji';
 
   @override
   String get path => 'Pot';
@@ -4257,7 +4275,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get refresh => 'Osveži';
 
   @override
-  String get remote => 'Daljinsko';
+  String get remote => 'Daljinski upravljalnik';
 
   @override
   String get rename => 'Preimenuj';
@@ -4269,13 +4287,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String get role => 'Vloga';
 
   @override
-  String get root => 'Root';
+  String get root => 'Koren';
 
   @override
   String get run => 'Teči';
 
   @override
-  String get search => 'Iskanje';
+  String get search => 'Išči';
 
   @override
   String get select => 'Izberite';
@@ -4293,7 +4311,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get status => 'Stanje';
 
   @override
-  String get stop => 'Stop';
+  String get stop => 'Ustavi';
 
   @override
   String get streaming => 'Pretakanje';
@@ -4302,7 +4320,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get time => 'Čas';
 
   @override
-  String get trickplay => 'Prevara';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => 'Odstrani';
@@ -4320,7 +4338,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get unmute => 'Vklop zvoka';
 
   @override
-  String get mute => 'Mute';
+  String get mute => 'Izklopi zvok';
 
   @override
   String get branding => 'Znamčenje';
@@ -4344,25 +4362,25 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminDrawerLibraries => 'Knjižnice';
 
   @override
-  String get adminDrawerDisplay => 'Display';
+  String get adminDrawerDisplay => 'Prikaz';
 
   @override
-  String get adminDrawerMetadata => 'Metadata';
+  String get adminDrawerMetadata => 'Metapodatki';
 
   @override
-  String get adminDrawerNfo => 'NFO Settings';
+  String get adminDrawerNfo => 'Nastavitve NFO';
 
   @override
   String get adminDrawerTranscoding => 'Prekodiranje';
 
   @override
-  String get adminDrawerResume => 'Nadaljevanje';
+  String get adminDrawerResume => 'Nadaljuj';
 
   @override
   String get adminDrawerStreaming => 'Pretakanje';
 
   @override
-  String get adminDrawerTrickplay => 'Prevara';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'Naprave';
@@ -4414,22 +4432,22 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Na voljo posodobitve vtičnikov: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Vtičniki, ki zahtevajo ponovni zagon: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Neuspešna načrtovana opravila: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Nedavna opozorila/napake: $count';
   }
 
   @override
@@ -4488,7 +4506,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Napaka: $error';
   }
 
   @override
@@ -4515,7 +4533,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Ukaz ni uspel: $error';
   }
 
   @override
@@ -4537,13 +4555,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String get sessionForward => 'Naprej';
 
   @override
-  String get sessionNext => 'Naprej';
+  String get sessionNext => 'Naslednji';
 
   @override
-  String get sessionVolumeDown => 'Vol –';
+  String get sessionVolumeDown => 'Glas. –';
 
   @override
-  String get sessionVolumeUp => 'Vol +';
+  String get sessionVolumeUp => 'Glas. +';
 
   @override
   String get uhd4k => '4K';
@@ -4564,7 +4582,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get audioCodec => 'Avdio kodek';
 
   @override
-  String get hwAccel => 'HW Accel';
+  String get hwAccel => 'Strojno pospeševanje';
 
   @override
   String get completion => 'Dokončanje';
@@ -4579,14 +4597,14 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminClearDates => 'Jasni datumi';
 
   @override
-  String get adminActivitySeverityAll => 'All severities';
+  String get adminActivitySeverityAll => 'Vse stopnje resnosti';
 
   @override
-  String get adminActivityDateRange => 'Date range';
+  String get adminActivityDateRange => 'Časovno obdobje';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Dnevnika dejavnosti ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -4603,7 +4621,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Naprave ni bilo mogoče posodobiti: $error';
   }
 
   @override
@@ -4614,28 +4632,28 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Naprave ni bilo mogoče izbrisati: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return 'Ali želite odstraniti napravo »$name«? Uporabnik se bo moral na tej napravi znova prijaviti.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Delete all devices';
+  String get adminDeleteAllDevices => 'Izbriši vse naprave';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
+    return 'Ali želite odstraniti $count naprav? Prizadeti uporabniki se bodo morali znova prijaviti. To ne vpliva na vašo trenutno napravo.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Devices removed';
+  String get adminDevicesDeletedAll => 'Naprave odstranjene';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Removed some devices; $count could not be removed.';
+    return 'Nekatere naprave so odstranjene, $count jih ni bilo mogoče odstraniti.';
   }
 
   @override
@@ -4664,7 +4682,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Pregleda ni bilo mogoče zagnati: $error';
   }
 
   @override
@@ -4675,12 +4693,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Knjižnica je preimenovana v »$name«';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Preimenovanje ni uspelo: $error';
   }
 
   @override
@@ -4688,17 +4706,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Knjižnica »$name« je izbrisana';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Knjižnice ni bilo mogoče izbrisati: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Poti ni bilo mogoče dodati: $error';
   }
 
   @override
@@ -4706,12 +4724,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Ali želite odstraniti »$path« iz te knjižnice?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Poti ni bilo mogoče odstraniti: $error';
   }
 
   @override
@@ -4719,7 +4737,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Možnosti ni bilo mogoče shraniti: $error';
   }
 
   @override
@@ -4751,251 +4769,258 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminMetadataCountryHint => 'npr. ZDA, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'Paths';
+  String get adminLibraryTabPaths => 'Poti';
 
   @override
-  String get adminLibraryTabOptions => 'Options';
+  String get adminLibraryTabOptions => 'Možnosti';
 
   @override
-  String get adminLibraryTabDownloaders => 'Downloaders';
+  String get adminLibraryTabDownloaders => 'Prenosniki';
 
   @override
-  String get adminLibMetadataSavers => 'Metadata savers';
+  String get adminLibMetadataSavers => 'Shranjevalniki metapodatkov';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+  String get adminLibSubtitleDownloaders => 'Prenosniki podnapisov';
 
   @override
-  String get adminLibLyricDownloaders => 'Lyric downloaders';
+  String get adminLibLyricDownloaders => 'Prenosniki besedil';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Metadata downloaders: $type';
+    return 'Prenosniki metapodatkov: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Image fetchers: $type';
+    return 'Pridobivalniki slik: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'This server exposes no downloaders for this library type.';
+      'Ta strežnik za to vrsto knjižnice ne ponuja nobenih prenosnikov.';
 
   @override
-  String get adminLibrarySectionGeneral => 'General';
+  String get adminLibrarySectionGeneral => 'Splošno';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadata';
+  String get adminLibrarySectionMetadata => 'Metapodatki';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Embedded Info';
+  String get adminLibrarySectionEmbedded => 'Vgrajeni podatki';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitles';
+  String get adminLibrarySectionSubtitles => 'Podnapisi';
 
   @override
-  String get adminLibrarySectionImages => 'Images';
+  String get adminLibrarySectionImages => 'Slike';
 
   @override
-  String get adminLibrarySectionSeries => 'Series';
+  String get adminLibrarySectionSeries => 'Serije';
 
   @override
-  String get adminLibrarySectionMusic => 'Music';
+  String get adminLibrarySectionMusic => 'Glasba';
 
   @override
-  String get adminLibrarySectionMovies => 'Movies';
+  String get adminLibrarySectionMovies => 'Filmi';
 
   @override
-  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+  String get adminLibRealtimeMonitor => 'Omogoči spremljanje v realnem času';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Detect file changes and process them automatically.';
+      'Zaznaj spremembe datotek in jih samodejno obdelaj.';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+  String get adminLibArchiveMediaFiles =>
+      'Obravnavaj arhive kot predstavnostne datoteke';
 
   @override
-  String get adminLibEnablePhotos => 'Display photos';
+  String get adminLibEnablePhotos => 'Prikaži fotografije';
 
   @override
-  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+  String get adminLibSaveLocalMetadata =>
+      'Shrani slikovno gradivo v predstavnostne mape';
 
   @override
-  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+  String get adminLibRefreshInterval => 'Samodejno osveževanje metapodatkov';
 
   @override
-  String get adminLibRefreshNever => 'Never';
+  String get adminLibRefreshNever => 'Nikoli';
 
   @override
-  String get adminLibDefault => 'Default';
+  String get adminLibDefault => 'Privzeto';
 
   @override
-  String get adminLibDisplayTitle => 'Display';
+  String get adminLibDisplayTitle => 'Prikaz';
 
   @override
-  String get adminLibDisplaySection => 'Library display';
+  String get adminLibDisplaySection => 'Prikaz knjižnice';
 
   @override
   String get adminLibFolderView =>
-      'Display a folder view to show plain media folders';
+      'Prikaži pogled map z navadnimi predstavnostnimi mapami';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'Display specials within seasons they aired in';
+      'Prikaži posebne epizode v sezonah, v katerih so bile predvajane';
 
   @override
-  String get adminLibGroupMovies => 'Group movies into collections';
+  String get adminLibGroupMovies => 'Združi filme v zbirke';
 
   @override
-  String get adminLibGroupShows => 'Group shows into collections';
+  String get adminLibGroupShows => 'Združi serije v zbirke';
 
   @override
   String get adminLibExternalSuggestions =>
-      'Show external content in suggestions';
+      'Prikaži zunanjo vsebino med predlogi';
 
   @override
-  String get adminLibDateAddedSection => 'Date added behavior';
+  String get adminLibDateAddedSection => 'Ravnanje z datumom dodajanja';
 
   @override
-  String get adminLibDateAddedLabel => 'Use date added from';
+  String get adminLibDateAddedLabel => 'Uporabi datum dodajanja iz';
 
   @override
-  String get adminLibDateAddedImport => 'Date scanned into the library';
+  String get adminLibDateAddedImport => 'Datum pregleda v knjižnico';
 
   @override
-  String get adminLibDateAddedFile => 'Date the file was created';
+  String get adminLibDateAddedFile => 'Datum nastanka datoteke';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata and Images';
+  String get adminLibMetadataTitle => 'Metapodatki in slike';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferred metadata language';
+  String get adminLibMetadataLangSection => 'Prednostni jezik metapodatkov';
 
   @override
-  String get adminLibChaptersSection => 'Chapters';
+  String get adminLibChaptersSection => 'Poglavja';
 
   @override
-  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
+  String get adminLibDummyChapterDuration =>
+      'Trajanje nadomestnih poglavij (sekunde)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Length of chapters generated for media that has none. Set to 0 to disable.';
+      'Dolžina poglavij, ustvarjenih za vsebine, ki jih nimajo. Nastavite na 0, da to onemogočite.';
 
   @override
-  String get adminLibChapterImageResolution => 'Chapter image resolution';
+  String get adminLibChapterImageResolution => 'Ločljivost slik poglavij';
 
   @override
-  String get adminLibNfoTitle => 'NFO Settings';
+  String get adminLibNfoTitle => 'Nastavitve NFO';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
+      'Metapodatki NFO so združljivi s Kodi in podobnimi odjemalci. Nastavitve veljajo za vse knjižnice, ki shranjujejo metapodatke NFO.';
 
   @override
-  String get adminLibKodiUser => 'User to store watch data for in NFO files';
+  String get adminLibKodiUser =>
+      'Uporabnik, za katerega se v datotekah NFO shranjujejo podatki o gledanju';
 
   @override
-  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
+  String get adminLibSaveImagePaths => 'Shrani poti do slik v datoteke NFO';
 
   @override
   String get adminLibPathSubstitution =>
-      'Enable path substitution for NFO image paths';
+      'Omogoči zamenjavo poti za poti do slik v NFO';
 
   @override
   String get adminLibExtraThumbs =>
-      'Copy extrafanart images into an extrathumbs folder';
+      'Kopiraj slike extrafanart v mapo extrathumbs';
 
   @override
-  String get adminLibNone => 'None';
+  String get adminLibNone => 'Brez';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days days';
+    return '$days dni';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Use embedded titles';
+  String get adminLibEmbeddedTitles => 'Uporabi vgrajene naslove';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+  String get adminLibEmbeddedExtrasTitles =>
+      'Uporabi vgrajene naslove za dodatke';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+  String get adminLibEmbeddedEpisodeInfos =>
+      'Uporabi vgrajene podatke o epizodah';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+  String get adminLibAllowEmbeddedSubtitles => 'Dovoli vgrajene podnapise';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Allow all';
+  String get adminLibEmbeddedAllowAll => 'Dovoli vse';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Text only';
+  String get adminLibEmbeddedAllowText => 'Samo besedilne';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Image only';
+  String get adminLibEmbeddedAllowImage => 'Samo slikovne';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'None';
+  String get adminLibEmbeddedAllowNone => 'Brez';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Skip download if embedded subtitles are present';
+      'Preskoči prenos, če so prisotni vgrajeni podnapisi';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Skip download if the audio track matches the download language';
+      'Preskoči prenos, če se zvočna sled ujema z jezikom prenosa';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+  String get adminLibRequirePerfectMatch =>
+      'Zahtevaj popolno ujemanje podnapisov';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'Save subtitles into media folders';
+      'Shrani podnapise v predstavnostne mape';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extract chapter images';
+  String get adminLibChapterImageExtraction => 'Izlušči slike poglavij';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Extract chapter images during the library scan';
+      'Izlušči slike poglavij med pregledom knjižnice';
 
   @override
-  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+  String get adminLibTrickplayExtraction => 'Omogoči luščenje slik trickplay';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Extract trickplay images during the library scan';
+      'Izlušči slike trickplay med pregledom knjižnice';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Save trickplay images into media folders';
+      'Shrani slike trickplay v predstavnostne mape';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Automatically merge series that are spread across multiple folders';
+      'Samodejno združi serije, ki so razpršene po več mapah';
 
   @override
-  String get adminLibSeasonZeroName => 'Season zero display name';
+  String get adminLibSeasonZeroName => 'Prikazano ime ničte sezone';
 
   @override
-  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+  String get adminLibLufsScan =>
+      'Omogoči pregled LUFS za normalizacijo glasnosti';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Prefer non-standard artists tag';
+      'Prednostno uporabi nestandardno oznako izvajalcev';
 
   @override
-  String get adminLibAutoAddToCollection =>
-      'Automatically add movies to collections';
+  String get adminLibAutoAddToCollection => 'Samodejno dodajaj filme v zbirke';
 
   @override
   String get adminLibraryNameRequired => 'Zahtevano je ime knjižnice';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Knjižnice ni bilo mogoče ustvariti: $error';
   }
 
   @override
@@ -5021,27 +5046,27 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Ali želite onemogočiti uporabnika $name? Ne bo se mogel prijaviti.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Ali želite omogočiti uporabnika $name? Znova se bo lahko prijavil.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Uporabnik »$name« je onemogočen';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Uporabnik »$name« je omogočen';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Pravilnika uporabnika ni bilo mogoče posodobiti: $error';
   }
 
   @override
@@ -5058,7 +5083,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Uporabnika ni bilo mogoče ustvariti: $error';
   }
 
   @override
@@ -5078,7 +5103,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Shranjevanje ni uspelo: $error';
   }
 
   @override
@@ -5089,7 +5114,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Ni uspelo: $error';
   }
 
   @override
@@ -5112,7 +5137,7 @@ class AppLocalizationsSl extends AppLocalizations {
       'Administratorji imajo popoln dostop do strežnika. Dodelite previdno.';
 
   @override
-  String get administrator => 'Administrator';
+  String get administrator => 'Skrbnik';
 
   @override
   String get adminHiddenUser => 'Skrit uporabnik';
@@ -5223,143 +5248,144 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminEnableAllChannels => 'Omogoči dostop do vseh kanalov';
 
   @override
-  String get adminParentalControl => 'Parental Control';
+  String get adminParentalControl => 'Starševski nadzor';
 
   @override
-  String get adminMaxParentalRating => 'Maximum allowed parental rating';
+  String get adminMaxParentalRating => 'Najvišja dovoljena starševska ocena';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Content with a higher rating will be hidden from this user.';
+      'Vsebina z višjo oceno bo temu uporabniku skrita.';
 
   @override
-  String get adminParentalRatingNone => 'None';
+  String get adminParentalRatingNone => 'Brez';
 
   @override
   String get adminBlockUnratedItems =>
-      'Block items with no or unrecognized rating information';
+      'Blokiraj elemente brez ocene ali z neprepoznano oceno';
 
   @override
-  String get adminUnratedBook => 'Books';
+  String get adminUnratedBook => 'Knjige';
 
   @override
-  String get adminUnratedChannelContent => 'Channels';
+  String get adminUnratedChannelContent => 'Kanali';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Live TV';
+  String get adminUnratedLiveTvChannel => 'TV v živo';
 
   @override
-  String get adminUnratedMovie => 'Movies';
+  String get adminUnratedMovie => 'Filmi';
 
   @override
-  String get adminUnratedMusic => 'Music';
+  String get adminUnratedMusic => 'Glasba';
 
   @override
-  String get adminUnratedTrailer => 'Trailers';
+  String get adminUnratedTrailer => 'Napovedniki';
 
   @override
-  String get adminUnratedSeries => 'Shows';
+  String get adminUnratedSeries => 'Serije';
 
   @override
-  String get adminAccessSchedules => 'Access Schedules';
+  String get adminAccessSchedules => 'Urniki dostopa';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
+      'Dovoli dostop samo med spodaj načrtovanimi časi. Če urnik ni nastavljen, je dostop dovoljen ves dan.';
 
   @override
-  String get adminAddSchedule => 'Add Schedule';
+  String get adminAddSchedule => 'Dodaj urnik';
 
   @override
-  String get adminScheduleDay => 'Day';
+  String get adminScheduleDay => 'Dan';
 
   @override
-  String get adminScheduleStart => 'Start';
+  String get adminScheduleStart => 'Začetek';
 
   @override
-  String get adminScheduleEnd => 'End';
+  String get adminScheduleEnd => 'Konec';
 
   @override
-  String get adminDayEveryday => 'Every day';
+  String get adminDayEveryday => 'Vsak dan';
 
   @override
-  String get adminDayWeekday => 'Weekday';
+  String get adminDayWeekday => 'Delovnik';
 
   @override
-  String get adminDayWeekend => 'Weekend';
+  String get adminDayWeekend => 'Vikend';
 
   @override
-  String get adminDaySunday => 'Sunday';
+  String get adminDaySunday => 'Nedelja';
 
   @override
-  String get adminDayMonday => 'Monday';
+  String get adminDayMonday => 'Ponedeljek';
 
   @override
-  String get adminDayTuesday => 'Tuesday';
+  String get adminDayTuesday => 'Torek';
 
   @override
-  String get adminDayWednesday => 'Wednesday';
+  String get adminDayWednesday => 'Sreda';
 
   @override
-  String get adminDayThursday => 'Thursday';
+  String get adminDayThursday => 'Četrtek';
 
   @override
-  String get adminDayFriday => 'Friday';
+  String get adminDayFriday => 'Petek';
 
   @override
-  String get adminDaySaturday => 'Saturday';
+  String get adminDaySaturday => 'Sobota';
 
   @override
-  String get adminAllowedTags => 'Allowed tags';
+  String get adminAllowedTags => 'Dovoljene oznake';
 
   @override
   String get adminAllowedTagsHint =>
-      'Only content with these tags is shown. Leave empty to allow all.';
+      'Prikazana je samo vsebina s temi oznakami. Pustite prazno, če želite dovoliti vse.';
 
   @override
-  String get adminBlockedTags => 'Blocked tags';
+  String get adminBlockedTags => 'Blokirane oznake';
 
   @override
   String get adminBlockedTagsHint =>
-      'Content with these tags is hidden from this user.';
+      'Vsebina s temi oznakami bo temu uporabniku skrita.';
 
   @override
-  String get adminAddTag => 'Add tag';
+  String get adminAddTag => 'Dodaj oznako';
 
   @override
-  String get adminEnabledDevices => 'Enabled devices';
+  String get adminEnabledDevices => 'Omogočene naprave';
 
   @override
-  String get adminEnabledChannels => 'Enabled channels';
+  String get adminEnabledChannels => 'Omogočeni kanali';
 
   @override
-  String get adminAuthProvider => 'Authentication provider';
+  String get adminAuthProvider => 'Ponudnik overjanja';
 
   @override
-  String get adminPasswordResetProvider => 'Password reset provider';
+  String get adminPasswordResetProvider => 'Ponudnik ponastavitve gesla';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Maximum failed login attempts before lockout';
+      'Največje število neuspelih prijav pred zaklepom';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Set to 0 for the default, or -1 to disable lockout.';
+      'Nastavite 0 za privzeto vrednost ali -1, da zaklep onemogočite.';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay access';
+  String get adminSyncPlayAccess => 'Dostop do SyncPlay';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
+  String get adminSyncPlayCreateAndJoin =>
+      'Dovoli ustvarjanje skupin in pridruževanje';
 
   @override
-  String get adminSyncPlayJoin => 'Allow joining groups';
+  String get adminSyncPlayJoin => 'Dovoli pridruževanje skupinam';
 
   @override
-  String get adminSyncPlayNone => 'No access';
+  String get adminSyncPlayNone => 'Brez dostopa';
 
   @override
-  String get adminContentDeletionFolders => 'Allow content deletion from';
+  String get adminContentDeletionFolders => 'Dovoli brisanje vsebine iz';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5367,22 +5393,22 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Strežnik je vrnil HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Ali ste prepričani, da želite izbrisati uporabnika $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Uporabnik »$name« je izbrisan';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Uporabnika ni bilo mogoče izbrisati: $error';
   }
 
   @override
@@ -5403,7 +5429,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Ključa ni bilo mogoče ustvariti: $error';
   }
 
   @override
@@ -5414,7 +5440,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Ali želite preklicati ključ za $name?';
   }
 
   @override
@@ -5422,7 +5448,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Ključa ni bilo mogoče preklicati: $error';
   }
 
   @override
@@ -5442,29 +5468,30 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Žeton: $token\\nUstvarjeno: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Create Backup';
+  String get adminBackupOptionsTitle => 'Ustvari varnostno kopijo';
 
   @override
-  String get adminBackupInclude => 'Choose what to include in the backup.';
+  String get adminBackupInclude =>
+      'Izberite, kaj naj vsebuje varnostna kopija.';
 
   @override
-  String get adminBackupDatabase => 'Database';
+  String get adminBackupDatabase => 'Zbirka podatkov';
 
   @override
-  String get adminBackupDatabaseAlways => 'Always included';
+  String get adminBackupDatabaseAlways => 'Vedno vključeno';
 
   @override
-  String get adminBackupMetadata => 'Metadata';
+  String get adminBackupMetadata => 'Metapodatki';
 
   @override
-  String get adminBackupSubtitles => 'Subtitles';
+  String get adminBackupSubtitles => 'Podnapisi';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay images';
+  String get adminBackupTrickplay => 'Slike trickplay';
 
   @override
   String get adminCreatingBackup => 'Ustvarjanje varnostne kopije ...';
@@ -5475,7 +5502,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Varnostne kopije ni bilo mogoče ustvariti: $error';
   }
 
   @override
@@ -5489,7 +5516,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Manifesta ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5500,7 +5527,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Varnostne kopije ni bilo mogoče obnoviti: $error';
   }
 
   @override
@@ -5533,17 +5560,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Shranjeno v $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Datoteke ni bilo mogoče shraniti: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Ni bilo mogoče naložiti $fileName';
   }
 
   @override
@@ -5554,7 +5581,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Opravil ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5566,17 +5593,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Opravila ni bilo mogoče zagnati: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Opravila ni bilo mogoče ustaviti: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Opravila ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5584,12 +5611,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Sprožilca ni bilo mogoče odstraniti: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Sprožilca ni bilo mogoče dodati: $error';
   }
 
   @override
@@ -5615,7 +5642,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours ur';
   }
 
   @override
@@ -5626,7 +5653,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Vtičnika ni bilo mogoče preklopiti: $error';
   }
 
   @override
@@ -5634,27 +5661,27 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Ali ste prepričani, da želite odstraniti »$name«?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Vtičnika ni bilo mogoče odstraniti: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Paketa ni bilo mogoče namestiti: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Posodobitve ni bilo mogoče namestiti: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Vtičnikov ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5666,12 +5693,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Namesti posodobitev (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Kataloga ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5693,17 +5720,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '»$name« bo odstranjen po ponovnem zagonu strežnika';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Odstranitev ni uspela: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Posodabljanje »$name« na v$version...';
   }
 
   @override
@@ -5712,7 +5739,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Vtičnika ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5720,7 +5747,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Različica $version';
   }
 
   @override
@@ -5740,17 +5767,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Ali ste prepričani, da želite odstraniti »$name«?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Repozitorijev ni bilo mogoče shraniti: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Repozitorijev ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -5767,12 +5794,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Nastavitev vtičnika ni mogoče naložiti: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Ni bilo mogoče odpreti $uri';
   }
 
   @override
@@ -6014,7 +6041,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminBaseUrl => 'Osnovni URL';
 
   @override
-  String get adminBaseUrlHint => 'npr. /želefina';
+  String get adminBaseUrlHint => 'npr. /jellyfin';
 
   @override
   String get https => 'HTTPS';
@@ -6054,12 +6081,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Metapodatkov ni bilo mogoče naložiti: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Metapodatkov ni bilo mogoče shraniti: $error';
   }
 
   @override
@@ -6080,7 +6107,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Metapodatkov ni bilo mogoče osvežiti: $error';
   }
 
   @override
@@ -6095,7 +6122,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Oddaljeno iskanje ni uspelo: $error';
   }
 
   @override
@@ -6109,7 +6136,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Vrste vsebine ni bilo mogoče posodobiti: $error';
   }
 
   @override
@@ -6124,12 +6151,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Slika $imageType je posodobljena';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Slike ni bilo mogoče prenesti: $error';
   }
 
   @override
@@ -6140,27 +6167,27 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Slika $imageType je naložena';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Slike ni bilo mogoče naložiti: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Izbriši sliko $imageType';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Slika $imageType je izbrisana';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Slike ni bilo mogoče izbrisati: $error';
   }
 
   @override
@@ -6171,67 +6198,68 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Iskanje sprejemnikov ni uspelo: $error';
   }
 
   @override
   String get adminAddTuner => 'Dodaj sprejemnik';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => 'Uredi sprejemnik';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'Sprejemnik M3U';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => 'Datoteka ali URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => 'IP naslov sprejemnika';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => 'Razumljivo ime';
 
   @override
   String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => 'Omejitev hkratnih povezav';
 
   @override
   String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+      'Največje število pretokov, ki jih sprejemnik dovoli hkrati. Nastavite na 0 za neomejeno.';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate =>
+      'Nadomestna največja bitna hitrost pretakanja';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly => 'Uvozi samo priljubljene kanale';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding => 'Dovoli strojno prekodiranje';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'Dovoli vsebnik za prekodiranje fMP4';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing => 'Dovoli deljenje pretokov';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping => 'Omogoči ponavljanje pretoka';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'Prezri DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+      'Beri vhod z izvorno hitrostjo sličic';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => 'Uredi ponudnika';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6240,50 +6268,49 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => 'Datoteka ali URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => 'Predpona filmov';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => 'Kategorije filmov';
 
   @override
-  String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+  String get adminXmltvCategoriesHelp => 'Več kategorij ločite z navpičnico.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => 'Kategorije za otroke';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => 'Kategorije novic';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => 'Kategorije športa';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => 'Uporabniško ime';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => 'Geslo';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => 'Država';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => 'Izberite državo';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => 'Poštna številka';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => 'Pridobi sporede';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => 'Sporedi';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => 'Omogoči vse sprejemnike';
 
   @override
   String get adminTunerType => 'Vrsta sprejemnika';
@@ -6293,7 +6320,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Sprejemnika ni bilo mogoče dodati: $error';
   }
 
   @override
@@ -6307,12 +6334,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Ponudnika ni bilo mogoče dodati: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Sprejemnika ni bilo mogoče odstraniti: $error';
   }
 
   @override
@@ -6320,16 +6347,16 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Sprejemnika ni bilo mogoče ponastaviti: $error';
   }
 
   @override
   String get adminTunerResetNotSupported =>
-      'This tuner type does not support resetting.';
+      'Ta vrsta sprejemnika ne podpira ponastavitve.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Ponudnika ni bilo mogoče odstraniti: $error';
   }
 
   @override
@@ -6348,43 +6375,44 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminSeriesRecordingPath => 'Pot snemanja serije';
 
   @override
-  String get adminMovieRecordingPath => 'Movie recording path';
+  String get adminMovieRecordingPath => 'Pot za snemanje filmov';
 
   @override
-  String get adminGuideDays => 'Guide data days';
+  String get adminGuideDays => 'Število dni podatkov sporeda';
 
   @override
-  String get adminGuideDaysAuto => 'Automatic';
+  String get adminGuideDaysAuto => 'Samodejno';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days days';
+    return '$days dni';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'Post-processing application path';
+  String get adminRecordingPostProcessor =>
+      'Pot do aplikacije za naknadno obdelavo';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
+  String get adminRecordingPostProcessorArgs => 'Argumenti naknadne obdelave';
 
   @override
-  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
+  String get adminSaveRecordingNfo => 'Shrani metapodatke NFO posnetkov';
 
   @override
-  String get adminSaveRecordingImages => 'Save recording images';
+  String get adminSaveRecordingImages => 'Shrani slike posnetkov';
 
   @override
-  String get adminLiveTvSectionTiming => 'Timing';
+  String get adminLiveTvSectionTiming => 'Časovna uskladitev';
 
   @override
-  String get adminLiveTvSectionPaths => 'Recording paths';
+  String get adminLiveTvSectionPaths => 'Poti posnetkov';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-processing';
+  String get adminLiveTvSectionPostProcessing => 'Naknadna obdelava';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Guide data: $value';
+    return 'Podatki sporeda: $value';
   }
 
   @override
@@ -6392,7 +6420,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Nastavitev ni bilo mogoče shraniti: $error';
   }
 
   @override
@@ -6410,7 +6438,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Preslikav ni bilo mogoče posodobiti: $error';
   }
 
   @override
@@ -6427,14 +6455,15 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminGuideProviders => 'Ponudniki vodnikov';
 
   @override
-  String get adminRefreshGuideData => 'Refresh Guide Data';
+  String get adminRefreshGuideData => 'Osveži podatke sporeda';
 
   @override
-  String get adminGuideRefreshStarted => 'Guide data refresh started';
+  String get adminGuideRefreshStarted =>
+      'Osveževanje podatkov sporeda se je začelo';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Guide refresh task is not available on this server.';
+      'Opravilo za osveževanje sporeda na tem strežniku ni na voljo.';
 
   @override
   String get adminAddProvider => 'Dodaj ponudnika';
@@ -6444,26 +6473,26 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Pot posnetkov: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Pot serij: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Rezerva pred: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Rezerva po: $minutes min';
   }
 
   @override
-  String get adminTunerDiscovery => 'Tuner Discovery';
+  String get adminTunerDiscovery => 'Iskanje sprejemnikov';
 
   @override
   String get adminChannelMappings => 'Preslikave kanalov';
@@ -6492,7 +6521,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Ali želite zdaj obnoviti varnostno kopijo $name?';
   }
 
   @override
@@ -6516,7 +6545,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminLiveTvTitle => 'Administracija televizije v živo';
 
   @override
-  String get adminApply => 'Prijavite se';
+  String get adminApply => 'Uporabi';
 
   @override
   String get adminNotSet => 'Ni nastavljeno';
@@ -6538,27 +6567,27 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return 'pred $minutes min';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return 'pred $hours h';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return 'pred $days d';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Ni bilo mogoče naložiti $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count zadetkov';
   }
 
   @override
@@ -6568,7 +6597,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminMetadataEditorTitle => 'Urejevalnik metapodatkov';
 
   @override
-  String get adminMetadataIdentify => 'Identify';
+  String get adminMetadataIdentify => 'Prepoznaj';
 
   @override
   String get adminMetadataType => 'Vrsta';
@@ -6668,22 +6697,22 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Slika $imageType je posodobljena';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Slika $imageType je naložena';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Slika $imageType je izbrisana';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Slike ni bilo mogoče prenesti: $error';
   }
 
   @override
@@ -6692,12 +6721,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Slike ni bilo mogoče naložiti: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Izbriši sliko $imageType';
   }
 
   @override
@@ -6706,12 +6735,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Slike ni bilo mogoče izbrisati: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Izberi sliko $imageType';
   }
 
   @override
@@ -6744,7 +6773,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Na voljo je posodobitev: v$version';
   }
 
   @override
@@ -6768,7 +6797,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Namesti posodobitev (v$version)';
   }
 
   @override
@@ -6780,7 +6809,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '»$name« se namešča...';
   }
 
   @override
@@ -6800,7 +6829,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return 'Nastavitve $name';
   }
 
   @override
@@ -6840,7 +6869,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Repozitorijev ni bilo mogoče naložiti: $error';
   }
 
   @override
@@ -6848,7 +6877,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Ali ste prepričani, da želite odstraniti »$name«?';
   }
 
   @override
@@ -6856,7 +6885,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Repozitorijev ni bilo mogoče shraniti: $error';
   }
 
   @override
@@ -6984,19 +7013,20 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminBrandingEnableSplash => 'Omogoči začetni zaslon';
 
   @override
-  String get adminBrandingSplashUpload => 'Upload image';
+  String get adminBrandingSplashUpload => 'Naloži sliko';
 
   @override
-  String get adminBrandingSplashUploaded => 'Splashscreen updated';
+  String get adminBrandingSplashUploaded => 'Uvodni zaslon je posodobljen';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
+  String get adminBrandingSplashUploadFailed =>
+      'Uvodnega zaslona ni bilo mogoče naložiti';
 
   @override
-  String get adminBrandingSplashDeleted => 'Splashscreen removed';
+  String get adminBrandingSplashDeleted => 'Uvodni zaslon je odstranjen';
 
   @override
-  String get adminBrandingNoSplash => 'No custom splashscreen';
+  String get adminBrandingNoSplash => 'Ni uvodnega zaslona po meri';
 
   @override
   String get adminPlaybackHwAccel => 'Strojni pospešek';
@@ -7012,121 +7042,128 @@ class AppLocalizationsSl extends AppLocalizations {
       'Omogoči dekodiranje strojne opreme za:';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV device';
+  String get adminPlaybackQsvDevice => 'Naprava QSV';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
+  String get adminPlaybackEnhancedNvdec =>
+      'Omogoči izboljšani dekodirnik NVDEC';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Prefer system native hardware decoder';
+      'Prednostno uporabi izvorni sistemski strojni dekodirnik';
 
   @override
-  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
+  String get adminPlaybackColorDepth => 'Barvna globina strojnega dekodiranja';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
+  String get adminPlaybackColorDepth10Hevc => '10-bitno dekodiranje HEVC';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
+  String get adminPlaybackColorDepth10Vp9 => '10-bitno dekodiranje VP9';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
+  String get adminPlaybackColorDepth10HevcRext =>
+      '8/10-bitno dekodiranje HEVC RExt';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
+  String get adminPlaybackColorDepth12HevcRext =>
+      '12-bitno dekodiranje HEVC RExt';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
+  String get adminPlaybackHwEncodingSection => 'Strojno kodiranje';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
+  String get adminPlaybackAllowHevcEncoding => 'Dovoli kodiranje HEVC';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
+  String get adminPlaybackAllowAv1Encoding => 'Dovoli kodiranje AV1';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Enable Intel low-power H.264 encoder';
+      'Omogoči Intelov nizkoenergijski kodirnik H.264';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Enable Intel low-power HEVC encoder';
+      'Omogoči Intelov nizkoenergijski kodirnik HEVC';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone Mapping';
+  String get adminPlaybackToneMapping => 'Preslikava tonov';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
+  String get adminPlaybackEnableTonemapping => 'Omogoči preslikavo tonov';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
+  String get adminPlaybackEnableVppTonemapping =>
+      'Omogoči preslikavo tonov VPP';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Enable VideoToolbox tone mapping';
+      'Omogoči preslikavo tonov VideoToolbox';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
+  String get adminPlaybackTonemappingAlgorithm => 'Algoritem preslikave tonov';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
+  String get adminPlaybackTonemappingMode => 'Način preslikave tonov';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Tone mapping range';
+  String get adminPlaybackTonemappingRange => 'Obseg preslikave tonov';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
+  String get adminPlaybackTonemappingDesat =>
+      'Zmanjšanje nasičenosti pri preslikavi tonov';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
+  String get adminPlaybackTonemappingPeak => 'Vrh preslikave tonov';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
+  String get adminPlaybackTonemappingParam => 'Parameter preslikave tonov';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+      'Svetlost preslikave tonov VPP';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast =>
+      'Kontrast preslikave tonov VPP';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presets & Quality';
+  String get adminPlaybackPresetsQuality => 'Prednastavitve in kakovost';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Encoder preset';
+  String get adminPlaybackEncoderPreset => 'Prednastavitev kodirnika';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
+  String get adminPlaybackH264Crf => 'CRF kodiranja H.264';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
+  String get adminPlaybackH265Crf => 'CRF kodiranja H.265 (HEVC)';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
+  String get adminPlaybackDeinterlaceMethod => 'Način razpletanja';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+      'Podvoji hitrost sličic pri razpletanju';
 
   @override
-  String get adminPlaybackAudioSection => 'Audio';
+  String get adminPlaybackAudioSection => 'Zvok';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
+  String get adminPlaybackEnableAudioVbr => 'Omogoči zvočno kodiranje VBR';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
+  String get adminPlaybackDownmixBoost => 'Ojačitev zmiksanega zvoka';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
+  String get adminPlaybackDownmixAlgorithm => 'Algoritem zmiksanja v stereo';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
+  String get adminPlaybackMaxMuxingQueue =>
+      'Največja velikost vrste za multipleksiranje';
 
   @override
-  String get adminPlaybackAutoOption => 'Auto';
+  String get adminPlaybackAutoOption => 'Samodejno';
 
   @override
   String get adminPlaybackEncoding => 'Kodiranje';
@@ -7246,10 +7283,10 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminTaskNeverRun => 'Nikoli ne teci';
 
   @override
-  String get adminTaskStop => 'Stop';
+  String get adminTaskStop => 'Ustavi';
 
   @override
-  String get adminRunningTasks => 'Running Tasks';
+  String get adminRunningTasks => 'Opravila v teku';
 
   @override
   String get adminTaskRun => 'Teči';
@@ -7271,17 +7308,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Dnevno ob $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Vsak $day ob $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Vsakih $duration';
   }
 
   @override
@@ -7319,8 +7356,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count ur',
+      few: '$count ure',
+      two: '$count uri',
+      one: '1 ura',
     );
     return '$_temp0';
   }
@@ -7348,17 +7387,17 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return 'pred $days d';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return 'pred $hours h';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return 'pred $minutes min';
   }
 
   @override
@@ -7366,22 +7405,22 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes min';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month/$day';
+    return '$day. $month.';
   }
 
   @override
@@ -7395,49 +7434,50 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'Osnovni URL';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'npr. /želefina';
+  String get adminNetworkingBaseUrlHint => 'npr. /jellyfin';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
+  String get adminNetworkingPublicHttpPort => 'Javna vrata HTTP';
 
   @override
-  String get adminNetworkingRequireHttps => 'Require HTTPS';
+  String get adminNetworkingRequireHttps => 'Zahtevaj HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
+      'Preusmeri vse oddaljene zahteve na HTTPS. Nima učinka, če strežnik nima veljavnega potrdila.';
 
   @override
-  String get adminNetworkingCertPassword => 'Certificate password';
+  String get adminNetworkingCertPassword => 'Geslo potrdila';
 
   @override
-  String get adminNetworkingIpSettings => 'IP Settings';
+  String get adminNetworkingIpSettings => 'Nastavitve IP';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
+  String get adminNetworkingEnableIpv4 => 'Omogoči IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
+  String get adminNetworkingEnableIpv6 => 'Omogoči IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
+  String get adminNetworkingAutoDiscovery =>
+      'Omogoči samodejno preslikavo vrat';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN networks';
+  String get adminNetworkingLocalSubnets => 'Omrežja LAN';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
+      'Z vejico ali novo vrstico ločen seznam IP naslovov ali podomrežij CIDR, ki se obravnavajo kot lokalno omrežje.';
 
   @override
-  String get adminNetworkingPublishedUris => 'Published server URIs';
+  String get adminNetworkingPublishedUris => 'Objavljeni URI-ji strežnika';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Map a subnet or address to a published URL, e.g. all=https://example.com';
+      'Preslikajte podomrežje ali naslov na objavljen URL, npr. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'Pot potrdila';
@@ -7467,11 +7507,11 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Medpomnilnik plina';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay => 'Zakasnitev omejevanja (sekunde)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+      'Dovoli sprotno luščenje podnapisov';
 
   @override
   String get adminResumeMinPct => 'Najmanjši odstotek nadaljevanja';
@@ -7521,29 +7561,30 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Vrste vsebine ni bilo mogoče posodobiti: $error';
   }
 
   @override
   String get adminGeneralSlowResponseThreshold => 'Prag počasnega odziva (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
+  String get adminGeneralEnableSlowResponse =>
+      'Omogoči opozorila o počasnem odzivu';
 
   @override
-  String get adminGeneralQuickConnect => 'Enable Quick Connect';
+  String get adminGeneralQuickConnect => 'Omogoči Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => 'Server';
+  String get adminGeneralSectionServer => 'Strežnik';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadata';
+  String get adminGeneralSectionMetadata => 'Metapodatki';
 
   @override
-  String get adminGeneralSectionPaths => 'Paths';
+  String get adminGeneralSectionPaths => 'Poti';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performance';
+  String get adminGeneralSectionPerformance => 'Zmogljivost';
 
   @override
   String get adminGeneralCachePath => 'Pot predpomnilnika';
@@ -7555,7 +7596,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminGeneralServerName => 'Ime strežnika';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage => 'Prednostni jezik prikaza';
 
   @override
   String get adminSettingsLoadFailed => 'Nastavitev ni bilo mogoče naložiti';
@@ -7565,12 +7606,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Preslikav ni bilo mogoče posodobiti: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Časovna omejitev: $duration';
   }
 
   @override
@@ -7607,8 +7648,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: '# udeležencev',
+      few: '# udeleženci',
+      two: '# udeleženca',
+      one: '# udeleženec',
     );
     return '$_temp0';
   }
@@ -7652,7 +7695,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Element $index';
   }
 
   @override
@@ -7700,12 +7743,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName se je pridružil skupini SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName je zapustil skupino SyncPlay';
   }
 
   @override
@@ -7717,7 +7760,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Sinhroniziranje predvajanja s skupino $groupName';
   }
 
   @override
@@ -7755,8 +7798,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: 'odkritih # vrstic',
+      few: 'odkrite # vrstice',
+      two: 'odkriti # vrstici',
+      one: 'odkrita # vrstica',
     );
     return '$_temp0';
   }
@@ -7791,26 +7836,26 @@ class AppLocalizationsSl extends AppLocalizations {
   String get offlineFileNotAvailable => 'Datoteka ni na voljo';
 
   @override
-  String get offlineSwitchServer => 'Switch Server';
+  String get offlineSwitchServer => 'Zamenjaj strežnik';
 
   @override
   String get offlineSavedMedia => 'Shranjeni mediji';
 
   @override
-  String get offlineBannerTitle => 'You\'re offline';
+  String get offlineBannerTitle => 'Niste povezani';
 
   @override
-  String get offlineBannerSubtitle => 'Showing your downloads';
+  String get offlineBannerSubtitle => 'Prikazani so vaši prenosi';
 
   @override
-  String get offlineBannerAction => 'Downloads';
+  String get offlineBannerAction => 'Prenosi';
 
   @override
-  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+  String get serverUnreachableBannerTitle => 'Strežnik ni dosegljiv';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Playing from downloads until it\'s back';
+      'Predvajanje iz prenosov, dokler se ne vrne';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7826,12 +7871,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Upravljanje predvajanja na napravi ni uspelo: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return 'Upravljanje $kind';
   }
 
   @override
@@ -7842,7 +7887,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Ustavi $kind';
   }
 
   @override
@@ -7865,12 +7910,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Vnesite $length-mestno kodo PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Vnesite svojo $length-mestno kodo PIN';
   }
 
   @override
@@ -7883,41 +7928,41 @@ class AppLocalizationsSl extends AppLocalizations {
   String get pinForgot => 'Ste pozabili PIN?';
 
   @override
-  String get pinClear => 'jasno';
+  String get pinClear => 'Počisti';
 
   @override
   String get pinBackspace => 'vračalka';
 
   @override
-  String get quickConnectAuthorized => 'Zahteva za hitro povezavo je odobrena.';
+  String get quickConnectAuthorized => 'Zahteva Quick Connect je odobrena.';
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'Koda za hitro povezavo je neveljavna ali potekla.';
+      'Koda Quick Connect je neveljavna ali potekla.';
 
   @override
   String get quickConnectNotSupported =>
-      'Hitra povezava ni podprta na tem strežniku.';
+      'Quick Connect ni podprt na tem strežniku.';
 
   @override
   String get quickConnectAuthorizeFailed =>
-      'Kode za hitro povezavo ni bilo mogoče avtorizirati.';
+      'Kode Quick Connect ni bilo mogoče avtorizirati.';
 
   @override
   String get quickConnectDisabled =>
-      'Hitra povezava je na tem strežniku onemogočena.';
+      'Quick Connect je na tem strežniku onemogočen.';
 
   @override
   String get quickConnectForbidden =>
-      'Vaš račun ne more odobriti te zahteve za hitro povezavo.';
+      'Vaš račun ne more odobriti te zahteve Quick Connect.';
 
   @override
   String get quickConnectNotFound =>
-      'Kode za hitro povezavo ni bilo mogoče najti. Poskusi z novo kodo.';
+      'Kode Quick Connect ni bilo mogoče najti. Poskusite z novo kodo.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Quick Connect ni uspel: $message';
   }
 
   @override
@@ -7928,7 +7973,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Ukaz ni uspel: $error';
   }
 
   @override
@@ -7957,7 +8002,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Predvajanja na napravi ni bilo mogoče začeti: $error';
   }
 
   @override
@@ -8003,7 +8048,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Prenašanje $name...';
   }
 
   @override
@@ -8085,14 +8130,14 @@ class AppLocalizationsSl extends AppLocalizations {
   String get stillWatchingContent => 'Predvajanje je zaustavljeno. še gledaš?';
 
   @override
-  String get stillWatchingStop => 'Stop';
+  String get stillWatchingStop => 'Ustavi';
 
   @override
   String get stillWatchingContinue => 'Nadaljuj';
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Preskoči $segment';
   }
 
   @override
@@ -8103,12 +8148,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Prenašanje $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Prenašanje $fileName';
   }
 
   @override
@@ -8145,7 +8190,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get playerTooltipUnlockOrientation => 'Dovoli vrtenje';
 
   @override
-  String get playerTooltipPrevious => 'Prejšnja';
+  String get playerTooltipPrevious => 'Prejšnji';
 
   @override
   String get playerTooltipSeekBack => 'Išči nazaj';
@@ -8170,13 +8215,13 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'Hide from Continue Watching';
+      'Skrij iz Nadaljuj z gledanjem';
 
   @override
-  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+  String get contextMenuHideFromNextUp => 'Skrij iz Sledi';
 
   @override
-  String get contextMenuAddToCollection => 'Add to Collection';
+  String get contextMenuAddToCollection => 'Dodaj v zbirko';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8231,14 +8276,14 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsAlphabetical => 'Abecedno';
 
   @override
-  String get settingsConnectionSection => 'CONNECTION';
+  String get settingsConnectionSection => 'POVEZAVA';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+  String get settingsAllowSelfSignedCerts => 'Dovoli samopodpisana potrdila';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+      'Zaupaj strežnikom s samopodpisanimi potrdili TLS ali potrdili zasebnega overitelja. Omogočite samo za strežnike, ki jih upravljate sami. S tem onemogočite preverjanje potrdil za vse povezave.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'ZASEBNOST IN VARNOST';
@@ -8254,11 +8299,11 @@ class AppLocalizationsSl extends AppLocalizations {
       'Tematski poudarki, ozadja, indikatorji gledanja in tematska glasba';
 
   @override
-  String get settingsDetailsScreen => 'Details Screen';
+  String get settingsDetailsScreen => 'Zaslon s podrobnostmi';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Style, background blur, and tab behavior';
+      'Slog, zabrisanost ozadja in vedenje zavihkov';
 
   @override
   String get settingsHomePage => 'Domača stran';
@@ -8296,11 +8341,11 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+      'Prikaži gumb Seerr v navigacijski vrstici';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Always show text labels in the top navigation bar';
+      'Vedno prikaži besedilne oznake v zgornji navigacijski vrstici';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8368,8 +8413,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsSupportMoonfin => 'Podprite Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => 'Kupite razvijalcu kavo';
 
   @override
   String get settingsLegal => 'PRAVNO';
@@ -8403,8 +8447,10 @@ class AppLocalizationsSl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: '# licenčnih obvestil',
+      few: '# licenčna obvestila',
+      two: '# licenčni obvestili',
+      one: '# licenčno obvestilo',
     );
     return '$_temp0';
   }
@@ -8454,16 +8500,17 @@ class AppLocalizationsSl extends AppLocalizations {
       'Preskočiti uvodne in končne elemente?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown =>
+      'Odštevanje predstavnostnih odsekov';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => 'Vrstica napredka';
 
   @override
-  String get settingsTimer => 'Timer';
+  String get settingsTimer => 'Časovnik';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => 'Brez';
 
   @override
   String get settingsPromptUser => 'Poziv uporabniku';
@@ -8498,13 +8545,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (priporočeno)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (starejši)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (podedovano)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (priporočeno)';
 
   @override
   String get settingsDolbyVisionFallback => 'Nadomestni Dolby Vision';
@@ -8573,7 +8620,7 @@ class AppLocalizationsSl extends AppLocalizations {
       'Bitstream AC3 na zunanji dekoder';
 
   @override
-  String get settingsCinemaMode => 'Cinema Mode';
+  String get settingsCinemaMode => 'Kinodvorana';
 
   @override
   String get settingsCinemaModeSubtitle =>
@@ -8695,749 +8742,763 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return 'Nedavno izdano – $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'Samodejno predvajaj naslednjo epizodo';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Samodejno predvajaj naslednjo epizodo, ko je na voljo.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Preskakuj tišino';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Samodejno preskoči tihe zvočne odseke, kadar to pretok podpira.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => 'Dovoli zunanje zvočne učinke';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Aplikacijam z izenačevalnikom in učinki (npr. Wavelet) dovoli povezavo s predvajalnimi sejami Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Onemogoči tuneliranje';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Vsili predvajanje brez tuneliranja. Uporabno na napravah s prekinitvami zvoka in slike pri tuneliranju.';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => 'Omogoči tuneliranje';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      'Napredno. Zvok in sliko usmeri po povezani strojni poti. Privzeto izklopljeno, ker na nekaterih napravah povzroča izpade zvoka in slike.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Preslikaj Dolby Vision profil 7 v HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Pretoke Dolby Vision profil 7 predvajaj kot HEVC, združljiv s HDR10, na napravah brez podpore za Dolby Vision.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => 'Uporabi vgrajene sloge podnapisov';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Uporabi barve, pisave in postavitev, vgrajene v sled podnapisov. Onemogočite, če želite uporabiti svoje nastavitve sloga podnapisov.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Uporabi vgrajene velikosti pisave podnapisov';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Uporabi namige o velikosti pisave, vgrajene v sled podnapisov. Onemogočite, če želite uporabiti velikost podnapisov iz svojih nastavitev sloga.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => 'Prikaži podrobnosti vsebine';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      'Prikaži podrobnosti izbranega elementa na vrhu strani knjižnice.';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries => 'Skrij ozadja med brskanjem?';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'Uporabi podrobne podnaslove';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Prikaži podrobno ali minimalno podvrstico na straneh knjižnice.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle =>
+      'Ali želite izbrisati shranjeno temo?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Ali želite odstraniti »$themeName« iz predpomnilnika te naprave?';
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => 'Trgovina s temami';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle =>
+      'Brskajte po temah skupnosti in jih shranjujte';
 
   @override
   String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+      'Shranite temo, da jo boste lahko uporabljali kot druge shranjene teme.';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => 'Trenutno ni na voljo nobene teme.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+      'Trgovine s temami ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => 'Shrani';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => 'Shrani in uporabi';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => 'Shranjeno';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'Te teme ni bilo mogoče naložiti.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return 'Tema »$themeName« je shranjena.';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return 'Tema »$themeName« je izbrisana iz te naprave.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Teme »$themeName« ni bilo mogoče izbrisati.';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Shranjene teme';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'To so teme, prenesene iz vtičnika Moonfin za trenutni strežnik. Z brisanjem odstranite samo to lokalno kopijo.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Za ta strežnik ni bilo najdenih shranjenih tem.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Trenutno aktivna';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Izbriši shranjeno temo';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Upravljajte prenesene teme vtičnika na tej napravi';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Urejevalnik tem';
 
   @override
   String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+      'Odprite urejevalnik tem Moonfin v brskalniku';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Domači zaslon';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Spodnja vrstica';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Klasični';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'Sodobni';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Vrstice na domači strani';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => 'Prikaz vrstic na domači strani';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => 'Razdelki vrstic na domači strani';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => 'Stikala vrstic na domači strani';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Enable or disable library-based home row categories';
+      'Omogočite ali onemogočite kategorije vrstic na domači strani glede na knjižnice';
 
   @override
   String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+      'Z vklopom spodnjih stikal prikažete vrstice v razdelkih domače strani.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Klasični ohrani vrsto slike in informacijsko prekrivko za vsako vrstico. Sodobni uporablja vrstice s prehodom iz pokončne slike v ozadje.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Prikaži vrstice priljubljenih';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'V razdelkih domače strani prikaži vrstice Priljubljeni filmi, Priljubljene serije in druge priljubljene.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Razvrščanje vrstic priljubljenih';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Vrstice priljubljenih razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Prikaži vrstice zbirk';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'V razdelkih domače strani prikaži vrstice zbirk.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Razvrščanje vrstic zbirk';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Vrstice zbirk razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Prikaži vrstice žanrov';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle =>
+      'V razdelkih domače strani prikaži vrstice žanrov.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Razvrščanje vrstic žanrov';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Vrstice žanrov razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Elementi v vrsticah žanrov';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'V vrsticah žanrov prikaži filme, serije ali oboje.';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => 'Prikaži vrstice seznamov predvajanja';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+      'V razdelkih domače strani prikaži vrstice seznamov predvajanja.';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => 'Razvrščanje vrstic seznamov predvajanja';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+      'Vrstice seznamov predvajanja razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => 'Prikaži zvočne vrstice';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle =>
+      'V razdelkih domače strani prikaži zvočne vrstice.';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => 'Razvrščanje zvočnih vrstic';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+      'Zvočne vrstice razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => 'Zvočni seznami predvajanja';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Videz';
 
   @override
-  String get layout => 'Layout';
+  String get layout => 'Postavitev';
 
   @override
-  String get theme => 'Theme';
+  String get theme => 'Tema';
 
   @override
-  String get keyboard => 'Keyboard';
+  String get keyboard => 'Tipkovnica';
 
   @override
-  String get navButtons => 'Buttons';
+  String get navButtons => 'Gumbi';
 
   @override
-  String get rendering => 'Rendering';
+  String get rendering => 'Izrisovanje';
 
   @override
-  String get mpvConfiguration => 'MPV configuration';
+  String get mpvConfiguration => 'Konfiguracija MPV';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Zunanja aplikacija za predvajanje';
 
   @override
   String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+      'Nastavite zunanji predvajalnik, da omogočite možnost predvajanja z dolgim pritiskom';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Ob začetku predvajanja prikaži izbirnik aplikacij.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers =>
+      'Nalaganje nameščenih predvajalnikov...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Povezava';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Cilj prekodiranja zvoka';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Podprto na tej napravi';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'Ni podprto na tej napravi';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'Passthrough DTS:X (DTS UHD)';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Pošlji bitni tok DTS:X (DTS UHD) v zunanji dekodirnik.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'Passthrough TrueHD z Atmos (JOC)';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Vedenje predvajalnika';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Izboljšave predvajanja';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Vedno vklopljeno.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Zamenjaj gumb Preskoči odjavno špico s prikazom Sledi';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Namesto gumba Preskoči odjavno špico prikaži prekrivko Sledi.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Usmerjanje predvajalnika';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders =>
+      'Prednostno uporabi programske dekodirnike';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Uporabi FFmpeg (zvok) in libgav1 (AV1) pred strojnimi dekodirniki. Onemogočite, če preneha delovati zvočni passthrough prek HDMI.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Predvajanje videa odpri v izbrani zunanji aplikaciji na Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Samodejno uvrščanje v vrsto';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Prednostno uporabi podnapise SDH';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Pri samodejni izbiri daj prednost sledem podnapisov SDH/CC.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Spletna diagnostika';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Spletna diagnostika Moonfin';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Na tej strani lahko diagnosticirate težave s povezljivostjo v brskalniku (CORS, mešana vsebina in nastavitve odkrivanja).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Zaznana napaka zaradi mešane vsebine';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'Zaznana napaka CORS/preflight';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin je zaznal, da stran HTTPS poskuša klicati URL strežnika prek HTTP. Brskalniki to zahtevo blokirajo, preden doseže vaš strežnik.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin je zaznal napako zahteve na ravni brskalnika, ki jo običajno povzročijo manjkajoče glave CORS ali preflight na predstavnostnem strežniku.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'Ciljni URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'Podrobnosti: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Trenutni kontekst izvajanja';
 
   @override
   String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Shema';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Način vtičnika';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'Pregled WebRTC';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'Vsiljeni URL strežnika';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'Privzeti URL strežnika';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl =>
+      'URL posredniškega strežnika za odkrivanje';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'ni nastavljeno';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'Mešana vsebina';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Ta stran je naložena prek HTTPS, vendar en ali več nastavljenih URL-jev uporablja HTTP. Brskalniki stranem HTTPS preprečujejo klice na vmesnike API prek HTTP.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Rešitev: predstavnostni strežnik ali posredniško končno točko ponudite prek HTTPS ali pa Moonfin nalagajte prek HTTP samo v zaupanja vrednih lokalnih omrežjih.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'V trenutnih nastavitvah izvajanja ni zaznane očitne konfiguracije z mešano vsebino.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'Kontrolni seznam CORS';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Dovolite origin brskalnika v Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• V Access-Control-Allow-Headers vključite Authorization, X-Emby-Authorization in X-Emby-Token.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• Izpostavite Content-Range in Accept-Ranges za pretakanje in iskanje po posnetku.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• Na zahteve OPTIONS preflight odgovarjajte s 204.';
 
   @override
-  String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+  String get webDiagnosticsHeaderSnippetTitle => 'Primer glav (slog nginx)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Opomba';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Ta diagnostična pot je namenjena spletnim gradnjam. Če to vidite na drugi platformi, ta preverjanja morda ne veljajo.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Nazaj na izbiro strežnika';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Odjavi vse uporabnike';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Dovoljenje za mikrofon je trajno zavrnjeno. Omogočite ga v sistemskih nastavitvah.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Glasovno iskanje zahteva dovoljenje za mikrofon.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'Nismo razumeli. Poskusite znova.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected =>
+      'Zaznanega ni bilo nobenega govora.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Napaka mikrofona.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => 'Glasovno iskanje potrebuje internet.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy =>
+      'Glasovna storitev je zasedena. Poskusite znova.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Dovoljenje za mikrofon je trajno zavrnjeno.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied =>
+      'Dovoljenje za mikrofon je zavrnjeno.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Prepoznavanje govora na tej napravi ni na voljo.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Odpri izbirnik izhoda iOS';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'Izbirnik izhoda AirPlay na tej napravi ni na voljo.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Videi';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Oddaje';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Skladbe';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Foto albumi';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Fotografije';
 
   @override
-  String get people => 'People';
+  String get people => 'Osebe';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Nedavno izdane epizode';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Poglej znova';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Gostujoči nastopi';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Nastopi (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => 'Prispevki ekipe (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Glej s skupino';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Napake';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Opozorila';
 
   @override
   String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Odpri v brskalniku';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Vgrajeni brskalnik na tej platformi ni na voljo.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Ali ste prepričani, da želite znova zagnati strežnik?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Ali ste prepričani, da želite zaustaviti strežnik? Znova ga boste morali zagnati ročno.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'Notranje';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Nedejavno';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Ni najdenih uporabnikov';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch =>
+      'Vašemu iskanju ne ustreza noben uporabnik';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Ni najdenih naprav';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Trenutnim filtrom ne ustreza nobena naprava';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Geslo je nastavljeno';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Nastavljenega ni nobenega gesla';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Oddaljeni dostop';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Samo lokalno';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed =>
+      'Analitike vsebin ni bilo mogoče naložiti';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Združena analitika po vseh predstavnostnih knjižnicah.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Najboljši izvajalci';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'Najboljši avtorji';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Najboljši sodelujoči';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '$count knjižnic',
+      few: '$count knjižnice',
+      two: '$count knjižnici',
+      one: '1 knjižnica',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Za to izbiro še ni na voljo nobenih seštevkov indeksiranih vsebin.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Podrobnosti knjižnice';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Razčlenitev knjižnic';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => 'Na voljo ni nobene knjižnice.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Upravljanje strežnika';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'Podatki';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Predpomnilnik slik';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'Predpomnilnik';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'Dnevniki';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'Metapodatki';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'Prekodiranje';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
-  String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+  String get adminNoServerPathsReturned => 'Ta strežnik ni vrnil nobenih poti.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent % porabljeno';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Dejavnost uporabnikov';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Sistemski dogodki';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Zahteva pozornost';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'Strežnik';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Predvajanje';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'Naprave';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'Napredno';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'Vtičniki';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'TV v živo';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'Domači videi';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'Mešana vsebina';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'Domači videi in fotografije';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'Mešani filmi in serije';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9449,299 +9510,301 @@ class AppLocalizationsSl extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'Ni najdenih posnetkov';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'V arhivu .$extension ni najdenih slikovnih strani.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'Vgrajeno izrisovanje ni uspelo ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'Izrisovanje EPUB ni uspelo ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'Manjka lokalna datoteka za bralnik: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status pri odpiranju podatkov knjige iz $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'Na voljo ni nobene berljive končne točke knjige';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'Nepodprta oblika stripovskega arhiva: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'Vtičnik za razširjanje CBR na tej platformi ni na voljo.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive =>
+      'Arhiva .cbr ni bilo mogoče razširiti.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'Razširjanje CB7 na tej platformi ni na voljo.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'Vtičnik za razširjanje CB7 na tej platformi ni na voljo.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'Zapri ploščo žanrov';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'Nalaganje naključnega izbora...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'NAKLJUČNO IZ KNJIŽNICE';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'NAKLJUČNI IZBOR';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'NAKLJUČNO PO ŽANRU';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'Samodejno preklapljanje HDR';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'Samodejno omogoči HDR pri predvajanju videa HDR in ob izhodu obnovi način prikaza.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'Na celotnem zaslonu';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => 'Zamenjaj slikovno gradivo';
 
   @override
-  String get missing => 'Missing';
+  String get missing => 'Manjka';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'Omejitve prekodiranja';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton =>
+      'Ali želite počistiti vse slikovno gradivo?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+      'Ali ste prepričani, da želite počistiti vse preneseno slikovno gradivo?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => 'Potrdi čiščenje';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return 'Ali ste prepričani, da želite počistiti element »$itemType«?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => 'Naložiti?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => 'Ločljivost: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+      'Prikaži samo slikovno gradivo v jeziku vmesnika';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => 'Potrdi čiščenje vsega';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => 'Slika je bila uspešno naložena!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Slike ni bilo mogoče naložiti: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return 'Slike ni bilo mogoče nastaviti: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Slike ni bilo mogoče izbrisati: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return 'Vsega slikovnega gradiva ni bilo mogoče počistiti: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'Da';
 
   @override
-  String get posterCategory => 'Poster';
+  String get posterCategory => 'Plakat';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => 'Ozadja';
 
   @override
-  String get bannerCategory => 'Banner';
+  String get bannerCategory => 'Pasica';
 
   @override
-  String get logoCategory => 'Logo';
+  String get logoCategory => 'Logotip';
 
   @override
-  String get thumbnailCategory => 'Thumbnail';
+  String get thumbnailCategory => 'Sličica';
 
   @override
-  String get artCategory => 'Art';
+  String get artCategory => 'Grafika';
 
   @override
-  String get discArtCategory => 'Disc Art';
+  String get discArtCategory => 'Grafika diska';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => 'Zaslonska slika';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => 'Sprednja stran ovitka';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => 'Zadnja stran ovitka';
 
   @override
-  String get menuArtCategory => 'Menu Art';
+  String get menuArtCategory => 'Grafika menija';
 
   @override
-  String get confirmItemPoster => 'poster';
+  String get confirmItemPoster => 'plakat';
 
   @override
-  String get confirmItemBackdrop => 'backdrop';
+  String get confirmItemBackdrop => 'ozadje';
 
   @override
-  String get confirmItemBanner => 'banner';
+  String get confirmItemBanner => 'pasica';
 
   @override
-  String get confirmItemLogo => 'logo';
+  String get confirmItemLogo => 'logotip';
 
   @override
-  String get confirmItemThumbnail => 'thumbnail';
+  String get confirmItemThumbnail => 'sličica';
 
   @override
-  String get confirmItemArt => 'art';
+  String get confirmItemArt => 'grafika';
 
   @override
-  String get confirmItemDiscArt => 'disc art';
+  String get confirmItemDiscArt => 'grafika diska';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => 'zaslonska slika';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => 'sprednja stran ovitka';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => 'zadnja stran ovitka';
 
   @override
-  String get confirmItemMenuArt => 'menu art';
+  String get confirmItemMenuArt => 'grafika menija';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => 'Vse';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => 'Visoka (1080p+)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => 'Srednja (720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => 'Nizka (<720p)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => 'Viri';
 
   @override
-  String get audiobookChapters => 'Chapters';
+  String get audiobookChapters => 'Poglavja';
 
   @override
-  String get audiobookBookmarks => 'Bookmarks';
+  String get audiobookBookmarks => 'Zaznamki';
 
   @override
-  String get audiobookNotes => 'Notes';
+  String get audiobookNotes => 'Zapiski';
 
   @override
-  String get audiobookQueue => 'Queue';
+  String get audiobookQueue => 'Vrsta';
 
   @override
-  String get audiobookTimeline => 'Timeline';
+  String get audiobookTimeline => 'Časovnica';
 
   @override
-  String get audiobookTimelineEmpty => 'Timeline is empty';
+  String get audiobookTimelineEmpty => 'Časovnica je prazna';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
+  String get audiobookWholeBook => 'Celotna knjiga';
 
   @override
-  String get audiobookFocusedTimeline => 'Focused Timeline';
+  String get audiobookFocusedTimeline => 'Osredotočena časovnica';
 
   @override
-  String get audiobookExportBookmarks => 'Export Bookmarks';
+  String get audiobookExportBookmarks => 'Izvozi zaznamke';
 
   @override
-  String get audiobookExportNotes => 'Export Notes';
+  String get audiobookExportNotes => 'Izvozi zapiske';
 
   @override
-  String get audiobookExportAll => 'Export All';
+  String get audiobookExportAll => 'Izvozi vse';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exported to $path';
+    return 'Izvoženo v $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export failed: $error';
+    return 'Izvoz ni uspel: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Lyrics';
+  String get audiobookLyrics => 'Besedilo';
 
   @override
-  String get audiobookAddBookmark => 'Add bookmark';
+  String get audiobookAddBookmark => 'Dodaj zaznamek';
 
   @override
-  String get audiobookAddNote => 'Add note';
+  String get audiobookAddNote => 'Dodaj zapisek';
 
   @override
-  String get audiobookEditNote => 'Edit note';
+  String get audiobookEditNote => 'Uredi zapisek';
 
   @override
-  String get audiobookNoteHint => 'Write a note for this moment';
+  String get audiobookNoteHint => 'Zapišite zapisek za ta trenutek';
 
   @override
-  String get audiobookSleepTimer => 'Sleep timer';
+  String get audiobookSleepTimer => 'Časovnik spanja';
 
   @override
-  String get audiobookSleepOff => 'Off';
+  String get audiobookSleepOff => 'Izklopljeno';
 
   @override
-  String get audiobookSleepEndOfChapter => 'End of chapter';
+  String get audiobookSleepEndOfChapter => 'Konec poglavja';
 
   @override
-  String get audiobookSleepCustom => 'Custom';
+  String get audiobookSleepCustom => 'Po meri';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining left';
+    return 'še $remaining';
   }
 
   @override
@@ -9756,51 +9819,51 @@ class AppLocalizationsSl extends AppLocalizations {
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Playback speed';
+  String get audiobookPlaybackSpeed => 'Hitrost predvajanja';
 
   @override
-  String get audiobookRemainingTime => 'Remaining';
+  String get audiobookRemainingTime => 'Preostalo';
 
   @override
-  String get audiobookElapsedTime => 'Elapsed';
+  String get audiobookElapsedTime => 'Preteklo';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Back ${seconds}s';
+    return 'Nazaj za $seconds s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Forward ${seconds}s';
+    return 'Naprej za $seconds s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Previous chapter';
+  String get audiobookPreviousChapter => 'Prejšnje poglavje';
 
   @override
-  String get audiobookNextChapter => 'Next chapter';
+  String get audiobookNextChapter => 'Naslednje poglavje';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Chapter $current of $total';
+    return 'Poglavje $current od $total';
   }
 
   @override
-  String get audiobookNoChapters => 'No chapters';
+  String get audiobookNoChapters => 'Ni poglavij';
 
   @override
-  String get audiobookNoBookmarks => 'No bookmarks yet';
+  String get audiobookNoBookmarks => 'Zaenkrat ni zaznamkov';
 
   @override
-  String get audiobookNoNotes => 'No notes yet';
+  String get audiobookNoNotes => 'Zaenkrat ni zapiskov';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Bookmark added at $position';
+    return 'Zaznamek dodan na $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'Reset to 1.0x';
+  String get audiobookSpeedReset => 'Ponastavi na 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9808,249 +9871,249 @@ class AppLocalizationsSl extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Save';
+  String get audiobookSave => 'Shrani';
 
   @override
-  String get audiobookCancel => 'Cancel';
+  String get audiobookCancel => 'Prekliči';
 
   @override
-  String get audiobookDelete => 'Delete';
+  String get audiobookDelete => 'Izbriši';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => 'Nastavitve podnapisov';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+      'Spremenite načine podnapisov, privzete jezike, videz in možnosti izrisovanja.';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => 'Izrisovanje podnapisov';
 
   @override
-  String get displayOptions => 'Display Options';
+  String get displayOptions => 'Možnosti prikaza';
 
   @override
-  String get releaseDateAscending => 'Release Date (Ascending)';
+  String get releaseDateAscending => 'Datum izida (naraščajoče)';
 
   @override
-  String get releaseDateDescending => 'Release Date (Descending)';
+  String get releaseDateDescending => 'Datum izida (padajoče)';
 
   @override
-  String get groupContributions => 'Group Contributions';
+  String get groupContributions => 'Združi prispevke';
 
   @override
-  String get groupMultipleRoles => 'Group multiple roles';
+  String get groupMultipleRoles => 'Združi več vlog';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+  String get libraryWriteAccessWarningTitle =>
+      'Opozorilo o pisalnem dostopu do knjižnice';
 
   @override
-  String get libraryWriteAccessHowToFix => 'How to fix this:';
+  String get libraryWriteAccessHowToFix => 'Kako to odpraviti:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+      '1. Storitvenemu uporabniku Jellyfin (npr. jellyfin ali Docker PUID/PGID) dodelite pravice za pisanje v mape vaše predstavnostne knjižnice na strežniku.\n\n2. Ali pa v nadzorni plošči Jellyfin pojdite v razdelek Libraries, uredite to knjižnico in onemogočite možnost »Save artwork into media folders«, da se slikovno gradivo shranjuje v notranjo zbirko podatkov Jellyfin.';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => 'Opusti';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return 'Vaša knjižnica »$libraryName« je nastavljena tako, da shranjuje slikovno gradivo neposredno v predstavnostne mape (možnost »Save artwork into media folders« je omogočena). Vendar je Jellyfin preizkusil pisalni dostop in nima dovoljenja za pisanje datotek v ta imenik:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+      'Videti je, da Jellyfin ni uspel posodobiti slikovnega gradiva. Vaša knjižnica je nastavljena tako, da shranjuje slikovno gradivo neposredno v predstavnostne mape (možnost »Save artwork into media folders« je omogočena). Ta napaka se običajno pojavi, kadar strežniški proces Jellyfin nima dovoljenja za pisanje datotek v vaše predstavnostne imenike.';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'Zunanji seznami';
 
   @override
-  String get replay => 'Replay';
+  String get replay => 'Predvajaj znova';
 
   @override
-  String get fileInformation => 'File Information';
+  String get fileInformation => 'Podatki o datoteki';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Size: $size  •  Format: $format';
+    return 'Velikost: $size  •  Oblika: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Show All ($count) Audio Tracks';
+    return 'Prikaži vse zvočne sledi ($count)';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Show All ($count) Subtitle Tracks';
+    return 'Prikaži vse sledi podnapisov ($count)';
   }
 
   @override
-  String get checkingDirectPlay => 'Checking Direct Play capability...';
+  String get checkingDirectPlay =>
+      'Preverjanje zmožnosti neposrednega predvajanja...';
 
   @override
-  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+  String get directPlayCapabilityLabel => 'Zmožnost neposrednega predvajanja: ';
 
   @override
-  String get forced => 'Forced';
+  String get forced => 'Vsiljeno';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Container format is not supported by the player.';
+      'Predvajalnik ne podpira oblike vsebnika.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+  String get transcodeVideoCodecNotSupported => 'Video kodek ni podprt.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+  String get transcodeAudioCodecNotSupported => 'Zvočni kodek ni podprt.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Subtitle format is not supported (requires burning).';
+      'Oblika podnapisov ni podprta (zahteva vžig v sliko).';
 
   @override
-  String get transcodeAudioProfileNotSupported =>
-      'Audio profile is not supported.';
+  String get transcodeAudioProfileNotSupported => 'Zvočni profil ni podprt.';
 
   @override
-  String get transcodeVideoProfileNotSupported =>
-      'Video profile is not supported.';
+  String get transcodeVideoProfileNotSupported => 'Video profil ni podprt.';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+  String get transcodeVideoLevelNotSupported => 'Raven videa ni podprta.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Video resolution is not supported by this device.';
+      'Ta naprava ne podpira ločljivosti videa.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Video bit depth is not supported.';
+      'Bitna globina videa ni podprta.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Video framerate is not supported.';
+      'Hitrost sličic videa ni podprta.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'File bitrate exceeds player streaming limit.';
+      'Bitna hitrost datoteke presega omejitev pretakanja predvajalnika.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Video bitrate exceeds streaming limit.';
+      'Bitna hitrost videa presega omejitev pretakanja.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Audio bitrate exceeds streaming limit.';
+      'Bitna hitrost zvoka presega omejitev pretakanja.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Number of audio channels is not supported.';
+      'Število zvočnih kanalov ni podprto.';
 
   @override
-  String get sortAlphabetical => 'Alphabetical';
+  String get sortAlphabetical => 'Po abecedi';
 
   @override
-  String get sortReleaseAscending => 'Release Order (Ascending)';
+  String get sortReleaseAscending => 'Vrstni red izida (naraščajoče)';
 
   @override
-  String get sortReleaseDescending => 'Release Order (Descending)';
+  String get sortReleaseDescending => 'Vrstni red izida (padajoče)';
 
   @override
-  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+  String get sortCustomDragDrop => 'Po meri (povleci in spusti)';
 
   @override
-  String get playlistSortOptions => 'Playlist Sort Options';
+  String get playlistSortOptions => 'Možnosti razvrščanja seznama predvajanja';
 
   @override
-  String get resetSort => 'Reset Sort';
+  String get resetSort => 'Ponastavi razvrščanje';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Rewatch S$season:E$episode';
+    return 'Poglej znova S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Rewatch Playlist';
+  String get rewatchPlaylist => 'Znova predvajaj seznam predvajanja';
 
   @override
-  String get noSubtitlesFound => 'No subtitles found.';
+  String get noSubtitlesFound => 'Ni najdenih podnapisov.';
 
   @override
-  String get adminControls => 'Admin Controls';
+  String get adminControls => 'Skrbniško upravljanje';
 
   @override
-  String get impellerRendering => 'Rendering engine (Impeller)';
+  String get impellerRendering => 'Pogon za izrisovanje (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+      'Impeller je sodobni GPU-izrisovalnik Flutterja za tekočejše animacije in manj zatikanja. Na nekaterih TV-škatlah in starejših grafičnih karticah lahko povzroči napake v prikazu ali črno sliko; v tem primeru ga izklopite. Samodejno izbere najboljšo privzeto nastavitev za vašo napravo. Za uveljavitev znova zaženite Moonfin.';
 
   @override
-  String get impellerAuto => 'Automatic';
+  String get impellerAuto => 'Samodejno';
 
   @override
-  String get impellerOn => 'On';
+  String get impellerOn => 'Vklopljeno';
 
   @override
-  String get impellerOff => 'Off';
+  String get impellerOff => 'Izklopljeno';
 
   @override
-  String get impellerRestartTitle => 'Restart required';
+  String get impellerRestartTitle => 'Zahtevan je ponovni zagon';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+      'Moonfin se mora znova zagnati, da spremeni pogon za izrisovanje. Zaprite aplikacijo in jo znova odprite.';
 
   @override
-  String get impellerCloseNow => 'Close app now';
+  String get impellerCloseNow => 'Zapri aplikacijo';
 
   @override
-  String get adminRefreshLibrary => 'Refresh Library';
+  String get adminRefreshLibrary => 'Osveži knjižnico';
 
   @override
-  String get adminRefreshAllLibraries => 'Refresh All Libraries';
+  String get adminRefreshAllLibraries => 'Osveži vse knjižnice';
 
   @override
-  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+  String get adminRepoSortDateOldest => 'Datum dodajanja (najprej najstarejši)';
 
   @override
-  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+  String get adminRepoSortDateNewest => 'Datum dodajanja (najprej najnovejši)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+  String get adminRepoSortNameAsc => 'Po abecedi (A do Ž)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+  String get adminRepoSortNameDesc => 'Po abecedi (Ž do A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Loading Server Analytics... $percentage%';
+    return 'Nalaganje analitike strežnika... $percentage %';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Match source';
+  String get adminLibChapterImageResolutionMatchSource => 'Ujemaj z virom';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+  String get imdbTop250Movies => 'IMDb Top 250 filmov';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+  String get imdbTop250TvShows => 'IMDb Top 250 serij';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+  String get imdbMostPopularMovies => 'Najbolj priljubljeni filmi na IMDb';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+  String get imdbMostPopularTvShows => 'Najbolj priljubljene serije na IMDb';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+  String get imdbLowestRatedMovies => 'Najslabše ocenjeni filmi na IMDb';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
+  String get imdbTopEnglishMovies => 'Najbolje ocenjeni angleški filmi na IMDb';
 }

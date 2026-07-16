@@ -135,3 +135,8 @@ app.*.map.json
 # Local vcpkg checkout (toolchain cache)
 /vcpkg/
 web/drift_worker.js.map
+
+# scripts/sync_arb.py: translation memory + in-flight translation work units
+/scripts/.cache/
+/.arb-work/
+/.arb-work-brand/

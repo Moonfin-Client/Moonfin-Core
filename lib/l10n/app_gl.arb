@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Conexión rápida",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "De volta",
+    "back": "Atrás",
     "@back": {
         "description": "Back button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Eliminar",
+    "remove": "Retirar",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -144,7 +144,7 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://your-server.example.com",
+    "serverAddressHint": "https://o-teu-servidor.exemplo.com",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Serie",
+    "series": "Series",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Casa",
+    "home": "Inicio",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Solicitar",
+    "apply": "Aplicar",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Currículo",
+    "resume": "Retomar",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Vixiado",
+    "watched": "Visto",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Sen vixiar",
+    "unwatched": "Non visto",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiolibro} other{{count} audiolibros}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Estacións",
+    "seasons": "Tempadas",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 tempada} other{{count} tempadas}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Xogar",
+    "play": "Reproducir",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Cast",
+    "cast": "Transmitir",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "ESCRITORES",
+    "writers": "GUIONISTAS",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 pista} other{{count} pistas}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 capítulo} other{{count} capítulos}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Barallar",
+    "shuffle": "Aleatorio",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} can.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Xogador",
+    "player": "Reprodutor",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Observa",
+    "watch": "Ver",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "T{season} E{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "T{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 episodio} other{{count} episodios}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -3057,7 +3057,7 @@
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
-    "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+    "afterEpisodesAndHours": "Despois de {episodes} episodios / {hours} h",
     "@afterEpisodesAndHours": {
         "description": "Still watching prompt interval",
         "placeholders": {
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS Direct Play",
+    "pgsDirectPlay": "Reprodución directa de PGS",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3177,7 +3177,7 @@
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "ASS/SSA Direct Play",
+    "assSsaDirectPlay": "Reprodución directa de ASS/SSA",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -3233,7 +3233,7 @@
     "@tv": {
         "description": "Profile: TV"
     },
-    "loadedProfileSettings": "Loaded {profile} profile settings.",
+    "loadedProfileSettings": "Cargouse a configuración do perfil {profile}.",
     "@loadedProfileSettings": {
         "description": "Message when profile settings are loaded",
         "placeholders": {
@@ -3242,7 +3242,7 @@
             }
         }
     },
-    "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+    "failedToLoadProfileSettings": "Non se puido cargar a configuración do perfil {profile}.",
     "@failedToLoadProfileSettings": {
         "description": "Error when profile settings fail to load",
         "placeholders": {
@@ -3251,7 +3251,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+    "syncedSettingsToProfile": "Sincronizouse a configuración local co perfil {profile}.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3464,7 +3464,7 @@
     "@slate": {
         "description": "Color: slate"
     },
-    "indigo": "Indigo",
+    "indigo": "Índigo",
     "@indigo": {
         "description": "Color: indigo"
     },
@@ -3540,7 +3540,7 @@
     "@selectAll": {
         "description": "Button to select all items"
     },
-    "itemsSelected": "{count} selected",
+    "itemsSelected": "{count} seleccionados",
     "@itemsSelected": {
         "description": "Number of selected items",
         "placeholders": {
@@ -3728,10 +3728,6 @@
     "lastUser": "Último Usuario",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Usuario específico",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Autenticarse sempre",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Engadido",
+    "pluginLabel": "Engadido Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3975,7 +3971,7 @@
     "@pluginNotDetectedDescription": {
         "description": "Description when plugin is not detected"
     },
-    "pluginStatusVersion": "{status}\nVersion: {version}",
+    "pluginStatusVersion": "{status}\nVersión: {version}",
     "@pluginStatusVersion": {
         "description": "Plugin status with version",
         "placeholders": {
@@ -4075,7 +4071,7 @@
     "@hideAdultContent": {
         "description": "Description for NSFW filter"
     },
-    "loggedInAs": "Logged in as: {username}",
+    "loggedInAs": "Sesión iniciada como: {username}",
     "@loggedInAs": {
         "description": "Label showing logged in username",
         "placeholders": {
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Descubre filas",
+    "discoverRows": "Páxina de descubrimento de Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Arrastra para reordenar. Activa ou desactiva filas. As sincronizacións de orde de filas activadas co complemento Moonfin.",
+    "discoverRowsDescriptionPlugin": "Activa as filas que queres ver na páxina principal de Seerr. Arrastra para reordenar. A orde personalizada sincronízase con Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Arrastra para reordenar. Activa ou desactiva filas.",
+    "discoverRowsDescription": "Activa as filas que queres ver na páxina principal de Seerr. Arrastra para reordenar. A orde personalizada sincronízase con Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4108,7 +4104,7 @@
     "@aboutTitle": {
         "description": "About screen title"
     },
-    "versionValue": "Version {version}",
+    "versionValue": "Versión {version}",
     "@versionValue": {
         "description": "Version display",
         "placeholders": {
@@ -4169,7 +4165,7 @@
     "@updateAvailable": {
         "description": "Message when an update is available"
     },
-    "updateAvailableVersion": "Update available: v{version}",
+    "updateAvailableVersion": "Actualización dispoñible: v{version}",
     "@updateAvailableVersion": {
         "description": "Message with specific update version",
         "placeholders": {
@@ -4186,7 +4182,7 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "updateAvailableTitle": "v{version} Available",
+    "updateAvailableTitle": "v{version} dispoñible",
     "@updateAvailableTitle": {
         "description": "Title of the update dialog showing the new version",
         "placeholders": {
@@ -4272,7 +4268,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "{count} elementos",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4301,7 +4297,7 @@
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
-    "requestedByName": "Requested by {name}",
+    "requestedByName": "Solicitado por {name}",
     "@requestedByName": {
         "description": "Label showing who requested media",
         "placeholders": {
@@ -4326,7 +4322,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+    "cancelRequestForTitle": "Cancelar a solicitude de \"{title}\"?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4335,7 +4331,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+    "cancelCountRequestsForTitle": "Cancelar {count} solicitudes de \"{title}\"?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4359,7 +4355,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "Budget: ${amount}",
+    "budgetAmount": "Orzamento: ${amount}",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4368,7 +4364,7 @@
             }
         }
     },
-    "revenueAmount": "Revenue: ${amount}",
+    "revenueAmount": "Ingresos: ${amount}",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4389,7 +4385,7 @@
             }
         }
     },
-    "requestSeriesOrMovie": "Request {type}",
+    "requestSeriesOrMovie": "Solicitar {type}",
     "@requestSeriesOrMovie": {
         "description": "Bottom sheet title for requesting media",
         "placeholders": {
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Aparencias",
+    "appearances": "Aparicións",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4438,7 +4434,7 @@
     "@crewSection": {
         "description": "Section title for crew credits"
     },
-    "ageValue": "age {age}",
+    "ageValue": "idade {age}",
     "@ageValue": {
         "description": "Person age display",
         "placeholders": {
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Estacións",
+    "seasonsLabel": "Tempadas",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4532,7 +4528,7 @@
     "edit": "Editar",
     "encoding": "Codificación",
     "error": "Erro",
-    "forward": "Adiante",
+    "forward": "Avanzar",
     "general": "Xeral",
     "go": "Vaia",
     "install": "Instalar",
@@ -4540,7 +4536,7 @@
     "interval": "Intervalo",
     "name": "Nome",
     "networking": "Rede",
-    "next": "A continuación",
+    "next": "Seguinte",
     "path": "Camiño",
     "paused": "En pausa",
     "permissions": "Permisos",
@@ -4554,13 +4550,13 @@
     "role": "Papel",
     "root": "Raíz",
     "run": "Corre",
-    "search": "Busca",
+    "search": "Buscar",
     "select": "Seleccione",
     "send": "Enviar",
     "sessions": "Sesións",
     "set": "Establecer",
     "status": "Estado",
-    "stop": "Pare",
+    "stop": "Deter",
     "streaming": "Transmisión en directo",
     "time": "Tempo",
     "trickplay": "Trickplay",
@@ -4578,7 +4574,7 @@
     "adminDrawerUsers": "Usuarios",
     "adminDrawerLibraries": "Bibliotecas",
     "adminDrawerTranscoding": "Transcodificación",
-    "adminDrawerResume": "Currículo",
+    "adminDrawerResume": "Retomar",
     "adminDrawerStreaming": "Transmisión en directo",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Dispositivos",
@@ -4596,7 +4592,7 @@
     "adminMediaOverview": "Visión xeral dos medios",
     "adminMediaTotalsError": "Non se puideron cargar os totais de medios do servidor.",
     "adminMediaOverviewSubtitle": "Unha lectura rápida sobre canto contido hai neste servidor.",
-    "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
+    "adminPluginUpdatesAvailable": "Actualizacións de complementos dispoñibles: {count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
             "count": {
@@ -4604,7 +4600,7 @@
             }
         }
     },
-    "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
+    "adminPluginsRequiringRestart": "Complementos que requiren reinicio: {count}",
     "@adminPluginsRequiringRestart": {
         "placeholders": {
             "count": {
@@ -4612,7 +4608,7 @@
             }
         }
     },
-    "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
+    "adminFailedScheduledTasks": "Tarefas programadas fallidas: {count}",
     "@adminFailedScheduledTasks": {
         "placeholders": {
             "count": {
@@ -4620,7 +4616,7 @@
             }
         }
     },
-    "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+    "adminRecentAlertEntries": "Entradas recentes de aviso/erro: {count}",
     "@adminRecentAlertEntries": {
         "placeholders": {
             "count": {
@@ -4646,7 +4642,7 @@
     "adminShutdownServer": "Apagar o servidor",
     "adminScanLibraries": "Escanear bibliotecas",
     "adminLibraryScanStarted": "Comezou a exploración da biblioteca",
-    "errorGeneric": "Error: {error}",
+    "errorGeneric": "Erro: {error}",
     "@errorGeneric": {
         "placeholders": {
             "error": {
@@ -4661,7 +4657,7 @@
     "adminNoActiveSessions": "Non hai sesións activas",
     "adminRecentActivity": "Actividade recente",
     "adminNoRecentActivity": "Non hai actividade recente",
-    "adminCommandFailed": "Command failed: {error}",
+    "adminCommandFailed": "Fallou o comando: {error}",
     "@adminCommandFailed": {
         "placeholders": {
             "error": {
@@ -4672,10 +4668,10 @@
     "adminSendMessage": "Enviar mensaxe",
     "adminMessageTextHint": "Texto da mensaxe",
     "adminSetVolume": "Establecer volume",
-    "sessionPrev": "Prev",
+    "sessionPrev": "Ant.",
     "sessionRewind": "Rebobinar",
-    "sessionForward": "Adiante",
-    "sessionNext": "A continuación",
+    "sessionForward": "Avanzar",
+    "sessionNext": "Seguinte",
     "sessionVolumeDown": "Vol -",
     "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
@@ -4684,12 +4680,12 @@
     "actions": "Accións",
     "videoCodec": "Códec de vídeo",
     "audioCodec": "Codec de audio",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Acel. HW",
     "completion": "Finalización",
     "direct": "Directo",
     "adminDisconnect": "Desconectar",
     "adminClearDates": "Datas claras",
-    "adminActivityLoadFailed": "Failed to load activity log: {error}",
+    "adminActivityLoadFailed": "Produciuse un erro ao cargar o rexistro de actividade: {error}",
     "@adminActivityLoadFailed": {
         "placeholders": {
             "error": {
@@ -4701,7 +4697,7 @@
     "adminEditDeviceName": "Editar o nome do dispositivo",
     "adminCustomName": "Nome personalizado",
     "adminDeviceNameUpdated": "Actualizouse o nome do dispositivo",
-    "adminDeviceUpdateFailed": "Failed to update device: {error}",
+    "adminDeviceUpdateFailed": "Produciuse un erro ao actualizar o dispositivo: {error}",
     "@adminDeviceUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4711,7 +4707,7 @@
     },
     "adminDeleteDevice": "Eliminar dispositivo",
     "adminDeviceDeleted": "Eliminouse o dispositivo",
-    "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+    "adminDeviceDeleteFailed": "Produciuse un erro ao eliminar o dispositivo: {error}",
     "@adminDeviceDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4727,7 +4723,7 @@
     "adminNoLibraries": "Non hai bibliotecas configuradas",
     "adminScanAllLibraries": "Escanear todas as bibliotecas",
     "adminAddLibrary": "Engadir biblioteca",
-    "adminScanFailed": "Failed to start scan: {error}",
+    "adminScanFailed": "Produciuse un erro ao iniciar a exploración: {error}",
     "@adminScanFailed": {
         "placeholders": {
             "error": {
@@ -4737,7 +4733,7 @@
     },
     "adminRenameLibrary": "Cambiar o nome da biblioteca",
     "adminNewName": "Novo nome",
-    "adminLibraryRenamed": "Library renamed to \"{name}\"",
+    "adminLibraryRenamed": "Renomeouse a biblioteca como \"{name}\"",
     "@adminLibraryRenamed": {
         "placeholders": {
             "name": {
@@ -4745,7 +4741,7 @@
             }
         }
     },
-    "adminRenameFailed": "Failed to rename: {error}",
+    "adminRenameFailed": "Produciuse un erro ao renomear: {error}",
     "@adminRenameFailed": {
         "placeholders": {
             "error": {
@@ -4754,7 +4750,7 @@
         }
     },
     "adminDeleteLibrary": "Eliminar biblioteca",
-    "adminLibraryDeleted": "Library \"{name}\" deleted",
+    "adminLibraryDeleted": "Eliminouse a biblioteca \"{name}\"",
     "@adminLibraryDeleted": {
         "placeholders": {
             "name": {
@@ -4762,7 +4758,7 @@
             }
         }
     },
-    "adminLibraryDeleteFailed": "Failed to delete library: {error}",
+    "adminLibraryDeleteFailed": "Produciuse un erro ao eliminar a biblioteca: {error}",
     "@adminLibraryDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4770,7 +4766,7 @@
             }
         }
     },
-    "adminAddPathFailed": "Failed to add path: {error}",
+    "adminAddPathFailed": "Produciuse un erro ao engadir o camiño: {error}",
     "@adminAddPathFailed": {
         "placeholders": {
             "error": {
@@ -4779,7 +4775,7 @@
         }
     },
     "adminRemovePath": "Eliminar o camiño",
-    "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
+    "adminRemovePathConfirm": "Quitar \"{path}\" desta biblioteca?",
     "@adminRemovePathConfirm": {
         "placeholders": {
             "path": {
@@ -4787,7 +4783,7 @@
             }
         }
     },
-    "adminRemovePathFailed": "Failed to remove path: {error}",
+    "adminRemovePathFailed": "Produciuse un erro ao quitar o camiño: {error}",
     "@adminRemovePathFailed": {
         "placeholders": {
             "error": {
@@ -4796,7 +4792,7 @@
         }
     },
     "adminLibraryOptionsSaved": "Gardáronse as opcións da biblioteca",
-    "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+    "adminLibraryOptionsSaveFailed": "Produciuse un erro ao gardar as opcións: {error}",
     "@adminLibraryOptionsSaveFailed": {
         "placeholders": {
             "error": {
@@ -4814,7 +4810,7 @@
     "adminMetadataCountryCode": "Código de país de metadatos",
     "adminMetadataCountryHint": "p.ex. EU, DE, FR",
     "adminLibraryNameRequired": "O nome da biblioteca é necesario",
-    "adminLibraryCreateFailed": "Failed to create library: {error}",
+    "adminLibraryCreateFailed": "Produciuse un erro ao crear a biblioteca: {error}",
     "@adminLibraryCreateFailed": {
         "placeholders": {
             "error": {
@@ -4829,7 +4825,7 @@
     "paths": "Camiños:",
     "adminDisableUser": "Desactivar Usuario",
     "adminEnableUser": "Activar Usuario",
-    "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
+    "adminDisableUserConfirm": "Desactivar a {name}? Non poderá iniciar sesión.",
     "@adminDisableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4837,7 +4833,7 @@
             }
         }
     },
-    "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
+    "adminEnableUserConfirm": "Activar a {name}? Poderá iniciar sesión de novo.",
     "@adminEnableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4845,7 +4841,7 @@
             }
         }
     },
-    "adminUserDisabled": "User \"{name}\" disabled",
+    "adminUserDisabled": "Desactivouse o usuario \"{name}\"",
     "@adminUserDisabled": {
         "placeholders": {
             "name": {
@@ -4853,7 +4849,7 @@
             }
         }
     },
-    "adminUserEnabled": "User \"{name}\" enabled",
+    "adminUserEnabled": "Activouse o usuario \"{name}\"",
     "@adminUserEnabled": {
         "placeholders": {
             "name": {
@@ -4861,7 +4857,7 @@
             }
         }
     },
-    "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+    "adminUserPolicyUpdateFailed": "Produciuse un erro ao actualizar a política do usuario: {error}",
     "@adminUserPolicyUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4873,7 +4869,7 @@
     "adminSearchUsers": "Busca usuarios",
     "adminEditUser": "Editar Usuario",
     "adminAddUser": "Engadir usuario",
-    "adminUserCreateFailed": "Failed to create user: {error}",
+    "adminUserCreateFailed": "Produciuse un erro ao crear o usuario: {error}",
     "@adminUserCreateFailed": {
         "placeholders": {
             "error": {
@@ -4886,7 +4882,7 @@
     "adminUsernameRequired": "O nome de usuario non pode estar baleiro",
     "adminNoProfileChanges": "Non hai cambios de perfil para gardar",
     "adminProfileSaved": "Perfil gardado",
-    "adminSaveFailed": "Failed to save: {error}",
+    "adminSaveFailed": "Produciuse un erro ao gardar: {error}",
     "@adminSaveFailed": {
         "placeholders": {
             "error": {
@@ -4896,7 +4892,7 @@
     },
     "adminPermissionsSaved": "Permisos gardados",
     "adminPasswordsMismatch": "Os contrasinais non coinciden",
-    "adminFailed": "Failed: {error}",
+    "adminFailed": "Fallou: {error}",
     "@adminFailed": {
         "placeholders": {
             "error": {
@@ -4947,7 +4943,7 @@
     "adminEnableAllDevices": "Activa o acceso a todos os dispositivos",
     "adminEnableAllChannels": "Activa o acceso a todas as canles",
     "adminResetPasswordWarning": "Isto eliminará o contrasinal. O usuario poderá iniciar sesión sen contrasinal.",
-    "adminServerReturnedHttp": "Server returned HTTP {status}",
+    "adminServerReturnedHttp": "O servidor devolveu HTTP {status}",
     "@adminServerReturnedHttp": {
         "placeholders": {
             "status": {
@@ -4955,7 +4951,7 @@
             }
         }
     },
-    "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
+    "adminDeleteUserConfirm": "Seguro que queres eliminar a {name}?",
     "@adminDeleteUserConfirm": {
         "placeholders": {
             "name": {
@@ -4963,7 +4959,7 @@
             }
         }
     },
-    "adminUserDeleted": "User \"{name}\" deleted",
+    "adminUserDeleted": "Eliminouse o usuario \"{name}\"",
     "@adminUserDeleted": {
         "placeholders": {
             "name": {
@@ -4971,7 +4967,7 @@
             }
         }
     },
-    "adminUserDeleteFailed": "Failed to delete user: {error}",
+    "adminUserDeleteFailed": "Produciuse un erro ao eliminar o usuario: {error}",
     "@adminUserDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4984,7 +4980,7 @@
     "adminApiKeyCreated": "Clave da API creada",
     "adminApiKeyCreatedNoToken": "A chave creouse correctamente. O servidor non devolveu o token. Comproba as claves da API do servidor.",
     "adminKeyCopied": "Copiouse a clave no portapapeis",
-    "adminApiKeyCreateFailed": "Failed to create key: {error}",
+    "adminApiKeyCreateFailed": "Produciuse un erro ao crear a clave: {error}",
     "@adminApiKeyCreateFailed": {
         "placeholders": {
             "error": {
@@ -4994,7 +4990,7 @@
     },
     "adminKeyTokenMissing": "Falta o token de chave na resposta do servidor",
     "adminRevokeApiKey": "Revogar a chave da API",
-    "adminRevokeKeyConfirm": "Revoke key for {name}?",
+    "adminRevokeKeyConfirm": "Revogar a clave de {name}?",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
             "name": {
@@ -5003,7 +4999,7 @@
         }
     },
     "adminApiKeyRevoked": "Revogouse a chave da API",
-    "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+    "adminApiKeyRevokeFailed": "Produciuse un erro ao revogar a clave: {error}",
     "@adminApiKeyRevokeFailed": {
         "placeholders": {
             "error": {
@@ -5016,7 +5012,7 @@
     "adminCreateKey": "Crear clave",
     "adminNoApiKeys": "Non se atoparon chaves API",
     "adminUnknownApp": "Aplicación descoñecida",
-    "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+    "adminApiKeyTokenCreated": "Token: {token}\\nCreada: {created}",
     "@adminApiKeyTokenCreated": {
         "placeholders": {
             "token": {
@@ -5029,7 +5025,7 @@
     },
     "adminCreatingBackup": "Creando copia de seguranza...",
     "adminBackupCreated": "Creouse a copia de seguranza correctamente",
-    "adminBackupCreateFailed": "Failed to create backup: {error}",
+    "adminBackupCreateFailed": "Produciuse un erro ao crear a copia de seguranza: {error}",
     "@adminBackupCreateFailed": {
         "placeholders": {
             "error": {
@@ -5038,7 +5034,7 @@
         }
     },
     "adminBackupPathMissing": "Falta a ruta da copia de seguranza na resposta do servidor",
-    "adminBackupManifest": "Manifest: {name}",
+    "adminBackupManifest": "Manifesto: {name}",
     "@adminBackupManifest": {
         "placeholders": {
             "name": {
@@ -5046,7 +5042,7 @@
             }
         }
     },
-    "adminManifestLoadFailed": "Failed to load manifest: {error}",
+    "adminManifestLoadFailed": "Produciuse un erro ao cargar o manifesto: {error}",
     "@adminManifestLoadFailed": {
         "placeholders": {
             "error": {
@@ -5056,7 +5052,7 @@
     },
     "adminConfirmRestore": "Confirmar a restauración",
     "adminRestoringBackup": "Restaurando a copia de seguranza...",
-    "adminRestoreFailed": "Failed to restore backup: {error}",
+    "adminRestoreFailed": "Produciuse un erro ao restaurar a copia de seguranza: {error}",
     "@adminRestoreFailed": {
         "placeholders": {
             "error": {
@@ -5073,7 +5069,7 @@
     "adminNoLogFiles": "Non se atoparon ficheiros de rexistro",
     "adminLogCopied": "Copiouse o rexistro no portapapeis",
     "adminSaveLogFile": "Gardar ficheiro de rexistro",
-    "adminSavedTo": "Saved to {path}",
+    "adminSavedTo": "Gardouse en {path}",
     "@adminSavedTo": {
         "placeholders": {
             "path": {
@@ -5081,7 +5077,7 @@
             }
         }
     },
-    "adminFileSaveFailed": "Failed to save file: {error}",
+    "adminFileSaveFailed": "Produciuse un erro ao gardar o ficheiro: {error}",
     "@adminFileSaveFailed": {
         "placeholders": {
             "error": {
@@ -5089,7 +5085,7 @@
             }
         }
     },
-    "adminLogFileLoadFailed": "Failed to load {fileName}",
+    "adminLogFileLoadFailed": "Produciuse un erro ao cargar {fileName}",
     "@adminLogFileLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5099,7 +5095,7 @@
     },
     "adminSearchInLog": "Busca no rexistro",
     "adminNoMatchingLines": "Non hai liñas coincidentes",
-    "adminTasksLoadFailed": "Failed to load tasks: {error}",
+    "adminTasksLoadFailed": "Produciuse un erro ao cargar as tarefas: {error}",
     "@adminTasksLoadFailed": {
         "placeholders": {
             "error": {
@@ -5109,7 +5105,7 @@
     },
     "adminNoScheduledTasks": "Non se atoparon tarefas programadas",
     "adminNoTasksMatchFilter": "Ningunha tarefa coincide co filtro actual",
-    "adminTaskStartFailed": "Failed to start task: {error}",
+    "adminTaskStartFailed": "Produciuse un erro ao iniciar a tarefa: {error}",
     "@adminTaskStartFailed": {
         "placeholders": {
             "error": {
@@ -5117,7 +5113,7 @@
             }
         }
     },
-    "adminTaskStopFailed": "Failed to stop task: {error}",
+    "adminTaskStopFailed": "Produciuse un erro ao deter a tarefa: {error}",
     "@adminTaskStopFailed": {
         "placeholders": {
             "error": {
@@ -5125,7 +5121,7 @@
             }
         }
     },
-    "adminTaskLoadFailed": "Failed to load task: {error}",
+    "adminTaskLoadFailed": "Produciuse un erro ao cargar a tarefa: {error}",
     "@adminTaskLoadFailed": {
         "placeholders": {
             "error": {
@@ -5134,7 +5130,7 @@
         }
     },
     "adminRunNow": "Corre agora",
-    "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
+    "adminTriggerRemoveFailed": "Produciuse un erro ao quitar o disparador: {error}",
     "@adminTriggerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5142,7 +5138,7 @@
             }
         }
     },
-    "adminTriggerAddFailed": "Failed to add trigger: {error}",
+    "adminTriggerAddFailed": "Produciuse un erro ao engadir o disparador: {error}",
     "@adminTriggerAddFailed": {
         "placeholders": {
             "error": {
@@ -5157,7 +5153,7 @@
     "adminTriggerType": "Tipo de disparador",
     "adminTimeLimit": "Límite de tempo (opcional)",
     "adminNoLimit": "Sen límite",
-    "adminHours": "{hours} hour(s)",
+    "adminHours": "{hours} hora(s)",
     "@adminHours": {
         "placeholders": {
             "hours": {
@@ -5167,7 +5163,7 @@
     },
     "adminDayOfWeek": "Día da semana",
     "adminSearchPlugins": "Busca complementos...",
-    "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+    "adminPluginToggleFailed": "Produciuse un erro ao activar ou desactivar o complemento: {error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
             "error": {
@@ -5176,7 +5172,7 @@
         }
     },
     "adminUninstallPlugin": "Desinstalar o complemento",
-    "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
+    "adminUninstallPluginConfirm": "Seguro que queres desinstalar \"{name}\"?",
     "@adminUninstallPluginConfirm": {
         "placeholders": {
             "name": {
@@ -5184,7 +5180,7 @@
             }
         }
     },
-    "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
+    "adminPluginUninstallFailed": "Produciuse un erro ao desinstalar o complemento: {error}",
     "@adminPluginUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5192,7 +5188,7 @@
             }
         }
     },
-    "adminPackageInstallFailed": "Failed to install package: {error}",
+    "adminPackageInstallFailed": "Produciuse un erro ao instalar o paquete: {error}",
     "@adminPackageInstallFailed": {
         "placeholders": {
             "error": {
@@ -5200,7 +5196,7 @@
             }
         }
     },
-    "adminPluginUpdateFailed": "Failed to install update: {error}",
+    "adminPluginUpdateFailed": "Produciuse un erro ao instalar a actualización: {error}",
     "@adminPluginUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5208,7 +5204,7 @@
             }
         }
     },
-    "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+    "adminPluginsLoadFailed": "Produciuse un erro ao cargar os complementos: {error}",
     "@adminPluginsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5218,7 +5214,7 @@
     },
     "adminNoPluginsMatchSearch": "Ningún complemento coincide coa túa busca",
     "adminNoPluginsInstalled": "Non hai complementos instalados",
-    "adminInstallUpdate": "Install update (v{version})",
+    "adminInstallUpdate": "Instalar a actualización (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
             "version": {
@@ -5226,7 +5222,7 @@
             }
         }
     },
-    "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+    "adminCatalogLoadFailed": "Produciuse un erro ao cargar o catálogo: {error}",
     "@adminCatalogLoadFailed": {
         "placeholders": {
             "error": {
@@ -5239,7 +5235,7 @@
     "adminExperimentalIntegration": "Integración experimental",
     "adminExperimentalWarning": "A integración da configuración do complemento aínda é experimental. É posible que algunhas páxinas de configuración non se mostren correctamente.",
     "continueAction": "Continuar",
-    "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
+    "adminPluginRemoveAfterRestart": "\"{name}\" quitarase despois de reiniciar o servidor",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
             "name": {
@@ -5247,7 +5243,7 @@
             }
         }
     },
-    "adminUninstallFailed": "Failed to uninstall: {error}",
+    "adminUninstallFailed": "Produciuse un erro ao desinstalar: {error}",
     "@adminUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5255,7 +5251,7 @@
             }
         }
     },
-    "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+    "adminPluginUpdating": "Actualizando \"{name}\" á v{version}...",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5267,7 +5263,7 @@
         }
     },
     "adminMissingAuthToken": "Non se puido abrir a configuración: falta o token de autenticación.",
-    "adminPluginLoadFailed": "Failed to load plugin: {error}",
+    "adminPluginLoadFailed": "Produciuse un erro ao cargar o complemento: {error}",
     "@adminPluginLoadFailed": {
         "placeholders": {
             "error": {
@@ -5276,7 +5272,7 @@
         }
     },
     "adminPluginNotFound": "Non se atopou o complemento",
-    "adminPluginVersion": "Version {version}",
+    "adminPluginVersion": "Versión {version}",
     "@adminPluginVersion": {
         "placeholders": {
             "version": {
@@ -5289,7 +5285,7 @@
     "adminRevisionHistory": "Historial de revisións",
     "adminNoChangelog": "Non hai rexistro de cambios dispoñible.",
     "adminRemoveRepository": "Eliminar repositorio",
-    "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminRemoveRepositoryConfirm": "Seguro que queres quitar \"{name}\"?",
     "@adminRemoveRepositoryConfirm": {
         "placeholders": {
             "name": {
@@ -5297,7 +5293,7 @@
             }
         }
     },
-    "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
+    "adminRepositoriesSaveFailed": "Produciuse un erro ao gardar os repositorios: {error}",
     "@adminRepositoriesSaveFailed": {
         "placeholders": {
             "error": {
@@ -5305,7 +5301,7 @@
             }
         }
     },
-    "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+    "adminRepositoriesLoadFailed": "Produciuse un erro ao cargar os repositorios: {error}",
     "@adminRepositoriesLoadFailed": {
         "placeholders": {
             "error": {
@@ -5317,7 +5313,7 @@
     "adminRepositoryUrl": "URL do repositorio",
     "adminAddEntry": "Engadir entrada",
     "adminInvalidUrl": "URL non válido",
-    "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
+    "adminPluginSettingsLoadFailed": "Non foi posible cargar a configuración do complemento: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5325,7 +5321,7 @@
             }
         }
     },
-    "adminCouldNotOpenUrl": "Could not open {uri}",
+    "adminCouldNotOpenUrl": "Non foi posible abrir {uri}",
     "@adminCouldNotOpenUrl": {
         "placeholders": {
             "uri": {
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Mantemento de segmentos (segundos)",
     "adminThrottleBuffering": "Buffer do acelerador",
     "adminTrickplaySaved": "Gardouse a configuración de Trickplay",
-    "adminTrickplayLoadFailed": "Produciuse un erro ao cargar a configuración de truco",
+    "adminTrickplayLoadFailed": "Produciuse un erro ao cargar a configuración de Trickplay",
     "adminEnableHardwareAcceleration": "Activa a aceleración de hardware",
     "adminEnableKeyFrameExtraction": "Activa a extracción só de fotogramas clave",
     "adminKeyFrameSubtitle": "Máis rápido pero con menor precisión",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "Porto HTTPS",
     "adminPublicHttpsPort": "Porto HTTPS público",
     "adminBaseUrl": "URL base",
-    "adminBaseUrlHint": "p.ex. /aleta",
+    "adminBaseUrlHint": "p.ex. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Activa HTTPS",
     "adminLocalNetwork": "Rede local",
@@ -5418,7 +5414,7 @@
     "blacklist": "Lista negra",
     "notSet": "Non definido",
     "adminMetadataSaved": "Gardáronse os metadatos",
-    "adminMetadataLoadFailed": "Failed to load metadata: {error}",
+    "adminMetadataLoadFailed": "Produciuse un erro ao cargar os metadatos: {error}",
     "@adminMetadataLoadFailed": {
         "placeholders": {
             "error": {
@@ -5426,7 +5422,7 @@
             }
         }
     },
-    "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+    "adminMetadataSaveFailed": "Produciuse un erro ao gardar os metadatos: {error}",
     "@adminMetadataSaveFailed": {
         "placeholders": {
             "error": {
@@ -5439,7 +5435,7 @@
     "adminReplaceAllMetadata": "Substitúe todos os metadatos",
     "adminReplaceAllImages": "Substitúe todas as imaxes",
     "adminMetadataRefreshRequested": "Solicitude de actualización de metadatos",
-    "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+    "adminMetadataRefreshFailed": "Produciuse un erro ao actualizar os metadatos: {error}",
     "@adminMetadataRefreshFailed": {
         "placeholders": {
             "error": {
@@ -5447,11 +5443,10 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Busca persoa remota",
     "adminNoRemoteMatches": "Non se atoparon coincidencias remotas",
     "adminRemoteResults": "Resultados remotos",
     "adminRemoteMetadataApplied": "Aplicáronse metadatos remotos",
-    "adminRemoteSearchFailed": "Remote search failed: {error}",
+    "adminRemoteSearchFailed": "Fallou a busca remota: {error}",
     "@adminRemoteSearchFailed": {
         "placeholders": {
             "error": {
@@ -5462,7 +5457,7 @@
     "adminUpdateContentType": "Actualizar o tipo de contido",
     "adminContentType": "Tipo de contido",
     "adminContentTypeUpdated": "Tipo de contido actualizado",
-    "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+    "adminContentTypeUpdateFailed": "Produciuse un erro ao actualizar o tipo de contido: {error}",
     "@adminContentTypeUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5473,7 +5468,7 @@
     "adminMetadataEditorLoadFailed": "Produciuse un erro ao cargar o editor de metadatos",
     "adminNoPeopleEntries": "Non hai entradas de persoas",
     "adminNoExternalIds": "Non hai ID externos dispoñibles",
-    "adminImageUpdated": "{imageType} image updated",
+    "adminImageUpdated": "Actualizouse a imaxe {imageType}",
     "@adminImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5481,7 +5476,7 @@
             }
         }
     },
-    "adminImageDownloadFailed": "Failed to download image: {error}",
+    "adminImageDownloadFailed": "Produciuse un erro ao descargar a imaxe: {error}",
     "@adminImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5491,7 +5486,7 @@
     },
     "adminUnsupportedImageFormat": "Formato de imaxe non compatible",
     "adminImageReadFailed": "Produciuse un erro ao ler a imaxe seleccionada",
-    "adminImageUploaded": "{imageType} image uploaded",
+    "adminImageUploaded": "Cargouse a imaxe {imageType}",
     "@adminImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5499,7 +5494,7 @@
             }
         }
     },
-    "adminImageUploadFailed": "Failed to upload image: {error}",
+    "adminImageUploadFailed": "Produciuse un erro ao cargar a imaxe: {error}",
     "@adminImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5507,7 +5502,7 @@
             }
         }
     },
-    "adminDeleteImage": "Delete {imageType} image",
+    "adminDeleteImage": "Eliminar a imaxe {imageType}",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5515,7 +5510,7 @@
             }
         }
     },
-    "adminImageDeleted": "{imageType} image deleted",
+    "adminImageDeleted": "Eliminouse a imaxe {imageType}",
     "@adminImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5523,7 +5518,7 @@
             }
         }
     },
-    "adminImageDeleteFailed": "Failed to delete image: {error}",
+    "adminImageDeleteFailed": "Produciuse un erro ao eliminar a imaxe: {error}",
     "@adminImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5533,7 +5528,7 @@
     },
     "adminAllProviders": "Todos os provedores",
     "adminNoRemoteImages": "Non se atoparon imaxes remotas",
-    "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+    "adminTunerDiscoveryFailed": "Produciuse un erro no descubrimento do sintonizador: {error}",
     "@adminTunerDiscoveryFailed": {
         "placeholders": {
             "error": {
@@ -5543,11 +5538,8 @@
     },
     "adminAddTuner": "Engadir sintonizador",
     "adminTunerType": "Tipo de sintonizador",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Outros",
-    "adminUrlPath": "URL/Ruta",
-    "adminNameOptional": "Nome (opcional)",
     "adminTunerAdded": "Engadiuse o sintonizador",
-    "adminTunerAddFailed": "Failed to add tuner: {error}",
+    "adminTunerAddFailed": "Produciuse un erro ao engadir o sintonizador: {error}",
     "@adminTunerAddFailed": {
         "placeholders": {
             "error": {
@@ -5557,11 +5549,8 @@
     },
     "adminAddGuideProvider": "Engadir provedor de guías",
     "adminProviderType": "Tipo de provedor",
-    "adminProviderTypeHint": "SchedulesDirect ou XMLTV",
-    "adminUsernameOptional": "Nome de usuario (opcional)",
-    "adminRefreshInterval": "Intervalo de actualización (horas)",
     "adminProviderAdded": "Engadiuse o provedor",
-    "adminProviderAddFailed": "Failed to add provider: {error}",
+    "adminProviderAddFailed": "Produciuse un erro ao engadir o provedor: {error}",
     "@adminProviderAddFailed": {
         "placeholders": {
             "error": {
@@ -5569,7 +5558,7 @@
             }
         }
     },
-    "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+    "adminTunerRemoveFailed": "Produciuse un erro ao quitar o sintonizador: {error}",
     "@adminTunerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5578,7 +5567,7 @@
         }
     },
     "adminTunerResetRequested": "Solicitouse o reinicio do sintonizador",
-    "adminTunerResetFailed": "Failed to reset tuner: {error}",
+    "adminTunerResetFailed": "Produciuse un erro ao restablecer o sintonizador: {error}",
     "@adminTunerResetFailed": {
         "placeholders": {
             "error": {
@@ -5586,7 +5575,7 @@
             }
         }
     },
-    "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+    "adminProviderRemoveFailed": "Produciuse un erro ao quitar o provedor: {error}",
     "@adminProviderRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5600,7 +5589,7 @@
     "adminRecordingPath": "Camiño de gravación",
     "adminSeriesRecordingPath": "Camiño de gravación da serie",
     "adminRecordingSettingsSaved": "Gardouse a configuración da gravación",
-    "adminSettingsSaveFailed": "Failed to save settings: {error}",
+    "adminSettingsSaveFailed": "Produciuse un erro ao gardar a configuración: {error}",
     "@adminSettingsSaveFailed": {
         "placeholders": {
             "error": {
@@ -5612,7 +5601,7 @@
     "adminMappingJson": "Asignación de JSON",
     "adminMappingJsonHint": "Exemplo: asignacións de carga útil JSON",
     "adminChannelMappingsUpdated": "Actualizáronse as asignacións de canles",
-    "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminMappingsUpdateFailed": "Produciuse un erro ao actualizar as asignacións: {error}",
     "@adminMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5626,7 +5615,7 @@
     "adminGuideProviders": "Provedores de guías",
     "adminAddProvider": "Engadir provedor",
     "adminNoListingProviders": "Non se configuraron provedores de listas",
-    "adminRecordingPathDisplay": "Recording path: {path}",
+    "adminRecordingPathDisplay": "Camiño de gravación: {path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
             "path": {
@@ -5634,7 +5623,7 @@
             }
         }
     },
-    "adminSeriesPathDisplay": "Series path: {path}",
+    "adminSeriesPathDisplay": "Camiño da serie: {path}",
     "@adminSeriesPathDisplay": {
         "placeholders": {
             "path": {
@@ -5642,7 +5631,7 @@
             }
         }
     },
-    "adminPrePaddingDisplay": "Pre-padding: {minutes} min",
+    "adminPrePaddingDisplay": "Recheo previo: {minutes} min",
     "@adminPrePaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5650,7 +5639,7 @@
             }
         }
     },
-    "adminPostPaddingDisplay": "Post-padding: {minutes} min",
+    "adminPostPaddingDisplay": "Recheo posterior: {minutes} min",
     "@adminPostPaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5666,7 +5655,7 @@
     "adminRestoreWarning1": "A restauración substituirá TODOS os datos actuais do servidor polos datos de copia de seguranza.",
     "adminRestoreWarning2": "Sobrescribiranse a configuración actual do servidor, os usuarios e os datos da biblioteca.",
     "adminRestoreWarning3": "O servidor reiniciarase despois da restauración.",
-    "adminRestoreConfirmMessage": "Restore backup {name} now?",
+    "adminRestoreConfirmMessage": "Restaurar agora a copia de seguranza {name}?",
     "@adminRestoreConfirmMessage": {
         "placeholders": {
             "name": {
@@ -5680,14 +5669,14 @@
     "adminUnnamedBackup": "Copia de seguranza sen nome",
     "adminLiveTvNotAvailable": "A administración de TV en directo non está dispoñible nesta compilación de servidor.",
     "adminLiveTvTitle": "Administración de TV en directo",
-    "adminApply": "Solicitar",
+    "adminApply": "Aplicar",
     "adminNotSet": "Non definido",
     "adminReset": "Restablecer",
     "adminLogsTitle": "Rexistros do servidor",
     "adminLogsNewestFirst": "O máis novo primeiro",
     "adminLogsOldestFirst": "Primeiro máis vello",
     "adminLogsJustNow": "Xusto agora",
-    "adminLogsMinutesAgo": "{minutes}m ago",
+    "adminLogsMinutesAgo": "hai {minutes} min",
     "@adminLogsMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -5695,7 +5684,7 @@
             }
         }
     },
-    "adminLogsHoursAgo": "{hours}h ago",
+    "adminLogsHoursAgo": "hai {hours} h",
     "@adminLogsHoursAgo": {
         "placeholders": {
             "hours": {
@@ -5703,7 +5692,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d ago",
+    "adminLogsDaysAgo": "hai {days} d",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5711,7 +5700,7 @@
             }
         }
     },
-    "adminLogViewerLoadFailed": "Failed to load {fileName}",
+    "adminLogViewerLoadFailed": "Produciuse un erro ao cargar {fileName}",
     "@adminLogViewerLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5719,7 +5708,7 @@
             }
         }
     },
-    "adminLogViewerMatches": "{count} matches",
+    "adminLogViewerMatches": "{count} coincidencias",
     "@adminLogViewerMatches": {
         "placeholders": {
             "count": {
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Non hai liñas coincidentes",
     "adminMetadataEditorTitle": "Editor de metadatos",
-    "adminMetadataRemote": "Mando a distancia",
     "adminMetadataType": "Tipo",
     "adminMetadataDetails": "Detalles",
     "adminMetadataExternalIds": "Identificacións externas",
@@ -5762,7 +5750,7 @@
     "adminMetadataImageThumb": "Polgar",
     "adminMetadataRecursive": "Recursiva",
     "adminMetadataProvider": "Provedor",
-    "adminMetadataImageUpdated": "{imageType} image updated",
+    "adminMetadataImageUpdated": "Actualizouse a imaxe {imageType}",
     "@adminMetadataImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5770,7 +5758,7 @@
             }
         }
     },
-    "adminMetadataImageUploaded": "{imageType} image uploaded",
+    "adminMetadataImageUploaded": "Cargouse a imaxe {imageType}",
     "@adminMetadataImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5778,7 +5766,7 @@
             }
         }
     },
-    "adminMetadataImageDeleted": "{imageType} image deleted",
+    "adminMetadataImageDeleted": "Eliminouse a imaxe {imageType}",
     "@adminMetadataImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5786,7 +5774,7 @@
             }
         }
     },
-    "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+    "adminMetadataImageDownloadFailed": "Produciuse un erro ao descargar a imaxe: {error}",
     "@adminMetadataImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5795,7 +5783,7 @@
         }
     },
     "adminMetadataImageReadFailed": "Produciuse un erro ao ler a imaxe seleccionada",
-    "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
+    "adminMetadataImageUploadFailed": "Produciuse un erro ao cargar a imaxe: {error}",
     "@adminMetadataImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5803,7 +5791,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+    "adminMetadataDeleteImageTitle": "Eliminar a imaxe {imageType}",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5812,7 +5800,7 @@
         }
     },
     "adminMetadataDeleteImageContent": "Isto elimina a imaxe actual do elemento.",
-    "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
+    "adminMetadataImageDeleteFailed": "Produciuse un erro ao eliminar a imaxe: {error}",
     "@adminMetadataImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5820,7 +5808,7 @@
             }
         }
     },
-    "adminMetadataChooseImage": "Choose {imageType} image",
+    "adminMetadataChooseImage": "Escoller a imaxe {imageType}",
     "@adminMetadataChooseImage": {
         "placeholders": {
             "imageType": {
@@ -5837,7 +5825,7 @@
     "adminPluginsRestart": "Reiniciar",
     "adminPluginsNoSearchResults": "Ningún complemento coincide coa túa busca",
     "adminPluginsNoneInstalled": "Non hai complementos instalados",
-    "adminPluginsUpdateAvailable": "Update available: v{version}",
+    "adminPluginsUpdateAvailable": "Actualización dispoñible: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {
             "version": {
@@ -5851,7 +5839,7 @@
     "adminPluginsEnable": "Activar",
     "adminPluginsDisable": "Desactivar",
     "adminPluginsInstallUpdate": "Instalar actualización",
-    "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+    "adminPluginsInstallUpdateVersioned": "Instalar a actualización (v{version})",
     "@adminPluginsInstallUpdateVersioned": {
         "placeholders": {
             "version": {
@@ -5861,7 +5849,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "Ningún paquete coincide coa túa busca",
     "adminPluginsCatalogEmpty": "Non hai paquetes dispoñibles",
-    "adminPluginsInstalling": "\"{name}\" is being installed...",
+    "adminPluginsInstalling": "Estase instalando \"{name}\"...",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5873,7 +5861,7 @@
     "adminPluginDetailExperimentalContent": "A integración da configuración do complemento aínda é experimental. É posible que algúns campos ou deseños aínda non se mostren correctamente.",
     "adminPluginDetailToggle404": "Produciuse un erro ao alternar o complemento. O servidor non puido atopar esta versión do complemento. Proba a actualizar os complementos e despois téntao de novo.",
     "adminPluginDetailToggleDioError": "Produciuse un erro ao alternar o complemento. Consulte os rexistros do servidor para obter máis detalles.",
-    "adminPluginDetailSettingsTitle": "{name} Settings",
+    "adminPluginDetailSettingsTitle": "Configuración de {name}",
     "@adminPluginDetailSettingsTitle": {
         "placeholders": {
             "name": {
@@ -5891,7 +5879,7 @@
     "adminPluginDetailMalfunctioned": "Este complemento non funcionou correctamente e é posible que non funcione correctamente.",
     "adminPluginDetailNotSupported": "Este complemento non é compatible coa versión actual do servidor.",
     "adminPluginDetailSuperseded": "Este complemento foi substituído por unha versión máis recente.",
-    "adminReposLoadFailed": "Failed to load repositories: {error}",
+    "adminReposLoadFailed": "Produciuse un erro ao cargar os repositorios: {error}",
     "@adminReposLoadFailed": {
         "placeholders": {
             "error": {
@@ -5900,7 +5888,7 @@
         }
     },
     "adminReposRemoveTitle": "Eliminar repositorio",
-    "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminReposRemoveConfirm": "Seguro que queres quitar \"{name}\"?",
     "@adminReposRemoveConfirm": {
         "placeholders": {
             "name": {
@@ -5908,8 +5896,8 @@
             }
         }
     },
-    "adminReposRemove": "Eliminar",
-    "adminReposSaveFailed": "Failed to save repositories: {error}",
+    "adminReposRemove": "Retirar",
+    "adminReposSaveFailed": "Produciuse un erro ao gardar os repositorios: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
             "error": {
@@ -5996,14 +5984,14 @@
     "adminTaskCancelling": "Cancelando...",
     "adminTaskRunning": "Correndo...",
     "adminTaskNeverRun": "Nunca corras",
-    "adminTaskStop": "Pare",
+    "adminTaskStop": "Deter",
     "adminTaskRun": "Corre",
     "adminTaskDetailLastExecution": "Última Execución",
     "adminTaskDetailStarted": "Comezou",
     "adminTaskDetailEnded": "Rematou",
     "adminTaskDetailDuration": "Duración",
     "adminTaskDetailErrorLabel": "Erro:",
-    "adminTaskTriggerDaily": "Daily at {time}",
+    "adminTaskTriggerDaily": "Diariamente ás {time}",
     "@adminTaskTriggerDaily": {
         "placeholders": {
             "time": {
@@ -6011,7 +5999,7 @@
             }
         }
     },
-    "adminTaskTriggerWeekly": "Every {day} at {time}",
+    "adminTaskTriggerWeekly": "Cada {day} ás {time}",
     "@adminTaskTriggerWeekly": {
         "placeholders": {
             "day": {
@@ -6022,7 +6010,7 @@
             }
         }
     },
-    "adminTaskTriggerInterval": "Every {duration}",
+    "adminTaskTriggerInterval": "Cada {duration}",
     "@adminTaskTriggerInterval": {
         "placeholders": {
             "duration": {
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Cada 12 horas",
     "adminTaskTriggerEvery24Hours": "Cada 24 horas",
     "adminTaskTriggerEvery2Days": "Cada 2 días",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hora} other{{count} horas}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6055,7 +6043,7 @@
     "adminActivityToday": "Hoxe",
     "adminActivityYesterday": "Onte",
     "adminActivityOlder": "Máis vello",
-    "adminActivityDaysAgo": "{days}d ago",
+    "adminActivityDaysAgo": "hai {days} d",
     "@adminActivityDaysAgo": {
         "placeholders": {
             "days": {
@@ -6063,7 +6051,7 @@
             }
         }
     },
-    "adminActivityHoursAgo": "{hours}h ago",
+    "adminActivityHoursAgo": "hai {hours} h",
     "@adminActivityHoursAgo": {
         "placeholders": {
             "hours": {
@@ -6071,7 +6059,7 @@
             }
         }
     },
-    "adminActivityMinutesAgo": "{minutes}m ago",
+    "adminActivityMinutesAgo": "hai {minutes} min",
     "@adminActivityMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "agora",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} d",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Configura a xeración de imaxes de truco para buscar miniaturas de vista previa.",
+    "adminTrickplayDescription": "Configura a xeración de imaxes de Trickplay para as miniaturas de vista previa ao buscar.",
     "adminNetworkingPublicHttpsPort": "Porto HTTPS público",
     "adminNetworkingBaseUrl": "URL base",
-    "adminNetworkingBaseUrlHint": "p.ex. /aleta",
+    "adminNetworkingBaseUrlHint": "p.ex. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Camiño do certificado",
     "adminNetworkingRemoteIpFilter": "Filtro IP remoto",
@@ -6143,7 +6131,7 @@
     "adminTrickplayWidthResolutions": "Resolucións de ancho",
     "adminMetadataDefault": "Por defecto",
     "adminMetadataContentTypeUpdated": "Tipo de contido actualizado",
-    "adminMetadataContentTypeFailed": "Failed to update content type: {error}",
+    "adminMetadataContentTypeFailed": "Produciuse un erro ao actualizar o tipo de contido: {error}",
     "@adminMetadataContentTypeFailed": {
         "placeholders": {
             "error": {
@@ -6157,7 +6145,7 @@
     "adminGeneralServerName": "Nome do servidor",
     "adminSettingsLoadFailed": "Produciuse un erro ao cargar a configuración",
     "adminDiscover": "Descubrir",
-    "adminChannelMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminChannelMappingsUpdateFailed": "Produciuse un erro ao actualizar as asignacións: {error}",
     "@adminChannelMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -6165,7 +6153,7 @@
             }
         }
     },
-    "adminTimeLimitDuration": "Time limit: {duration}",
+    "adminTimeLimitDuration": "Límite de tempo: {duration}",
     "@adminTimeLimitDuration": {
         "placeholders": {
             "duration": {
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay require un servidor Jellyfin. O servidor actual non o admite.",
     "syncPlayGroupFallbackName": "Grupo SyncPlay",
     "syncPlayGroupTooltip": "Grupo SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participante} other {# participantes}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6202,7 +6190,7 @@
     "syncPlaySyncCurrentQueueSubtitle": "Substitúe a cola do grupo polo que se reproduce localmente",
     "syncPlayLeaveGroup": "Deixa o grupo",
     "syncPlayGroupQueue": "Fila de grupo",
-    "syncPlayQueueItemFallback": "Item {index}",
+    "syncPlayQueueItemFallback": "Elemento {index}",
     "@syncPlayQueueItemFallback": {
         "description": "Fallback title for SyncPlay queue item when media title is unavailable",
         "placeholders": {
@@ -6225,7 +6213,7 @@
     "syncPlayStateWaiting": "Agardando",
     "syncPlayStatePaused": "En pausa",
     "syncPlayStatePlaying": "Xogando",
-    "syncPlayUserJoinedGroup": "{userName} joined SyncPlay group",
+    "syncPlayUserJoinedGroup": "{userName} uniuse ao grupo de SyncPlay",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
         "placeholders": {
@@ -6234,7 +6222,7 @@
             }
         }
     },
-    "syncPlayUserLeftGroup": "{userName} left SyncPlay group",
+    "syncPlayUserLeftGroup": "{userName} saíu do grupo de SyncPlay",
     "@syncPlayUserLeftGroup": {
         "description": "Snackbar message when a user leaves a SyncPlay group",
         "placeholders": {
@@ -6245,7 +6233,7 @@
     },
     "syncPlayAccessDeniedTitle": "Acceso a SyncPlay denegado",
     "syncPlayAccessDeniedMessage": "Non tes acceso a un ou varios elementos deste grupo de SyncPlay. Pídalle ao propietario do grupo que verifique os permisos da biblioteca ou que elixa unha cola diferente.",
-    "syncPlaySyncingPlaybackToGroup": "Syncing playback to {groupName}",
+    "syncPlaySyncingPlaybackToGroup": "Sincronizando a reprodución con {groupName}",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Lembra a miña elección",
     "playHdr10Fallback": "Reproducir HDR10 alternativa",
     "requestTranscode": "Solicitar transcodificación",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# fila descuberta} other {# filas descubertas}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6287,7 +6275,7 @@
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
     "castRemotePlayback": "Reprodución remota",
-    "castControlFailed": "Cast control failed: {error}",
+    "castControlFailed": "Fallou o control de Cast: {error}",
     "@castControlFailed": {
         "placeholders": {
             "error": {
@@ -6295,7 +6283,7 @@
             }
         }
     },
-    "castKindControls": "{kind} Controls",
+    "castKindControls": "Controis de {kind}",
     "@castKindControls": {
         "placeholders": {
             "kind": {
@@ -6305,7 +6293,7 @@
     },
     "castDeviceVolume": "Volume do dispositivo",
     "castVolumeUnavailable": "Non dispoñible",
-    "castStopKind": "Stop {kind}",
+    "castStopKind": "Deter {kind}",
     "@castStopKind": {
         "placeholders": {
             "kind": {
@@ -6319,7 +6307,7 @@
     "pinSetTitle": "Establecer PIN",
     "pinEnterTitle": "Introduce o PIN",
     "pinReenterToConfirm": "Volve introducir o teu PIN para confirmar",
-    "pinEnterNDigit": "Enter a {length}-digit PIN",
+    "pinEnterNDigit": "Introduce un PIN de {length} díxitos",
     "@pinEnterNDigit": {
         "placeholders": {
             "length": {
@@ -6327,7 +6315,7 @@
             }
         }
     },
-    "pinEnterYourNDigit": "Enter your {length}-digit PIN",
+    "pinEnterYourNDigit": "Introduce o teu PIN de {length} díxitos",
     "@pinEnterYourNDigit": {
         "placeholders": {
             "length": {
@@ -6340,14 +6328,14 @@
     "pinForgot": "Esqueciches o PIN?",
     "pinClear": "Limpar",
     "pinBackspace": "Retroceso",
-    "quickConnectAuthorized": "Solicitude de conexión rápida autorizada.",
-    "quickConnectInvalidOrExpired": "O código de conexión rápida non é válido ou caducou.",
-    "quickConnectNotSupported": "A conexión rápida non é compatible neste servidor.",
-    "quickConnectAuthorizeFailed": "Produciuse un erro ao autorizar o código de conexión rápida.",
-    "quickConnectDisabled": "A conexión rápida está desactivada neste servidor.",
-    "quickConnectForbidden": "A túa conta non pode autorizar esta solicitude de conexión rápida.",
-    "quickConnectNotFound": "Non se atopou o código de conexión rápida. Proba cun novo código.",
-    "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
+    "quickConnectAuthorized": "Solicitude de Quick Connect autorizada.",
+    "quickConnectInvalidOrExpired": "O código de Quick Connect non é válido ou caducou.",
+    "quickConnectNotSupported": "Quick Connect non é compatible neste servidor.",
+    "quickConnectAuthorizeFailed": "Produciuse un erro ao autorizar o código de Quick Connect.",
+    "quickConnectDisabled": "Quick Connect está desactivado neste servidor.",
+    "quickConnectForbidden": "A túa conta non pode autorizar esta solicitude de Quick Connect.",
+    "quickConnectNotFound": "Non se atopou o código de Quick Connect. Proba cun novo código.",
+    "quickConnectFailedWithMessage": "Fallou Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6357,7 +6345,7 @@
     },
     "quickConnectEnterCode": "Introduce o código",
     "quickConnectAuthorize": "Autorizar",
-    "remoteCommandFailed": "Command failed: {error}",
+    "remoteCommandFailed": "Fallou o comando: {error}",
     "@remoteCommandFailed": {
         "placeholders": {
             "error": {
@@ -6373,7 +6361,7 @@
     "unknownItem": "Descoñecido",
     "remoteNothingPlaying": "Non se xoga nada nesta sesión",
     "castingStarted": "A emisión comezou no dispositivo seleccionado",
-    "castingFailed": "Failed to start casting: {error}",
+    "castingFailed": "Produciuse un erro ao iniciar o Cast: {error}",
     "@castingFailed": {
         "placeholders": {
             "error": {
@@ -6394,7 +6382,7 @@
     "trackActionAddToFavorites": "Engadir a Favoritos",
     "trackActionGoToAlbum": "Ir ao álbum",
     "trackActionGoToArtist": "Ir a Artista",
-    "trackActionDownloading": "Downloading {name}...",
+    "trackActionDownloading": "Descargando {name}...",
     "@trackActionDownloading": {
         "placeholders": {
             "name": {
@@ -6427,9 +6415,9 @@
     "upNext": "A continuación",
     "playNext": "Xoga a seguinte",
     "stillWatchingContent": "Detívose a reprodución. Aínda estás vendo?",
-    "stillWatchingStop": "Pare",
+    "stillWatchingStop": "Deter",
     "stillWatchingContinue": "Continuar",
-    "skipSegment": "Skip {segment}",
+    "skipSegment": "Omitir {segment}",
     "@skipSegment": {
         "placeholders": {
             "segment": {
@@ -6439,7 +6427,7 @@
     },
     "liveTv": "TV en directo",
     "continueWatchingAndNextUp": "Seguir vendo e seguinte",
-    "downloadingBatchProgress": "Downloading {current}/{total} — {fileName}",
+    "downloadingBatchProgress": "Descargando {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
             "current": {
@@ -6453,7 +6441,7 @@
             }
         }
     },
-    "downloadingFile": "Downloading {fileName}",
+    "downloadingFile": "Descargando {fileName}",
     "@downloadingFile": {
         "placeholders": {
             "fileName": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Consulta as actualizacións",
     "settingsCheckForUpdatesSubtitle": "Consulta a última versión de Moonfin",
     "settingsPoweredByFlutter": "Impulsado por Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# aviso de licenza} other {# avisos de licenza}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6807,23 +6795,11 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC estéreo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Paso directo (avanzado)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "Passthrough do códec",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
@@ -6835,11 +6811,11 @@
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "Passthrough EAC3 JOC (Atmos)",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "Passthrough DTS Core",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6847,11 +6823,11 @@
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "Passthrough TrueHD",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "Passthrough TrueHD Atmos",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6859,31 +6835,31 @@
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "Envía o bitstream Dolby Atmos sobre EAC3 (JOC) ao decodificador externo.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "Envía o bitstream DTS-HD MA (inclúe o DTS core) ao decodificador externo.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Envía o bitstream Dolby TrueHD con metadatos Atmos ao decodificador externo.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+    "settingsDetectedAudioCapabilities": "Capacidades de audio detectadas",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+    "settingsDetectedAudioCapabilitiesUnavailable": "Aínda non hai ningunha captura de capacidades en tempo de execución.",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "Route",
+    "settingsAudioRouteLabel": "Ruta",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
-    "settingsAudioDecodeLabel": "Decode",
+    "settingsAudioDecodeLabel": "Decodificación",
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
@@ -6891,7 +6867,7 @@
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD audio route",
+    "settingsAudioHdRoute": "Ruta de audio HD",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6911,11 +6887,11 @@
     "@settingsAudioRouteBluetooth": {
         "description": "Audio route type Bluetooth"
     },
-    "settingsAudioRouteSpeaker": "Speaker",
+    "settingsAudioRouteSpeaker": "Altofalante",
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} can. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6924,114 +6900,114 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "Diagnostics",
+    "settingsAudioDiagnostics": "Diagnóstico",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "Video Level",
+    "settingsAudioDiagnosticsVideoLevel": "Nivel de vídeo",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "Video Range",
+    "settingsAudioDiagnosticsVideoRange": "Rango de vídeo",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
-    "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+    "settingsAudioDiagnosticsSubtitleCodec": "Códec de subtítulos",
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "Códecs de audio permitidos",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "Códecs de audio HLS MPEG-TS",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "Códecs de audio HLS fMP4",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "passthrough audio-spdif",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+    "settingsAudioDiagnosticsActiveAudioRoute": "Ruta de audio activa",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "Compatibilidade de audio HD da ruta",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
-    "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
-    "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
-    "autoplayNextEpisode": "Autoplay Next Episode",
+    "settingsPlaybackEngineMedia3Legacy": "Media3 (antigo)",
+    "settingsPlaybackEngineMpvRecommended": "mpv (recomendado)",
+    "autoplayNextEpisode": "Reproducir automaticamente o seguinte episodio",
     "@autoplayNextEpisode": {
         "description": "Setting title: automatically start the next episode"
     },
-    "autoplayNextEpisodeSubtitle": "Automatically play the next episode when available.",
+    "autoplayNextEpisodeSubtitle": "Reproduce automaticamente o seguinte episodio cando estea dispoñible.",
     "@autoplayNextEpisodeSubtitle": {
         "description": "Setting subtitle for autoplay next episode"
     },
-    "skipSilenceTitle": "Skip silence",
+    "skipSilenceTitle": "Omitir os silencios",
     "@skipSilenceTitle": {
         "description": "Setting title: skip silent audio segments during playback"
     },
-    "skipSilenceSubtitle": "Automatically skip silent audio segments when supported by the stream.",
+    "skipSilenceSubtitle": "Omite automaticamente os segmentos de audio silenciosos cando o fluxo o admita.",
     "@skipSilenceSubtitle": {
         "description": "Setting subtitle for skip silence"
     },
-    "allowExternalAudioEffectsTitle": "Allow external audio effects",
+    "allowExternalAudioEffectsTitle": "Permitir efectos de audio externos",
     "@allowExternalAudioEffectsTitle": {
         "description": "Setting title: allow equalizer apps to attach to Media3"
     },
-    "allowExternalAudioEffectsSubtitle": "Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.",
+    "allowExternalAudioEffectsSubtitle": "Permite que as aplicacións de ecualización e efectos (p. ex. Wavelet) se conecten ás sesións de reprodución de Media3.",
     "@allowExternalAudioEffectsSubtitle": {
         "description": "Setting subtitle for external audio effects"
     },
-    "disableTunnelingTitle": "Disable tunneling",
+    "disableTunnelingTitle": "Desactivar a tunelización",
     "@disableTunnelingTitle": {
         "description": "Setting title: force non-tunneled video playback"
     },
-    "disableTunnelingSubtitle": "Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.",
+    "disableTunnelingSubtitle": "Forza a reprodución sen tunelización. Útil en dispositivos con descontinuidades de audio/vídeo ao tunelizar.",
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+    "mapDolbyVisionP7Title": "Asignar o perfil 7 de Dolby Vision a HEVC",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
-    "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+    "mapDolbyVisionP7Subtitle": "Reproduce os fluxos do perfil 7 de Dolby Vision como HEVC compatible con HDR10 en dispositivos sen Dolby Vision.",
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
-    "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+    "subtitlesUseEmbeddedStyles": "Usar os estilos de subtítulos incrustados",
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
-    "subtitlesUseEmbeddedStylesSubtitle": "Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.",
+    "subtitlesUseEmbeddedStylesSubtitle": "Aplica as cores, os tipos de letra e a posición incrustados na pista de subtítulos. Desactívao para usar as túas preferencias de estilo.",
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
-    "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+    "subtitlesUseEmbeddedFontSizes": "Usar os tamaños de letra dos subtítulos incrustados",
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
-    "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
+    "subtitlesUseEmbeddedFontSizesSubtitle": "Aplica as suxestións de tamaño de letra incrustadas na pista de subtítulos. Desactívao para usar o tamaño dos subtítulos das túas preferencias de estilo.",
     "@subtitlesUseEmbeddedFontSizesSubtitle": {
         "description": "Setting subtitle for embedded font sizes toggle"
     },
-    "useDetailedSubHeadings": "Use Detailed Sub-Headings",
+    "useDetailedSubHeadings": "Usar subcabeceiras detalladas",
     "@useDetailedSubHeadings": {
         "description": "Label for setting to toggle detailed or minimal subrow on library pages"
     },
-    "useDetailedSubHeadingsDescription": "Show detailed or minimal subrow on Library pages.",
+    "useDetailedSubHeadingsDescription": "Mostra unha subfila detallada ou mínima nas páxinas de Biblioteca.",
     "@useDetailedSubHeadingsDescription": {
         "description": "Subtitle for the use detailed sub headings setting"
     },
-    "savedThemesDeleteDialogTitle": "Delete saved theme?",
-    "savedThemesDeleteDialogMessage": "Remove \"{themeName}\" from this device cache?",
+    "savedThemesDeleteDialogTitle": "Eliminar o tema gardado?",
+    "savedThemesDeleteDialogMessage": "Quitar \"{themeName}\" da caché deste dispositivo?",
     "@savedThemesDeleteDialogMessage": {
         "description": "Confirmation message for deleting a saved custom theme",
         "placeholders": {
@@ -7040,7 +7016,7 @@
             }
         }
     },
-    "savedThemesDeletedMessage": "Deleted \"{themeName}\" from this device.",
+    "savedThemesDeletedMessage": "Eliminouse \"{themeName}\" deste dispositivo.",
     "@savedThemesDeletedMessage": {
         "description": "Status message shown after deleting a saved custom theme",
         "placeholders": {
@@ -7049,7 +7025,7 @@
             }
         }
     },
-    "savedThemesDeleteFailedMessage": "Could not delete \"{themeName}\".",
+    "savedThemesDeleteFailedMessage": "Non foi posible eliminar \"{themeName}\".",
     "@savedThemesDeleteFailedMessage": {
         "description": "Status message shown when deleting a saved custom theme fails",
         "placeholders": {
@@ -7058,10 +7034,10 @@
             }
         }
     },
-    "savedThemesTitle": "Saved themes",
-    "savedThemesDescription": "These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.",
-    "savedThemesEmpty": "No saved themes were found for this server.",
-    "savedThemesCurrentThemeId": "{themeId} • Currently active",
+    "savedThemesTitle": "Temas gardados",
+    "savedThemesDescription": "Estes son os temas descargados desde o complemento de Moonfin para o servidor actual. Ao eliminalos só se quita esta copia local.",
+    "savedThemesEmpty": "Non se atopou ningún tema gardado para este servidor.",
+    "savedThemesCurrentThemeId": "{themeId} • Activo actualmente",
     "@savedThemesCurrentThemeId": {
         "description": "Subtitle showing the saved theme id when it is currently selected",
         "placeholders": {
@@ -7070,65 +7046,65 @@
             }
         }
     },
-    "savedThemesDeleteTooltip": "Delete saved theme",
-    "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "themeEditor": "Theme Editor",
-    "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
-    "homeScreen": "Home Screen",
-    "bottomBar": "Bottom Bar",
-    "homeRowsStyleClassic": "Classic",
-    "homeRowsStyleModern": "Modern",
-    "homeRowsSection": "Home Rows",
+    "savedThemesDeleteTooltip": "Eliminar o tema gardado",
+    "savedThemesManageSubtitle": "Xestiona os temas do complemento descargados neste dispositivo",
+    "themeEditor": "Editor de temas",
+    "themeEditorSubtitle": "Abre o Editor de temas de Moonfin no teu navegador",
+    "homeScreen": "Pantalla de inicio",
+    "bottomBar": "Barra inferior",
+    "homeRowsStyleClassic": "Clásico",
+    "homeRowsStyleModern": "Moderno",
+    "homeRowsSection": "Filas de inicio",
     "rowsType": "Rows Type",
-    "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
-    "displayFavoritesRows": "Display Favorites Rows",
-    "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
-    "favoritesRowSorting": "Favorites Row Sorting",
-    "favoritesRowSortingDescription": "Sort Favorites rows by date added, release date, alphabetically, and more.",
-    "displayCollectionsRows": "Display Collections Rows",
-    "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
-    "collectionsRowSorting": "Collections Row Sorting",
-    "collectionsRowSortingDescription": "Sort Collections rows by date added, release date, alphabetically, and more.",
-    "displayGenresRows": "Display Genres Rows",
-    "displayGenresRowsSubtitle": "Show Genres rows in Home Sections.",
-    "genresRowSorting": "Genres Row Sorting",
-    "genresRowSortingDescription": "Sort Genres rows by date added, release date, alphabetically, and more.",
-    "genresRowItems": "Genres Row Items",
-    "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
-    "appearance": "Appearance",
+    "rowsTypeDescription": "Clásico mantén o tipo de imaxe e a superposición de información por fila. Moderno usa filas de retrato a imaxe de fondo.",
+    "displayFavoritesRows": "Mostrar as filas de favoritos",
+    "displayFavoritesRowsSubtitle": "Mostra as filas de películas favoritas, series e outras filas de favoritos nas seccións de inicio.",
+    "favoritesRowSorting": "Ordenación das filas de favoritos",
+    "favoritesRowSortingDescription": "Ordena as filas de favoritos por data de engadido, data de lanzamento, alfabeticamente e máis.",
+    "displayCollectionsRows": "Mostrar as filas de coleccións",
+    "displayCollectionsRowsSubtitle": "Mostra as filas de coleccións nas seccións de inicio.",
+    "collectionsRowSorting": "Ordenación das filas de coleccións",
+    "collectionsRowSortingDescription": "Ordena as filas de coleccións por data de engadido, data de lanzamento, alfabeticamente e máis.",
+    "displayGenresRows": "Mostrar as filas de xéneros",
+    "displayGenresRowsSubtitle": "Mostra as filas de xéneros nas seccións de inicio.",
+    "genresRowSorting": "Ordenación das filas de xéneros",
+    "genresRowSortingDescription": "Ordena as filas de xéneros por data de engadido, data de lanzamento, alfabeticamente e máis.",
+    "genresRowItems": "Elementos das filas de xéneros",
+    "genresRowItemsDescription": "Mostra películas, series ou ambas nas filas de xéneros.",
+    "appearance": "Aparencia",
     "cardSize": "Card Size",
-    "externalPlayerApp": "External player app",
-    "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
-    "loadingInstalledPlayers": "Loading installed players...",
-    "connection": "Connection",
-    "audioTranscodeTarget": "Audio Transcode Target",
+    "externalPlayerApp": "Aplicación de reprodutor externo",
+    "externalPlayerAskEachTimeSubtitle": "Mostra o selector de aplicacións cando comece a reprodución.",
+    "loadingInstalledPlayers": "Cargando os reprodutores instalados...",
+    "connection": "Conexión",
+    "audioTranscodeTarget": "Destino da transcodificación de audio",
     "passthrough": "Passthrough",
-    "supportedOnThisDevice": "Supported on this device",
-    "notSupportedOnThisDevice": "Not Supported on this device",
-    "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
-    "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) to external decoder.",
-    "settingsAudioTrueHdJocPassthrough": "TrueHD with Atmos (JOC) Passthrough",
-    "mediaPlayerBehavior": "Media Player Behavior",
-    "playbackEnhancements": "Playback Enhancements",
-    "alwaysOn": "Always on.",
-    "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
-    "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
-    "playerRouting": "Player Routing",
-    "preferSoftwareDecoders": "Prefer software decoders",
-    "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
+    "supportedOnThisDevice": "Compatible con este dispositivo",
+    "notSupportedOnThisDevice": "Non compatible con este dispositivo",
+    "settingsAudioDtsXPassthrough": "Passthrough DTS:X (DTS UHD)",
+    "settingsAudioBitstreamDtsXToExternalDecoder": "Envía o bitstream DTS:X (DTS UHD) ao decodificador externo.",
+    "settingsAudioTrueHdJocPassthrough": "Passthrough TrueHD con Atmos (JOC)",
+    "mediaPlayerBehavior": "Comportamento do reprodutor multimedia",
+    "playbackEnhancements": "Melloras da reprodución",
+    "alwaysOn": "Sempre activo.",
+    "replaceSkipOutroWithNextUpDisplay": "Substituír Omitir créditos pola vista de A continuación",
+    "replaceSkipOutroWithNextUpDisplaySubtitle": "Mostra a superposición de A continuación en vez do botón Omitir créditos.",
+    "playerRouting": "Encamiñamento do reprodutor",
+    "preferSoftwareDecoders": "Preferir os decodificadores por software",
+    "preferSoftwareDecodersSubtitle": "Usa FFmpeg (audio) e libgav1 (AV1) antes que os decodificadores por hardware. Desactívao se falla o passthrough de audio por HDMI.",
     "useExternalPlayer": "Use external player",
-    "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
-    "automaticQueuing": "Automatic Queuing",
-    "preferSdhSubtitles": "Prefer SDH subtitles",
-    "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
-    "webDiagnostics": "Web diagnostics",
-    "webDiagnosticsTitle": "Moonfin Web Diagnostics",
-    "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",
-    "webDiagnosticsDetectedMixedContentFailure": "Detected Mixed-Content Failure",
-    "webDiagnosticsDetectedCorsPreflightFailure": "Detected CORS/Preflight Failure",
-    "webDiagnosticsMixedContentFailureBody": "Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.",
-    "webDiagnosticsCorsFailureBody": "Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.",
-    "webDiagnosticsTargetUrl": "Target URL: {url}",
+    "useExternalPlayerSubtitle": "Abre a reprodución de vídeo na aplicación externa seleccionada en Android TV.",
+    "automaticQueuing": "Cola automática",
+    "preferSdhSubtitles": "Preferir os subtítulos SDH",
+    "preferSdhSubtitlesSubtitle": "Prioriza as pistas de subtítulos SDH/CC ao seleccionar automaticamente.",
+    "webDiagnostics": "Diagnóstico web",
+    "webDiagnosticsTitle": "Diagnóstico web de Moonfin",
+    "webDiagnosticsIntro": "Usa esta páxina para diagnosticar problemas de conectividade do navegador (CORS, contido mixto e configuración de descubrimento).",
+    "webDiagnosticsDetectedMixedContentFailure": "Detectouse un fallo de contido mixto",
+    "webDiagnosticsDetectedCorsPreflightFailure": "Detectouse un fallo de CORS/preflight",
+    "webDiagnosticsMixedContentFailureBody": "Moonfin detectou unha páxina HTTPS que tenta chamar a un URL de servidor HTTP. Os navegadores bloquean esta solicitude antes de que chegue ao teu servidor.",
+    "webDiagnosticsCorsFailureBody": "Moonfin detectou un fallo de solicitude a nivel de navegador que adoita deberse á falta de cabeceiras CORS ou de preflight no servidor multimedia.",
+    "webDiagnosticsTargetUrl": "URL de destino: {url}",
     "@webDiagnosticsTargetUrl": {
         "description": "Target URL shown in diagnostics summary",
         "placeholders": {
@@ -7137,7 +7113,7 @@
             }
         }
     },
-    "webDiagnosticsDetail": "Detail: {detail}",
+    "webDiagnosticsDetail": "Detalle: {detail}",
     "@webDiagnosticsDetail": {
         "description": "Error detail shown in diagnostics summary",
         "placeholders": {
@@ -7146,77 +7122,77 @@
             }
         }
     },
-    "webDiagnosticsCurrentRuntimeContext": "Current Runtime Context",
-    "webDiagnosticsOrigin": "Origin",
-    "webDiagnosticsScheme": "Scheme",
-    "webDiagnosticsPluginMode": "Plugin Mode",
-    "webDiagnosticsWebRtcScan": "WebRTC Scan",
-    "webDiagnosticsForcedServerUrl": "Forced Server URL",
-    "webDiagnosticsDefaultServerUrl": "Default Server URL",
-    "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
-    "notConfigured": "not configured",
-    "webDiagnosticsMixedContent": "Mixed Content",
-    "webDiagnosticsMixedContentDetected": "This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.",
-    "webDiagnosticsMixedContentFix": "Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.",
-    "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
-    "webDiagnosticsCorsChecklist": "CORS Checklist",
-    "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
-    "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
-    "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
-    "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
-    "note": "Note",
-    "webDiagnosticsNonWebNote": "This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.",
-    "backToServerSelect": "Back To Server Select",
-    "signOutAllUsers": "Sign Out All Users",
-    "voiceSearchPermissionPermanentlyDenied": "Microphone permission is permanently denied. Enable it in system settings.",
-    "voiceSearchPermissionRequired": "Microphone permission is required for voice search.",
-    "voiceSearchNoMatch": "Did not catch that. Try again.",
-    "voiceSearchNoSpeechDetected": "No speech detected.",
-    "voiceSearchMicrophoneError": "Microphone error.",
-    "voiceSearchNeedsInternet": "Voice search needs internet.",
-    "voiceSearchServiceBusy": "Voice service is busy. Try again.",
-    "microphonePermissionPermanentlyDenied": "Microphone permission is permanently denied.",
-    "microphonePermissionDenied": "Microphone permission is denied.",
-    "speechRecognitionUnavailable": "Speech recognition is unavailable on this device.",
-    "openIosRoutePicker": "Open iOS route picker",
-    "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
-    "videos": "Videos",
-    "trailers": "Trailers",
-    "programs": "Programs",
-    "songs": "Songs",
-    "photoAlbums": "Photo Albums",
-    "photos": "Photos",
-    "people": "People",
-    "recentlyReleasedEpisodes": "Recently Released Episodes",
-    "watchAgain": "Watch Again",
-    "guestAppearances": "Guest Appearances",
-    "appearancesSeerr": "Appearances (Seerr)",
-    "watchWithGroup": "Watch with group",
-    "errors": "Errors",
-    "warnings": "Warnings",
-    "disk": "Disk",
-    "openInBrowser": "Open in Browser",
-    "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
-    "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
-    "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
-    "internal": "Internal",
-    "idle": "Idle",
+    "webDiagnosticsCurrentRuntimeContext": "Contexto de execución actual",
+    "webDiagnosticsOrigin": "Orixe",
+    "webDiagnosticsScheme": "Esquema",
+    "webDiagnosticsPluginMode": "Modo de complemento",
+    "webDiagnosticsWebRtcScan": "Exploración WebRTC",
+    "webDiagnosticsForcedServerUrl": "URL de servidor forzado",
+    "webDiagnosticsDefaultServerUrl": "URL de servidor predeterminado",
+    "webDiagnosticsDiscoveryProxyUrl": "URL do proxy de descubrimento",
+    "notConfigured": "non configurado",
+    "webDiagnosticsMixedContent": "Contido mixto",
+    "webDiagnosticsMixedContentDetected": "Esta páxina cárgase por HTTPS, pero un ou máis URL configurados son HTTP. Os navegadores bloquean que as páxinas HTTPS chamen a API HTTP.",
+    "webDiagnosticsMixedContentFix": "Solución: serve o teu servidor multimedia ou o punto final do proxy por HTTPS, ou carga Moonfin por HTTP só en redes locais de confianza.",
+    "webDiagnosticsNoMixedContentDetected": "Non se detectou ningunha configuración obvia de contido mixto na configuración de execución actual.",
+    "webDiagnosticsCorsChecklist": "Lista de comprobación de CORS",
+    "webDiagnosticsCorsChecklistItem1": "• Permite a orixe do navegador en Access-Control-Allow-Origin.",
+    "webDiagnosticsCorsChecklistItem2": "• Inclúe Authorization, X-Emby-Authorization e X-Emby-Token en Access-Control-Allow-Headers.",
+    "webDiagnosticsCorsChecklistItem3": "• Expón Content-Range e Accept-Ranges para o comportamento de transmisión e busca.",
+    "webDiagnosticsCorsChecklistItem4": "• Devolve 204 ás solicitudes de preflight OPTIONS.",
+    "webDiagnosticsHeaderSnippetTitle": "Exemplo de fragmento de cabeceiras (estilo nginx)",
+    "note": "Nota",
+    "webDiagnosticsNonWebNote": "Esta ruta de diagnóstico está pensada para compilacións web. Se ves isto noutra plataforma, é posible que estas comprobacións non se apliquen.",
+    "backToServerSelect": "Volver á selección de servidor",
+    "signOutAllUsers": "Pechar a sesión de todos os usuarios",
+    "voiceSearchPermissionPermanentlyDenied": "O permiso do micrófono está denegado permanentemente. Actívao na configuración do sistema.",
+    "voiceSearchPermissionRequired": "Requírese o permiso do micrófono para a busca por voz.",
+    "voiceSearchNoMatch": "Non se entendeu. Téntao de novo.",
+    "voiceSearchNoSpeechDetected": "Non se detectou ningunha fala.",
+    "voiceSearchMicrophoneError": "Erro do micrófono.",
+    "voiceSearchNeedsInternet": "A busca por voz precisa conexión a internet.",
+    "voiceSearchServiceBusy": "O servizo de voz está ocupado. Téntao de novo.",
+    "microphonePermissionPermanentlyDenied": "O permiso do micrófono está denegado permanentemente.",
+    "microphonePermissionDenied": "O permiso do micrófono está denegado.",
+    "speechRecognitionUnavailable": "O recoñecemento de voz non está dispoñible neste dispositivo.",
+    "openIosRoutePicker": "Abrir o selector de rutas de iOS",
+    "airPlayRoutePickerUnavailable": "O selector de rutas de AirPlay non está dispoñible neste dispositivo.",
+    "videos": "Vídeos",
+    "trailers": "Tráilers",
+    "programs": "Programas",
+    "songs": "Cancións",
+    "photoAlbums": "Álbums de fotos",
+    "photos": "Fotos",
+    "people": "Persoas",
+    "recentlyReleasedEpisodes": "Episodios lanzados recentemente",
+    "watchAgain": "Ver de novo",
+    "guestAppearances": "Aparicións como convidado",
+    "appearancesSeerr": "Aparicións (Seerr)",
+    "watchWithGroup": "Ver co grupo",
+    "errors": "Erros",
+    "warnings": "Avisos",
+    "disk": "Disco",
+    "openInBrowser": "Abrir no navegador",
+    "embeddedBrowserNotAvailable": "O navegador incrustado non está dispoñible nesta plataforma.",
+    "adminRestartServerConfirmation": "Seguro que queres reiniciar o servidor?",
+    "adminShutdownServerConfirmation": "Seguro que queres apagar o servidor? Terás que reinicialo manualmente.",
+    "internal": "Interno",
+    "idle": "Inactivo",
     "os": "OS",
-    "adminNoUsersFound": "No users found",
-    "adminNoUsersMatchSearch": "No users match your search",
-    "adminNoDevicesFound": "No devices found",
-    "adminNoDevicesMatchCurrentFilters": "No devices match the current filters",
-    "passwordSet": "Password set",
-    "noPasswordConfigured": "No password configured",
-    "remoteAccess": "Remote Access",
-    "localOnly": "Local Only",
-    "adminMediaAnalyticsLoadFailed": "Failed to load media analytics",
-    "analyticsCombinedAcrossLibraries": "Combined analytics across all media libraries.",
-    "analyticsTopArtists": "Top Artists",
-    "analyticsTopAuthors": "Top Authors",
-    "analyticsTopContributors": "Top Contributors",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "adminNoUsersFound": "Non se atopou ningún usuario",
+    "adminNoUsersMatchSearch": "Ningún usuario coincide coa túa busca",
+    "adminNoDevicesFound": "Non se atopou ningún dispositivo",
+    "adminNoDevicesMatchCurrentFilters": "Ningún dispositivo coincide cos filtros actuais",
+    "passwordSet": "Contrasinal definido",
+    "noPasswordConfigured": "Non hai ningún contrasinal configurado",
+    "remoteAccess": "Acceso remoto",
+    "localOnly": "Só local",
+    "adminMediaAnalyticsLoadFailed": "Produciuse un erro ao cargar a analítica multimedia",
+    "analyticsCombinedAcrossLibraries": "Analítica combinada de todas as bibliotecas multimedia.",
+    "analyticsTopArtists": "Artistas principais",
+    "analyticsTopAuthors": "Autores principais",
+    "analyticsTopContributors": "Colaboradores principais",
+    "analyticsLibrariesCount": "{count, plural, =1{1 biblioteca} other{{count} bibliotecas}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7224,20 +7200,20 @@
             }
         }
     },
-    "analyticsNoIndexedMediaTotals": "No indexed media totals are available for this selection yet.",
-    "analyticsLibraryDetails": "Library Details",
-    "analyticsLibraryBreakdown": "Library Breakdown",
-    "analyticsNoLibrariesAvailable": "No libraries are available.",
-    "adminServerAdministrationTitle": "Server Administration",
-    "adminServerPathData": "Data",
-    "adminServerPathImageCache": "Image Cache",
-    "adminServerPathCache": "Cache",
-    "adminServerPathLogs": "Logs",
-    "adminServerPathMetadata": "Metadata",
-    "adminServerPathTranscode": "Transcode",
+    "analyticsNoIndexedMediaTotals": "Aínda non hai totais de contido indexado para esta selección.",
+    "analyticsLibraryDetails": "Detalles da biblioteca",
+    "analyticsLibraryBreakdown": "Distribución por biblioteca",
+    "analyticsNoLibrariesAvailable": "Non hai ningunha biblioteca dispoñible.",
+    "adminServerAdministrationTitle": "Administración do servidor",
+    "adminServerPathData": "Datos",
+    "adminServerPathImageCache": "Caché de imaxes",
+    "adminServerPathCache": "Caché",
+    "adminServerPathLogs": "Rexistros",
+    "adminServerPathMetadata": "Metadatos",
+    "adminServerPathTranscode": "Transcodificación",
     "adminServerPathWeb": "Web",
-    "adminNoServerPathsReturned": "No server paths returned by this server.",
-    "adminPercentUsed": "{percent}% used",
+    "adminNoServerPathsReturned": "Este servidor non devolveu ningún camiño.",
+    "adminPercentUsed": "{percent}% usado",
     "@adminPercentUsed": {
         "placeholders": {
             "percent": {
@@ -7245,24 +7221,24 @@
             }
         }
     },
-    "userActivity": "User Activity",
-    "systemEvents": "System Events",
-    "needsAttention": "Needs Attention",
-    "adminDrawerSectionServer": "Server",
-    "adminDrawerSectionPlayback": "Playback",
-    "adminDrawerSectionDevices": "Devices",
-    "adminDrawerSectionAdvanced": "Advanced",
-    "adminDrawerSectionPlugins": "Plugins",
-    "adminDrawerSectionLiveTv": "Live TV",
-    "homeVideos": "Home Videos",
-    "mixedContent": "Mixed Content",
-    "homeVideosAndPhotos": "Home Videos & Photos",
-    "mixedMoviesAndShows": "Mixed Movies & Shows",
+    "userActivity": "Actividade dos usuarios",
+    "systemEvents": "Eventos do sistema",
+    "needsAttention": "Precisa atención",
+    "adminDrawerSectionServer": "Servidor",
+    "adminDrawerSectionPlayback": "Reprodución",
+    "adminDrawerSectionDevices": "Dispositivos",
+    "adminDrawerSectionAdvanced": "Avanzado",
+    "adminDrawerSectionPlugins": "Complementos",
+    "adminDrawerSectionLiveTv": "TV en directo",
+    "homeVideos": "Vídeos caseiros",
+    "mixedContent": "Contido mixto",
+    "homeVideosAndPhotos": "Vídeos caseiros e fotos",
+    "mixedMoviesAndShows": "Películas e series mixtas",
     "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
-    "noRecordingsFound": "No recordings found",
-    "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+    "noRecordingsFound": "Non se atopou ningunha gravación",
+    "noImagePagesFoundInArchive": "Non se atoparon páxinas de imaxe no arquivo .{extension}.",
     "@noImagePagesFoundInArchive": {
         "placeholders": {
             "extension": {
@@ -7270,7 +7246,7 @@
             }
         }
     },
-    "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+    "embeddedRendererFailed": "Fallou o renderizador incrustado ({code}): {description}",
     "@embeddedRendererFailed": {
         "placeholders": {
             "code": {
@@ -7281,7 +7257,7 @@
             }
         }
     },
-    "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+    "epubRendererFailed": "Fallou o renderizador de EPUB ({code}): {description}",
     "@epubRendererFailed": {
         "placeholders": {
             "code": {
@@ -7292,7 +7268,7 @@
             }
         }
     },
-    "missingLocalFileForReader": "Missing local file for reader: {uri}",
+    "missingLocalFileForReader": "Falta o ficheiro local para o lector: {uri}",
     "@missingLocalFileForReader": {
         "placeholders": {
             "uri": {
@@ -7300,7 +7276,7 @@
             }
         }
     },
-    "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+    "httpStatusWhileOpeningBookData": "HTTP {status} ao abrir os datos do libro desde {uri}",
     "@httpStatusWhileOpeningBookData": {
         "placeholders": {
             "status": {
@@ -7311,8 +7287,8 @@
             }
         }
     },
-    "noReadableBookEndpointAvailable": "No readable book endpoint available",
-    "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+    "noReadableBookEndpointAvailable": "Non hai ningún punto final de libro lexible dispoñible",
+    "unsupportedComicArchiveFormat": "Formato de arquivo de banda deseñada non admitido: .{extension}",
     "@unsupportedComicArchiveFormat": {
         "placeholders": {
             "extension": {
@@ -7320,18 +7296,1715 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
-    "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
-    "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
-    "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
-    "closeGenrePanel": "Close genre panel",
-    "loadingShuffle": "Loading shuffle...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
-    "autoHdrSwitching": "Auto HDR Switching",
-    "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
-    "whenFullscreen": "When fullscreen",
-    "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "cbrExtractionPluginUnavailable": "O complemento de extracción de CBR non está dispoñible nesta plataforma.",
+    "failedToExtractCbrArchive": "Produciuse un erro ao extraer o arquivo .cbr.",
+    "cb7ExtractionUnavailable": "A extracción de CB7 non está dispoñible nesta plataforma.",
+    "cb7ExtractionPluginUnavailable": "O complemento de extracción de CB7 non está dispoñible nesta plataforma.",
+    "closeGenrePanel": "Pechar o panel de xéneros",
+    "loadingShuffle": "Cargando a reprodución aleatoria...",
+    "libraryShuffleLabel": "ALEATORIO POR BIBLIOTECA",
+    "randomShuffleLabel": "ALEATORIO TOTAL",
+    "genresShuffleLabel": "ALEATORIO POR XÉNEROS",
+    "autoHdrSwitching": "Cambio automático a HDR",
+    "autoHdrSwitchingDescription": "Activa automaticamente o HDR na reprodución de vídeo HDR e restaura o modo de pantalla ao saír.",
+    "whenFullscreen": "En pantalla completa",
+    "transcodingLimits": "Límites de transcodificación",
+    "settingsSupportMoonfinSubtitle": "Invita a un café ao desenvolvedor",
+    "accountPreferences": "PREFERENCIAS DA CONTA",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Idioma da interface",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Predeterminado do sistema",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Baleiro",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Estilo da pantalla de detalles",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Clásico é a disposición centrada orixinal de Moonfin. Moderno é unha disposición cinematográfica adaptable.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Clásico",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Moderno",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Pestanas despregadas",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Mostra automaticamente o contido das pestanas mentres navegas por elas. Desactívao para abrir e pechar cada pestana manualmente.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Mostrar os detalles técnicos?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Mostra o códec, a resolución e a información do fluxo no resumo do báner",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Sistema de recomendacións",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Usa o algoritmo local de recomendacións de Moonfin (Recomendacións Moonfin) ou as métricas de similitude en liña de TMDb. Nota: as recomendacións en liña requiren a integración con Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Recomendacións Moonfin",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "Similitude de TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Aplicar o límite de clasificación parental?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Limita as suxestións de Recomendacións Moonfin segundo a clasificación parental do contido de destino",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Estilo da interface",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automático adáptase ao teu dispositivo. Escolle Apple ou Material para forzar un aspecto concreto.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automático",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Calidade de Glass",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Auto escolle o mellor efecto Glass para este dispositivo. Completo forza un desenfoque real; Reducido usa un efecto lixeiro que aforra enerxía da GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Auto",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Completo",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Reducido",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Tema personalizado",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Os temas personalizados modifican os elementos visuais de todo Moonfin. Escolle unha destas opcións segundo o teu estilo.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Estilo Liquid Glass cun fondo de degradado en movemento, superficies esmeriladas e acento azul Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Estilo retro de pixel art cunha paleta contundente, bordos cadrados, sombras marcadas e unha tipografía de píxeles",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Menú",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Pausado",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Gardar estado",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Xogos",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Cargar estado",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Avance rápido",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Configuración do emulador",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Este núcleo non ten opcións axustables.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Mantén premido para abrir o menú",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Aínda non se poden executar xogos neste dispositivo.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Últimos libros",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Últimos audiolibros",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 libro} other{{count} libros}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Libro",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audiolibro",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% lido",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Quedan {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Ler",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Escoitar",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Elementos",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Extras",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Tras as cámaras",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Escenas eliminadas",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Reportaxes",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Entrevistas",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Escenas",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Curtametraxes",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Quedan {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Remata en {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "DIRECTORES",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "GUIONISTA",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Reproducir toda a música en modo aleatorio",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Inicia sesión en Moonfin no teu teléfono",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Non se pode conectar co teu servidor",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "A continuación: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes} min restantes",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours} h restantes",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} h {minutes} min restantes",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Páxinas de detalle, filas de inicio e volume",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Música do tema en bucle",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Repite a pista en vez de reproducila unha soa vez",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Roda do rato",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Escolle o que fai desprazar a roda do rato sobre o vídeo durante a reprodución.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Desactivado",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Buscar (adiante / atrás)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volume",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volume",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Idioma de audio alternativo",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Preferir a pista de audio predeterminada",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Prefire a pista de audio orixinal en vez da dobraxe localizada.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Preferir as pistas de audiodescrición",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Prefire as pistas de audiodescrición en vez das normais.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transcodificación (audio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Transmisión directa (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transcodificación (taxa de bits ou resolución)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transcodificación (vídeo e audio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transcodificación (vídeo)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Escolle como se decodifica o audio. AVR Passthrough envía os fluxos Dolby/DTS en bruto ao teu receptor; Auto ou Downmix decodifican localmente.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Escolle o formato de destino para transcodificar o audio multicanle cando o fluxo de orixe non se pode reproducir de forma nativa nin transmitir directamente.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Detección automática\n(Recomendado)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Predeterminado)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sen perdas)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Só estéreo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Eficiente)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Sen perdas)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Máximo de canles de audio",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Configura o número máximo de canles da túa configuración de audio. Os fluxos multicanle que superen este límite reduciranse (downmix) ou transcodificaranse.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Detección automática\n(Predeterminado do hardware)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Estéreo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Cuadrafónico",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Auriculares",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Modo de subtítulos",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Marcados",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Sempre",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Estranxeiro",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Forzados",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Reproduce as pistas marcadas internamente nos metadatos do ficheiro como \"predeterminada\" ou \"forzada\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Carga e mostra automaticamente os subtítulos cada vez que comeza un vídeo.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Activa automaticamente os subtítulos se a pista de audio predeterminada está nun idioma estranxeiro.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Só carga os subtítulos marcados explicitamente co indicador de metadatos \"forzado\".",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Desactiva completamente a carga automática de subtítulos.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Idioma de subtítulos alternativo",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Fluxo de subtítulos",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Mostrar as descargas no servidor",
+    "reportDownloadsActivitySubtitle": "Permite que o administrador do servidor vexa as túas descargas transcodificadas no panel",
+    "navbarAlwaysExpanded": "Mostrar sempre as etiquetas da barra de navegación",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Mostrar o botón de Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Agrupar os elementos en coleccións",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Ocultar os elementos asociados a coleccións ao navegar polas bibliotecas",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Aviso sobre a agrupación de bibliotecas",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Para usar esta opción, asegúrate de que as opcións de biblioteca \"Agrupar as películas en coleccións\" e/ou \"Agrupar as series en coleccións\" estean activadas na configuración de visualización da túa biblioteca no servidor de Jellyfin ou Emby.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Audio dos tráilers",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Activar o audio dos tráilers na barra multimedia",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Filas de inicio expandidas",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Limita as filas de inicio a 1 fila por pantalla",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Usuario actual",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Estático",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Rebotando",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Filas de descubrimento de Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Notificacións",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Notificacións de solicitudes novas",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Avísame cando alguén envíe unha solicitude",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Actualizacións das solicitudes",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Aprobadas, rexeitadas e engadidas á túa biblioteca",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Actualizacións dos problemas",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Problemas novos, respostas e resolucións",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Límite da caché de imaxes",
+    "clearImageCache": "Limpar a caché de imaxes",
+    "imageCacheCleared": "Limpouse a caché de imaxes",
+    "seerrDownloadingPercent": "Descargando · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Importando",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Fallou",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "En proceso",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Modificado por {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Completada",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Este título xa se solicitou",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Acadaches o límite de solicitudes",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Este título está na lista de bloqueo",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Non quedan tempadas por solicitar",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Non tes permiso para facer esta solicitude",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Solicitudes",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Problemas",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Máis recentes",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Última modificación",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Non hai problemas",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Quédanche {remaining} de {limit} solicitudes de películas",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Quédanche {remaining} de {limit} solicitudes de tempadas",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Forma parte de {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Ver a colección",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Solicitar a colección",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} películas · {available} dispoñibles",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Solicitar {count} películas",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Solicitando {current} de {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Solicitáronse {count} películas",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Solicitáronse {ok} de {total} películas",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Todas as películas xa están dispoñibles ou solicitadas",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Informar dun problema",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Vídeo",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Audio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Que ocorre?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Todos os episodios",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episodio",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Aberto",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Resolto",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Resolver",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Reabrir",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Informado por {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} comentarios",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Engadir un comentario",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Eliminar este problema?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Enviar o informe",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Visualización",
+    "adminDrawerMetadata": "Metadatos",
+    "adminDrawerNfo": "Configuración NFO",
+    "adminActivitySeverityAll": "Todas as gravidades",
+    "adminActivityDateRange": "Intervalo de datas",
+    "adminRemoveDeviceConfirm": "Eliminar o dispositivo '{name}'? O usuario terá que iniciar sesión de novo neste dispositivo.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Eliminar todos os dispositivos",
+    "adminDeleteAllDevicesConfirm": "Eliminar {count} dispositivos? Os usuarios afectados terán que iniciar sesión de novo. O teu dispositivo actual non se verá afectado.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Elimináronse os dispositivos",
+    "adminDevicesDeletedPartial": "Elimináronse algúns dispositivos; {count} non se puideron eliminar.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Camiños",
+    "adminLibraryTabOptions": "Opcións",
+    "adminLibraryTabDownloaders": "Descargadores",
+    "adminLibMetadataSavers": "Gardadores de metadatos",
+    "adminLibSubtitleDownloaders": "Descargadores de subtítulos",
+    "adminLibLyricDownloaders": "Descargadores de letras",
+    "adminLibMetadataDownloadersFor": "Descargadores de metadatos: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Obtedores de imaxes: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Este servidor non ofrece ningún descargador para este tipo de biblioteca.",
+    "adminLibrarySectionGeneral": "Xeral",
+    "adminLibrarySectionMetadata": "Metadatos",
+    "adminLibrarySectionEmbedded": "Información incrustada",
+    "adminLibrarySectionSubtitles": "Subtítulos",
+    "adminLibrarySectionImages": "Imaxes",
+    "adminLibrarySectionSeries": "Series",
+    "adminLibrarySectionMusic": "Música",
+    "adminLibrarySectionMovies": "Películas",
+    "adminLibRealtimeMonitor": "Activar a supervisión en tempo real",
+    "adminLibRealtimeMonitorHint": "Detecta os cambios nos ficheiros e procésaos automaticamente.",
+    "adminLibArchiveMediaFiles": "Tratar os arquivos como ficheiros multimedia",
+    "adminLibEnablePhotos": "Mostrar as fotos",
+    "adminLibSaveLocalMetadata": "Gardar as ilustracións nos cartafoles multimedia",
+    "adminLibRefreshInterval": "Actualización automática dos metadatos",
+    "adminLibRefreshNever": "Nunca",
+    "adminLibDefault": "Predeterminado",
+    "adminLibDisplayTitle": "Visualización",
+    "adminLibDisplaySection": "Visualización da biblioteca",
+    "adminLibFolderView": "Mostrar unha vista de cartafoles para ver os cartafoles multimedia simples",
+    "adminLibSpecialsInSeasons": "Mostrar os especiais dentro das tempadas nas que se emitiron",
+    "adminLibGroupMovies": "Agrupar as películas en coleccións",
+    "adminLibGroupShows": "Agrupar as series en coleccións",
+    "adminLibExternalSuggestions": "Mostrar contido externo nas suxestións",
+    "adminLibDateAddedSection": "Comportamento da data de engadido",
+    "adminLibDateAddedLabel": "Usar a data de engadido de",
+    "adminLibDateAddedImport": "Data de exploración na biblioteca",
+    "adminLibDateAddedFile": "Data de creación do ficheiro",
+    "adminLibMetadataTitle": "Metadatos e imaxes",
+    "adminLibMetadataLangSection": "Idioma de metadatos preferido",
+    "adminLibChaptersSection": "Capítulos",
+    "adminLibDummyChapterDuration": "Duración dos capítulos simulados (segundos)",
+    "adminLibDummyChapterDurationHint": "Duración dos capítulos xerados para o contido que non ten ningún. Establece 0 para desactivalo.",
+    "adminLibChapterImageResolution": "Resolución das imaxes dos capítulos",
+    "adminLibNfoTitle": "Configuración NFO",
+    "adminLibNfoHelp": "Os metadatos NFO son compatibles con Kodi e clientes similares. A configuración aplícase a todas as bibliotecas que gardan metadatos NFO.",
+    "adminLibKodiUser": "Usuario do que se gardarán os datos de visualización nos ficheiros NFO",
+    "adminLibSaveImagePaths": "Gardar os camiños das imaxes nos ficheiros NFO",
+    "adminLibPathSubstitution": "Activar a substitución de camiños para os camiños de imaxe dos NFO",
+    "adminLibExtraThumbs": "Copiar as imaxes de extrafanart nun cartafol extrathumbs",
+    "adminLibNone": "Ningún",
+    "adminLibRefreshDays": "{days} días",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Usar os títulos incrustados",
+    "adminLibEmbeddedExtrasTitles": "Usar os títulos incrustados para os extras",
+    "adminLibEmbeddedEpisodeInfos": "Usar a información de episodio incrustada",
+    "adminLibAllowEmbeddedSubtitles": "Permitir os subtítulos incrustados",
+    "adminLibEmbeddedAllowAll": "Permitir todo",
+    "adminLibEmbeddedAllowText": "Só texto",
+    "adminLibEmbeddedAllowImage": "Só imaxe",
+    "adminLibEmbeddedAllowNone": "Ningún",
+    "adminLibSkipIfEmbeddedSubs": "Omitir a descarga se hai subtítulos incrustados",
+    "adminLibSkipIfAudioMatches": "Omitir a descarga se a pista de audio coincide co idioma de descarga",
+    "adminLibRequirePerfectMatch": "Esixir unha coincidencia perfecta dos subtítulos",
+    "adminLibSaveSubtitlesWithMedia": "Gardar os subtítulos nos cartafoles multimedia",
+    "adminLibChapterImageExtraction": "Extraer as imaxes dos capítulos",
+    "adminLibChapterImagesDuringScan": "Extraer as imaxes dos capítulos durante a exploración da biblioteca",
+    "adminLibTrickplayExtraction": "Activar a extracción de imaxes de Trickplay",
+    "adminLibTrickplayDuringScan": "Extraer as imaxes de Trickplay durante a exploración da biblioteca",
+    "adminLibSaveTrickplayWithMedia": "Gardar as imaxes de Trickplay nos cartafoles multimedia",
+    "adminLibAutomaticSeriesGrouping": "Combinar automaticamente as series repartidas en varios cartafoles",
+    "adminLibSeasonZeroName": "Nome que se mostra para a tempada cero",
+    "adminLibLufsScan": "Activar a análise LUFS para a normalización do audio",
+    "adminLibPreferNonstandardArtist": "Preferir a etiqueta de artistas non estándar",
+    "adminLibAutoAddToCollection": "Engadir automaticamente as películas ás coleccións",
+    "adminParentalControl": "Control parental",
+    "adminMaxParentalRating": "Clasificación parental máxima permitida",
+    "adminMaxParentalRatingHint": "O contido cunha clasificación superior ocultarase a este usuario.",
+    "adminParentalRatingNone": "Ningunha",
+    "adminBlockUnratedItems": "Bloquear os elementos sen clasificación ou con clasificación non recoñecida",
+    "adminUnratedBook": "Libros",
+    "adminUnratedChannelContent": "Canles",
+    "adminUnratedLiveTvChannel": "TV en directo",
+    "adminUnratedMovie": "Películas",
+    "adminUnratedMusic": "Música",
+    "adminUnratedTrailer": "Tráilers",
+    "adminUnratedSeries": "Series",
+    "adminAccessSchedules": "Horarios de acceso",
+    "adminAccessSchedulesHint": "Permite o acceso só durante os horarios programados a continuación. Se non se define ningún horario, o acceso permítese todo o día.",
+    "adminAddSchedule": "Engadir un horario",
+    "adminScheduleDay": "Día",
+    "adminScheduleStart": "Inicio",
+    "adminScheduleEnd": "Fin",
+    "adminDayEveryday": "Todos os días",
+    "adminDayWeekday": "Día laborable",
+    "adminDayWeekend": "Fin de semana",
+    "adminDaySunday": "Domingo",
+    "adminDayMonday": "Luns",
+    "adminDayTuesday": "Martes",
+    "adminDayWednesday": "Mércores",
+    "adminDayThursday": "Xoves",
+    "adminDayFriday": "Venres",
+    "adminDaySaturday": "Sábado",
+    "adminAllowedTags": "Etiquetas permitidas",
+    "adminAllowedTagsHint": "Só se mostra o contido con estas etiquetas. Déixao baleiro para permitir todo.",
+    "adminBlockedTags": "Etiquetas bloqueadas",
+    "adminBlockedTagsHint": "O contido con estas etiquetas ocúltase a este usuario.",
+    "adminAddTag": "Engadir unha etiqueta",
+    "adminEnabledDevices": "Dispositivos activados",
+    "adminEnabledChannels": "Canles activadas",
+    "adminAuthProvider": "Provedor de autenticación",
+    "adminPasswordResetProvider": "Provedor de restablecemento do contrasinal",
+    "adminLoginAttemptsBeforeLockout": "Máximo de intentos de inicio de sesión fallidos antes do bloqueo",
+    "adminLoginAttemptsHint": "Establece 0 para o valor predeterminado, ou -1 para desactivar o bloqueo.",
+    "adminSyncPlayAccess": "Acceso a SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Permitir crear grupos e unirse a eles",
+    "adminSyncPlayJoin": "Permitir unirse a grupos",
+    "adminSyncPlayNone": "Sen acceso",
+    "adminContentDeletionFolders": "Permitir a eliminación de contido de",
+    "adminBackupOptionsTitle": "Crear unha copia de seguranza",
+    "adminBackupInclude": "Escolle que queres incluír na copia de seguranza.",
+    "adminBackupDatabase": "Base de datos",
+    "adminBackupDatabaseAlways": "Sempre incluída",
+    "adminBackupMetadata": "Metadatos",
+    "adminBackupSubtitles": "Subtítulos",
+    "adminBackupTrickplay": "Imaxes de Trickplay",
+    "adminEditTuner": "Editar o sintonizador",
+    "adminTunerTypeM3u": "Sintonizador M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Ficheiro ou URL",
+    "adminTunerIpAddress": "Enderezo IP do sintonizador",
+    "adminTunerFriendlyName": "Nome descritivo",
+    "adminTunerUserAgent": "Axente de usuario",
+    "adminTunerCount": "Límite de conexións simultáneas",
+    "adminTunerCountHelp": "Número máximo de fluxos que permite o sintonizador á vez. Establece 0 para ilimitado.",
+    "adminTunerFallbackBitrate": "Taxa de bits máxima de transmisión alternativa",
+    "adminTunerImportFavoritesOnly": "Importar só as canles favoritas",
+    "adminTunerAllowHwTranscoding": "Permitir a transcodificación por hardware",
+    "adminTunerAllowFmp4": "Permitir o contedor de transcodificación fMP4",
+    "adminTunerAllowStreamSharing": "Permitir compartir fluxos",
+    "adminTunerEnableStreamLooping": "Activar a repetición de fluxos",
+    "adminTunerIgnoreDts": "Ignorar DTS",
+    "adminTunerReadAtNativeFramerate": "Ler a entrada á velocidade de fotogramas nativa",
+    "adminEditProvider": "Editar o provedor",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Ficheiro ou URL",
+    "adminXmltvMoviePrefix": "Prefixo de película",
+    "adminXmltvMovieCategories": "Categorías de películas",
+    "adminXmltvCategoriesHelp": "Separa as categorías cunha barra vertical.",
+    "adminXmltvKidsCategories": "Categorías infantís",
+    "adminXmltvNewsCategories": "Categorías de novas",
+    "adminXmltvSportsCategories": "Categorías de deportes",
+    "adminSdUsername": "Nome de usuario",
+    "adminSdPassword": "Contrasinal",
+    "adminSdCountry": "País",
+    "adminSdCountrySelect": "Selecciona un país",
+    "adminSdPostalCode": "Código postal",
+    "adminSdGetListings": "Obter a programación",
+    "adminSdListings": "Programación",
+    "adminEnableAllTuners": "Activar todos os sintonizadores",
+    "adminTunerResetNotSupported": "Este tipo de sintonizador non admite o restablecemento.",
+    "adminMovieRecordingPath": "Camiño de gravación de películas",
+    "adminGuideDays": "Días de datos da guía",
+    "adminGuideDaysAuto": "Automático",
+    "adminGuideDaysValue": "{days} días",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Camiño da aplicación de posprocesamento",
+    "adminRecordingPostProcessorArgs": "Argumentos do posprocesador",
+    "adminSaveRecordingNfo": "Gardar os metadatos NFO das gravacións",
+    "adminSaveRecordingImages": "Gardar as imaxes das gravacións",
+    "adminLiveTvSectionTiming": "Temporización",
+    "adminLiveTvSectionPaths": "Camiños de gravación",
+    "adminLiveTvSectionPostProcessing": "Posprocesamento",
+    "adminGuideDaysDisplay": "Datos da guía: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Actualizar os datos da guía",
+    "adminGuideRefreshStarted": "Comezou a actualización dos datos da guía",
+    "adminGuideRefreshUnavailable": "A tarefa de actualización da guía non está dispoñible neste servidor.",
+    "adminMetadataIdentify": "Identificar",
+    "adminBrandingSplashUpload": "Cargar unha imaxe",
+    "adminBrandingSplashUploaded": "Actualizouse a pantalla de inicio",
+    "adminBrandingSplashUploadFailed": "Produciuse un erro ao cargar a pantalla de inicio",
+    "adminBrandingSplashDeleted": "Eliminouse a pantalla de inicio",
+    "adminBrandingNoSplash": "Non hai ningunha pantalla de inicio personalizada",
+    "adminPlaybackQsvDevice": "Dispositivo QSV",
+    "adminPlaybackEnhancedNvdec": "Activar o decodificador NVDEC mellorado",
+    "adminPlaybackPreferNativeDecoder": "Preferir o decodificador por hardware nativo do sistema",
+    "adminPlaybackColorDepth": "Profundidade de cor da decodificación por hardware",
+    "adminPlaybackColorDepth10Hevc": "Decodificación HEVC de 10 bits",
+    "adminPlaybackColorDepth10Vp9": "Decodificación VP9 de 10 bits",
+    "adminPlaybackColorDepth10HevcRext": "Decodificación HEVC RExt de 8/10 bits",
+    "adminPlaybackColorDepth12HevcRext": "Decodificación HEVC RExt de 12 bits",
+    "adminPlaybackHwEncodingSection": "Codificación por hardware",
+    "adminPlaybackAllowHevcEncoding": "Permitir a codificación HEVC",
+    "adminPlaybackAllowAv1Encoding": "Permitir a codificación AV1",
+    "adminPlaybackIntelLowPowerH264": "Activar o codificador H.264 de baixo consumo de Intel",
+    "adminPlaybackIntelLowPowerHevc": "Activar o codificador HEVC de baixo consumo de Intel",
+    "adminPlaybackToneMapping": "Mapeamento de tons",
+    "adminPlaybackEnableTonemapping": "Activar o mapeamento de tons",
+    "adminPlaybackEnableVppTonemapping": "Activar o mapeamento de tons VPP",
+    "adminPlaybackEnableVtTonemapping": "Activar o mapeamento de tons de VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "Algoritmo de mapeamento de tons",
+    "adminPlaybackTonemappingMode": "Modo de mapeamento de tons",
+    "adminPlaybackTonemappingRange": "Rango de mapeamento de tons",
+    "adminPlaybackTonemappingDesat": "Desaturación do mapeamento de tons",
+    "adminPlaybackTonemappingPeak": "Pico do mapeamento de tons",
+    "adminPlaybackTonemappingParam": "Parámetro do mapeamento de tons",
+    "adminPlaybackVppTonemappingBrightness": "Brillo do mapeamento de tons VPP",
+    "adminPlaybackVppTonemappingContrast": "Contraste do mapeamento de tons VPP",
+    "adminPlaybackPresetsQuality": "Predefinicións e calidade",
+    "adminPlaybackEncoderPreset": "Predefinición do codificador",
+    "adminPlaybackH264Crf": "CRF de codificación H.264",
+    "adminPlaybackH265Crf": "CRF de codificación H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "Método de desentrelazado",
+    "adminPlaybackDeinterlaceDoubleRate": "Duplicar a velocidade de fotogramas ao desentrelazar",
+    "adminPlaybackAudioSection": "Audio",
+    "adminPlaybackEnableAudioVbr": "Activar a codificación de audio VBR",
+    "adminPlaybackDownmixBoost": "Amplificación do downmix de audio",
+    "adminPlaybackDownmixAlgorithm": "Algoritmo de downmix a estéreo",
+    "adminPlaybackMaxMuxingQueue": "Tamaño máximo da cola de multiplexación",
+    "adminPlaybackAutoOption": "Auto",
+    "adminRunningTasks": "Tarefas en execución",
+    "adminNetworkingPublicHttpPort": "Porto HTTP público",
+    "adminNetworkingRequireHttps": "Esixir HTTPS",
+    "adminNetworkingRequireHttpsHint": "Redirixe todas as solicitudes remotas a HTTPS. Non ten efecto se o servidor non ten un certificado válido.",
+    "adminNetworkingCertPassword": "Contrasinal do certificado",
+    "adminNetworkingIpSettings": "Configuración de IP",
+    "adminNetworkingEnableIpv4": "Activar IPv4",
+    "adminNetworkingEnableIpv6": "Activar IPv6",
+    "adminNetworkingAutoDiscovery": "Activar a asignación automática de portos",
+    "adminNetworkingLocalSubnets": "Redes LAN",
+    "adminNetworkingLocalSubnetsHint": "Lista de enderezos IP ou subredes CIDR, separados por comas ou saltos de liña, que se consideran da rede local.",
+    "adminNetworkingPublishedUris": "URI publicados do servidor",
+    "adminNetworkingPublishedUriHint": "Asigna unha subrede ou enderezo a un URL publicado, p. ex. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Atraso de limitación (segundos)",
+    "adminPlaybackEnableSubtitleExtraction": "Permitir a extracción de subtítulos sobre a marcha",
+    "adminGeneralEnableSlowResponse": "Activar os avisos de resposta lenta",
+    "adminGeneralQuickConnect": "Activar Quick Connect",
+    "adminGeneralSectionServer": "Servidor",
+    "adminGeneralSectionMetadata": "Metadatos",
+    "adminGeneralSectionPaths": "Camiños",
+    "adminGeneralSectionPerformance": "Rendemento",
+    "adminGeneralDisplayLanguage": "Idioma de visualización preferido",
+    "offlineBannerTitle": "Non tes conexión",
+    "offlineBannerSubtitle": "Móstranse as túas descargas",
+    "offlineBannerAction": "Descargas",
+    "serverUnreachableBannerTitle": "Non se pode conectar co teu servidor",
+    "serverUnreachableBannerSubtitle": "Reproducindo desde as descargas ata que volva",
+    "contextMenuHideFromContinueWatching": "Ocultar de Seguir vendo",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Ocultar de A continuación",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Engadir a unha colección",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "CONEXIÓN",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Permitir os certificados autoasinados",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Confía nos servidores que usan certificados TLS autoasinados ou dunha CA privada. Actívao só para os servidores que controles. Isto desactiva a validación de certificados en todas as conexións.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Pantalla de detalles",
+    "settingsDetailsScreenSubtitle": "Estilo, desenfoque do fondo e comportamento das pestanas",
+    "settingsShowSeerrButtonInNavigation": "Mostrar o botón de Seerr na barra de navegación",
+    "settingsAlwaysExpandNavbarLabels": "Mostrar sempre as etiquetas de texto na barra de navegación superior",
+    "settingsMediaSegmentCountdown": "Conta atrás dos segmentos multimedia",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Barra de progreso",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Temporizador",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Ningún",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Lanzamentos recentes de {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Activar a tunelización",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Avanzado. Encamiña o audio e o vídeo por unha ruta de hardware acoplada. Está desactivado de forma predeterminada porque provoca cortes de audio/vídeo nalgúns dispositivos.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Mostrar os detalles do contido",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Mostra os detalles do elemento seleccionado na parte superior das páxinas de Biblioteca.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Ocultar as imaxes de fondo mentres navegas?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Tenda de temas",
+    "themeStoreSubtitle": "Explora e garda temas da comunidade",
+    "themeStoreDescription": "Garda un tema para usalo como os demais temas gardados.",
+    "themeStoreEmpty": "Non hai ningún tema dispoñible neste momento.",
+    "themeStoreLoadFailed": "Non foi posible cargar a Tenda de temas. Comproba a túa conexión e téntao de novo.",
+    "themeStoreSave": "Gardar",
+    "themeStoreSaveAndApply": "Gardar e aplicar",
+    "themeStoreSaved": "Gardado",
+    "themeStoreInvalidMessage": "Non foi posible cargar este tema.",
+    "themeStoreSavedMessage": "Gardouse \"{themeName}\".",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Visualización das filas de inicio",
+    "homeRowSections": "Seccións das filas de inicio",
+    "homeRowToggles": "Interruptores das filas de inicio",
+    "homeRowTogglesSubtitle": "Activa ou desactiva as categorías de filas de inicio baseadas en bibliotecas",
+    "homeRowTogglesDescription": "Activa os seguintes interruptores para mostrar as filas nas seccións de inicio.",
+    "displayPlaylistsRows": "Mostrar as filas de listas de reprodución",
+    "displayPlaylistsRowsSubtitle": "Mostra as filas de listas de reprodución nas seccións de inicio.",
+    "playlistsRowSorting": "Ordenación das filas de listas de reprodución",
+    "playlistsRowSortingDescription": "Ordena as filas de listas de reprodución por data de engadido, data de lanzamento, alfabeticamente e máis.",
+    "displayAudioRows": "Mostrar as filas de audio",
+    "displayAudioRowsSubtitle": "Mostra as filas de audio nas seccións de inicio.",
+    "audioRowsSorting": "Ordenación das filas de audio",
+    "audioRowsSortingDescription": "Ordena as filas de audio por data de engadido, data de lanzamento, alfabeticamente e máis.",
+    "audioPlaylists": "Listas de reprodución de audio",
+    "layout": "Disposición",
+    "theme": "Tema",
+    "keyboard": "Teclado",
+    "navButtons": "Botóns",
+    "rendering": "Renderización",
+    "mpvConfiguration": "Configuración de MPV",
+    "externalPlayerAppDescription": "Define un reprodutor externo para activar a opción de reproducir cunha pulsación longa",
+    "crewContributionsSeerr": "Contribucións do equipo (Seerr)",
+    "changeArtwork": "Cambiar a ilustración",
+    "missing": "Falta",
+    "clearAllArtworkButton": "Limpar todas as ilustracións?",
+    "clearAllArtworkWarning": "Seguro que queres limpar todas as ilustracións descargadas?",
+    "confirmClear": "Confirmar a limpeza",
+    "confirmClearMessage": "Seguro que queres limpar esta imaxe ({itemType})?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Cargar?",
+    "resolutionLabel": "Resolución: ",
+    "onlyShowInterfaceLanguage": "Mostrar só as ilustracións no idioma da interface",
+    "confirmClearAll": "Confirmar a limpeza de todo",
+    "imageUploadSuccess": "A imaxe cargouse correctamente!",
+    "imageUploadFailed": "Produciuse un erro ao cargar a imaxe: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Produciuse un erro ao definir a imaxe: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Produciuse un erro ao eliminar a imaxe: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Produciuse un erro ao limpar todas as ilustracións: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Si",
+    "posterCategory": "Cartel",
+    "backdropsCategory": "Fondos",
+    "bannerCategory": "Báner",
+    "logoCategory": "Logotipo",
+    "thumbnailCategory": "Miniatura",
+    "artCategory": "Arte",
+    "discArtCategory": "Arte do disco",
+    "screenshotCategory": "Captura de pantalla",
+    "boxCoverCategory": "Portada da caixa",
+    "boxRearCoverCategory": "Contraportada da caixa",
+    "menuArtCategory": "Arte do menú",
+    "confirmItemPoster": "cartel",
+    "confirmItemBackdrop": "fondo",
+    "confirmItemBanner": "báner",
+    "confirmItemLogo": "logotipo",
+    "confirmItemThumbnail": "miniatura",
+    "confirmItemArt": "arte",
+    "confirmItemDiscArt": "arte do disco",
+    "confirmItemScreenshot": "captura de pantalla",
+    "confirmItemBoxCover": "portada da caixa",
+    "confirmItemBoxRearCover": "contraportada da caixa",
+    "confirmItemMenuArt": "arte do menú",
+    "resolutionAll": "Todas",
+    "resolutionHigh": "Alta (1080p+)",
+    "resolutionMedium": "Media (720p)",
+    "resolutionLow": "Baixa (<720p)",
+    "sources": "Fontes",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Capítulos",
+    "audiobookBookmarks": "Marcadores",
+    "audiobookNotes": "Notas",
+    "audiobookQueue": "Cola",
+    "audiobookTimeline": "Cronoloxía",
+    "audiobookTimelineEmpty": "A cronoloxía está baleira",
+    "audiobookWholeBook": "Todo o libro",
+    "audiobookFocusedTimeline": "Cronoloxía enfocada",
+    "audiobookExportBookmarks": "Exportar os marcadores",
+    "audiobookExportNotes": "Exportar as notas",
+    "audiobookExportAll": "Exportar todo",
+    "audiobookExportSuccess": "Exportouse a {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Fallou a exportación: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Letras",
+    "audiobookAddBookmark": "Engadir un marcador",
+    "audiobookAddNote": "Engadir unha nota",
+    "audiobookEditNote": "Editar a nota",
+    "audiobookNoteHint": "Escribe unha nota para este momento",
+    "audiobookSleepTimer": "Temporizador de sono",
+    "audiobookSleepOff": "Desactivado",
+    "audiobookSleepEndOfChapter": "Fin do capítulo",
+    "audiobookSleepCustom": "Personalizado",
+    "audiobookSleepRemaining": "Quedan {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Velocidade de reprodución",
+    "audiobookRemainingTime": "Restante",
+    "audiobookElapsedTime": "Transcorrido",
+    "audiobookSkipBackSeconds": "Atrás {seconds}s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Adiante {seconds}s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Capítulo anterior",
+    "audiobookNextChapter": "Capítulo seguinte",
+    "audiobookChapterIndicator": "Capítulo {current} de {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Non hai capítulos",
+    "audiobookNoBookmarks": "Aínda non hai marcadores",
+    "audiobookNoNotes": "Aínda non hai notas",
+    "audiobookBookmarkAdded": "Marcador engadido en {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Restablecer a 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Gardar",
+    "audiobookCancel": "Cancelar",
+    "audiobookDelete": "Eliminar",
+    "subtitlePreferences": "Preferencias dos subtítulos",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Cambia os modos de subtítulos, os idiomas predeterminados, a aparencia e as opcións de renderización.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Renderización dos subtítulos",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Opcións de visualización",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Data de lanzamento (ascendente)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Data de lanzamento (descendente)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Agrupar as contribucións",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Agrupar múltiples roles",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Aviso de acceso de escritura á biblioteca",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Como solucionalo:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Concede permisos de escritura ao usuario do servizo Jellyfin (p. ex., jellyfin ou o PUID/PGID de Docker) para os cartafoles da túa biblioteca multimedia no servidor.\n\n2. Ou ben vai ao panel de control de Jellyfin -> Bibliotecas, edita esta biblioteca e desactiva 'Gardar as ilustracións nos cartafoles multimedia' para almacenalas na base de datos interna de Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Descartar",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "A túa biblioteca '{libraryName}' está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Non obstante, Jellyfin comprobou o acceso de escritura e non ten permiso para escribir ficheiros neste directorio:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Semella que Jellyfin non puido actualizar a ilustración. A túa biblioteca está configurada para gardar as ilustracións directamente nos cartafoles multimedia ('Gardar as ilustracións nos cartafoles multimedia' está activado). Este erro adoita producirse cando o proceso do servidor Jellyfin non ten permiso para escribir ficheiros nos teus directorios multimedia.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Listas externas",
+    "replay": "Reproducir de novo",
+    "fileInformation": "Información do ficheiro",
+    "fileSizeFormat": "Tamaño: {size}  •  Formato: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Mostrar todas as pistas de audio ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Mostrar todas as pistas de subtítulos ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Comprobando a capacidade de reprodución directa...",
+    "directPlayCapabilityLabel": "Capacidade de reprodución directa: ",
+    "forced": "Forzado",
+    "transcodeContainerNotSupported": "O reprodutor non admite o formato do contedor.",
+    "transcodeVideoCodecNotSupported": "O códec de vídeo non é compatible.",
+    "transcodeAudioCodecNotSupported": "O códec de audio non é compatible.",
+    "transcodeSubtitleCodecNotSupported": "O formato dos subtítulos non é compatible (require incrustalos no vídeo).",
+    "transcodeAudioProfileNotSupported": "O perfil de audio non é compatible.",
+    "transcodeVideoProfileNotSupported": "O perfil de vídeo non é compatible.",
+    "transcodeVideoLevelNotSupported": "O nivel de vídeo non é compatible.",
+    "transcodeVideoResolutionNotSupported": "Este dispositivo non admite a resolución do vídeo.",
+    "transcodeVideoBitDepthNotSupported": "A profundidade de bits do vídeo non é compatible.",
+    "transcodeVideoFramerateNotSupported": "A velocidade de fotogramas do vídeo non é compatible.",
+    "transcodeContainerBitrateExceedsLimit": "A taxa de bits do ficheiro supera o límite de transmisión do reprodutor.",
+    "transcodeVideoBitrateExceedsLimit": "A taxa de bits do vídeo supera o límite de transmisión.",
+    "transcodeAudioBitrateExceedsLimit": "A taxa de bits do audio supera o límite de transmisión.",
+    "transcodeAudioChannelsNotSupported": "O número de canles de audio non é compatible.",
+    "sortAlphabetical": "Alfabético",
+    "sortReleaseAscending": "Orde de lanzamento (ascendente)",
+    "sortReleaseDescending": "Orde de lanzamento (descendente)",
+    "sortCustomDragDrop": "Personalizado (arrastrar e soltar)",
+    "playlistSortOptions": "Opcións de ordenación da lista de reprodución",
+    "resetSort": "Restablecer a ordenación",
+    "rewatchSeasonEpisode": "Ver de novo T{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Ver de novo a lista de reprodución",
+    "noSubtitlesFound": "Non se atoparon subtítulos.",
+    "adminControls": "Controis de administración",
+    "impellerRendering": "Motor de renderización (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller é o renderizador de GPU moderno de Flutter, para animacións máis fluídas e menos interrupcións. Nalgúns descodificadores de TV e GPU antigas pode provocar defectos visuais ou vídeo en negro; desactívao se os detectas. Automático escolle o mellor valor predeterminado para o teu dispositivo. Reinicia Moonfin para aplicalo.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automático",
+    "impellerOn": "Activado",
+    "impellerOff": "Desactivado",
+    "impellerRestartTitle": "Cómpre reiniciar",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin ten que reiniciarse para cambiar o motor de renderización. Pecha a aplicación agora e ábrea de novo para aplicalo.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Pechar a aplicación agora",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Actualizar a biblioteca",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Actualizar todas as bibliotecas",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Data de engadido (máis antigas primeiro)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Data de engadido (máis recentes primeiro)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alfabético (A a Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Alfabético (Z a A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Cargando a analítica do servidor... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Igual que a orixe",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "Top 250 películas de IMDb",
+    "imdbTop250TvShows": "Top 250 series de TV de IMDb",
+    "imdbMostPopularMovies": "Películas máis populares de IMDb",
+    "imdbMostPopularTvShows": "Series de TV máis populares de IMDb",
+    "imdbLowestRatedMovies": "Películas peor valoradas de IMDb",
+    "imdbTopEnglishMovies": "Mellores películas en inglés de IMDb"
 }

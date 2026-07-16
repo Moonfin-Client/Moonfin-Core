@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Ātrais savienojums",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "sērija",
+    "series": "Seriāli",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Mākslinieki",
+    "artists": "Izpildītāji",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Pieteikties",
+    "apply": "Lietot",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Atsākt",
+    "resume": "Turpināt",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Noskatījos",
+    "watched": "Noskatīts",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Neskatīts",
+    "unwatched": "Nenoskatīts",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiogrāmata} zero{{count} audiogrāmatu} one{{count} audiogrāmata} other{{count} audiogrāmatas}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Gadalaiki",
+    "seasons": "Sezonas",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 sezona} zero{{count} sezonu} one{{count} sezona} other{{count} sezonas}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Spēlēt",
+    "play": "Atskaņot",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Cast",
+    "cast": "Apraidīt",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "RAKSTNIEKI",
+    "writers": "SCENĀRISTI",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 celiņš} zero{{count} celiņu} one{{count} celiņš} other{{count} celiņi}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 nodaļa} zero{{count} nodaļu} one{{count} nodaļa} other{{count} nodaļas}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} kan.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1743,7 +1743,7 @@
             }
         }
     },
-    "auto": "Auto",
+    "auto": "Automātiski",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Spēlētājs",
+    "player": "Atskaņotājs",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Trase",
+    "track": "Celiņš",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 epizode} zero{{count} epizožu} one{{count} epizode} other{{count} epizodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3436,11 +3436,11 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "Teal",
+    "teal": "Zilganzaļa",
     "@teal": {
         "description": "Color: teal"
     },
-    "navy": "Navy",
+    "navy": "Tumši zila",
     "@navy": {
         "description": "Color: navy"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Konkrēts lietotājs",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Vienmēr autentificēt",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Spraudnis",
+    "pluginLabel": "Moonbase spraudnis",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4059,7 +4055,7 @@
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "Rādīt Seer navigācijā (nepieciešams servera spraudnis)",
+    "showSeerrInNavigation": "Rādīt Seerr navigācijā (nepieciešams servera spraudnis)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Atklājiet rindas",
+    "discoverRows": "Seerr atklāšanas lapa",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Velciet, lai pārkārtotu. Iespējot vai atspējot rindas. Iespējota rindu secība sinhronizējas ar spraudni Moonfin.",
+    "discoverRowsDescriptionPlugin": "Iespējojiet rindas, ko rādīt Seerr galvenajā lapā. Velciet, lai pārkārtotu. Pielāgotā kārtība tiek sinhronizēta ar Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Velciet, lai pārkārtotu. Iespējot vai atspējot rindas.",
+    "discoverRowsDescription": "Iespējojiet rindas, ko rādīt Seerr galvenajā lapā. Velciet, lai pārkārtotu. Pielāgotā kārtība tiek sinhronizēta ar Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Skaidrs",
+    "clear": "Notīrīt",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Redzēja iestatījumi",
+    "seerrSettings": "Seerr iestatījumi",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Izskati",
+    "appearances": "Filmogrāfija",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Gadalaiki",
+    "seasonsLabel": "Sezonas",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4522,7 +4518,7 @@
     "access": "Piekļuve",
     "add": "Pievienot",
     "address": "Adrese",
-    "analytics": "Analytics",
+    "analytics": "Analītika",
     "catalog": "Katalogs",
     "content": "Saturs",
     "copy": "Kopēt",
@@ -4533,7 +4529,7 @@
     "encoding": "Kodēšana",
     "error": "Kļūda",
     "forward": "Uz priekšu",
-    "general": "Ģenerālis",
+    "general": "Vispārīgi",
     "go": "Aiziet",
     "install": "Instalējiet",
     "installed": "Uzstādīts",
@@ -4548,7 +4544,7 @@
     "profile": "Profils",
     "provider": "Pakalpojumu sniedzējs",
     "refresh": "Atsvaidzināt",
-    "remote": "Tālvadības pults",
+    "remote": "Attālināts",
     "rename": "Pārdēvēt",
     "revoke": "Atsaukt",
     "role": "Loma",
@@ -4560,7 +4556,7 @@
     "sessions": "Sesijas",
     "set": "Iestatīt",
     "status": "Statuss",
-    "stop": "Stop",
+    "stop": "Apturēt",
     "streaming": "Straumēšana",
     "time": "Laiks",
     "trickplay": "Trickplay",
@@ -4572,13 +4568,13 @@
     "mute": "Izslēgt skaņu",
     "branding": "Brendings",
     "adminDrawerDashboard": "Informācijas panelis",
-    "adminDrawerAnalytics": "Analytics",
+    "adminDrawerAnalytics": "Analītika",
     "adminDrawerSettings": "Iestatījumi",
     "adminDrawerBranding": "Brendings",
     "adminDrawerUsers": "Lietotāji",
     "adminDrawerLibraries": "Bibliotēkas",
     "adminDrawerTranscoding": "Pārkodēšana",
-    "adminDrawerResume": "Atsākt",
+    "adminDrawerResume": "Turpināt",
     "adminDrawerStreaming": "Straumēšana",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Ierīces",
@@ -4674,17 +4670,17 @@
     "adminSetVolume": "Iestatīt skaļumu",
     "sessionPrev": "Iepriekšējā",
     "sessionRewind": "Attīt atpakaļ",
-    "sessionForward": "Uz priekšu",
-    "sessionNext": "Tālāk",
-    "sessionVolumeDown": "Vol –",
-    "sessionVolumeUp": "Vol +",
+    "sessionForward": "Patīt uz priekšu",
+    "sessionNext": "Nākamais",
+    "sessionVolumeDown": "Skaļ. –",
+    "sessionVolumeUp": "Skaļ. +",
     "uhd4k": "4K",
     "nowPlaying": "Tagad spēlē",
     "volume": "Skaļums",
     "actions": "Darbības",
     "videoCodec": "Video kodeks",
     "audioCodec": "Audio kodeks",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Aparat. paātrin.",
     "completion": "Pabeigšana",
     "direct": "Tieša",
     "adminDisconnect": "Atvienot",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Segmenta saglabāšana (sekundēs)",
     "adminThrottleBuffering": "Droseles buferizācija",
     "adminTrickplaySaved": "Trickplay iestatījumi ir saglabāti",
-    "adminTrickplayLoadFailed": "Neizdevās ielādēt triku spēles iestatījumus",
+    "adminTrickplayLoadFailed": "Neizdevās ielādēt Trickplay iestatījumus",
     "adminEnableHardwareAcceleration": "Iespējot aparatūras paātrinājumu",
     "adminEnableKeyFrameExtraction": "Iespējot tikai atslēgas rāmja izvilkšanu",
     "adminKeyFrameSubtitle": "Ātrāka, bet zemāka precizitāte",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS ports",
     "adminPublicHttpsPort": "Publisks HTTPS ports",
     "adminBaseUrl": "Pamata URL",
-    "adminBaseUrlHint": "piem. /želeja",
+    "adminBaseUrlHint": "piem. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Iespējot HTTPS",
     "adminLocalNetwork": "Vietējais tīkls",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Meklēt attālo personu",
     "adminNoRemoteMatches": "Nav atrasta neviena attālināta atbilstība",
     "adminRemoteResults": "Attālinātie rezultāti",
     "adminRemoteMetadataApplied": "Lietoti attālie metadati",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Pievienojiet uztvērēju",
     "adminTunerType": "Uztvērēja tips",
-    "adminTunerTypeHint": "HDHomeRun, M3U, cits",
-    "adminUrlPath": "URL/ceļš",
-    "adminNameOptional": "Vārds (neobligāti)",
     "adminTunerAdded": "Pievienots uztvērējs",
     "adminTunerAddFailed": "Neizdevās pievienot uztvērēju: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Pievienot ceļveža nodrošinātāju",
     "adminProviderType": "Pakalpojumu sniedzēja veids",
-    "adminProviderTypeHint": "SchedulesDirect vai XMLTV",
-    "adminUsernameOptional": "Lietotājvārds (pēc izvēles)",
-    "adminRefreshInterval": "Atsvaidzināšanas intervāls (stundas)",
     "adminProviderAdded": "Pakalpojumu sniedzējs ir pievienots",
     "adminProviderAddFailed": "Neizdevās pievienot pakalpojumu sniedzēju: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "Dublējums bez nosaukuma",
     "adminLiveTvNotAvailable": "TV tiešraides administrēšana šajā servera versijā nav pieejama.",
     "adminLiveTvTitle": "TV tiešraides administrācija",
-    "adminApply": "Pieteikties",
+    "adminApply": "Lietot",
     "adminNotSet": "Nav iestatīts",
     "adminReset": "Atiestatīt",
     "adminLogsTitle": "Servera žurnāli",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Nav atbilstošu līniju",
     "adminMetadataEditorTitle": "Metadatu redaktors",
-    "adminMetadataRemote": "Tālvadības pults",
     "adminMetadataType": "Tips",
     "adminMetadataDetails": "Sīkāka informācija",
     "adminMetadataExternalIds": "Ārējie ID",
@@ -5743,7 +5731,7 @@
     "adminMetadataFieldOfficialRating": "Oficiālais vērtējums",
     "adminMetadataFieldCommunityRating": "Kopienas vērtējums",
     "adminMetadataFieldCriticRating": "Kritiķu vērtējums",
-    "adminMetadataFieldTagline": "Tagline",
+    "adminMetadataFieldTagline": "Sauklis",
     "adminMetadataFieldOverview": "Pārskats",
     "adminMetadataGenres": "Žanri",
     "adminMetadataTags": "Tagi",
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Notiek atcelšana...",
     "adminTaskRunning": "Skriešana...",
     "adminTaskNeverRun": "Nekad neskrien",
-    "adminTaskStop": "Stop",
+    "adminTaskStop": "Apturēt",
     "adminTaskRun": "Skrien",
     "adminTaskDetailLastExecution": "Pēdējā izpilde",
     "adminTaskDetailStarted": "Sākts",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Ik pēc 12 stundām",
     "adminTaskTriggerEvery24Hours": "Ik pēc 24 stundām",
     "adminTaskTriggerEvery2Days": "Ik pēc 2 dienām",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, zero{{count} stundu} one{{count} stunda} other{{count} stundas}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "tagad",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} d.",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{month}-{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Konfigurējiet triku atskaņošanas attēlu ģenerēšanu priekšskatījuma sīktēlu meklēšanai.",
+    "adminTrickplayDescription": "Konfigurējiet Trickplay attēlu ģenerēšanu pārtīšanas priekšskatījuma sīktēliem.",
     "adminNetworkingPublicHttpsPort": "Publisks HTTPS ports",
     "adminNetworkingBaseUrl": "Pamata URL",
-    "adminNetworkingBaseUrlHint": "piem. /želeja",
+    "adminNetworkingBaseUrlHint": "piem. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Sertifikāta ceļš",
     "adminNetworkingRemoteIpFilter": "Attālais IP filtrs",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay ir nepieciešams Jellyfin serveris. Pašreizējais serveris to neatbalsta.",
     "syncPlayGroupFallbackName": "SyncPlay grupa",
     "syncPlayGroupTooltip": "SyncPlay grupa",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, zero {# dalībnieku} one {# dalībnieks} other {# dalībnieki}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Atcerieties manu izvēli",
     "playHdr10Fallback": "Atskaņojiet HDR10 atkāpšanos",
     "requestTranscode": "Pieprasīt pārkodēšanu",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, zero {atrasts # rindu} one {atrasta # rinda} other {atrastas # rindas}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Nepareizs PIN",
     "pinMismatch": "PIN kodi nesakrīt",
     "pinForgot": "Aizmirsāt PIN?",
-    "pinClear": "Skaidrs",
-    "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Ātrā savienojuma pieprasījums ir atļauts.",
-    "quickConnectInvalidOrExpired": "Ātrā savienojuma kods ir nederīgs vai beidzies derīguma termiņš.",
-    "quickConnectNotSupported": "Ātrais savienojums šajā serverī netiek atbalstīts.",
-    "quickConnectAuthorizeFailed": "Neizdevās autorizēt ātrā savienojuma kodu.",
-    "quickConnectDisabled": "Ātrais savienojums šajā serverī ir atspējots.",
-    "quickConnectForbidden": "Jūsu konts nevar autorizēt šo ātrās savienojuma pieprasījumu.",
-    "quickConnectNotFound": "Ātrā savienojuma kods netika atrasts. Izmēģiniet jaunu kodu.",
-    "quickConnectFailedWithMessage": "Ātrais savienojums neizdevās: {message}",
+    "pinClear": "Notīrīt",
+    "pinBackspace": "Atpakaļatkāpe",
+    "quickConnectAuthorized": "Quick Connect pieprasījums apstiprināts.",
+    "quickConnectInvalidOrExpired": "Quick Connect kods nav derīgs vai tam beidzies termiņš.",
+    "quickConnectNotSupported": "Šis serveris neatbalsta Quick Connect.",
+    "quickConnectAuthorizeFailed": "Neizdevās apstiprināt Quick Connect kodu.",
+    "quickConnectDisabled": "Šajā serverī Quick Connect ir atspējots.",
+    "quickConnectForbidden": "Jūsu konts nevar apstiprināt šo Quick Connect pieprasījumu.",
+    "quickConnectNotFound": "Quick Connect kods netika atrasts. Mēģiniet jaunu kodu.",
+    "quickConnectFailedWithMessage": "Quick Connect neizdevās: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "Uz augšu Nākamais",
     "playNext": "Spēlēt nākamo",
     "stillWatchingContent": "Atskaņošana ir apturēta. Vai jūs joprojām skatāties?",
-    "stillWatchingStop": "Stop",
+    "stillWatchingStop": "Apturēt",
     "stillWatchingContinue": "Turpināt",
     "skipSegment": "Izlaist {segment}",
     "@skipSegment": {
@@ -6532,7 +6520,7 @@
     "settingsDynamicContentSubtitle": "Multivides josla un vizuālie pārklājumi",
     "settingsPlaybackSyncplay": "Atskaņošana un SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "Audio/video iestatījumi, subtitri, lejupielādes un SyncPlay vadīklas",
-    "settingsIntegrationsSubtitle": "Spraudņu sinhronizācija, Serr, vērtējumi un daudz kas cits",
+    "settingsIntegrationsSubtitle": "Spraudņu sinhronizācija, Seerr, vērtējumi un citi",
     "settingsAboutSubtitle": "Lietotnes versija, juridiskā informācija un kredīti",
     "settingsAuthenticationSection": "AUTENTIKĀCIJA",
     "settingsSortServersBy": "Kārtot serverus pēc",
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Pārbaudiet atjauninājumus",
     "settingsCheckForUpdatesSubtitle": "Pārbaudiet jaunāko Moonfin versiju",
     "settingsPoweredByFlutter": "Darbojas ar Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, zero {# licenču paziņojumu} one {# licences paziņojums} other {# licences paziņojumi}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Serr konta veids",
+    "seerrAccountType": "Seerr konta veids",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Ieraksts",
+    "record": "Ierakstīt",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6807,18 +6795,6 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Passthrough (papildu)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
@@ -6839,7 +6815,7 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core caurlaide",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} kan. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Atveriet iOS maršruta atlasītāju",
     "airPlayRoutePickerUnavailable": "AirPlay maršruta atlasītājs šajā ierīcē nav pieejams.",
     "videos": "Videoklipi",
-    "trailers": "Piekabes",
+    "trailers": "Treileri",
     "programs": "Programmas",
     "songs": "Dziesmas",
     "photoAlbums": "Fotoalbumi",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "Nesen iznākušās sērijas",
     "watchAgain": "Skatīties vēlreiz",
     "guestAppearances": "Viesu uzstāšanās",
-    "appearancesSeerr": "Izskati (Serr)",
+    "appearancesSeerr": "Parādīšanās (Seerr)",
     "watchWithGroup": "Skatieties kopā ar grupu",
     "errors": "Kļūdas",
     "warnings": "Brīdinājumi",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Labākie mākslinieki",
     "analyticsTopAuthors": "Populārākie autori",
     "analyticsTopContributors": "Aktīvākie līdzstrādnieki",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 bibliotēka} zero{{count} bibliotēku} one{{count} bibliotēka} other{{count} bibliotēkas}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7250,19 +7226,19 @@
     "needsAttention": "Nepieciešama uzmanība",
     "adminDrawerSectionServer": "Serveris",
     "adminDrawerSectionPlayback": "Atskaņošana",
-    "adminDrawerSectionDevices": "Devices",
-    "adminDrawerSectionAdvanced": "Advanced",
-    "adminDrawerSectionPlugins": "Plugins",
-    "adminDrawerSectionLiveTv": "Live TV",
-    "homeVideos": "Home Videos",
-    "mixedContent": "Mixed Content",
-    "homeVideosAndPhotos": "Home Videos & Photos",
-    "mixedMoviesAndShows": "Mixed Movies & Shows",
+    "adminDrawerSectionDevices": "Ierīces",
+    "adminDrawerSectionAdvanced": "Paplašināti",
+    "adminDrawerSectionPlugins": "Spraudņi",
+    "adminDrawerSectionLiveTv": "Tiešraides TV",
+    "homeVideos": "Mājas video",
+    "mixedContent": "Jaukts saturs",
+    "homeVideosAndPhotos": "Mājas video un fotoattēli",
+    "mixedMoviesAndShows": "Jauktas filmas un seriāli",
     "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
-    "noRecordingsFound": "No recordings found",
-    "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+    "noRecordingsFound": "Ieraksti nav atrasti",
+    "noImagePagesFoundInArchive": "Arhīvā .{extension} nav atrasta neviena attēla lappuse.",
     "@noImagePagesFoundInArchive": {
         "placeholders": {
             "extension": {
@@ -7270,7 +7246,7 @@
             }
         }
     },
-    "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+    "embeddedRendererFailed": "Iegultajam renderētājam radās kļūda ({code}): {description}",
     "@embeddedRendererFailed": {
         "placeholders": {
             "code": {
@@ -7281,7 +7257,7 @@
             }
         }
     },
-    "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+    "epubRendererFailed": "EPUB renderētājam radās kļūda ({code}): {description}",
     "@epubRendererFailed": {
         "placeholders": {
             "code": {
@@ -7292,7 +7268,7 @@
             }
         }
     },
-    "missingLocalFileForReader": "Missing local file for reader: {uri}",
+    "missingLocalFileForReader": "Trūkst lokālā faila lasītājam: {uri}",
     "@missingLocalFileForReader": {
         "placeholders": {
             "uri": {
@@ -7300,7 +7276,7 @@
             }
         }
     },
-    "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+    "httpStatusWhileOpeningBookData": "HTTP {status}, atverot grāmatas datus no {uri}",
     "@httpStatusWhileOpeningBookData": {
         "placeholders": {
             "status": {
@@ -7311,8 +7287,8 @@
             }
         }
     },
-    "noReadableBookEndpointAvailable": "No readable book endpoint available",
-    "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+    "noReadableBookEndpointAvailable": "Nav pieejams neviens lasāms grāmatas galapunkts",
+    "unsupportedComicArchiveFormat": "Neatbalstīts komiksu arhīva formāts: .{extension}",
     "@unsupportedComicArchiveFormat": {
         "placeholders": {
             "extension": {
@@ -7320,18 +7296,1715 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
-    "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
-    "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
-    "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
-    "closeGenrePanel": "Close genre panel",
-    "loadingShuffle": "Loading shuffle...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
-    "autoHdrSwitching": "Auto HDR Switching",
-    "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
-    "whenFullscreen": "When fullscreen",
-    "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "cbrExtractionPluginUnavailable": "CBR izpakošanas spraudnis šajā platformā nav pieejams.",
+    "failedToExtractCbrArchive": "Neizdevās izpakot .cbr arhīvu.",
+    "cb7ExtractionUnavailable": "CB7 izpakošana šajā platformā nav pieejama.",
+    "cb7ExtractionPluginUnavailable": "CB7 izpakošanas spraudnis šajā platformā nav pieejams.",
+    "closeGenrePanel": "Aizvērt žanru paneli",
+    "loadingShuffle": "Ielādē jaukšanu...",
+    "libraryShuffleLabel": "BIBLIOTĒKAS JAUKŠANA",
+    "randomShuffleLabel": "NEJAUŠA JAUKŠANA",
+    "genresShuffleLabel": "ŽANRU JAUKŠANA",
+    "autoHdrSwitching": "Automātiska HDR pārslēgšana",
+    "autoHdrSwitchingDescription": "Automātiski ieslēgt HDR HDR video atskaņošanai un pēc iziešanas atjaunot ekrāna režīmu.",
+    "whenFullscreen": "Pilnekrāna režīmā",
+    "transcodingLimits": "Pārkodēšanas ierobežojumi",
+    "settingsSupportMoonfinSubtitle": "Uzsauciet izstrādātājam kafiju",
+    "accountPreferences": "KONTA PREFERENCES",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Saskarnes valoda",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Sistēmas noklusējums",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Tukšs",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Detaļu ekrāna stils",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Klasiskais ir oriģinālais centrētais Moonfin izkārtojums. Modernais ir adaptīvs kinematogrāfisks izkārtojums.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Klasiskais",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modernais",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Izvērstas cilnes",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Automātiski rādīt cilnes saturu, pārlūkojot cilnes. Izslēdziet, lai katru cilni atvērtu un aizvērtu manuāli.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Rādīt tehnisko informāciju?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Rādīt kodeka, izšķirtspējas un straumes informāciju bannera kopsavilkumā",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Ieteikumu sistēma",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Izmantojiet Moonfin Recommends vietējās bibliotēkas algoritmu vai tiešsaistes TMDB līdzības rādītājus. Piezīme: tiešsaistes ieteikumiem nepieciešama Seerr integrācija.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb līdzība",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Piemērot vecuma ierobežojuma slieksni?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Ierobežot Moonfin Recommends ieteikumus atbilstoši izvēlētā satura vecuma ierobežojumam",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Saskarnes stils",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automātiskais pielāgojas jūsu ierīcei. Izvēlieties Apple vai Material, lai noteiktu konkrētu izskatu.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automātiskais",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Stikla kvalitāte",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Automātiskais izvēlas šai ierīcei piemērotāko stikla efektu. Pilnais ieslēdz īstu izplūdumu; Samazinātais izmanto vieglu stiklu, kas taupa GPU jaudu.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Automātiski",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Pilns",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Samazināts",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Pielāgota tēma",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Pielāgotas tēmas maina vizuālos elementus visā Moonfin lietotnē. Izvēlieties vienu no šīm iespējām atbilstoši savam stilam.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Stikls",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Šķidra stikla stils ar plūstošu gradienta fonu, matētām virsmām un Apple zilo akcentu",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8 bitu varonis",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retro pikseļu mākslas stils ar rupju paleti, kvadrātveida apmalēm, asām ēnām un pikseļu fontu",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Izvēlne",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Pauzēts",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Saglabāt stāvokli",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Spēles",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Ielādēt stāvokli",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Paātrināt",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emulatora iestatījumi",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Šim kodolam nav pielāgojamu opciju.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Turiet, lai atvērtu izvēlni",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Spēles šajā ierīcē pagaidām netiek atbalstītas.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Jaunākās grāmatas",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Jaunākās audiogrāmatas",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 grāmata} zero{{count} grāmatu} one{{count} grāmata} other{{count} grāmatas}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Grāmata",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audiogrāmata",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "Izlasīts {percent}%",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Atlicis {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Lasīt",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Klausīties",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Vienumi",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Papildmateriāli",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Aizkulises",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Izgrieztās ainas",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Sižeti par filmu",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Intervijas",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Ainas",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Īsfilmas",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Atlicis {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Beigsies pēc {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "REŽISORI",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "SCENĀRISTS",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Jaukt visu mūziku",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Pierakstieties Moonfin savā tālrunī",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Nevar sasniegt serveri",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Nākamā: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "Atlicis {minutes} min",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "Atlicis {hours} h",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "Atlicis {hours} h {minutes} min",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Detaļu lapas, sākuma ekrāna rindas un skaļums",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Atkārtot tēmas mūziku",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Atkārtot celiņu, nevis atskaņot to vienu reizi",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Peles ritenītis",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Izvēlieties, ko atskaņošanas laikā dara peles ritenīša ritināšana virs video.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Izslēgts",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Pārtīt (uz priekšu / atpakaļ)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Skaļums",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Skaļums",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Rezerves audio valoda",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Priekšroka noklusējuma audio celiņam",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Dot priekšroku oriģinālajam audio celiņam, nevis lokalizētam dublējumam.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Priekšroka audioaprakstu celiņiem",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Dot priekšroku audioaprakstu celiņiem, nevis parastajiem celiņiem.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Pārkodēšana (audio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Tiešā straume (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Pārkodēšana (bitu pārraides ātrums vai izšķirtspēja)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Pārkodēšana (video un audio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Pārkodēšana (video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Izvēlieties, kā tiek dekodēts audio. „AVR caurlaide“ sūta neapstrādātas Dolby / DTS straumes uz uztvērēju; „Automātiski“ vai „Samiksēšana“ dekodē lokāli.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Izvēlieties formātu, uz kuru pārkodēt daudzkanālu audio, ja avota straumi nevar atskaņot tieši vai pārraidīt bez izmaiņām.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Automātiska noteikšana\n(ieteicams)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(noklusējums)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(bez zudumiem)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(tikai stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(efektīvs)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(bez zudumiem)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Maksimālais audio kanālu skaits",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Norādiet savas audio sistēmas maksimālo kanālu skaitu. Daudzkanālu straumes, kas pārsniedz šo ierobežojumu, tiks samiksētas vai pārkodētas.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Automātiska noteikšana\n(aparatūras noklusējums)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 telpiskā skaņa",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 kvadrofoniskā",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 telpiskā skaņa",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 telpiskā skaņa",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 telpiskā skaņa",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 telpiskā skaņa",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Austiņas",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Subtitru režīms",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Atzīmētie",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Vienmēr",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Svešvaloda",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Piespiedu",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Atskaņo celiņus, kas multivides faila metadatos atzīmēti kā „default“ vai „forced“.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Automātiski ielādē un rāda subtitrus katru reizi, kad sākas video.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Automātiski ieslēdz subtitrus, ja noklusējuma audio celiņš ir svešvalodā.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Ielādē tikai subtitrus, kas nepārprotami atzīmēti ar „forced“ metadatu karodziņu.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Pilnībā atspējo automātisku subtitru ielādi.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Rezerves subtitru valoda",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Subtitru straume",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Rādīt lejupielādes serverī",
+    "reportDownloadsActivitySubtitle": "Ļaut servera administratoram redzēt jūsu pārkodētās lejupielādes vadības panelī",
+    "navbarAlwaysExpanded": "Vienmēr rādīt navigācijas joslas nosaukumus",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Rādīt Seerr pogu",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Grupēt vienumus kolekcijās",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Pārlūkojot bibliotēkas, slēpt ar kolekcijām saistītos bibliotēkas vienumus",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Paziņojums par bibliotēkas grupēšanu",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Lai izmantotu šo iestatījumu, savā Jellyfin vai Emby serverī bibliotēkas attēlošanas iestatījumos iespējojiet bibliotēkas opciju „Grupēt filmas kolekcijās“ un/vai „Grupēt seriālus kolekcijās“.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Treilera audio",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Iespējot treileru audio multivides joslā",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Izvērstas sākuma ekrāna rindas",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Rādīt tikai vienu sākuma ekrāna rindu",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Pašreizējais lietotājs",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Statisks",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Lecošs",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr atklāšanas rindas",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Paziņojumi",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Paziņojumi par jauniem pieprasījumiem",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Paziņot, kad kāds iesniedz pieprasījumu",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Pieprasījumu jaunumi",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Apstiprināts, noraidīts un pievienots jūsu bibliotēkai",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Problēmu jaunumi",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Jaunas problēmas, atbildes un risinājumi",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Attēlu kešatmiņas ierobežojums",
+    "clearImageCache": "Notīrīt attēlu kešatmiņu",
+    "imageCacheCleared": "Attēlu kešatmiņa notīrīta",
+    "seerrDownloadingPercent": "Lejupielādē · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Importē",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Neizdevās",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Apstrādā",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Mainīja {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Pabeigts",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Šis nosaukums jau ir pieprasīts",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Sasniegts pieprasījumu ierobežojums",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Šis nosaukums ir bloķēto sarakstā",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Nav palikusi neviena sezona, ko pieprasīt",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Jums nav atļaujas veikt šo pieprasījumu",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Pieprasījumi",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Problēmas",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Jaunākie",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Pēdējoreiz mainīts",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Nav problēmu",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Atlikuši {remaining} no {limit} filmu pieprasījumiem",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Atlikuši {remaining} no {limit} sezonu pieprasījumiem",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Pieder kolekcijai {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Skatīt kolekciju",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Pieprasīt kolekciju",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "Filmas: {total} · pieejamas: {available}",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Pieprasīt filmas ({count})",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Pieprasa {current} no {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Pieprasītas filmas ({count})",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Pieprasītas {ok} no {total} filmām",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Visas filmas jau ir pieejamas vai pieprasītas",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Ziņot par problēmu",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Audio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Kas nav kārtībā?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Visas epizodes",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Epizode",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Atvērta",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Atrisināta",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Atrisināt",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Atvērt atkārtoti",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Ziņoja {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "Komentāri: {count}",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Pievienot komentāru",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Dzēst šo problēmu?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Iesniegt ziņojumu",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Attēlošana",
+    "adminDrawerMetadata": "Metadati",
+    "adminDrawerNfo": "NFO iestatījumi",
+    "adminActivitySeverityAll": "Visi nopietnības līmeņi",
+    "adminActivityDateRange": "Datumu diapazons",
+    "adminRemoveDeviceConfirm": "Noņemt ierīci “{name}”? Lietotājam būs atkārtoti jāpierakstās šajā ierīcē.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Dzēst visas ierīces",
+    "adminDeleteAllDevicesConfirm": "Noņemt ierīces ({count})? Skartajiem lietotājiem būs atkārtoti jāpierakstās. Jūsu pašreizējā ierīce netiks skarta.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Ierīces noņemtas",
+    "adminDevicesDeletedPartial": "Dažas ierīces noņemtas; {count} nevarēja noņemt.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Ceļi",
+    "adminLibraryTabOptions": "Opcijas",
+    "adminLibraryTabDownloaders": "Lejupielādes avoti",
+    "adminLibMetadataSavers": "Metadatu saglabātāji",
+    "adminLibSubtitleDownloaders": "Subtitru lejupielādes avoti",
+    "adminLibLyricDownloaders": "Dziesmu tekstu lejupielādes avoti",
+    "adminLibMetadataDownloadersFor": "Metadatu lejupielādes avoti: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Attēlu avoti: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Šis serveris nepiedāvā lejupielādes avotus šāda veida bibliotēkai.",
+    "adminLibrarySectionGeneral": "Vispārīgi",
+    "adminLibrarySectionMetadata": "Metadati",
+    "adminLibrarySectionEmbedded": "Iegultā informācija",
+    "adminLibrarySectionSubtitles": "Subtitri",
+    "adminLibrarySectionImages": "Attēli",
+    "adminLibrarySectionSeries": "Seriāli",
+    "adminLibrarySectionMusic": "Mūzika",
+    "adminLibrarySectionMovies": "Filmas",
+    "adminLibRealtimeMonitor": "Iespējot uzraudzību reāllaikā",
+    "adminLibRealtimeMonitorHint": "Noteikt failu izmaiņas un apstrādāt tās automātiski.",
+    "adminLibArchiveMediaFiles": "Uzskatīt arhīvus par multivides failiem",
+    "adminLibEnablePhotos": "Rādīt fotoattēlus",
+    "adminLibSaveLocalMetadata": "Saglabāt vāka attēlus multivides mapēs",
+    "adminLibRefreshInterval": "Automātiska metadatu atsvaidzināšana",
+    "adminLibRefreshNever": "Nekad",
+    "adminLibDefault": "Noklusējums",
+    "adminLibDisplayTitle": "Attēlošana",
+    "adminLibDisplaySection": "Bibliotēkas attēlošana",
+    "adminLibFolderView": "Rādīt mapju skatu ar vienkāršām multivides mapēm",
+    "adminLibSpecialsInSeasons": "Rādīt speciālās epizodes tajās sezonās, kurās tās tika rādītas",
+    "adminLibGroupMovies": "Grupēt filmas kolekcijās",
+    "adminLibGroupShows": "Grupēt seriālus kolekcijās",
+    "adminLibExternalSuggestions": "Rādīt ārējo saturu ieteikumos",
+    "adminLibDateAddedSection": "Pievienošanas datuma darbība",
+    "adminLibDateAddedLabel": "Pievienošanas datumu ņemt no",
+    "adminLibDateAddedImport": "Bibliotēkā skenēšanas datums",
+    "adminLibDateAddedFile": "Faila izveides datums",
+    "adminLibMetadataTitle": "Metadati un attēli",
+    "adminLibMetadataLangSection": "Vēlamā metadatu valoda",
+    "adminLibChaptersSection": "Nodaļas",
+    "adminLibDummyChapterDuration": "Fiktīvo nodaļu ilgums (sekundēs)",
+    "adminLibDummyChapterDurationHint": "To nodaļu ilgums, kas ģenerētas multividei bez nodaļām. Iestatiet 0, lai atspējotu.",
+    "adminLibChapterImageResolution": "Nodaļu attēlu izšķirtspēja",
+    "adminLibNfoTitle": "NFO iestatījumi",
+    "adminLibNfoHelp": "NFO metadati ir saderīgi ar Kodi un līdzīgām lietotnēm. Iestatījumi attiecas uz visām bibliotēkām, kas saglabā NFO metadatus.",
+    "adminLibKodiUser": "Lietotājs, kura skatīšanās dati tiks saglabāti NFO failos",
+    "adminLibSaveImagePaths": "Saglabāt attēlu ceļus NFO failos",
+    "adminLibPathSubstitution": "Iespējot ceļu aizstāšanu NFO attēlu ceļiem",
+    "adminLibExtraThumbs": "Kopēt extrafanart attēlus mapē extrathumbs",
+    "adminLibNone": "Nav",
+    "adminLibRefreshDays": "{days} d.",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Izmantot iegultos nosaukumus",
+    "adminLibEmbeddedExtrasTitles": "Izmantot iegultos papildmateriālu nosaukumus",
+    "adminLibEmbeddedEpisodeInfos": "Izmantot iegulto epizožu informāciju",
+    "adminLibAllowEmbeddedSubtitles": "Atļaut iegultos subtitrus",
+    "adminLibEmbeddedAllowAll": "Atļaut visus",
+    "adminLibEmbeddedAllowText": "Tikai tekstu",
+    "adminLibEmbeddedAllowImage": "Tikai attēlus",
+    "adminLibEmbeddedAllowNone": "Nav",
+    "adminLibSkipIfEmbeddedSubs": "Izlaist lejupielādi, ja ir iegultie subtitri",
+    "adminLibSkipIfAudioMatches": "Izlaist lejupielādi, ja audio celiņa valoda sakrīt ar lejupielādes valodu",
+    "adminLibRequirePerfectMatch": "Pieprasīt precīzu subtitru atbilstību",
+    "adminLibSaveSubtitlesWithMedia": "Saglabāt subtitrus multivides mapēs",
+    "adminLibChapterImageExtraction": "Iegūt nodaļu attēlus",
+    "adminLibChapterImagesDuringScan": "Iegūt nodaļu attēlus bibliotēkas skenēšanas laikā",
+    "adminLibTrickplayExtraction": "Iespējot Trickplay attēlu iegūšanu",
+    "adminLibTrickplayDuringScan": "Iegūt Trickplay attēlus bibliotēkas skenēšanas laikā",
+    "adminLibSaveTrickplayWithMedia": "Saglabāt Trickplay attēlus multivides mapēs",
+    "adminLibAutomaticSeriesGrouping": "Automātiski apvienot seriālus, kas izvietoti vairākās mapēs",
+    "adminLibSeasonZeroName": "Nulltās sezonas attēlojamais nosaukums",
+    "adminLibLufsScan": "Iespējot LUFS skenēšanu audio normalizēšanai",
+    "adminLibPreferNonstandardArtist": "Dot priekšroku nestandarta izpildītāju tagam",
+    "adminLibAutoAddToCollection": "Automātiski pievienot filmas kolekcijām",
+    "adminParentalControl": "Vecāku kontrole",
+    "adminMaxParentalRating": "Maksimālais atļautais vecuma ierobežojums",
+    "adminMaxParentalRatingHint": "Saturs ar augstāku ierobežojumu šim lietotājam tiks paslēpts.",
+    "adminParentalRatingNone": "Nav",
+    "adminBlockUnratedItems": "Bloķēt vienumus bez vecuma ierobežojuma informācijas vai ar neatpazītu informāciju",
+    "adminUnratedBook": "Grāmatas",
+    "adminUnratedChannelContent": "Kanāli",
+    "adminUnratedLiveTvChannel": "Tiešraides TV",
+    "adminUnratedMovie": "Filmas",
+    "adminUnratedMusic": "Mūzika",
+    "adminUnratedTrailer": "Treileri",
+    "adminUnratedSeries": "Seriāli",
+    "adminAccessSchedules": "Piekļuves grafiki",
+    "adminAccessSchedulesHint": "Atļaut piekļuvi tikai turpmāk norādītajos grafika laikos. Ja grafiks nav iestatīts, piekļuve ir atļauta visu diennakti.",
+    "adminAddSchedule": "Pievienot grafiku",
+    "adminScheduleDay": "Diena",
+    "adminScheduleStart": "Sākums",
+    "adminScheduleEnd": "Beigas",
+    "adminDayEveryday": "Katru dienu",
+    "adminDayWeekday": "Darba diena",
+    "adminDayWeekend": "Nedēļas nogale",
+    "adminDaySunday": "Svētdiena",
+    "adminDayMonday": "Pirmdiena",
+    "adminDayTuesday": "Otrdiena",
+    "adminDayWednesday": "Trešdiena",
+    "adminDayThursday": "Ceturtdiena",
+    "adminDayFriday": "Piektdiena",
+    "adminDaySaturday": "Sestdiena",
+    "adminAllowedTags": "Atļautie tagi",
+    "adminAllowedTagsHint": "Tiek rādīts tikai saturs ar šiem tagiem. Atstājiet tukšu, lai atļautu visu.",
+    "adminBlockedTags": "Bloķētie tagi",
+    "adminBlockedTagsHint": "Saturs ar šiem tagiem šim lietotājam tiek paslēpts.",
+    "adminAddTag": "Pievienot tagu",
+    "adminEnabledDevices": "Iespējotās ierīces",
+    "adminEnabledChannels": "Iespējotie kanāli",
+    "adminAuthProvider": "Autentifikācijas nodrošinātājs",
+    "adminPasswordResetProvider": "Paroles atiestatīšanas nodrošinātājs",
+    "adminLoginAttemptsBeforeLockout": "Maksimālais neveiksmīgo pieteikšanās mēģinājumu skaits pirms bloķēšanas",
+    "adminLoginAttemptsHint": "Iestatiet 0 noklusējuma vērtībai vai -1, lai atspējotu bloķēšanu.",
+    "adminSyncPlayAccess": "SyncPlay piekļuve",
+    "adminSyncPlayCreateAndJoin": "Atļaut veidot grupas un tām pievienoties",
+    "adminSyncPlayJoin": "Atļaut pievienoties grupām",
+    "adminSyncPlayNone": "Nav piekļuves",
+    "adminContentDeletionFolders": "Atļaut satura dzēšanu no",
+    "adminBackupOptionsTitle": "Izveidot dublējumu",
+    "adminBackupInclude": "Izvēlieties, ko iekļaut dublējumā.",
+    "adminBackupDatabase": "Datubāze",
+    "adminBackupDatabaseAlways": "Vienmēr iekļauts",
+    "adminBackupMetadata": "Metadati",
+    "adminBackupSubtitles": "Subtitri",
+    "adminBackupTrickplay": "Trickplay attēli",
+    "adminEditTuner": "Rediģēt uztvērēju",
+    "adminTunerTypeM3u": "M3U uztvērējs",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Fails vai URL",
+    "adminTunerIpAddress": "Uztvērēja IP adrese",
+    "adminTunerFriendlyName": "Draudzīgais nosaukums",
+    "adminTunerUserAgent": "Lietotāja aģents",
+    "adminTunerCount": "Vienlaicīgo savienojumu ierobežojums",
+    "adminTunerCountHelp": "Maksimālais straumju skaits, ko uztvērējs atļauj vienlaikus. Iestatiet 0, lai būtu neierobežots.",
+    "adminTunerFallbackBitrate": "Rezerves maksimālais straumēšanas bitu ātrums",
+    "adminTunerImportFavoritesOnly": "Importēt tikai izlases kanālus",
+    "adminTunerAllowHwTranscoding": "Atļaut aparatūras pārkodēšanu",
+    "adminTunerAllowFmp4": "Atļaut fMP4 pārkodēšanas konteineru",
+    "adminTunerAllowStreamSharing": "Atļaut straumes koplietošanu",
+    "adminTunerEnableStreamLooping": "Iespējot straumes atkārtošanu",
+    "adminTunerIgnoreDts": "Ignorēt DTS",
+    "adminTunerReadAtNativeFramerate": "Nolasīt ievadi ar dabisko kadru nomaiņas ātrumu",
+    "adminEditProvider": "Rediģēt nodrošinātāju",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Fails vai URL",
+    "adminXmltvMoviePrefix": "Filmu prefikss",
+    "adminXmltvMovieCategories": "Filmu kategorijas",
+    "adminXmltvCategoriesHelp": "Vairākas kategorijas atdaliet ar vertikālu svītru.",
+    "adminXmltvKidsCategories": "Bērnu kategorijas",
+    "adminXmltvNewsCategories": "Ziņu kategorijas",
+    "adminXmltvSportsCategories": "Sporta kategorijas",
+    "adminSdUsername": "Lietotājvārds",
+    "adminSdPassword": "Parole",
+    "adminSdCountry": "Valsts",
+    "adminSdCountrySelect": "Izvēlieties valsti",
+    "adminSdPostalCode": "Pasta indekss",
+    "adminSdGetListings": "Iegūt sarakstus",
+    "adminSdListings": "Saraksti",
+    "adminEnableAllTuners": "Iespējot visus uztvērējus",
+    "adminTunerResetNotSupported": "Šāda veida uztvērējs neatbalsta atiestatīšanu.",
+    "adminMovieRecordingPath": "Filmu ierakstīšanas ceļš",
+    "adminGuideDays": "Programmas datu dienas",
+    "adminGuideDaysAuto": "Automātiski",
+    "adminGuideDaysValue": "{days} d.",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Pēcapstrādes lietojumprogrammas ceļš",
+    "adminRecordingPostProcessorArgs": "Pēcapstrādes argumenti",
+    "adminSaveRecordingNfo": "Saglabāt ierakstu NFO metadatus",
+    "adminSaveRecordingImages": "Saglabāt ierakstu attēlus",
+    "adminLiveTvSectionTiming": "Laiks",
+    "adminLiveTvSectionPaths": "Ierakstīšanas ceļi",
+    "adminLiveTvSectionPostProcessing": "Pēcapstrāde",
+    "adminGuideDaysDisplay": "Programmas dati: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Atsvaidzināt programmas datus",
+    "adminGuideRefreshStarted": "Uzsākta programmas datu atsvaidzināšana",
+    "adminGuideRefreshUnavailable": "Programmas atsvaidzināšanas uzdevums šajā serverī nav pieejams.",
+    "adminMetadataIdentify": "Identificēt",
+    "adminBrandingSplashUpload": "Augšupielādēt attēlu",
+    "adminBrandingSplashUploaded": "Sveiciena ekrāns atjaunināts",
+    "adminBrandingSplashUploadFailed": "Neizdevās augšupielādēt sveiciena ekrānu",
+    "adminBrandingSplashDeleted": "Sveiciena ekrāns noņemts",
+    "adminBrandingNoSplash": "Nav pielāgota sveiciena ekrāna",
+    "adminPlaybackQsvDevice": "QSV ierīce",
+    "adminPlaybackEnhancedNvdec": "Iespējot uzlaboto NVDEC dekodētāju",
+    "adminPlaybackPreferNativeDecoder": "Dot priekšroku sistēmas aparatūras dekodētājam",
+    "adminPlaybackColorDepth": "Aparatūras dekodēšanas krāsu dziļums",
+    "adminPlaybackColorDepth10Hevc": "10 bitu HEVC dekodēšana",
+    "adminPlaybackColorDepth10Vp9": "10 bitu VP9 dekodēšana",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10 bitu dekodēšana",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12 bitu dekodēšana",
+    "adminPlaybackHwEncodingSection": "Aparatūras kodēšana",
+    "adminPlaybackAllowHevcEncoding": "Atļaut HEVC kodēšanu",
+    "adminPlaybackAllowAv1Encoding": "Atļaut AV1 kodēšanu",
+    "adminPlaybackIntelLowPowerH264": "Iespējot Intel mazjaudas H.264 kodētāju",
+    "adminPlaybackIntelLowPowerHevc": "Iespējot Intel mazjaudas HEVC kodētāju",
+    "adminPlaybackToneMapping": "Toņu kartēšana",
+    "adminPlaybackEnableTonemapping": "Iespējot toņu kartēšanu",
+    "adminPlaybackEnableVppTonemapping": "Iespējot VPP toņu kartēšanu",
+    "adminPlaybackEnableVtTonemapping": "Iespējot VideoToolbox toņu kartēšanu",
+    "adminPlaybackTonemappingAlgorithm": "Toņu kartēšanas algoritms",
+    "adminPlaybackTonemappingMode": "Toņu kartēšanas režīms",
+    "adminPlaybackTonemappingRange": "Toņu kartēšanas diapazons",
+    "adminPlaybackTonemappingDesat": "Toņu kartēšanas piesātinājuma samazināšana",
+    "adminPlaybackTonemappingPeak": "Toņu kartēšanas maksimums",
+    "adminPlaybackTonemappingParam": "Toņu kartēšanas parametrs",
+    "adminPlaybackVppTonemappingBrightness": "VPP toņu kartēšanas spilgtums",
+    "adminPlaybackVppTonemappingContrast": "VPP toņu kartēšanas kontrasts",
+    "adminPlaybackPresetsQuality": "Sagataves un kvalitāte",
+    "adminPlaybackEncoderPreset": "Kodētāja sagatave",
+    "adminPlaybackH264Crf": "H.264 kodēšanas CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) kodēšanas CRF",
+    "adminPlaybackDeinterlaceMethod": "Rindpārlēces novēršanas metode",
+    "adminPlaybackDeinterlaceDoubleRate": "Dubultot kadru nomaiņas ātrumu, novēršot rindpārlēci",
+    "adminPlaybackAudioSection": "Audio",
+    "adminPlaybackEnableAudioVbr": "Iespējot audio VBR kodēšanu",
+    "adminPlaybackDownmixBoost": "Audio samiksēšanas pastiprinājums",
+    "adminPlaybackDownmixAlgorithm": "Stereo samiksēšanas algoritms",
+    "adminPlaybackMaxMuxingQueue": "Maksimālais multipleksēšanas rindas izmērs",
+    "adminPlaybackAutoOption": "Automātiski",
+    "adminRunningTasks": "Aktīvie uzdevumi",
+    "adminNetworkingPublicHttpPort": "Publiskais HTTP ports",
+    "adminNetworkingRequireHttps": "Pieprasīt HTTPS",
+    "adminNetworkingRequireHttpsHint": "Novirzīt visus attālinātos pieprasījumus uz HTTPS. Nedarbojas, ja serverim nav derīga sertifikāta.",
+    "adminNetworkingCertPassword": "Sertifikāta parole",
+    "adminNetworkingIpSettings": "IP iestatījumi",
+    "adminNetworkingEnableIpv4": "Iespējot IPv4",
+    "adminNetworkingEnableIpv6": "Iespējot IPv6",
+    "adminNetworkingAutoDiscovery": "Iespējot automātisku portu kartēšanu",
+    "adminNetworkingLocalSubnets": "LAN tīkli",
+    "adminNetworkingLocalSubnetsHint": "Ar komatiem vai jaunām rindām atdalīts IP adrešu vai CIDR apakštīklu saraksts, ko uzskata par vietējo tīklu.",
+    "adminNetworkingPublishedUris": "Publicētie servera URI",
+    "adminNetworkingPublishedUriHint": "Kartējiet apakštīklu vai adresi uz publicētu URL, piem. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Ierobežošanas aizture (sekundēs)",
+    "adminPlaybackEnableSubtitleExtraction": "Atļaut subtitru iegūšanu reāllaikā",
+    "adminGeneralEnableSlowResponse": "Iespējot brīdinājumus par lēnu atbildi",
+    "adminGeneralQuickConnect": "Iespējot Quick Connect",
+    "adminGeneralSectionServer": "Serveris",
+    "adminGeneralSectionMetadata": "Metadati",
+    "adminGeneralSectionPaths": "Ceļi",
+    "adminGeneralSectionPerformance": "Veiktspēja",
+    "adminGeneralDisplayLanguage": "Vēlamā attēlošanas valoda",
+    "offlineBannerTitle": "Jūs esat bezsaistē",
+    "offlineBannerSubtitle": "Tiek rādītas jūsu lejupielādes",
+    "offlineBannerAction": "Lejupielādes",
+    "serverUnreachableBannerTitle": "Nevar sasniegt serveri",
+    "serverUnreachableBannerSubtitle": "Līdz servera atjaunošanai atskaņo no lejupielādēm",
+    "contextMenuHideFromContinueWatching": "Slēpt no “Turpināt skatīties”",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Slēpt no “Nākamais”",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Pievienot kolekcijai",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "SAVIENOJUMS",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Atļaut pašparakstītus sertifikātus",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Uzticēties serveriem, kas izmanto pašparakstītus vai privātas CA TLS sertifikātus. Iespējojiet tikai saviem serveriem. Tas atspējo sertifikātu pārbaudi visiem savienojumiem.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Detaļu ekrāns",
+    "settingsDetailsScreenSubtitle": "Stils, fona izplūdums un ciļņu darbība",
+    "settingsShowSeerrButtonInNavigation": "Rādīt Seerr pogu navigācijas joslā",
+    "settingsAlwaysExpandNavbarLabels": "Vienmēr rādīt teksta nosaukumus augšējā navigācijas joslā",
+    "settingsMediaSegmentCountdown": "Multivides segmenta atpakaļskaitīšana",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Progresa josla",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Taimeris",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Nav",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Nesen izdots: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Iespējot tunelēšanu",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Paplašināts. Novirza audio un video caur saistītu aparatūras ceļu. Pēc noklusējuma izslēgts, jo dažās ierīcēs tas rada audio un video pārrāvumus.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Rādīt multivides informāciju",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Rādīt izvēlētā vienuma informāciju bibliotēkas lapu augšdaļā.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Slēpt fona attēlus pārlūkošanas laikā?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Tēmu veikals",
+    "themeStoreSubtitle": "Pārlūkojiet un saglabājiet kopienas tēmas",
+    "themeStoreDescription": "Saglabājiet tēmu, lai to izmantotu tāpat kā citas saglabātās tēmas.",
+    "themeStoreEmpty": "Pašlaik nav pieejama neviena tēma.",
+    "themeStoreLoadFailed": "Neizdevās ielādēt tēmu veikalu. Pārbaudiet savienojumu un mēģiniet vēlreiz.",
+    "themeStoreSave": "Saglabāt",
+    "themeStoreSaveAndApply": "Saglabāt un lietot",
+    "themeStoreSaved": "Saglabāts",
+    "themeStoreInvalidMessage": "Šo tēmu neizdevās ielādēt.",
+    "themeStoreSavedMessage": "Saglabāts “{themeName}”.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Sākuma ekrāna rindu attēlošana",
+    "homeRowSections": "Sākuma ekrāna rindu sadaļas",
+    "homeRowToggles": "Sākuma ekrāna rindu slēdži",
+    "homeRowTogglesSubtitle": "Iespējojiet vai atspējojiet uz bibliotēkām balstītas sākuma ekrāna rindu kategorijas",
+    "homeRowTogglesDescription": "Iespējojiet turpmākos slēdžus, lai rindas tiktu rādītas sākuma ekrāna sadaļās.",
+    "displayPlaylistsRows": "Rādīt atskaņošanas sarakstu rindas",
+    "displayPlaylistsRowsSubtitle": "Rādīt atskaņošanas sarakstu rindas sākuma ekrāna sadaļās.",
+    "playlistsRowSorting": "Atskaņošanas sarakstu rindu kārtošana",
+    "playlistsRowSortingDescription": "Kārtojiet atskaņošanas sarakstu rindas pēc pievienošanas datuma, izdošanas datuma, alfabēta un citiem kritērijiem.",
+    "displayAudioRows": "Rādīt audio rindas",
+    "displayAudioRowsSubtitle": "Rādīt audio rindas sākuma ekrāna sadaļās.",
+    "audioRowsSorting": "Audio rindu kārtošana",
+    "audioRowsSortingDescription": "Kārtojiet audio rindas pēc pievienošanas datuma, izdošanas datuma, alfabēta un citiem kritērijiem.",
+    "audioPlaylists": "Audio atskaņošanas saraksti",
+    "layout": "Izkārtojums",
+    "theme": "Tēma",
+    "keyboard": "Tastatūra",
+    "navButtons": "Pogas",
+    "rendering": "Renderēšana",
+    "mpvConfiguration": "MPV konfigurācija",
+    "externalPlayerAppDescription": "Iestatiet ārējo atskaņotāju, lai iespējotu atskaņošanu ar ilgu piespiešanu",
+    "crewContributionsSeerr": "Filmēšanas grupas darbi (Seerr)",
+    "changeArtwork": "Mainīt vāka attēlu",
+    "missing": "Trūkst",
+    "clearAllArtworkButton": "Notīrīt visus vāka attēlus?",
+    "clearAllArtworkWarning": "Vai tiešām vēlaties notīrīt visus lejupielādētos vāka attēlus?",
+    "confirmClear": "Apstiprināt notīrīšanu",
+    "confirmClearMessage": "Vai tiešām vēlaties notīrīt šo vienumu: {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Augšupielādēt?",
+    "resolutionLabel": "Izšķirtspēja: ",
+    "onlyShowInterfaceLanguage": "Rādīt tikai saskarnes valodas vāka attēlus",
+    "confirmClearAll": "Apstiprināt visu notīrīšanu",
+    "imageUploadSuccess": "Attēls veiksmīgi augšupielādēts!",
+    "imageUploadFailed": "Neizdevās augšupielādēt attēlu: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Neizdevās iestatīt attēlu: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Neizdevās dzēst attēlu: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Neizdevās notīrīt visus vāka attēlus: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Jā",
+    "posterCategory": "Plakāts",
+    "backdropsCategory": "Fona attēli",
+    "bannerCategory": "Baneris",
+    "logoCategory": "Logotips",
+    "thumbnailCategory": "Sīktēls",
+    "artCategory": "Grafika",
+    "discArtCategory": "Diska grafika",
+    "screenshotCategory": "Ekrānuzņēmums",
+    "boxCoverCategory": "Kastītes vāks",
+    "boxRearCoverCategory": "Kastītes aizmugurējais vāks",
+    "menuArtCategory": "Izvēlnes grafika",
+    "confirmItemPoster": "plakāts",
+    "confirmItemBackdrop": "fona attēls",
+    "confirmItemBanner": "baneris",
+    "confirmItemLogo": "logotips",
+    "confirmItemThumbnail": "sīktēls",
+    "confirmItemArt": "grafika",
+    "confirmItemDiscArt": "diska grafika",
+    "confirmItemScreenshot": "ekrānuzņēmums",
+    "confirmItemBoxCover": "kastītes vāks",
+    "confirmItemBoxRearCover": "kastītes aizmugurējais vāks",
+    "confirmItemMenuArt": "izvēlnes grafika",
+    "resolutionAll": "Visas",
+    "resolutionHigh": "Augsta (1080p+)",
+    "resolutionMedium": "Vidēja (720p)",
+    "resolutionLow": "Zema (<720p)",
+    "sources": "Avoti",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Nodaļas",
+    "audiobookBookmarks": "Grāmatzīmes",
+    "audiobookNotes": "Piezīmes",
+    "audiobookQueue": "Rinda",
+    "audiobookTimeline": "Laika josla",
+    "audiobookTimelineEmpty": "Laika josla ir tukša",
+    "audiobookWholeBook": "Visa grāmata",
+    "audiobookFocusedTimeline": "Fokusētā laika josla",
+    "audiobookExportBookmarks": "Eksportēt grāmatzīmes",
+    "audiobookExportNotes": "Eksportēt piezīmes",
+    "audiobookExportAll": "Eksportēt visu",
+    "audiobookExportSuccess": "Eksportēts uz {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Eksportēšana neizdevās: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Dziesmu teksti",
+    "audiobookAddBookmark": "Pievienot grāmatzīmi",
+    "audiobookAddNote": "Pievienot piezīmi",
+    "audiobookEditNote": "Rediģēt piezīmi",
+    "audiobookNoteHint": "Uzrakstiet piezīmi šim brīdim",
+    "audiobookSleepTimer": "Miega taimeris",
+    "audiobookSleepOff": "Izslēgts",
+    "audiobookSleepEndOfChapter": "Nodaļas beigās",
+    "audiobookSleepCustom": "Pielāgots",
+    "audiobookSleepRemaining": "Atlicis {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Atskaņošanas ātrums",
+    "audiobookRemainingTime": "Atlicis",
+    "audiobookElapsedTime": "Pagājis",
+    "audiobookSkipBackSeconds": "Atpakaļ {seconds} s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Uz priekšu {seconds} s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Iepriekšējā nodaļa",
+    "audiobookNextChapter": "Nākamā nodaļa",
+    "audiobookChapterIndicator": "{current}. nodaļa no {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Nav nodaļu",
+    "audiobookNoBookmarks": "Vēl nav grāmatzīmju",
+    "audiobookNoNotes": "Vēl nav piezīmju",
+    "audiobookBookmarkAdded": "Grāmatzīme pievienota pie {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Atiestatīt uz 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Saglabāt",
+    "audiobookCancel": "Atcelt",
+    "audiobookDelete": "Dzēst",
+    "subtitlePreferences": "Subtitru preferences",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Mainiet subtitru režīmus, noklusējuma valodas, izskatu un renderēšanas opcijas.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Subtitru renderēšana",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Attēlošanas opcijas",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Izdošanas datums (augoši)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Izdošanas datums (dilstoši)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Grupēt darbus",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Grupēt vairākas lomas",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Brīdinājums par bibliotēkas rakstīšanas piekļuvi",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Kā to novērst:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Piešķiriet Jellyfin pakalpojuma lietotājam (piem., jellyfin vai Docker PUID/PGID) rakstīšanas atļaujas serverī esošajām multivides bibliotēkas mapēm.\n\n2. Vai arī dodieties uz Jellyfin vadības paneli -> Bibliotēkas, rediģējiet šo bibliotēku un atspējojiet opciju “Saglabāt vāka attēlus multivides mapēs”, lai vāka attēli tiktu glabāti Jellyfin iekšējā datubāzē.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Noraidīt",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Jūsu bibliotēka “{libraryName}” ir konfigurēta saglabāt vāka attēlus tieši multivides mapēs (opcija “Saglabāt vāka attēlus multivides mapēs” ir iespējota). Tomēr Jellyfin pārbaudīja rakstīšanas piekļuvi un tam nav atļaujas rakstīt failus šajā direktorijā:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Šķiet, ka Jellyfin neizdevās atjaunināt vāka attēlu. Jūsu bibliotēka ir konfigurēta saglabāt vāka attēlus tieši multivides mapēs (opcija “Saglabāt vāka attēlus multivides mapēs” ir iespējota). Šī kļūda parasti rodas, kad Jellyfin servera procesam nav atļaujas rakstīt failus jūsu multivides direktorijās.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Ārējie saraksti",
+    "replay": "Atskaņot no jauna",
+    "fileInformation": "Faila informācija",
+    "fileSizeFormat": "Izmērs: {size}  •  Formāts: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Rādīt visus audio celiņus ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Rādīt visus subtitru celiņus ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Pārbauda tiešās atskaņošanas iespēju...",
+    "directPlayCapabilityLabel": "Tiešās atskaņošanas iespēja: ",
+    "forced": "Piespiedu",
+    "transcodeContainerNotSupported": "Atskaņotājs neatbalsta konteinera formātu.",
+    "transcodeVideoCodecNotSupported": "Video kodeks netiek atbalstīts.",
+    "transcodeAudioCodecNotSupported": "Audio kodeks netiek atbalstīts.",
+    "transcodeSubtitleCodecNotSupported": "Subtitru formāts netiek atbalstīts (nepieciešama iededzināšana).",
+    "transcodeAudioProfileNotSupported": "Audio profils netiek atbalstīts.",
+    "transcodeVideoProfileNotSupported": "Video profils netiek atbalstīts.",
+    "transcodeVideoLevelNotSupported": "Video līmenis netiek atbalstīts.",
+    "transcodeVideoResolutionNotSupported": "Šī ierīce neatbalsta video izšķirtspēju.",
+    "transcodeVideoBitDepthNotSupported": "Video bitu dziļums netiek atbalstīts.",
+    "transcodeVideoFramerateNotSupported": "Video kadru nomaiņas ātrums netiek atbalstīts.",
+    "transcodeContainerBitrateExceedsLimit": "Faila bitu ātrums pārsniedz atskaņotāja straumēšanas ierobežojumu.",
+    "transcodeVideoBitrateExceedsLimit": "Video bitu ātrums pārsniedz straumēšanas ierobežojumu.",
+    "transcodeAudioBitrateExceedsLimit": "Audio bitu ātrums pārsniedz straumēšanas ierobežojumu.",
+    "transcodeAudioChannelsNotSupported": "Audio kanālu skaits netiek atbalstīts.",
+    "sortAlphabetical": "Pēc alfabēta",
+    "sortReleaseAscending": "Izdošanas secība (augoši)",
+    "sortReleaseDescending": "Izdošanas secība (dilstoši)",
+    "sortCustomDragDrop": "Pielāgota (velkot un nometot)",
+    "playlistSortOptions": "Atskaņošanas saraksta kārtošanas opcijas",
+    "resetSort": "Atiestatīt kārtošanu",
+    "rewatchSeasonEpisode": "Skatīties atkārtoti S{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Skatīties atskaņošanas sarakstu atkārtoti",
+    "noSubtitlesFound": "Subtitri nav atrasti.",
+    "adminControls": "Administratora vadīklas",
+    "impellerRendering": "Renderēšanas dzinējs (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller ir Flutter modernais GPU renderētājs, kas nodrošina plūstošākas animācijas un mazāku raustīšanos. Dažās TV pierīcēs un vecākos GPU tas var radīt traucējumus vai melnu attēlu; tādā gadījumā izslēdziet to. “Automātiski” izvēlas jūsu ierīcei piemērotāko noklusējumu. Lai lietotu izmaiņas, restartējiet Moonfin.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automātiski",
+    "impellerOn": "Ieslēgts",
+    "impellerOff": "Izslēgts",
+    "impellerRestartTitle": "Nepieciešams restarts",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Lai mainītu renderēšanas dzinēju, Moonfin ir jārestartē. Aizveriet lietotni tagad un atveriet to no jauna.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Aizvērt lietotni tagad",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Atsvaidzināt bibliotēku",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Atsvaidzināt visas bibliotēkas",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Pievienošanas datums (vecākie vispirms)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Pievienošanas datums (jaunākie vispirms)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Pēc alfabēta (no A līdz Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Pēc alfabēta (no Z līdz A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Ielādē servera analītiku... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Kā avotam",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb 250 labākās filmas",
+    "imdbTop250TvShows": "IMDb 250 labākie seriāli",
+    "imdbMostPopularMovies": "IMDb populārākās filmas",
+    "imdbMostPopularTvShows": "IMDb populārākie seriāli",
+    "imdbLowestRatedMovies": "IMDb zemāk novērtētās filmas",
+    "imdbTopEnglishMovies": "IMDb augstāk novērtētās filmas angļu valodā"
 }

@@ -1,6 +1,6 @@
 {
     "@@locale": "bg",
-    "appTitle": "Лунна перка",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Бързо свързване",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Премахнете",
+    "remove": "Премахване",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Лунна перка",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Серия",
+    "series": "Сериали",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Художници",
+    "artists": "Изпълнители",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Кандидатствайте",
+    "apply": "Прилагане",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Резюме",
+    "resume": "Продължи",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Гледах",
+    "watched": "Гледани",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Ненаблюдавано",
+    "unwatched": "Негледани",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 аудиокнига} other{{count} аудиокниги}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Сезон} other{{count} Сезона}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Играйте",
+    "play": "Пусни",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Актьорски състав",
+    "cast": "Предаване",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Няма",
+    "none": "Без",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "ПИСАТЕЛИ",
+    "writers": "СЦЕНАРИСТИ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 песен} other{{count} песни}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 глава} other{{count} глави}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Разбъркайте",
+    "shuffle": "Разбъркай",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1727,7 +1727,7 @@
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
-    "off": "Изкл",
+    "off": "Изкл.",
     "@off": {
         "description": "Label for subtitle off option"
     },
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value}мс",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value}мс",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Играч",
+    "player": "Плейър",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -2191,7 +2191,7 @@
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "затвори",
+    "close": "Затвори",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "не",
+    "no": "Не",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "С{season} Е{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "С{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 епизод} other{{count} епизода}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Забранено",
+    "disabled": "Изключено",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value}с",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Лунна перка",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Изкл",
+    "mediaBarModeOff": "Изкл.",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Конкретен потребител",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Винаги удостоверявай",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "Тракт",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Плъгин",
+    "pluginLabel": "Приставка Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "Открийте редове",
+    "discoverRows": "Страница за откриване в Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Плъзнете, за да пренаредите. Активиране или деактивиране на редове. Активираният ред на редовете се синхронизира с плъгина Moonfin.",
+    "discoverRowsDescriptionPlugin": "Включете редовете, които да виждате на началната страница на Seerr. Плъзнете, за да пренаредите. Персонализираният ред се синхронизира с Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Плъзнете, за да пренаредите. Активиране или деактивиране на редове.",
+    "discoverRowsDescription": "Включете редовете, които да виждате на началната страница на Seerr. Плъзнете, за да пренаредите. Персонализираният ред се синхронизира с Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Активирано",
+    "enabled": "Включено",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "ясно",
+    "clear": "Изчисти",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Изяви",
+    "appearances": "Участия",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4520,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "Достъп",
-    "add": "Добавете",
+    "add": "Добавяне",
     "address": "Адрес",
     "analytics": "Анализ",
     "catalog": "Каталог",
@@ -4533,14 +4529,14 @@
     "encoding": "Кодиране",
     "error": "Грешка",
     "forward": "Напред",
-    "general": "генерал",
+    "general": "Общи",
     "go": "върви",
     "install": "Инсталирайте",
     "installed": "Инсталиран",
     "interval": "Интервал",
     "name": "Име",
     "networking": "Работа в мрежа",
-    "next": "Следваща",
+    "next": "Следващ",
     "path": "Пътека",
     "paused": "На пауза",
     "permissions": "Разрешения",
@@ -4560,7 +4556,7 @@
     "sessions": "Сесии",
     "set": "Комплект",
     "status": "Статус",
-    "stop": "Спрете",
+    "stop": "Спри",
     "streaming": "Поточно предаване",
     "time": "време",
     "trickplay": "Trickplay",
@@ -4576,9 +4572,9 @@
     "adminDrawerSettings": "Настройки",
     "adminDrawerBranding": "Брандиране",
     "adminDrawerUsers": "Потребители",
-    "adminDrawerLibraries": "библиотеки",
+    "adminDrawerLibraries": "Библиотеки",
     "adminDrawerTranscoding": "Транскодиране",
-    "adminDrawerResume": "Резюме",
+    "adminDrawerResume": "Продължаване",
     "adminDrawerStreaming": "Поточно предаване",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "устройства",
@@ -4675,16 +4671,16 @@
     "sessionPrev": "предишна",
     "sessionRewind": "Превъртане назад",
     "sessionForward": "Напред",
-    "sessionNext": "Следваща",
+    "sessionNext": "Следващ",
     "sessionVolumeDown": "том –",
-    "sessionVolumeUp": "Vol +",
+    "sessionVolumeUp": "Звук +",
     "uhd4k": "4K",
     "nowPlaying": "Сега се играе",
-    "volume": "Обем",
+    "volume": "Сила на звука",
     "actions": "Действия",
     "videoCodec": "Видео кодек",
     "audioCodec": "Аудио кодек",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Хард. ускорение",
     "completion": "Завършване",
     "direct": "Директен",
     "adminDisconnect": "Прекъснете връзката",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Запазване на сегмент (секунди)",
     "adminThrottleBuffering": "Буфериране на газта",
     "adminTrickplaySaved": "Настройките за Trickplay са запазени",
-    "adminTrickplayLoadFailed": "Неуспешно зареждане на настройките за трикплей",
+    "adminTrickplayLoadFailed": "Неуспешно зареждане на настройките за Trickplay",
     "adminEnableHardwareAcceleration": "Активирайте хардуерното ускорение",
     "adminEnableKeyFrameExtraction": "Активирайте извличането само на ключови кадри",
     "adminKeyFrameSubtitle": "По-бързо, но с по-ниска точност",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS порт",
     "adminPublicHttpsPort": "Обществен HTTPS порт",
     "adminBaseUrl": "Основен URL адрес",
-    "adminBaseUrlHint": "напр. / желе",
+    "adminBaseUrlHint": "напр. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Активирайте HTTPS",
     "adminLocalNetwork": "Локална мрежа",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Търсене на отдалечено лице",
     "adminNoRemoteMatches": "Няма открити отдалечени съвпадения",
     "adminRemoteResults": "Дистанционни резултати",
     "adminRemoteMetadataApplied": "Приложени са отдалечени метаданни",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Добавете тунер",
     "adminTunerType": "Тип тунер",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Други",
-    "adminUrlPath": "URL/път",
-    "adminNameOptional": "Име (по избор)",
     "adminTunerAdded": "Добавен тунер",
     "adminTunerAddFailed": "Неуспешно добавяне на тунер: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Добавете доставчик на ръководство",
     "adminProviderType": "Тип доставчик",
-    "adminProviderTypeHint": "SchedulesDirect или XMLTV",
-    "adminUsernameOptional": "потребителско име (по избор)",
-    "adminRefreshInterval": "Интервал на опресняване (часове)",
     "adminProviderAdded": "Доставчикът е добавен",
     "adminProviderAddFailed": "Неуспешно добавяне на доставчик: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "Резервно копие без име",
     "adminLiveTvNotAvailable": "Администрирането на телевизия на живо не е налично на тази сървърна компилация.",
     "adminLiveTvTitle": "Администрация на телевизия на живо",
-    "adminApply": "Кандидатствайте",
+    "adminApply": "Прилагане",
     "adminNotSet": "Не е зададено",
     "adminReset": "Нулиране",
     "adminLogsTitle": "Сървърни регистрационни файлове",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Няма съответстващи редове",
     "adminMetadataEditorTitle": "Редактор на метаданни",
-    "adminMetadataRemote": "Дистанционно",
     "adminMetadataType": "Тип",
     "adminMetadataDetails": "Подробности",
     "adminMetadataExternalIds": "Външни идентификатори",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Премахнете",
+    "adminReposRemove": "Премахване",
     "adminReposSaveFailed": "Неуспешно запазване на хранилища: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Отменя се...",
     "adminTaskRunning": "Работи...",
     "adminTaskNeverRun": "Никога не бягайте",
-    "adminTaskStop": "Спрете",
+    "adminTaskStop": "Спри",
     "adminTaskRun": "Бягай",
     "adminTaskDetailLastExecution": "Последна екзекуция",
     "adminTaskDetailStarted": "започна",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "На всеки 12 часа",
     "adminTaskTriggerEvery24Hours": "На всеки 24 часа",
     "adminTaskTriggerEvery2Days": "На всеки 2 дни",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 час} other{{count} часа}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "сега",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes}м",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}ч",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days}д",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}.{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Конфигурирайте генериране на трикплей изображения за миниатюри за преглед при търсене.",
+    "adminTrickplayDescription": "Конфигурирайте генерирането на Trickplay изображения за миниатюрите при превъртане.",
     "adminNetworkingPublicHttpsPort": "Обществен HTTPS порт",
     "adminNetworkingBaseUrl": "Основен URL адрес",
-    "adminNetworkingBaseUrlHint": "напр. / желе",
+    "adminNetworkingBaseUrlHint": "напр. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Път на сертификата",
     "adminNetworkingRemoteIpFilter": "Отдалечен IP филтър",
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "Папки",
-    "libraries": "библиотеки",
+    "libraries": "Библиотеки",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay деактивиран",
     "syncPlayDisabledMessage": "Активирайте SyncPlay в Настройки, за да използвате синхронизирано възпроизвеждане.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay изисква Jellyfin сървър. Текущият сървър не го поддържа.",
     "syncPlayGroupFallbackName": "SyncPlay Група",
     "syncPlayGroupTooltip": "SyncPlay група",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# участник} other {# участници}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Запомни моя избор",
     "playHdr10Fallback": "Играйте HDR10 резервен вариант",
     "requestTranscode": "Заявка за прекодиране",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {открит # ред} other {открити # реда}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Неправилен ПИН",
     "pinMismatch": "ПИН кодовете не съвпадат",
     "pinForgot": "Забравен ПИН?",
-    "pinClear": "ясно",
-    "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Заявката за бързо свързване е разрешена.",
-    "quickConnectInvalidOrExpired": "Кодът за бързо свързване е невалиден или изтекъл.",
-    "quickConnectNotSupported": "Бързото свързване не се поддържа на този сървър.",
-    "quickConnectAuthorizeFailed": "Неуспешно оторизиране на кода за бързо свързване.",
-    "quickConnectDisabled": "Бързото свързване е деактивирано на този сървър.",
-    "quickConnectForbidden": "Вашият акаунт не може да разреши тази заявка за бързо свързване.",
-    "quickConnectNotFound": "Кодът за бързо свързване не беше намерен. Опитайте нов код.",
-    "quickConnectFailedWithMessage": "Неуспешно бързо свързване: {message}",
+    "pinClear": "Изчисти",
+    "pinBackspace": "Изтриване",
+    "quickConnectAuthorized": "Заявката за Quick Connect е одобрена.",
+    "quickConnectInvalidOrExpired": "Кодът за Quick Connect е невалиден или изтекъл.",
+    "quickConnectNotSupported": "Quick Connect не се поддържа на този сървър.",
+    "quickConnectAuthorizeFailed": "Неуспешно одобряване на кода за Quick Connect.",
+    "quickConnectDisabled": "Quick Connect е изключен на този сървър.",
+    "quickConnectForbidden": "Вашият акаунт не може да одобри тази заявка за Quick Connect.",
+    "quickConnectNotFound": "Кодът за Quick Connect не е намерен. Опитайте с нов код.",
+    "quickConnectFailedWithMessage": "Quick Connect беше неуспешен: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "Следва",
     "playNext": "Възпроизвеждане Следващ",
     "stillWatchingContent": "Възпроизвеждането е поставено на пауза. Гледате ли още?",
-    "stillWatchingStop": "Спрете",
+    "stillWatchingStop": "Спри",
     "stillWatchingContinue": "Продължи",
     "skipSegment": "Пропускане на {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Проверете за актуализации",
     "settingsCheckForUpdatesSubtitle": "Проверете за най-новата Moonfin версия",
     "settingsPoweredByFlutter": "Осъществено от Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# лицензионно известие} other {# лицензионни известия}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6635,7 +6623,7 @@
     "settingsLong": "Дълги",
     "settingsVeryLong": "Много дълго",
     "settingsVideoStartDelay": "Забавяне на стартиране на видео",
-    "settingsMillisecondsValue": "{value} ms",
+    "settingsMillisecondsValue": "{value} мс",
     "@settingsMillisecondsValue": {
         "description": "Milliseconds duration label",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Записвайте",
+    "record": "Запис",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "Аудио резервен кодек",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC стерео",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Преминаване (разширено)",
     "@settingsAudioPassthroughAdvanced": {
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Топ изпълнители",
     "analyticsTopAuthors": "Топ автори",
     "analyticsTopContributors": "Най-активни сътрудници",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Библиотека} other{{count} Библиотеки}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "Плъгинът за извличане на CB7 не е наличен на тази платформа.",
     "closeGenrePanel": "Затворете жанровия панел",
     "loadingShuffle": "Разбъркването се зарежда...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "РАЗБЪРКВАНЕ НА БИБЛИОТЕКАТА",
+    "randomShuffleLabel": "СЛУЧАЙНО РАЗБЪРКВАНЕ",
+    "genresShuffleLabel": "РАЗБЪРКВАНЕ ПО ЖАНРОВЕ",
     "autoHdrSwitching": "Автоматично превключване на HDR",
     "autoHdrSwitchingDescription": "Автоматично активиране на HDR за възпроизвеждане на HDR видео и възстановяване на режима на показване при излизане.",
     "whenFullscreen": "Когато е на цял екран",
     "transcodingLimits": "Ограничения за транскодиране",
-    "settingsSupportMoonfinSubtitle": "Дарете кафе на разработчика"
+    "settingsSupportMoonfinSubtitle": "Дарете кафе на разработчика",
+    "accountPreferences": "ПРЕДПОЧИТАНИЯ ЗА АКАУНТА",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Език на интерфейса",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Системен по подразбиране",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Празно",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Стил на екрана с детайли",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Класически е оригиналното центрирано оформление на Moonfin. Модерен е адаптивно кинематографично оформление.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Класически",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Модерен",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Разгънати раздели",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Автоматично показване на съдържанието на разделите при разглеждане. Изключете, за да отваряте и затваряте всеки раздел ръчно.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Показване на технически детайли?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Показване на кодек, резолюция и информация за потока в обобщението на банера",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Система за препоръки",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Използвайте алгоритъма Moonfin Recommends за локалната библиотека или онлайн показателите за сходство на TMDb. Забележка: онлайн препоръките изискват интеграция със Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "Сходство по TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Прилагане на ограничение по родителска оценка?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Ограничаване на предложенията на Moonfin Recommends според родителската оценка на целевата медия",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Стил на интерфейса",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Автоматично съответства на вашето устройство. Изберете Apple или Material, за да наложите определен облик.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Автоматично",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Качество на стъклото",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Автоматично избира най-добрия стъклен ефект за това устройство. Пълно налага истинско размиване; Намалено използва олекотено стъкло, което пести GPU ресурси.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Автоматично",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Пълно",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Намалено",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Персонализирана тема",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Персонализираните теми променят визуалните елементи в Moonfin. Изберете една от тези опции според вашия стил.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Стил с течно стъкло, плавно движещ се градиентен фон, матирани повърхности и акцент в Apple синьо",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Ретро пиксел-арт стил с плътна палитра, блокови рамки, резки сенки и пикселен шрифт",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Меню",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "На пауза",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Запазване на състоянието",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Игри",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Зареждане на състоянието",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Превъртане напред",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Настройки на емулатора",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Това ядро няма настройваеми опции.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Задръжте за меню",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Възпроизвеждането на игри още не се поддържа на това устройство.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Последни книги",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Последни аудиокниги",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 книга} other{{count} книги}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Книга",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Аудиокнига",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% прочетено",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "остават {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Четене",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Слушане",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Елементи",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Допълнения",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Зад кулисите",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Изтрити сцени",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Кратки материали",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Интервюта",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Сцени",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Късометражни филми",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "остават {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Завършва след {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "РЕЖИСЬОРИ",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "СЦЕНАРИСТ",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Разбъркване на цялата музика",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Влезте в Moonfin на телефона си",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Сървърът не е достъпен",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Следва: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "остават {minutes} мин",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "остават {hours} ч",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "остават {hours} ч {minutes} мин",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Страници с детайли, начални редове и сила на звука",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Повтаряне на тематичната музика",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Повтаряне на записа вместо еднократно възпроизвеждане",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Колелце на мишката",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Изберете какво прави превъртането с колелцето на мишката върху видеото по време на възпроизвеждане.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Изкл.",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Превъртане (напред / назад)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Сила на звука",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Сила на звука",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Резервен език на звука",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Предпочитане на аудиозаписа по подразбиране",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Предпочитайте оригиналния аудиозапис пред локализирания дублаж.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Предпочитане на записи с аудиоописание",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Предпочитайте записите с аудиоописание пред обикновените.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Прекодиране (звук)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Директен поток (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Прекодиране (битрейт или резолюция)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Прекодиране (видео и звук)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Прекодиране (видео)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Изберете как се декодира звукът. AVR Passthrough изпраща необработени Dolby/DTS потоци към вашия ресийвър; Автоматично или Downmix декодира локално.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Изберете целевия формат за прекодиране на многоканален звук, когато изходният поток не може да се възпроизведе директно или да премине без обработка.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Автоматично разпознаване\n(Препоръчително)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(По подразбиране)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Без загуби)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Само стерео)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Ефективен)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Без загуби)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Максимален брой аудиоканали",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Задайте максималния брой канали на вашата аудиосистема. Многоканалните потоци над този лимит ще бъдат смесени или прекодирани.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Автоматично разпознаване\n(Хардуер по подразбиране)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Моно",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Стерео",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Съраунд",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Квадрофоничен",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Съраунд",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Съраунд",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Съраунд",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Съраунд",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Слушалки",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Режим на субтитрите",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Маркирани",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Винаги",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Чуждоезични",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Принудителни",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Възпроизвежда записите, маркирани в метаданните на медийния файл като „по подразбиране“ или „принудителни“.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Автоматично зарежда и показва субтитри при всяко пускане на видео.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Автоматично включва субтитрите, ако аудиозаписът по подразбиране е на чужд език.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Зарежда само субтитрите, изрично маркирани с флага „принудителни“ в метаданните.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Напълно изключва автоматичното зареждане на субтитри.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Резервен език на субтитрите",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Поток на субтитрите",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Показване на изтеглянията на сървъра",
+    "reportDownloadsActivitySubtitle": "Позволете на администратора на сървъра да вижда вашите прекодирани изтегляния в таблото за управление",
+    "navbarAlwaysExpanded": "Винаги разгънати надписи в навигацията",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Показване на бутона Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Групиране на елементите в колекции",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Скриване на елементите, свързани с колекция, при разглеждане на библиотеките",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Бележка за групирането на библиотеката",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "За да използвате тази настройка, уверете се, че настройките на библиотеката „Групиране на филмите в колекции“ и/или „Групиране на сериалите в колекции“ са включени в настройките за показване на вашата библиотека на вашия Jellyfin или Emby сървър.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Звук на трейлърите",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Включване на звука за трейлърите в медийната лента",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Разгънати начални редове",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Ограничаване до 1 начален ред на екран",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Текущ потребител",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Статичен",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Подскачащ",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Редове за откриване в Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Известия",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Известия за нови заявки",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Известие, когато някой подаде заявка",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Актуализации на заявките",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Одобрени, отхвърлени и добавени в библиотеката ви",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Актуализации на проблемите",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Нови проблеми, отговори и решения",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Лимит на кеша за изображения",
+    "clearImageCache": "Изчистване на кеша за изображения",
+    "imageCacheCleared": "Кешът за изображения е изчистен",
+    "seerrDownloadingPercent": "Изтегляне · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Импортиране",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Неуспешно",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Обработва се",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Променено от {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Завършено",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Това заглавие вече е заявено",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Достигнат е лимитът на заявките",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Това заглавие е в списъка с блокирани",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Няма останали сезони за заявяване",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Нямате разрешение да направите тази заявка",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Заявки",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Проблеми",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Най-нови",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Последно променени",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Няма проблеми",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Остават {remaining} от {limit} заявки за филми",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Остават {remaining} от {limit} заявки за сезони",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Част от {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Преглед на колекцията",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Заявяване на колекцията",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} филма · {available} налични",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Заявяване на {count} филма",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Заявяване на {current} от {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Заявени са {count} филма",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Заявени са {ok} от {total} филма",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Всички филми вече са налични или заявени",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Докладване на проблем",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Видео",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Звук",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Какъв е проблемът?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Всички епизоди",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Епизод",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Отворен",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Решен",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Разрешаване",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Отваряне отново",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Докладвано от {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} коментара",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Добавете коментар",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Изтриване на този проблем?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Изпращане на доклада",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Показване",
+    "adminDrawerMetadata": "Метаданни",
+    "adminDrawerNfo": "NFO настройки",
+    "adminActivitySeverityAll": "Всички нива",
+    "adminActivityDateRange": "Период",
+    "adminRemoveDeviceConfirm": "Да се премахне ли устройството „{name}“? Потребителят ще трябва да влезе отново на това устройство.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Изтриване на всички устройства",
+    "adminDeleteAllDevicesConfirm": "Да се премахнат ли {count} устройства? Засегнатите потребители ще трябва да влязат отново. Текущото ви устройство не е засегнато.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Устройствата са премахнати",
+    "adminDevicesDeletedPartial": "Някои устройства бяха премахнати; {count} не можаха да бъдат премахнати.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Пътища",
+    "adminLibraryTabOptions": "Опции",
+    "adminLibraryTabDownloaders": "Модули за изтегляне",
+    "adminLibMetadataSavers": "Модули за запис на метаданни",
+    "adminLibSubtitleDownloaders": "Модули за изтегляне на субтитри",
+    "adminLibLyricDownloaders": "Модули за изтегляне на текстове",
+    "adminLibMetadataDownloadersFor": "Модули за изтегляне на метаданни: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Модули за изображения: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Този сървър не предоставя модули за изтегляне за този тип библиотека.",
+    "adminLibrarySectionGeneral": "Общи",
+    "adminLibrarySectionMetadata": "Метаданни",
+    "adminLibrarySectionEmbedded": "Вградена информация",
+    "adminLibrarySectionSubtitles": "Субтитри",
+    "adminLibrarySectionImages": "Изображения",
+    "adminLibrarySectionSeries": "Сериали",
+    "adminLibrarySectionMusic": "Музика",
+    "adminLibrarySectionMovies": "Филми",
+    "adminLibRealtimeMonitor": "Наблюдение в реално време",
+    "adminLibRealtimeMonitorHint": "Откриване на промени във файловете и автоматичната им обработка.",
+    "adminLibArchiveMediaFiles": "Третиране на архивите като медийни файлове",
+    "adminLibEnablePhotos": "Показване на снимки",
+    "adminLibSaveLocalMetadata": "Запазване на обложките в медийните папки",
+    "adminLibRefreshInterval": "Автоматично обновяване на метаданните",
+    "adminLibRefreshNever": "Никога",
+    "adminLibDefault": "По подразбиране",
+    "adminLibDisplayTitle": "Показване",
+    "adminLibDisplaySection": "Показване на библиотеката",
+    "adminLibFolderView": "Показване на изглед с папки за обикновените медийни папки",
+    "adminLibSpecialsInSeasons": "Показване на специалните епизоди в сезоните, в които са излъчени",
+    "adminLibGroupMovies": "Групиране на филмите в колекции",
+    "adminLibGroupShows": "Групиране на сериалите в колекции",
+    "adminLibExternalSuggestions": "Показване на външно съдържание в предложенията",
+    "adminLibDateAddedSection": "Поведение на датата на добавяне",
+    "adminLibDateAddedLabel": "Използване на дата на добавяне от",
+    "adminLibDateAddedImport": "Датата на сканиране в библиотеката",
+    "adminLibDateAddedFile": "Датата на създаване на файла",
+    "adminLibMetadataTitle": "Метаданни и изображения",
+    "adminLibMetadataLangSection": "Предпочитан език на метаданните",
+    "adminLibChaptersSection": "Глави",
+    "adminLibDummyChapterDuration": "Продължителност на фиктивните глави (секунди)",
+    "adminLibDummyChapterDurationHint": "Дължина на главите, генерирани за медия, която няма такива. Задайте 0, за да изключите.",
+    "adminLibChapterImageResolution": "Резолюция на изображенията за главите",
+    "adminLibNfoTitle": "NFO настройки",
+    "adminLibNfoHelp": "NFO метаданните са съвместими с Kodi и подобни клиенти. Настройките важат за всички библиотеки, които записват NFO метаданни.",
+    "adminLibKodiUser": "Потребител, за когото да се записват данните за гледане в NFO файловете",
+    "adminLibSaveImagePaths": "Запазване на пътищата към изображенията в NFO файловете",
+    "adminLibPathSubstitution": "Заместване на пътищата за изображенията в NFO файловете",
+    "adminLibExtraThumbs": "Копиране на extrafanart изображенията в папка extrathumbs",
+    "adminLibNone": "Няма",
+    "adminLibRefreshDays": "{days} дни",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Използване на вградените заглавия",
+    "adminLibEmbeddedExtrasTitles": "Използване на вградените заглавия за допълненията",
+    "adminLibEmbeddedEpisodeInfos": "Използване на вградената информация за епизодите",
+    "adminLibAllowEmbeddedSubtitles": "Разрешаване на вградените субтитри",
+    "adminLibEmbeddedAllowAll": "Всички",
+    "adminLibEmbeddedAllowText": "Само текст",
+    "adminLibEmbeddedAllowImage": "Само изображения",
+    "adminLibEmbeddedAllowNone": "Няма",
+    "adminLibSkipIfEmbeddedSubs": "Пропускане на изтеглянето, ако има вградени субтитри",
+    "adminLibSkipIfAudioMatches": "Пропускане на изтеглянето, ако аудиозаписът съвпада с езика за изтегляне",
+    "adminLibRequirePerfectMatch": "Изискване на пълно съвпадение на субтитрите",
+    "adminLibSaveSubtitlesWithMedia": "Запазване на субтитрите в медийните папки",
+    "adminLibChapterImageExtraction": "Извличане на изображения за главите",
+    "adminLibChapterImagesDuringScan": "Извличане на изображенията за главите по време на сканирането на библиотеката",
+    "adminLibTrickplayExtraction": "Извличане на Trickplay изображения",
+    "adminLibTrickplayDuringScan": "Извличане на Trickplay изображенията по време на сканирането на библиотеката",
+    "adminLibSaveTrickplayWithMedia": "Запазване на Trickplay изображенията в медийните папки",
+    "adminLibAutomaticSeriesGrouping": "Автоматично обединяване на сериалите, разпределени в няколко папки",
+    "adminLibSeasonZeroName": "Име на нулевия сезон",
+    "adminLibLufsScan": "LUFS сканиране за нормализиране на звука",
+    "adminLibPreferNonstandardArtist": "Предпочитане на нестандартния таг за изпълнител",
+    "adminLibAutoAddToCollection": "Автоматично добавяне на филмите към колекции",
+    "adminParentalControl": "Родителски контрол",
+    "adminMaxParentalRating": "Максимална разрешена родителска оценка",
+    "adminMaxParentalRatingHint": "Съдържанието с по-висока оценка ще бъде скрито от този потребител.",
+    "adminParentalRatingNone": "Няма",
+    "adminBlockUnratedItems": "Блокиране на елементите без или с неразпозната информация за оценка",
+    "adminUnratedBook": "Книги",
+    "adminUnratedChannelContent": "Канали",
+    "adminUnratedLiveTvChannel": "Телевизия на живо",
+    "adminUnratedMovie": "Филми",
+    "adminUnratedMusic": "Музика",
+    "adminUnratedTrailer": "Трейлъри",
+    "adminUnratedSeries": "Сериали",
+    "adminAccessSchedules": "Графици за достъп",
+    "adminAccessSchedulesHint": "Разрешаване на достъп само в посочените по-долу часове. Когато не е зададен график, достъпът е разрешен през целия ден.",
+    "adminAddSchedule": "Добавяне на график",
+    "adminScheduleDay": "Ден",
+    "adminScheduleStart": "Начало",
+    "adminScheduleEnd": "Край",
+    "adminDayEveryday": "Всеки ден",
+    "adminDayWeekday": "Делничен ден",
+    "adminDayWeekend": "Уикенд",
+    "adminDaySunday": "Неделя",
+    "adminDayMonday": "Понеделник",
+    "adminDayTuesday": "Вторник",
+    "adminDayWednesday": "Сряда",
+    "adminDayThursday": "Четвъртък",
+    "adminDayFriday": "Петък",
+    "adminDaySaturday": "Събота",
+    "adminAllowedTags": "Разрешени тагове",
+    "adminAllowedTagsHint": "Показва се само съдържание с тези тагове. Оставете празно, за да разрешите всички.",
+    "adminBlockedTags": "Блокирани тагове",
+    "adminBlockedTagsHint": "Съдържанието с тези тагове е скрито от този потребител.",
+    "adminAddTag": "Добавяне на таг",
+    "adminEnabledDevices": "Разрешени устройства",
+    "adminEnabledChannels": "Разрешени канали",
+    "adminAuthProvider": "Доставчик на удостоверяване",
+    "adminPasswordResetProvider": "Доставчик за нулиране на паролата",
+    "adminLoginAttemptsBeforeLockout": "Максимален брой неуспешни опити за вход преди заключване",
+    "adminLoginAttemptsHint": "Задайте 0 за стойността по подразбиране или -1, за да изключите заключването.",
+    "adminSyncPlayAccess": "Достъп до SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Разрешаване на създаване и присъединяване към групи",
+    "adminSyncPlayJoin": "Разрешаване на присъединяване към групи",
+    "adminSyncPlayNone": "Без достъп",
+    "adminContentDeletionFolders": "Разрешаване на изтриване на съдържание от",
+    "adminBackupOptionsTitle": "Създаване на резервно копие",
+    "adminBackupInclude": "Изберете какво да бъде включено в резервното копие.",
+    "adminBackupDatabase": "База данни",
+    "adminBackupDatabaseAlways": "Винаги включена",
+    "adminBackupMetadata": "Метаданни",
+    "adminBackupSubtitles": "Субтитри",
+    "adminBackupTrickplay": "Trickplay изображения",
+    "adminEditTuner": "Редактиране на тунер",
+    "adminTunerTypeM3u": "M3U тунер",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Файл или URL",
+    "adminTunerIpAddress": "IP адрес на тунера",
+    "adminTunerFriendlyName": "Показвано име",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Лимит на едновременните връзки",
+    "adminTunerCountHelp": "Максималният брой потоци, които тунерът позволява едновременно. Задайте 0 за неограничено.",
+    "adminTunerFallbackBitrate": "Резервен максимален битрейт за стрийминг",
+    "adminTunerImportFavoritesOnly": "Импортиране само на любимите канали",
+    "adminTunerAllowHwTranscoding": "Разрешаване на хардуерно прекодиране",
+    "adminTunerAllowFmp4": "Разрешаване на fMP4 контейнер за прекодиране",
+    "adminTunerAllowStreamSharing": "Разрешаване на споделяне на потока",
+    "adminTunerEnableStreamLooping": "Включване на зацикляне на потока",
+    "adminTunerIgnoreDts": "Игнориране на DTS",
+    "adminTunerReadAtNativeFramerate": "Четене на входа с оригиналната честота на кадрите",
+    "adminEditProvider": "Редактиране на доставчик",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Файл или URL",
+    "adminXmltvMoviePrefix": "Префикс за филми",
+    "adminXmltvMovieCategories": "Категории за филми",
+    "adminXmltvCategoriesHelp": "Разделяйте няколко категории с вертикална черта.",
+    "adminXmltvKidsCategories": "Категории за деца",
+    "adminXmltvNewsCategories": "Категории за новини",
+    "adminXmltvSportsCategories": "Категории за спорт",
+    "adminSdUsername": "Потребителско име",
+    "adminSdPassword": "Парола",
+    "adminSdCountry": "Държава",
+    "adminSdCountrySelect": "Изберете държава",
+    "adminSdPostalCode": "Пощенски код",
+    "adminSdGetListings": "Извличане на програмата",
+    "adminSdListings": "Програма",
+    "adminEnableAllTuners": "Включване на всички тунери",
+    "adminTunerResetNotSupported": "Този тип тунер не поддържа нулиране.",
+    "adminMovieRecordingPath": "Път за записите на филми",
+    "adminGuideDays": "Дни с данни за програмата",
+    "adminGuideDaysAuto": "Автоматично",
+    "adminGuideDaysValue": "{days} дни",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Път до приложението за последваща обработка",
+    "adminRecordingPostProcessorArgs": "Аргументи за последващата обработка",
+    "adminSaveRecordingNfo": "Запазване на NFO метаданни за записите",
+    "adminSaveRecordingImages": "Запазване на изображения за записите",
+    "adminLiveTvSectionTiming": "Време",
+    "adminLiveTvSectionPaths": "Пътища за записите",
+    "adminLiveTvSectionPostProcessing": "Последваща обработка",
+    "adminGuideDaysDisplay": "Данни за програмата: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Обновяване на данните за програмата",
+    "adminGuideRefreshStarted": "Обновяването на данните за програмата започна",
+    "adminGuideRefreshUnavailable": "Задачата за обновяване на програмата не е налична на този сървър.",
+    "adminMetadataIdentify": "Идентифициране",
+    "adminBrandingSplashUpload": "Качване на изображение",
+    "adminBrandingSplashUploaded": "Началният екран е обновен",
+    "adminBrandingSplashUploadFailed": "Неуспешно качване на началния екран",
+    "adminBrandingSplashDeleted": "Началният екран е премахнат",
+    "adminBrandingNoSplash": "Няма персонализиран начален екран",
+    "adminPlaybackQsvDevice": "QSV устройство",
+    "adminPlaybackEnhancedNvdec": "Включване на подобрения NVDEC декодер",
+    "adminPlaybackPreferNativeDecoder": "Предпочитане на системния хардуерен декодер",
+    "adminPlaybackColorDepth": "Дълбочина на цвета при хардуерно декодиране",
+    "adminPlaybackColorDepth10Hevc": "10-битово HEVC декодиране",
+    "adminPlaybackColorDepth10Vp9": "10-битово VP9 декодиране",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-битово декодиране",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-битово декодиране",
+    "adminPlaybackHwEncodingSection": "Хардуерно кодиране",
+    "adminPlaybackAllowHevcEncoding": "Разрешаване на HEVC кодиране",
+    "adminPlaybackAllowAv1Encoding": "Разрешаване на AV1 кодиране",
+    "adminPlaybackIntelLowPowerH264": "Включване на Intel нискоенергийния H.264 кодер",
+    "adminPlaybackIntelLowPowerHevc": "Включване на Intel нискоенергийния HEVC кодер",
+    "adminPlaybackToneMapping": "Тонално преобразуване",
+    "adminPlaybackEnableTonemapping": "Включване на тонално преобразуване",
+    "adminPlaybackEnableVppTonemapping": "Включване на VPP тонално преобразуване",
+    "adminPlaybackEnableVtTonemapping": "Включване на VideoToolbox тонално преобразуване",
+    "adminPlaybackTonemappingAlgorithm": "Алгоритъм за тонално преобразуване",
+    "adminPlaybackTonemappingMode": "Режим на тонално преобразуване",
+    "adminPlaybackTonemappingRange": "Обхват на тоналното преобразуване",
+    "adminPlaybackTonemappingDesat": "Обезцветяване при тоналното преобразуване",
+    "adminPlaybackTonemappingPeak": "Пик на тоналното преобразуване",
+    "adminPlaybackTonemappingParam": "Параметър на тоналното преобразуване",
+    "adminPlaybackVppTonemappingBrightness": "Яркост при VPP тонално преобразуване",
+    "adminPlaybackVppTonemappingContrast": "Контраст при VPP тонално преобразуване",
+    "adminPlaybackPresetsQuality": "Профили и качество",
+    "adminPlaybackEncoderPreset": "Профил на кодера",
+    "adminPlaybackH264Crf": "CRF при H.264 кодиране",
+    "adminPlaybackH265Crf": "CRF при H.265 (HEVC) кодиране",
+    "adminPlaybackDeinterlaceMethod": "Метод на деинтерлейсинг",
+    "adminPlaybackDeinterlaceDoubleRate": "Удвояване на честотата на кадрите при деинтерлейсинг",
+    "adminPlaybackAudioSection": "Звук",
+    "adminPlaybackEnableAudioVbr": "Включване на VBR кодиране на звука",
+    "adminPlaybackDownmixBoost": "Усилване при смесване на звука",
+    "adminPlaybackDownmixAlgorithm": "Алгоритъм за стерео смесване",
+    "adminPlaybackMaxMuxingQueue": "Максимален размер на опашката за мултиплексиране",
+    "adminPlaybackAutoOption": "Автоматично",
+    "adminRunningTasks": "Изпълнявани задачи",
+    "adminNetworkingPublicHttpPort": "Публичен HTTP порт",
+    "adminNetworkingRequireHttps": "Изискване на HTTPS",
+    "adminNetworkingRequireHttpsHint": "Пренасочва всички отдалечени заявки към HTTPS. Няма ефект, ако сървърът няма валиден сертификат.",
+    "adminNetworkingCertPassword": "Парола на сертификата",
+    "adminNetworkingIpSettings": "IP настройки",
+    "adminNetworkingEnableIpv4": "Включване на IPv4",
+    "adminNetworkingEnableIpv6": "Включване на IPv6",
+    "adminNetworkingAutoDiscovery": "Включване на автоматично съпоставяне на портовете",
+    "adminNetworkingLocalSubnets": "LAN мрежи",
+    "adminNetworkingLocalSubnetsHint": "Списък с IP адреси или CIDR подмрежи, разделени със запетая или нов ред, които се третират като част от локалната мрежа.",
+    "adminNetworkingPublishedUris": "Публикувани URI адреси на сървъра",
+    "adminNetworkingPublishedUriHint": "Съпоставете подмрежа или адрес с публикуван URL, напр. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Забавяне при ограничаване (секунди)",
+    "adminPlaybackEnableSubtitleExtraction": "Разрешаване на извличане на субтитри в движение",
+    "adminGeneralEnableSlowResponse": "Включване на предупрежденията за бавен отговор",
+    "adminGeneralQuickConnect": "Включване на Quick Connect",
+    "adminGeneralSectionServer": "Сървър",
+    "adminGeneralSectionMetadata": "Метаданни",
+    "adminGeneralSectionPaths": "Пътища",
+    "adminGeneralSectionPerformance": "Производителност",
+    "adminGeneralDisplayLanguage": "Предпочитан език на показване",
+    "offlineBannerTitle": "Нямате връзка",
+    "offlineBannerSubtitle": "Показват се изтеглянията ви",
+    "offlineBannerAction": "Изтегляния",
+    "serverUnreachableBannerTitle": "Сървърът не е достъпен",
+    "serverUnreachableBannerSubtitle": "Възпроизвеждане от изтеглянията, докато се възстанови",
+    "contextMenuHideFromContinueWatching": "Скриване от „Продължете да гледате“",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Скриване от „Следва“",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Добавяне към колекция",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "ВРЪЗКА",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Разрешаване на самоподписани сертификати",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Доверявайте се на сървъри, използващи самоподписани TLS сертификати или такива от частен сертифициращ орган. Включвайте само за сървъри, които контролирате. Това изключва проверката на сертификатите за всички връзки.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Екран с детайли",
+    "settingsDetailsScreenSubtitle": "Стил, размиване на фона и поведение на разделите",
+    "settingsShowSeerrButtonInNavigation": "Показване на бутона Seerr в навигационната лента",
+    "settingsAlwaysExpandNavbarLabels": "Винаги показване на текстовите надписи в горната навигационна лента",
+    "settingsMediaSegmentCountdown": "Обратно броене за медийните сегменти",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Лента за напредъка",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Таймер",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Няма",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Наскоро издадени {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Включване на тунелиране",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "За напреднали. Насочва звука и видеото през свързан хардуерен път. Изключено по подразбиране, защото причинява прекъсвания на звука/видеото на някои устройства.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Показване на детайли за медията",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Показване на детайли за избрания елемент в горната част на страниците с библиотеки.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Скриване на фоновете при разглеждане?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Магазин за теми",
+    "themeStoreSubtitle": "Разглеждайте и запазвайте теми от общността",
+    "themeStoreDescription": "Запазете дадена тема, за да я използвате като другите си запазени теми.",
+    "themeStoreEmpty": "В момента няма налични теми.",
+    "themeStoreLoadFailed": "Магазинът за теми не можа да се зареди. Проверете връзката си и опитайте отново.",
+    "themeStoreSave": "Запазване",
+    "themeStoreSaveAndApply": "Запазване и прилагане",
+    "themeStoreSaved": "Запазена",
+    "themeStoreInvalidMessage": "Тази тема не можа да бъде заредена.",
+    "themeStoreSavedMessage": "„{themeName}“ е запазена.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Показване на началните редове",
+    "homeRowSections": "Секции на началните редове",
+    "homeRowToggles": "Превключватели за началните редове",
+    "homeRowTogglesSubtitle": "Включване или изключване на категориите начални редове, базирани на библиотеки",
+    "homeRowTogglesDescription": "Включете следните превключватели, за да се показват редовете в началните секции.",
+    "displayPlaylistsRows": "Показване на редовете с плейлисти",
+    "displayPlaylistsRowsSubtitle": "Показване на редовете с плейлисти в началните секции.",
+    "playlistsRowSorting": "Подреждане на редовете с плейлисти",
+    "playlistsRowSortingDescription": "Подреждайте редовете с плейлисти по дата на добавяне, дата на издаване, по азбучен ред и други.",
+    "displayAudioRows": "Показване на аудиоредовете",
+    "displayAudioRowsSubtitle": "Показване на аудиоредовете в началните секции.",
+    "audioRowsSorting": "Подреждане на аудиоредовете",
+    "audioRowsSortingDescription": "Подреждайте аудиоредовете по дата на добавяне, дата на издаване, по азбучен ред и други.",
+    "audioPlaylists": "Аудиоплейлисти",
+    "layout": "Оформление",
+    "theme": "Тема",
+    "keyboard": "Клавиатура",
+    "navButtons": "Бутони",
+    "rendering": "Рендиране",
+    "mpvConfiguration": "MPV конфигурация",
+    "externalPlayerAppDescription": "Задайте външен плейър, за да включите опцията за възпроизвеждане при задържане",
+    "crewContributionsSeerr": "Участие на екипа (Seerr)",
+    "changeArtwork": "Смяна на изображението",
+    "missing": "Липсва",
+    "clearAllArtworkButton": "Изчистване на всички изображения?",
+    "clearAllArtworkWarning": "Сигурни ли сте, че искате да изчистите всички изтеглени изображения?",
+    "confirmClear": "Потвърдете изчистването",
+    "confirmClearMessage": "Сигурни ли сте, че искате да изчистите {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Качване?",
+    "resolutionLabel": "Резолюция: ",
+    "onlyShowInterfaceLanguage": "Показване само на изображения на езика на интерфейса",
+    "confirmClearAll": "Потвърдете изчистването на всичко",
+    "imageUploadSuccess": "Изображението е качено успешно!",
+    "imageUploadFailed": "Неуспешно качване на изображението: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Неуспешно задаване на изображението: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Неуспешно изтриване на изображението: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Неуспешно изчистване на всички изображения: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Да",
+    "posterCategory": "Постер",
+    "backdropsCategory": "Фонове",
+    "bannerCategory": "Банер",
+    "logoCategory": "Лого",
+    "thumbnailCategory": "Миниатюра",
+    "artCategory": "Изображение",
+    "discArtCategory": "Изображение на диска",
+    "screenshotCategory": "Екранна снимка",
+    "boxCoverCategory": "Предна корица",
+    "boxRearCoverCategory": "Задна корица",
+    "menuArtCategory": "Изображение на менюто",
+    "confirmItemPoster": "постера",
+    "confirmItemBackdrop": "фона",
+    "confirmItemBanner": "банера",
+    "confirmItemLogo": "логото",
+    "confirmItemThumbnail": "миниатюрата",
+    "confirmItemArt": "изображението",
+    "confirmItemDiscArt": "изображението на диска",
+    "confirmItemScreenshot": "екранната снимка",
+    "confirmItemBoxCover": "предната корица",
+    "confirmItemBoxRearCover": "задната корица",
+    "confirmItemMenuArt": "изображението на менюто",
+    "resolutionAll": "Всички",
+    "resolutionHigh": "Висока (1080p+)",
+    "resolutionMedium": "Средна (720p)",
+    "resolutionLow": "Ниска (<720p)",
+    "sources": "Източници",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Глави",
+    "audiobookBookmarks": "Отметки",
+    "audiobookNotes": "Бележки",
+    "audiobookQueue": "Опашка",
+    "audiobookTimeline": "Хронология",
+    "audiobookTimelineEmpty": "Хронологията е празна",
+    "audiobookWholeBook": "Цялата книга",
+    "audiobookFocusedTimeline": "Фокусирана хронология",
+    "audiobookExportBookmarks": "Експортиране на отметките",
+    "audiobookExportNotes": "Експортиране на бележките",
+    "audiobookExportAll": "Експортиране на всичко",
+    "audiobookExportSuccess": "Експортирано в {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Неуспешно експортиране: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Текст",
+    "audiobookAddBookmark": "Добавяне на отметка",
+    "audiobookAddNote": "Добавяне на бележка",
+    "audiobookEditNote": "Редактиране на бележката",
+    "audiobookNoteHint": "Напишете бележка за този момент",
+    "audiobookSleepTimer": "Таймер за заспиване",
+    "audiobookSleepOff": "Изкл.",
+    "audiobookSleepEndOfChapter": "В края на главата",
+    "audiobookSleepCustom": "Персонализиран",
+    "audiobookSleepRemaining": "остават {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 мин} other{{count} мин}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Скорост на възпроизвеждане",
+    "audiobookRemainingTime": "Оставащо",
+    "audiobookElapsedTime": "Изминало",
+    "audiobookSkipBackSeconds": "Назад {seconds}с",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Напред {seconds}с",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Предишна глава",
+    "audiobookNextChapter": "Следваща глава",
+    "audiobookChapterIndicator": "Глава {current} от {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Няма глави",
+    "audiobookNoBookmarks": "Все още няма отметки",
+    "audiobookNoNotes": "Все още няма бележки",
+    "audiobookBookmarkAdded": "Добавена е отметка на {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Връщане на 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Запазване",
+    "audiobookCancel": "Отказ",
+    "audiobookDelete": "Изтриване",
+    "subtitlePreferences": "Настройки на субтитрите",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Променете режимите на субтитрите, езиците по подразбиране, външния вид и опциите за изобразяване.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Изобразяване на субтитрите",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Опции за показване",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Дата на издаване (възходящо)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Дата на издаване (низходящо)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Групиране на участията",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Групиране на няколко роли",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Предупреждение за достъп за запис в библиотеката",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Как да поправите това:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Дайте права за запис на потребителя на услугата Jellyfin (напр. jellyfin или Docker PUID/PGID) върху папките с медийната ви библиотека на сървъра.\n\n2. Или отидете в таблото за управление на Jellyfin -> Библиотеки, редактирайте тази библиотека и изключете „Запазване на обложките в медийните папки“, за да се съхраняват обложките във вътрешната база данни на Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Отхвърляне",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Вашата библиотека „{libraryName}“ е конфигурирана да запазва обложките директно в медийните папки (включено е „Запазване на обложките в медийните папки“). Jellyfin обаче провери достъпа за запис и няма права да записва файлове в тази директория:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Изглежда, че Jellyfin не успя да обнови обложката. Вашата библиотека е конфигурирана да запазва обложките директно в медийните папки (включено е „Запазване на обложките в медийните папки“). Тази грешка обикновено възниква, когато процесът на сървъра Jellyfin няма права да записва файлове в медийните ви директории.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Външни списъци",
+    "replay": "Възпроизвеждане отново",
+    "fileInformation": "Информация за файла",
+    "fileSizeFormat": "Размер: {size}  •  Формат: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Показване на всички ({count}) аудиозаписи",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Показване на всички ({count}) субтитри",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Проверка на възможността за директно възпроизвеждане...",
+    "directPlayCapabilityLabel": "Възможност за директно възпроизвеждане: ",
+    "forced": "Принудителни",
+    "transcodeContainerNotSupported": "Форматът на контейнера не се поддържа от плейъра.",
+    "transcodeVideoCodecNotSupported": "Видеокодекът не се поддържа.",
+    "transcodeAudioCodecNotSupported": "Аудиокодекът не се поддържа.",
+    "transcodeSubtitleCodecNotSupported": "Форматът на субтитрите не се поддържа (изисква вграждане).",
+    "transcodeAudioProfileNotSupported": "Аудиопрофилът не се поддържа.",
+    "transcodeVideoProfileNotSupported": "Видеопрофилът не се поддържа.",
+    "transcodeVideoLevelNotSupported": "Видеонивото не се поддържа.",
+    "transcodeVideoResolutionNotSupported": "Видеорезолюцията не се поддържа от това устройство.",
+    "transcodeVideoBitDepthNotSupported": "Битовата дълбочина на видеото не се поддържа.",
+    "transcodeVideoFramerateNotSupported": "Честотата на кадрите не се поддържа.",
+    "transcodeContainerBitrateExceedsLimit": "Битрейтът на файла надвишава лимита за стрийминг на плейъра.",
+    "transcodeVideoBitrateExceedsLimit": "Битрейтът на видеото надвишава лимита за стрийминг.",
+    "transcodeAudioBitrateExceedsLimit": "Битрейтът на звука надвишава лимита за стрийминг.",
+    "transcodeAudioChannelsNotSupported": "Броят на аудиоканалите не се поддържа.",
+    "sortAlphabetical": "По азбучен ред",
+    "sortReleaseAscending": "Ред на издаване (възходящо)",
+    "sortReleaseDescending": "Ред на издаване (низходящо)",
+    "sortCustomDragDrop": "Персонализиран (с плъзгане)",
+    "playlistSortOptions": "Опции за подреждане на плейлиста",
+    "resetSort": "Нулиране на подреждането",
+    "rewatchSeasonEpisode": "Гледай отново С{season}:Е{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Гледай отново плейлиста",
+    "noSubtitlesFound": "Не са намерени субтитри.",
+    "adminControls": "Административни контроли",
+    "impellerRendering": "Двигател за изобразяване (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller е модерният GPU рендер на Flutter за по-плавни анимации и по-малко забавяния. На някои TV устройства и по-стари GPU може да причини дефекти или черно видео; изключете го, ако забележите такива. „Автоматично“ избира най-добрата настройка за вашето устройство. Рестартирайте Moonfin, за да приложите промяната.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Автоматично",
+    "impellerOn": "Вкл.",
+    "impellerOff": "Изкл.",
+    "impellerRestartTitle": "Изисква се рестартиране",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin трябва да се рестартира, за да смени двигателя за изобразяване. Затворете приложението сега и след това го отворете отново, за да приложите промяната.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Затвори приложението сега",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Обновяване на библиотеката",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Обновяване на всички библиотеки",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Дата на добавяне (първо най-старите)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Дата на добавяне (първо най-новите)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "По азбучен ред (А до Я)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "По азбучен ред (Я до А)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Зареждане на анализите на сървъра... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Като източника",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Топ 250 филми",
+    "imdbTop250TvShows": "IMDb Топ 250 сериали",
+    "imdbMostPopularMovies": "IMDb Най-популярни филми",
+    "imdbMostPopularTvShows": "IMDb Най-популярни сериали",
+    "imdbLowestRatedMovies": "IMDb Най-ниско оценени филми",
+    "imdbTopEnglishMovies": "IMDb Най-високо оценени филми на английски"
 }

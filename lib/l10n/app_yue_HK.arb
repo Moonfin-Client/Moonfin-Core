@@ -17,10 +17,6 @@
             }
         }
     },
-    "quickConnect": "快速連接",
-    "@quickConnect": {
-        "description": "Quick Connect toggle button label"
-    },
     "password": "密碼",
     "@password": {
         "description": "Password field label and toggle button"
@@ -845,10 +841,6 @@
     "librivoxPage": "LibriVox 頁",
     "@librivoxPage": {
         "description": "Button label for LibriVox external link"
-    },
-    "internetArchive": "互聯網檔案館",
-    "@internetArchive": {
-        "description": "Button label for Internet Archive external link"
     },
     "rssFeed": "RSS 來源",
     "@rssFeed": {
@@ -3729,10 +3721,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "特定用戶",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "始終進行身份驗證",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3867,45 +3855,9 @@
     "@displayClockDuringScreensaver": {
         "description": "Description for show clock"
     },
-    "rottenTomatoesCritics": "爛番茄（評論家）",
-    "@rottenTomatoesCritics": {
-        "description": "Rating source: Rotten Tomatoes Critics"
-    },
-    "rottenTomatoesAudience": "爛番茄（觀眾）",
-    "@rottenTomatoesAudience": {
-        "description": "Rating source: Rotten Tomatoes Audience"
-    },
-    "imdb": "網路醫學資料庫",
-    "@imdb": {
-        "description": "Rating source: IMDb"
-    },
-    "tmdb": "TM資料庫",
-    "@tmdb": {
-        "description": "Rating source: TMDB"
-    },
-    "metacritic": "元評論家",
-    "@metacritic": {
-        "description": "Rating source: Metacritic"
-    },
-    "metacriticUser": "元評論家（使用者）",
-    "@metacriticUser": {
-        "description": "Rating source: Metacritic User"
-    },
-    "trakt": "特拉克特",
-    "@trakt": {
-        "description": "Rating source: Trakt"
-    },
     "letterboxd": "信箱",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
-    },
-    "myAnimeList": "我的動漫列表",
-    "@myAnimeList": {
-        "description": "Rating source: MyAnimeList"
-    },
-    "aniList": "動畫列表",
-    "@aniList": {
-        "description": "Rating source: AniList"
     },
     "communityRating": "社區評級",
     "@communityRating": {
@@ -3954,10 +3906,6 @@
     "ratingSourcesDescription": "啟用並重新排序整個應用程式中顯示的評級來源",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
-    },
-    "pluginLabel": "外掛",
-    "@pluginLabel": {
-        "description": "Settings title for plugin"
     },
     "pluginDetected": "偵測到插件",
     "@pluginDetected": {
@@ -4055,10 +4003,6 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "啟用搜尋器",
-    "@enableSeerr": {
-        "description": "Setting for enabling Seerr"
-    },
     "showSeerrInNavigation": "在導航中顯示 Seerr（需要伺服器插件）",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
@@ -4083,18 +4027,6 @@
                 "type": "String"
             }
         }
-    },
-    "discoverRows": "發現行",
-    "@discoverRows": {
-        "description": "Section title for discover rows"
-    },
-    "discoverRowsDescriptionPlugin": "拖曳以重新排序。啟用或停用行。啟用與 Moonfin 插件的行順序同步。",
-    "@discoverRowsDescriptionPlugin": {
-        "description": "Description for discover rows with plugin"
-    },
-    "discoverRowsDescription": "拖曳以重新排序。啟用或停用行。",
-    "@discoverRowsDescription": {
-        "description": "Description for discover rows without plugin"
     },
     "enabled": "啟用",
     "@enabled": {
@@ -4280,10 +4212,6 @@
                 "type": "int"
             }
         }
-    },
-    "seerrSettings": "搜尋者設定",
-    "@seerrSettings": {
-        "description": "Dialog title for Seerr browse settings"
     },
     "requestMore": "請求更多",
     "@requestMore": {
@@ -4563,7 +4491,6 @@
     "stop": "停止",
     "streaming": "串流媒體",
     "time": "時間",
-    "trickplay": "特技遊戲",
     "uninstall": "解除安裝",
     "up": "向上",
     "update": "更新",
@@ -4580,7 +4507,6 @@
     "adminDrawerTranscoding": "轉碼",
     "adminDrawerResume": "恢復",
     "adminDrawerStreaming": "串流媒體",
-    "adminDrawerTrickplay": "特技遊戲",
     "adminDrawerDevices": "裝置",
     "adminDrawerActivity": "活動",
     "adminDrawerNetworking": "聯網",
@@ -5370,8 +5296,6 @@
     "adminAllowSegmentDeletion": "允許段刪除",
     "adminSegmentKeepSeconds": "段保持（秒）",
     "adminThrottleBuffering": "油門緩衝",
-    "adminTrickplaySaved": "已儲存特技播放設定",
-    "adminTrickplayLoadFailed": "無法載入特技播放設置",
     "adminEnableHardwareAcceleration": "啟用硬體加速",
     "adminEnableKeyFrameExtraction": "啟用僅提取關鍵幀",
     "adminKeyFrameSubtitle": "速度較快但精度較低",
@@ -5405,7 +5329,6 @@
     "adminHttpsPort": "HTTPS連接埠",
     "adminPublicHttpsPort": "公共 HTTPS 連接埠",
     "adminBaseUrl": "基本網址",
-    "adminBaseUrlHint": "例如/果凍",
     "https": "HTTPS",
     "adminEnableHttps": "啟用 HTTPS",
     "adminLocalNetwork": "本地網路",
@@ -5447,7 +5370,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "搜尋遠端人員",
     "adminNoRemoteMatches": "未找到遠端匹配項",
     "adminRemoteResults": "遠程結果",
     "adminRemoteMetadataApplied": "應用遠端元數據",
@@ -5543,9 +5465,6 @@
     },
     "adminAddTuner": "新增調音器",
     "adminTunerType": "調音器類型",
-    "adminTunerTypeHint": "HDHomeRun、M3U、其他",
-    "adminUrlPath": "網址/路徑",
-    "adminNameOptional": "姓名（可選）",
     "adminTunerAdded": "新增了調音器",
     "adminTunerAddFailed": "Failed to add tuner: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5476,6 @@
     },
     "adminAddGuideProvider": "新增嚮導提供者",
     "adminProviderType": "提供者類型",
-    "adminProviderTypeHint": "ScheduleDirect 或 XMLTV",
-    "adminUsernameOptional": "使用者名稱（可選）",
-    "adminRefreshInterval": "刷新間隔（小時）",
     "adminProviderAdded": "提供者已新增",
     "adminProviderAddFailed": "Failed to add provider: {error}",
     "@adminProviderAddFailed": {
@@ -5729,7 +5645,6 @@
     },
     "adminLogViewerNoMatches": "沒有匹配的線",
     "adminMetadataEditorTitle": "元資料編輯器",
-    "adminMetadataRemote": "偏僻的",
     "adminMetadataType": "類型",
     "adminMetadataDetails": "細節",
     "adminMetadataExternalIds": "外部 ID",
@@ -6115,10 +6030,8 @@
             }
         }
     },
-    "adminTrickplayDescription": "配置搜尋預覽縮圖的特技播放影像生成。",
     "adminNetworkingPublicHttpsPort": "公共 HTTPS 連接埠",
     "adminNetworkingBaseUrl": "基本網址",
-    "adminNetworkingBaseUrlHint": "例如/果凍",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "證書路徑",
     "adminNetworkingRemoteIpFilter": "遠端IP過濾",
@@ -6340,13 +6253,6 @@
     "pinForgot": "忘記密碼？",
     "pinClear": "清除",
     "pinBackspace": "退格鍵",
-    "quickConnectAuthorized": "快速連線請求已獲授權。",
-    "quickConnectInvalidOrExpired": "快速連線代碼無效或已過期。",
-    "quickConnectNotSupported": "此伺服器不支援快速連線。",
-    "quickConnectAuthorizeFailed": "無法授權快速連線代碼。",
-    "quickConnectDisabled": "此伺服器上禁用了快速連線。",
-    "quickConnectForbidden": "您的帳戶無法授權此快速連線要求。",
-    "quickConnectNotFound": "未找到快速連線代碼。嘗試新的程式碼。",
     "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
@@ -6719,10 +6625,6 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "西爾帳戶類型",
-    "@seerrAccountType": {
-        "description": "Header for selecting Seerr authentication account type"
-    },
     "jellyfinAccount": "Jellyfin",
     "@jellyfinAccount": {
         "description": "Auth option label for Seerr sign in using Jellyfin credentials"
@@ -6806,18 +6708,6 @@
     "settingsAudioFallbackCodec": "Audio Fallback Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
     "@settingsAudioPassthroughAdvanced": {

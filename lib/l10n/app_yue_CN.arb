@@ -17,10 +17,6 @@
             }
         }
     },
-    "quickConnect": "快速连接",
-    "@quickConnect": {
-        "description": "Quick Connect toggle button label"
-    },
     "password": "密码",
     "@password": {
         "description": "Password field label and toggle button"
@@ -845,10 +841,6 @@
     "librivoxPage": "LibriVox 页",
     "@librivoxPage": {
         "description": "Button label for LibriVox external link"
-    },
-    "internetArchive": "互联网档案馆",
-    "@internetArchive": {
-        "description": "Button label for Internet Archive external link"
     },
     "rssFeed": "RSS 源",
     "@rssFeed": {
@@ -3729,10 +3721,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "特定用户",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "始终进行身份验证",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3867,45 +3855,9 @@
     "@displayClockDuringScreensaver": {
         "description": "Description for show clock"
     },
-    "rottenTomatoesCritics": "烂番茄（评论家）",
-    "@rottenTomatoesCritics": {
-        "description": "Rating source: Rotten Tomatoes Critics"
-    },
-    "rottenTomatoesAudience": "烂番茄（观众）",
-    "@rottenTomatoesAudience": {
-        "description": "Rating source: Rotten Tomatoes Audience"
-    },
-    "imdb": "互联网医学数据库",
-    "@imdb": {
-        "description": "Rating source: IMDb"
-    },
-    "tmdb": "TM数据库",
-    "@tmdb": {
-        "description": "Rating source: TMDB"
-    },
-    "metacritic": "元评论家",
-    "@metacritic": {
-        "description": "Rating source: Metacritic"
-    },
-    "metacriticUser": "元评论家（用户）",
-    "@metacriticUser": {
-        "description": "Rating source: Metacritic User"
-    },
-    "trakt": "特拉克特",
-    "@trakt": {
-        "description": "Rating source: Trakt"
-    },
     "letterboxd": "信箱",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
-    },
-    "myAnimeList": "我的动漫列表",
-    "@myAnimeList": {
-        "description": "Rating source: MyAnimeList"
-    },
-    "aniList": "动画列表",
-    "@aniList": {
-        "description": "Rating source: AniList"
     },
     "communityRating": "社区评级",
     "@communityRating": {
@@ -3954,10 +3906,6 @@
     "ratingSourcesDescription": "启用并重新排序整个应用程序中显示的评级来源",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
-    },
-    "pluginLabel": "插件",
-    "@pluginLabel": {
-        "description": "Settings title for plugin"
     },
     "pluginDetected": "检测到插件",
     "@pluginDetected": {
@@ -4055,10 +4003,6 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "启用搜索器",
-    "@enableSeerr": {
-        "description": "Setting for enabling Seerr"
-    },
     "showSeerrInNavigation": "在导航中显示 Seerr（需要服务器插件）",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
@@ -4083,18 +4027,6 @@
                 "type": "String"
             }
         }
-    },
-    "discoverRows": "发现行",
-    "@discoverRows": {
-        "description": "Section title for discover rows"
-    },
-    "discoverRowsDescriptionPlugin": "拖动以重新排序。启用或禁用行。启用与 Moonfin 插件的行顺序同步。",
-    "@discoverRowsDescriptionPlugin": {
-        "description": "Description for discover rows with plugin"
-    },
-    "discoverRowsDescription": "拖动以重新排序。启用或禁用行。",
-    "@discoverRowsDescription": {
-        "description": "Description for discover rows without plugin"
     },
     "enabled": "启用",
     "@enabled": {
@@ -4280,10 +4212,6 @@
                 "type": "int"
             }
         }
-    },
-    "seerrSettings": "搜索者设置",
-    "@seerrSettings": {
-        "description": "Dialog title for Seerr browse settings"
     },
     "requestMore": "请求更多",
     "@requestMore": {
@@ -4563,7 +4491,6 @@
     "stop": "停止",
     "streaming": "流媒体",
     "time": "时间",
-    "trickplay": "特技游戏",
     "uninstall": "卸载",
     "up": "向上",
     "update": "更新",
@@ -4580,7 +4507,6 @@
     "adminDrawerTranscoding": "转码",
     "adminDrawerResume": "恢复",
     "adminDrawerStreaming": "流媒体",
-    "adminDrawerTrickplay": "特技游戏",
     "adminDrawerDevices": "设备",
     "adminDrawerActivity": "活动",
     "adminDrawerNetworking": "联网",
@@ -5370,8 +5296,6 @@
     "adminAllowSegmentDeletion": "允许段删除",
     "adminSegmentKeepSeconds": "段保持（秒）",
     "adminThrottleBuffering": "油门缓冲",
-    "adminTrickplaySaved": "已保存特技播放设置",
-    "adminTrickplayLoadFailed": "无法加载特技播放设置",
     "adminEnableHardwareAcceleration": "启用硬件加速",
     "adminEnableKeyFrameExtraction": "启用仅提取关键帧",
     "adminKeyFrameSubtitle": "速度更快但精度较低",
@@ -5405,7 +5329,6 @@
     "adminHttpsPort": "HTTPS端口",
     "adminPublicHttpsPort": "公共 HTTPS 端口",
     "adminBaseUrl": "基本网址",
-    "adminBaseUrlHint": "例如/果冻",
     "https": "HTTPS",
     "adminEnableHttps": "启用 HTTPS",
     "adminLocalNetwork": "本地网络",
@@ -5447,7 +5370,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "搜索远程人员",
     "adminNoRemoteMatches": "未找到远程匹配项",
     "adminRemoteResults": "远程结果",
     "adminRemoteMetadataApplied": "应用远程元数据",
@@ -5543,9 +5465,6 @@
     },
     "adminAddTuner": "添加调音器",
     "adminTunerType": "调音器类型",
-    "adminTunerTypeHint": "HDHomeRun、M3U、其他",
-    "adminUrlPath": "网址/路径",
-    "adminNameOptional": "姓名（可选）",
     "adminTunerAdded": "添加了调音器",
     "adminTunerAddFailed": "Failed to add tuner: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5476,6 @@
     },
     "adminAddGuideProvider": "添加向导提供者",
     "adminProviderType": "提供商类型",
-    "adminProviderTypeHint": "ScheduleDirect 或 XMLTV",
-    "adminUsernameOptional": "用户名（可选）",
-    "adminRefreshInterval": "刷新间隔（小时）",
     "adminProviderAdded": "提供商已添加",
     "adminProviderAddFailed": "Failed to add provider: {error}",
     "@adminProviderAddFailed": {
@@ -5729,7 +5645,6 @@
     },
     "adminLogViewerNoMatches": "没有匹配的线",
     "adminMetadataEditorTitle": "元数据编辑器",
-    "adminMetadataRemote": "偏僻的",
     "adminMetadataType": "类型",
     "adminMetadataDetails": "细节",
     "adminMetadataExternalIds": "外部 ID",
@@ -6115,10 +6030,8 @@
             }
         }
     },
-    "adminTrickplayDescription": "配置搜索预览缩略图的特技播放图像生成。",
     "adminNetworkingPublicHttpsPort": "公共 HTTPS 端口",
     "adminNetworkingBaseUrl": "基本网址",
-    "adminNetworkingBaseUrlHint": "例如/果冻",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "证书路径",
     "adminNetworkingRemoteIpFilter": "远程IP过滤",
@@ -6340,13 +6253,6 @@
     "pinForgot": "忘记密码？",
     "pinClear": "清除",
     "pinBackspace": "退格键",
-    "quickConnectAuthorized": "快速连接请求已获授权。",
-    "quickConnectInvalidOrExpired": "快速连接代码无效或已过期。",
-    "quickConnectNotSupported": "此服务器不支持快速连接。",
-    "quickConnectAuthorizeFailed": "无法授权快速连接代码。",
-    "quickConnectDisabled": "此服务器上禁用了快速连接。",
-    "quickConnectForbidden": "您的帐户无法授权此快速连接请求。",
-    "quickConnectNotFound": "未找到快速连接代码。尝试新的代码。",
     "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
@@ -6719,10 +6625,6 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "西尔账户类型",
-    "@seerrAccountType": {
-        "description": "Header for selecting Seerr authentication account type"
-    },
     "jellyfinAccount": "Jellyfin",
     "@jellyfinAccount": {
         "description": "Auth option label for Seerr sign in using Jellyfin credentials"
@@ -6806,18 +6708,6 @@
     "settingsAudioFallbackCodec": "Audio Fallback Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
     "@settingsAudioPassthroughAdvanced": {

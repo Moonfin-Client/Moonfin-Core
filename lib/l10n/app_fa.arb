@@ -1,6 +1,6 @@
 {
     "@@locale": "fa",
-    "appTitle": "باله ماه",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "اتصال سریع",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "برگشت",
+    "back": "بازگشت",
     "@back": {
         "description": "Back button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "حذف کنید",
+    "remove": "حذف",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "باله ماه",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -277,7 +277,7 @@
     "@guide": {
         "description": "Live TV guide button label"
     },
-    "recordings": "ضبط ها",
+    "recordings": "ضبط‌ها",
     "@recordings": {
         "description": "Live TV recordings button label"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "سری",
+    "series": "سریال‌ها",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "درخواست کنید",
+    "apply": "اعمال",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "رزومه",
+    "resume": "ادامه",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "تماشا کرد",
+    "watched": "تماشا شده",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "دیده نشده",
+    "unwatched": "تماشا نشده",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 کتاب صوتی} other{{count} کتاب صوتی}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,11 +935,11 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "حذف کنید",
+    "delete": "حذف",
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "ذخیره کنید",
+    "save": "ذخیره",
     "@save": {
         "description": "Save action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "فصل ها",
+    "seasons": "فصل‌ها",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 فصل} other{{count} فصل}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1058,7 +1058,7 @@
     "@view": {
         "description": "Action button label for viewing a photo"
     },
-    "resumeReading": "Resume Reading",
+    "resumeReading": "ادامه خواندن",
     "@resumeReading": {
         "description": "Action button label to resume reading a book"
     },
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "بازی کنید",
+    "play": "پخش",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "بازیگران",
+    "cast": "ارسال به دستگاه",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "هیچ کدام",
+    "none": "هیچ‌کدام",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 قطعه} other{{count} قطعه}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 فصل} other{{count} فصل}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "مخلوط کردن",
+    "shuffle": "پخش تصادفی",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} کانال",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1526,7 +1526,7 @@
             }
         }
     },
-    "mono": "مونونوکلئوز",
+    "mono": "مونو",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "مکث کنید",
+    "pause": "مکث",
     "@pause": {
         "description": "Pause action label"
     },
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "بازنشانی کنید",
+    "reset": "بازنشانی",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "بازیکن",
+    "player": "پخش‌کننده",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "آهنگ",
+    "track": "قطعه",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2003,7 +2003,7 @@
     "@markAsRead": {
         "description": "Button or menu item to mark as read"
     },
-    "reloadReader": "Reload Reader",
+    "reloadReader": "بارگذاری مجدد کتاب‌خوان",
     "@reloadReader": {
         "description": "Button or menu item to reload the reader"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "تماشا کنید",
+    "watch": "تماشا",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "فصل {season} قسمت {episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "فصل {number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 قسمت} other{{count} قسمت}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "از کار افتاده است",
+    "disabled": "غیرفعال",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -2964,11 +2964,11 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3 Passthrough",
+    "ac3Passthrough": "عبور مستقیم AC3",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
-    "dtsPassthrough": "DTS Passthrough",
+    "dtsPassthrough": "عبور مستقیم DTS",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} ثانیه",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS Direct Play",
+    "pgsDirectPlay": "پخش مستقیم PGS",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "باله ماه",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "کاربر خاص",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "همیشه احراز هویت",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "تراکت",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3919,7 +3915,7 @@
     "@additionalRatings": {
         "description": "Setting for additional ratings"
     },
-    "showMdbListAndTmdbRatings": "نمایش رتبه بندی MDBLlist و TMDB",
+    "showMdbListAndTmdbRatings": "نمایش امتیازهای MDBList و TMDB",
     "@showMdbListAndTmdbRatings": {
         "description": "Description for additional ratings"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "پلاگین",
+    "pluginLabel": "افزونه Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "ردیف ها را کشف کنید",
+    "discoverRows": "صفحه کشف Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "برای سفارش مجدد بکشید. فعال یا غیرفعال کردن ردیف ها سفارش ردیف فعال با افزونه Moonfin همگام‌سازی می‌شود.",
+    "discoverRowsDescriptionPlugin": "ردیف‌هایی را که می‌خواهید در صفحه اصلی Seerr ببینید فعال کنید. برای تغییر ترتیب بکشید. ترتیب سفارشی با Moonbase همگام می‌شود.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "برای سفارش مجدد بکشید. فعال یا غیرفعال کردن ردیف ها",
+    "discoverRowsDescription": "ردیف‌هایی را که می‌خواهید در صفحه اصلی Seerr ببینید فعال کنید. برای تغییر ترتیب بکشید. ترتیب سفارشی با Moonbase همگام می‌شود.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "فعال شد",
+    "enabled": "فعال",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4243,7 +4239,7 @@
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
-    "gbValue": "{value} GB",
+    "gbValue": "{value} گیگابایت",
     "@gbValue": {
         "description": "Gigabyte value display",
         "placeholders": {
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "تنظیمات Seer",
+    "seerrSettings": "تنظیمات Seerr",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "ظواهر",
+    "appearances": "نقش‌آفرینی‌ها",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "فصل ها",
+    "seasonsLabel": "فصل‌ها",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4520,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "دسترسی داشته باشید",
-    "add": "اضافه کنید",
+    "add": "افزودن",
     "address": "آدرس",
     "analytics": "تجزیه و تحلیل",
     "catalog": "کاتالوگ",
@@ -4529,11 +4525,11 @@
     "create": "ایجاد کنید",
     "disable": "غیر فعال کردن",
     "done": "انجام شد",
-    "edit": "ویرایش کنید",
+    "edit": "ویرایش",
     "encoding": "رمزگذاری",
     "error": "خطا",
-    "forward": "به جلو",
-    "general": "ژنرال",
+    "forward": "جلو",
+    "general": "عمومی",
     "go": "برو",
     "install": "نصب کنید",
     "installed": "نصب شده است",
@@ -4548,39 +4544,39 @@
     "profile": "نمایه",
     "provider": "ارائه دهنده",
     "refresh": "تازه کردن",
-    "remote": "از راه دور",
+    "remote": "کنترل از راه دور",
     "rename": "تغییر نام دهید",
     "revoke": "لغو",
     "role": "نقش",
     "root": "ریشه",
     "run": "اجرا کنید",
-    "search": "جستجو کنید",
+    "search": "جستجو",
     "select": "انتخاب کنید",
     "send": "ارسال کنید",
     "sessions": "جلسات",
     "set": "تنظیم کنید",
     "status": "وضعیت",
-    "stop": "توقف کنید",
+    "stop": "توقف",
     "streaming": "پخش جریانی",
     "time": "زمان",
-    "trickplay": "ترفند بازی",
+    "trickplay": "Trickplay",
     "uninstall": "حذف نصب کنید",
     "up": "بالا",
     "update": "به روز رسانی",
     "upload": "آپلود کنید",
     "unmute": "باصدا کردن",
-    "mute": "بی صدا",
+    "mute": "بی‌صدا",
     "branding": "برندسازی",
     "adminDrawerDashboard": "داشبورد",
     "adminDrawerAnalytics": "تجزیه و تحلیل",
     "adminDrawerSettings": "تنظیمات",
     "adminDrawerBranding": "برندسازی",
     "adminDrawerUsers": "کاربران",
-    "adminDrawerLibraries": "کتابخانه ها",
+    "adminDrawerLibraries": "کتابخانه‌ها",
     "adminDrawerTranscoding": "رمزگذاری",
-    "adminDrawerResume": "رزومه",
+    "adminDrawerResume": "ادامه",
     "adminDrawerStreaming": "پخش جریانی",
-    "adminDrawerTrickplay": "ترفند بازی",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "دستگاه ها",
     "adminDrawerActivity": "فعالیت",
     "adminDrawerNetworking": "شبکه سازی",
@@ -4674,17 +4670,17 @@
     "adminSetVolume": "تنظیم صدا",
     "sessionPrev": "قبلی",
     "sessionRewind": "عقب",
-    "sessionForward": "به جلو",
+    "sessionForward": "جلو",
     "sessionNext": "بعدی",
     "sessionVolumeDown": "جلد –",
     "sessionVolumeUp": "جلد +",
     "uhd4k": "4K",
     "nowPlaying": "در حال پخش",
-    "volume": "حجم",
+    "volume": "میزان صدا",
     "actions": "اقدامات",
     "videoCodec": "کدک ویدیویی",
     "audioCodec": "کدک صوتی",
-    "hwAccel": "HW Accel",
+    "hwAccel": "شتاب سخت‌افزاری",
     "completion": "تکمیل",
     "direct": "مستقیم",
     "adminDisconnect": "قطع کن",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "پورت HTTPS",
     "adminPublicHttpsPort": "پورت عمومی HTTPS",
     "adminBaseUrl": "URL پایه",
-    "adminBaseUrlHint": "به عنوان مثال /ژله فین",
+    "adminBaseUrlHint": "مثلاً /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPS را فعال کنید",
     "adminLocalNetwork": "شبکه محلی",
@@ -5434,7 +5430,7 @@
             }
         }
     },
-    "adminRefreshMetadata": "Refresh Metadata",
+    "adminRefreshMetadata": "به‌روزرسانی فراداده",
     "recursive": "بازگشتی",
     "adminReplaceAllMetadata": "همه متادیتا را جایگزین کنید",
     "adminReplaceAllImages": "همه تصاویر را جایگزین کنید",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "جستجوی شخص از راه دور",
     "adminNoRemoteMatches": "هیچ منطبق از راه دور پیدا نشد",
     "adminRemoteResults": "نتایج از راه دور",
     "adminRemoteMetadataApplied": "ابرداده از راه دور اعمال شد",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "تیونر را اضافه کنید",
     "adminTunerType": "نوع تیونر",
-    "adminTunerTypeHint": "HDHomeRun، M3U، سایر موارد",
-    "adminUrlPath": "URL / مسیر",
-    "adminNameOptional": "نام (اختیاری)",
     "adminTunerAdded": "تیونر اضافه شد",
     "adminTunerAddFailed": "تیونر اضافه نشد: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "ارائه دهنده راهنما را اضافه کنید",
     "adminProviderType": "نوع ارائه دهنده",
-    "adminProviderTypeHint": "SchedulesDirect یا XMLTV",
-    "adminUsernameOptional": "نام کاربری (اختیاری)",
-    "adminRefreshInterval": "فاصله بازخوانی (ساعت)",
     "adminProviderAdded": "ارائه دهنده اضافه شد",
     "adminProviderAddFailed": "ارائه دهنده اضافه نشد: {error}",
     "@adminProviderAddFailed": {
@@ -5680,9 +5669,9 @@
     "adminUnnamedBackup": "پشتیبان گیری بدون نام",
     "adminLiveTvNotAvailable": "مدیریت تلویزیون زنده در این ساخت سرور در دسترس نیست.",
     "adminLiveTvTitle": "مدیریت تلویزیون زنده",
-    "adminApply": "درخواست کنید",
+    "adminApply": "اعمال",
     "adminNotSet": "تنظیم نشده است",
-    "adminReset": "بازنشانی کنید",
+    "adminReset": "بازنشانی",
     "adminLogsTitle": "گزارش های سرور",
     "adminLogsNewestFirst": "جدیدترین اول",
     "adminLogsOldestFirst": "قدیمی ترین اول",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "بدون خطوط منطبق",
     "adminMetadataEditorTitle": "ویرایشگر فراداده",
-    "adminMetadataRemote": "از راه دور",
     "adminMetadataType": "تایپ کنید",
     "adminMetadataDetails": "جزئیات",
     "adminMetadataExternalIds": "شناسه های خارجی",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "حذف کنید",
+    "adminReposRemove": "حذف",
     "adminReposSaveFailed": "مخازن ذخیره نشد: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "در حال لغو...",
     "adminTaskRunning": "در حال دویدن...",
     "adminTaskNeverRun": "هرگز اجرا نکنید",
-    "adminTaskStop": "توقف کنید",
+    "adminTaskStop": "توقف",
     "adminTaskRun": "اجرا کنید",
     "adminTaskDetailLastExecution": "آخرین اعدام",
     "adminTaskDetailStarted": "شروع شد",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "هر 12 ساعت",
     "adminTaskTriggerEvery24Hours": "هر 24 ساعت",
     "adminTaskTriggerEvery2Days": "هر 2 روز",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 ساعت} other{{count} ساعت}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "اکنون",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} دقیقه",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} ساعت",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} روز",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6118,7 +6106,7 @@
     "adminTrickplayDescription": "تولید تصویر trickplay را برای ریز عکسهای پیش نمایش جستجو پیکربندی کنید.",
     "adminNetworkingPublicHttpsPort": "پورت عمومی HTTPS",
     "adminNetworkingBaseUrl": "URL پایه",
-    "adminNetworkingBaseUrlHint": "به عنوان مثال /ژله فین",
+    "adminNetworkingBaseUrlHint": "مثلاً /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "مسیر گواهینامه",
     "adminNetworkingRemoteIpFilter": "فیلتر IP از راه دور",
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "پوشه ها",
-    "libraries": "کتابخانه ها",
+    "libraries": "کتابخانه‌ها",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay غیرفعال شد",
     "syncPlayDisabledMessage": "برای استفاده از پخش همگام، SyncPlay را در تنظیمات فعال کنید.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay به سرور Jellyfin نیاز دارد. سرور فعلی آن را پشتیبانی نمی کند.",
     "syncPlayGroupFallbackName": "SyncPlay گروه",
     "syncPlayGroupTooltip": "گروه SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# شرکت‌کننده} other {# شرکت‌کننده}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "انتخاب من را به خاطر بسپار",
     "playHdr10Fallback": "پخش مجدد HDR10",
     "requestTranscode": "درخواست ترانکد",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# ردیف کشف شد} other {# ردیف کشف شد}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6340,14 +6328,14 @@
     "pinForgot": "پین را فراموش کرده اید؟",
     "pinClear": "پاک کردن",
     "pinBackspace": "بک اسپیس",
-    "quickConnectAuthorized": "درخواست اتصال سریع مجاز است.",
-    "quickConnectInvalidOrExpired": "کد اتصال سریع نامعتبر یا منقضی شده است.",
+    "quickConnectAuthorized": "درخواست Quick Connect تأیید شد.",
+    "quickConnectInvalidOrExpired": "کد Quick Connect نامعتبر یا منقضی شده است.",
     "quickConnectNotSupported": "Quick Connect در این سرور پشتیبانی نمی شود.",
-    "quickConnectAuthorizeFailed": "کد اتصال سریع تأیید نشد.",
-    "quickConnectDisabled": "اتصال سریع در این سرور غیرفعال است.",
-    "quickConnectForbidden": "حساب شما نمی‌تواند این درخواست اتصال سریع را تأیید کند.",
-    "quickConnectNotFound": "کد اتصال سریع پیدا نشد. یک کد جدید را امتحان کنید.",
-    "quickConnectFailedWithMessage": "اتصال سریع انجام نشد: {message}",
+    "quickConnectAuthorizeFailed": "تأیید کد Quick Connect ناموفق بود.",
+    "quickConnectDisabled": "Quick Connect در این سرور غیرفعال است.",
+    "quickConnectForbidden": "حساب شما نمی‌تواند این درخواست Quick Connect را تأیید کند.",
+    "quickConnectNotFound": "کد Quick Connect یافت نشد. کد جدیدی را امتحان کنید.",
+    "quickConnectFailedWithMessage": "Quick Connect ناموفق بود: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "بالا بعدی",
     "playNext": "پخش بعدی",
     "stillWatchingContent": "پخش موقتاً متوقف شده است. هنوز هم تماشا می کنی؟",
-    "stillWatchingStop": "توقف کنید",
+    "stillWatchingStop": "توقف",
     "stillWatchingContinue": "ادامه دهید",
     "skipSegment": "رد شدن از {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "به روز رسانی ها را بررسی کنید",
     "settingsCheckForUpdatesSubtitle": "آخرین نسخه Moonfin را بررسی کنید",
     "settingsPoweredByFlutter": "پشتیبانی شده توسط فلاتر",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# اعلان مجوز} other {# اعلان مجوز}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6635,7 +6623,7 @@
     "settingsLong": "طولانی",
     "settingsVeryLong": "خیلی طولانی",
     "settingsVideoStartDelay": "تاخیر شروع ویدیو",
-    "settingsMillisecondsValue": "{value} ms",
+    "settingsMillisecondsValue": "{value} میلی‌ثانیه",
     "@settingsMillisecondsValue": {
         "description": "Milliseconds duration label",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "نوع حساب Serr",
+    "seerrAccountType": "نوع حساب Seerr",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "ضبط کنید",
+    "record": "ضبط",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6799,25 +6787,13 @@
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "عبور مستقیم AVR",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
     "settingsAudioFallbackCodec": "کدک بازگشتی صوتی",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "استریو AAC",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "عبور (پیشرفته)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6831,27 +6807,27 @@
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "عبور مستقیم EAC3",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "عبور مستقیم EAC3 JOC (Atmos)",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "عبور مستقیم DTS Core",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+    "settingsAudioDtsHdPassthrough": "عبور مستقیم DTS-HD MA",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "عبور مستقیم TrueHD",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "عبور مستقیم TrueHD Atmos",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} کانال PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6960,7 +6936,7 @@
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "پشتیبانی از صدای HD در مسیر خروجی",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "هنرمندان برتر",
     "analyticsTopAuthors": "نویسندگان برتر",
     "analyticsTopContributors": "مشارکت کنندگان برتر",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 کتابخانه} other{{count} کتابخانه}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "محتوای ترکیبی",
     "homeVideosAndPhotos": "فیلم ها و عکس های صفحه اصلی",
     "mixedMoviesAndShows": "فیلم‌ها و نمایش‌های ترکیبی",
-    "intelQuickSync": "همگام سازی سریع اینتل",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "هیچ ضبطی یافت نشد",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "افزونه استخراج CB7 در این پلتفرم موجود نیست.",
     "closeGenrePanel": "پانل ژانر را ببندید",
     "loadingShuffle": "در حال بارگیری ترکیبی...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "پخش تصادفی کتابخانه",
+    "randomShuffleLabel": "پخش تصادفی",
+    "genresShuffleLabel": "پخش تصادفی ژانرها",
     "autoHdrSwitching": "سوئیچینگ خودکار HDR",
     "autoHdrSwitchingDescription": "به طور خودکار HDR را برای پخش ویدیوی HDR فعال کنید و حالت نمایش را در هنگام خروج بازیابی کنید.",
     "whenFullscreen": "وقتی تمام صفحه",
     "transcodingLimits": "محدودیت های رمزگذاری",
-    "settingsSupportMoonfinSubtitle": "یک قهوه به توسعه دهنده اهدا کنید"
+    "settingsSupportMoonfinSubtitle": "یک قهوه به توسعه دهنده اهدا کنید",
+    "accountPreferences": "ترجیحات حساب",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "زبان رابط کاربری",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "پیش‌فرض سیستم",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "خالی",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "سبک صفحه جزئیات",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "کلاسیک همان چیدمان وسط‌چین اصلی Moonfin است. مدرن یک چیدمان سینمایی واکنش‌گراست.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "کلاسیک",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "مدرن",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "برگه‌های گسترده",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "محتوای هر برگه هنگام مرور برگه‌ها به‌طور خودکار نمایش داده می‌شود. برای باز و بستن دستی هر برگه، این گزینه را خاموش کنید.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "نمایش جزئیات فنی؟",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "نمایش کدک، وضوح و اطلاعات جریان در خلاصه بنر",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "سیستم پیشنهاد",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "از الگوریتم کتابخانه محلی Moonfin Recommends یا سنجه‌های شباهت آنلاین TMDb استفاده کنید. توجه: پیشنهادهای آنلاین به یکپارچه‌سازی Seerr نیاز دارند.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "شباهت TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "اعمال سقف رده‌بندی سنی؟",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "محدود کردن پیشنهادهای Moonfin Recommends بر اساس رده‌بندی سنی رسانه هدف",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "سبک رابط کاربری",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "خودکار با دستگاه شما هماهنگ می‌شود. برای اعمال اجباری یک ظاهر، Apple یا Material را انتخاب کنید.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "خودکار",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "کیفیت شیشه",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "خودکار بهترین جلوه شیشه‌ای را برای این دستگاه انتخاب می‌کند. کامل محوشدگی واقعی را اعمال می‌کند؛ کاهش‌یافته از شیشه‌ای سبک استفاده می‌کند که در مصرف GPU صرفه‌جویی می‌کند.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "خودکار",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "کامل",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "کاهش‌یافته",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "تم سفارشی",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "تم‌های سفارشی عناصر بصری را در سراسر Moonfin تغییر می‌دهند. یکی از این گزینه‌ها را متناسب با سلیقه خود انتخاب کنید.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "شیشه",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "استایل شیشه مایع با پس‌زمینه گرادیانی متحرک، سطوح مات و رنگ تأکیدی آبی Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "قهرمان 8-بیتی",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "استایل پیکسل‌آرت رترو با پالت درشت، حاشیه‌های بلوکی، سایه‌های تیز و فونت پیکسلی",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "منو",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "متوقف شده",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "ذخیره وضعیت",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "بازی‌ها",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "بارگذاری وضعیت",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "جلو بردن سریع",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "تنظیمات شبیه‌ساز",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "این هسته گزینه قابل تنظیمی ندارد.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "برای باز کردن منو نگه دارید",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "اجرای بازی هنوز روی این دستگاه پشتیبانی نمی‌شود.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "جدیدترین کتاب‌ها",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "جدیدترین کتاب‌های صوتی",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 کتاب} other{{count} کتاب}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "کتاب",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "کتاب صوتی",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% خوانده شده",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} باقی‌مانده",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "خواندن",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "شنیدن",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "موارد",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "موارد اضافی",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "پشت صحنه",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "صحنه‌های حذف‌شده",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "ویژه‌برنامه‌ها",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "مصاحبه‌ها",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "صحنه‌ها",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "فیلم‌های کوتاه",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} باقی‌مانده",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "{time} تا پایان",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "کارگردانان",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "نویسنده",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "پخش تصادفی همه موسیقی‌ها",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "در گوشی خود وارد Moonfin شوید",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "دسترسی به سرور شما ممکن نیست",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "بعدی: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes} دقیقه باقی‌مانده",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours} ساعت باقی‌مانده",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} ساعت و {minutes} دقیقه باقی‌مانده",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "صفحات جزئیات، ردیف‌های صفحه اصلی و صدا",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "تکرار موسیقی تم",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "تکرار قطعه به‌جای پخش یک‌باره آن",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "چرخ اسکرول ماوس",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "انتخاب کنید چرخاندن چرخ ماوس روی ویدیو هنگام پخش چه کاری انجام دهد.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "خاموش",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "پرش (جلو / عقب)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "میزان صدا",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "میزان صدا",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "زبان صوتی جایگزین",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "ترجیح ترک صوتی پیش‌فرض",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "ترک صوتی اصلی به دوبله بومی‌سازی‌شده ترجیح داده شود.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "ترجیح ترک‌های توضیح صوتی",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "ترک‌های توضیح صوتی به ترک‌های عادی ترجیح داده شوند.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "ترنسکد (صدا)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "پخش مستقیم (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "ترنسکد (نرخ بیت یا وضوح)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "ترنسکد (ویدیو و صدا)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "ترنسکد (ویدیو)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "انتخاب کنید صدا چگونه رمزگشایی شود. عبور مستقیم AVR جریان‌های خام Dolby/DTS را به گیرنده شما می‌فرستد؛ خودکار یا داون‌میکس به‌صورت محلی رمزگشایی می‌کند.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "قالب مقصد را برای ترنسکد صدای چندکاناله انتخاب کنید؛ زمانی که جریان منبع قابل پخش مستقیم یا عبور مستقیم نیست.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "تشخیص خودکار\n(توصیه‌شده)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(پیش‌فرض)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(بدون افت کیفیت)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(فقط استریو)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(کارآمد)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(بدون افت کیفیت)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "حداکثر کانال‌های صوتی",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "حداکثر کانال‌های سیستم صوتی خود را تنظیم کنید. جریان‌های چندکاناله فراتر از این حد داون‌میکس یا ترنسکد می‌شوند.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "تشخیص خودکار\n(پیش‌فرض سخت‌افزار)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 مونو",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 استریو",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 فراگیر",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 چهارکاناله",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 فراگیر",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 فراگیر",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 فراگیر",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 فراگیر",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "هدفون",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "حالت زیرنویس",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "نشان‌دار",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "همیشه",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "زبان خارجی",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "اجباری",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "ترک‌هایی را پخش می‌کند که در فراداده فایل رسانه به‌عنوان «پیش‌فرض» یا «اجباری» نشان‌گذاری شده‌اند.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "هر بار که ویدیویی شروع می‌شود، زیرنویس‌ها را به‌طور خودکار بارگذاری و نمایش می‌دهد.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "اگر ترک صوتی پیش‌فرض به زبان خارجی باشد، زیرنویس‌ها را به‌طور خودکار روشن می‌کند.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "فقط زیرنویس‌هایی را بارگذاری می‌کند که صراحتاً با نشان فراداده «اجباری» برچسب خورده‌اند.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "بارگذاری خودکار زیرنویس را کاملاً غیرفعال می‌کند.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "زبان زیرنویس جایگزین",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "جریان زیرنویس",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "نمایش دانلودها در سرور",
+    "reportDownloadsActivitySubtitle": "به مدیر سرور اجازه دهید دانلودهای ترنسکدشده شما را در داشبورد ببیند",
+    "navbarAlwaysExpanded": "همیشه نمایش برچسب‌های نوار ناوبری",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "نمایش دکمه Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "گروه‌بندی موارد در مجموعه‌ها",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "پنهان کردن موارد کتابخانه مرتبط با مجموعه هنگام مرور کتابخانه‌ها",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "اطلاعیه گروه‌بندی کتابخانه",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "برای استفاده از این تنظیم، لطفاً مطمئن شوید تنظیمات کتابخانه‌ای «گروه‌بندی فیلم‌ها در مجموعه‌ها» و/یا «گروه‌بندی سریال‌ها در مجموعه‌ها» در بخش تنظیمات نمایش کتابخانه، روی سرور Jellyfin یا Emby شما فعال باشند.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "صدای تریلر",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "فعال کردن صدا برای تریلرها در نوار رسانه",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "ردیف‌های گسترده صفحه اصلی",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "محدود کردن ردیف‌های صفحه اصلی به 1 ردیف در هر صفحه",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "کاربر فعلی",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "ثابت",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "متحرک",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "ردیف‌های کشف Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "اعلان‌ها",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "اعلان درخواست‌های جدید",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "وقتی کسی درخواستی ثبت می‌کند به من اطلاع بده",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "به‌روزرسانی درخواست‌ها",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "تأییدشده، ردشده و افزوده‌شده به کتابخانه شما",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "به‌روزرسانی مشکلات",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "مشکلات جدید، پاسخ‌ها و راه‌حل‌ها",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} مگابایت",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "محدودیت حافظه پنهان تصاویر",
+    "clearImageCache": "پاک کردن حافظه پنهان تصاویر",
+    "imageCacheCleared": "حافظه پنهان تصاویر پاک شد",
+    "seerrDownloadingPercent": "در حال دانلود · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "در حال وارد کردن",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "ناموفق",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "در حال پردازش",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "تغییر داده شده توسط {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "تکمیل شد",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "این عنوان قبلاً درخواست شده است",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "به سقف درخواست رسیدید",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "این عنوان در فهرست مسدود است",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "فصلی برای درخواست باقی نمانده است",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "شما اجازه ثبت این درخواست را ندارید",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "درخواست‌ها",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "مشکلات",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "جدیدترین",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "آخرین تغییر",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "هیچ مشکلی وجود ندارد",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{remaining} از {limit} درخواست فیلم باقی مانده است",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{remaining} از {limit} درخواست فصل باقی مانده است",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "بخشی از {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "مشاهده مجموعه",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "درخواست مجموعه",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} فیلم · {available} در دسترس",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "درخواست {count} فیلم",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "در حال درخواست {current} از {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} فیلم درخواست شد",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{ok} فیلم از {total} فیلم درخواست شد",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "همه فیلم‌ها از قبل در دسترس یا درخواست شده‌اند",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "گزارش مشکل",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "ویدیو",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "صدا",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "مشکل چیست؟",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "همه قسمت‌ها",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "قسمت",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "باز",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "حل‌شده",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "حل کردن",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "بازگشایی",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "گزارش‌شده توسط {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} نظر",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "افزودن نظر",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "این مشکل حذف شود؟",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "ثبت گزارش",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "نمایش",
+    "adminDrawerMetadata": "فراداده",
+    "adminDrawerNfo": "تنظیمات NFO",
+    "adminActivitySeverityAll": "همه سطوح اهمیت",
+    "adminActivityDateRange": "بازه زمانی",
+    "adminRemoveDeviceConfirm": "دستگاه «{name}» حذف شود؟ کاربر باید دوباره در این دستگاه وارد شود.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "حذف همه دستگاه‌ها",
+    "adminDeleteAllDevicesConfirm": "{count} دستگاه حذف شود؟ کاربران متأثر باید دوباره وارد شوند. دستگاه فعلی شما تحت تأثیر قرار نمی‌گیرد.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "دستگاه‌ها حذف شدند",
+    "adminDevicesDeletedPartial": "برخی دستگاه‌ها حذف شدند؛ {count} دستگاه حذف نشد.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "مسیرها",
+    "adminLibraryTabOptions": "گزینه‌ها",
+    "adminLibraryTabDownloaders": "دانلودکننده‌ها",
+    "adminLibMetadataSavers": "ذخیره‌کننده‌های فراداده",
+    "adminLibSubtitleDownloaders": "دانلودکننده‌های زیرنویس",
+    "adminLibLyricDownloaders": "دانلودکننده‌های متن ترانه",
+    "adminLibMetadataDownloadersFor": "دانلودکننده‌های فراداده: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "دریافت‌کننده‌های تصویر: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "این سرور هیچ دانلودکننده‌ای برای این نوع کتابخانه ارائه نمی‌دهد.",
+    "adminLibrarySectionGeneral": "عمومی",
+    "adminLibrarySectionMetadata": "فراداده",
+    "adminLibrarySectionEmbedded": "اطلاعات توکار",
+    "adminLibrarySectionSubtitles": "زیرنویس‌ها",
+    "adminLibrarySectionImages": "تصاویر",
+    "adminLibrarySectionSeries": "سریال‌ها",
+    "adminLibrarySectionMusic": "موسیقی",
+    "adminLibrarySectionMovies": "فیلم‌ها",
+    "adminLibRealtimeMonitor": "فعال کردن پایش بی‌درنگ",
+    "adminLibRealtimeMonitorHint": "تغییرات فایل‌ها شناسایی و به‌طور خودکار پردازش می‌شوند.",
+    "adminLibArchiveMediaFiles": "در نظر گرفتن آرشیوها به‌عنوان فایل رسانه",
+    "adminLibEnablePhotos": "نمایش عکس‌ها",
+    "adminLibSaveLocalMetadata": "ذخیره آثار هنری در پوشه‌های رسانه",
+    "adminLibRefreshInterval": "به‌روزرسانی خودکار فراداده",
+    "adminLibRefreshNever": "هرگز",
+    "adminLibDefault": "پیش‌فرض",
+    "adminLibDisplayTitle": "نمایش",
+    "adminLibDisplaySection": "نمایش کتابخانه",
+    "adminLibFolderView": "نمایش نمای پوشه برای نشان دادن پوشه‌های رسانه ساده",
+    "adminLibSpecialsInSeasons": "نمایش قسمت‌های ویژه در فصلی که پخش شده‌اند",
+    "adminLibGroupMovies": "گروه‌بندی فیلم‌ها در مجموعه‌ها",
+    "adminLibGroupShows": "گروه‌بندی سریال‌ها در مجموعه‌ها",
+    "adminLibExternalSuggestions": "نمایش محتوای خارجی در پیشنهادها",
+    "adminLibDateAddedSection": "رفتار تاریخ افزودن",
+    "adminLibDateAddedLabel": "استفاده از تاریخ افزودن بر اساس",
+    "adminLibDateAddedImport": "تاریخ پویش در کتابخانه",
+    "adminLibDateAddedFile": "تاریخ ایجاد فایل",
+    "adminLibMetadataTitle": "فراداده و تصاویر",
+    "adminLibMetadataLangSection": "زبان ترجیحی فراداده",
+    "adminLibChaptersSection": "فصل‌ها",
+    "adminLibDummyChapterDuration": "مدت فصل ساختگی (ثانیه)",
+    "adminLibDummyChapterDurationHint": "طول فصل‌هایی که برای رسانه‌های بدون فصل ساخته می‌شوند. برای غیرفعال کردن روی 0 تنظیم کنید.",
+    "adminLibChapterImageResolution": "وضوح تصویر فصل",
+    "adminLibNfoTitle": "تنظیمات NFO",
+    "adminLibNfoHelp": "فراداده NFO با Kodi و کلاینت‌های مشابه سازگار است. این تنظیمات برای همه کتابخانه‌هایی که فراداده NFO ذخیره می‌کنند اعمال می‌شود.",
+    "adminLibKodiUser": "کاربری که داده‌های تماشای او در فایل‌های NFO ذخیره می‌شود",
+    "adminLibSaveImagePaths": "ذخیره مسیر تصاویر در فایل‌های NFO",
+    "adminLibPathSubstitution": "فعال کردن جایگزینی مسیر برای مسیرهای تصویر NFO",
+    "adminLibExtraThumbs": "کپی تصاویر extrafanart در پوشه extrathumbs",
+    "adminLibNone": "هیچ‌کدام",
+    "adminLibRefreshDays": "{days} روز",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "استفاده از عنوان‌های توکار",
+    "adminLibEmbeddedExtrasTitles": "استفاده از عنوان‌های توکار برای موارد اضافی",
+    "adminLibEmbeddedEpisodeInfos": "استفاده از اطلاعات توکار قسمت",
+    "adminLibAllowEmbeddedSubtitles": "اجازه زیرنویس‌های توکار",
+    "adminLibEmbeddedAllowAll": "اجازه همه",
+    "adminLibEmbeddedAllowText": "فقط متنی",
+    "adminLibEmbeddedAllowImage": "فقط تصویری",
+    "adminLibEmbeddedAllowNone": "هیچ‌کدام",
+    "adminLibSkipIfEmbeddedSubs": "رد کردن دانلود در صورت وجود زیرنویس توکار",
+    "adminLibSkipIfAudioMatches": "رد کردن دانلود اگر ترک صوتی با زبان دانلود مطابقت داشته باشد",
+    "adminLibRequirePerfectMatch": "الزام تطابق کامل زیرنویس",
+    "adminLibSaveSubtitlesWithMedia": "ذخیره زیرنویس‌ها در پوشه‌های رسانه",
+    "adminLibChapterImageExtraction": "استخراج تصاویر فصل",
+    "adminLibChapterImagesDuringScan": "استخراج تصاویر فصل هنگام پویش کتابخانه",
+    "adminLibTrickplayExtraction": "فعال کردن استخراج تصاویر Trickplay",
+    "adminLibTrickplayDuringScan": "استخراج تصاویر Trickplay هنگام پویش کتابخانه",
+    "adminLibSaveTrickplayWithMedia": "ذخیره تصاویر Trickplay در پوشه‌های رسانه",
+    "adminLibAutomaticSeriesGrouping": "ادغام خودکار سریال‌هایی که در چند پوشه پراکنده‌اند",
+    "adminLibSeasonZeroName": "نام نمایشی فصل صفر",
+    "adminLibLufsScan": "فعال کردن پویش LUFS برای یکسان‌سازی صدا",
+    "adminLibPreferNonstandardArtist": "ترجیح برچسب هنرمندان غیراستاندارد",
+    "adminLibAutoAddToCollection": "افزودن خودکار فیلم‌ها به مجموعه‌ها",
+    "adminParentalControl": "کنترل والدین",
+    "adminMaxParentalRating": "حداکثر رده‌بندی سنی مجاز",
+    "adminMaxParentalRatingHint": "محتوای با رده‌بندی بالاتر از این کاربر پنهان می‌شود.",
+    "adminParentalRatingNone": "هیچ‌کدام",
+    "adminBlockUnratedItems": "مسدود کردن مواردی که اطلاعات رده‌بندی ندارند یا رده‌بندی‌شان ناشناخته است",
+    "adminUnratedBook": "کتاب‌ها",
+    "adminUnratedChannelContent": "کانال‌ها",
+    "adminUnratedLiveTvChannel": "تلویزیون زنده",
+    "adminUnratedMovie": "فیلم‌ها",
+    "adminUnratedMusic": "موسیقی",
+    "adminUnratedTrailer": "تریلرها",
+    "adminUnratedSeries": "سریال‌ها",
+    "adminAccessSchedules": "زمان‌بندی‌های دسترسی",
+    "adminAccessSchedulesHint": "دسترسی فقط در زمان‌های زمان‌بندی‌شده زیر مجاز است. وقتی زمان‌بندی‌ای تنظیم نشده باشد، دسترسی در تمام طول روز مجاز است.",
+    "adminAddSchedule": "افزودن زمان‌بندی",
+    "adminScheduleDay": "روز",
+    "adminScheduleStart": "شروع",
+    "adminScheduleEnd": "پایان",
+    "adminDayEveryday": "هر روز",
+    "adminDayWeekday": "روزهای هفته",
+    "adminDayWeekend": "آخر هفته",
+    "adminDaySunday": "یکشنبه",
+    "adminDayMonday": "دوشنبه",
+    "adminDayTuesday": "سه‌شنبه",
+    "adminDayWednesday": "چهارشنبه",
+    "adminDayThursday": "پنجشنبه",
+    "adminDayFriday": "جمعه",
+    "adminDaySaturday": "شنبه",
+    "adminAllowedTags": "برچسب‌های مجاز",
+    "adminAllowedTagsHint": "فقط محتوای دارای این برچسب‌ها نمایش داده می‌شود. برای اجازه به همه، خالی بگذارید.",
+    "adminBlockedTags": "برچسب‌های مسدود",
+    "adminBlockedTagsHint": "محتوای دارای این برچسب‌ها از این کاربر پنهان می‌شود.",
+    "adminAddTag": "افزودن برچسب",
+    "adminEnabledDevices": "دستگاه‌های فعال",
+    "adminEnabledChannels": "کانال‌های فعال",
+    "adminAuthProvider": "ارائه‌دهنده احراز هویت",
+    "adminPasswordResetProvider": "ارائه‌دهنده بازنشانی رمز عبور",
+    "adminLoginAttemptsBeforeLockout": "حداکثر تلاش‌های ناموفق ورود پیش از قفل شدن",
+    "adminLoginAttemptsHint": "برای مقدار پیش‌فرض روی 0 و برای غیرفعال کردن قفل شدن روی -1 تنظیم کنید.",
+    "adminSyncPlayAccess": "دسترسی SyncPlay",
+    "adminSyncPlayCreateAndJoin": "اجازه ساخت و پیوستن به گروه‌ها",
+    "adminSyncPlayJoin": "اجازه پیوستن به گروه‌ها",
+    "adminSyncPlayNone": "بدون دسترسی",
+    "adminContentDeletionFolders": "اجازه حذف محتوا از",
+    "adminBackupOptionsTitle": "ایجاد پشتیبان",
+    "adminBackupInclude": "انتخاب کنید چه چیزی در پشتیبان گنجانده شود.",
+    "adminBackupDatabase": "پایگاه داده",
+    "adminBackupDatabaseAlways": "همیشه گنجانده می‌شود",
+    "adminBackupMetadata": "فراداده",
+    "adminBackupSubtitles": "زیرنویس‌ها",
+    "adminBackupTrickplay": "تصاویر Trickplay",
+    "adminEditTuner": "ویرایش تیونر",
+    "adminTunerTypeM3u": "تیونر M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "فایل یا URL",
+    "adminTunerIpAddress": "آدرس IP تیونر",
+    "adminTunerFriendlyName": "نام نمایشی",
+    "adminTunerUserAgent": "عامل کاربر",
+    "adminTunerCount": "محدودیت اتصال هم‌زمان",
+    "adminTunerCountHelp": "حداکثر تعداد جریان‌هایی که تیونر به‌طور هم‌زمان اجازه می‌دهد. برای نامحدود روی 0 تنظیم کنید.",
+    "adminTunerFallbackBitrate": "حداکثر نرخ بیت پخش جریانی جایگزین",
+    "adminTunerImportFavoritesOnly": "وارد کردن فقط کانال‌های دلخواه",
+    "adminTunerAllowHwTranscoding": "اجازه ترنسکد سخت‌افزاری",
+    "adminTunerAllowFmp4": "اجازه کانتینر ترنسکد fMP4",
+    "adminTunerAllowStreamSharing": "اجازه اشتراک‌گذاری جریان",
+    "adminTunerEnableStreamLooping": "فعال کردن تکرار جریان",
+    "adminTunerIgnoreDts": "نادیده گرفتن DTS",
+    "adminTunerReadAtNativeFramerate": "خواندن ورودی با نرخ فریم اصلی",
+    "adminEditProvider": "ویرایش ارائه‌دهنده",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "فایل یا URL",
+    "adminXmltvMoviePrefix": "پیشوند فیلم",
+    "adminXmltvMovieCategories": "دسته‌بندی‌های فیلم",
+    "adminXmltvCategoriesHelp": "چند دسته‌بندی را با خط عمودی از هم جدا کنید.",
+    "adminXmltvKidsCategories": "دسته‌بندی‌های کودکان",
+    "adminXmltvNewsCategories": "دسته‌بندی‌های اخبار",
+    "adminXmltvSportsCategories": "دسته‌بندی‌های ورزشی",
+    "adminSdUsername": "نام کاربری",
+    "adminSdPassword": "رمز عبور",
+    "adminSdCountry": "کشور",
+    "adminSdCountrySelect": "یک کشور انتخاب کنید",
+    "adminSdPostalCode": "کد پستی",
+    "adminSdGetListings": "دریافت فهرست برنامه‌ها",
+    "adminSdListings": "فهرست برنامه‌ها",
+    "adminEnableAllTuners": "فعال کردن همه تیونرها",
+    "adminTunerResetNotSupported": "این نوع تیونر از بازنشانی پشتیبانی نمی‌کند.",
+    "adminMovieRecordingPath": "مسیر ضبط فیلم",
+    "adminGuideDays": "روزهای داده راهنما",
+    "adminGuideDaysAuto": "خودکار",
+    "adminGuideDaysValue": "{days} روز",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "مسیر برنامه پس‌پردازش",
+    "adminRecordingPostProcessorArgs": "آرگومان‌های پس‌پردازنده",
+    "adminSaveRecordingNfo": "ذخیره فراداده NFO ضبط",
+    "adminSaveRecordingImages": "ذخیره تصاویر ضبط",
+    "adminLiveTvSectionTiming": "زمان‌بندی",
+    "adminLiveTvSectionPaths": "مسیرهای ضبط",
+    "adminLiveTvSectionPostProcessing": "پس‌پردازش",
+    "adminGuideDaysDisplay": "داده راهنما: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "به‌روزرسانی داده راهنما",
+    "adminGuideRefreshStarted": "به‌روزرسانی داده راهنما آغاز شد",
+    "adminGuideRefreshUnavailable": "وظیفه به‌روزرسانی راهنما در این سرور در دسترس نیست.",
+    "adminMetadataIdentify": "شناسایی",
+    "adminBrandingSplashUpload": "بارگذاری تصویر",
+    "adminBrandingSplashUploaded": "صفحه شروع به‌روزرسانی شد",
+    "adminBrandingSplashUploadFailed": "بارگذاری صفحه شروع ناموفق بود",
+    "adminBrandingSplashDeleted": "صفحه شروع حذف شد",
+    "adminBrandingNoSplash": "بدون صفحه شروع سفارشی",
+    "adminPlaybackQsvDevice": "دستگاه QSV",
+    "adminPlaybackEnhancedNvdec": "فعال کردن رمزگشای پیشرفته NVDEC",
+    "adminPlaybackPreferNativeDecoder": "ترجیح رمزگشای سخت‌افزاری بومی سیستم",
+    "adminPlaybackColorDepth": "عمق رنگ رمزگشایی سخت‌افزاری",
+    "adminPlaybackColorDepth10Hevc": "رمزگشایی 10-بیتی HEVC",
+    "adminPlaybackColorDepth10Vp9": "رمزگشایی 10-بیتی VP9",
+    "adminPlaybackColorDepth10HevcRext": "رمزگشایی 8/10-بیتی HEVC RExt",
+    "adminPlaybackColorDepth12HevcRext": "رمزگشایی 12-بیتی HEVC RExt",
+    "adminPlaybackHwEncodingSection": "کدگذاری سخت‌افزاری",
+    "adminPlaybackAllowHevcEncoding": "اجازه کدگذاری HEVC",
+    "adminPlaybackAllowAv1Encoding": "اجازه کدگذاری AV1",
+    "adminPlaybackIntelLowPowerH264": "فعال کردن کدگذار کم‌مصرف H.264 اینتل",
+    "adminPlaybackIntelLowPowerHevc": "فعال کردن کدگذار کم‌مصرف HEVC اینتل",
+    "adminPlaybackToneMapping": "نگاشت تُن",
+    "adminPlaybackEnableTonemapping": "فعال کردن نگاشت تُن",
+    "adminPlaybackEnableVppTonemapping": "فعال کردن نگاشت تُن VPP",
+    "adminPlaybackEnableVtTonemapping": "فعال کردن نگاشت تُن VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "الگوریتم نگاشت تُن",
+    "adminPlaybackTonemappingMode": "حالت نگاشت تُن",
+    "adminPlaybackTonemappingRange": "محدوده نگاشت تُن",
+    "adminPlaybackTonemappingDesat": "کاهش اشباع نگاشت تُن",
+    "adminPlaybackTonemappingPeak": "اوج نگاشت تُن",
+    "adminPlaybackTonemappingParam": "پارامتر نگاشت تُن",
+    "adminPlaybackVppTonemappingBrightness": "روشنایی نگاشت تُن VPP",
+    "adminPlaybackVppTonemappingContrast": "کنتراست نگاشت تُن VPP",
+    "adminPlaybackPresetsQuality": "پیش‌تنظیم‌ها و کیفیت",
+    "adminPlaybackEncoderPreset": "پیش‌تنظیم کدگذار",
+    "adminPlaybackH264Crf": "CRF کدگذاری H.264",
+    "adminPlaybackH265Crf": "CRF کدگذاری H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "روش حذف درهم‌بافتگی",
+    "adminPlaybackDeinterlaceDoubleRate": "دو برابر کردن نرخ فریم هنگام حذف درهم‌بافتگی",
+    "adminPlaybackAudioSection": "صدا",
+    "adminPlaybackEnableAudioVbr": "فعال کردن کدگذاری VBR صدا",
+    "adminPlaybackDownmixBoost": "تقویت داون‌میکس صدا",
+    "adminPlaybackDownmixAlgorithm": "الگوریتم داون‌میکس استریو",
+    "adminPlaybackMaxMuxingQueue": "حداکثر اندازه صف مالتی‌پلکس",
+    "adminPlaybackAutoOption": "خودکار",
+    "adminRunningTasks": "وظایف در حال اجرا",
+    "adminNetworkingPublicHttpPort": "پورت عمومی HTTP",
+    "adminNetworkingRequireHttps": "الزام HTTPS",
+    "adminNetworkingRequireHttpsHint": "همه درخواست‌های راه دور به HTTPS هدایت می‌شوند. اگر سرور گواهی معتبر نداشته باشد، تأثیری ندارد.",
+    "adminNetworkingCertPassword": "رمز عبور گواهی",
+    "adminNetworkingIpSettings": "تنظیمات IP",
+    "adminNetworkingEnableIpv4": "فعال کردن IPv4",
+    "adminNetworkingEnableIpv6": "فعال کردن IPv6",
+    "adminNetworkingAutoDiscovery": "فعال کردن نگاشت خودکار پورت",
+    "adminNetworkingLocalSubnets": "شبکه‌های LAN",
+    "adminNetworkingLocalSubnetsHint": "فهرست آدرس‌های IP یا زیرشبکه‌های CIDR که به‌عنوان شبکه محلی در نظر گرفته می‌شوند، جداشده با کاما یا خط جدید.",
+    "adminNetworkingPublishedUris": "URIهای منتشرشده سرور",
+    "adminNetworkingPublishedUriHint": "یک زیرشبکه یا آدرس را به یک URL منتشرشده نگاشت کنید، مثلاً all=https://example.com",
+    "adminPlaybackThrottleDelay": "تأخیر محدودسازی (ثانیه)",
+    "adminPlaybackEnableSubtitleExtraction": "اجازه استخراج زیرنویس در لحظه",
+    "adminGeneralEnableSlowResponse": "فعال کردن هشدارهای پاسخ کند",
+    "adminGeneralQuickConnect": "فعال کردن Quick Connect",
+    "adminGeneralSectionServer": "سرور",
+    "adminGeneralSectionMetadata": "فراداده",
+    "adminGeneralSectionPaths": "مسیرها",
+    "adminGeneralSectionPerformance": "کارایی",
+    "adminGeneralDisplayLanguage": "زبان نمایش ترجیحی",
+    "offlineBannerTitle": "آفلاین هستید",
+    "offlineBannerSubtitle": "نمایش دانلودهای شما",
+    "offlineBannerAction": "دانلودها",
+    "serverUnreachableBannerTitle": "دسترسی به سرور شما ممکن نیست",
+    "serverUnreachableBannerSubtitle": "تا بازگشت سرور، پخش از دانلودها انجام می‌شود",
+    "contextMenuHideFromContinueWatching": "پنهان کردن از «ادامه تماشا»",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "پنهان کردن از «بعدی»",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "افزودن به مجموعه",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "اتصال",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "اجازه گواهی‌های خودامضا",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "به سرورهایی که از گواهی‌های TLS خودامضا یا CA خصوصی استفاده می‌کنند اعتماد کنید. فقط برای سرورهایی که خودتان کنترل می‌کنید فعال کنید. این کار اعتبارسنجی گواهی را برای همه اتصال‌ها غیرفعال می‌کند.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "صفحه جزئیات",
+    "settingsDetailsScreenSubtitle": "سبک، محوشدگی پس‌زمینه و رفتار برگه‌ها",
+    "settingsShowSeerrButtonInNavigation": "نمایش دکمه Seerr در نوار ناوبری",
+    "settingsAlwaysExpandNavbarLabels": "همیشه نمایش برچسب‌های متنی در نوار ناوبری بالا",
+    "settingsMediaSegmentCountdown": "شمارش معکوس بخش رسانه",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "نوار پیشرفت",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "زمان‌شمار",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "هیچ‌کدام",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "{libraryName} تازه‌منتشرشده",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "فعال کردن تونل‌سازی",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "پیشرفته. صدا و ویدیو را از یک مسیر سخت‌افزاری مشترک عبور می‌دهد. به‌طور پیش‌فرض خاموش است، زیرا در برخی دستگاه‌ها باعث قطعی صدا/تصویر می‌شود.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "نمایش جزئیات رسانه",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "نمایش جزئیات مورد انتخاب‌شده در بالای صفحات کتابخانه.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "پنهان کردن پس‌زمینه‌ها هنگام مرور؟",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "فروشگاه تم",
+    "themeStoreSubtitle": "مرور و ذخیره تم‌های انجمن",
+    "themeStoreDescription": "یک تم را ذخیره کنید تا مانند سایر تم‌های ذخیره‌شده از آن استفاده کنید.",
+    "themeStoreEmpty": "در حال حاضر هیچ تمی در دسترس نیست.",
+    "themeStoreLoadFailed": "بارگذاری فروشگاه تم ممکن نشد. اتصال خود را بررسی کرده و دوباره تلاش کنید.",
+    "themeStoreSave": "ذخیره",
+    "themeStoreSaveAndApply": "ذخیره و اعمال",
+    "themeStoreSaved": "ذخیره شد",
+    "themeStoreInvalidMessage": "این تم بارگذاری نشد.",
+    "themeStoreSavedMessage": "«{themeName}» ذخیره شد.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "نمایش ردیف‌های صفحه اصلی",
+    "homeRowSections": "بخش‌های ردیف صفحه اصلی",
+    "homeRowToggles": "کلیدهای ردیف صفحه اصلی",
+    "homeRowTogglesSubtitle": "فعال یا غیرفعال کردن دسته‌بندی‌های ردیف صفحه اصلی مبتنی بر کتابخانه",
+    "homeRowTogglesDescription": "کلیدهای زیر را فعال کنید تا ردیف‌ها در بخش‌های صفحه اصلی نمایش داده شوند.",
+    "displayPlaylistsRows": "نمایش ردیف‌های لیست پخش",
+    "displayPlaylistsRowsSubtitle": "نمایش ردیف‌های لیست پخش در بخش‌های صفحه اصلی.",
+    "playlistsRowSorting": "مرتب‌سازی ردیف لیست پخش",
+    "playlistsRowSortingDescription": "ردیف‌های لیست پخش را بر اساس تاریخ افزودن، تاریخ انتشار، ترتیب الفبا و موارد دیگر مرتب کنید.",
+    "displayAudioRows": "نمایش ردیف‌های صوتی",
+    "displayAudioRowsSubtitle": "نمایش ردیف‌های صوتی در بخش‌های صفحه اصلی.",
+    "audioRowsSorting": "مرتب‌سازی ردیف‌های صوتی",
+    "audioRowsSortingDescription": "ردیف‌های صوتی را بر اساس تاریخ افزودن، تاریخ انتشار، ترتیب الفبا و موارد دیگر مرتب کنید.",
+    "audioPlaylists": "لیست‌های پخش صوتی",
+    "layout": "چیدمان",
+    "theme": "تم",
+    "keyboard": "صفحه‌کلید",
+    "navButtons": "دکمه‌ها",
+    "rendering": "رندرینگ",
+    "mpvConfiguration": "پیکربندی MPV",
+    "externalPlayerAppDescription": "پخش‌کننده خارجی را تنظیم کنید تا گزینه پخش با فشار طولانی فعال شود",
+    "crewContributionsSeerr": "مشارکت‌های عوامل (Seerr)",
+    "changeArtwork": "تغییر تصویر",
+    "missing": "موجود نیست",
+    "clearAllArtworkButton": "همه تصاویر پاک شوند؟",
+    "clearAllArtworkWarning": "آیا مطمئن هستید که می‌خواهید همه تصاویر دانلودشده را پاک کنید؟",
+    "confirmClear": "تأیید پاک کردن",
+    "confirmClearMessage": "آیا مطمئن هستید که می‌خواهید این {itemType} را پاک کنید؟",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "بارگذاری شود؟",
+    "resolutionLabel": "وضوح: ",
+    "onlyShowInterfaceLanguage": "فقط نمایش تصاویر به زبان رابط کاربری",
+    "confirmClearAll": "تأیید پاک کردن همه",
+    "imageUploadSuccess": "تصویر با موفقیت بارگذاری شد!",
+    "imageUploadFailed": "بارگذاری تصویر ناموفق بود: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "تنظیم تصویر ناموفق بود: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "حذف تصویر ناموفق بود: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "پاک کردن همه تصاویر ناموفق بود: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "بله",
+    "posterCategory": "پوستر",
+    "backdropsCategory": "پس‌زمینه‌ها",
+    "bannerCategory": "بنر",
+    "logoCategory": "لوگو",
+    "thumbnailCategory": "تصویر بندانگشتی",
+    "artCategory": "تصویر هنری",
+    "discArtCategory": "تصویر دیسک",
+    "screenshotCategory": "اسکرین‌شات",
+    "boxCoverCategory": "جلد جعبه",
+    "boxRearCoverCategory": "جلد پشت جعبه",
+    "menuArtCategory": "تصویر منو",
+    "confirmItemPoster": "پوستر",
+    "confirmItemBackdrop": "پس‌زمینه",
+    "confirmItemBanner": "بنر",
+    "confirmItemLogo": "لوگو",
+    "confirmItemThumbnail": "تصویر بندانگشتی",
+    "confirmItemArt": "تصویر هنری",
+    "confirmItemDiscArt": "تصویر دیسک",
+    "confirmItemScreenshot": "اسکرین‌شات",
+    "confirmItemBoxCover": "جلد جعبه",
+    "confirmItemBoxRearCover": "جلد پشت جعبه",
+    "confirmItemMenuArt": "تصویر منو",
+    "resolutionAll": "همه",
+    "resolutionHigh": "بالا (1080p+)",
+    "resolutionMedium": "متوسط (720p)",
+    "resolutionLow": "پایین (<720p)",
+    "sources": "منابع",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "فصل‌ها",
+    "audiobookBookmarks": "نشانک‌ها",
+    "audiobookNotes": "یادداشت‌ها",
+    "audiobookQueue": "صف پخش",
+    "audiobookTimeline": "خط زمانی",
+    "audiobookTimelineEmpty": "خط زمانی خالی است",
+    "audiobookWholeBook": "کل کتاب",
+    "audiobookFocusedTimeline": "خط زمانی متمرکز",
+    "audiobookExportBookmarks": "برون‌بری نشانک‌ها",
+    "audiobookExportNotes": "برون‌بری یادداشت‌ها",
+    "audiobookExportAll": "برون‌بری همه",
+    "audiobookExportSuccess": "برون‌بری شد در {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "برون‌بری ناموفق بود: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "متن ترانه",
+    "audiobookAddBookmark": "افزودن نشانک",
+    "audiobookAddNote": "افزودن یادداشت",
+    "audiobookEditNote": "ویرایش یادداشت",
+    "audiobookNoteHint": "برای این لحظه یادداشتی بنویسید",
+    "audiobookSleepTimer": "زمان‌سنج خواب",
+    "audiobookSleepOff": "خاموش",
+    "audiobookSleepEndOfChapter": "پایان فصل",
+    "audiobookSleepCustom": "سفارشی",
+    "audiobookSleepRemaining": "{remaining} باقی‌مانده",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 دقیقه} other{{count} دقیقه}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "سرعت پخش",
+    "audiobookRemainingTime": "باقی‌مانده",
+    "audiobookElapsedTime": "سپری‌شده",
+    "audiobookSkipBackSeconds": "{seconds} ثانیه عقب",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "{seconds} ثانیه جلو",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "فصل قبلی",
+    "audiobookNextChapter": "فصل بعدی",
+    "audiobookChapterIndicator": "فصل {current} از {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "بدون فصل",
+    "audiobookNoBookmarks": "هنوز نشانکی نیست",
+    "audiobookNoNotes": "هنوز یادداشتی نیست",
+    "audiobookBookmarkAdded": "نشانک در {position} افزوده شد",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "بازنشانی به 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "ذخیره",
+    "audiobookCancel": "لغو",
+    "audiobookDelete": "حذف",
+    "subtitlePreferences": "ترجیحات زیرنویس",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "تغییر حالت‌های زیرنویس، زبان‌های پیش‌فرض، ظاهر و گزینه‌های رندر.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "رندر زیرنویس",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "گزینه‌های نمایش",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "تاریخ انتشار (صعودی)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "تاریخ انتشار (نزولی)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "گروه‌بندی مشارکت‌ها",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "گروه‌بندی چند نقش",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "هشدار دسترسی نوشتن در کتابخانه",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "روش رفع این مشکل:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. به کاربر سرویس Jellyfin (مثلاً jellyfin یا PUID/PGID داکر) برای پوشه‌های کتابخانه رسانه خود روی سرور، مجوز نوشتن بدهید.\n\n2. یا به داشبورد Jellyfin -> کتابخانه‌ها بروید، این کتابخانه را ویرایش کنید و «ذخیره آثار هنری در پوشه‌های رسانه» را غیرفعال کنید تا آثار هنری در پایگاه داده داخلی Jellyfin ذخیره شوند.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "بستن",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "کتابخانه «{libraryName}» شما طوری پیکربندی شده که آثار هنری را مستقیماً در پوشه‌های رسانه ذخیره کند («ذخیره آثار هنری در پوشه‌های رسانه» فعال است). با این حال، Jellyfin دسترسی نوشتن را آزمایش کرده و مجوز نوشتن فایل در این پوشه را ندارد:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "به نظر می‌رسد Jellyfin نتوانسته آثار هنری را به‌روزرسانی کند. کتابخانه شما طوری پیکربندی شده که آثار هنری را مستقیماً در پوشه‌های رسانه ذخیره کند («ذخیره آثار هنری در پوشه‌های رسانه» فعال است). این خطا معمولاً زمانی رخ می‌دهد که فرایند سرور Jellyfin مجوز نوشتن فایل در پوشه‌های رسانه شما را نداشته باشد.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "فهرست‌های خارجی",
+    "replay": "پخش دوباره",
+    "fileInformation": "اطلاعات فایل",
+    "fileSizeFormat": "اندازه: {size}  •  قالب: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "نمایش همه ({count}) ترک صوتی",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "نمایش همه ({count}) ترک زیرنویس",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "در حال بررسی قابلیت پخش مستقیم...",
+    "directPlayCapabilityLabel": "قابلیت پخش مستقیم: ",
+    "forced": "اجباری",
+    "transcodeContainerNotSupported": "قالب کانتینر توسط پخش‌کننده پشتیبانی نمی‌شود.",
+    "transcodeVideoCodecNotSupported": "کدک ویدیو پشتیبانی نمی‌شود.",
+    "transcodeAudioCodecNotSupported": "کدک صدا پشتیبانی نمی‌شود.",
+    "transcodeSubtitleCodecNotSupported": "قالب زیرنویس پشتیبانی نمی‌شود (نیاز به چاپ روی تصویر دارد).",
+    "transcodeAudioProfileNotSupported": "پروفایل صدا پشتیبانی نمی‌شود.",
+    "transcodeVideoProfileNotSupported": "پروفایل ویدیو پشتیبانی نمی‌شود.",
+    "transcodeVideoLevelNotSupported": "سطح ویدیو پشتیبانی نمی‌شود.",
+    "transcodeVideoResolutionNotSupported": "وضوح ویدیو توسط این دستگاه پشتیبانی نمی‌شود.",
+    "transcodeVideoBitDepthNotSupported": "عمق بیت ویدیو پشتیبانی نمی‌شود.",
+    "transcodeVideoFramerateNotSupported": "نرخ فریم ویدیو پشتیبانی نمی‌شود.",
+    "transcodeContainerBitrateExceedsLimit": "نرخ بیت فایل از حد پخش جریانی پخش‌کننده فراتر است.",
+    "transcodeVideoBitrateExceedsLimit": "نرخ بیت ویدیو از حد پخش جریانی فراتر است.",
+    "transcodeAudioBitrateExceedsLimit": "نرخ بیت صدا از حد پخش جریانی فراتر است.",
+    "transcodeAudioChannelsNotSupported": "تعداد کانال‌های صوتی پشتیبانی نمی‌شود.",
+    "sortAlphabetical": "الفبایی",
+    "sortReleaseAscending": "ترتیب انتشار (صعودی)",
+    "sortReleaseDescending": "ترتیب انتشار (نزولی)",
+    "sortCustomDragDrop": "سفارشی (کشیدن و رها کردن)",
+    "playlistSortOptions": "گزینه‌های مرتب‌سازی لیست پخش",
+    "resetSort": "بازنشانی مرتب‌سازی",
+    "rewatchSeasonEpisode": "تماشای دوباره فصل {season} قسمت {episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "تماشای دوباره لیست پخش",
+    "noSubtitlesFound": "زیرنویسی یافت نشد.",
+    "adminControls": "کنترل‌های مدیر",
+    "impellerRendering": "موتور رندر (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller موتور رندر مدرن GPU در Flutter است که انیمیشن‌های روان‌تر و پرش کمتری ارائه می‌دهد. در برخی تی‌وی‌باکس‌ها و GPUهای قدیمی ممکن است باعث اشکال تصویری یا ویدیوی سیاه شود؛ در این صورت آن را خاموش کنید. خودکار بهترین حالت پیش‌فرض را برای دستگاه شما انتخاب می‌کند. برای اعمال، Moonfin را دوباره راه‌اندازی کنید.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "خودکار",
+    "impellerOn": "روشن",
+    "impellerOff": "خاموش",
+    "impellerRestartTitle": "راه‌اندازی مجدد لازم است",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "برای تغییر موتور رندر، Moonfin باید دوباره راه‌اندازی شود. اکنون برنامه را ببندید و سپس دوباره باز کنید تا اعمال شود.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "اکنون برنامه بسته شود",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "به‌روزرسانی کتابخانه",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "به‌روزرسانی همه کتابخانه‌ها",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "تاریخ افزودن (قدیمی‌ترین اول)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "تاریخ افزودن (جدیدترین اول)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "الفبایی (الف تا ی)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "الفبایی (ی تا الف)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "در حال بارگذاری تحلیل‌های سرور... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "مطابق با منبع",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "250 فیلم برتر IMDb",
+    "imdbTop250TvShows": "250 سریال برتر IMDb",
+    "imdbMostPopularMovies": "محبوب‌ترین فیلم‌های IMDb",
+    "imdbMostPopularTvShows": "محبوب‌ترین سریال‌های IMDb",
+    "imdbLowestRatedMovies": "کم‌امتیازترین فیلم‌های IMDb",
+    "imdbTopEnglishMovies": "برترین فیلم‌های انگلیسی‌زبان IMDb"
 }

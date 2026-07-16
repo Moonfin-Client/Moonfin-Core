@@ -1,6 +1,6 @@
 {
     "@@locale": "uk",
-    "appTitle": "Місячне плавник",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Connecting to {serverName}",
+    "connectingToServer": "Підключення до {serverName}",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Швидке підключення",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+    "quickConnectUnavailable": "QuickConnect недоступний: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect недоступний ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Версія Moonfin {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -119,7 +119,7 @@
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+    "removeServerConfirmation": "Видалити «{serverName}» зі списку ваших серверів?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "видалити",
+    "remove": "Прибрати",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Місячне плавник",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -240,7 +240,7 @@
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
-    "unableToConnectTo": "Unable to connect to {target}",
+    "unableToConnectTo": "Не вдалося підключитися до {target}",
     "@unableToConnectTo": {
         "description": "Error when connection to a specific server or address fails",
         "placeholders": {
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Серія",
+    "series": "Серіали",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "додому",
+    "home": "Головна",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "Бібліотека",
+    "library": "Медіатека",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -349,7 +349,7 @@
     "@noGenresFound": {
         "description": "Empty state when no genres are available"
     },
-    "failedToLoadFolderError": "Failed to load folder: {error}",
+    "failedToLoadFolderError": "Не вдалося завантажити теку: {error}",
     "@failedToLoadFolderError": {
         "description": "Error when a folder cannot be loaded",
         "placeholders": {
@@ -362,7 +362,7 @@
     "@thisFolderIsEmpty": {
         "description": "Empty state for folder browse screen"
     },
-    "itemCountLabel": "{count} items",
+    "itemCountLabel": "{count} елементів",
     "@itemCountLabel": {
         "description": "Subtitle showing number of items in a folder or collection",
         "placeholders": {
@@ -387,7 +387,7 @@
     "@favorites": {
         "description": "Favorites section heading and filter label"
     },
-    "totalCountItems": "{count} Items",
+    "totalCountItems": "{count} елементів",
     "@totalCountItems": {
         "description": "Header showing total item count",
         "placeholders": {
@@ -444,7 +444,7 @@
     "@extraLarge": {
         "description": "Size option: extra large"
     },
-    "libraryGenresTitle": "{name} — Genres",
+    "libraryGenresTitle": "{name} — жанри",
     "@libraryGenresTitle": {
         "description": "Header title showing library name with genres suffix",
         "placeholders": {
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Художники",
+    "artists": "Виконавці",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -497,7 +497,7 @@
     "@justNow": {
         "description": "Relative time for less than a minute ago"
     },
-    "minutesAgo": "{count}m ago",
+    "minutesAgo": "{count} хв тому",
     "@minutesAgo": {
         "description": "Relative time in minutes",
         "placeholders": {
@@ -506,7 +506,7 @@
             }
         }
     },
-    "hoursAgo": "{count}h ago",
+    "hoursAgo": "{count} год тому",
     "@hoursAgo": {
         "description": "Relative time in hours",
         "placeholders": {
@@ -515,7 +515,7 @@
             }
         }
     },
-    "daysAgo": "{count}d ago",
+    "daysAgo": "{count} дн тому",
     "@daysAgo": {
         "description": "Relative time in days",
         "placeholders": {
@@ -560,7 +560,7 @@
     "@librivoxDescription": {
         "description": "Subtitle for audiobook discovery section"
     },
-    "titlesCount": "{count} titles",
+    "titlesCount": "{count} назв",
     "@titlesCount": {
         "description": "Label showing number of titles",
         "placeholders": {
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Резюме",
+    "resume": "Продовжити",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -669,7 +669,7 @@
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
-    "authorsCount": "{count} authors",
+    "authorsCount": "{count} авторів",
     "@authorsCount": {
         "description": "Metric pill showing author count",
         "placeholders": {
@@ -678,7 +678,7 @@
             }
         }
     },
-    "genresCount": "{count} genres",
+    "genresCount": "{count} жанрів",
     "@genresCount": {
         "description": "Metric pill showing genre count",
         "placeholders": {
@@ -687,7 +687,7 @@
             }
         }
     },
-    "percentCompleted": "{percent}% completed",
+    "percentCompleted": "{percent}% завершено",
     "@percentCompleted": {
         "description": "Reading progress percentage label",
         "placeholders": {
@@ -712,7 +712,7 @@
     "@bookmarksAndProgress": {
         "description": "Panel header for bookmarks section"
     },
-    "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+    "titlesArrangedForBrowsing": "{count} назв, упорядкованих для перегляду з фокусом на читанні.",
     "@titlesArrangedForBrowsing": {
         "description": "Panel subtitle showing total titles",
         "placeholders": {
@@ -721,7 +721,7 @@
             }
         }
     },
-    "titles": "Титули",
+    "titles": "Назви",
     "@titles": {
         "description": "Stat card label for total titles"
     },
@@ -761,7 +761,7 @@
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
-    "noLabelFound": "No {label} found",
+    "noLabelFound": "{label} не знайдено",
     "@noLabelFound": {
         "description": "Empty state with dynamic label like books or audiobooks",
         "placeholders": {
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Дивився",
+    "watched": "Переглянуто",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Непереглянуто",
+    "unwatched": "Не переглянуто",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -858,7 +858,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "{count} sections",
+    "sectionCountLabel": "{count} розділів",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
@@ -867,7 +867,7 @@
             }
         }
     },
-    "firstPublished": "First published {year}",
+    "firstPublished": "Перше видання: {year}",
     "@firstPublished": {
         "description": "Publication year for a book",
         "placeholders": {
@@ -888,7 +888,7 @@
     "@all": {
         "description": "Filter option for showing all items"
     },
-    "booksCount": "{count} books",
+    "booksCount": "{count} книг",
     "@booksCount": {
         "description": "Label showing number of books in a discover row",
         "placeholders": {
@@ -905,7 +905,7 @@
     "@audiobookDetails": {
         "description": "AppBar title for LibriVox audiobook detail screen"
     },
-    "authorsCountTitle": "{count} Authors",
+    "authorsCountTitle": "{count} авторів",
     "@authorsCountTitle": {
         "description": "AppBar title for LibriVox authors list screen",
         "placeholders": {
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 аудіокнига} one{{count} аудіокнига} few{{count} аудіокниги} many{{count} аудіокниг} other{{count} аудіокниги}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -939,7 +939,7 @@
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "зберегти",
+    "save": "Зберегти",
     "@save": {
         "description": "Save action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Пори року",
+    "seasons": "Сезони",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1023,7 +1023,7 @@
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
-    "published": "Published {year}",
+    "published": "Видано {year}",
     "@published": {
         "description": "Publication year for an author book tile",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 сезон} one{{count} сезон} few{{count} сезони} many{{count} сезонів} other{{count} сезону}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1045,7 +1045,7 @@
             }
         }
     },
-    "endsAt": "Ends at {time}",
+    "endsAt": "Закінчиться о {time}",
     "@endsAt": {
         "description": "Label showing when media will end",
         "placeholders": {
@@ -1066,7 +1066,7 @@
     "@read": {
         "description": "Action button label to start reading a book"
     },
-    "resumeFrom": "Resume from {position}",
+    "resumeFrom": "Продовжити з {position}",
     "@resumeFrom": {
         "description": "Action button label showing resume position",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "грати",
+    "play": "Відтворити",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "акторський склад",
+    "cast": "Транслювати",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1199,7 +1199,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+    "deleteDownloadedTracksMessage": "Видалити завантажені треки для «{title}»?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1220,7 +1220,7 @@
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
-    "noItemsLoaded": "No {itemLabel} loaded",
+    "noItemsLoaded": "{itemLabel} не завантажено",
     "@noItemsLoaded": {
         "description": "Message when no items are loaded for download",
         "placeholders": {
@@ -1229,7 +1229,7 @@
             }
         }
     },
-    "downloadingTitle": "Downloading {title} ({count} items)...",
+    "downloadingTitle": "Завантаження {title} ({count} елементів)...",
     "@downloadingTitle": {
         "description": "Snackbar message when downloading album tracks",
         "placeholders": {
@@ -1241,7 +1241,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+    "deleteConfirmMessage": "Ви впевнені, що хочете видалити «{name}» із сервера? Цю дію неможливо скасувати.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -1258,7 +1258,7 @@
     "@noPlayableTrailerFound": {
         "description": "Error message when no trailer can be played"
     },
-    "unsupportedBookFormat": "Unsupported book format: .{extension}",
+    "unsupportedBookFormat": "Непідтримуваний формат книги: .{extension}",
     "@unsupportedBookFormat": {
         "description": "Error message for unsupported book file format",
         "placeholders": {
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Жодного",
+    "none": "Немає",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1295,7 +1295,7 @@
     "@selectedSubtitleInvalid": {
         "description": "Error message when a selected subtitle is invalid"
     },
-    "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+    "subtitleDownloadedSelected": "Субтитри завантажено та вибрано: {name}",
     "@subtitleDownloadedSelected": {
         "description": "Success message after downloading and selecting a subtitle",
         "placeholders": {
@@ -1308,7 +1308,7 @@
     "@subtitleDownloadedPending": {
         "description": "Message when subtitle was downloaded but not yet visible"
     },
-    "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+    "noRemoteSubtitlesFound": "Віддалених субтитрів для мови {language} не знайдено.",
     "@noRemoteSubtitlesFound": {
         "description": "Message when no remote subtitles were found",
         "placeholders": {
@@ -1321,7 +1321,7 @@
     "@selectVersion": {
         "description": "Dialog title for selecting a media version"
     },
-    "versionNumber": "Version {number}",
+    "versionNumber": "Версія {number}",
     "@versionNumber": {
         "description": "Default label for a media version",
         "placeholders": {
@@ -1350,7 +1350,7 @@
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
-    "downloadingItem": "Downloading {name} ({quality})...",
+    "downloadingItem": "Завантаження {name} ({quality})...",
     "@downloadingItem": {
         "description": "Snackbar message when downloading an item",
         "placeholders": {
@@ -1366,7 +1366,7 @@
     "@deleteDownloadedFiles": {
         "description": "Dialog title for deleting downloaded files"
     },
-    "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+    "deleteLocalFilesMessage": "Видалити локальні файли для {typeLabel}?\n\nЦе звільнить місце у сховищі. Ви зможете завантажити їх знову пізніше.",
     "@deleteLocalFilesMessage": {
         "description": "Confirmation message for deleting local downloaded files",
         "placeholders": {
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "ПИСЬМЕННИКИ",
+    "writers": "СЦЕНАРИСТИ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1399,7 +1399,7 @@
     "@studio": {
         "description": "Metadata label for studio"
     },
-    "studioMoreCount": "+{count} more",
+    "studioMoreCount": "+ще {count}",
     "@studioMoreCount": {
         "description": "Label showing additional studio count",
         "placeholders": {
@@ -1408,7 +1408,7 @@
             }
         }
     },
-    "totalEpisodes": "{count} Episodes",
+    "totalEpisodes": "{count} епізодів",
     "@totalEpisodes": {
         "description": "Season progress label showing total episodes",
         "placeholders": {
@@ -1429,7 +1429,7 @@
             }
         }
     },
-    "episodeLabel": "Episode {number}",
+    "episodeLabel": "Епізод {number}",
     "@episodeLabel": {
         "description": "Label for an episode number",
         "placeholders": {
@@ -1438,7 +1438,7 @@
             }
         }
     },
-    "chapterNumber": "Chapter {number}",
+    "chapterNumber": "Розділ {number}",
     "@chapterNumber": {
         "description": "Default name for a chapter",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 трек} one{{count} трек} few{{count} треки} many{{count} треків} other{{count} треку}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 розділ} one{{count} розділ} few{{count} розділи} many{{count} розділів} other{{count} розділу}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1465,7 +1465,7 @@
             }
         }
     },
-    "born": "Born {date}",
+    "born": "Народження: {date}",
     "@born": {
         "description": "Person birth date label",
         "placeholders": {
@@ -1474,7 +1474,7 @@
             }
         }
     },
-    "died": "Died {date}",
+    "died": "Смерть: {date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1483,7 +1483,7 @@
             }
         }
     },
-    "age": "Age {age}",
+    "age": "Вік: {age}",
     "@age": {
         "description": "Person age label",
         "placeholders": {
@@ -1500,11 +1500,11 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Перетасувати",
+    "shuffle": "Перемішати",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
-    "downloadsCount": "{count} downloads",
+    "downloadsCount": "{count} завантажень",
     "@downloadsCount": {
         "description": "Subtitle showing number of downloads for a remote subtitle",
         "placeholders": {
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} кан.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1526,7 +1526,7 @@
             }
         }
     },
-    "mono": "Мононуклеоз",
+    "mono": "Моно",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
@@ -1534,7 +1534,7 @@
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
-    "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
+    "remoteSubtitlePermissionError": "Для дії «{action}» з віддаленими субтитрами цьому користувачеві потрібен дозвіл Jellyfin на керування субтитрами.",
     "@remoteSubtitlePermissionError": {
         "description": "Error message when user lacks subtitle management permission",
         "placeholders": {
@@ -1543,7 +1543,7 @@
             }
         }
     },
-    "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
+    "remoteSubtitleNotFoundError": "Не вдалося знайти цей елемент на сервері для дії «{action}» з віддаленими субтитрами.",
     "@remoteSubtitleNotFoundError": {
         "description": "Error message when item not found for subtitle operation",
         "placeholders": {
@@ -1552,7 +1552,7 @@
             }
         }
     },
-    "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
+    "remoteSubtitleDetailError": "Не вдалося виконати дію «{action}» з віддаленими субтитрами: {detail}",
     "@remoteSubtitleDetailError": {
         "description": "Error message with detail for subtitle operation",
         "placeholders": {
@@ -1564,7 +1564,7 @@
             }
         }
     },
-    "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
+    "remoteSubtitleHttpError": "Не вдалося виконати дію «{action}» з віддаленими субтитрами (HTTP {status}).",
     "@remoteSubtitleHttpError": {
         "description": "Error message with HTTP status for subtitle operation",
         "placeholders": {
@@ -1576,7 +1576,7 @@
             }
         }
     },
-    "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
+    "remoteSubtitleGenericError": "Не вдалося виконати дію «{action}» з віддаленими субтитрами.",
     "@remoteSubtitleGenericError": {
         "description": "Generic error message for subtitle operation",
         "placeholders": {
@@ -1585,7 +1585,7 @@
             }
         }
     },
-    "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+    "deleteSeriesFiles": "усі завантажені епізоди для «{name}»",
     "@deleteSeriesFiles": {
         "description": "Type label for series file deletion",
         "placeholders": {
@@ -1630,7 +1630,7 @@
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
-    "castActionFailed": "{label} action failed: {error}",
+    "castActionFailed": "Не вдалося виконати дію {label}: {error}",
     "@castActionFailed": {
         "description": "Error when a cast action fails",
         "placeholders": {
@@ -1642,7 +1642,7 @@
             }
         }
     },
-    "failedToSetCastVolume": "Failed to set cast volume: {error}",
+    "failedToSetCastVolume": "Не вдалося встановити гучність трансляції: {error}",
     "@failedToSetCastVolume": {
         "description": "Error when setting cast volume fails",
         "placeholders": {
@@ -1651,7 +1651,7 @@
             }
         }
     },
-    "castControlsTitle": "{label} Controls",
+    "castControlsTitle": "Керування {label}",
     "@castControlsTitle": {
         "description": "Title for cast controls dialog",
         "placeholders": {
@@ -1676,7 +1676,7 @@
     "@syncPosition": {
         "description": "Cast control action to sync playback position"
     },
-    "stopCast": "Stop {label}",
+    "stopCast": "Зупинити {label}",
     "@stopCast": {
         "description": "Cast control action to stop casting",
         "placeholders": {
@@ -1689,7 +1689,7 @@
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
-    "trackNumber": "Track {number}",
+    "trackNumber": "Трек {number}",
     "@trackNumber": {
         "description": "Fallback track name in queue",
         "placeholders": {
@@ -1714,7 +1714,7 @@
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
-    "secondsCount": "{seconds} seconds",
+    "secondsCount": "{seconds} секунд",
     "@secondsCount": {
         "description": "Double-tap skip overlay duration label",
         "placeholders": {
@@ -1747,7 +1747,7 @@
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
-    "bitrateValueMbps": "{mbps} Mbps",
+    "bitrateValueMbps": "{mbps} Мбіт/с",
     "@bitrateValueMbps": {
         "description": "Bitrate option label in Mbps",
         "placeholders": {
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} мс",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} мс",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "гравець",
+    "player": "Програвач",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Трек",
+    "track": "Доріжка",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1882,7 +1882,7 @@
     "@embedded": {
         "description": "Subtitle type label for embedded subtitles"
     },
-    "castSessionError": "{protocol} session error",
+    "castSessionError": "Помилка сеансу {protocol}",
     "@castSessionError": {
         "description": "Fallback error message for cast session errors",
         "placeholders": {
@@ -1891,7 +1891,7 @@
             }
         }
     },
-    "failedToLoadBookDetails": "Failed to load book details: {error}",
+    "failedToLoadBookDetails": "Не вдалося завантажити відомості про книгу: {error}",
     "@failedToLoadBookDetails": {
         "description": "Error when loading book details fails",
         "placeholders": {
@@ -1904,7 +1904,7 @@
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
-    "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+    "formatCannotRenderInApp": "Цей формат (.{extension}) поки що не можна відобразити у програмі.",
     "@formatCannotRenderInApp": {
         "description": "Fallback message for unsupported document format",
         "placeholders": {
@@ -1921,7 +1921,7 @@
     "@couldNotOpenExternalViewer": {
         "description": "Error when external viewer fails to open"
     },
-    "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
+    "failedToOpenInAppReader": "Не вдалося відкрити вбудовану читалку: {error}",
     "@failedToOpenInAppReader": {
         "description": "Error when in-app reader fails to open",
         "placeholders": {
@@ -1930,7 +1930,7 @@
             }
         }
     },
-    "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
+    "bookmarkAlreadySaved": "Закладку вже збережено на {label}.",
     "@bookmarkAlreadySaved": {
         "description": "Snackbar when bookmark already exists",
         "placeholders": {
@@ -1939,7 +1939,7 @@
             }
         }
     },
-    "bookmarkAdded": "Bookmark added: {label}",
+    "bookmarkAdded": "Закладку додано: {label}",
     "@bookmarkAdded": {
         "description": "Snackbar confirming bookmark was added",
         "placeholders": {
@@ -1956,7 +1956,7 @@
     "@noTableOfContentsAvailable": {
         "description": "Empty state for table of contents panel"
     },
-    "pageLabel": "Page {number}",
+    "pageLabel": "Сторінка {number}",
     "@pageLabel": {
         "description": "Page number label in TOC or position",
         "placeholders": {
@@ -1973,7 +1973,7 @@
     "@bookReader": {
         "description": "Default title for book reader screen"
     },
-    "formatExtension": "Format: .{extension}",
+    "formatExtension": "Формат: .{extension}",
     "@formatExtension": {
         "description": "Chip label showing file format",
         "placeholders": {
@@ -1982,7 +1982,7 @@
             }
         }
     },
-    "percentRead": "{percent}% read",
+    "percentRead": "{percent}% прочитано",
     "@percentRead": {
         "description": "Chip label showing reading progress",
         "placeholders": {
@@ -2015,7 +2015,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "Reset Zoom ({zoom}x)",
+    "resetZoom": "Скинути масштаб ({zoom}x)",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2048,7 +2048,7 @@
     "@markedAsUnread": {
         "description": "Snackbar confirming item marked as unread"
     },
-    "failedToUpdateReadState": "Failed to update read state: {error}",
+    "failedToUpdateReadState": "Не вдалося оновити стан прочитання: {error}",
     "@failedToUpdateReadState": {
         "description": "Error when marking read/unread fails",
         "placeholders": {
@@ -2093,7 +2093,7 @@
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
-    "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+    "platformCannotHostDocumentEngine": "Ця платформа не підтримує вбудований рушій документів для файлів {extension}.",
     "@platformCannotHostDocumentEngine": {
         "description": "Fallback description when platform lacks document engine",
         "placeholders": {
@@ -2146,7 +2146,7 @@
     "@guideTimeline": {
         "description": "Section title for the TV guide timeline"
     },
-    "failedToLoadGuide": "Failed to load guide: {error}",
+    "failedToLoadGuide": "Не вдалося завантажити телепрограму: {error}",
     "@failedToLoadGuide": {
         "description": "Error when guide data fails to load",
         "placeholders": {
@@ -2195,7 +2195,7 @@
     "@close": {
         "description": "Button label to close a dialog"
     },
-    "failedToPlayChannel": "Failed to play {name}",
+    "failedToPlayChannel": "Не вдалося відтворити {name}",
     "@failedToPlayChannel": {
         "description": "Error when live TV channel playback fails",
         "placeholders": {
@@ -2232,7 +2232,7 @@
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+    "cancelScheduledRecordingOf": "Скасувати запланований запис «{name}»?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "немає",
+    "no": "Ні",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2269,7 +2269,7 @@
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
-    "stopRecordingName": "Stop recording \"{name}\"?",
+    "stopRecordingName": "Зупинити запис «{name}»?",
     "@stopRecordingName": {
         "description": "Confirmation message for stopping a series recording",
         "placeholders": {
@@ -2290,7 +2290,7 @@
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
-    "noResultsForQuery": "No results for \"{query}\"",
+    "noResultsForQuery": "Немає результатів за запитом «{query}»",
     "@noResultsForQuery": {
         "description": "Shown when search returns no results",
         "placeholders": {
@@ -2299,7 +2299,7 @@
             }
         }
     },
-    "searchFailedError": "Search failed: {error}",
+    "searchFailedError": "Помилка пошуку: {error}",
     "@searchFailedError": {
         "description": "Shown when search encounters an error",
         "placeholders": {
@@ -2344,7 +2344,7 @@
     "@deleteDownload": {
         "description": "Dialog title for deleting a download"
     },
-    "removeItemAndFiles": "Remove \"{name}\" and its files?",
+    "removeItemAndFiles": "Видалити «{name}» та його файли?",
     "@removeItemAndFiles": {
         "description": "Confirmation to delete a downloaded item and its files",
         "placeholders": {
@@ -2353,7 +2353,7 @@
             }
         }
     },
-    "tracksCount": "{count} tracks",
+    "tracksCount": "{count} треків",
     "@tracksCount": {
         "description": "Number of tracks in an album",
         "placeholders": {
@@ -2370,7 +2370,7 @@
     "@playAlbum": {
         "description": "Button to play an album"
     },
-    "failedToLoadAlbum": "Failed to load album: {error}",
+    "failedToLoadAlbum": "Не вдалося завантажити альбом: {error}",
     "@failedToLoadAlbum": {
         "description": "Error when loading an album fails",
         "placeholders": {
@@ -2379,7 +2379,7 @@
             }
         }
     },
-    "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+    "noDownloadedTracksForAlbum": "Для {name} не знайдено завантажених треків.",
     "@noDownloadedTracksForAlbum": {
         "description": "Shown when an album has no downloaded tracks",
         "placeholders": {
@@ -2404,7 +2404,7 @@
     "@deleteEpisode": {
         "description": "Dialog title for deleting an episode"
     },
-    "removeName": "Remove \"{name}\"?",
+    "removeName": "Видалити «{name}»?",
     "@removeName": {
         "description": "Confirmation to remove an item by name",
         "placeholders": {
@@ -2413,7 +2413,7 @@
             }
         }
     },
-    "durationMinutes": "{minutes} min",
+    "durationMinutes": "{minutes} хв",
     "@durationMinutes": {
         "description": "Duration in minutes",
         "placeholders": {
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "С{season} Е{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2434,7 +2434,7 @@
             }
         }
     },
-    "episodeNumber": "Episode {number}",
+    "episodeNumber": "Епізод {number}",
     "@episodeNumber": {
         "description": "Episode label with number",
         "placeholders": {
@@ -2455,7 +2455,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "Season {number}",
+    "seasonNumber": "Сезон {number}",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "С{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2481,7 +2481,7 @@
     "@deleteSeason": {
         "description": "Dialog title for deleting a season"
     },
-    "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+    "deleteAllEpisodesInSeason": "Видалити всі завантажені епізоди в {season}?",
     "@deleteAllEpisodesInSeason": {
         "description": "Confirmation to delete all episodes in a season",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 епізод} one{{count} епізод} few{{count} епізоди} many{{count} епізодів} other{{count} епізоду}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2535,7 +2535,7 @@
     "@deleteSelected": {
         "description": "Dialog title for deleting selected items"
     },
-    "deleteSelectedCount": "Delete {count} downloaded items?",
+    "deleteSelectedCount": "Видалити {count} завантажених елементів?",
     "@deleteSelectedCount": {
         "description": "Confirmation to delete selected downloaded items",
         "placeholders": {
@@ -2556,7 +2556,7 @@
     "@database": {
         "description": "Storage breakdown label for database"
     },
-    "ofStorageLimit": "of {limit} limit",
+    "ofStorageLimit": "з ліміту {limit}",
     "@ofStorageLimit": {
         "description": "Text showing storage used of total limit",
         "placeholders": {
@@ -2613,7 +2613,7 @@
     "@mediaRequestIntegration": {
         "description": "Seerr settings description"
     },
-    "switchServer": "Switch Server",
+    "switchServer": "Змінити сервер",
     "@switchServer": {
         "description": "Button to switch to a different server"
     },
@@ -2665,7 +2665,7 @@
     "@customizeAccountPlaybackInterface": {
         "description": "Settings screen subtitle"
     },
-    "optionsCount": "{count} options",
+    "optionsCount": "{count} параметрів",
     "@optionsCount": {
         "description": "Number of options in a settings section",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} пкс",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} с",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3057,7 +3057,7 @@
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
-    "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+    "afterEpisodesAndHours": "Після {episodes} епізодів / {hours} год",
     "@afterEpisodesAndHours": {
         "description": "Still watching prompt interval",
         "placeholders": {
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS Direct Play",
+    "pgsDirectPlay": "Пряме відтворення PGS",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3233,7 +3233,7 @@
     "@tv": {
         "description": "Profile: TV"
     },
-    "loadedProfileSettings": "Loaded {profile} profile settings.",
+    "loadedProfileSettings": "Завантажено налаштування профілю {profile}.",
     "@loadedProfileSettings": {
         "description": "Message when profile settings are loaded",
         "placeholders": {
@@ -3242,7 +3242,7 @@
             }
         }
     },
-    "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+    "failedToLoadProfileSettings": "Не вдалося завантажити налаштування профілю {profile}.",
     "@failedToLoadProfileSettings": {
         "description": "Error when profile settings fail to load",
         "placeholders": {
@@ -3251,7 +3251,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+    "syncedSettingsToProfile": "Локальні налаштування синхронізовано з профілем {profile}.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3540,7 +3540,7 @@
     "@selectAll": {
         "description": "Button to select all items"
     },
-    "itemsSelected": "{count} selected",
+    "itemsSelected": "Вибрано: {count}",
     "@itemsSelected": {
         "description": "Number of selected items",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Місячне плавник",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Конкретний користувач",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Завжди автентифікувати",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3821,7 +3817,7 @@
     "@timeout": {
         "description": "Setting for timeout"
     },
-    "minutesShort": "{minutes} min",
+    "minutesShort": "{minutes} хв",
     "@minutesShort": {
         "description": "Minutes duration short format",
         "placeholders": {
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "тракт",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Плагін",
+    "pluginLabel": "Плагін Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3975,7 +3971,7 @@
     "@pluginNotDetectedDescription": {
         "description": "Description when plugin is not detected"
     },
-    "pluginStatusVersion": "{status}\nVersion: {version}",
+    "pluginStatusVersion": "{status}\nВерсія: {version}",
     "@pluginStatusVersion": {
         "description": "Plugin status with version",
         "placeholders": {
@@ -4075,7 +4071,7 @@
     "@hideAdultContent": {
         "description": "Description for NSFW filter"
     },
-    "loggedInAs": "Logged in as: {username}",
+    "loggedInAs": "Вхід виконано як: {username}",
     "@loggedInAs": {
         "description": "Label showing logged in username",
         "placeholders": {
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Відкрийте рядки",
+    "discoverRows": "Сторінка огляду Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Перетягніть, щоб змінити порядок. Увімкніть або вимкніть рядки. Увімкнений порядок рядків синхронізується з плагіном Moonfin.",
+    "discoverRowsDescriptionPlugin": "Увімкніть рядки, які будуть показані на головній сторінці Seerr. Перетягніть, щоб змінити порядок. Власний порядок синхронізується з Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Перетягніть, щоб змінити порядок. Увімкніть або вимкніть рядки.",
+    "discoverRowsDescription": "Увімкніть рядки, які будуть показані на головній сторінці Seerr. Перетягніть, щоб змінити порядок. Власний порядок синхронізується з Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4108,7 +4104,7 @@
     "@aboutTitle": {
         "description": "About screen title"
     },
-    "versionValue": "Version {version}",
+    "versionValue": "Версія {version}",
     "@versionValue": {
         "description": "Version display",
         "placeholders": {
@@ -4169,7 +4165,7 @@
     "@updateAvailable": {
         "description": "Message when an update is available"
     },
-    "updateAvailableVersion": "Update available: v{version}",
+    "updateAvailableVersion": "Доступне оновлення: v{version}",
     "@updateAvailableVersion": {
         "description": "Message with specific update version",
         "placeholders": {
@@ -4186,7 +4182,7 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "updateAvailableTitle": "v{version} Available",
+    "updateAvailableTitle": "Доступна v{version}",
     "@updateAvailableTitle": {
         "description": "Title of the update dialog showing the new version",
         "placeholders": {
@@ -4243,7 +4239,7 @@
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
-    "gbValue": "{value} GB",
+    "gbValue": "{value} ГБ",
     "@gbValue": {
         "description": "Gigabyte value display",
         "placeholders": {
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "ясно",
+    "clear": "Очистити",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4272,7 +4268,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "{count} елементів",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4301,7 +4297,7 @@
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
-    "requestedByName": "Requested by {name}",
+    "requestedByName": "Запит від {name}",
     "@requestedByName": {
         "description": "Label showing who requested media",
         "placeholders": {
@@ -4326,7 +4322,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+    "cancelRequestForTitle": "Скасувати запит на «{title}»?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4335,7 +4331,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+    "cancelCountRequestsForTitle": "Скасувати {count} запитів на «{title}»?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4359,7 +4355,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "Budget: ${amount}",
+    "budgetAmount": "Бюджет: ${amount}",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4368,7 +4364,7 @@
             }
         }
     },
-    "revenueAmount": "Revenue: ${amount}",
+    "revenueAmount": "Збори: ${amount}",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4389,7 +4385,7 @@
             }
         }
     },
-    "requestSeriesOrMovie": "Request {type}",
+    "requestSeriesOrMovie": "Запитати {type}",
     "@requestSeriesOrMovie": {
         "description": "Bottom sheet title for requesting media",
         "placeholders": {
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Поява",
+    "appearances": "Фільмографія",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4438,7 +4434,7 @@
     "@crewSection": {
         "description": "Section title for crew credits"
     },
-    "ageValue": "age {age}",
+    "ageValue": "вік {age}",
     "@ageValue": {
         "description": "Person age display",
         "placeholders": {
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Пори року",
+    "seasonsLabel": "Сезони",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4520,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "Доступ",
-    "add": "додати",
+    "add": "Додати",
     "address": "Адреса",
     "analytics": "Аналітика",
     "catalog": "Каталог",
@@ -4532,8 +4528,8 @@
     "edit": "Редагувати",
     "encoding": "Кодування",
     "error": "Помилка",
-    "forward": "вперед",
-    "general": "Загальний",
+    "forward": "Вперед",
+    "general": "Загальні",
     "go": "Іди",
     "install": "встановити",
     "installed": "встановлено",
@@ -4548,7 +4544,7 @@
     "profile": "Профіль",
     "provider": "Провайдер",
     "refresh": "Оновити",
-    "remote": "Дистанційний",
+    "remote": "Пульт",
     "rename": "Перейменувати",
     "revoke": "Відкликати",
     "role": "Роль",
@@ -4560,7 +4556,7 @@
     "sessions": "Сесії",
     "set": "встановити",
     "status": "Статус",
-    "stop": "СТІЙ",
+    "stop": "Зупинити",
     "streaming": "Потокове передавання",
     "time": "час",
     "trickplay": "Trickplay",
@@ -4576,9 +4572,9 @@
     "adminDrawerSettings": "Налаштування",
     "adminDrawerBranding": "брендинг",
     "adminDrawerUsers": "Користувачі",
-    "adminDrawerLibraries": "Бібліотеки",
+    "adminDrawerLibraries": "Медіатеки",
     "adminDrawerTranscoding": "Перекодування",
-    "adminDrawerResume": "Резюме",
+    "adminDrawerResume": "Відновлення",
     "adminDrawerStreaming": "Потокове передавання",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Пристрої",
@@ -4596,7 +4592,7 @@
     "adminMediaOverview": "Огляд ЗМІ",
     "adminMediaTotalsError": "Не вдалося завантажити загальні дані сервера.",
     "adminMediaOverviewSubtitle": "Короткий огляд того, скільки вмісту розміщено на цьому сервері.",
-    "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
+    "adminPluginUpdatesAvailable": "Доступні оновлення плагінів: {count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
             "count": {
@@ -4604,7 +4600,7 @@
             }
         }
     },
-    "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
+    "adminPluginsRequiringRestart": "Плагіни, що потребують перезапуску: {count}",
     "@adminPluginsRequiringRestart": {
         "placeholders": {
             "count": {
@@ -4612,7 +4608,7 @@
             }
         }
     },
-    "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
+    "adminFailedScheduledTasks": "Невдалі заплановані завдання: {count}",
     "@adminFailedScheduledTasks": {
         "placeholders": {
             "count": {
@@ -4620,7 +4616,7 @@
             }
         }
     },
-    "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+    "adminRecentAlertEntries": "Нещодавні попередження/помилки: {count}",
     "@adminRecentAlertEntries": {
         "placeholders": {
             "count": {
@@ -4646,7 +4642,7 @@
     "adminShutdownServer": "Вимкнути сервер",
     "adminScanLibraries": "Бібліотеки сканування",
     "adminLibraryScanStarted": "Розпочато сканування бібліотеки",
-    "errorGeneric": "Error: {error}",
+    "errorGeneric": "Помилка: {error}",
     "@errorGeneric": {
         "placeholders": {
             "error": {
@@ -4661,7 +4657,7 @@
     "adminNoActiveSessions": "Немає активних сеансів",
     "adminRecentActivity": "Останні дії",
     "adminNoRecentActivity": "Немає останніх дій",
-    "adminCommandFailed": "Command failed: {error}",
+    "adminCommandFailed": "Не вдалося виконати команду: {error}",
     "@adminCommandFailed": {
         "placeholders": {
             "error": {
@@ -4674,22 +4670,22 @@
     "adminSetVolume": "Встановити гучність",
     "sessionPrev": "попередня",
     "sessionRewind": "Перемотати назад",
-    "sessionForward": "вперед",
+    "sessionForward": "Вперед",
     "sessionNext": "Далі",
     "sessionVolumeDown": "том –",
     "sessionVolumeUp": "Гучність +",
     "uhd4k": "4K",
     "nowPlaying": "Зараз грає",
-    "volume": "Обсяг",
+    "volume": "Гучність",
     "actions": "Дії",
     "videoCodec": "Відеокодек",
     "audioCodec": "Аудіокодек",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Апаратне прискорення",
     "completion": "Завершення",
     "direct": "Прямий",
     "adminDisconnect": "Відключити",
     "adminClearDates": "Чіткі дати",
-    "adminActivityLoadFailed": "Failed to load activity log: {error}",
+    "adminActivityLoadFailed": "Не вдалося завантажити журнал активності: {error}",
     "@adminActivityLoadFailed": {
         "placeholders": {
             "error": {
@@ -4701,7 +4697,7 @@
     "adminEditDeviceName": "Змінити назву пристрою",
     "adminCustomName": "Спеціальна назва",
     "adminDeviceNameUpdated": "Назву пристрою оновлено",
-    "adminDeviceUpdateFailed": "Failed to update device: {error}",
+    "adminDeviceUpdateFailed": "Не вдалося оновити пристрій: {error}",
     "@adminDeviceUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4711,7 +4707,7 @@
     },
     "adminDeleteDevice": "Видалити пристрій",
     "adminDeviceDeleted": "Пристрій видалено",
-    "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+    "adminDeviceDeleteFailed": "Не вдалося видалити пристрій: {error}",
     "@adminDeviceDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4727,7 +4723,7 @@
     "adminNoLibraries": "Бібліотеки не налаштовано",
     "adminScanAllLibraries": "Сканувати всі бібліотеки",
     "adminAddLibrary": "Додати бібліотеку",
-    "adminScanFailed": "Failed to start scan: {error}",
+    "adminScanFailed": "Не вдалося почати сканування: {error}",
     "@adminScanFailed": {
         "placeholders": {
             "error": {
@@ -4737,7 +4733,7 @@
     },
     "adminRenameLibrary": "Перейменувати бібліотеку",
     "adminNewName": "Нова назва",
-    "adminLibraryRenamed": "Library renamed to \"{name}\"",
+    "adminLibraryRenamed": "Бібліотеку перейменовано на «{name}»",
     "@adminLibraryRenamed": {
         "placeholders": {
             "name": {
@@ -4745,7 +4741,7 @@
             }
         }
     },
-    "adminRenameFailed": "Failed to rename: {error}",
+    "adminRenameFailed": "Не вдалося перейменувати: {error}",
     "@adminRenameFailed": {
         "placeholders": {
             "error": {
@@ -4754,7 +4750,7 @@
         }
     },
     "adminDeleteLibrary": "Видалити бібліотеку",
-    "adminLibraryDeleted": "Library \"{name}\" deleted",
+    "adminLibraryDeleted": "Бібліотеку «{name}» видалено",
     "@adminLibraryDeleted": {
         "placeholders": {
             "name": {
@@ -4762,7 +4758,7 @@
             }
         }
     },
-    "adminLibraryDeleteFailed": "Failed to delete library: {error}",
+    "adminLibraryDeleteFailed": "Не вдалося видалити бібліотеку: {error}",
     "@adminLibraryDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4770,7 +4766,7 @@
             }
         }
     },
-    "adminAddPathFailed": "Failed to add path: {error}",
+    "adminAddPathFailed": "Не вдалося додати шлях: {error}",
     "@adminAddPathFailed": {
         "placeholders": {
             "error": {
@@ -4779,7 +4775,7 @@
         }
     },
     "adminRemovePath": "Видалити шлях",
-    "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
+    "adminRemovePathConfirm": "Видалити «{path}» з цієї бібліотеки?",
     "@adminRemovePathConfirm": {
         "placeholders": {
             "path": {
@@ -4787,7 +4783,7 @@
             }
         }
     },
-    "adminRemovePathFailed": "Failed to remove path: {error}",
+    "adminRemovePathFailed": "Не вдалося видалити шлях: {error}",
     "@adminRemovePathFailed": {
         "placeholders": {
             "error": {
@@ -4796,7 +4792,7 @@
         }
     },
     "adminLibraryOptionsSaved": "Параметри бібліотеки збережено",
-    "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+    "adminLibraryOptionsSaveFailed": "Не вдалося зберегти параметри: {error}",
     "@adminLibraryOptionsSaveFailed": {
         "placeholders": {
             "error": {
@@ -4814,7 +4810,7 @@
     "adminMetadataCountryCode": "Код країни метаданих",
     "adminMetadataCountryHint": "напр. США, Німеччина, Франція",
     "adminLibraryNameRequired": "Потрібно вказати назву бібліотеки",
-    "adminLibraryCreateFailed": "Failed to create library: {error}",
+    "adminLibraryCreateFailed": "Не вдалося створити бібліотеку: {error}",
     "@adminLibraryCreateFailed": {
         "placeholders": {
             "error": {
@@ -4829,7 +4825,7 @@
     "paths": "Шляхи:",
     "adminDisableUser": "Вимкнути користувача",
     "adminEnableUser": "Увімкнути користувача",
-    "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
+    "adminDisableUserConfirm": "Вимкнути {name}? Користувач не зможе увійти.",
     "@adminDisableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4837,7 +4833,7 @@
             }
         }
     },
-    "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
+    "adminEnableUserConfirm": "Увімкнути {name}? Користувач знову зможе увійти.",
     "@adminEnableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4845,7 +4841,7 @@
             }
         }
     },
-    "adminUserDisabled": "User \"{name}\" disabled",
+    "adminUserDisabled": "Користувача «{name}» вимкнено",
     "@adminUserDisabled": {
         "placeholders": {
             "name": {
@@ -4853,7 +4849,7 @@
             }
         }
     },
-    "adminUserEnabled": "User \"{name}\" enabled",
+    "adminUserEnabled": "Користувача «{name}» увімкнено",
     "@adminUserEnabled": {
         "placeholders": {
             "name": {
@@ -4861,7 +4857,7 @@
             }
         }
     },
-    "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+    "adminUserPolicyUpdateFailed": "Не вдалося оновити політику користувача: {error}",
     "@adminUserPolicyUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4873,7 +4869,7 @@
     "adminSearchUsers": "Пошук користувачів",
     "adminEditUser": "Редагувати користувача",
     "adminAddUser": "Додати користувача",
-    "adminUserCreateFailed": "Failed to create user: {error}",
+    "adminUserCreateFailed": "Не вдалося створити користувача: {error}",
     "@adminUserCreateFailed": {
         "placeholders": {
             "error": {
@@ -4886,7 +4882,7 @@
     "adminUsernameRequired": "Ім'я користувача не може бути пустим",
     "adminNoProfileChanges": "Немає змін профілю для збереження",
     "adminProfileSaved": "Профіль збережено",
-    "adminSaveFailed": "Failed to save: {error}",
+    "adminSaveFailed": "Не вдалося зберегти: {error}",
     "@adminSaveFailed": {
         "placeholders": {
             "error": {
@@ -4896,7 +4892,7 @@
     },
     "adminPermissionsSaved": "Дозволи збережено",
     "adminPasswordsMismatch": "Паролі не збігаються",
-    "adminFailed": "Failed: {error}",
+    "adminFailed": "Помилка: {error}",
     "@adminFailed": {
         "placeholders": {
             "error": {
@@ -4947,7 +4943,7 @@
     "adminEnableAllDevices": "Увімкніть доступ до всіх пристроїв",
     "adminEnableAllChannels": "Увімкнути доступ до всіх каналів",
     "adminResetPasswordWarning": "Це видалить пароль. Користувач зможе увійти без пароля.",
-    "adminServerReturnedHttp": "Server returned HTTP {status}",
+    "adminServerReturnedHttp": "Сервер повернув HTTP {status}",
     "@adminServerReturnedHttp": {
         "placeholders": {
             "status": {
@@ -4955,7 +4951,7 @@
             }
         }
     },
-    "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
+    "adminDeleteUserConfirm": "Ви впевнені, що хочете видалити {name}?",
     "@adminDeleteUserConfirm": {
         "placeholders": {
             "name": {
@@ -4963,7 +4959,7 @@
             }
         }
     },
-    "adminUserDeleted": "User \"{name}\" deleted",
+    "adminUserDeleted": "Користувача «{name}» видалено",
     "@adminUserDeleted": {
         "placeholders": {
             "name": {
@@ -4971,7 +4967,7 @@
             }
         }
     },
-    "adminUserDeleteFailed": "Failed to delete user: {error}",
+    "adminUserDeleteFailed": "Не вдалося видалити користувача: {error}",
     "@adminUserDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4984,7 +4980,7 @@
     "adminApiKeyCreated": "Ключ API створено",
     "adminApiKeyCreatedNoToken": "Ключ успішно створено. Сервер не повернув маркер. Перевірте ключі API сервера.",
     "adminKeyCopied": "Ключ скопійовано в буфер обміну",
-    "adminApiKeyCreateFailed": "Failed to create key: {error}",
+    "adminApiKeyCreateFailed": "Не вдалося створити ключ: {error}",
     "@adminApiKeyCreateFailed": {
         "placeholders": {
             "error": {
@@ -4994,7 +4990,7 @@
     },
     "adminKeyTokenMissing": "У відповіді сервера відсутній маркер ключа",
     "adminRevokeApiKey": "Відкликати ключ API",
-    "adminRevokeKeyConfirm": "Revoke key for {name}?",
+    "adminRevokeKeyConfirm": "Відкликати ключ для {name}?",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
             "name": {
@@ -5003,7 +4999,7 @@
         }
     },
     "adminApiKeyRevoked": "Ключ API відкликано",
-    "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+    "adminApiKeyRevokeFailed": "Не вдалося відкликати ключ: {error}",
     "@adminApiKeyRevokeFailed": {
         "placeholders": {
             "error": {
@@ -5016,7 +5012,7 @@
     "adminCreateKey": "Створити ключ",
     "adminNoApiKeys": "Ключі API не знайдено",
     "adminUnknownApp": "Невідомий додаток",
-    "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+    "adminApiKeyTokenCreated": "Токен: {token}\\nСтворено: {created}",
     "@adminApiKeyTokenCreated": {
         "placeholders": {
             "token": {
@@ -5029,7 +5025,7 @@
     },
     "adminCreatingBackup": "Створення резервної копії...",
     "adminBackupCreated": "Резервну копію створено успішно",
-    "adminBackupCreateFailed": "Failed to create backup: {error}",
+    "adminBackupCreateFailed": "Не вдалося створити резервну копію: {error}",
     "@adminBackupCreateFailed": {
         "placeholders": {
             "error": {
@@ -5038,7 +5034,7 @@
         }
     },
     "adminBackupPathMissing": "Резервний шлях відсутній у відповіді сервера",
-    "adminBackupManifest": "Manifest: {name}",
+    "adminBackupManifest": "Маніфест: {name}",
     "@adminBackupManifest": {
         "placeholders": {
             "name": {
@@ -5046,7 +5042,7 @@
             }
         }
     },
-    "adminManifestLoadFailed": "Failed to load manifest: {error}",
+    "adminManifestLoadFailed": "Не вдалося завантажити маніфест: {error}",
     "@adminManifestLoadFailed": {
         "placeholders": {
             "error": {
@@ -5056,7 +5052,7 @@
     },
     "adminConfirmRestore": "Підтвердити відновлення",
     "adminRestoringBackup": "Відновлення резервної копії...",
-    "adminRestoreFailed": "Failed to restore backup: {error}",
+    "adminRestoreFailed": "Не вдалося відновити з резервної копії: {error}",
     "@adminRestoreFailed": {
         "placeholders": {
             "error": {
@@ -5073,7 +5069,7 @@
     "adminNoLogFiles": "Файли журналів не знайдено",
     "adminLogCopied": "Журнал скопійовано в буфер обміну",
     "adminSaveLogFile": "Зберегти файл журналу",
-    "adminSavedTo": "Saved to {path}",
+    "adminSavedTo": "Збережено до {path}",
     "@adminSavedTo": {
         "placeholders": {
             "path": {
@@ -5081,7 +5077,7 @@
             }
         }
     },
-    "adminFileSaveFailed": "Failed to save file: {error}",
+    "adminFileSaveFailed": "Не вдалося зберегти файл: {error}",
     "@adminFileSaveFailed": {
         "placeholders": {
             "error": {
@@ -5089,7 +5085,7 @@
             }
         }
     },
-    "adminLogFileLoadFailed": "Failed to load {fileName}",
+    "adminLogFileLoadFailed": "Не вдалося завантажити {fileName}",
     "@adminLogFileLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5099,7 +5095,7 @@
     },
     "adminSearchInLog": "Пошук в журналі",
     "adminNoMatchingLines": "Немає відповідних рядків",
-    "adminTasksLoadFailed": "Failed to load tasks: {error}",
+    "adminTasksLoadFailed": "Не вдалося завантажити завдання: {error}",
     "@adminTasksLoadFailed": {
         "placeholders": {
             "error": {
@@ -5109,7 +5105,7 @@
     },
     "adminNoScheduledTasks": "Запланованих завдань не знайдено",
     "adminNoTasksMatchFilter": "Жодне завдання не відповідає поточному фільтру",
-    "adminTaskStartFailed": "Failed to start task: {error}",
+    "adminTaskStartFailed": "Не вдалося запустити завдання: {error}",
     "@adminTaskStartFailed": {
         "placeholders": {
             "error": {
@@ -5117,7 +5113,7 @@
             }
         }
     },
-    "adminTaskStopFailed": "Failed to stop task: {error}",
+    "adminTaskStopFailed": "Не вдалося зупинити завдання: {error}",
     "@adminTaskStopFailed": {
         "placeholders": {
             "error": {
@@ -5125,7 +5121,7 @@
             }
         }
     },
-    "adminTaskLoadFailed": "Failed to load task: {error}",
+    "adminTaskLoadFailed": "Не вдалося завантажити завдання: {error}",
     "@adminTaskLoadFailed": {
         "placeholders": {
             "error": {
@@ -5134,7 +5130,7 @@
         }
     },
     "adminRunNow": "Біжи зараз",
-    "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
+    "adminTriggerRemoveFailed": "Не вдалося видалити тригер: {error}",
     "@adminTriggerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5142,7 +5138,7 @@
             }
         }
     },
-    "adminTriggerAddFailed": "Failed to add trigger: {error}",
+    "adminTriggerAddFailed": "Не вдалося додати тригер: {error}",
     "@adminTriggerAddFailed": {
         "placeholders": {
             "error": {
@@ -5157,7 +5153,7 @@
     "adminTriggerType": "Тип тригера",
     "adminTimeLimit": "Обмеження часу (необов'язково)",
     "adminNoLimit": "Без обмежень",
-    "adminHours": "{hours} hour(s)",
+    "adminHours": "{hours} год",
     "@adminHours": {
         "placeholders": {
             "hours": {
@@ -5167,7 +5163,7 @@
     },
     "adminDayOfWeek": "День тижня",
     "adminSearchPlugins": "Пошук плагінів...",
-    "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+    "adminPluginToggleFailed": "Не вдалося перемкнути плагін: {error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
             "error": {
@@ -5176,7 +5172,7 @@
         }
     },
     "adminUninstallPlugin": "Видалити плагін",
-    "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
+    "adminUninstallPluginConfirm": "Ви впевнені, що хочете видалити «{name}»?",
     "@adminUninstallPluginConfirm": {
         "placeholders": {
             "name": {
@@ -5184,7 +5180,7 @@
             }
         }
     },
-    "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
+    "adminPluginUninstallFailed": "Не вдалося видалити плагін: {error}",
     "@adminPluginUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5192,7 +5188,7 @@
             }
         }
     },
-    "adminPackageInstallFailed": "Failed to install package: {error}",
+    "adminPackageInstallFailed": "Не вдалося встановити пакет: {error}",
     "@adminPackageInstallFailed": {
         "placeholders": {
             "error": {
@@ -5200,7 +5196,7 @@
             }
         }
     },
-    "adminPluginUpdateFailed": "Failed to install update: {error}",
+    "adminPluginUpdateFailed": "Не вдалося встановити оновлення: {error}",
     "@adminPluginUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5208,7 +5204,7 @@
             }
         }
     },
-    "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+    "adminPluginsLoadFailed": "Не вдалося завантажити плагіни: {error}",
     "@adminPluginsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5218,7 +5214,7 @@
     },
     "adminNoPluginsMatchSearch": "Жоден плагін не відповідає вашому пошуку",
     "adminNoPluginsInstalled": "Плагіни не встановлено",
-    "adminInstallUpdate": "Install update (v{version})",
+    "adminInstallUpdate": "Встановити оновлення (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
             "version": {
@@ -5226,7 +5222,7 @@
             }
         }
     },
-    "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+    "adminCatalogLoadFailed": "Не вдалося завантажити каталог: {error}",
     "@adminCatalogLoadFailed": {
         "placeholders": {
             "error": {
@@ -5239,7 +5235,7 @@
     "adminExperimentalIntegration": "Експериментальна інтеграція",
     "adminExperimentalWarning": "Інтеграція налаштувань плагіна все ще експериментальна. Деякі сторінки налаштувань можуть не відображатися належним чином.",
     "continueAction": "Продовжити",
-    "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
+    "adminPluginRemoveAfterRestart": "«{name}» буде видалено після перезапуску сервера",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
             "name": {
@@ -5247,7 +5243,7 @@
             }
         }
     },
-    "adminUninstallFailed": "Failed to uninstall: {error}",
+    "adminUninstallFailed": "Не вдалося видалити: {error}",
     "@adminUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5255,7 +5251,7 @@
             }
         }
     },
-    "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+    "adminPluginUpdating": "Оновлення «{name}» до v{version}...",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5267,7 +5263,7 @@
         }
     },
     "adminMissingAuthToken": "Не вдалося відкрити налаштування: відсутній маркер авторизації.",
-    "adminPluginLoadFailed": "Failed to load plugin: {error}",
+    "adminPluginLoadFailed": "Не вдалося завантажити плагін: {error}",
     "@adminPluginLoadFailed": {
         "placeholders": {
             "error": {
@@ -5276,7 +5272,7 @@
         }
     },
     "adminPluginNotFound": "Плагін не знайдено",
-    "adminPluginVersion": "Version {version}",
+    "adminPluginVersion": "Версія {version}",
     "@adminPluginVersion": {
         "placeholders": {
             "version": {
@@ -5289,7 +5285,7 @@
     "adminRevisionHistory": "Історія версій",
     "adminNoChangelog": "Немає журналу змін.",
     "adminRemoveRepository": "Видалити репозиторій",
-    "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminRemoveRepositoryConfirm": "Ви впевнені, що хочете видалити «{name}»?",
     "@adminRemoveRepositoryConfirm": {
         "placeholders": {
             "name": {
@@ -5297,7 +5293,7 @@
             }
         }
     },
-    "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
+    "adminRepositoriesSaveFailed": "Не вдалося зберегти репозиторії: {error}",
     "@adminRepositoriesSaveFailed": {
         "placeholders": {
             "error": {
@@ -5305,7 +5301,7 @@
             }
         }
     },
-    "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+    "adminRepositoriesLoadFailed": "Не вдалося завантажити репозиторії: {error}",
     "@adminRepositoriesLoadFailed": {
         "placeholders": {
             "error": {
@@ -5317,7 +5313,7 @@
     "adminRepositoryUrl": "URL-адреса сховища",
     "adminAddEntry": "Додати запис",
     "adminInvalidUrl": "Недійсний URL",
-    "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
+    "adminPluginSettingsLoadFailed": "Не вдалося завантажити налаштування плагіна: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5325,7 +5321,7 @@
             }
         }
     },
-    "adminCouldNotOpenUrl": "Could not open {uri}",
+    "adminCouldNotOpenUrl": "Не вдалося відкрити {uri}",
     "@adminCouldNotOpenUrl": {
         "placeholders": {
             "uri": {
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Тримання сегмента (секунди)",
     "adminThrottleBuffering": "Буферізація дросельної заслінки",
     "adminTrickplaySaved": "Налаштування Trickplay збережено",
-    "adminTrickplayLoadFailed": "Не вдалося завантажити налаштування трикплея",
+    "adminTrickplayLoadFailed": "Не вдалося завантажити налаштування Trickplay",
     "adminEnableHardwareAcceleration": "Увімкніть апаратне прискорення",
     "adminEnableKeyFrameExtraction": "Увімкнути вилучення лише ключових кадрів",
     "adminKeyFrameSubtitle": "Швидше, але нижча точність",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "Порт HTTPS",
     "adminPublicHttpsPort": "Загальнодоступний порт HTTPS",
     "adminBaseUrl": "Базовий URL",
-    "adminBaseUrlHint": "напр. /желеподібний",
+    "adminBaseUrlHint": "напр. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Увімкніть HTTPS",
     "adminLocalNetwork": "Локальна мережа",
@@ -5418,7 +5414,7 @@
     "blacklist": "Чорний список",
     "notSet": "Не встановлено",
     "adminMetadataSaved": "Метадані збережено",
-    "adminMetadataLoadFailed": "Failed to load metadata: {error}",
+    "adminMetadataLoadFailed": "Не вдалося завантажити метадані: {error}",
     "@adminMetadataLoadFailed": {
         "placeholders": {
             "error": {
@@ -5426,7 +5422,7 @@
             }
         }
     },
-    "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+    "adminMetadataSaveFailed": "Не вдалося зберегти метадані: {error}",
     "@adminMetadataSaveFailed": {
         "placeholders": {
             "error": {
@@ -5439,7 +5435,7 @@
     "adminReplaceAllMetadata": "Замінити всі метадані",
     "adminReplaceAllImages": "Замінити всі зображення",
     "adminMetadataRefreshRequested": "Надіслано запит на оновлення метаданих",
-    "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+    "adminMetadataRefreshFailed": "Не вдалося оновити метадані: {error}",
     "@adminMetadataRefreshFailed": {
         "placeholders": {
             "error": {
@@ -5447,11 +5443,10 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Пошук віддаленої особи",
     "adminNoRemoteMatches": "Віддалених збігів не знайдено",
     "adminRemoteResults": "Віддалені результати",
     "adminRemoteMetadataApplied": "Застосовано віддалені метадані",
-    "adminRemoteSearchFailed": "Remote search failed: {error}",
+    "adminRemoteSearchFailed": "Помилка віддаленого пошуку: {error}",
     "@adminRemoteSearchFailed": {
         "placeholders": {
             "error": {
@@ -5462,7 +5457,7 @@
     "adminUpdateContentType": "Оновити тип вмісту",
     "adminContentType": "Тип вмісту",
     "adminContentTypeUpdated": "Оновлено тип вмісту",
-    "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+    "adminContentTypeUpdateFailed": "Не вдалося оновити тип вмісту: {error}",
     "@adminContentTypeUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5473,7 +5468,7 @@
     "adminMetadataEditorLoadFailed": "Не вдалося завантажити редактор метаданих",
     "adminNoPeopleEntries": "Немає записів людей",
     "adminNoExternalIds": "Немає зовнішніх ідентифікаторів",
-    "adminImageUpdated": "{imageType} image updated",
+    "adminImageUpdated": "Зображення {imageType} оновлено",
     "@adminImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5481,7 +5476,7 @@
             }
         }
     },
-    "adminImageDownloadFailed": "Failed to download image: {error}",
+    "adminImageDownloadFailed": "Не вдалося завантажити зображення: {error}",
     "@adminImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5491,7 +5486,7 @@
     },
     "adminUnsupportedImageFormat": "Непідтримуваний формат зображення",
     "adminImageReadFailed": "Не вдалося прочитати вибране зображення",
-    "adminImageUploaded": "{imageType} image uploaded",
+    "adminImageUploaded": "Зображення {imageType} вивантажено",
     "@adminImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5499,7 +5494,7 @@
             }
         }
     },
-    "adminImageUploadFailed": "Failed to upload image: {error}",
+    "adminImageUploadFailed": "Не вдалося вивантажити зображення: {error}",
     "@adminImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5507,7 +5502,7 @@
             }
         }
     },
-    "adminDeleteImage": "Delete {imageType} image",
+    "adminDeleteImage": "Видалити зображення {imageType}",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5515,7 +5510,7 @@
             }
         }
     },
-    "adminImageDeleted": "{imageType} image deleted",
+    "adminImageDeleted": "Зображення {imageType} видалено",
     "@adminImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5523,7 +5518,7 @@
             }
         }
     },
-    "adminImageDeleteFailed": "Failed to delete image: {error}",
+    "adminImageDeleteFailed": "Не вдалося видалити зображення: {error}",
     "@adminImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5533,7 +5528,7 @@
     },
     "adminAllProviders": "Всі провайдери",
     "adminNoRemoteImages": "Віддалених зображень не знайдено",
-    "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+    "adminTunerDiscoveryFailed": "Не вдалося виявити тюнери: {error}",
     "@adminTunerDiscoveryFailed": {
         "placeholders": {
             "error": {
@@ -5543,11 +5538,8 @@
     },
     "adminAddTuner": "Додати тюнер",
     "adminTunerType": "Тип тюнера",
-    "adminTunerTypeHint": "HDHomeRun, M3U, інше",
-    "adminUrlPath": "URL / шлях",
-    "adminNameOptional": "Ім'я (необов'язково)",
     "adminTunerAdded": "Додано тюнер",
-    "adminTunerAddFailed": "Failed to add tuner: {error}",
+    "adminTunerAddFailed": "Не вдалося додати тюнер: {error}",
     "@adminTunerAddFailed": {
         "placeholders": {
             "error": {
@@ -5557,11 +5549,8 @@
     },
     "adminAddGuideProvider": "Додати постачальника посібника",
     "adminProviderType": "Тип постачальника",
-    "adminProviderTypeHint": "SchedulesDirect або XMLTV",
-    "adminUsernameOptional": "Ім'я користувача (необов'язково)",
-    "adminRefreshInterval": "Інтервал оновлення (годин)",
     "adminProviderAdded": "Провайдер доданий",
-    "adminProviderAddFailed": "Failed to add provider: {error}",
+    "adminProviderAddFailed": "Не вдалося додати постачальника: {error}",
     "@adminProviderAddFailed": {
         "placeholders": {
             "error": {
@@ -5569,7 +5558,7 @@
             }
         }
     },
-    "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+    "adminTunerRemoveFailed": "Не вдалося видалити тюнер: {error}",
     "@adminTunerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5578,7 +5567,7 @@
         }
     },
     "adminTunerResetRequested": "Запит на скидання тюнера",
-    "adminTunerResetFailed": "Failed to reset tuner: {error}",
+    "adminTunerResetFailed": "Не вдалося скинути тюнер: {error}",
     "@adminTunerResetFailed": {
         "placeholders": {
             "error": {
@@ -5586,7 +5575,7 @@
             }
         }
     },
-    "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+    "adminProviderRemoveFailed": "Не вдалося видалити постачальника: {error}",
     "@adminProviderRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5600,7 +5589,7 @@
     "adminRecordingPath": "Шлях запису",
     "adminSeriesRecordingPath": "Шлях запису серії",
     "adminRecordingSettingsSaved": "Налаштування запису збережено",
-    "adminSettingsSaveFailed": "Failed to save settings: {error}",
+    "adminSettingsSaveFailed": "Не вдалося зберегти налаштування: {error}",
     "@adminSettingsSaveFailed": {
         "placeholders": {
             "error": {
@@ -5612,7 +5601,7 @@
     "adminMappingJson": "Відображення JSON",
     "adminMappingJsonHint": "Приклад: відображення корисного навантаження JSON",
     "adminChannelMappingsUpdated": "Зіставлення каналів оновлено",
-    "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminMappingsUpdateFailed": "Не вдалося оновити зіставлення: {error}",
     "@adminMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5626,7 +5615,7 @@
     "adminGuideProviders": "Постачальники посібників",
     "adminAddProvider": "Додати постачальника",
     "adminNoListingProviders": "Немає налаштованих постачальників лістингу",
-    "adminRecordingPathDisplay": "Recording path: {path}",
+    "adminRecordingPathDisplay": "Шлях для записів: {path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
             "path": {
@@ -5634,7 +5623,7 @@
             }
         }
     },
-    "adminSeriesPathDisplay": "Series path: {path}",
+    "adminSeriesPathDisplay": "Шлях для серіалів: {path}",
     "@adminSeriesPathDisplay": {
         "placeholders": {
             "path": {
@@ -5642,7 +5631,7 @@
             }
         }
     },
-    "adminPrePaddingDisplay": "Pre-padding: {minutes} min",
+    "adminPrePaddingDisplay": "Запас на початку: {minutes} хв",
     "@adminPrePaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5650,7 +5639,7 @@
             }
         }
     },
-    "adminPostPaddingDisplay": "Post-padding: {minutes} min",
+    "adminPostPaddingDisplay": "Запас у кінці: {minutes} хв",
     "@adminPostPaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5666,7 +5655,7 @@
     "adminRestoreWarning1": "Під час відновлення ВСІ поточні дані сервера буде замінено даними резервної копії.",
     "adminRestoreWarning2": "Поточні налаштування сервера, дані користувачів і бібліотеки буде перезаписано.",
     "adminRestoreWarning3": "Після відновлення сервер перезавантажиться.",
-    "adminRestoreConfirmMessage": "Restore backup {name} now?",
+    "adminRestoreConfirmMessage": "Відновити резервну копію {name} зараз?",
     "@adminRestoreConfirmMessage": {
         "placeholders": {
             "name": {
@@ -5687,7 +5676,7 @@
     "adminLogsNewestFirst": "Спочатку найновіші",
     "adminLogsOldestFirst": "Спочатку найстаріший",
     "adminLogsJustNow": "Просто зараз",
-    "adminLogsMinutesAgo": "{minutes}m ago",
+    "adminLogsMinutesAgo": "{minutes} хв тому",
     "@adminLogsMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -5695,7 +5684,7 @@
             }
         }
     },
-    "adminLogsHoursAgo": "{hours}h ago",
+    "adminLogsHoursAgo": "{hours} год тому",
     "@adminLogsHoursAgo": {
         "placeholders": {
             "hours": {
@@ -5703,7 +5692,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d ago",
+    "adminLogsDaysAgo": "{days} дн тому",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5711,7 +5700,7 @@
             }
         }
     },
-    "adminLogViewerLoadFailed": "Failed to load {fileName}",
+    "adminLogViewerLoadFailed": "Не вдалося завантажити {fileName}",
     "@adminLogViewerLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5719,7 +5708,7 @@
             }
         }
     },
-    "adminLogViewerMatches": "{count} matches",
+    "adminLogViewerMatches": "{count} збігів",
     "@adminLogViewerMatches": {
         "placeholders": {
             "count": {
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Немає відповідних рядків",
     "adminMetadataEditorTitle": "Редактор метаданих",
-    "adminMetadataRemote": "Дистанційний",
     "adminMetadataType": "Тип",
     "adminMetadataDetails": "Подробиці",
     "adminMetadataExternalIds": "Зовнішні ідентифікатори",
@@ -5762,7 +5750,7 @@
     "adminMetadataImageThumb": "Великий палець",
     "adminMetadataRecursive": "рекурсивний",
     "adminMetadataProvider": "Провайдер",
-    "adminMetadataImageUpdated": "{imageType} image updated",
+    "adminMetadataImageUpdated": "Зображення {imageType} оновлено",
     "@adminMetadataImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5770,7 +5758,7 @@
             }
         }
     },
-    "adminMetadataImageUploaded": "{imageType} image uploaded",
+    "adminMetadataImageUploaded": "Зображення {imageType} вивантажено",
     "@adminMetadataImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5778,7 +5766,7 @@
             }
         }
     },
-    "adminMetadataImageDeleted": "{imageType} image deleted",
+    "adminMetadataImageDeleted": "Зображення {imageType} видалено",
     "@adminMetadataImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5786,7 +5774,7 @@
             }
         }
     },
-    "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+    "adminMetadataImageDownloadFailed": "Не вдалося завантажити зображення: {error}",
     "@adminMetadataImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5795,7 +5783,7 @@
         }
     },
     "adminMetadataImageReadFailed": "Не вдалося прочитати вибране зображення",
-    "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
+    "adminMetadataImageUploadFailed": "Не вдалося вивантажити зображення: {error}",
     "@adminMetadataImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5803,7 +5791,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+    "adminMetadataDeleteImageTitle": "Видалити зображення {imageType}",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5812,7 +5800,7 @@
         }
     },
     "adminMetadataDeleteImageContent": "Це видаляє поточне зображення з елемента.",
-    "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
+    "adminMetadataImageDeleteFailed": "Не вдалося видалити зображення: {error}",
     "@adminMetadataImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5820,7 +5808,7 @@
             }
         }
     },
-    "adminMetadataChooseImage": "Choose {imageType} image",
+    "adminMetadataChooseImage": "Виберіть зображення {imageType}",
     "@adminMetadataChooseImage": {
         "placeholders": {
             "imageType": {
@@ -5837,7 +5825,7 @@
     "adminPluginsRestart": "Перезапустіть",
     "adminPluginsNoSearchResults": "Жоден плагін не відповідає вашому пошуку",
     "adminPluginsNoneInstalled": "Плагіни не встановлено",
-    "adminPluginsUpdateAvailable": "Update available: v{version}",
+    "adminPluginsUpdateAvailable": "Доступне оновлення: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {
             "version": {
@@ -5851,7 +5839,7 @@
     "adminPluginsEnable": "Увімкнути",
     "adminPluginsDisable": "Вимкнути",
     "adminPluginsInstallUpdate": "Встановити оновлення",
-    "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+    "adminPluginsInstallUpdateVersioned": "Встановити оновлення (v{version})",
     "@adminPluginsInstallUpdateVersioned": {
         "placeholders": {
             "version": {
@@ -5861,7 +5849,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "Немає пакетів, що відповідають вашому запиту",
     "adminPluginsCatalogEmpty": "Немає доступних пакетів",
-    "adminPluginsInstalling": "\"{name}\" is being installed...",
+    "adminPluginsInstalling": "«{name}» встановлюється...",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5873,7 +5861,7 @@
     "adminPluginDetailExperimentalContent": "Інтеграція налаштувань плагіна все ще експериментальна. Деякі поля чи макети можуть ще не відображатися належним чином.",
     "adminPluginDetailToggle404": "Не вдалося перемкнути плагін. Сервер не може знайти цю версію плагіна. Спробуйте оновити плагіни, а потім повторіть спробу.",
     "adminPluginDetailToggleDioError": "Не вдалося перемкнути плагін. Подробиці перевірте в журналах сервера.",
-    "adminPluginDetailSettingsTitle": "{name} Settings",
+    "adminPluginDetailSettingsTitle": "Налаштування {name}",
     "@adminPluginDetailSettingsTitle": {
         "placeholders": {
             "name": {
@@ -5891,7 +5879,7 @@
     "adminPluginDetailMalfunctioned": "Цей плагін несправний і може не працювати належним чином.",
     "adminPluginDetailNotSupported": "Цей плагін не підтримується поточною версією сервера.",
     "adminPluginDetailSuperseded": "Цей плагін було замінено новішою версією.",
-    "adminReposLoadFailed": "Failed to load repositories: {error}",
+    "adminReposLoadFailed": "Не вдалося завантажити репозиторії: {error}",
     "@adminReposLoadFailed": {
         "placeholders": {
             "error": {
@@ -5900,7 +5888,7 @@
         }
     },
     "adminReposRemoveTitle": "Видалити репозиторій",
-    "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminReposRemoveConfirm": "Ви впевнені, що хочете видалити «{name}»?",
     "@adminReposRemoveConfirm": {
         "placeholders": {
             "name": {
@@ -5908,8 +5896,8 @@
             }
         }
     },
-    "adminReposRemove": "видалити",
-    "adminReposSaveFailed": "Failed to save repositories: {error}",
+    "adminReposRemove": "Прибрати",
+    "adminReposSaveFailed": "Не вдалося зберегти репозиторії: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
             "error": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Скасування...",
     "adminTaskRunning": "Біг...",
     "adminTaskNeverRun": "Ніколи не бігайте",
-    "adminTaskStop": "СТІЙ",
+    "adminTaskStop": "Зупинити",
     "adminTaskRun": "бігти",
     "adminTaskDetailLastExecution": "Остання страта",
     "adminTaskDetailStarted": "розпочато",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Кожні 12 годин",
     "adminTaskTriggerEvery24Hours": "Кожні 24 години",
     "adminTaskTriggerEvery2Days": "Кожні 2 дні",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{{count} година} few{{count} години} many{{count} годин} other{{count} години}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "тепер",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} хв",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} год",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} дн",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}.{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Налаштуйте генерацію зображень підказки для ескізів попереднього перегляду пошуку.",
+    "adminTrickplayDescription": "Налаштуйте створення зображень Trickplay для ескізів попереднього перегляду під час перемотування.",
     "adminNetworkingPublicHttpsPort": "Загальнодоступний порт HTTPS",
     "adminNetworkingBaseUrl": "Базовий URL",
-    "adminNetworkingBaseUrlHint": "напр. /желеподібний",
+    "adminNetworkingBaseUrlHint": "напр. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Шлях сертифіката",
     "adminNetworkingRemoteIpFilter": "Віддалений IP-фільтр",
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "Папки",
-    "libraries": "Бібліотеки",
+    "libraries": "Медіатеки",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay вимкнено",
     "syncPlayDisabledMessage": "Увімкніть SyncPlay у налаштуваннях, щоб використовувати синхронізоване відтворення.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "Для SyncPlay потрібен сервер Jellyfin. Поточний сервер не підтримує це.",
     "syncPlayGroupFallbackName": "SyncPlay Група",
     "syncPlayGroupTooltip": "SyncPlay група",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# учасник} few {# учасники} many {# учасників} other {# учасника}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Запам'ятай мій вибір",
     "playHdr10Fallback": "Відтворити HDR10 запасний варіант",
     "requestTranscode": "Запит на перекодування",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {виявлено # рядок} few {виявлено # рядки} many {виявлено # рядків} other {виявлено # рядка}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6281,7 +6269,7 @@
     "offlineServerUnavailable": "Підключено до Інтернету, але поточний сервер недоступний.",
     "offlineNoInternet": "Ви офлайн. Доступний лише завантажений вміст.",
     "offlineFileNotAvailable": "Файл недоступний",
-    "offlineSwitchServer": "Switch Server",
+    "offlineSwitchServer": "Змінити сервер",
     "offlineSavedMedia": "Збережені медіа",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Неправильний PIN-код",
     "pinMismatch": "PIN-коди не збігаються",
     "pinForgot": "Забули PIN-код?",
-    "pinClear": "ясно",
-    "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Запит на швидке підключення авторизовано.",
-    "quickConnectInvalidOrExpired": "Код швидкого підключення недійсний або термін дії минув.",
-    "quickConnectNotSupported": "Швидке підключення не підтримується на цьому сервері.",
-    "quickConnectAuthorizeFailed": "Не вдалося авторизувати код швидкого підключення.",
-    "quickConnectDisabled": "Швидке підключення вимкнено на цьому сервері.",
-    "quickConnectForbidden": "Ваш обліковий запис не може авторизувати цей запит швидкого підключення.",
-    "quickConnectNotFound": "Код швидкого підключення не знайдено. Спробуйте новий код.",
-    "quickConnectFailedWithMessage": "Помилка швидкого підключення: {message}",
+    "pinClear": "Очистити",
+    "pinBackspace": "Стерти",
+    "quickConnectAuthorized": "Запит Quick Connect авторизовано.",
+    "quickConnectInvalidOrExpired": "Код Quick Connect недійсний або термін його дії минув.",
+    "quickConnectNotSupported": "Quick Connect не підтримується на цьому сервері.",
+    "quickConnectAuthorizeFailed": "Не вдалося авторизувати код Quick Connect.",
+    "quickConnectDisabled": "Quick Connect вимкнено на цьому сервері.",
+    "quickConnectForbidden": "Ваш обліковий запис не може авторизувати цей запит Quick Connect.",
+    "quickConnectNotFound": "Код Quick Connect не знайдено. Спробуйте новий код.",
+    "quickConnectFailedWithMessage": "Помилка Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6404,10 +6392,10 @@
     },
     "trackActionDeletedFile": "Завантажений файл видалено",
     "trackActionDeleteFileFailed": "Не вдалося видалити завантажений файл",
-    "shuffleBy": "Shuffle By",
+    "shuffleBy": "Перемішати за",
     "shuffleSelectLibrary": "Виберіть Бібліотека",
     "shuffleSelectGenre": "Виберіть Жанр",
-    "shuffleLibrary": "Бібліотека",
+    "shuffleLibrary": "Медіатека",
     "shuffleGenre": "Жанр",
     "shuffleNoLibraries": "Немає доступних сумісних бібліотек.",
     "shuffleNoGenres": "Не знайдено жанрів для цього режиму перемішування.",
@@ -6427,7 +6415,7 @@
     "upNext": "Далі",
     "playNext": "Грати далі",
     "stillWatchingContent": "Відтворення призупинено. Ви все ще дивитесь?",
-    "stillWatchingStop": "СТІЙ",
+    "stillWatchingStop": "Зупинити",
     "stillWatchingContinue": "Продовжити",
     "skipSegment": "Пропустити {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Перевірте наявність оновлень",
     "settingsCheckForUpdatesSubtitle": "Перевірте останню версію Moonfin",
     "settingsPoweredByFlutter": "Технологія Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# ліцензійне повідомлення} few {# ліцензійні повідомлення} many {# ліцензійних повідомлень} other {# ліцензійного повідомлення}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6635,7 +6623,7 @@
     "settingsLong": "довгий",
     "settingsVeryLong": "Дуже довго",
     "settingsVideoStartDelay": "Затримка запуску відео",
-    "settingsMillisecondsValue": "{value} ms",
+    "settingsMillisecondsValue": "{value} мс",
     "@settingsMillisecondsValue": {
         "description": "Milliseconds duration label",
         "placeholders": {
@@ -6689,7 +6677,7 @@
             }
         }
     },
-    "discNumber": "Disc {number}",
+    "discNumber": "Диск {number}",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",
         "placeholders": {
@@ -6763,135 +6751,123 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Prefer system keyboard",
+    "keyboardPreferSystemIme": "Віддавати перевагу системній клавіатурі",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+    "keyboardPreferSystemImeDescription": "Типово використовувати метод введення вашого пристрою для введення тексту",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
-    "musicVideos": "Music Videos",
+    "musicVideos": "Музичні відео",
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Record",
+    "record": "Записати",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
-    "cancelRecordingAction": "Cancel Recording",
+    "cancelRecordingAction": "Скасувати запис",
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
-    "programSetToRecord": "Program set to record",
+    "programSetToRecord": "Програму поставлено на запис",
     "@programSetToRecord": {
         "description": "Snackbar confirmation after scheduling a live TV program recording"
     },
-    "recordingCancelled": "Recording cancelled",
+    "recordingCancelled": "Запис скасовано",
     "@recordingCancelled": {
         "description": "Snackbar confirmation after cancelling a live TV recording"
     },
-    "unableToCreateRecording": "Unable to create recording",
+    "unableToCreateRecording": "Не вдалося створити запис",
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "Режим виведення звуку",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "Пряма передача на AVR",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Audio Fallback Codec",
+    "settingsAudioFallbackCodec": "Резервний аудіокодек",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
-    "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+    "settingsAudioPassthroughAdvanced": "Пряма передача (додатково)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "Пряма передача кодеків",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+    "settingsAudioCodecPassthroughDescription": "Вмикайте лише формати, які підтримує ваш AVR або HDMI-приймач.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "Пряма передача EAC3",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "Пряма передача EAC3 JOC (Atmos)",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "Пряма передача DTS Core",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+    "settingsAudioDtsHdPassthrough": "Пряма передача DTS-HD MA",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "Пряма передача TrueHD",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "Пряма передача TrueHD Atmos",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
-    "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+    "settingsAudioBitstreamEac3ToExternalDecoder": "Передавати бітпотік Dolby Digital Plus (EAC3) на зовнішній декодер.",
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "Передавати бітпотік Dolby Atmos через EAC3 (JOC) на зовнішній декодер.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "Передавати бітпотік DTS-HD MA (разом із ядром DTS) на зовнішній декодер.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Передавати бітпотік Dolby TrueHD з метаданими Atmos на зовнішній декодер.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+    "settingsDetectedAudioCapabilities": "Виявлені аудіоможливості",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+    "settingsDetectedAudioCapabilitiesUnavailable": "Знімок можливостей середовища ще недоступний.",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "Route",
+    "settingsAudioRouteLabel": "Маршрут",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
-    "settingsAudioDecodeLabel": "Decode",
+    "settingsAudioDecodeLabel": "Декодування",
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
-    "settingsAudioPassthroughLabel": "Passthrough",
+    "settingsAudioPassthroughLabel": "Пряма передача",
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD audio route",
+    "settingsAudioHdRoute": "Маршрут HD-аудіо",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6911,11 +6887,11 @@
     "@settingsAudioRouteBluetooth": {
         "description": "Audio route type Bluetooth"
     },
-    "settingsAudioRouteSpeaker": "Speaker",
+    "settingsAudioRouteSpeaker": "Динамік",
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} кан. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6924,43 +6900,43 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "Diagnostics",
+    "settingsAudioDiagnostics": "Діагностика",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "Video Level",
+    "settingsAudioDiagnosticsVideoLevel": "Рівень відео",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "Video Range",
+    "settingsAudioDiagnosticsVideoRange": "Діапазон відео",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
-    "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+    "settingsAudioDiagnosticsSubtitleCodec": "Кодек субтитрів",
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "Дозволені аудіокодеки",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "Аудіокодеки HLS MPEG-TS",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "Аудіокодеки HLS fMP4",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "пряма передача audio-spdif",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+    "settingsAudioDiagnosticsActiveAudioRoute": "Активний аудіомаршрут",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "Підтримка HD-аудіо маршрутом",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Найкращі виконавці",
     "analyticsTopAuthors": "Найкращі автори",
     "analyticsTopContributors": "Найкращі учасники",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 бібліотека} one{{count} бібліотека} few{{count} бібліотеки} many{{count} бібліотек} other{{count} бібліотеки}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "Плагін вилучення CB7 недоступний на цій платформі.",
     "closeGenrePanel": "Закрити панель жанрів",
     "loadingShuffle": "Завантаження перемішування...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "ПЕРЕМІШУВАННЯ БІБЛІОТЕКИ",
+    "randomShuffleLabel": "ВИПАДКОВЕ ПЕРЕМІШУВАННЯ",
+    "genresShuffleLabel": "ПЕРЕМІШУВАННЯ ЖАНРІВ",
     "autoHdrSwitching": "Автоматичне перемикання HDR",
     "autoHdrSwitchingDescription": "Автоматично вмикайте HDR для відтворення відео HDR і відновлюйте режим відображення після виходу.",
     "whenFullscreen": "У повноекранному режимі",
     "transcodingLimits": "Обмеження перекодування",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "Пригостіть розробника кавою",
+    "accountPreferences": "НАЛАШТУВАННЯ ОБЛІКОВОГО ЗАПИСУ",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Мова інтерфейсу",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Як у системі",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Порожньо",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Стиль екрана деталей",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "«Класичний» — це початковий центрований макет moonfin. «Сучасний» — адаптивний кінематографічний макет.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Класичний",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Сучасний",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Розгорнуті вкладки",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Автоматично показувати вміст вкладки під час її перегляду. Вимкніть, щоб відкривати й закривати кожну вкладку вручну.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Показувати технічні деталі?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Показувати кодек, роздільну здатність і відомості про потік у зведенні банера",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Система рекомендацій",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Використовуйте локальний алгоритм «Moonfin рекомендує» або онлайн-метрики схожості TMDb. Примітка: онлайн-рекомендації потребують інтеграції з Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin рекомендує",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "Схожість TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Обмежувати за віковим рейтингом?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Обмежувати пропозиції «Moonfin рекомендує» за віковим рейтингом цільового медіа",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Стиль інтерфейсу",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "«Автоматично» відповідає вашому пристрою. Виберіть Apple або Material, щоб задати вигляд примусово.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Автоматично",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Якість скла",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "«Авто» добирає найкращий ефект скла для цього пристрою. «Повна» вмикає справжнє розмиття; «Знижена» використовує полегшене скло, що заощаджує ресурс GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Авто",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Повна",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Знижена",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Власна тема",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Власні теми змінюють візуальні елементи в усьому Moonfin. Виберіть один із варіантів на свій смак.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Скло",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Стиль рідкого скла з плинним градієнтним тлом, матовими поверхнями та синім акцентом Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-бітний герой",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Ретростиль піксель-арту з насиченою палітрою, масивними рамками, різкими тінями та піксельним шрифтом",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Меню",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Призупинено",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Зберегти стан",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Ігри",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Завантажити стан",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Перемотування вперед",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Налаштування емулятора",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Це ядро не має налаштовуваних параметрів.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Утримуйте, щоб відкрити меню",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Запуск ігор поки що не підтримується на цьому пристрої.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Найновіші книги",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Найновіші аудіокниги",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 книга} one{{count} книга} few{{count} книги} many{{count} книг} other{{count} книги}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Книга",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Аудіокнига",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% прочитано",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Залишилось {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Читати",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Слухати",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Елементи",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Додаткові матеріали",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "За лаштунками",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Вилучені сцени",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Мініфільми",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Інтерв'ю",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Сцени",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Короткометражки",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Залишилось {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Завершиться через {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "РЕЖИСЕРИ",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "СЦЕНАРИСТ",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Перемішати всю музику",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Увійдіть у Moonfin на телефоні",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Не вдається зв'язатися з вашим сервером",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Далі: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "Залишилось {minutes} хв",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "Залишилось {hours} год",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "Залишилось {hours} год {minutes} хв",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Сторінки деталей, рядки на головній та гучність",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Зациклити музичну тему",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Повторювати трек, а не відтворювати його лише раз",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Коліщатко миші",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Виберіть, що робитиме прокручування коліщатком миші над відео під час відтворення.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Вимкнено",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Перемотування (вперед / назад)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Гучність",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Гучність",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Резервна мова аудіо",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Віддавати перевагу типовій аудіодоріжці",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Віддавати перевагу оригінальній аудіодоріжці замість локалізованого дубляжу.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Віддавати перевагу доріжкам аудіоопису",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Віддавати перевагу доріжкам аудіоопису замість звичайних доріжок.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Транскодування (аудіо)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Прямий потік (ремуксування)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Транскодування (бітрейт або роздільна здатність)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Транскодування (відео та аудіо)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Транскодування (відео)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Виберіть, як декодується звук. «Пряма передача на AVR» надсилає необроблені потоки Dolby/DTS на ваш ресивер; «Авто» чи «Мікшування» декодують локально.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Виберіть цільовий формат для транскодування багатоканального звуку, коли вихідний потік не можна відтворити напряму або передати без обробки.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Автовизначення\n(рекомендовано)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(типово)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(без втрат)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(лише стерео)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(ефективний)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(без втрат)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Максимум аудіоканалів",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Налаштуйте максимальну кількість каналів вашої аудіосистеми. Багатоканальні потоки, що перевищують цей ліміт, буде змікшовано або транскодовано.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Автовизначення\n(типово для обладнання)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 моно",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 стерео",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 об'ємний",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 квадрофонія",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 об'ємний",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 об'ємний",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 об'ємний",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 об'ємний",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Навушники",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Режим субтитрів",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Позначені",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Завжди",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Іншомовні",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Примусові",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Відтворює доріжки, позначені в метаданих медіафайлу як «default» або «forced».",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Автоматично завантажує й показує субтитри щоразу під час запуску відео.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Автоматично вмикає субтитри, якщо типова аудіодоріжка іншою мовою.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Завантажує лише субтитри з явною позначкою «forced» у метаданих.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Повністю вимикає автоматичне завантаження субтитрів.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Резервна мова субтитрів",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Потік субтитрів",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Показувати завантаження на сервері",
+    "reportDownloadsActivitySubtitle": "Дозволити адміністратору сервера бачити ваші транскодовані завантаження на панелі керування",
+    "navbarAlwaysExpanded": "Завжди показувати підписи в навігації",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Показувати кнопку Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Групувати елементи в колекції",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Приховувати елементи бібліотеки, що входять до колекцій, під час перегляду бібліотек",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Примітка щодо групування бібліотеки",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Щоб скористатися цим налаштуванням, переконайтеся, що параметри «Group movies into collections» та/або «Group shows into collections» увімкнено в налаштуваннях відображення вашої бібліотеки на сервері Jellyfin або Emby.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Звук трейлера",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Увімкнути звук для трейлерів у медіапанелі",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Розгорнуті рядки головної",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Обмежити головну до 1 рядка на екран",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Поточний користувач",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Статичний",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Рухомий",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Рядки відкриттів Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Сповіщення",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Сповіщення про нові запити",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Повідомляти мене, коли хтось надсилає запит",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Оновлення запитів",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Схвалено, відхилено та додано до вашої бібліотеки",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Оновлення проблем",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Нові проблеми, відповіді та розв'язання",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} МБ",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Ліміт кешу зображень",
+    "clearImageCache": "Очистити кеш зображень",
+    "imageCacheCleared": "Кеш зображень очищено",
+    "seerrDownloadingPercent": "Завантаження · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Імпортування",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Не вдалося",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Обробляється",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Змінив {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Завершено",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Цю назву вже запитано",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Досягнуто ліміту запитів",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Цю назву заблоковано",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Не залишилось сезонів для запиту",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "У вас немає дозволу надсилати цей запит",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Запити",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Проблеми",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Найновіші",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Останні зміни",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Немає проблем",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Залишилось {remaining} із {limit} запитів на фільми",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Залишилось {remaining} із {limit} запитів на сезони",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Частина {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Переглянути колекцію",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Запитати колекцію",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} фільмів · {available} доступно",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Запитати {count} фільмів",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Надсилання запиту {current} з {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Запитано {count} фільмів",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Запитано {ok} із {total} фільмів",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Усі фільми вже доступні або запитані",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Повідомити про проблему",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Відео",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Аудіо",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Що не так?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Усі епізоди",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Епізод",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Відкрито",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Розв'язано",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Розв'язати",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Відкрити знову",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Повідомив {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} коментарів",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Додати коментар",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Видалити цю проблему?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Надіслати звіт",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Відображення",
+    "adminDrawerMetadata": "Метадані",
+    "adminDrawerNfo": "Налаштування NFO",
+    "adminActivitySeverityAll": "Усі рівні",
+    "adminActivityDateRange": "Діапазон дат",
+    "adminRemoveDeviceConfirm": "Видалити пристрій «{name}»? Користувачеві доведеться знову увійти на цьому пристрої.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Видалити всі пристрої",
+    "adminDeleteAllDevicesConfirm": "Видалити {count} пристроїв? Відповідним користувачам доведеться увійти знову. Вашого поточного пристрою це не стосується.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Пристрої видалено",
+    "adminDevicesDeletedPartial": "Деякі пристрої видалено; {count} видалити не вдалося.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Шляхи",
+    "adminLibraryTabOptions": "Параметри",
+    "adminLibraryTabDownloaders": "Завантажувачі",
+    "adminLibMetadataSavers": "Збереження метаданих",
+    "adminLibSubtitleDownloaders": "Завантажувачі субтитрів",
+    "adminLibLyricDownloaders": "Завантажувачі текстів пісень",
+    "adminLibMetadataDownloadersFor": "Завантажувачі метаданих: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Джерела зображень: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Цей сервер не надає завантажувачів для цього типу бібліотеки.",
+    "adminLibrarySectionGeneral": "Загальні",
+    "adminLibrarySectionMetadata": "Метадані",
+    "adminLibrarySectionEmbedded": "Вбудована інформація",
+    "adminLibrarySectionSubtitles": "Субтитри",
+    "adminLibrarySectionImages": "Зображення",
+    "adminLibrarySectionSeries": "Серіали",
+    "adminLibrarySectionMusic": "Музика",
+    "adminLibrarySectionMovies": "Фільми",
+    "adminLibRealtimeMonitor": "Увімкнути моніторинг у реальному часі",
+    "adminLibRealtimeMonitorHint": "Виявляти зміни файлів і обробляти їх автоматично.",
+    "adminLibArchiveMediaFiles": "Вважати архіви медіафайлами",
+    "adminLibEnablePhotos": "Показувати фотографії",
+    "adminLibSaveLocalMetadata": "Зберігати обкладинки в теках медіа",
+    "adminLibRefreshInterval": "Автоматичне оновлення метаданих",
+    "adminLibRefreshNever": "Ніколи",
+    "adminLibDefault": "Типово",
+    "adminLibDisplayTitle": "Відображення",
+    "adminLibDisplaySection": "Відображення бібліотеки",
+    "adminLibFolderView": "Показувати вигляд тек для звичайних медіатек",
+    "adminLibSpecialsInSeasons": "Показувати спецвипуски в сезонах, у яких вони виходили",
+    "adminLibGroupMovies": "Групувати фільми в колекції",
+    "adminLibGroupShows": "Групувати серіали в колекції",
+    "adminLibExternalSuggestions": "Показувати зовнішній вміст у пропозиціях",
+    "adminLibDateAddedSection": "Поведінка дати додавання",
+    "adminLibDateAddedLabel": "Використовувати дату додавання з",
+    "adminLibDateAddedImport": "Дата сканування до бібліотеки",
+    "adminLibDateAddedFile": "Дата створення файлу",
+    "adminLibMetadataTitle": "Метадані та зображення",
+    "adminLibMetadataLangSection": "Бажана мова метаданих",
+    "adminLibChaptersSection": "Розділи",
+    "adminLibDummyChapterDuration": "Тривалість фіктивних розділів (секунди)",
+    "adminLibDummyChapterDurationHint": "Довжина розділів, що генеруються для медіа без них. Установіть 0, щоб вимкнути.",
+    "adminLibChapterImageResolution": "Роздільна здатність зображень розділів",
+    "adminLibNfoTitle": "Налаштування NFO",
+    "adminLibNfoHelp": "Метадані NFO сумісні з Kodi та подібними клієнтами. Налаштування застосовуються до всіх бібліотек, які зберігають метадані NFO.",
+    "adminLibKodiUser": "Користувач, для якого зберігати дані перегляду у файлах NFO",
+    "adminLibSaveImagePaths": "Зберігати шляхи до зображень у файлах NFO",
+    "adminLibPathSubstitution": "Увімкнути заміну шляхів для шляхів зображень NFO",
+    "adminLibExtraThumbs": "Копіювати зображення extrafanart до теки extrathumbs",
+    "adminLibNone": "Немає",
+    "adminLibRefreshDays": "{days} днів",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Використовувати вбудовані назви",
+    "adminLibEmbeddedExtrasTitles": "Використовувати вбудовані назви для додаткових матеріалів",
+    "adminLibEmbeddedEpisodeInfos": "Використовувати вбудовану інформацію про епізоди",
+    "adminLibAllowEmbeddedSubtitles": "Дозволити вбудовані субтитри",
+    "adminLibEmbeddedAllowAll": "Дозволити всі",
+    "adminLibEmbeddedAllowText": "Лише текстові",
+    "adminLibEmbeddedAllowImage": "Лише графічні",
+    "adminLibEmbeddedAllowNone": "Немає",
+    "adminLibSkipIfEmbeddedSubs": "Пропускати завантаження, якщо є вбудовані субтитри",
+    "adminLibSkipIfAudioMatches": "Пропускати завантаження, якщо аудіодоріжка збігається з мовою завантаження",
+    "adminLibRequirePerfectMatch": "Вимагати точний збіг субтитрів",
+    "adminLibSaveSubtitlesWithMedia": "Зберігати субтитри в теках медіа",
+    "adminLibChapterImageExtraction": "Витягувати зображення розділів",
+    "adminLibChapterImagesDuringScan": "Витягувати зображення розділів під час сканування бібліотеки",
+    "adminLibTrickplayExtraction": "Увімкнути витягування зображень trickplay",
+    "adminLibTrickplayDuringScan": "Витягувати зображення trickplay під час сканування бібліотеки",
+    "adminLibSaveTrickplayWithMedia": "Зберігати зображення trickplay у теках медіа",
+    "adminLibAutomaticSeriesGrouping": "Автоматично об'єднувати серіали, розподілені між кількома теками",
+    "adminLibSeasonZeroName": "Назва нульового сезону",
+    "adminLibLufsScan": "Увімкнути сканування LUFS для нормалізації гучності",
+    "adminLibPreferNonstandardArtist": "Віддавати перевагу нестандартному тегу виконавців",
+    "adminLibAutoAddToCollection": "Автоматично додавати фільми до колекцій",
+    "adminParentalControl": "Батьківський контроль",
+    "adminMaxParentalRating": "Максимальний дозволений віковий рейтинг",
+    "adminMaxParentalRatingHint": "Вміст із вищим рейтингом буде приховано від цього користувача.",
+    "adminParentalRatingNone": "Немає",
+    "adminBlockUnratedItems": "Блокувати елементи без рейтингу або з нерозпізнаним рейтингом",
+    "adminUnratedBook": "Книги",
+    "adminUnratedChannelContent": "Канали",
+    "adminUnratedLiveTvChannel": "Пряме телебачення",
+    "adminUnratedMovie": "Фільми",
+    "adminUnratedMusic": "Музика",
+    "adminUnratedTrailer": "Трейлери",
+    "adminUnratedSeries": "Серіали",
+    "adminAccessSchedules": "Розклади доступу",
+    "adminAccessSchedulesHint": "Дозволяти доступ лише в зазначені нижче години. Якщо розклад не задано, доступ дозволено цілодобово.",
+    "adminAddSchedule": "Додати розклад",
+    "adminScheduleDay": "День",
+    "adminScheduleStart": "Початок",
+    "adminScheduleEnd": "Кінець",
+    "adminDayEveryday": "Щодня",
+    "adminDayWeekday": "Будній день",
+    "adminDayWeekend": "Вихідні",
+    "adminDaySunday": "Неділя",
+    "adminDayMonday": "Понеділок",
+    "adminDayTuesday": "Вівторок",
+    "adminDayWednesday": "Середа",
+    "adminDayThursday": "Четвер",
+    "adminDayFriday": "П'ятниця",
+    "adminDaySaturday": "Субота",
+    "adminAllowedTags": "Дозволені теги",
+    "adminAllowedTagsHint": "Показується лише вміст із цими тегами. Залиште порожнім, щоб дозволити все.",
+    "adminBlockedTags": "Заблоковані теги",
+    "adminBlockedTagsHint": "Вміст із цими тегами приховано від цього користувача.",
+    "adminAddTag": "Додати тег",
+    "adminEnabledDevices": "Увімкнені пристрої",
+    "adminEnabledChannels": "Увімкнені канали",
+    "adminAuthProvider": "Постачальник автентифікації",
+    "adminPasswordResetProvider": "Постачальник скидання пароля",
+    "adminLoginAttemptsBeforeLockout": "Максимум невдалих спроб входу до блокування",
+    "adminLoginAttemptsHint": "Установіть 0 для типового значення або -1, щоб вимкнути блокування.",
+    "adminSyncPlayAccess": "Доступ до SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Дозволити створювати групи та приєднуватися до них",
+    "adminSyncPlayJoin": "Дозволити приєднуватися до груп",
+    "adminSyncPlayNone": "Без доступу",
+    "adminContentDeletionFolders": "Дозволити видалення вмісту з",
+    "adminBackupOptionsTitle": "Створити резервну копію",
+    "adminBackupInclude": "Виберіть, що включити до резервної копії.",
+    "adminBackupDatabase": "База даних",
+    "adminBackupDatabaseAlways": "Завжди включено",
+    "adminBackupMetadata": "Метадані",
+    "adminBackupSubtitles": "Субтитри",
+    "adminBackupTrickplay": "Зображення trickplay",
+    "adminEditTuner": "Редагувати тюнер",
+    "adminTunerTypeM3u": "Тюнер M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Файл або URL",
+    "adminTunerIpAddress": "IP-адреса тюнера",
+    "adminTunerFriendlyName": "Зрозуміла назва",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Ліміт одночасних підключень",
+    "adminTunerCountHelp": "Максимальна кількість потоків, які тюнер дозволяє одночасно. Установіть 0 для необмеженої кількості.",
+    "adminTunerFallbackBitrate": "Резервний максимальний бітрейт потоку",
+    "adminTunerImportFavoritesOnly": "Імпортувати лише улюблені канали",
+    "adminTunerAllowHwTranscoding": "Дозволити апаратне транскодування",
+    "adminTunerAllowFmp4": "Дозволити контейнер транскодування fMP4",
+    "adminTunerAllowStreamSharing": "Дозволити спільне використання потоку",
+    "adminTunerEnableStreamLooping": "Увімкнути зациклення потоку",
+    "adminTunerIgnoreDts": "Ігнорувати DTS",
+    "adminTunerReadAtNativeFramerate": "Читати вхідний потік із власною частотою кадрів",
+    "adminEditProvider": "Редагувати постачальника",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Файл або URL",
+    "adminXmltvMoviePrefix": "Префікс фільмів",
+    "adminXmltvMovieCategories": "Категорії фільмів",
+    "adminXmltvCategoriesHelp": "Розділяйте кілька категорій вертикальною рискою.",
+    "adminXmltvKidsCategories": "Дитячі категорії",
+    "adminXmltvNewsCategories": "Категорії новин",
+    "adminXmltvSportsCategories": "Спортивні категорії",
+    "adminSdUsername": "Ім'я користувача",
+    "adminSdPassword": "Пароль",
+    "adminSdCountry": "Країна",
+    "adminSdCountrySelect": "Виберіть країну",
+    "adminSdPostalCode": "Поштовий індекс",
+    "adminSdGetListings": "Отримати списки",
+    "adminSdListings": "Списки",
+    "adminEnableAllTuners": "Увімкнути всі тюнери",
+    "adminTunerResetNotSupported": "Цей тип тюнера не підтримує скидання.",
+    "adminMovieRecordingPath": "Шлях для запису фільмів",
+    "adminGuideDays": "Кількість днів телепрограми",
+    "adminGuideDaysAuto": "Автоматично",
+    "adminGuideDaysValue": "{days} днів",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Шлях до програми постобробки",
+    "adminRecordingPostProcessorArgs": "Аргументи постобробника",
+    "adminSaveRecordingNfo": "Зберігати метадані NFO для записів",
+    "adminSaveRecordingImages": "Зберігати зображення записів",
+    "adminLiveTvSectionTiming": "Час",
+    "adminLiveTvSectionPaths": "Шляхи для записів",
+    "adminLiveTvSectionPostProcessing": "Постобробка",
+    "adminGuideDaysDisplay": "Дані телепрограми: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Оновити дані телепрограми",
+    "adminGuideRefreshStarted": "Оновлення даних телепрограми розпочато",
+    "adminGuideRefreshUnavailable": "Завдання оновлення телепрограми недоступне на цьому сервері.",
+    "adminMetadataIdentify": "Ідентифікувати",
+    "adminBrandingSplashUpload": "Вивантажити зображення",
+    "adminBrandingSplashUploaded": "Заставку оновлено",
+    "adminBrandingSplashUploadFailed": "Не вдалося вивантажити заставку",
+    "adminBrandingSplashDeleted": "Заставку видалено",
+    "adminBrandingNoSplash": "Немає власної заставки",
+    "adminPlaybackQsvDevice": "Пристрій QSV",
+    "adminPlaybackEnhancedNvdec": "Увімкнути покращений декодер NVDEC",
+    "adminPlaybackPreferNativeDecoder": "Віддавати перевагу системному апаратному декодеру",
+    "adminPlaybackColorDepth": "Глибина кольору апаратного декодування",
+    "adminPlaybackColorDepth10Hevc": "10-бітне декодування HEVC",
+    "adminPlaybackColorDepth10Vp9": "10-бітне декодування VP9",
+    "adminPlaybackColorDepth10HevcRext": "8/10-бітне декодування HEVC RExt",
+    "adminPlaybackColorDepth12HevcRext": "12-бітне декодування HEVC RExt",
+    "adminPlaybackHwEncodingSection": "Апаратне кодування",
+    "adminPlaybackAllowHevcEncoding": "Дозволити кодування HEVC",
+    "adminPlaybackAllowAv1Encoding": "Дозволити кодування AV1",
+    "adminPlaybackIntelLowPowerH264": "Увімкнути енергоощадний кодер Intel H.264",
+    "adminPlaybackIntelLowPowerHevc": "Увімкнути енергоощадний кодер Intel HEVC",
+    "adminPlaybackToneMapping": "Тональне відображення",
+    "adminPlaybackEnableTonemapping": "Увімкнути тональне відображення",
+    "adminPlaybackEnableVppTonemapping": "Увімкнути тональне відображення VPP",
+    "adminPlaybackEnableVtTonemapping": "Увімкнути тональне відображення VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "Алгоритм тонального відображення",
+    "adminPlaybackTonemappingMode": "Режим тонального відображення",
+    "adminPlaybackTonemappingRange": "Діапазон тонального відображення",
+    "adminPlaybackTonemappingDesat": "Знебарвлення тонального відображення",
+    "adminPlaybackTonemappingPeak": "Пік тонального відображення",
+    "adminPlaybackTonemappingParam": "Параметр тонального відображення",
+    "adminPlaybackVppTonemappingBrightness": "Яскравість тонального відображення VPP",
+    "adminPlaybackVppTonemappingContrast": "Контрастність тонального відображення VPP",
+    "adminPlaybackPresetsQuality": "Пресети та якість",
+    "adminPlaybackEncoderPreset": "Пресет кодера",
+    "adminPlaybackH264Crf": "CRF кодування H.264",
+    "adminPlaybackH265Crf": "CRF кодування H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "Метод деінтерлейсингу",
+    "adminPlaybackDeinterlaceDoubleRate": "Подвоювати частоту кадрів під час деінтерлейсингу",
+    "adminPlaybackAudioSection": "Аудіо",
+    "adminPlaybackEnableAudioVbr": "Увімкнути кодування аудіо зі змінним бітрейтом (VBR)",
+    "adminPlaybackDownmixBoost": "Підсилення при мікшуванні аудіо",
+    "adminPlaybackDownmixAlgorithm": "Алгоритм мікшування в стерео",
+    "adminPlaybackMaxMuxingQueue": "Максимальний розмір черги мультиплексування",
+    "adminPlaybackAutoOption": "Авто",
+    "adminRunningTasks": "Активні завдання",
+    "adminNetworkingPublicHttpPort": "Публічний порт HTTP",
+    "adminNetworkingRequireHttps": "Вимагати HTTPS",
+    "adminNetworkingRequireHttpsHint": "Перенаправляти всі віддалені запити на HTTPS. Не діє, якщо сервер не має дійсного сертифіката.",
+    "adminNetworkingCertPassword": "Пароль сертифіката",
+    "adminNetworkingIpSettings": "Налаштування IP",
+    "adminNetworkingEnableIpv4": "Увімкнути IPv4",
+    "adminNetworkingEnableIpv6": "Увімкнути IPv6",
+    "adminNetworkingAutoDiscovery": "Увімкнути автоматичне зіставлення портів",
+    "adminNetworkingLocalSubnets": "Мережі LAN",
+    "adminNetworkingLocalSubnetsHint": "Список IP-адрес або підмереж CIDR, розділених комами чи новими рядками, які вважаються локальною мережею.",
+    "adminNetworkingPublishedUris": "Опубліковані URI сервера",
+    "adminNetworkingPublishedUriHint": "Зіставте підмережу або адресу з опублікованою URL-адресою, напр. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Затримка тротлінгу (секунди)",
+    "adminPlaybackEnableSubtitleExtraction": "Дозволити витягування субтитрів на льоту",
+    "adminGeneralEnableSlowResponse": "Увімкнути попередження про повільну відповідь",
+    "adminGeneralQuickConnect": "Увімкнути Quick Connect",
+    "adminGeneralSectionServer": "Сервер",
+    "adminGeneralSectionMetadata": "Метадані",
+    "adminGeneralSectionPaths": "Шляхи",
+    "adminGeneralSectionPerformance": "Продуктивність",
+    "adminGeneralDisplayLanguage": "Бажана мова відображення",
+    "offlineBannerTitle": "Ви офлайн",
+    "offlineBannerSubtitle": "Показуємо ваші завантаження",
+    "offlineBannerAction": "Завантаження",
+    "serverUnreachableBannerTitle": "Не вдається зв'язатися з вашим сервером",
+    "serverUnreachableBannerSubtitle": "Відтворюємо із завантажень, доки він не повернеться",
+    "contextMenuHideFromContinueWatching": "Приховати з «Продовжити перегляд»",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Приховати з «Далі»",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Додати до колекції",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "ПІДКЛЮЧЕННЯ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Дозволити самопідписані сертифікати",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Довіряти серверам із самопідписаними сертифікатами TLS або сертифікатами приватного ЦС. Вмикайте лише для серверів, які ви контролюєте. Це вимикає перевірку сертифікатів для всіх підключень.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Екран деталей",
+    "settingsDetailsScreenSubtitle": "Стиль, розмиття тла та поведінка вкладок",
+    "settingsShowSeerrButtonInNavigation": "Показувати кнопку Seerr на панелі навігації",
+    "settingsAlwaysExpandNavbarLabels": "Завжди показувати текстові підписи у верхній панелі навігації",
+    "settingsMediaSegmentCountdown": "Відлік медіасегментів",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Смуга прогресу",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Таймер",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Немає",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Нещодавно вийшло: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Увімкнути тунелювання",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Для досвідчених. Спрямовує аудіо та відео через спарений апаратний шлях. Типово вимкнено, бо на деяких пристроях спричиняє випадання аудіо/відео.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Показувати деталі медіа",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Показувати деталі вибраного елемента вгорі сторінок бібліотеки.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Приховувати тла під час перегляду?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Магазин тем",
+    "themeStoreSubtitle": "Переглядайте та зберігайте теми спільноти",
+    "themeStoreDescription": "Збережіть тему, щоб користуватися нею, як іншими збереженими темами.",
+    "themeStoreEmpty": "Наразі немає доступних тем.",
+    "themeStoreLoadFailed": "Не вдалося завантажити Магазин тем. Перевірте підключення та спробуйте ще раз.",
+    "themeStoreSave": "Зберегти",
+    "themeStoreSaveAndApply": "Зберегти й застосувати",
+    "themeStoreSaved": "Збережено",
+    "themeStoreInvalidMessage": "Не вдалося завантажити цю тему.",
+    "themeStoreSavedMessage": "Збережено «{themeName}».",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Відображення рядків головної",
+    "homeRowSections": "Розділи рядків головної",
+    "homeRowToggles": "Перемикачі рядків головної",
+    "homeRowTogglesSubtitle": "Увімкніть або вимкніть категорії рядків головної на основі бібліотек",
+    "homeRowTogglesDescription": "Увімкніть наведені нижче перемикачі, щоб показувати рядки в розділах головної.",
+    "displayPlaylistsRows": "Показувати рядки списків відтворення",
+    "displayPlaylistsRowsSubtitle": "Показувати рядки списків відтворення в розділах головної.",
+    "playlistsRowSorting": "Сортування рядків списків відтворення",
+    "playlistsRowSortingDescription": "Сортуйте рядки списків відтворення за датою додавання, датою випуску, за алфавітом тощо.",
+    "displayAudioRows": "Показувати аудіорядки",
+    "displayAudioRowsSubtitle": "Показувати аудіорядки в розділах головної.",
+    "audioRowsSorting": "Сортування аудіорядків",
+    "audioRowsSortingDescription": "Сортуйте аудіорядки за датою додавання, датою випуску, за алфавітом тощо.",
+    "audioPlaylists": "Аудіосписки відтворення",
+    "layout": "Макет",
+    "theme": "Тема",
+    "keyboard": "Клавіатура",
+    "navButtons": "Кнопки",
+    "rendering": "Рендеринг",
+    "mpvConfiguration": "Конфігурація MPV",
+    "externalPlayerAppDescription": "Установіть зовнішній програвач, щоб увімкнути відтворення довгим натисканням",
+    "crewContributionsSeerr": "Внесок знімальної групи (Seerr)",
+    "changeArtwork": "Змінити обкладинку",
+    "missing": "Відсутнє",
+    "clearAllArtworkButton": "Очистити всі обкладинки?",
+    "clearAllArtworkWarning": "Ви впевнені, що хочете очистити всі завантажені обкладинки?",
+    "confirmClear": "Підтвердити очищення",
+    "confirmClearMessage": "Ви впевнені, що хочете очистити це зображення ({itemType})?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Вивантажити?",
+    "resolutionLabel": "Роздільна здатність: ",
+    "onlyShowInterfaceLanguage": "Показувати лише обкладинки мовою інтерфейсу",
+    "confirmClearAll": "Підтвердити очищення всього",
+    "imageUploadSuccess": "Зображення успішно вивантажено!",
+    "imageUploadFailed": "Не вдалося вивантажити зображення: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Не вдалося встановити зображення: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Не вдалося видалити зображення: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Не вдалося очистити всі обкладинки: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Так",
+    "posterCategory": "Постер",
+    "backdropsCategory": "Тла",
+    "bannerCategory": "Банер",
+    "logoCategory": "Логотип",
+    "thumbnailCategory": "Мініатюра",
+    "artCategory": "Ілюстрація",
+    "discArtCategory": "Зображення диска",
+    "screenshotCategory": "Знімок екрана",
+    "boxCoverCategory": "Обкладинка коробки",
+    "boxRearCoverCategory": "Задня обкладинка коробки",
+    "menuArtCategory": "Ілюстрація меню",
+    "confirmItemPoster": "постер",
+    "confirmItemBackdrop": "тло",
+    "confirmItemBanner": "банер",
+    "confirmItemLogo": "логотип",
+    "confirmItemThumbnail": "мініатюра",
+    "confirmItemArt": "ілюстрація",
+    "confirmItemDiscArt": "зображення диска",
+    "confirmItemScreenshot": "знімок екрана",
+    "confirmItemBoxCover": "обкладинка коробки",
+    "confirmItemBoxRearCover": "задня обкладинка коробки",
+    "confirmItemMenuArt": "ілюстрація меню",
+    "resolutionAll": "Усі",
+    "resolutionHigh": "Висока (1080p+)",
+    "resolutionMedium": "Середня (720p)",
+    "resolutionLow": "Низька (<720p)",
+    "sources": "Джерела",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Розділи",
+    "audiobookBookmarks": "Закладки",
+    "audiobookNotes": "Нотатки",
+    "audiobookQueue": "Черга",
+    "audiobookTimeline": "Хронологія",
+    "audiobookTimelineEmpty": "Хронологія порожня",
+    "audiobookWholeBook": "Уся книга",
+    "audiobookFocusedTimeline": "Сфокусована хронологія",
+    "audiobookExportBookmarks": "Експортувати закладки",
+    "audiobookExportNotes": "Експортувати нотатки",
+    "audiobookExportAll": "Експортувати все",
+    "audiobookExportSuccess": "Експортовано до {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Помилка експорту: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Текст",
+    "audiobookAddBookmark": "Додати закладку",
+    "audiobookAddNote": "Додати нотатку",
+    "audiobookEditNote": "Редагувати нотатку",
+    "audiobookNoteHint": "Напишіть нотатку для цього моменту",
+    "audiobookSleepTimer": "Таймер сну",
+    "audiobookSleepOff": "Вимкнено",
+    "audiobookSleepEndOfChapter": "Кінець розділу",
+    "audiobookSleepCustom": "Власний",
+    "audiobookSleepRemaining": "Залишилось {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 хв} other{{count} хв}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Швидкість відтворення",
+    "audiobookRemainingTime": "Залишилось",
+    "audiobookElapsedTime": "Минуло",
+    "audiobookSkipBackSeconds": "Назад {seconds} с",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Вперед {seconds} с",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Попередній розділ",
+    "audiobookNextChapter": "Наступний розділ",
+    "audiobookChapterIndicator": "Розділ {current} з {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Немає розділів",
+    "audiobookNoBookmarks": "Поки що немає закладок",
+    "audiobookNoNotes": "Поки що немає нотаток",
+    "audiobookBookmarkAdded": "Закладку додано на {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Скинути до 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Зберегти",
+    "audiobookCancel": "Скасувати",
+    "audiobookDelete": "Видалити",
+    "subtitlePreferences": "Параметри субтитрів",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Змініть режими субтитрів, типові мови, вигляд і параметри рендерингу.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Рендеринг субтитрів",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Параметри відображення",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Дата виходу (за зростанням)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Дата виходу (за спаданням)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Групувати внески",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Групувати кілька ролей",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Попередження про доступ на запис до бібліотеки",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Як це виправити:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Надайте службовому користувачу Jellyfin (напр., jellyfin або PUID/PGID у Docker) права на запис до тек вашої медіабібліотеки на сервері.\n\n2. Або відкрийте Jellyfin Dashboard -> Libraries, відредагуйте цю бібліотеку та вимкніть параметр «Save artwork into media folders», щоб зберігати обкладинки у внутрішній базі даних Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Закрити",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Вашу бібліотеку «{libraryName}» налаштовано зберігати обкладинки безпосередньо в теках медіа (параметр «Save artwork into media folders» увімкнено). Проте Jellyfin перевірив доступ на запис і не має дозволу записувати файли до цього каталогу:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Схоже, Jellyfin не вдалося оновити обкладинку. Вашу бібліотеку налаштовано зберігати обкладинки безпосередньо в теках медіа (параметр «Save artwork into media folders» увімкнено). Ця помилка зазвичай виникає, коли процес сервера Jellyfin не має дозволу записувати файли до ваших каталогів медіа.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Зовнішні списки",
+    "replay": "Відтворити знову",
+    "fileInformation": "Інформація про файл",
+    "fileSizeFormat": "Розмір: {size}  •  Формат: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Показати всі аудіодоріжки ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Показати всі доріжки субтитрів ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Перевірка можливості прямого відтворення...",
+    "directPlayCapabilityLabel": "Можливість прямого відтворення: ",
+    "forced": "Примусові",
+    "transcodeContainerNotSupported": "Формат контейнера не підтримується програвачем.",
+    "transcodeVideoCodecNotSupported": "Відеокодек не підтримується.",
+    "transcodeAudioCodecNotSupported": "Аудіокодек не підтримується.",
+    "transcodeSubtitleCodecNotSupported": "Формат субтитрів не підтримується (потребує вшивання).",
+    "transcodeAudioProfileNotSupported": "Аудіопрофіль не підтримується.",
+    "transcodeVideoProfileNotSupported": "Відеопрофіль не підтримується.",
+    "transcodeVideoLevelNotSupported": "Рівень відео не підтримується.",
+    "transcodeVideoResolutionNotSupported": "Роздільна здатність відео не підтримується цим пристроєм.",
+    "transcodeVideoBitDepthNotSupported": "Глибина кольору відео не підтримується.",
+    "transcodeVideoFramerateNotSupported": "Частота кадрів відео не підтримується.",
+    "transcodeContainerBitrateExceedsLimit": "Бітрейт файлу перевищує ліміт потоку програвача.",
+    "transcodeVideoBitrateExceedsLimit": "Бітрейт відео перевищує ліміт потоку.",
+    "transcodeAudioBitrateExceedsLimit": "Бітрейт аудіо перевищує ліміт потоку.",
+    "transcodeAudioChannelsNotSupported": "Кількість аудіоканалів не підтримується.",
+    "sortAlphabetical": "За алфавітом",
+    "sortReleaseAscending": "Порядок виходу (за зростанням)",
+    "sortReleaseDescending": "Порядок виходу (за спаданням)",
+    "sortCustomDragDrop": "Власний (перетягуванням)",
+    "playlistSortOptions": "Параметри сортування списку відтворення",
+    "resetSort": "Скинути сортування",
+    "rewatchSeasonEpisode": "Переглянути знову С{season}:Е{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Переглянути список відтворення знову",
+    "noSubtitlesFound": "Субтитрів не знайдено.",
+    "adminControls": "Керування адміністратора",
+    "impellerRendering": "Рушій рендерингу (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller — це сучасний GPU-рендерер Flutter для плавніших анімацій і меншого підгальмовування. На деяких ТВ-боксах і старих GPU він може спричиняти артефакти або чорне відео; вимкніть його, якщо це помітите. «Автоматично» добирає найкраще значення для вашого пристрою. Перезапустіть Moonfin, щоб застосувати.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Автоматично",
+    "impellerOn": "Увімкнено",
+    "impellerOff": "Вимкнено",
+    "impellerRestartTitle": "Потрібен перезапуск",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin потрібно перезапустити, щоб змінити рушій рендерингу. Закрийте програму зараз, а потім відкрийте її знову, щоб застосувати зміни.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Закрити програму зараз",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Оновити бібліотеку",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Оновити всі бібліотеки",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Дата додавання (спочатку старі)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Дата додавання (спочатку нові)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "За алфавітом (А–Я)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "За алфавітом (Я–А)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Завантаження аналітики сервера... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Як у джерелі",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Топ-250 фільмів",
+    "imdbTop250TvShows": "IMDb Топ-250 серіалів",
+    "imdbMostPopularMovies": "IMDb Найпопулярніші фільми",
+    "imdbMostPopularTvShows": "IMDb Найпопулярніші серіали",
+    "imdbLowestRatedMovies": "IMDb Фільми з найнижчим рейтингом",
+    "imdbTopEnglishMovies": "IMDb Найкращі англомовні фільми"
 }

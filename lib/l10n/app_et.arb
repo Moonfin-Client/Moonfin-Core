@@ -1,6 +1,6 @@
 {
     "@@locale": "et",
-    "appTitle": "Kuufin",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Kiirühendus",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Kuufin",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "seeria",
+    "series": "Sarjad",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Kodu",
+    "home": "Avaleht",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "Raamatukogu",
+    "library": "Meediakogu",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Kunstnikud",
+    "artists": "Esitajad",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Vaadati",
+    "watched": "Vaadatud",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audioraamat} other{{count} audioraamatut}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Aastaajad",
+    "seasons": "Hooajad",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 hooaeg} other{{count} hooaega}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Mängi",
+    "play": "Esita",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Mitte ühtegi",
+    "none": "Puudub",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "KIRJANIKUD",
+    "writers": "STSENARISTID",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 lugu} other{{count} lugu}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 peatükk} other{{count} peatükki}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Segamine",
+    "shuffle": "Juhuesitus",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} kan.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Mängija",
+    "player": "Pleier",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -2159,7 +2159,7 @@
     "@noChannelsFound": {
         "description": "Empty state when no TV channels match the filter"
     },
-    "liveBadge": "LIVE",
+    "liveBadge": "OTSE",
     "@liveBadge": {
         "description": "Badge label shown on currently airing programs"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "H{season} E{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "H{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 episood} other{{count} episoodi}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -3032,11 +3032,11 @@
     "@minimal": {
         "description": "Option: minimal"
     },
-    "nextUpTimeout": "Next Up Timeout",
+    "nextUpTimeout": "„Järgmisena“ ooteaeg",
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Kuufin",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3728,10 +3728,6 @@
     "lastUser": "Viimane kasutaja",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Konkreetne kasutaja",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Autentige alati",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin",
+    "pluginLabel": "Moonbase'i plugin",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4059,7 +4055,7 @@
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "Kuva Nägija navigeerimisel (vaja on serveri pistikprogrammi)",
+    "showSeerrInNavigation": "Kuva Seerr navigeerimisribal (nõuab serveri pluginat)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Avasta read",
+    "discoverRows": "Seerri avastamisleht",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Lohistage ümberjärjestamiseks. Lubage või keelake read. Lubatud ridade järjestus sünkroonitakse Moonfini pistikprogrammiga.",
+    "discoverRowsDescriptionPlugin": "Lubage read, mida soovite Seerri avalehel näha. Lohistage ümberjärjestamiseks. Kohandatud järjestus sünkroonitakse Moonbase'iga.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Lohistage ümberjärjestamiseks. Lubage või keelake read.",
+    "discoverRowsDescription": "Lubage read, mida soovite Seerri avalehel näha. Lohistage ümberjärjestamiseks. Kohandatud järjestus sünkroonitakse Moonbase'iga.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Selge",
+    "clear": "Tühjenda",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Nägija seaded",
+    "seerrSettings": "Seerri seaded",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Aastaajad",
+    "seasonsLabel": "Hooajad",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4533,14 +4529,14 @@
     "encoding": "Kodeerimine",
     "error": "Viga",
     "forward": "Edasi",
-    "general": "Kindral",
+    "general": "Üldine",
     "go": "Mine",
     "install": "Installige",
     "installed": "Paigaldatud",
     "interval": "Intervall",
     "name": "Nimi",
     "networking": "Võrgustiku loomine",
-    "next": "Edasi",
+    "next": "Järgmine",
     "path": "Tee",
     "paused": "Peatatud",
     "permissions": "load",
@@ -4560,7 +4556,7 @@
     "sessions": "Seansid",
     "set": "Määra",
     "status": "Olek",
-    "stop": "Peatus",
+    "stop": "Peata",
     "streaming": "Voogesitus",
     "time": "Aeg",
     "trickplay": "Trickplay",
@@ -4576,7 +4572,7 @@
     "adminDrawerSettings": "Seaded",
     "adminDrawerBranding": "Bränding",
     "adminDrawerUsers": "Kasutajad",
-    "adminDrawerLibraries": "raamatukogud",
+    "adminDrawerLibraries": "Meediakogud",
     "adminDrawerTranscoding": "Ümberkodeerimine",
     "adminDrawerResume": "Jätka",
     "adminDrawerStreaming": "Voogesitus",
@@ -4675,16 +4671,16 @@
     "sessionPrev": "Eelmine",
     "sessionRewind": "Keri tagasi",
     "sessionForward": "Edasi",
-    "sessionNext": "Edasi",
-    "sessionVolumeDown": "Vol –",
-    "sessionVolumeUp": "Vol +",
+    "sessionNext": "Järgmine",
+    "sessionVolumeDown": "Heli –",
+    "sessionVolumeUp": "Heli +",
     "uhd4k": "4K",
     "nowPlaying": "Mängib",
     "volume": "Helitugevus",
     "actions": "Tegevused",
     "videoCodec": "Videokodek",
     "audioCodec": "Heli koodek",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Riistvarakiirendus",
     "completion": "Lõpetamine",
     "direct": "Otsene",
     "adminDisconnect": "Katkesta ühendus",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS-port",
     "adminPublicHttpsPort": "Avalik HTTPS-port",
     "adminBaseUrl": "Baas-URL",
-    "adminBaseUrlHint": "nt. /tarretis",
+    "adminBaseUrlHint": "nt /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Luba HTTPS",
     "adminLocalNetwork": "Kohalik võrk",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Otsige kaugisikut",
     "adminNoRemoteMatches": "Kaugvasteid ei leitud",
     "adminRemoteResults": "Kaugtulemused",
     "adminRemoteMetadataApplied": "Kaugmetaandmed on rakendatud",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Lisage tuuner",
     "adminTunerType": "Tuneri tüüp",
-    "adminTunerTypeHint": "HDHomeRun, M3U, muu",
-    "adminUrlPath": "URL / tee",
-    "adminNameOptional": "Nimi (valikuline)",
     "adminTunerAdded": "Tuner lisatud",
     "adminTunerAddFailed": "Tuneri lisamine nurjus: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Lisage juhendi pakkuja",
     "adminProviderType": "Pakkuja tüüp",
-    "adminProviderTypeHint": "SchedulesDirect või XMLTV",
-    "adminUsernameOptional": "Kasutajanimi (valikuline)",
-    "adminRefreshInterval": "Värskendusintervall (tunnid)",
     "adminProviderAdded": "Pakkuja lisatud",
     "adminProviderAddFailed": "Teenusepakkuja lisamine ebaõnnestus: {error}",
     "@adminProviderAddFailed": {
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Ühtegi sobivat rida pole",
     "adminMetadataEditorTitle": "Metaandmete redaktor",
-    "adminMetadataRemote": "Kaugjuhtimispult",
     "adminMetadataType": "Tüüp",
     "adminMetadataDetails": "Üksikasjad",
     "adminMetadataExternalIds": "Välised ID-d",
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Tühistamine...",
     "adminTaskRunning": "Jooksmine...",
     "adminTaskNeverRun": "Ärge kunagi jookske",
-    "adminTaskStop": "Peatus",
+    "adminTaskStop": "Peata",
     "adminTaskRun": "Jookse",
     "adminTaskDetailLastExecution": "Viimane hukkamine",
     "adminTaskDetailStarted": "Alustatud",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Iga 12 tunni järel",
     "adminTaskTriggerEvery24Hours": "Iga 24 tunni järel",
     "adminTaskTriggerEvery2Days": "Iga 2 päeva järel",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 tund} other{{count} tundi}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "nüüd",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} t",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} p",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}.{month}.",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6118,7 +6106,7 @@
     "adminTrickplayDescription": "Konfigureerige eelvaate pisipiltide jaoks trickplay-piltide genereerimine.",
     "adminNetworkingPublicHttpsPort": "Avalik HTTPS-port",
     "adminNetworkingBaseUrl": "Baas-URL",
-    "adminNetworkingBaseUrlHint": "nt. /tarretis",
+    "adminNetworkingBaseUrlHint": "nt /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Sertifikaadi tee",
     "adminNetworkingRemoteIpFilter": "Kaug-IP-filter",
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "Kaustad",
-    "libraries": "raamatukogud",
+    "libraries": "Meediakogud",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay on keelatud",
     "syncPlayDisabledMessage": "Sünkroonitud taasesituse kasutamiseks lubage seadetes SyncPlay.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay nõuab Jellyfini serverit. Praegune server seda ei toeta.",
     "syncPlayGroupFallbackName": "SyncPlay grupp",
     "syncPlayGroupTooltip": "SyncPlay grupp",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# osaleja} other {# osalejat}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Pidage meeles minu valikut",
     "playHdr10Fallback": "Esitage HDR10 varuvarianti",
     "requestTranscode": "Küsi transkodeerimist",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {leitud # rida} other {leitud # rida}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Vale PIN-kood",
     "pinMismatch": "PIN-koodid ei ühti",
     "pinForgot": "Unustasite PIN-koodi?",
-    "pinClear": "Selge",
+    "pinClear": "Tühjenda",
     "pinBackspace": "Tagasilükkeklahv",
-    "quickConnectAuthorized": "Kiirühenduse taotlus on lubatud.",
-    "quickConnectInvalidOrExpired": "Kiirühenduse kood on kehtetu või aegunud.",
-    "quickConnectNotSupported": "Kiirühendust selles serveris ei toetata.",
-    "quickConnectAuthorizeFailed": "Kiirühenduse koodi autoriseerimine ebaõnnestus.",
-    "quickConnectDisabled": "Kiirühendus on selles serveris keelatud.",
-    "quickConnectForbidden": "Teie konto ei saa seda kiirühenduse taotlust autoriseerida.",
-    "quickConnectNotFound": "Kiirühenduse koodi ei leitud. Proovige uut koodi.",
-    "quickConnectFailedWithMessage": "Kiirühendus ebaõnnestus: {message}",
+    "quickConnectAuthorized": "Quick Connecti taotlus on lubatud.",
+    "quickConnectInvalidOrExpired": "Quick Connecti kood on kehtetu või aegunud.",
+    "quickConnectNotSupported": "Quick Connecti ei toetata selles serveris.",
+    "quickConnectAuthorizeFailed": "Quick Connecti koodi autoriseerimine ebaõnnestus.",
+    "quickConnectDisabled": "Quick Connect on selles serveris keelatud.",
+    "quickConnectForbidden": "Teie konto ei saa seda Quick Connecti taotlust autoriseerida.",
+    "quickConnectNotFound": "Quick Connecti koodi ei leitud. Proovige uut koodi.",
+    "quickConnectFailedWithMessage": "Quick Connect ebaõnnestus: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "Juhuslikult",
     "shuffleSelectLibrary": "Valige Raamatukogu",
     "shuffleSelectGenre": "Valige Žanr",
-    "shuffleLibrary": "Raamatukogu",
+    "shuffleLibrary": "Meediakogu",
     "shuffleGenre": "Žanr",
     "shuffleNoLibraries": "Ühilduvaid teeke pole saadaval.",
     "shuffleNoGenres": "Selle segamisrežiimi jaoks ei leitud ühtegi žanri.",
@@ -6427,7 +6415,7 @@
     "upNext": "Üles Järgmine",
     "playNext": "Mängi edasi",
     "stillWatchingContent": "Taasesitus on peatatud. Kas sa ikka vaatad?",
-    "stillWatchingStop": "Peatus",
+    "stillWatchingStop": "Peata",
     "stillWatchingContinue": "Jätka",
     "skipSegment": "Jäta vahele {segment}",
     "@skipSegment": {
@@ -6578,8 +6566,8 @@
     "settingsPrivacyPolicySubtitle": "Kuidas Moonfin teie andmeid käsitleb",
     "settingsCheckForUpdates": "Kontrollige värskendusi",
     "settingsCheckForUpdatesSubtitle": "Kontrollige uusimat Moonfini väljaannet",
-    "settingsPoweredByFlutter": "Powered by Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsPoweredByFlutter": "Töötab Flutteri baasil",
+    "settingsLicenseNoticesCount": "{count, plural, one {# litsentsiteade} other {# litsentsiteadet}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Nägija konto tüüp",
+    "seerrAccountType": "Seerri konto tüüp",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Salvestus",
+    "record": "Salvesta",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6799,7 +6787,7 @@
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR-läbilase",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
@@ -6807,23 +6795,11 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Läbimine (täpsem)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "Koodeki läbilase",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
@@ -6839,7 +6815,7 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core läbilase",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6847,11 +6823,11 @@
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD läbilase",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos läbilase",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} kan. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6964,7 +6940,7 @@
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
-    "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
+    "settingsPlaybackEngineMedia3Legacy": "Media3 (pärand)",
     "settingsPlaybackEngineMpvRecommended": "mpv (soovitatav)",
     "autoplayNextEpisode": "Järgmise jao automaatne esitamine",
     "@autoplayNextEpisode": {
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Avage iOS-i marsruudi valija",
     "airPlayRoutePickerUnavailable": "AirPlay marsruudi valija pole selles seadmes saadaval.",
     "videos": "Videod",
-    "trailers": "Haagised",
+    "trailers": "Treilerid",
     "programs": "Programmid",
     "songs": "Laulud",
     "photoAlbums": "Fotoalbumid",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "Hiljuti avaldatud episoodid",
     "watchAgain": "Vaata uuesti",
     "guestAppearances": "Külalisesinemised",
-    "appearancesSeerr": "Esinemised (nägija)",
+    "appearancesSeerr": "Esinemised (Seerr)",
     "watchWithGroup": "Vaadake koos rühmaga",
     "errors": "Vead",
     "warnings": "Hoiatused",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Tippkunstnikud",
     "analyticsTopAuthors": "Parimad autorid",
     "analyticsTopContributors": "Peamised panustajad",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 kogu} other{{count} kogu}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "Segatud sisu",
     "homeVideosAndPhotos": "Koduvideod ja fotod",
     "mixedMoviesAndShows": "Segafilmid ja -saated",
-    "intelQuickSync": "Inteli kiire sünkroonimine",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Salvestisi ei leitud",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "CB7 ekstraheerimise pistikprogramm pole sellel platvormil saadaval.",
     "closeGenrePanel": "Sule žanri paneel",
     "loadingShuffle": "Juhusliku esituse laadimine...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "KOGU SEGAMINE",
+    "randomShuffleLabel": "JUHUSLIK SEGAMINE",
+    "genresShuffleLabel": "ŽANRIDE SEGAMINE",
     "autoHdrSwitching": "Automaatne HDR-i vahetamine",
     "autoHdrSwitchingDescription": "Lubage HDR-i automaatselt HDR-video taasesitamiseks ja taastage väljumisel kuvarežiim.",
     "whenFullscreen": "Täisekraanil",
     "transcodingLimits": "Ümberkodeerimise piirangud",
-    "settingsSupportMoonfinSubtitle": "Annetage arendajale kohv"
+    "settingsSupportMoonfinSubtitle": "Annetage arendajale kohv",
+    "accountPreferences": "KONTO EELISTUSED",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Liidese keel",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Süsteemi vaikimisi",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Tühi",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Detailivaate stiil",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Klassikaline on algne keskjoondatud Moonfini paigutus. Moodne on kohanduv kinolik paigutus.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Klassikaline",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Moodne",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Laiendatud vahekaardid",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Näita vahekaardi sisu automaatselt vahekaartide sirvimisel. Lülita välja, et avada ja sulgeda iga vahekaart käsitsi.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Kas näidata tehnilisi andmeid?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Näita bänneri kokkuvõttes koodeki, eraldusvõime ja voo teavet",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Soovitussüsteem",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Kasuta kohalikul meediakogul põhinevat algoritmi „Moonfin soovitab“ või TMDb võrgupõhiseid sarnasusmõõdikuid. Märkus: võrgusoovitused vajavad Seerri integratsiooni.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin soovitab",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb sarnasus",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Kas piirata vanusepiiranguga?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Piira „Moonfin soovitab“ ettepanekuid sihtmeedia vanusepiirangu järgi",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Liidese stiil",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automaatne kohandub sinu seadmega. Vali Apple või Material, et sundida kindlat välimust.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automaatne",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Klaasi kvaliteet",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Automaatne valib selle seadme jaoks parima klaasiefekti. Täielik sunnib päris hägustuse, Vähendatud kasutab kerget klaasi, mis säästab GPU jõudlust.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Automaatne",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Täielik",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Vähendatud",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Kohandatud teema",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Kohandatud teemad muudavad Moonfini visuaalseid elemente kõikjal. Vali oma stiiliga sobiv variant.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Klaas",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Vedela klaasi stiil hõljuva üleminekuga taustal, härmatanud pinnad ja Apple’i sinine rõhuvärv",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bitine kangelane",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retro pikslikunsti stiil jämeda paleti, kandiliste äärte, teravate varjude ja pikslifondiga",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Menüü",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Pausil",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Salvesta olek",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Mängud",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Laadi olek",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Kiirkerimine",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emulaatori seaded",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Sellel tuumal pole reguleeritavaid valikuid.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Hoia all, et avada menüü",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "See seade ei toeta veel mängude mängimist.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Uusimad raamatud",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Uusimad audioraamatud",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 raamat} other{{count} raamatut}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Raamat",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audioraamat",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% loetud",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} jäänud",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Loe",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Kuula",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Üksused",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Lisamaterjalid",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Kaadri taga",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Väljajäetud stseenid",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Lühidokumentaalid",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Intervjuud",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Stseenid",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Lühifilmid",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} jäänud",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Lõpeb {time} pärast",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "REŽISSÖÖRID",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "STSENARIST",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Esita kogu muusika juhuslikus järjekorras",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Logi telefonis Moonfini sisse",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Serveriga ei saa ühendust",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Järgmisena: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes} min jäänud",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours} t jäänud",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} t {minutes} min jäänud",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Detailivaated, avaekraani read ja helitugevus",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Korda tunnusmuusikat",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Korda lugu ühekordse esitamise asemel",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Hiire kerimisratas",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Vali, mida hiireratta kerimine video kohal esituse ajal teeb.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Väljas",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Kerimine (edasi / tagasi)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Helitugevus",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Helitugevus",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Varuheli keel",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Eelista vaikimisi helirada",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Eelista originaalhelirada lokaliseeritud dublaažile.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Eelista kirjeldustõlke radu",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Eelista kirjeldustõlke radu tavaliste radade asemel.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transkodeerimine (heli)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Otsevoog (remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transkodeerimine (bitikiirus või eraldusvõime)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transkodeerimine (video ja heli)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transkodeerimine (video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Vali, kuidas heli dekodeeritakse. AVR-läbilase saadab Dolby ja DTS toorvood ressiiverisse, Automaatne ja Allamiksimine dekodeerivad heli seadmes.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Vali sihtvorming, millesse mitmekanaliline heli transkodeeritakse, kui lähtevoogu ei saa otse esitada ega läbi lasta.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Automaatne tuvastus\n(soovitatav)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(vaikimisi)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(kadudeta)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(ainult stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(tõhus)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(kadudeta)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Helikanalite maksimum",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Määra oma helisüsteemi kanalite maksimum. Seda piiri ületavad mitmekanalilised vood miksitakse alla või transkodeeritakse.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Automaatne tuvastus\n(riistvara vaikeväärtus)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 ruumiline heli",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 kvadrofooniline",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 ruumiline heli",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 ruumiline heli",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 ruumiline heli",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 ruumiline heli",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Kõrvaklapid",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Subtiitrite režiim",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Märgistatud",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Alati",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Võõrkeelsed",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Sunnitud",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Esitab rajad, mis on meediafaili metaandmetes märgitud „vaikimisi“ või „sunnitud“ radadeks.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Laadib ja kuvab subtiitrid automaatselt iga kord, kui video algab.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Lülitab subtiitrid automaatselt sisse, kui vaikimisi helirada on võõrkeelne.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Laadib ainult need subtiitrid, mis on selgesõnaliselt märgitud sunnitud lipuga.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Keelab subtiitrite automaatse laadimise täielikult.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Varusubtiitrite keel",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Subtiitrivoog",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Näita allalaadimisi serveris",
+    "reportDownloadsActivitySubtitle": "Luba serveri administraatoril näha juhtpaneelil sinu transkodeeritud allalaadimisi",
+    "navbarAlwaysExpanded": "Näita navigeerimisriba silte alati",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Näita Seerri nuppu",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Rühmita üksused kollektsioonidesse",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Peida kollektsiooniga seotud üksused kogude sirvimisel",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Kogu rühmitamise teade",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Selle seade kasutamiseks veendu, et Jellyfini või Emby serveris on sinu kogu kuvamisseadetes lubatud „Rühmita filmid kollektsioonidesse“ ja/või „Rühmita saated kollektsioonidesse“.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Treileri heli",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Luba treilerite heli meediaribal",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Laiendatud avaekraani read",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Näita korraga ainult üht avaekraani rida",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Praegune kasutaja",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Paigal",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Põrkuv",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerri avastamisread",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Teavitused",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Uute taotluste teavitused",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Teavita mind, kui keegi esitab taotluse",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Taotluste uuendused",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Heaks kiidetud, tagasi lükatud ja kogusse lisatud",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Probleemide uuendused",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Uued probleemid, vastused ja lahendused",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Pildipuhvri piirang",
+    "clearImageCache": "Tühjenda pildipuhver",
+    "imageCacheCleared": "Pildipuhver tühjendatud",
+    "seerrDownloadingPercent": "Allalaadimine · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Importimine",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Ebaõnnestus",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Töötlemisel",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Muutja: {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Lõpetatud",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Seda pealkirja on juba taotletud",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Taotluste limiit on täis",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "See pealkiri on blokeerimisnimekirjas",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Rohkem taotletavaid hooaegu pole",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Sul pole õigust seda taotlust esitada",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Taotlused",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Probleemid",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Uusimad",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Viimati muudetud",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Probleeme pole",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Jäänud {remaining}/{limit} filmitaotlust",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Jäänud {remaining}/{limit} hooajataotlust",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Kuulub kollektsiooni: {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Vaata kollektsiooni",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Taotle kollektsiooni",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} filmi · {available} saadaval",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Taotle {count} filmi",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Taotlemine {current}/{total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Taotletud {count} filmi",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Taotletud {ok}/{total} filmi",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Kõik filmid on juba saadaval või taotletud",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Teata probleemist",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Heli",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Mis on valesti?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Kõik episoodid",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episood",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Avatud",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Lahendatud",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Märgi lahendatuks",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Ava uuesti",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Teataja: {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} kommentaari",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Lisa kommentaar",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Kas kustutada see probleem?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Esita teade",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Kuva",
+    "adminDrawerMetadata": "Metaandmed",
+    "adminDrawerNfo": "NFO seaded",
+    "adminActivitySeverityAll": "Kõik raskusastmed",
+    "adminActivityDateRange": "Ajavahemik",
+    "adminRemoveDeviceConfirm": "Kas eemaldada seade '{name}'? Kasutaja peab selles seadmes uuesti sisse logima.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Kustuta kõik seadmed",
+    "adminDeleteAllDevicesConfirm": "Kas eemaldada {count} seadet? Mõjutatud kasutajad peavad uuesti sisse logima. Sinu praegust seadet see ei puuduta.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Seadmed eemaldatud",
+    "adminDevicesDeletedPartial": "Osa seadmeid eemaldati, {count} seadet ei õnnestunud eemaldada.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Teed",
+    "adminLibraryTabOptions": "Valikud",
+    "adminLibraryTabDownloaders": "Allalaadijad",
+    "adminLibMetadataSavers": "Metaandmete salvestajad",
+    "adminLibSubtitleDownloaders": "Subtiitrite allalaadijad",
+    "adminLibLyricDownloaders": "Laulusõnade allalaadijad",
+    "adminLibMetadataDownloadersFor": "Metaandmete allalaadijad: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Piltide hankijad: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "See server ei paku selle kogutüübi jaoks allalaadijaid.",
+    "adminLibrarySectionGeneral": "Üldine",
+    "adminLibrarySectionMetadata": "Metaandmed",
+    "adminLibrarySectionEmbedded": "Manustatud teave",
+    "adminLibrarySectionSubtitles": "Subtiitrid",
+    "adminLibrarySectionImages": "Pildid",
+    "adminLibrarySectionSeries": "Sarjad",
+    "adminLibrarySectionMusic": "Muusika",
+    "adminLibrarySectionMovies": "Filmid",
+    "adminLibRealtimeMonitor": "Luba reaalajas jälgimine",
+    "adminLibRealtimeMonitorHint": "Tuvasta failimuudatused ja töötle need automaatselt.",
+    "adminLibArchiveMediaFiles": "Käsitle arhiive meediafailidena",
+    "adminLibEnablePhotos": "Näita fotosid",
+    "adminLibSaveLocalMetadata": "Salvesta kujunduspildid meediakaustadesse",
+    "adminLibRefreshInterval": "Metaandmete automaatne värskendamine",
+    "adminLibRefreshNever": "Mitte kunagi",
+    "adminLibDefault": "Vaikimisi",
+    "adminLibDisplayTitle": "Kuva",
+    "adminLibDisplaySection": "Kogu kuvamine",
+    "adminLibFolderView": "Näita kaustavaadet tavaliste meediakaustade jaoks",
+    "adminLibSpecialsInSeasons": "Näita eriosi nende hooaegade sees, kus need eetris olid",
+    "adminLibGroupMovies": "Rühmita filmid kollektsioonidesse",
+    "adminLibGroupShows": "Rühmita saated kollektsioonidesse",
+    "adminLibExternalSuggestions": "Näita soovitustes välist sisu",
+    "adminLibDateAddedSection": "Lisamiskuupäeva käitumine",
+    "adminLibDateAddedLabel": "Kasuta lisamiskuupäevana",
+    "adminLibDateAddedImport": "Kogusse skannimise kuupäev",
+    "adminLibDateAddedFile": "Faili loomise kuupäev",
+    "adminLibMetadataTitle": "Metaandmed ja pildid",
+    "adminLibMetadataLangSection": "Eelistatud metaandmete keel",
+    "adminLibChaptersSection": "Peatükid",
+    "adminLibDummyChapterDuration": "Asenduspeatükkide kestus (sekundites)",
+    "adminLibDummyChapterDurationHint": "Peatükkide pikkus meedia jaoks, millel neid pole. Keelamiseks määra 0.",
+    "adminLibChapterImageResolution": "Peatükipiltide eraldusvõime",
+    "adminLibNfoTitle": "NFO seaded",
+    "adminLibNfoHelp": "NFO metaandmed ühilduvad Kodi ja sarnaste klientidega. Seaded kehtivad kõigile kogudele, mis salvestavad NFO metaandmeid.",
+    "adminLibKodiUser": "Kasutaja, kelle vaatamisandmed NFO failidesse salvestatakse",
+    "adminLibSaveImagePaths": "Salvesta pilditeed NFO failidesse",
+    "adminLibPathSubstitution": "Luba teede asendamine NFO pilditeede jaoks",
+    "adminLibExtraThumbs": "Kopeeri extrafanart-pildid kausta extrathumbs",
+    "adminLibNone": "Puudub",
+    "adminLibRefreshDays": "{days} päeva",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Kasuta manustatud pealkirju",
+    "adminLibEmbeddedExtrasTitles": "Kasuta manustatud pealkirju lisamaterjalide jaoks",
+    "adminLibEmbeddedEpisodeInfos": "Kasuta manustatud episooditeavet",
+    "adminLibAllowEmbeddedSubtitles": "Luba manustatud subtiitrid",
+    "adminLibEmbeddedAllowAll": "Luba kõik",
+    "adminLibEmbeddedAllowText": "Ainult tekst",
+    "adminLibEmbeddedAllowImage": "Ainult pilt",
+    "adminLibEmbeddedAllowNone": "Puudub",
+    "adminLibSkipIfEmbeddedSubs": "Jäta allalaadimine vahele, kui manustatud subtiitrid on olemas",
+    "adminLibSkipIfAudioMatches": "Jäta allalaadimine vahele, kui helirada vastab allalaadimise keelele",
+    "adminLibRequirePerfectMatch": "Nõua täpset subtiitrite vastet",
+    "adminLibSaveSubtitlesWithMedia": "Salvesta subtiitrid meediakaustadesse",
+    "adminLibChapterImageExtraction": "Eralda peatükipildid",
+    "adminLibChapterImagesDuringScan": "Eralda peatükipildid kogu skannimise ajal",
+    "adminLibAutomaticSeriesGrouping": "Ühenda automaatselt sarjad, mis on jaotatud mitme kausta vahel",
+    "adminLibSeasonZeroName": "Nullhooaja kuvatav nimi",
+    "adminLibLufsScan": "Luba LUFS-skannimine heli normaliseerimiseks",
+    "adminLibPreferNonstandardArtist": "Eelista mittestandardset esitajasilti",
+    "adminLibAutoAddToCollection": "Lisa filmid automaatselt kollektsioonidesse",
+    "adminParentalControl": "Vanemlik järelevalve",
+    "adminMaxParentalRating": "Suurim lubatud vanusepiirang",
+    "adminMaxParentalRatingHint": "Sellest kõrgema piiranguga sisu peidetakse selle kasutaja eest.",
+    "adminParentalRatingNone": "Puudub",
+    "adminBlockUnratedItems": "Blokeeri üksused, mille vanusepiirangu teave puudub või on tundmatu",
+    "adminUnratedBook": "Raamatud",
+    "adminUnratedChannelContent": "Kanalid",
+    "adminUnratedLiveTvChannel": "Otse-TV",
+    "adminUnratedMovie": "Filmid",
+    "adminUnratedMusic": "Muusika",
+    "adminUnratedTrailer": "Treilerid",
+    "adminUnratedSeries": "Sarjad",
+    "adminAccessSchedules": "Juurdepääsu ajakavad",
+    "adminAccessSchedulesHint": "Luba juurdepääs ainult allpool määratud aegadel. Kui ajakava pole määratud, on juurdepääs lubatud kogu päeva.",
+    "adminAddSchedule": "Lisa ajakava",
+    "adminScheduleDay": "Päev",
+    "adminScheduleStart": "Algus",
+    "adminScheduleEnd": "Lõpp",
+    "adminDayEveryday": "Iga päev",
+    "adminDayWeekday": "Argipäev",
+    "adminDayWeekend": "Nädalavahetus",
+    "adminDaySunday": "Pühapäev",
+    "adminDayMonday": "Esmaspäev",
+    "adminDayTuesday": "Teisipäev",
+    "adminDayWednesday": "Kolmapäev",
+    "adminDayThursday": "Neljapäev",
+    "adminDayFriday": "Reede",
+    "adminDaySaturday": "Laupäev",
+    "adminAllowedTags": "Lubatud sildid",
+    "adminAllowedTagsHint": "Näidatakse ainult nende siltidega sisu. Kõige lubamiseks jäta tühjaks.",
+    "adminBlockedTags": "Blokeeritud sildid",
+    "adminBlockedTagsHint": "Nende siltidega sisu peidetakse selle kasutaja eest.",
+    "adminAddTag": "Lisa silt",
+    "adminEnabledDevices": "Lubatud seadmed",
+    "adminEnabledChannels": "Lubatud kanalid",
+    "adminAuthProvider": "Autentimisteenuse pakkuja",
+    "adminPasswordResetProvider": "Parooli lähtestamise pakkuja",
+    "adminLoginAttemptsBeforeLockout": "Ebaõnnestunud sisselogimiskatsete maksimum enne lukustamist",
+    "adminLoginAttemptsHint": "Vaikeväärtuse jaoks määra 0 või lukustamise keelamiseks -1.",
+    "adminSyncPlayAccess": "SyncPlay juurdepääs",
+    "adminSyncPlayCreateAndJoin": "Luba rühmade loomine ja nendega liitumine",
+    "adminSyncPlayJoin": "Luba rühmadega liitumine",
+    "adminSyncPlayNone": "Juurdepääs puudub",
+    "adminContentDeletionFolders": "Luba sisu kustutamine kaustadest",
+    "adminBackupOptionsTitle": "Loo varukoopia",
+    "adminBackupInclude": "Vali, mida varukoopiasse kaasata.",
+    "adminBackupDatabase": "Andmebaas",
+    "adminBackupDatabaseAlways": "Alati kaasatud",
+    "adminBackupMetadata": "Metaandmed",
+    "adminBackupSubtitles": "Subtiitrid",
+    "adminEditTuner": "Muuda tuunerit",
+    "adminTunerTypeM3u": "M3U tuuner",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Fail või URL",
+    "adminTunerIpAddress": "Tuuneri IP-aadress",
+    "adminTunerFriendlyName": "Kuvatav nimi",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Samaaegsete ühenduste piirang",
+    "adminTunerCountHelp": "Voogude maksimaalne arv, mida tuuner korraga lubab. Piiramatu jaoks määra 0.",
+    "adminTunerFallbackBitrate": "Voogedastuse varubitikiiruse ülempiir",
+    "adminTunerImportFavoritesOnly": "Impordi ainult lemmikkanalid",
+    "adminTunerAllowHwTranscoding": "Luba riistvaraline transkodeerimine",
+    "adminTunerAllowFmp4": "Luba fMP4 transkodeerimiskonteiner",
+    "adminTunerAllowStreamSharing": "Luba voo jagamine",
+    "adminTunerEnableStreamLooping": "Luba voo kordamine",
+    "adminTunerIgnoreDts": "Eira DTS-i",
+    "adminTunerReadAtNativeFramerate": "Loe sisendit algsel kaadrisagedusel",
+    "adminEditProvider": "Muuda pakkujat",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Fail või URL",
+    "adminXmltvMoviePrefix": "Filmide eesliide",
+    "adminXmltvMovieCategories": "Filmikategooriad",
+    "adminXmltvCategoriesHelp": "Eralda mitu kategooriat püstkriipsuga.",
+    "adminXmltvKidsCategories": "Lastesaadete kategooriad",
+    "adminXmltvNewsCategories": "Uudistekategooriad",
+    "adminXmltvSportsCategories": "Spordikategooriad",
+    "adminSdUsername": "Kasutajanimi",
+    "adminSdPassword": "Parool",
+    "adminSdCountry": "Riik",
+    "adminSdCountrySelect": "Vali riik",
+    "adminSdPostalCode": "Postiindeks",
+    "adminSdGetListings": "Hangi kavad",
+    "adminSdListings": "Kavad",
+    "adminEnableAllTuners": "Luba kõik tuunerid",
+    "adminTunerResetNotSupported": "See tuuneritüüp ei toeta lähtestamist.",
+    "adminMovieRecordingPath": "Filmisalvestiste tee",
+    "adminGuideDays": "Kavaandmete päevade arv",
+    "adminGuideDaysAuto": "Automaatne",
+    "adminGuideDaysValue": "{days} päeva",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Järeltöötlusrakenduse tee",
+    "adminRecordingPostProcessorArgs": "Järeltöötleja argumendid",
+    "adminSaveRecordingNfo": "Salvesta salvestise NFO metaandmed",
+    "adminSaveRecordingImages": "Salvesta salvestise pildid",
+    "adminLiveTvSectionTiming": "Ajastus",
+    "adminLiveTvSectionPaths": "Salvestamise teed",
+    "adminLiveTvSectionPostProcessing": "Järeltöötlus",
+    "adminGuideDaysDisplay": "Kavaandmed: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Värskenda kavaandmeid",
+    "adminGuideRefreshStarted": "Kavaandmete värskendamine alustatud",
+    "adminGuideRefreshUnavailable": "Kava värskendamise ülesanne pole selles serveris saadaval.",
+    "adminMetadataIdentify": "Tuvasta",
+    "adminBrandingSplashUpload": "Laadi pilt üles",
+    "adminBrandingSplashUploaded": "Avakuva uuendatud",
+    "adminBrandingSplashUploadFailed": "Avakuva üleslaadimine ebaõnnestus",
+    "adminBrandingSplashDeleted": "Avakuva eemaldatud",
+    "adminBrandingNoSplash": "Kohandatud avakuva puudub",
+    "adminPlaybackQsvDevice": "QSV seade",
+    "adminPlaybackEnhancedNvdec": "Luba täiustatud NVDEC dekooder",
+    "adminPlaybackPreferNativeDecoder": "Eelista süsteemi algset riistvaralist dekooderit",
+    "adminPlaybackColorDepth": "Riistvaralise dekodeerimise värvisügavus",
+    "adminPlaybackColorDepth10Hevc": "10-bitine HEVC dekodeerimine",
+    "adminPlaybackColorDepth10Vp9": "10-bitine VP9 dekodeerimine",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bitine dekodeerimine",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bitine dekodeerimine",
+    "adminPlaybackHwEncodingSection": "Riistvaraline kodeerimine",
+    "adminPlaybackAllowHevcEncoding": "Luba HEVC kodeerimine",
+    "adminPlaybackAllowAv1Encoding": "Luba AV1 kodeerimine",
+    "adminPlaybackIntelLowPowerH264": "Luba Inteli väikese energiatarbega H.264 kooder",
+    "adminPlaybackIntelLowPowerHevc": "Luba Inteli väikese energiatarbega HEVC kooder",
+    "adminPlaybackToneMapping": "Toonivastendus",
+    "adminPlaybackEnableTonemapping": "Luba toonivastendus",
+    "adminPlaybackEnableVppTonemapping": "Luba VPP toonivastendus",
+    "adminPlaybackEnableVtTonemapping": "Luba VideoToolboxi toonivastendus",
+    "adminPlaybackTonemappingAlgorithm": "Toonivastenduse algoritm",
+    "adminPlaybackTonemappingMode": "Toonivastenduse režiim",
+    "adminPlaybackTonemappingRange": "Toonivastenduse vahemik",
+    "adminPlaybackTonemappingDesat": "Toonivastenduse küllastuse vähendamine",
+    "adminPlaybackTonemappingPeak": "Toonivastenduse tipptase",
+    "adminPlaybackTonemappingParam": "Toonivastenduse parameeter",
+    "adminPlaybackVppTonemappingBrightness": "VPP toonivastenduse heledus",
+    "adminPlaybackVppTonemappingContrast": "VPP toonivastenduse kontrastsus",
+    "adminPlaybackPresetsQuality": "Eelseadistused ja kvaliteet",
+    "adminPlaybackEncoderPreset": "Koodri eelseadistus",
+    "adminPlaybackH264Crf": "H.264 kodeerimise CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) kodeerimise CRF",
+    "adminPlaybackDeinterlaceMethod": "Ülerealaotuse eemaldamise meetod",
+    "adminPlaybackDeinterlaceDoubleRate": "Kahekordista kaadrisagedus ülerealaotuse eemaldamisel",
+    "adminPlaybackAudioSection": "Heli",
+    "adminPlaybackEnableAudioVbr": "Luba heli VBR-kodeerimine",
+    "adminPlaybackDownmixBoost": "Heli allamiksimise võimendus",
+    "adminPlaybackDownmixAlgorithm": "Stereo allamiksimise algoritm",
+    "adminPlaybackMaxMuxingQueue": "Multipleksimisjärjekorra maksimaalne suurus",
+    "adminPlaybackAutoOption": "Automaatne",
+    "adminRunningTasks": "Töötavad ülesanded",
+    "adminNetworkingPublicHttpPort": "Avalik HTTP port",
+    "adminNetworkingRequireHttps": "Nõua HTTPS-i",
+    "adminNetworkingRequireHttpsHint": "Suuna kõik kaugpäringud HTTPS-ile. Ei avalda mõju, kui serveril pole kehtivat sertifikaati.",
+    "adminNetworkingCertPassword": "Sertifikaadi parool",
+    "adminNetworkingIpSettings": "IP-seaded",
+    "adminNetworkingEnableIpv4": "Luba IPv4",
+    "adminNetworkingEnableIpv6": "Luba IPv6",
+    "adminNetworkingAutoDiscovery": "Luba automaatne portide suunamine",
+    "adminNetworkingLocalSubnets": "Kohtvõrgud",
+    "adminNetworkingLocalSubnetsHint": "Komade või reavahetustega eraldatud loend IP-aadressidest või CIDR-alamvõrkudest, mida käsitletakse kohtvõrguna.",
+    "adminNetworkingPublishedUris": "Avaldatud serveri URI-d",
+    "adminNetworkingPublishedUriHint": "Seosta alamvõrk või aadress avaldatud URL-iga, nt all=https://example.com",
+    "adminPlaybackThrottleDelay": "Piiramise viivitus (sekundites)",
+    "adminPlaybackEnableSubtitleExtraction": "Luba subtiitrite eraldamine lennult",
+    "adminGeneralEnableSlowResponse": "Luba aeglase vastuse hoiatused",
+    "adminGeneralQuickConnect": "Luba Quick Connect",
+    "adminGeneralSectionServer": "Server",
+    "adminGeneralSectionMetadata": "Metaandmed",
+    "adminGeneralSectionPaths": "Teed",
+    "adminGeneralSectionPerformance": "Jõudlus",
+    "adminGeneralDisplayLanguage": "Eelistatud kuvakeel",
+    "offlineBannerTitle": "Oled võrguühenduseta",
+    "offlineBannerSubtitle": "Näitame sinu allalaadimisi",
+    "offlineBannerAction": "Allalaadimised",
+    "serverUnreachableBannerTitle": "Serveriga ei saa ühendust",
+    "serverUnreachableBannerSubtitle": "Esitame allalaadimistest, kuni ühendus taastub",
+    "contextMenuHideFromContinueWatching": "Peida jaotisest „Jätka vaatamist“",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Peida jaotisest „Järgmisena“",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Lisa kollektsiooni",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "ÜHENDUS",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Luba ise allkirjastatud sertifikaadid",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Usalda servereid, mis kasutavad ise allkirjastatud või privaatse CA TLS-sertifikaate. Luba ainult enda hallatavate serverite puhul. See keelab sertifikaatide kontrolli kõigil ühendustel.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Detailivaade",
+    "settingsDetailsScreenSubtitle": "Stiil, tausta hägustus ja vahekaartide käitumine",
+    "settingsShowSeerrButtonInNavigation": "Näita Seerri nuppu navigeerimisribal",
+    "settingsAlwaysExpandNavbarLabels": "Näita ülemisel navigeerimisribal alati tekstisilte",
+    "settingsMediaSegmentCountdown": "Meediasegmendi loendur",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Edenemisriba",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Taimer",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Puudub",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Hiljuti ilmunud: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Luba tunneldamine",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Täpsem seade. Suunab heli ja video seotud riistvaratee kaudu. Vaikimisi väljas, kuna see põhjustab mõnes seadmes heli- ja pildikatkestusi.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Näita meedia üksikasju",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Näita valitud üksuse üksikasju kogulehtede ülaosas.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Kas peita taustapildid sirvimisel?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Teemapood",
+    "themeStoreSubtitle": "Sirvi ja salvesta kogukonna teemasid",
+    "themeStoreDescription": "Salvesta teema, et kasutada seda nagu teisi salvestatud teemasid.",
+    "themeStoreEmpty": "Praegu pole ühtegi teemat saadaval.",
+    "themeStoreLoadFailed": "Teemapoodi ei õnnestunud laadida. Kontrolli ühendust ja proovi uuesti.",
+    "themeStoreSave": "Salvesta",
+    "themeStoreSaveAndApply": "Salvesta ja rakenda",
+    "themeStoreSaved": "Salvestatud",
+    "themeStoreInvalidMessage": "Seda teemat ei õnnestunud laadida.",
+    "themeStoreSavedMessage": "Teema „{themeName}“ salvestatud.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Avaekraani ridade kuvamine",
+    "homeRowSections": "Avaekraani ridade jaotised",
+    "homeRowToggles": "Avaekraani ridade lülitid",
+    "homeRowTogglesSubtitle": "Luba või keela kogupõhised avaekraani ridade kategooriad",
+    "homeRowTogglesDescription": "Luba järgmised lülitid, et read avaekraani jaotistes kuvataks.",
+    "displayPlaylistsRows": "Näita esitusloendite ridu",
+    "displayPlaylistsRowsSubtitle": "Näita esitusloendite ridu avaekraani jaotistes.",
+    "playlistsRowSorting": "Esitusloendite ridade sortimine",
+    "playlistsRowSortingDescription": "Sordi esitusloendite ridu lisamiskuupäeva, ilmumiskuupäeva, tähestiku ja muu järgi.",
+    "displayAudioRows": "Näita heliridu",
+    "displayAudioRowsSubtitle": "Näita heliridu avaekraani jaotistes.",
+    "audioRowsSorting": "Heliridade sortimine",
+    "audioRowsSortingDescription": "Sordi heliridu lisamiskuupäeva, ilmumiskuupäeva, tähestiku ja muu järgi.",
+    "audioPlaylists": "Heliesitusloendid",
+    "layout": "Paigutus",
+    "theme": "Teema",
+    "keyboard": "Klaviatuur",
+    "navButtons": "Nupud",
+    "rendering": "Renderdamine",
+    "mpvConfiguration": "MPV seadistus",
+    "externalPlayerAppDescription": "Määra väline mängija, et lubada pika vajutuse esitusvalik",
+    "crewContributionsSeerr": "Meeskonna panused (Seerr)",
+    "changeArtwork": "Muuda kujunduspilti",
+    "missing": "Puudub",
+    "clearAllArtworkButton": "Kas tühjendada kõik kujunduspildid?",
+    "clearAllArtworkWarning": "Kas oled kindel, et soovid kõik allalaaditud kujunduspildid tühjendada?",
+    "confirmClear": "Kinnita tühjendamine",
+    "confirmClearMessage": "Kas oled kindel, et soovid tühjendada selle: {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Kas laadida üles?",
+    "resolutionLabel": "Eraldusvõime: ",
+    "onlyShowInterfaceLanguage": "Näita ainult liidese keeles kujunduspilte",
+    "confirmClearAll": "Kinnita kõigi tühjendamine",
+    "imageUploadSuccess": "Pilt laaditi edukalt üles!",
+    "imageUploadFailed": "Pildi üleslaadimine ebaõnnestus: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Pildi määramine ebaõnnestus: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Pildi kustutamine ebaõnnestus: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Kõigi kujunduspiltide tühjendamine ebaõnnestus: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Jah",
+    "posterCategory": "Plakat",
+    "backdropsCategory": "Taustapildid",
+    "bannerCategory": "Bänner",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Pisipilt",
+    "artCategory": "Kujunduspilt",
+    "discArtCategory": "Plaadi kujundus",
+    "screenshotCategory": "Ekraanipilt",
+    "boxCoverCategory": "Karbi esikaas",
+    "boxRearCoverCategory": "Karbi tagakaas",
+    "menuArtCategory": "Menüü kujundus",
+    "confirmItemPoster": "plakat",
+    "confirmItemBackdrop": "taustapilt",
+    "confirmItemBanner": "bänner",
+    "confirmItemLogo": "logo",
+    "confirmItemThumbnail": "pisipilt",
+    "confirmItemArt": "kujunduspilt",
+    "confirmItemDiscArt": "plaadi kujundus",
+    "confirmItemScreenshot": "ekraanipilt",
+    "confirmItemBoxCover": "karbi esikaas",
+    "confirmItemBoxRearCover": "karbi tagakaas",
+    "confirmItemMenuArt": "menüü kujundus",
+    "resolutionAll": "Kõik",
+    "resolutionHigh": "Kõrge (1080p+)",
+    "resolutionMedium": "Keskmine (720p)",
+    "resolutionLow": "Madal (<720p)",
+    "sources": "Allikad",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Peatükid",
+    "audiobookBookmarks": "Järjehoidjad",
+    "audiobookNotes": "Märkmed",
+    "audiobookQueue": "Järjekord",
+    "audiobookTimeline": "Ajajoon",
+    "audiobookTimelineEmpty": "Ajajoon on tühi",
+    "audiobookWholeBook": "Kogu raamat",
+    "audiobookFocusedTimeline": "Kitsendatud ajajoon",
+    "audiobookExportBookmarks": "Ekspordi järjehoidjad",
+    "audiobookExportNotes": "Ekspordi märkmed",
+    "audiobookExportAll": "Ekspordi kõik",
+    "audiobookExportSuccess": "Eksporditud asukohta {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Eksportimine ebaõnnestus: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Laulusõnad",
+    "audiobookAddBookmark": "Lisa järjehoidja",
+    "audiobookAddNote": "Lisa märge",
+    "audiobookEditNote": "Muuda märget",
+    "audiobookNoteHint": "Kirjuta selle koha kohta märge",
+    "audiobookSleepTimer": "Unetaimer",
+    "audiobookSleepOff": "Väljas",
+    "audiobookSleepEndOfChapter": "Peatüki lõpp",
+    "audiobookSleepCustom": "Kohandatud",
+    "audiobookSleepRemaining": "{remaining} jäänud",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Esituskiirus",
+    "audiobookRemainingTime": "Jäänud",
+    "audiobookElapsedTime": "Möödunud",
+    "audiobookSkipBackSeconds": "Tagasi {seconds} s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Edasi {seconds} s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Eelmine peatükk",
+    "audiobookNextChapter": "Järgmine peatükk",
+    "audiobookChapterIndicator": "Peatükk {current}/{total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Peatükke pole",
+    "audiobookNoBookmarks": "Järjehoidjaid pole veel",
+    "audiobookNoNotes": "Märkmeid pole veel",
+    "audiobookBookmarkAdded": "Järjehoidja lisatud kohta {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Lähtesta kiirusele 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Salvesta",
+    "audiobookCancel": "Tühista",
+    "audiobookDelete": "Kustuta",
+    "subtitlePreferences": "Subtiitrite eelistused",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Muuda subtiitrite režiime, vaikekeeli, välimust ja renderdamisvalikuid.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Subtiitrite renderdamine",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Kuvamisvalikud",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Ilmumiskuupäev (kasvav)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Ilmumiskuupäev (kahanev)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Rühmita panused",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Rühmita mitu rolli",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Kogu kirjutusõiguse hoiatus",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Kuidas seda parandada:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Anna Jellyfini teenuse kasutajale (nt jellyfin või Dockeri PUID/PGID) kirjutusõigused serveris asuvatele meediakogu kaustadele.\n\n2. Või mine Jellyfini juhtpaneelile -> Kogud, muuda seda kogu ja keela „Salvesta kujunduspildid meediakaustadesse“, et kujunduspilte hoitaks Jellyfini sisemises andmebaasis.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Sulge",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Sinu kogu '{libraryName}' on seadistatud salvestama kujunduspilte otse meediakaustadesse (valik „Salvesta kujunduspildid meediakaustadesse“ on lubatud). Jellyfin kontrollis aga kirjutusõigust ja tal pole luba sellesse kataloogi faile kirjutada:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Näib, et Jellyfinil ei õnnestunud kujunduspilti uuendada. Sinu kogu on seadistatud salvestama kujunduspilte otse meediakaustadesse (valik „Salvesta kujunduspildid meediakaustadesse“ on lubatud). See viga tekib tavaliselt siis, kui Jellyfini serveriprotsessil pole luba sinu meediakataloogidesse faile kirjutada.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Välised loendid",
+    "replay": "Esita uuesti",
+    "fileInformation": "Faili teave",
+    "fileSizeFormat": "Suurus: {size}  •  Vorming: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Näita kõiki ({count}) helirada",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Näita kõiki ({count}) subtiitrirada",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Otseesituse toe kontrollimine...",
+    "directPlayCapabilityLabel": "Otseesituse tugi: ",
+    "forced": "Sunnitud",
+    "transcodeContainerNotSupported": "Mängija ei toeta konteinerivormingut.",
+    "transcodeVideoCodecNotSupported": "Videokoodekit ei toetata.",
+    "transcodeAudioCodecNotSupported": "Helikoodekit ei toetata.",
+    "transcodeSubtitleCodecNotSupported": "Subtiitrivormingut ei toetata (nõuab pildile põletamist).",
+    "transcodeAudioProfileNotSupported": "Heliprofiili ei toetata.",
+    "transcodeVideoProfileNotSupported": "Videoprofiili ei toetata.",
+    "transcodeVideoLevelNotSupported": "Videotaset ei toetata.",
+    "transcodeVideoResolutionNotSupported": "See seade ei toeta video eraldusvõimet.",
+    "transcodeVideoBitDepthNotSupported": "Video bitisügavust ei toetata.",
+    "transcodeVideoFramerateNotSupported": "Video kaadrisagedust ei toetata.",
+    "transcodeContainerBitrateExceedsLimit": "Faili bitikiirus ületab mängija voogedastuse piiri.",
+    "transcodeVideoBitrateExceedsLimit": "Video bitikiirus ületab voogedastuse piiri.",
+    "transcodeAudioBitrateExceedsLimit": "Heli bitikiirus ületab voogedastuse piiri.",
+    "transcodeAudioChannelsNotSupported": "Helikanalite arvu ei toetata.",
+    "sortAlphabetical": "Tähestikuline",
+    "sortReleaseAscending": "Ilmumisjärjekord (kasvav)",
+    "sortReleaseDescending": "Ilmumisjärjekord (kahanev)",
+    "sortCustomDragDrop": "Kohandatud (lohistamisega)",
+    "playlistSortOptions": "Esitusloendi sortimisvalikud",
+    "resetSort": "Lähtesta sortimine",
+    "rewatchSeasonEpisode": "Vaata uuesti H{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Vaata esitusloendit uuesti",
+    "noSubtitlesFound": "Subtiitreid ei leitud.",
+    "adminControls": "Administraatori juhtnupud",
+    "impellerRendering": "Renderdusmootor (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller on Flutteri moodne GPU-renderdaja, mis annab sujuvamad animatsioonid ja vähem tõrkeid. Mõnes TV-boksis ja vanemas GPU-s võib see põhjustada häireid või musta pilti; sel juhul lülita see välja. Automaatne valib sinu seadme jaoks parima vaikeväärtuse. Muudatuse rakendamiseks käivita Moonfin uuesti.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automaatne",
+    "impellerOn": "Sees",
+    "impellerOff": "Väljas",
+    "impellerRestartTitle": "Vajalik on taaskäivitus",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Renderdusmootori muutmiseks tuleb Moonfin taaskäivitada. Sulge rakendus nüüd ja ava see uuesti, et muudatus rakenduks.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Sulge rakendus nüüd",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Värskenda kogu",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Värskenda kõiki kogusid",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Lisamiskuupäev (vanimad enne)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Lisamiskuupäev (uusimad enne)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Tähestikuline (A–Ü)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Tähestikuline (Ü–A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Serveri analüütika laadimine... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Sama mis lähtefailil",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb 250 parimat filmi",
+    "imdbTop250TvShows": "IMDb 250 parimat sarja",
+    "imdbMostPopularMovies": "IMDb populaarseimad filmid",
+    "imdbMostPopularTvShows": "IMDb populaarseimad sarjad",
+    "imdbLowestRatedMovies": "IMDb madalaima hinnanguga filmid",
+    "imdbTopEnglishMovies": "IMDb parimad ingliskeelsed filmid",
+    "adminLibTrickplayExtraction": "Luba Trickplay piltide eraldamine",
+    "adminLibTrickplayDuringScan": "Eralda Trickplay pildid kogu skannimise ajal",
+    "adminLibSaveTrickplayWithMedia": "Salvesta Trickplay pildid meediakaustadesse",
+    "adminBackupTrickplay": "Trickplay pildid"
 }

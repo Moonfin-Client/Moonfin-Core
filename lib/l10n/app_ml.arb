@@ -1,6 +1,6 @@
 {
     "@@locale": "ml",
-    "appTitle": "മൂൺഫിൻ",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Connecting to {serverName}",
+    "connectingToServer": "{serverName} ലേക്ക് കണക്റ്റ് ചെയ്യുന്നു",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "ദ്രുത കണക്ഷൻ",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+    "quickConnectUnavailable": "QuickConnect ലഭ്യമല്ല: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect ലഭ്യമല്ല ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Moonfin പതിപ്പ് {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -119,7 +119,7 @@
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+    "removeServerConfirmation": "നിങ്ങളുടെ സെർവറുകളിൽ നിന്ന് \"{serverName}\" നീക്കം ചെയ്യണോ?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "മൂൺഫിൻ",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -240,7 +240,7 @@
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
-    "unableToConnectTo": "Unable to connect to {target}",
+    "unableToConnectTo": "{target} ലേക്ക് കണക്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല",
     "@unableToConnectTo": {
         "description": "Error when connection to a specific server or address fails",
         "placeholders": {
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "പരമ്പര",
+    "series": "പരമ്പരകൾ",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "വീട്",
+    "home": "ഹോം",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -349,7 +349,7 @@
     "@noGenresFound": {
         "description": "Empty state when no genres are available"
     },
-    "failedToLoadFolderError": "Failed to load folder: {error}",
+    "failedToLoadFolderError": "ഫോൾഡർ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToLoadFolderError": {
         "description": "Error when a folder cannot be loaded",
         "placeholders": {
@@ -362,7 +362,7 @@
     "@thisFolderIsEmpty": {
         "description": "Empty state for folder browse screen"
     },
-    "itemCountLabel": "{count} items",
+    "itemCountLabel": "{count} ഇനങ്ങൾ",
     "@itemCountLabel": {
         "description": "Subtitle showing number of items in a folder or collection",
         "placeholders": {
@@ -387,7 +387,7 @@
     "@favorites": {
         "description": "Favorites section heading and filter label"
     },
-    "totalCountItems": "{count} Items",
+    "totalCountItems": "{count} ഇനങ്ങൾ",
     "@totalCountItems": {
         "description": "Header showing total item count",
         "placeholders": {
@@ -444,7 +444,7 @@
     "@extraLarge": {
         "description": "Size option: extra large"
     },
-    "libraryGenresTitle": "{name} — Genres",
+    "libraryGenresTitle": "{name} — വിഭാഗങ്ങൾ",
     "@libraryGenresTitle": {
         "description": "Header title showing library name with genres suffix",
         "placeholders": {
@@ -497,7 +497,7 @@
     "@justNow": {
         "description": "Relative time for less than a minute ago"
     },
-    "minutesAgo": "{count}m ago",
+    "minutesAgo": "{count}മി മുമ്പ്",
     "@minutesAgo": {
         "description": "Relative time in minutes",
         "placeholders": {
@@ -506,7 +506,7 @@
             }
         }
     },
-    "hoursAgo": "{count}h ago",
+    "hoursAgo": "{count}മ മുമ്പ്",
     "@hoursAgo": {
         "description": "Relative time in hours",
         "placeholders": {
@@ -515,7 +515,7 @@
             }
         }
     },
-    "daysAgo": "{count}d ago",
+    "daysAgo": "{count}ദി മുമ്പ്",
     "@daysAgo": {
         "description": "Relative time in days",
         "placeholders": {
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "അപേക്ഷിക്കുക",
+    "apply": "പ്രയോഗിക്കുക",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -560,7 +560,7 @@
     "@librivoxDescription": {
         "description": "Subtitle for audiobook discovery section"
     },
-    "titlesCount": "{count} titles",
+    "titlesCount": "{count} ശീർഷകങ്ങൾ",
     "@titlesCount": {
         "description": "Label showing number of titles",
         "placeholders": {
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "പുനരാരംഭിക്കുക",
+    "resume": "തുടരുക",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -669,7 +669,7 @@
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
-    "authorsCount": "{count} authors",
+    "authorsCount": "{count} രചയിതാക്കൾ",
     "@authorsCount": {
         "description": "Metric pill showing author count",
         "placeholders": {
@@ -678,7 +678,7 @@
             }
         }
     },
-    "genresCount": "{count} genres",
+    "genresCount": "{count} വിഭാഗങ്ങൾ",
     "@genresCount": {
         "description": "Metric pill showing genre count",
         "placeholders": {
@@ -687,7 +687,7 @@
             }
         }
     },
-    "percentCompleted": "{percent}% completed",
+    "percentCompleted": "{percent}% പൂർത്തിയായി",
     "@percentCompleted": {
         "description": "Reading progress percentage label",
         "placeholders": {
@@ -712,7 +712,7 @@
     "@bookmarksAndProgress": {
         "description": "Panel header for bookmarks section"
     },
-    "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+    "titlesArrangedForBrowsing": "വായന-ആദ്യ ബ്രൗസിംഗിനായി ക്രമീകരിച്ച {count} ശീർഷകങ്ങൾ.",
     "@titlesArrangedForBrowsing": {
         "description": "Panel subtitle showing total titles",
         "placeholders": {
@@ -761,7 +761,7 @@
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
-    "noLabelFound": "No {label} found",
+    "noLabelFound": "{label} ഒന്നും കണ്ടെത്തിയില്ല",
     "@noLabelFound": {
         "description": "Empty state with dynamic label like books or audiobooks",
         "placeholders": {
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "നിരീക്ഷിച്ചു",
+    "watched": "കണ്ടവ",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "കാണാത്തത്",
+    "unwatched": "കാണാത്തവ",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -858,7 +858,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "{count} sections",
+    "sectionCountLabel": "{count} വിഭാഗങ്ങൾ",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
@@ -867,7 +867,7 @@
             }
         }
     },
-    "firstPublished": "First published {year}",
+    "firstPublished": "ആദ്യം പ്രസിദ്ധീകരിച്ചത് {year}",
     "@firstPublished": {
         "description": "Publication year for a book",
         "placeholders": {
@@ -888,7 +888,7 @@
     "@all": {
         "description": "Filter option for showing all items"
     },
-    "booksCount": "{count} books",
+    "booksCount": "{count} പുസ്തകങ്ങൾ",
     "@booksCount": {
         "description": "Label showing number of books in a discover row",
         "placeholders": {
@@ -905,7 +905,7 @@
     "@audiobookDetails": {
         "description": "AppBar title for LibriVox audiobook detail screen"
     },
-    "authorsCountTitle": "{count} Authors",
+    "authorsCountTitle": "{count} രചയിതാക്കൾ",
     "@authorsCountTitle": {
         "description": "AppBar title for LibriVox authors list screen",
         "placeholders": {
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 ഓഡിയോബുക്ക്} other{{count} ഓഡിയോബുക്കുകൾ}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1023,7 +1023,7 @@
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
-    "published": "Published {year}",
+    "published": "പ്രസിദ്ധീകരിച്ചത് {year}",
     "@published": {
         "description": "Publication year for an author book tile",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 സീസൺ} other{{count} സീസണുകൾ}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1045,7 +1045,7 @@
             }
         }
     },
-    "endsAt": "Ends at {time}",
+    "endsAt": "{time} ന് അവസാനിക്കുന്നു",
     "@endsAt": {
         "description": "Label showing when media will end",
         "placeholders": {
@@ -1066,7 +1066,7 @@
     "@read": {
         "description": "Action button label to start reading a book"
     },
-    "resumeFrom": "Resume from {position}",
+    "resumeFrom": "{position} ൽ നിന്ന് പുനരാരംഭിക്കുക",
     "@resumeFrom": {
         "description": "Action button label showing resume position",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "കളിക്കുക",
+    "play": "പ്ലേ ചെയ്യുക",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "കാസ്റ്റ്",
+    "cast": "കാസ്റ്റ് ചെയ്യുക",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1199,7 +1199,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+    "deleteDownloadedTracksMessage": "\"{title}\" നായി ഡൗൺലോഡ് ചെയ്ത ട്രാക്കുകൾ ഇല്ലാതാക്കണോ?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1220,7 +1220,7 @@
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
-    "noItemsLoaded": "No {itemLabel} loaded",
+    "noItemsLoaded": "{itemLabel} ഒന്നും ലോഡ് ചെയ്തിട്ടില്ല",
     "@noItemsLoaded": {
         "description": "Message when no items are loaded for download",
         "placeholders": {
@@ -1229,7 +1229,7 @@
             }
         }
     },
-    "downloadingTitle": "Downloading {title} ({count} items)...",
+    "downloadingTitle": "{title} ഡൗൺലോഡ് ചെയ്യുന്നു ({count} ഇനങ്ങൾ)...",
     "@downloadingTitle": {
         "description": "Snackbar message when downloading album tracks",
         "placeholders": {
@@ -1241,7 +1241,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+    "deleteConfirmMessage": "സെർവറിൽ നിന്ന് \"{name}\" ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ? ഈ പ്രവർത്തനം പഴയപടിയാക്കാൻ കഴിയില്ല.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -1258,7 +1258,7 @@
     "@noPlayableTrailerFound": {
         "description": "Error message when no trailer can be played"
     },
-    "unsupportedBookFormat": "Unsupported book format: .{extension}",
+    "unsupportedBookFormat": "പിന്തുണയ്ക്കാത്ത പുസ്തക ഫോർമാറ്റ്: .{extension}",
     "@unsupportedBookFormat": {
         "description": "Error message for unsupported book file format",
         "placeholders": {
@@ -1295,7 +1295,7 @@
     "@selectedSubtitleInvalid": {
         "description": "Error message when a selected subtitle is invalid"
     },
-    "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+    "subtitleDownloadedSelected": "സബ്ടൈറ്റിൽ ഡൗൺലോഡ് ചെയ്ത് തിരഞ്ഞെടുത്തു: {name}",
     "@subtitleDownloadedSelected": {
         "description": "Success message after downloading and selecting a subtitle",
         "placeholders": {
@@ -1308,7 +1308,7 @@
     "@subtitleDownloadedPending": {
         "description": "Message when subtitle was downloaded but not yet visible"
     },
-    "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+    "noRemoteSubtitlesFound": "{language} നായി റിമോട്ട് സബ്ടൈറ്റിലുകളൊന്നും കണ്ടെത്തിയില്ല.",
     "@noRemoteSubtitlesFound": {
         "description": "Message when no remote subtitles were found",
         "placeholders": {
@@ -1321,7 +1321,7 @@
     "@selectVersion": {
         "description": "Dialog title for selecting a media version"
     },
-    "versionNumber": "Version {number}",
+    "versionNumber": "പതിപ്പ് {number}",
     "@versionNumber": {
         "description": "Default label for a media version",
         "placeholders": {
@@ -1350,7 +1350,7 @@
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
-    "downloadingItem": "Downloading {name} ({quality})...",
+    "downloadingItem": "{name} ഡൗൺലോഡ് ചെയ്യുന്നു ({quality})...",
     "@downloadingItem": {
         "description": "Snackbar message when downloading an item",
         "placeholders": {
@@ -1366,7 +1366,7 @@
     "@deleteDownloadedFiles": {
         "description": "Dialog title for deleting downloaded files"
     },
-    "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+    "deleteLocalFilesMessage": "{typeLabel} നായുള്ള ലോക്കൽ ഫയലുകൾ ഇല്ലാതാക്കണോ?\n\nഇത് സ്റ്റോറേജ് സ്ഥലം ഒഴിവാക്കും. നിങ്ങൾക്ക് പിന്നീട് വീണ്ടും ഡൗൺലോഡ് ചെയ്യാം.",
     "@deleteLocalFilesMessage": {
         "description": "Confirmation message for deleting local downloaded files",
         "placeholders": {
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "എഴുത്തുകാർ",
+    "writers": "തിരക്കഥാകൃത്തുക്കൾ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1399,7 +1399,7 @@
     "@studio": {
         "description": "Metadata label for studio"
     },
-    "studioMoreCount": "+{count} more",
+    "studioMoreCount": "+{count} കൂടുതൽ",
     "@studioMoreCount": {
         "description": "Label showing additional studio count",
         "placeholders": {
@@ -1408,7 +1408,7 @@
             }
         }
     },
-    "totalEpisodes": "{count} Episodes",
+    "totalEpisodes": "{count} എപ്പിസോഡുകൾ",
     "@totalEpisodes": {
         "description": "Season progress label showing total episodes",
         "placeholders": {
@@ -1429,7 +1429,7 @@
             }
         }
     },
-    "episodeLabel": "Episode {number}",
+    "episodeLabel": "എപ്പിസോഡ് {number}",
     "@episodeLabel": {
         "description": "Label for an episode number",
         "placeholders": {
@@ -1438,7 +1438,7 @@
             }
         }
     },
-    "chapterNumber": "Chapter {number}",
+    "chapterNumber": "അധ്യായം {number}",
     "@chapterNumber": {
         "description": "Default name for a chapter",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 ട്രാക്ക്} other{{count} ട്രാക്കുകൾ}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 അധ്യായം} other{{count} അധ്യായങ്ങൾ}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1465,7 +1465,7 @@
             }
         }
     },
-    "born": "Born {date}",
+    "born": "ജനനം {date}",
     "@born": {
         "description": "Person birth date label",
         "placeholders": {
@@ -1474,7 +1474,7 @@
             }
         }
     },
-    "died": "Died {date}",
+    "died": "മരണം {date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1483,7 +1483,7 @@
             }
         }
     },
-    "age": "Age {age}",
+    "age": "വയസ്സ് {age}",
     "@age": {
         "description": "Person age label",
         "placeholders": {
@@ -1500,11 +1500,11 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "ഷഫിൾ ചെയ്യുക",
+    "shuffle": "ഷഫിൾ",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
-    "downloadsCount": "{count} downloads",
+    "downloadsCount": "{count} ഡൗൺലോഡുകൾ",
     "@downloadsCount": {
         "description": "Subtitle showing number of downloads for a remote subtitle",
         "placeholders": {
@@ -1534,7 +1534,7 @@
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
-    "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
+    "remoteSubtitlePermissionError": "റിമോട്ട് സബ്ടൈറ്റിൽ {action} ന് ഈ ഉപയോക്താവിന് Jellyfin സബ്ടൈറ്റിൽ മാനേജ്മെന്റ് അനുമതി ആവശ്യമാണ്.",
     "@remoteSubtitlePermissionError": {
         "description": "Error message when user lacks subtitle management permission",
         "placeholders": {
@@ -1543,7 +1543,7 @@
             }
         }
     },
-    "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
+    "remoteSubtitleNotFoundError": "റിമോട്ട് സബ്ടൈറ്റിൽ {action} നായി ഈ ഇനം സെർവറിൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല.",
     "@remoteSubtitleNotFoundError": {
         "description": "Error message when item not found for subtitle operation",
         "placeholders": {
@@ -1552,7 +1552,7 @@
             }
         }
     },
-    "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
+    "remoteSubtitleDetailError": "റിമോട്ട് സബ്ടൈറ്റിൽ {action} പരാജയപ്പെട്ടു: {detail}",
     "@remoteSubtitleDetailError": {
         "description": "Error message with detail for subtitle operation",
         "placeholders": {
@@ -1564,7 +1564,7 @@
             }
         }
     },
-    "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
+    "remoteSubtitleHttpError": "റിമോട്ട് സബ്ടൈറ്റിൽ {action} പരാജയപ്പെട്ടു (HTTP {status}).",
     "@remoteSubtitleHttpError": {
         "description": "Error message with HTTP status for subtitle operation",
         "placeholders": {
@@ -1576,7 +1576,7 @@
             }
         }
     },
-    "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
+    "remoteSubtitleGenericError": "റിമോട്ട് സബ്ടൈറ്റിലുകൾ {action} ചെയ്യാൻ കഴിഞ്ഞില്ല.",
     "@remoteSubtitleGenericError": {
         "description": "Generic error message for subtitle operation",
         "placeholders": {
@@ -1585,7 +1585,7 @@
             }
         }
     },
-    "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+    "deleteSeriesFiles": "\"{name}\" നായി ഡൗൺലോഡ് ചെയ്ത എല്ലാ എപ്പിസോഡുകളും",
     "@deleteSeriesFiles": {
         "description": "Type label for series file deletion",
         "placeholders": {
@@ -1630,7 +1630,7 @@
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
-    "castActionFailed": "{label} action failed: {error}",
+    "castActionFailed": "{label} പ്രവർത്തനം പരാജയപ്പെട്ടു: {error}",
     "@castActionFailed": {
         "description": "Error when a cast action fails",
         "placeholders": {
@@ -1642,7 +1642,7 @@
             }
         }
     },
-    "failedToSetCastVolume": "Failed to set cast volume: {error}",
+    "failedToSetCastVolume": "കാസ്റ്റ് വോളിയം സജ്ജമാക്കാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToSetCastVolume": {
         "description": "Error when setting cast volume fails",
         "placeholders": {
@@ -1651,7 +1651,7 @@
             }
         }
     },
-    "castControlsTitle": "{label} Controls",
+    "castControlsTitle": "{label} നിയന്ത്രണങ്ങൾ",
     "@castControlsTitle": {
         "description": "Title for cast controls dialog",
         "placeholders": {
@@ -1676,7 +1676,7 @@
     "@syncPosition": {
         "description": "Cast control action to sync playback position"
     },
-    "stopCast": "Stop {label}",
+    "stopCast": "{label} നിർത്തുക",
     "@stopCast": {
         "description": "Cast control action to stop casting",
         "placeholders": {
@@ -1689,7 +1689,7 @@
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
-    "trackNumber": "Track {number}",
+    "trackNumber": "ട്രാക്ക് {number}",
     "@trackNumber": {
         "description": "Fallback track name in queue",
         "placeholders": {
@@ -1714,7 +1714,7 @@
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
-    "secondsCount": "{seconds} seconds",
+    "secondsCount": "{seconds} സെക്കൻഡുകൾ",
     "@secondsCount": {
         "description": "Double-tap skip overlay duration label",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "കളിക്കാരൻ",
+    "player": "പ്ലെയർ",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1882,7 +1882,7 @@
     "@embedded": {
         "description": "Subtitle type label for embedded subtitles"
     },
-    "castSessionError": "{protocol} session error",
+    "castSessionError": "{protocol} സെഷൻ പിശക്",
     "@castSessionError": {
         "description": "Fallback error message for cast session errors",
         "placeholders": {
@@ -1891,7 +1891,7 @@
             }
         }
     },
-    "failedToLoadBookDetails": "Failed to load book details: {error}",
+    "failedToLoadBookDetails": "പുസ്തക വിശദാംശങ്ങൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToLoadBookDetails": {
         "description": "Error when loading book details fails",
         "placeholders": {
@@ -1904,7 +1904,7 @@
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
-    "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+    "formatCannotRenderInApp": "ഈ ഫോർമാറ്റ് (.{extension}) ഇതുവരെ ആപ്പിനുള്ളിൽ കാണിക്കാൻ കഴിയില്ല.",
     "@formatCannotRenderInApp": {
         "description": "Fallback message for unsupported document format",
         "placeholders": {
@@ -1921,7 +1921,7 @@
     "@couldNotOpenExternalViewer": {
         "description": "Error when external viewer fails to open"
     },
-    "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
+    "failedToOpenInAppReader": "ആപ്പിനുള്ളിലെ റീഡർ തുറക്കാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToOpenInAppReader": {
         "description": "Error when in-app reader fails to open",
         "placeholders": {
@@ -1930,7 +1930,7 @@
             }
         }
     },
-    "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
+    "bookmarkAlreadySaved": "{label} ൽ ബുക്ക്മാർക്ക് ഇതിനകം സംരക്ഷിച്ചു.",
     "@bookmarkAlreadySaved": {
         "description": "Snackbar when bookmark already exists",
         "placeholders": {
@@ -1939,7 +1939,7 @@
             }
         }
     },
-    "bookmarkAdded": "Bookmark added: {label}",
+    "bookmarkAdded": "ബുക്ക്മാർക്ക് ചേർത്തു: {label}",
     "@bookmarkAdded": {
         "description": "Snackbar confirming bookmark was added",
         "placeholders": {
@@ -1956,7 +1956,7 @@
     "@noTableOfContentsAvailable": {
         "description": "Empty state for table of contents panel"
     },
-    "pageLabel": "Page {number}",
+    "pageLabel": "പേജ് {number}",
     "@pageLabel": {
         "description": "Page number label in TOC or position",
         "placeholders": {
@@ -1973,7 +1973,7 @@
     "@bookReader": {
         "description": "Default title for book reader screen"
     },
-    "formatExtension": "Format: .{extension}",
+    "formatExtension": "ഫോർമാറ്റ്: .{extension}",
     "@formatExtension": {
         "description": "Chip label showing file format",
         "placeholders": {
@@ -1982,7 +1982,7 @@
             }
         }
     },
-    "percentRead": "{percent}% read",
+    "percentRead": "{percent}% വായിച്ചു",
     "@percentRead": {
         "description": "Chip label showing reading progress",
         "placeholders": {
@@ -2015,7 +2015,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "Reset Zoom ({zoom}x)",
+    "resetZoom": "സൂം പുനഃസജ്ജമാക്കുക ({zoom}x)",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2048,7 +2048,7 @@
     "@markedAsUnread": {
         "description": "Snackbar confirming item marked as unread"
     },
-    "failedToUpdateReadState": "Failed to update read state: {error}",
+    "failedToUpdateReadState": "വായന നില അപ്ഡേറ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToUpdateReadState": {
         "description": "Error when marking read/unread fails",
         "placeholders": {
@@ -2093,7 +2093,7 @@
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
-    "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+    "platformCannotHostDocumentEngine": "ഈ പ്ലാറ്റ്ഫോമിന് {extension} ഫയലുകൾക്കായി എംബഡഡ് ഡോക്യുമെന്റ് എഞ്ചിൻ ഹോസ്റ്റ് ചെയ്യാൻ കഴിയില്ല.",
     "@platformCannotHostDocumentEngine": {
         "description": "Fallback description when platform lacks document engine",
         "placeholders": {
@@ -2146,7 +2146,7 @@
     "@guideTimeline": {
         "description": "Section title for the TV guide timeline"
     },
-    "failedToLoadGuide": "Failed to load guide: {error}",
+    "failedToLoadGuide": "ഗൈഡ് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToLoadGuide": {
         "description": "Error when guide data fails to load",
         "placeholders": {
@@ -2195,7 +2195,7 @@
     "@close": {
         "description": "Button label to close a dialog"
     },
-    "failedToPlayChannel": "Failed to play {name}",
+    "failedToPlayChannel": "{name} പ്ലേ ചെയ്യാൻ കഴിഞ്ഞില്ല",
     "@failedToPlayChannel": {
         "description": "Error when live TV channel playback fails",
         "placeholders": {
@@ -2232,7 +2232,7 @@
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+    "cancelScheduledRecordingOf": "\"{name}\" ന്റെ ഷെഡ്യൂൾ ചെയ്ത റെക്കോർഡിംഗ് റദ്ദാക്കണോ?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2269,7 +2269,7 @@
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
-    "stopRecordingName": "Stop recording \"{name}\"?",
+    "stopRecordingName": "\"{name}\" റെക്കോർഡിംഗ് നിർത്തണോ?",
     "@stopRecordingName": {
         "description": "Confirmation message for stopping a series recording",
         "placeholders": {
@@ -2290,7 +2290,7 @@
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
-    "noResultsForQuery": "No results for \"{query}\"",
+    "noResultsForQuery": "\"{query}\" നായി ഫലങ്ങളൊന്നുമില്ല",
     "@noResultsForQuery": {
         "description": "Shown when search returns no results",
         "placeholders": {
@@ -2299,7 +2299,7 @@
             }
         }
     },
-    "searchFailedError": "Search failed: {error}",
+    "searchFailedError": "തിരയൽ പരാജയപ്പെട്ടു: {error}",
     "@searchFailedError": {
         "description": "Shown when search encounters an error",
         "placeholders": {
@@ -2344,7 +2344,7 @@
     "@deleteDownload": {
         "description": "Dialog title for deleting a download"
     },
-    "removeItemAndFiles": "Remove \"{name}\" and its files?",
+    "removeItemAndFiles": "\"{name}\" ഉം അതിന്റെ ഫയലുകളും നീക്കം ചെയ്യണോ?",
     "@removeItemAndFiles": {
         "description": "Confirmation to delete a downloaded item and its files",
         "placeholders": {
@@ -2353,7 +2353,7 @@
             }
         }
     },
-    "tracksCount": "{count} tracks",
+    "tracksCount": "{count} ട്രാക്കുകൾ",
     "@tracksCount": {
         "description": "Number of tracks in an album",
         "placeholders": {
@@ -2370,7 +2370,7 @@
     "@playAlbum": {
         "description": "Button to play an album"
     },
-    "failedToLoadAlbum": "Failed to load album: {error}",
+    "failedToLoadAlbum": "ആൽബം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
     "@failedToLoadAlbum": {
         "description": "Error when loading an album fails",
         "placeholders": {
@@ -2379,7 +2379,7 @@
             }
         }
     },
-    "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+    "noDownloadedTracksForAlbum": "{name} നായി ഡൗൺലോഡ് ചെയ്ത ട്രാക്കുകളൊന്നും കണ്ടെത്തിയില്ല.",
     "@noDownloadedTracksForAlbum": {
         "description": "Shown when an album has no downloaded tracks",
         "placeholders": {
@@ -2404,7 +2404,7 @@
     "@deleteEpisode": {
         "description": "Dialog title for deleting an episode"
     },
-    "removeName": "Remove \"{name}\"?",
+    "removeName": "\"{name}\" നീക്കം ചെയ്യണോ?",
     "@removeName": {
         "description": "Confirmation to remove an item by name",
         "placeholders": {
@@ -2413,7 +2413,7 @@
             }
         }
     },
-    "durationMinutes": "{minutes} min",
+    "durationMinutes": "{minutes} മിനി",
     "@durationMinutes": {
         "description": "Duration in minutes",
         "placeholders": {
@@ -2434,7 +2434,7 @@
             }
         }
     },
-    "episodeNumber": "Episode {number}",
+    "episodeNumber": "എപ്പിസോഡ് {number}",
     "@episodeNumber": {
         "description": "Episode label with number",
         "placeholders": {
@@ -2455,7 +2455,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "Season {number}",
+    "seasonNumber": "സീസൺ {number}",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2481,7 +2481,7 @@
     "@deleteSeason": {
         "description": "Dialog title for deleting a season"
     },
-    "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+    "deleteAllEpisodesInSeason": "{season} ലെ ഡൗൺലോഡ് ചെയ്ത എല്ലാ എപ്പിസോഡുകളും ഇല്ലാതാക്കണോ?",
     "@deleteAllEpisodesInSeason": {
         "description": "Confirmation to delete all episodes in a season",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 എപ്പിസോഡ്} other{{count} എപ്പിസോഡുകൾ}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2535,7 +2535,7 @@
     "@deleteSelected": {
         "description": "Dialog title for deleting selected items"
     },
-    "deleteSelectedCount": "Delete {count} downloaded items?",
+    "deleteSelectedCount": "ഡൗൺലോഡ് ചെയ്ത {count} ഇനങ്ങൾ ഇല്ലാതാക്കണോ?",
     "@deleteSelectedCount": {
         "description": "Confirmation to delete selected downloaded items",
         "placeholders": {
@@ -2556,7 +2556,7 @@
     "@database": {
         "description": "Storage breakdown label for database"
     },
-    "ofStorageLimit": "of {limit} limit",
+    "ofStorageLimit": "{limit} പരിധിയിൽ",
     "@ofStorageLimit": {
         "description": "Text showing storage used of total limit",
         "placeholders": {
@@ -2665,7 +2665,7 @@
     "@customizeAccountPlaybackInterface": {
         "description": "Settings screen subtitle"
     },
-    "optionsCount": "{count} options",
+    "optionsCount": "{count} ഓപ്ഷനുകൾ",
     "@optionsCount": {
         "description": "Number of options in a settings section",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "അപ്രാപ്തമാക്കി",
+    "disabled": "പ്രവർത്തനരഹിതം",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value}സെ",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3057,7 +3057,7 @@
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
-    "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+    "afterEpisodesAndHours": "{episodes} എപ്പിസോഡുകൾക്ക് ശേഷം / {hours}മ",
     "@afterEpisodesAndHours": {
         "description": "Still watching prompt interval",
         "placeholders": {
@@ -3233,7 +3233,7 @@
     "@tv": {
         "description": "Profile: TV"
     },
-    "loadedProfileSettings": "Loaded {profile} profile settings.",
+    "loadedProfileSettings": "{profile} പ്രൊഫൈൽ ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്തു.",
     "@loadedProfileSettings": {
         "description": "Message when profile settings are loaded",
         "placeholders": {
@@ -3242,7 +3242,7 @@
             }
         }
     },
-    "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+    "failedToLoadProfileSettings": "{profile} പ്രൊഫൈൽ ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.",
     "@failedToLoadProfileSettings": {
         "description": "Error when profile settings fail to load",
         "placeholders": {
@@ -3251,7 +3251,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+    "syncedSettingsToProfile": "ലോക്കൽ ക്രമീകരണങ്ങൾ {profile} പ്രൊഫൈലിലേക്ക് സിങ്ക് ചെയ്തു.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3540,7 +3540,7 @@
     "@selectAll": {
         "description": "Button to select all items"
     },
-    "itemsSelected": "{count} selected",
+    "itemsSelected": "{count} തിരഞ്ഞെടുത്തു",
     "@itemsSelected": {
         "description": "Number of selected items",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "മൂൺഫിൻ",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "നിർദ്ദിഷ്ട ഉപയോക്താവ്",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "എപ്പോഴും പ്രാമാണീകരിക്കുക",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3879,7 +3875,7 @@
     "@imdb": {
         "description": "Rating source: IMDb"
     },
-    "tmdb": "ടിഎംഡിബി",
+    "tmdb": "TMDB",
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "ട്രാക്റ്റ്",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "പ്ലഗിൻ",
+    "pluginLabel": "Moonbase പ്ലഗിൻ",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4055,15 +4051,15 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "സീർ പ്രവർത്തനക്ഷമമാക്കുക",
+    "enableSeerr": "Seerr പ്രവർത്തനക്ഷമമാക്കുക",
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "നാവിഗേഷനിൽ സീർ കാണിക്കുക (സെർവർ പ്ലഗിൻ ആവശ്യമാണ്)",
+    "showSeerrInNavigation": "നാവിഗേഷനിൽ Seerr കാണിക്കുക (സെർവർ പ്ലഗിൻ ആവശ്യമാണ്)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "സെർവർ പ്ലഗിൻ സീർ പിന്തുണ പ്രവർത്തനരഹിതമാക്കിയതിനാൽ ലഭ്യമല്ല.",
+    "seerrUnavailable": "സെർവർ പ്ലഗിന്റെ Seerr പിന്തുണ പ്രവർത്തനരഹിതമായതിനാൽ ലഭ്യമല്ല.",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "വരികൾ കണ്ടെത്തുക",
+    "discoverRows": "Seerr ഡിസ്കവറി പേജ്",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "പുനഃക്രമീകരിക്കാൻ വലിച്ചിടുക. വരികൾ പ്രവർത്തനക്ഷമമാക്കുക അല്ലെങ്കിൽ പ്രവർത്തനരഹിതമാക്കുക. Moonfin പ്ലഗിനുമായി വരി ഓർഡർ സമന്വയം പ്രാപ്തമാക്കി.",
+    "discoverRowsDescriptionPlugin": "Seerr മെയിൻപേജിൽ കാണാൻ വരികൾ പ്രവർത്തനക്ഷമമാക്കുക. പുനഃക്രമീകരിക്കാൻ വലിച്ചിടുക. ഇഷ്ടാനുസൃത ക്രമം Moonbase-മായി സിങ്ക് ചെയ്യുന്നു.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "പുനഃക്രമീകരിക്കാൻ വലിച്ചിടുക. വരികൾ പ്രവർത്തനക്ഷമമാക്കുക അല്ലെങ്കിൽ പ്രവർത്തനരഹിതമാക്കുക.",
+    "discoverRowsDescription": "Seerr മെയിൻപേജിൽ കാണാൻ വരികൾ പ്രവർത്തനക്ഷമമാക്കുക. പുനഃക്രമീകരിക്കാൻ വലിച്ചിടുക. ഇഷ്ടാനുസൃത ക്രമം Moonbase-മായി സിങ്ക് ചെയ്യുന്നു.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "പ്രവർത്തനക്ഷമമാക്കി",
+    "enabled": "പ്രവർത്തനക്ഷമം",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "ക്ലിയർ",
+    "clear": "മായ്ക്കുക",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "സീർ ക്രമീകരണങ്ങൾ",
+    "seerrSettings": "Seerr ക്രമീകരണങ്ങൾ",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "രൂപഭാവങ്ങൾ",
+    "appearances": "പ്രത്യക്ഷപ്പെടലുകൾ",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4528,12 +4524,12 @@
     "copy": "പകർത്തുക",
     "create": "സൃഷ്ടിക്കുക",
     "disable": "പ്രവർത്തനരഹിതമാക്കുക",
-    "done": "ചെയ്തു",
+    "done": "പൂർത്തിയായി",
     "edit": "എഡിറ്റ് ചെയ്യുക",
     "encoding": "എൻകോഡിംഗ്",
     "error": "പിശക്",
     "forward": "മുന്നോട്ട്",
-    "general": "ജനറൽ",
+    "general": "പൊതുവായത്",
     "go": "പോകൂ",
     "install": "ഇൻസ്റ്റാൾ ചെയ്യുക",
     "installed": "ഇൻസ്റ്റാൾ ചെയ്തു",
@@ -4563,7 +4559,7 @@
     "stop": "നിർത്തുക",
     "streaming": "സ്ട്രീമിംഗ്",
     "time": "സമയം",
-    "trickplay": "ട്രിക്ക്പ്ലേ",
+    "trickplay": "Trickplay",
     "uninstall": "അൺഇൻസ്റ്റാൾ ചെയ്യുക",
     "up": "മുകളിലേക്ക്",
     "update": "അപ്ഡേറ്റ്",
@@ -4578,9 +4574,9 @@
     "adminDrawerUsers": "ഉപയോക്താക്കൾ",
     "adminDrawerLibraries": "ലൈബ്രറികൾ",
     "adminDrawerTranscoding": "ട്രാൻസ്കോഡിംഗ്",
-    "adminDrawerResume": "പുനരാരംഭിക്കുക",
+    "adminDrawerResume": "തുടരുക",
     "adminDrawerStreaming": "സ്ട്രീമിംഗ്",
-    "adminDrawerTrickplay": "ട്രിക്ക്പ്ലേ",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "ഉപകരണങ്ങൾ",
     "adminDrawerActivity": "പ്രവർത്തനം",
     "adminDrawerNetworking": "നെറ്റ്വർക്കിംഗ്",
@@ -4684,7 +4680,7 @@
     "actions": "പ്രവർത്തനങ്ങൾ",
     "videoCodec": "വീഡിയോ കോഡെക്",
     "audioCodec": "ഓഡിയോ കോഡെക്",
-    "hwAccel": "HW Accel",
+    "hwAccel": "HW ആക്സൽ",
     "completion": "പൂർത്തീകരണം",
     "direct": "നേരിട്ട്",
     "adminDisconnect": "വിച്ഛേദിക്കുക",
@@ -5370,8 +5366,8 @@
     "adminAllowSegmentDeletion": "സെഗ്‌മെൻ്റ് ഇല്ലാതാക്കാൻ അനുവദിക്കുക",
     "adminSegmentKeepSeconds": "സെഗ്മെൻ്റ് സൂക്ഷിക്കുക (സെക്കൻഡ്)",
     "adminThrottleBuffering": "ത്രോട്ടിൽ ബഫറിംഗ്",
-    "adminTrickplaySaved": "ട്രിക്ക്പ്ലേ ക്രമീകരണങ്ങൾ സംരക്ഷിച്ചു",
-    "adminTrickplayLoadFailed": "ട്രിക്ക്പ്ലേ ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു",
+    "adminTrickplaySaved": "Trickplay ക്രമീകരണങ്ങൾ സംരക്ഷിച്ചു",
+    "adminTrickplayLoadFailed": "trickplay ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല",
     "adminEnableHardwareAcceleration": "ഹാർഡ്‌വെയർ ആക്സിലറേഷൻ പ്രവർത്തനക്ഷമമാക്കുക",
     "adminEnableKeyFrameExtraction": "കീ ഫ്രെയിം മാത്രം എക്സ്ട്രാക്ഷൻ പ്രവർത്തനക്ഷമമാക്കുക",
     "adminKeyFrameSubtitle": "വേഗതയേറിയതും എന്നാൽ കുറഞ്ഞ കൃത്യതയും",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS പോർട്ട്",
     "adminPublicHttpsPort": "പൊതു HTTPS പോർട്ട്",
     "adminBaseUrl": "അടിസ്ഥാന URL",
-    "adminBaseUrlHint": "ഉദാ. /ജെല്ലിഫിൻ",
+    "adminBaseUrlHint": "ഉദാ. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPS പ്രവർത്തനക്ഷമമാക്കുക",
     "adminLocalNetwork": "പ്രാദേശിക നെറ്റ്‌വർക്ക്",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "വിദൂര വ്യക്തിയെ തിരയുക",
     "adminNoRemoteMatches": "വിദൂര പൊരുത്തങ്ങളൊന്നും കണ്ടെത്തിയില്ല",
     "adminRemoteResults": "റിമോട്ട് ഫലങ്ങൾ",
     "adminRemoteMetadataApplied": "റിമോട്ട് മെറ്റാഡാറ്റ പ്രയോഗിച്ചു",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "ട്യൂണർ ചേർക്കുക",
     "adminTunerType": "ട്യൂണർ തരം",
-    "adminTunerTypeHint": "HDHomeRun, M3U, മറ്റുള്ളവ",
-    "adminUrlPath": "URL / പാത",
-    "adminNameOptional": "പേര് (ഓപ്ഷണൽ)",
     "adminTunerAdded": "ട്യൂണർ കൂട്ടിച്ചേർത്തു",
     "adminTunerAddFailed": "ട്യൂണർ ചേർക്കുന്നതിൽ പരാജയപ്പെട്ടു: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "ഗൈഡ് ദാതാവിനെ ചേർക്കുക",
     "adminProviderType": "ദാതാവിൻ്റെ തരം",
-    "adminProviderTypeHint": "ഷെഡ്യൂൾസ്ഡയറക്ട് അല്ലെങ്കിൽ XMLTV",
-    "adminUsernameOptional": "ഉപയോക്തൃനാമം (ഓപ്ഷണൽ)",
-    "adminRefreshInterval": "പുതുക്കിയ ഇടവേള (മണിക്കൂറുകൾ)",
     "adminProviderAdded": "ദാതാവ് ചേർത്തു",
     "adminProviderAddFailed": "ദാതാവിനെ ചേർക്കുന്നതിൽ പരാജയപ്പെട്ടു: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "പേരിടാത്ത ബാക്കപ്പ്",
     "adminLiveTvNotAvailable": "ഈ സെർവർ ബിൽഡിൽ ലൈവ് ടിവി അഡ്മിനിസ്ട്രേഷൻ ലഭ്യമല്ല.",
     "adminLiveTvTitle": "ലൈവ് ടിവി അഡ്മിനിസ്ട്രേഷൻ",
-    "adminApply": "അപേക്ഷിക്കുക",
+    "adminApply": "പ്രയോഗിക്കുക",
     "adminNotSet": "സജ്ജമാക്കിയിട്ടില്ല",
     "adminReset": "പുനഃസജ്ജമാക്കുക",
     "adminLogsTitle": "സെർവർ ലോഗുകൾ",
@@ -5729,12 +5718,11 @@
     },
     "adminLogViewerNoMatches": "പൊരുത്തപ്പെടുന്ന വരികളൊന്നുമില്ല",
     "adminMetadataEditorTitle": "മെറ്റാഡാറ്റ എഡിറ്റർ",
-    "adminMetadataRemote": "റിമോട്ട്",
     "adminMetadataType": "ടൈപ്പ് ചെയ്യുക",
     "adminMetadataDetails": "വിശദാംശങ്ങൾ",
     "adminMetadataExternalIds": "ബാഹ്യ ഐഡികൾ",
     "adminMetadataImages": "ചിത്രങ്ങൾ",
-    "adminMetadataFieldTitle": "തലക്കെട്ട്",
+    "adminMetadataFieldTitle": "ശീർഷകം",
     "adminMetadataFieldSortTitle": "ശീർഷകം അടുക്കുക",
     "adminMetadataFieldOriginalTitle": "യഥാർത്ഥ തലക്കെട്ട്",
     "adminMetadataFieldPremiereDate": "പ്രീമിയർ തീയതി (YYYY-MM-DD)",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "ഓരോ 12 മണിക്കൂറിലും",
     "adminTaskTriggerEvery24Hours": "ഓരോ 24 മണിക്കൂറിലും",
     "adminTaskTriggerEvery2Days": "ഓരോ 2 ദിവസത്തിലും",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 മണിക്കൂർ} other{{count} മണിക്കൂർ}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "ഇപ്പോൾ",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes}മി",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}മ",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days}ദി",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "തിരനോട്ടം ലഘുചിത്രങ്ങൾക്കായി ട്രിക്ക്പ്ലേ ഇമേജ് ജനറേഷൻ കോൺഫിഗർ ചെയ്യുക.",
+    "adminTrickplayDescription": "സീക്ക് പ്രിവ്യൂ തംബ്‌നെയിലുകൾക്കായി trickplay ചിത്ര സൃഷ്ടിക്കൽ കോൺഫിഗർ ചെയ്യുക.",
     "adminNetworkingPublicHttpsPort": "പൊതു HTTPS പോർട്ട്",
     "adminNetworkingBaseUrl": "അടിസ്ഥാന URL",
-    "adminNetworkingBaseUrlHint": "ഉദാ. /ജെല്ലിഫിൻ",
+    "adminNetworkingBaseUrlHint": "ഉദാ. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "സർട്ടിഫിക്കറ്റ് പാത",
     "adminNetworkingRemoteIpFilter": "വിദൂര ഐപി ഫിൽട്ടർ",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay എന്നതിന് Jellyfin സെർവർ ആവശ്യമാണ്. നിലവിലെ സെർവർ അതിനെ പിന്തുണയ്ക്കുന്നില്ല.",
     "syncPlayGroupFallbackName": "SyncPlay ഗ്രൂപ്പ്",
     "syncPlayGroupTooltip": "SyncPlay ഗ്രൂപ്പ്",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# പങ്കാളി} other {# പങ്കാളികൾ}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "എൻ്റെ തിരഞ്ഞെടുപ്പ് ഓർക്കുക",
     "playHdr10Fallback": "HDR10 ഫാൾബാക്ക് പ്ലേ ചെയ്യുക",
     "requestTranscode": "ട്രാൻസ്കോഡ് അഭ്യർത്ഥിക്കുക",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# വരി കണ്ടെത്തി} other {# വരികൾ കണ്ടെത്തി}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "തെറ്റായ പിൻ",
     "pinMismatch": "PIN-കൾ പൊരുത്തപ്പെടുന്നില്ല",
     "pinForgot": "പിൻ മറന്നോ?",
-    "pinClear": "ക്ലിയർ",
+    "pinClear": "മായ്ക്കുക",
     "pinBackspace": "ബാക്ക്സ്പേസ്",
-    "quickConnectAuthorized": "ദ്രുത കണക്ഷൻ അഭ്യർത്ഥന അംഗീകരിച്ചു.",
-    "quickConnectInvalidOrExpired": "ദ്രുത കണക്റ്റ് കോഡ് അസാധുവാണ് അല്ലെങ്കിൽ കാലഹരണപ്പെട്ടു.",
+    "quickConnectAuthorized": "Quick Connect അഭ്യർത്ഥന അംഗീകരിച്ചു.",
+    "quickConnectInvalidOrExpired": "Quick Connect കോഡ് അസാധുവാണ് അല്ലെങ്കിൽ കാലഹരണപ്പെട്ടു.",
     "quickConnectNotSupported": "ഈ സെർവറിൽ Quick Connect പിന്തുണയ്ക്കുന്നില്ല.",
     "quickConnectAuthorizeFailed": "Quick Connect കോഡ് അംഗീകരിക്കുന്നതിൽ പരാജയപ്പെട്ടു.",
-    "quickConnectDisabled": "ഈ സെർവറിൽ ദ്രുത കണക്ഷൻ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു.",
-    "quickConnectForbidden": "നിങ്ങളുടെ അക്കൗണ്ടിന് ഈ ദ്രുത കണക്ഷൻ അഭ്യർത്ഥന അംഗീകരിക്കാൻ കഴിയില്ല.",
-    "quickConnectNotFound": "ദ്രുത കണക്റ്റ് കോഡ് കണ്ടെത്തിയില്ല. ഒരു പുതിയ കോഡ് പരീക്ഷിക്കുക.",
-    "quickConnectFailedWithMessage": "ദ്രുത കണക്ഷൻ പരാജയപ്പെട്ടു: {message}",
+    "quickConnectDisabled": "ഈ സെർവറിൽ Quick Connect പ്രവർത്തനരഹിതമാണ്.",
+    "quickConnectForbidden": "നിങ്ങളുടെ അക്കൗണ്ടിന് ഈ Quick Connect അഭ്യർത്ഥന അംഗീകരിക്കാൻ കഴിയില്ല.",
+    "quickConnectNotFound": "Quick Connect കോഡ് കണ്ടെത്തിയില്ല. ഒരു പുതിയ കോഡ് പരീക്ഷിക്കുക.",
+    "quickConnectFailedWithMessage": "Quick Connect പരാജയപ്പെട്ടു: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6491,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "മുമ്പത്തെ",
+    "playerTooltipPrevious": "മുമ്പത്തേത്",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -6532,7 +6520,7 @@
     "settingsDynamicContentSubtitle": "മീഡിയ ബാറും വിഷ്വൽ ഓവർലേകളും",
     "settingsPlaybackSyncplay": "പ്ലേബാക്ക് & SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "ഓഡിയോ/വീഡിയോ ക്രമീകരണങ്ങൾ, സബ്‌ടൈറ്റിലുകൾ, ഡൗൺലോഡുകൾ, SyncPlay നിയന്ത്രണങ്ങൾ",
-    "settingsIntegrationsSubtitle": "പ്ലഗിൻ സമന്വയം, സീർ, റേറ്റിംഗുകൾ എന്നിവയും അതിലേറെയും",
+    "settingsIntegrationsSubtitle": "പ്ലഗിൻ സിങ്ക്, Seerr, റേറ്റിംഗുകൾ എന്നിവയും അതിലേറെയും",
     "settingsAboutSubtitle": "ആപ്പ് പതിപ്പ്, നിയമപരമായ വിവരങ്ങൾ, ക്രെഡിറ്റുകൾ",
     "settingsAuthenticationSection": "പ്രാമാണീകരണം",
     "settingsSortServersBy": "സെർവറുകൾ അടുക്കുക",
@@ -6556,7 +6544,7 @@
     "settingsVisualOverlays": "വിഷ്വൽ ഓവർലേകൾ",
     "settingsSeasonalSurprise": "സീസണൽ സർപ്രൈസ്",
     "settingsMetadataAndRatings": "മെറ്റാഡാറ്റയും റേറ്റിംഗുകളും",
-    "settingsPluginScreenDescription": "Moonbase അധിക റേറ്റിംഗ് ഉറവിടങ്ങൾ, സീർ അഭ്യർത്ഥനകൾ, സമന്വയിപ്പിച്ച മുൻഗണനകൾ എന്നിവ ഉൾപ്പെടെയുള്ള സെർവർ-സൈഡ് സംയോജനങ്ങൾക്ക് ശക്തി നൽകുന്നു.",
+    "settingsPluginScreenDescription": "അധിക റേറ്റിംഗ് ഉറവിടങ്ങൾ, Seerr അഭ്യർത്ഥനകൾ, സിങ്ക് ചെയ്ത മുൻഗണനകൾ എന്നിവയുൾപ്പെടെയുള്ള സെർവർ-സൈഡ് സംയോജനങ്ങൾക്ക് Moonbase ശക്തി പകരുന്നു.",
     "settingsOfflineDownloads": "ഓഫ്‌ലൈൻ ഡൗൺലോഡുകൾ",
     "settingsHigh": "ഉയർന്നത്",
     "settingsLow": "താഴ്ന്നത്",
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കുക",
     "settingsCheckForUpdatesSubtitle": "ഏറ്റവും പുതിയ Moonfin റിലീസിനായി പരിശോധിക്കുക",
     "settingsPoweredByFlutter": "Flutter നാൽ പ്രവർത്തിക്കുന്നത്",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# ലൈസൻസ് അറിയിപ്പ്} other {# ലൈസൻസ് അറിയിപ്പുകൾ}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6689,7 +6677,7 @@
             }
         }
     },
-    "discNumber": "Disc {number}",
+    "discNumber": "ഡിസ്ക് {number}",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "സീർ അക്കൗണ്ട് തരം",
+    "seerrAccountType": "Seerr അക്കൗണ്ട് തരം",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6763,135 +6751,123 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Prefer system keyboard",
+    "keyboardPreferSystemIme": "സിസ്റ്റം കീബോർഡ് തിരഞ്ഞെടുക്കുക",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+    "keyboardPreferSystemImeDescription": "ടെക്സ്റ്റ് നൽകുന്നതിന് ഡിഫോൾട്ടായി നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഇൻപുട്ട് രീതി ഉപയോഗിക്കുക",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
-    "musicVideos": "Music Videos",
+    "musicVideos": "മ്യൂസിക് വീഡിയോകൾ",
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Record",
+    "record": "റെക്കോർഡ് ചെയ്യുക",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
-    "cancelRecordingAction": "Cancel Recording",
+    "cancelRecordingAction": "റെക്കോർഡിംഗ് റദ്ദാക്കുക",
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
-    "programSetToRecord": "Program set to record",
+    "programSetToRecord": "പ്രോഗ്രാം റെക്കോർഡ് ചെയ്യാൻ സജ്ജമാക്കി",
     "@programSetToRecord": {
         "description": "Snackbar confirmation after scheduling a live TV program recording"
     },
-    "recordingCancelled": "Recording cancelled",
+    "recordingCancelled": "റെക്കോർഡിംഗ് റദ്ദാക്കി",
     "@recordingCancelled": {
         "description": "Snackbar confirmation after cancelling a live TV recording"
     },
-    "unableToCreateRecording": "Unable to create recording",
+    "unableToCreateRecording": "റെക്കോർഡിംഗ് സൃഷ്ടിക്കാൻ കഴിഞ്ഞില്ല",
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "ഓഡിയോ ഔട്ട്പുട്ട് മോഡ്",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR പാസ്ത്രൂ",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Audio Fallback Codec",
+    "settingsAudioFallbackCodec": "ഓഡിയോ ഫോൾബാക്ക് കോഡെക്",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
-    "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+    "settingsAudioPassthroughAdvanced": "പാസ്ത്രൂ (വിപുലം)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "കോഡെക് പാസ്ത്രൂ",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+    "settingsAudioCodecPassthroughDescription": "നിങ്ങളുടെ AVR അല്ലെങ്കിൽ HDMI സിങ്ക് പിന്തുണയ്ക്കുന്ന ഫോർമാറ്റുകൾ മാത്രം പ്രവർത്തനക്ഷമമാക്കുക.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "EAC3 പാസ്ത്രൂ",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) പാസ്ത്രൂ",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core പാസ്ത്രൂ",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA പാസ്ത്രൂ",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD പാസ്ത്രൂ",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos പാസ്ത്രൂ",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
-    "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+    "settingsAudioBitstreamEac3ToExternalDecoder": "Dolby Digital Plus (EAC3) ബാഹ്യ ഡീകോഡറിലേക്ക് ബിറ്റ്സ്ട്രീം ചെയ്യുക.",
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "EAC3 (JOC) വഴി Dolby Atmos ബാഹ്യ ഡീകോഡറിലേക്ക് ബിറ്റ്സ്ട്രീം ചെയ്യുക.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "DTS-HD MA (DTS core ഉൾപ്പെടെ) ബാഹ്യ ഡീകോഡറിലേക്ക് ബിറ്റ്സ്ട്രീം ചെയ്യുക.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Atmos മെറ്റാഡാറ്റയോടുകൂടിയ Dolby TrueHD ബാഹ്യ ഡീകോഡറിലേക്ക് ബിറ്റ്സ്ട്രീം ചെയ്യുക.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+    "settingsDetectedAudioCapabilities": "കണ്ടെത്തിയ ഓഡിയോ കഴിവുകൾ",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+    "settingsDetectedAudioCapabilitiesUnavailable": "ഇതുവരെ റൺടൈം കപ്പാബിലിറ്റി സ്നാപ്ഷോട്ട് ലഭ്യമല്ല.",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "Route",
+    "settingsAudioRouteLabel": "റൂട്ട്",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
-    "settingsAudioDecodeLabel": "Decode",
+    "settingsAudioDecodeLabel": "ഡീകോഡ്",
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
-    "settingsAudioPassthroughLabel": "Passthrough",
+    "settingsAudioPassthroughLabel": "പാസ്ത്രൂ",
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD audio route",
+    "settingsAudioHdRoute": "HD ഓഡിയോ റൂട്ട്",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6911,7 +6887,7 @@
     "@settingsAudioRouteBluetooth": {
         "description": "Audio route type Bluetooth"
     },
-    "settingsAudioRouteSpeaker": "Speaker",
+    "settingsAudioRouteSpeaker": "സ്പീക്കർ",
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
@@ -6924,43 +6900,43 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "Diagnostics",
+    "settingsAudioDiagnostics": "ഡയഗ്നോസ്റ്റിക്സ്",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "Video Level",
+    "settingsAudioDiagnosticsVideoLevel": "വീഡിയോ ലെവൽ",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "Video Range",
+    "settingsAudioDiagnosticsVideoRange": "വീഡിയോ റേഞ്ച്",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
-    "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+    "settingsAudioDiagnosticsSubtitleCodec": "സബ്ടൈറ്റിൽ കോഡെക്",
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "അനുവദനീയമായ ഓഡിയോ കോഡെക്കുകൾ",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS ഓഡിയോ കോഡെക്കുകൾ",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 ഓഡിയോ കോഡെക്കുകൾ",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif പാസ്ത്രൂ",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+    "settingsAudioDiagnosticsActiveAudioRoute": "സജീവ ഓഡിയോ റൂട്ട്",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "റൂട്ട് HD ഓഡിയോ പിന്തുണ",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "അടുത്തിടെ പുറത്തിറങ്ങിയ എപ്പിസോഡുകൾ",
     "watchAgain": "വീണ്ടും കാണുക",
     "guestAppearances": "അതിഥി വേഷങ്ങൾ",
-    "appearancesSeerr": "രൂപഭാവങ്ങൾ (സീർ)",
+    "appearancesSeerr": "പ്രത്യക്ഷപ്പെടലുകൾ (Seerr)",
     "watchWithGroup": "ഗ്രൂപ്പിനൊപ്പം കാണുക",
     "errors": "പിശകുകൾ",
     "warnings": "മുന്നറിയിപ്പുകൾ",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "മുൻനിര കലാകാരന്മാർ",
     "analyticsTopAuthors": "മുൻനിര എഴുത്തുകാർ",
     "analyticsTopContributors": "മുൻനിര സംഭാവകർ",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 ലൈബ്രറി} other{{count} ലൈബ്രറികൾ}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "സമ്മിശ്ര ഉള്ളടക്കം",
     "homeVideosAndPhotos": "ഹോം വീഡിയോകളും ഫോട്ടോകളും",
     "mixedMoviesAndShows": "മിക്സഡ് സിനിമകളും ഷോകളും",
-    "intelQuickSync": "ഇൻ്റൽ ദ്രുത സമന്വയം",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "റോക്ക്ചിപ്പ് എംപിപി",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "റെക്കോർഡിംഗുകളൊന്നും കണ്ടെത്തിയില്ല",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "CB7 എക്‌സ്‌ട്രാക്ഷൻ പ്ലഗിൻ ഈ പ്ലാറ്റ്‌ഫോമിൽ ലഭ്യമല്ല.",
     "closeGenrePanel": "തരം പാനൽ അടയ്ക്കുക",
     "loadingShuffle": "ഷഫിൾ ലോഡുചെയ്യുന്നു...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "ലൈബ്രറി ഷഫിൾ",
+    "randomShuffleLabel": "റാൻഡം ഷഫിൾ",
+    "genresShuffleLabel": "വിഭാഗ ഷഫിൾ",
     "autoHdrSwitching": "യാന്ത്രിക HDR സ്വിച്ചിംഗ്",
     "autoHdrSwitchingDescription": "HDR വീഡിയോ പ്ലേബാക്കിനായി HDR സ്വയമേവ പ്രവർത്തനക്ഷമമാക്കുകയും പുറത്തുകടക്കുമ്പോൾ ഡിസ്പ്ലേ മോഡ് പുനഃസ്ഥാപിക്കുകയും ചെയ്യുക.",
     "whenFullscreen": "ഫുൾസ്ക്രീൻ ആയിരിക്കുമ്പോൾ",
     "transcodingLimits": "ട്രാൻസ്കോഡിംഗ് പരിധികൾ",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "ഡെവലപ്പർക്ക് ഒരു കോഫി സംഭാവന ചെയ്യുക",
+    "accountPreferences": "അക്കൗണ്ട് മുൻഗണനകൾ",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "ഇന്റർഫേസ് ഭാഷ",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "സിസ്റ്റം ഡിഫോൾട്ട്",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "ശൂന്യം",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "വിശദാംശ സ്ക്രീൻ ശൈലി",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "ക്ലാസിക് എന്നത് യഥാർത്ഥ കേന്ദ്രീകൃത Moonfin ലേഔട്ടാണ്. മോഡേൺ എന്നത് ഒരു റെസ്പോൺസീവ് സിനിമാറ്റിക് ലേഔട്ടാണ്.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "ക്ലാസിക്",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "മോഡേൺ",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "വിപുലീകരിച്ച ടാബുകൾ",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "ടാബുകൾ ബ്രൗസ് ചെയ്യുമ്പോൾ ടാബ് ഉള്ളടക്കം സ്വയമേവ കാണിക്കുക. ഓരോ ടാബും സ്വമേധയാ തുറക്കാനും അടയ്ക്കാനും ഓഫ് ചെയ്യുക.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "സാങ്കേതിക വിശദാംശങ്ങൾ കാണിക്കണോ?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "ബാനർ സംഗ്രഹത്തിൽ കോഡെക്, റെസലൂഷൻ, സ്ട്രീം വിവരങ്ങൾ കാണിക്കുക",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "ശുപാർശ സംവിധാനം",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Moonfin Recommends ലോക്കൽ-ലൈബ്രറി അൽഗോരിതം അല്ലെങ്കിൽ ഓൺലൈൻ TMDb യുടെ സാമ്യതാ മെട്രിക്സ് ഉപയോഗിക്കുക. ശ്രദ്ധിക്കുക: ഓൺലൈൻ ശുപാർശകൾക്ക് Seerr സംയോജനം ആവശ്യമാണ്.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb സാമ്യത",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "പേരന്റൽ റേറ്റിംഗ് പരിധി പ്രയോഗിക്കണോ?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "ലക്ഷ്യ മീഡിയയുടെ പേരന്റൽ റേറ്റിംഗ് അനുസരിച്ച് Moonfin Recommends നിർദ്ദേശങ്ങൾ പരിമിതപ്പെടുത്തുക",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "ഇന്റർഫേസ് ശൈലി",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "ഓട്ടോമാറ്റിക് നിങ്ങളുടെ ഉപകരണവുമായി പൊരുത്തപ്പെടുന്നു. ഒരു രൂപം നിർബന്ധമാക്കാൻ Apple അല്ലെങ്കിൽ Material തിരഞ്ഞെടുക്കുക.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "ഓട്ടോമാറ്റിക്",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "ഗ്ലാസ് ഗുണനിലവാരം",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "ഓട്ടോ ഈ ഉപകരണത്തിനുള്ള മികച്ച ഗ്ലാസ് ഇഫക്റ്റ് തിരഞ്ഞെടുക്കുന്നു. ഫുൾ യഥാർത്ഥ ബ്ലർ നിർബന്ധമാക്കുന്നു; റിഡ്യൂസ്ഡ് GPU പവർ ലാഭിക്കുന്ന ഭാരം കുറഞ്ഞ ഗ്ലാസ് ഉപയോഗിക്കുന്നു.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "ഓട്ടോ",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "ഫുൾ",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "റിഡ്യൂസ്ഡ്",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "ഇഷ്ടാനുസൃത തീം",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "ഇഷ്ടാനുസൃത തീമുകൾ Moonfin-ൽ ഉടനീളം വിഷ്വൽ ഘടകങ്ങൾ മാറ്റുന്നു. നിങ്ങളുടെ ശൈലിക്ക് അനുയോജ്യമായ ഒന്ന് തിരഞ്ഞെടുക്കുക.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "ഗ്ലാസ്",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "ഒഴുകുന്ന ഗ്രേഡിയന്റ് പശ്ചാത്തലം, ഫ്രോസ്റ്റഡ് പ്രതലങ്ങൾ, Apple-നീല ആക്സന്റ് എന്നിവയുള്ള ലിക്വിഡ്-ഗ്ലാസ് ശൈലി",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "കട്ടിയുള്ള പാലറ്റ്, ബ്ലോക്കി ബോർഡറുകൾ, കടുത്ത ഡ്രോപ്പ്-ഷാഡോകൾ, പിക്സൽ ഫോണ്ട് എന്നിവയുള്ള റെട്രോ പിക്സൽ-ആർട്ട് ശൈലി",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "മെനു",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "താൽക്കാലികമായി നിർത്തി",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "സ്റ്റേറ്റ് സംരക്ഷിക്കുക",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "ഗെയിമുകൾ",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "സ്റ്റേറ്റ് ലോഡ് ചെയ്യുക",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "ഫാസ്റ്റ്-ഫോർവേഡ്",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "എമുലേറ്റർ ക്രമീകരണങ്ങൾ",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "ഈ കോറിന് ക്രമീകരിക്കാവുന്ന ഓപ്ഷനുകളൊന്നുമില്ല.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "മെനു തുറക്കാൻ അമർത്തിപ്പിടിക്കുക",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "ഈ ഉപകരണത്തിൽ ഗെയിം കളിക്കുന്നത് ഇതുവരെ പിന്തുണയ്ക്കുന്നില്ല.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "ഏറ്റവും പുതിയ പുസ്തകങ്ങൾ",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "ഏറ്റവും പുതിയ ഓഡിയോബുക്കുകൾ",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 പുസ്തകം} other{{count} പുസ്തകങ്ങൾ}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "പുസ്തകം",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "ഓഡിയോബുക്ക്",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% വായിച്ചു",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} ബാക്കി",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "വായിക്കുക",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "കേൾക്കുക",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "ഇനങ്ങൾ",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "എക്സ്ട്രാകൾ",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "ബിഹൈൻഡ് ദ സീൻസ്",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "ഒഴിവാക്കിയ രംഗങ്ങൾ",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "ഫീച്ചറെറ്റുകൾ",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "അഭിമുഖങ്ങൾ",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "രംഗങ്ങൾ",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "ഹ്രസ്വചിത്രങ്ങൾ",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} ബാക്കി",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "{time} ൽ അവസാനിക്കുന്നു",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "സംവിധായകർ",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "രചയിതാവ്",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "എല്ലാ സംഗീതവും ഷഫിൾ ചെയ്യുക",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "നിങ്ങളുടെ ഫോണിൽ Moonfin ലേക്ക് സൈൻ ഇൻ ചെയ്യുക",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "നിങ്ങളുടെ സെർവറിലേക്ക് എത്താൻ കഴിയുന്നില്ല",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "അടുത്തത്: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}മി ബാക്കി",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}മ ബാക്കി",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}മ {minutes}മി ബാക്കി",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "വിശദാംശ പേജുകൾ, ഹോം വരികൾ, വോളിയം",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "തീം സംഗീതം ലൂപ്പ് ചെയ്യുക",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "ട്രാക്ക് ഒരിക്കൽ പ്ലേ ചെയ്യുന്നതിന് പകരം ആവർത്തിക്കുക",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "മൗസ് സ്ക്രോൾ വീൽ",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "പ്ലേബാക്ക് സമയത്ത് വീഡിയോയ്ക്ക് മുകളിലൂടെ മൗസ് വീൽ സ്ക്രോൾ ചെയ്യുമ്പോൾ എന്ത് സംഭവിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "ഓഫ്",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "സീക്ക് (മുന്നോട്ട് / പിന്നോട്ട്)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "വോളിയം",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "വോളിയം",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "ഫോൾബാക്ക് ഓഡിയോ ഭാഷ",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "ഡിഫോൾട്ട് ഓഡിയോ ട്രാക്ക് തിരഞ്ഞെടുക്കുക",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "ലോക്കലൈസ് ചെയ്ത ഡബ്ബിനേക്കാൾ യഥാർത്ഥ ഓഡിയോ ട്രാക്ക് തിരഞ്ഞെടുക്കുക.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "ഓഡിയോ വിവരണ ട്രാക്കുകൾ തിരഞ്ഞെടുക്കുക",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "സാധാരണ ട്രാക്കുകളേക്കാൾ ഓഡിയോ വിവരണ ട്രാക്കുകൾ തിരഞ്ഞെടുക്കുക.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "ട്രാൻസ്കോഡിംഗ് (ഓഡിയോ)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "ഡയറക്റ്റ് സ്ട്രീം (റീമക്സ്)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "ട്രാൻസ്കോഡിംഗ് (ബിറ്റ്റേറ്റ് അല്ലെങ്കിൽ റെസലൂഷൻ)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "ട്രാൻസ്കോഡിംഗ് (വീഡിയോയും ഓഡിയോയും)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "ട്രാൻസ്കോഡിംഗ് (വീഡിയോ)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "ഓഡിയോ എങ്ങനെ ഡീകോഡ് ചെയ്യണമെന്ന് തിരഞ്ഞെടുക്കുക. AVR പാസ്ത്രൂ റോ Dolby/DTS സ്ട്രീമുകൾ നിങ്ങളുടെ റിസീവറിലേക്ക് അയയ്ക്കുന്നു; ഓട്ടോ അല്ലെങ്കിൽ ഡൗൺമിക്സ് ലോക്കലായി ഡീകോഡ് ചെയ്യുന്നു.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "സോഴ്സ് സ്ട്രീം നേരിട്ട് പ്ലേ ചെയ്യാനോ പാസ്ത്രൂ ചെയ്യാനോ കഴിയാത്തപ്പോൾ മൾട്ടി-ചാനൽ ഓഡിയോ ട്രാൻസ്കോഡ് ചെയ്യുന്നതിനുള്ള ലക്ഷ്യ ഫോർമാറ്റ് തിരഞ്ഞെടുക്കുക.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "ഓട്ടോ ഡിറ്റക്റ്റ്\n(ശുപാർശ ചെയ്യുന്നത്)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(ഡിഫോൾട്ട്)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(ലോസ്‌ലെസ്)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(സ്റ്റീരിയോ മാത്രം)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(കാര്യക്ഷമം)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(ലോസ്‌ലെസ്)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "പരമാവധി ഓഡിയോ ചാനലുകൾ",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "നിങ്ങളുടെ ഓഡിയോ സെറ്റപ്പിന്റെ പരമാവധി ചാനലുകൾ കോൺഫിഗർ ചെയ്യുക. ഈ പരിധി കവിയുന്ന മൾട്ടിചാനൽ സ്ട്രീമുകൾ ഡൗൺമിക്സ് അല്ലെങ്കിൽ ട്രാൻസ്കോഡ് ചെയ്യപ്പെടും.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "ഓട്ടോ ഡിറ്റക്റ്റ്\n(ഹാർഡ്‌വെയർ ഡിഫോൾട്ട്)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadraphonic",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "ഹെഡ്ഫോണുകൾ",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "സബ്ടൈറ്റിൽ മോഡ്",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "ഫ്ലാഗ് ചെയ്തത്",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "എപ്പോഴും",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "വിദേശ",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "ഫോഴ്സ്ഡ്",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "മീഡിയ ഫയലിന്റെ മെറ്റാഡാറ്റയിൽ \"default\" അല്ലെങ്കിൽ \"forced\" എന്ന് ആന്തരികമായി ഫ്ലാഗ് ചെയ്ത ട്രാക്കുകൾ പ്ലേ ചെയ്യുന്നു.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "ഒരു വീഡിയോ ആരംഭിക്കുമ്പോഴെല്ലാം സബ്ടൈറ്റിലുകൾ സ്വയമേവ ലോഡ് ചെയ്ത് പ്രദർശിപ്പിക്കുന്നു.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "ഡിഫോൾട്ട് ഓഡിയോ ട്രാക്ക് ഒരു വിദേശ ഭാഷയിലാണെങ്കിൽ സബ്ടൈറ്റിലുകൾ സ്വയമേവ ഓണാക്കുന്നു.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "ഫോഴ്സ്ഡ് മെറ്റാഡാറ്റ ഫ്ലാഗ് ഉപയോഗിച്ച് വ്യക്തമായി ടാഗ് ചെയ്ത സബ്ടൈറ്റിലുകൾ മാത്രം ലോഡ് ചെയ്യുന്നു.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "സ്വയമേവയുള്ള സബ്ടൈറ്റിൽ ലോഡിംഗ് പൂർണ്ണമായി പ്രവർത്തനരഹിതമാക്കുന്നു.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "ഫോൾബാക്ക് സബ്ടൈറ്റിൽ ഭാഷ",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "സബ്ടൈറ്റിൽ സ്ട്രീം",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "സെർവറിൽ ഡൗൺലോഡുകൾ കാണിക്കുക",
+    "reportDownloadsActivitySubtitle": "ഡാഷ്ബോർഡിൽ നിങ്ങളുടെ ട്രാൻസ്കോഡ് ചെയ്ത ഡൗൺലോഡുകൾ കാണാൻ സെർവർ അഡ്മിനെ അനുവദിക്കുക",
+    "navbarAlwaysExpanded": "നാവ്ബാർ ലേബലുകൾ എപ്പോഴും വിപുലീകരിക്കുക",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Seerr ബട്ടൺ കാണിക്കുക",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "ഇനങ്ങൾ ശേഖരങ്ങളായി ഗ്രൂപ്പ് ചെയ്യുക",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "ലൈബ്രറികൾ ബ്രൗസ് ചെയ്യുമ്പോൾ ശേഖരവുമായി ബന്ധപ്പെട്ട ലൈബ്രറി ഇനങ്ങൾ മറയ്ക്കുക",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "ലൈബ്രറി ഗ്രൂപ്പിംഗ് അറിയിപ്പ്",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "ഈ ക്രമീകരണം ഉപയോഗിക്കാൻ, നിങ്ങളുടെ Jellyfin അല്ലെങ്കിൽ Emby സെർവറിലെ നിങ്ങളുടെ ലൈബ്രറിയുടെ ഡിസ്പ്ലേ ക്രമീകരണങ്ങൾക്ക് കീഴിൽ \"Group movies into collections\" കൂടാതെ/അല്ലെങ്കിൽ \"Group shows into collections\" ലൈബ്രറി ക്രമീകരണങ്ങൾ പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "ട്രെയിലർ ഓഡിയോ",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "മീഡിയ ബാറിലെ ട്രെയിലറുകൾക്ക് ഓഡിയോ പ്രവർത്തനക്ഷമമാക്കുക",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "വിപുലീകരിച്ച ഹോം വരികൾ",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "ഹോം വരികൾ ഒരു സ്ക്രീനിന് 1 വരിയായി പരിമിതപ്പെടുത്തുക",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "നിലവിലെ ഉപയോക്താവ്",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "സ്ഥിരം",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "കുതിക്കുന്ന",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr ഡിസ്കവറി വരികൾ",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "അറിയിപ്പുകൾ",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "പുതിയ അഭ്യർത്ഥന അറിയിപ്പുകൾ",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "ആരെങ്കിലും ഒരു അഭ്യർത്ഥന സമർപ്പിക്കുമ്പോൾ എന്നെ അറിയിക്കുക",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "അഭ്യർത്ഥന അപ്ഡേറ്റുകൾ",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "അംഗീകരിച്ചു, നിരസിച്ചു, നിങ്ങളുടെ ലൈബ്രറിയിലേക്ക് ചേർത്തു",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "പ്രശ്ന അപ്ഡേറ്റുകൾ",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "പുതിയ പ്രശ്നങ്ങൾ, മറുപടികൾ, പരിഹാരങ്ങൾ",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "ചിത്ര കാഷെ പരിധി",
+    "clearImageCache": "ചിത്ര കാഷെ മായ്ക്കുക",
+    "imageCacheCleared": "ചിത്ര കാഷെ മായ്ച്ചു",
+    "seerrDownloadingPercent": "ഡൗൺലോഡ് ചെയ്യുന്നു · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "ഇറക്കുമതി ചെയ്യുന്നു",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "പരാജയപ്പെട്ടു",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "പ്രോസസ് ചെയ്യുന്നു",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "{name} പരിഷ്കരിച്ചു",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "പൂർത്തിയായി",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "ഈ ശീർഷകം ഇതിനകം അഭ്യർത്ഥിച്ചു",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "അഭ്യർത്ഥന പരിധി എത്തി",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "ഈ ശീർഷകം ബ്ലോക്ക്‌ലിസ്റ്റിലാണ്",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "അഭ്യർത്ഥിക്കാൻ സീസണുകളൊന്നും ബാക്കിയില്ല",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "ഈ അഭ്യർത്ഥന നടത്താൻ നിങ്ങൾക്ക് അനുമതിയില്ല",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "അഭ്യർത്ഥനകൾ",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "പ്രശ്നങ്ങൾ",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "ഏറ്റവും പുതിയത്",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "അവസാനം പരിഷ്കരിച്ചത്",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "പ്രശ്നങ്ങളൊന്നുമില്ല",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{limit} സിനിമ അഭ്യർത്ഥനകളിൽ {remaining} ബാക്കി",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{limit} സീസൺ അഭ്യർത്ഥനകളിൽ {remaining} ബാക്കി",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "{name} ന്റെ ഭാഗം",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "ശേഖരം കാണുക",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "ശേഖരം അഭ്യർത്ഥിക്കുക",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} സിനിമകൾ · {available} ലഭ്യമാണ്",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "{count} സിനിമകൾ അഭ്യർത്ഥിക്കുക",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "{total} ൽ {current} അഭ്യർത്ഥിക്കുന്നു...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} സിനിമകൾ അഭ്യർത്ഥിച്ചു",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{total} സിനിമകളിൽ {ok} എണ്ണം അഭ്യർത്ഥിച്ചു",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "എല്ലാ സിനിമകളും ഇതിനകം ലഭ്യമാണ് അല്ലെങ്കിൽ അഭ്യർത്ഥിച്ചു",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "വീഡിയോ",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "ഓഡിയോ",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "എന്താണ് തെറ്റ്?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "എല്ലാ എപ്പിസോഡുകളും",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "എപ്പിസോഡ്",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "ഓപ്പൺ",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "പരിഹരിച്ചു",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "പരിഹരിക്കുക",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "വീണ്ടും തുറക്കുക",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "{name} റിപ്പോർട്ട് ചെയ്തു",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} അഭിപ്രായങ്ങൾ",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "ഒരു അഭിപ്രായം ചേർക്കുക",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "ഈ പ്രശ്നം ഇല്ലാതാക്കണോ?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "റിപ്പോർട്ട് സമർപ്പിക്കുക",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "ഡിസ്പ്ലേ",
+    "adminDrawerMetadata": "മെറ്റാഡാറ്റ",
+    "adminDrawerNfo": "NFO ക്രമീകരണങ്ങൾ",
+    "adminActivitySeverityAll": "എല്ലാ തീവ്രതകളും",
+    "adminActivityDateRange": "തീയതി ശ്രേണി",
+    "adminRemoveDeviceConfirm": "'{name}' ഉപകരണം നീക്കം ചെയ്യണോ? ഉപയോക്താവിന് ഈ ഉപകരണത്തിൽ വീണ്ടും സൈൻ ഇൻ ചെയ്യേണ്ടിവരും.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "എല്ലാ ഉപകരണങ്ങളും ഇല്ലാതാക്കുക",
+    "adminDeleteAllDevicesConfirm": "{count} ഉപകരണങ്ങൾ നീക്കം ചെയ്യണോ? ബാധിക്കപ്പെട്ട ഉപയോക്താക്കൾക്ക് വീണ്ടും സൈൻ ഇൻ ചെയ്യേണ്ടിവരും. നിങ്ങളുടെ നിലവിലെ ഉപകരണത്തെ ഇത് ബാധിക്കില്ല.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "ഉപകരണങ്ങൾ നീക്കം ചെയ്തു",
+    "adminDevicesDeletedPartial": "ചില ഉപകരണങ്ങൾ നീക്കം ചെയ്തു; {count} എണ്ണം നീക്കം ചെയ്യാൻ കഴിഞ്ഞില്ല.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "പാതകൾ",
+    "adminLibraryTabOptions": "ഓപ്ഷനുകൾ",
+    "adminLibraryTabDownloaders": "ഡൗൺലോഡറുകൾ",
+    "adminLibMetadataSavers": "മെറ്റാഡാറ്റ സേവറുകൾ",
+    "adminLibSubtitleDownloaders": "സബ്ടൈറ്റിൽ ഡൗൺലോഡറുകൾ",
+    "adminLibLyricDownloaders": "വരികൾ ഡൗൺലോഡറുകൾ",
+    "adminLibMetadataDownloadersFor": "മെറ്റാഡാറ്റ ഡൗൺലോഡറുകൾ: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "ചിത്ര ഫെച്ചറുകൾ: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "ഈ സെർവർ ഈ ലൈബ്രറി തരത്തിനായി ഡൗൺലോഡറുകളൊന്നും നൽകുന്നില്ല.",
+    "adminLibrarySectionGeneral": "പൊതുവായത്",
+    "adminLibrarySectionMetadata": "മെറ്റാഡാറ്റ",
+    "adminLibrarySectionEmbedded": "എംബഡഡ് വിവരം",
+    "adminLibrarySectionSubtitles": "സബ്ടൈറ്റിലുകൾ",
+    "adminLibrarySectionImages": "ചിത്രങ്ങൾ",
+    "adminLibrarySectionSeries": "പരമ്പരകൾ",
+    "adminLibrarySectionMusic": "സംഗീതം",
+    "adminLibrarySectionMovies": "സിനിമകൾ",
+    "adminLibRealtimeMonitor": "തത്സമയ നിരീക്ഷണം പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminLibRealtimeMonitorHint": "ഫയൽ മാറ്റങ്ങൾ കണ്ടെത്തി അവ സ്വയമേവ പ്രോസസ് ചെയ്യുക.",
+    "adminLibArchiveMediaFiles": "ആർക്കൈവുകൾ മീഡിയ ഫയലുകളായി പരിഗണിക്കുക",
+    "adminLibEnablePhotos": "ഫോട്ടോകൾ പ്രദർശിപ്പിക്കുക",
+    "adminLibSaveLocalMetadata": "ആർട്ട്‌വർക്ക് മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കുക",
+    "adminLibRefreshInterval": "സ്വയമേവയുള്ള മെറ്റാഡാറ്റ പുതുക്കൽ",
+    "adminLibRefreshNever": "ഒരിക്കലും",
+    "adminLibDefault": "ഡിഫോൾട്ട്",
+    "adminLibDisplayTitle": "ഡിസ്പ്ലേ",
+    "adminLibDisplaySection": "ലൈബ്രറി ഡിസ്പ്ലേ",
+    "adminLibFolderView": "സാധാരണ മീഡിയ ഫോൾഡറുകൾ കാണിക്കാൻ ഒരു ഫോൾഡർ കാഴ്ച പ്രദർശിപ്പിക്കുക",
+    "adminLibSpecialsInSeasons": "സ്പെഷ്യലുകൾ അവ സംപ്രേഷണം ചെയ്ത സീസണുകൾക്കുള്ളിൽ പ്രദർശിപ്പിക്കുക",
+    "adminLibGroupMovies": "സിനിമകൾ ശേഖരങ്ങളായി ഗ്രൂപ്പ് ചെയ്യുക",
+    "adminLibGroupShows": "ഷോകൾ ശേഖരങ്ങളായി ഗ്രൂപ്പ് ചെയ്യുക",
+    "adminLibExternalSuggestions": "നിർദ്ദേശങ്ങളിൽ ബാഹ്യ ഉള്ളടക്കം കാണിക്കുക",
+    "adminLibDateAddedSection": "ചേർത്ത തീയതി സ്വഭാവം",
+    "adminLibDateAddedLabel": "ചേർത്ത തീയതി ഇവിടെ നിന്ന് ഉപയോഗിക്കുക",
+    "adminLibDateAddedImport": "ലൈബ്രറിയിലേക്ക് സ്കാൻ ചെയ്ത തീയതി",
+    "adminLibDateAddedFile": "ഫയൽ സൃഷ്ടിച്ച തീയതി",
+    "adminLibMetadataTitle": "മെറ്റാഡാറ്റയും ചിത്രങ്ങളും",
+    "adminLibMetadataLangSection": "ഇഷ്ട മെറ്റാഡാറ്റ ഭാഷ",
+    "adminLibChaptersSection": "അധ്യായങ്ങൾ",
+    "adminLibDummyChapterDuration": "ഡമ്മി അധ്യായ ദൈർഘ്യം (സെക്കൻഡുകൾ)",
+    "adminLibDummyChapterDurationHint": "അധ്യായങ്ങളില്ലാത്ത മീഡിയയ്ക്കായി സൃഷ്ടിക്കുന്ന അധ്യായങ്ങളുടെ ദൈർഘ്യം. പ്രവർത്തനരഹിതമാക്കാൻ 0 ആയി സജ്ജമാക്കുക.",
+    "adminLibChapterImageResolution": "അധ്യായ ചിത്ര റെസലൂഷൻ",
+    "adminLibNfoTitle": "NFO ക്രമീകരണങ്ങൾ",
+    "adminLibNfoHelp": "NFO മെറ്റാഡാറ്റ Kodi യുമായും സമാന ക്ലയന്റുകളുമായും അനുയോജ്യമാണ്. ക്രമീകരണങ്ങൾ NFO മെറ്റാഡാറ്റ സംരക്ഷിക്കുന്ന എല്ലാ ലൈബ്രറികൾക്കും ബാധകമാണ്.",
+    "adminLibKodiUser": "NFO ഫയലുകളിൽ വാച്ച് ഡാറ്റ സംഭരിക്കാനുള്ള ഉപയോക്താവ്",
+    "adminLibSaveImagePaths": "NFO ഫയലുകൾക്കുള്ളിൽ ചിത്ര പാതകൾ സംരക്ഷിക്കുക",
+    "adminLibPathSubstitution": "NFO ചിത്ര പാതകൾക്കായി പാത പകരംവയ്ക്കൽ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminLibExtraThumbs": "extrafanart ചിത്രങ്ങൾ extrathumbs ഫോൾഡറിലേക്ക് പകർത്തുക",
+    "adminLibNone": "ഒന്നുമില്ല",
+    "adminLibRefreshDays": "{days} ദിവസങ്ങൾ",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "എംബഡഡ് ശീർഷകങ്ങൾ ഉപയോഗിക്കുക",
+    "adminLibEmbeddedExtrasTitles": "എക്സ്ട്രാകൾക്കായി എംബഡഡ് ശീർഷകങ്ങൾ ഉപയോഗിക്കുക",
+    "adminLibEmbeddedEpisodeInfos": "എംബഡഡ് എപ്പിസോഡ് വിവരം ഉപയോഗിക്കുക",
+    "adminLibAllowEmbeddedSubtitles": "എംബഡഡ് സബ്ടൈറ്റിലുകൾ അനുവദിക്കുക",
+    "adminLibEmbeddedAllowAll": "എല്ലാം അനുവദിക്കുക",
+    "adminLibEmbeddedAllowText": "ടെക്സ്റ്റ് മാത്രം",
+    "adminLibEmbeddedAllowImage": "ചിത്രം മാത്രം",
+    "adminLibEmbeddedAllowNone": "ഒന്നുമില്ല",
+    "adminLibSkipIfEmbeddedSubs": "എംബഡഡ് സബ്ടൈറ്റിലുകൾ ഉണ്ടെങ്കിൽ ഡൗൺലോഡ് ഒഴിവാക്കുക",
+    "adminLibSkipIfAudioMatches": "ഓഡിയോ ട്രാക്ക് ഡൗൺലോഡ് ഭാഷയുമായി പൊരുത്തപ്പെടുന്നെങ്കിൽ ഡൗൺലോഡ് ഒഴിവാക്കുക",
+    "adminLibRequirePerfectMatch": "ഒരു കൃത്യമായ സബ്ടൈറ്റിൽ പൊരുത്തം ആവശ്യമാണ്",
+    "adminLibSaveSubtitlesWithMedia": "സബ്ടൈറ്റിലുകൾ മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കുക",
+    "adminLibChapterImageExtraction": "അധ്യായ ചിത്രങ്ങൾ എക്സ്ട്രാക്റ്റ് ചെയ്യുക",
+    "adminLibChapterImagesDuringScan": "ലൈബ്രറി സ്കാൻ സമയത്ത് അധ്യായ ചിത്രങ്ങൾ എക്സ്ട്രാക്റ്റ് ചെയ്യുക",
+    "adminLibTrickplayExtraction": "trickplay ചിത്ര എക്സ്ട്രാക്ഷൻ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminLibTrickplayDuringScan": "ലൈബ്രറി സ്കാൻ സമയത്ത് trickplay ചിത്രങ്ങൾ എക്സ്ട്രാക്റ്റ് ചെയ്യുക",
+    "adminLibSaveTrickplayWithMedia": "trickplay ചിത്രങ്ങൾ മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കുക",
+    "adminLibAutomaticSeriesGrouping": "ഒന്നിലധികം ഫോൾഡറുകളിൽ വ്യാപിച്ചുകിടക്കുന്ന പരമ്പരകൾ സ്വയമേവ ലയിപ്പിക്കുക",
+    "adminLibSeasonZeroName": "സീസൺ പൂജ്യം ഡിസ്പ്ലേ പേര്",
+    "adminLibLufsScan": "ഓഡിയോ നോർമലൈസേഷനായി LUFS സ്കാൻ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminLibPreferNonstandardArtist": "നിലവാരമില്ലാത്ത ആർട്ടിസ്റ്റ് ടാഗ് തിരഞ്ഞെടുക്കുക",
+    "adminLibAutoAddToCollection": "സിനിമകൾ സ്വയമേവ ശേഖരങ്ങളിലേക്ക് ചേർക്കുക",
+    "adminParentalControl": "പേരന്റൽ കൺട്രോൾ",
+    "adminMaxParentalRating": "അനുവദനീയമായ പരമാവധി പേരന്റൽ റേറ്റിംഗ്",
+    "adminMaxParentalRatingHint": "ഉയർന്ന റേറ്റിംഗുള്ള ഉള്ളടക്കം ഈ ഉപയോക്താവിൽ നിന്ന് മറയ്ക്കപ്പെടും.",
+    "adminParentalRatingNone": "ഒന്നുമില്ല",
+    "adminBlockUnratedItems": "റേറ്റിംഗ് വിവരമില്ലാത്ത അല്ലെങ്കിൽ തിരിച്ചറിയാൻ കഴിയാത്ത ഇനങ്ങൾ തടയുക",
+    "adminUnratedBook": "പുസ്തകങ്ങൾ",
+    "adminUnratedChannelContent": "ചാനലുകൾ",
+    "adminUnratedLiveTvChannel": "ലൈവ് ടിവി",
+    "adminUnratedMovie": "സിനിമകൾ",
+    "adminUnratedMusic": "സംഗീതം",
+    "adminUnratedTrailer": "ട്രെയിലറുകൾ",
+    "adminUnratedSeries": "ഷോകൾ",
+    "adminAccessSchedules": "ആക്സസ് ഷെഡ്യൂളുകൾ",
+    "adminAccessSchedulesHint": "ചുവടെയുള്ള ഷെഡ്യൂൾ ചെയ്ത സമയങ്ങളിൽ മാത്രം ആക്സസ് അനുവദിക്കുക. ഷെഡ്യൂൾ സജ്ജീകരിക്കാത്തപ്പോൾ ദിവസം മുഴുവൻ ആക്സസ് അനുവദനീയമാണ്.",
+    "adminAddSchedule": "ഷെഡ്യൂൾ ചേർക്കുക",
+    "adminScheduleDay": "ദിവസം",
+    "adminScheduleStart": "ആരംഭം",
+    "adminScheduleEnd": "അവസാനം",
+    "adminDayEveryday": "എല്ലാ ദിവസവും",
+    "adminDayWeekday": "പ്രവൃത്തിദിവസം",
+    "adminDayWeekend": "വാരാന്ത്യം",
+    "adminDaySunday": "ഞായർ",
+    "adminDayMonday": "തിങ്കൾ",
+    "adminDayTuesday": "ചൊവ്വ",
+    "adminDayWednesday": "ബുധൻ",
+    "adminDayThursday": "വ്യാഴം",
+    "adminDayFriday": "വെള്ളി",
+    "adminDaySaturday": "ശനി",
+    "adminAllowedTags": "അനുവദനീയമായ ടാഗുകൾ",
+    "adminAllowedTagsHint": "ഈ ടാഗുകളുള്ള ഉള്ളടക്കം മാത്രം കാണിക്കുന്നു. എല്ലാം അനുവദിക്കാൻ ശൂന്യമായി വിടുക.",
+    "adminBlockedTags": "തടഞ്ഞ ടാഗുകൾ",
+    "adminBlockedTagsHint": "ഈ ടാഗുകളുള്ള ഉള്ളടക്കം ഈ ഉപയോക്താവിൽ നിന്ന് മറയ്ക്കപ്പെടും.",
+    "adminAddTag": "ടാഗ് ചേർക്കുക",
+    "adminEnabledDevices": "പ്രവർത്തനക്ഷമമാക്കിയ ഉപകരണങ്ങൾ",
+    "adminEnabledChannels": "പ്രവർത്തനക്ഷമമാക്കിയ ചാനലുകൾ",
+    "adminAuthProvider": "പ്രാമാണീകരണ ദാതാവ്",
+    "adminPasswordResetProvider": "പാസ്‌വേഡ് പുനഃസജ്ജീകരണ ദാതാവ്",
+    "adminLoginAttemptsBeforeLockout": "ലോക്ക്ഔട്ടിന് മുമ്പുള്ള പരമാവധി പരാജയപ്പെട്ട ലോഗിൻ ശ്രമങ്ങൾ",
+    "adminLoginAttemptsHint": "ഡിഫോൾട്ടിനായി 0 ആയി സജ്ജമാക്കുക, അല്ലെങ്കിൽ ലോക്ക്ഔട്ട് പ്രവർത്തനരഹിതമാക്കാൻ -1.",
+    "adminSyncPlayAccess": "SyncPlay ആക്സസ്",
+    "adminSyncPlayCreateAndJoin": "ഗ്രൂപ്പുകൾ സൃഷ്ടിക്കാനും ചേരാനും അനുവദിക്കുക",
+    "adminSyncPlayJoin": "ഗ്രൂപ്പുകളിൽ ചേരാൻ അനുവദിക്കുക",
+    "adminSyncPlayNone": "ആക്സസ് ഇല്ല",
+    "adminContentDeletionFolders": "ഇവിടെ നിന്ന് ഉള്ളടക്കം ഇല്ലാതാക്കാൻ അനുവദിക്കുക",
+    "adminBackupOptionsTitle": "ബാക്കപ്പ് സൃഷ്ടിക്കുക",
+    "adminBackupInclude": "ബാക്കപ്പിൽ എന്ത് ഉൾപ്പെടുത്തണമെന്ന് തിരഞ്ഞെടുക്കുക.",
+    "adminBackupDatabase": "ഡാറ്റാബേസ്",
+    "adminBackupDatabaseAlways": "എപ്പോഴും ഉൾപ്പെടുത്തിയത്",
+    "adminBackupMetadata": "മെറ്റാഡാറ്റ",
+    "adminBackupSubtitles": "സബ്ടൈറ്റിലുകൾ",
+    "adminBackupTrickplay": "Trickplay ചിത്രങ്ങൾ",
+    "adminEditTuner": "ട്യൂണർ എഡിറ്റ് ചെയ്യുക",
+    "adminTunerTypeM3u": "M3U ട്യൂണർ",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "ഫയൽ അല്ലെങ്കിൽ URL",
+    "adminTunerIpAddress": "ട്യൂണർ IP വിലാസം",
+    "adminTunerFriendlyName": "ഡിസ്പ്ലേ പേര്",
+    "adminTunerUserAgent": "യൂസർ ഏജന്റ്",
+    "adminTunerCount": "ഒരേസമയമുള്ള കണക്ഷൻ പരിധി",
+    "adminTunerCountHelp": "ട്യൂണർ ഒരേസമയം അനുവദിക്കുന്ന പരമാവധി സ്ട്രീമുകളുടെ എണ്ണം. അൺലിമിറ്റഡിന് 0 ആയി സജ്ജമാക്കുക.",
+    "adminTunerFallbackBitrate": "ഫോൾബാക്ക് പരമാവധി സ്ട്രീമിംഗ് ബിറ്റ്റേറ്റ്",
+    "adminTunerImportFavoritesOnly": "പ്രിയപ്പെട്ട ചാനലുകൾ മാത്രം ഇറക്കുമതി ചെയ്യുക",
+    "adminTunerAllowHwTranscoding": "ഹാർഡ്‌വെയർ ട്രാൻസ്കോഡിംഗ് അനുവദിക്കുക",
+    "adminTunerAllowFmp4": "fMP4 ട്രാൻസ്കോഡിംഗ് കണ്ടെയ്നർ അനുവദിക്കുക",
+    "adminTunerAllowStreamSharing": "സ്ട്രീം പങ്കിടൽ അനുവദിക്കുക",
+    "adminTunerEnableStreamLooping": "സ്ട്രീം ലൂപ്പിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminTunerIgnoreDts": "DTS അവഗണിക്കുക",
+    "adminTunerReadAtNativeFramerate": "നേറ്റീവ് ഫ്രെയിം റേറ്റിൽ ഇൻപുട്ട് വായിക്കുക",
+    "adminEditProvider": "ദാതാവിനെ എഡിറ്റ് ചെയ്യുക",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "ഫയൽ അല്ലെങ്കിൽ URL",
+    "adminXmltvMoviePrefix": "സിനിമ പ്രിഫിക്സ്",
+    "adminXmltvMovieCategories": "സിനിമ വിഭാഗങ്ങൾ",
+    "adminXmltvCategoriesHelp": "ഒന്നിലധികം വിഭാഗങ്ങൾ ഒരു ലംബ ബാർ ഉപയോഗിച്ച് വേർതിരിക്കുക.",
+    "adminXmltvKidsCategories": "കുട്ടികളുടെ വിഭാഗങ്ങൾ",
+    "adminXmltvNewsCategories": "വാർത്ത വിഭാഗങ്ങൾ",
+    "adminXmltvSportsCategories": "കായിക വിഭാഗങ്ങൾ",
+    "adminSdUsername": "ഉപയോക്തൃനാമം",
+    "adminSdPassword": "പാസ്‌വേഡ്",
+    "adminSdCountry": "രാജ്യം",
+    "adminSdCountrySelect": "ഒരു രാജ്യം തിരഞ്ഞെടുക്കുക",
+    "adminSdPostalCode": "പോസ്റ്റൽ കോഡ്",
+    "adminSdGetListings": "ലിസ്റ്റിംഗുകൾ നേടുക",
+    "adminSdListings": "ലിസ്റ്റിംഗുകൾ",
+    "adminEnableAllTuners": "എല്ലാ ട്യൂണറുകളും പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminTunerResetNotSupported": "ഈ ട്യൂണർ തരം പുനഃസജ്ജീകരണം പിന്തുണയ്ക്കുന്നില്ല.",
+    "adminMovieRecordingPath": "സിനിമ റെക്കോർഡിംഗ് പാത",
+    "adminGuideDays": "ഗൈഡ് ഡാറ്റ ദിവസങ്ങൾ",
+    "adminGuideDaysAuto": "ഓട്ടോമാറ്റിക്",
+    "adminGuideDaysValue": "{days} ദിവസങ്ങൾ",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "പോസ്റ്റ്-പ്രോസസിംഗ് ആപ്ലിക്കേഷൻ പാത",
+    "adminRecordingPostProcessorArgs": "പോസ്റ്റ്-പ്രോസസർ ആർഗ്യുമെന്റുകൾ",
+    "adminSaveRecordingNfo": "റെക്കോർഡിംഗ് NFO മെറ്റാഡാറ്റ സംരക്ഷിക്കുക",
+    "adminSaveRecordingImages": "റെക്കോർഡിംഗ് ചിത്രങ്ങൾ സംരക്ഷിക്കുക",
+    "adminLiveTvSectionTiming": "സമയക്രമം",
+    "adminLiveTvSectionPaths": "റെക്കോർഡിംഗ് പാതകൾ",
+    "adminLiveTvSectionPostProcessing": "പോസ്റ്റ്-പ്രോസസിംഗ്",
+    "adminGuideDaysDisplay": "ഗൈഡ് ഡാറ്റ: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "ഗൈഡ് ഡാറ്റ പുതുക്കുക",
+    "adminGuideRefreshStarted": "ഗൈഡ് ഡാറ്റ പുതുക്കൽ ആരംഭിച്ചു",
+    "adminGuideRefreshUnavailable": "ഈ സെർവറിൽ ഗൈഡ് പുതുക്കൽ ടാസ്ക് ലഭ്യമല്ല.",
+    "adminMetadataIdentify": "തിരിച്ചറിയുക",
+    "adminBrandingSplashUpload": "ചിത്രം അപ്‌ലോഡ് ചെയ്യുക",
+    "adminBrandingSplashUploaded": "സ്‌പ്ലാഷ്‌സ്‌ക്രീൻ അപ്ഡേറ്റ് ചെയ്തു",
+    "adminBrandingSplashUploadFailed": "സ്‌പ്ലാഷ്‌സ്‌ക്രീൻ അപ്‌ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല",
+    "adminBrandingSplashDeleted": "സ്‌പ്ലാഷ്‌സ്‌ക്രീൻ നീക്കം ചെയ്തു",
+    "adminBrandingNoSplash": "ഇഷ്ടാനുസൃത സ്‌പ്ലാഷ്‌സ്‌ക്രീൻ ഇല്ല",
+    "adminPlaybackQsvDevice": "QSV ഉപകരണം",
+    "adminPlaybackEnhancedNvdec": "മെച്ചപ്പെടുത്തിയ NVDEC ഡീകോഡർ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackPreferNativeDecoder": "സിസ്റ്റം നേറ്റീവ് ഹാർഡ്‌വെയർ ഡീകോഡർ തിരഞ്ഞെടുക്കുക",
+    "adminPlaybackColorDepth": "ഹാർഡ്‌വെയർ ഡീകോഡിംഗ് കളർ ഡെപ്ത്",
+    "adminPlaybackColorDepth10Hevc": "10-bit HEVC ഡീകോഡിംഗ്",
+    "adminPlaybackColorDepth10Vp9": "10-bit VP9 ഡീകോഡിംഗ്",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bit ഡീകോഡിംഗ്",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bit ഡീകോഡിംഗ്",
+    "adminPlaybackHwEncodingSection": "ഹാർഡ്‌വെയർ എൻകോഡിംഗ്",
+    "adminPlaybackAllowHevcEncoding": "HEVC എൻകോഡിംഗ് അനുവദിക്കുക",
+    "adminPlaybackAllowAv1Encoding": "AV1 എൻകോഡിംഗ് അനുവദിക്കുക",
+    "adminPlaybackIntelLowPowerH264": "Intel ലോ-പവർ H.264 എൻകോഡർ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackIntelLowPowerHevc": "Intel ലോ-പവർ HEVC എൻകോഡർ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackToneMapping": "ടോൺ മാപ്പിംഗ്",
+    "adminPlaybackEnableTonemapping": "ടോൺ മാപ്പിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackEnableVppTonemapping": "VPP ടോൺ മാപ്പിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackEnableVtTonemapping": "VideoToolbox ടോൺ മാപ്പിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackTonemappingAlgorithm": "ടോൺ മാപ്പിംഗ് അൽഗോരിതം",
+    "adminPlaybackTonemappingMode": "ടോൺ മാപ്പിംഗ് മോഡ്",
+    "adminPlaybackTonemappingRange": "ടോൺ മാപ്പിംഗ് റേഞ്ച്",
+    "adminPlaybackTonemappingDesat": "ടോൺ മാപ്പിംഗ് ഡീസാച്ചുറേഷൻ",
+    "adminPlaybackTonemappingPeak": "ടോൺ മാപ്പിംഗ് പീക്ക്",
+    "adminPlaybackTonemappingParam": "ടോൺ മാപ്പിംഗ് പാരാമീറ്റർ",
+    "adminPlaybackVppTonemappingBrightness": "VPP ടോൺ മാപ്പിംഗ് തെളിച്ചം",
+    "adminPlaybackVppTonemappingContrast": "VPP ടോൺ മാപ്പിംഗ് കോൺട്രാസ്റ്റ്",
+    "adminPlaybackPresetsQuality": "പ്രീസെറ്റുകളും ഗുണനിലവാരവും",
+    "adminPlaybackEncoderPreset": "എൻകോഡർ പ്രീസെറ്റ്",
+    "adminPlaybackH264Crf": "H.264 എൻകോഡിംഗ് CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) എൻകോഡിംഗ് CRF",
+    "adminPlaybackDeinterlaceMethod": "ഡീഇന്റർലേസ് രീതി",
+    "adminPlaybackDeinterlaceDoubleRate": "ഡീഇന്റർലേസ് ചെയ്യുമ്പോൾ ഫ്രെയിം റേറ്റ് ഇരട്ടിയാക്കുക",
+    "adminPlaybackAudioSection": "ഓഡിയോ",
+    "adminPlaybackEnableAudioVbr": "ഓഡിയോ VBR എൻകോഡിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminPlaybackDownmixBoost": "ഓഡിയോ ഡൗൺമിക്സ് ബൂസ്റ്റ്",
+    "adminPlaybackDownmixAlgorithm": "സ്റ്റീരിയോ ഡൗൺമിക്സ് അൽഗോരിതം",
+    "adminPlaybackMaxMuxingQueue": "പരമാവധി മക്സിംഗ് ക്യൂ വലുപ്പം",
+    "adminPlaybackAutoOption": "ഓട്ടോ",
+    "adminRunningTasks": "പ്രവർത്തിക്കുന്ന ടാസ്കുകൾ",
+    "adminNetworkingPublicHttpPort": "പബ്ലിക് HTTP പോർട്ട്",
+    "adminNetworkingRequireHttps": "HTTPS ആവശ്യമാണ്",
+    "adminNetworkingRequireHttpsHint": "എല്ലാ റിമോട്ട് അഭ്യർത്ഥനകളും HTTPS ലേക്ക് റീഡയറക്റ്റ് ചെയ്യുക. സെർവറിന് സാധുവായ സർട്ടിഫിക്കറ്റ് ഇല്ലെങ്കിൽ ഇതിന് ഒരു ഫലവുമില്ല.",
+    "adminNetworkingCertPassword": "സർട്ടിഫിക്കറ്റ് പാസ്‌വേഡ്",
+    "adminNetworkingIpSettings": "IP ക്രമീകരണങ്ങൾ",
+    "adminNetworkingEnableIpv4": "IPv4 പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminNetworkingEnableIpv6": "IPv6 പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminNetworkingAutoDiscovery": "സ്വയമേവയുള്ള പോർട്ട് മാപ്പിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminNetworkingLocalSubnets": "LAN നെറ്റ്‌വർക്കുകൾ",
+    "adminNetworkingLocalSubnetsHint": "ലോക്കൽ നെറ്റ്‌വർക്കിലുള്ളതായി പരിഗണിക്കുന്ന IP വിലാസങ്ങളുടെയോ CIDR സബ്‌നെറ്റുകളുടെയോ കോമ അല്ലെങ്കിൽ ലൈൻ കൊണ്ട് വേർതിരിച്ച ലിസ്റ്റ്.",
+    "adminNetworkingPublishedUris": "പ്രസിദ്ധീകരിച്ച സെർവർ URI-കൾ",
+    "adminNetworkingPublishedUriHint": "ഒരു സബ്‌നെറ്റ് അല്ലെങ്കിൽ വിലാസം ഒരു പ്രസിദ്ധീകരിച്ച URL-ലേക്ക് മാപ്പ് ചെയ്യുക, ഉദാ. all=https://example.com",
+    "adminPlaybackThrottleDelay": "ത്രോട്ടിൽ കാലതാമസം (സെക്കൻഡുകൾ)",
+    "adminPlaybackEnableSubtitleExtraction": "തത്സമയ സബ്ടൈറ്റിൽ എക്സ്ട്രാക്ഷൻ അനുവദിക്കുക",
+    "adminGeneralEnableSlowResponse": "സാവധാന പ്രതികരണ മുന്നറിയിപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminGeneralQuickConnect": "Quick Connect പ്രവർത്തനക്ഷമമാക്കുക",
+    "adminGeneralSectionServer": "സെർവർ",
+    "adminGeneralSectionMetadata": "മെറ്റാഡാറ്റ",
+    "adminGeneralSectionPaths": "പാതകൾ",
+    "adminGeneralSectionPerformance": "പ്രകടനം",
+    "adminGeneralDisplayLanguage": "ഇഷ്ട ഡിസ്പ്ലേ ഭാഷ",
+    "offlineBannerTitle": "നിങ്ങൾ ഓഫ്‌ലൈനാണ്",
+    "offlineBannerSubtitle": "നിങ്ങളുടെ ഡൗൺലോഡുകൾ കാണിക്കുന്നു",
+    "offlineBannerAction": "ഡൗൺലോഡുകൾ",
+    "serverUnreachableBannerTitle": "നിങ്ങളുടെ സെർവറിലേക്ക് എത്താൻ കഴിയുന്നില്ല",
+    "serverUnreachableBannerSubtitle": "അത് തിരികെ വരുന്നതുവരെ ഡൗൺലോഡുകളിൽ നിന്ന് പ്ലേ ചെയ്യുന്നു",
+    "contextMenuHideFromContinueWatching": "\"കാണുന്നത് തുടരുക\" എന്നതിൽ നിന്ന് മറയ്ക്കുക",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "\"അടുത്തത്\" എന്നതിൽ നിന്ന് മറയ്ക്കുക",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "ശേഖരത്തിലേക്ക് ചേർക്കുക",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "കണക്ഷൻ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "സ്വയം-സൈൻ ചെയ്ത സർട്ടിഫിക്കറ്റുകൾ അനുവദിക്കുക",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "സ്വയം-സൈൻ ചെയ്ത അല്ലെങ്കിൽ പ്രൈവറ്റ്-CA TLS സർട്ടിഫിക്കറ്റുകൾ ഉപയോഗിക്കുന്ന സെർവറുകളെ വിശ്വസിക്കുക. നിങ്ങൾ നിയന്ത്രിക്കുന്ന സെർവറുകൾക്ക് മാത്രം പ്രവർത്തനക്ഷമമാക്കുക. ഇത് എല്ലാ കണക്ഷനുകൾക്കുമുള്ള സർട്ടിഫിക്കറ്റ് മൂല്യനിർണ്ണയം പ്രവർത്തനരഹിതമാക്കുന്നു.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "വിശദാംശ സ്ക്രീൻ",
+    "settingsDetailsScreenSubtitle": "ശൈലി, പശ്ചാത്തല ബ്ലർ, ടാബ് സ്വഭാവം",
+    "settingsShowSeerrButtonInNavigation": "നാവിഗേഷൻ ബാറിൽ Seerr ബട്ടൺ കാണിക്കുക",
+    "settingsAlwaysExpandNavbarLabels": "മുകളിലെ നാവിഗേഷൻ ബാറിൽ ടെക്സ്റ്റ് ലേബലുകൾ എപ്പോഴും കാണിക്കുക",
+    "settingsMediaSegmentCountdown": "മീഡിയ സെഗ്‌മെന്റ് കൗണ്ട്ഡൗൺ",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "പ്രോഗ്രസ് ബാർ",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "ടൈമർ",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "ഒന്നുമില്ല",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "അടുത്തിടെ പുറത്തിറങ്ങിയ {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "ടണലിംഗ് പ്രവർത്തനക്ഷമമാക്കുക",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "വിപുലം. ഓഡിയോയും വീഡിയോയും ഒരു കപ്പിൾഡ് ഹാർഡ്‌വെയർ പാതയിലൂടെ റൂട്ട് ചെയ്യുന്നു. ചില ഉപകരണങ്ങളിൽ ഓഡിയോ/വീഡിയോ ഡ്രോപ്പ്‌ഔട്ടുകൾക്ക് കാരണമാകുന്നതിനാൽ ഡിഫോൾട്ടായി ഓഫാണ്.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "മീഡിയ വിശദാംശങ്ങൾ കാണിക്കുക",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "ലൈബ്രറി പേജുകളുടെ മുകളിൽ തിരഞ്ഞെടുത്ത ഇനത്തിന്റെ വിശദാംശങ്ങൾ കാണിക്കുക.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "ബ്രൗസ് ചെയ്യുമ്പോൾ ബാക്ക്‌ഡ്രോപ്പുകൾ മറയ്ക്കണോ?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "തീം സ്റ്റോർ",
+    "themeStoreSubtitle": "കമ്മ്യൂണിറ്റി തീമുകൾ ബ്രൗസ് ചെയ്ത് സംരക്ഷിക്കുക",
+    "themeStoreDescription": "നിങ്ങളുടെ മറ്റ് സംരക്ഷിച്ച തീമുകൾ പോലെ ഉപയോഗിക്കാൻ ഒരു തീം സംരക്ഷിക്കുക.",
+    "themeStoreEmpty": "ഇപ്പോൾ തീമുകളൊന്നും ലഭ്യമല്ല.",
+    "themeStoreLoadFailed": "തീം സ്റ്റോർ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.",
+    "themeStoreSave": "സംരക്ഷിക്കുക",
+    "themeStoreSaveAndApply": "സംരക്ഷിച്ച് പ്രയോഗിക്കുക",
+    "themeStoreSaved": "സംരക്ഷിച്ചു",
+    "themeStoreInvalidMessage": "ഈ തീം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.",
+    "themeStoreSavedMessage": "\"{themeName}\" സംരക്ഷിച്ചു.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "ഹോം വരി ഡിസ്പ്ലേ",
+    "homeRowSections": "ഹോം വരി വിഭാഗങ്ങൾ",
+    "homeRowToggles": "ഹോം വരി ടോഗിളുകൾ",
+    "homeRowTogglesSubtitle": "ലൈബ്രറി അധിഷ്ഠിത ഹോം വരി വിഭാഗങ്ങൾ പ്രവർത്തനക്ഷമമാക്കുകയോ പ്രവർത്തനരഹിതമാക്കുകയോ ചെയ്യുക",
+    "homeRowTogglesDescription": "ഹോം വിഭാഗങ്ങളിൽ വരികൾ പ്രദർശിപ്പിക്കാൻ ഇനിപ്പറയുന്ന ടോഗിളുകൾ പ്രവർത്തനക്ഷമമാക്കുക.",
+    "displayPlaylistsRows": "പ്ലേലിസ്റ്റ് വരികൾ പ്രദർശിപ്പിക്കുക",
+    "displayPlaylistsRowsSubtitle": "ഹോം വിഭാഗങ്ങളിൽ പ്ലേലിസ്റ്റ് വരികൾ കാണിക്കുക.",
+    "playlistsRowSorting": "പ്ലേലിസ്റ്റ് വരി അടുക്കൽ",
+    "playlistsRowSortingDescription": "പ്ലേലിസ്റ്റ് വരികൾ ചേർത്ത തീയതി, റിലീസ് തീയതി, അക്ഷരമാലാക്രമം എന്നിവയും അതിലേറെയും അനുസരിച്ച് അടുക്കുക.",
+    "displayAudioRows": "ഓഡിയോ വരികൾ പ്രദർശിപ്പിക്കുക",
+    "displayAudioRowsSubtitle": "ഹോം വിഭാഗങ്ങളിൽ ഓഡിയോ വരികൾ കാണിക്കുക.",
+    "audioRowsSorting": "ഓഡിയോ വരികളുടെ അടുക്കൽ",
+    "audioRowsSortingDescription": "ഓഡിയോ വരികൾ ചേർത്ത തീയതി, റിലീസ് തീയതി, അക്ഷരമാലാക്രമം എന്നിവയും അതിലേറെയും അനുസരിച്ച് അടുക്കുക.",
+    "audioPlaylists": "ഓഡിയോ പ്ലേലിസ്റ്റുകൾ",
+    "layout": "ലേഔട്ട്",
+    "theme": "തീം",
+    "keyboard": "കീബോർഡ്",
+    "navButtons": "ബട്ടണുകൾ",
+    "rendering": "റെൻഡറിംഗ്",
+    "mpvConfiguration": "MPV കോൺഫിഗറേഷൻ",
+    "externalPlayerAppDescription": "ലോംഗ്-പ്രസ് പ്ലേ ഓപ്ഷൻ പ്രവർത്തനക്ഷമമാക്കാൻ ബാഹ്യ പ്ലേയർ സജ്ജമാക്കുക",
+    "crewContributionsSeerr": "ക്രൂ സംഭാവനകൾ (Seerr)",
+    "changeArtwork": "ആർട്ട്‌വർക്ക് മാറ്റുക",
+    "missing": "കാണുന്നില്ല",
+    "clearAllArtworkButton": "എല്ലാ ആർട്ട്‌വർക്കും മായ്ക്കണോ?",
+    "clearAllArtworkWarning": "ഡൗൺലോഡ് ചെയ്ത എല്ലാ ആർട്ട്‌വർക്കും മായ്ക്കണമെന്ന് ഉറപ്പാണോ?",
+    "confirmClear": "മായ്ക്കൽ സ്ഥിരീകരിക്കുക",
+    "confirmClearMessage": "ഈ {itemType} മായ്ക്കണമെന്ന് ഉറപ്പാണോ?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "അപ്‌ലോഡ് ചെയ്യണോ?",
+    "resolutionLabel": "റെസലൂഷൻ: ",
+    "onlyShowInterfaceLanguage": "ഇന്റർഫേസ് ഭാഷയിൽ മാത്രം ആർട്ട്‌വർക്ക് കാണിക്കുക",
+    "confirmClearAll": "എല്ലാം മായ്ക്കൽ സ്ഥിരീകരിക്കുക",
+    "imageUploadSuccess": "ചിത്രം വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!",
+    "imageUploadFailed": "ചിത്രം അപ്‌ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "ചിത്രം സജ്ജമാക്കാൻ കഴിഞ്ഞില്ല: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "ചിത്രം ഇല്ലാതാക്കാൻ കഴിഞ്ഞില്ല: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "എല്ലാ ആർട്ട്‌വർക്കും മായ്ക്കാൻ കഴിഞ്ഞില്ല: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "അതെ",
+    "posterCategory": "പോസ്റ്റർ",
+    "backdropsCategory": "ബാക്ക്‌ഡ്രോപ്പുകൾ",
+    "bannerCategory": "ബാനർ",
+    "logoCategory": "ലോഗോ",
+    "thumbnailCategory": "തംബ്‌നെയിൽ",
+    "artCategory": "ആർട്ട്",
+    "discArtCategory": "ഡിസ്ക് ആർട്ട്",
+    "screenshotCategory": "സ്ക്രീൻഷോട്ട്",
+    "boxCoverCategory": "ബോക്സ് കവർ",
+    "boxRearCoverCategory": "ബോക്സ് പിൻ കവർ",
+    "menuArtCategory": "മെനു ആർട്ട്",
+    "confirmItemPoster": "പോസ്റ്റർ",
+    "confirmItemBackdrop": "ബാക്ക്‌ഡ്രോപ്പ്",
+    "confirmItemBanner": "ബാനർ",
+    "confirmItemLogo": "ലോഗോ",
+    "confirmItemThumbnail": "തംബ്‌നെയിൽ",
+    "confirmItemArt": "ആർട്ട്",
+    "confirmItemDiscArt": "ഡിസ്ക് ആർട്ട്",
+    "confirmItemScreenshot": "സ്ക്രീൻഷോട്ട്",
+    "confirmItemBoxCover": "ബോക്സ് കവർ",
+    "confirmItemBoxRearCover": "ബോക്സ് പിൻ കവർ",
+    "confirmItemMenuArt": "മെനു ആർട്ട്",
+    "resolutionAll": "എല്ലാം",
+    "resolutionHigh": "ഉയർന്നത് (1080p+)",
+    "resolutionMedium": "ഇടത്തരം (720p)",
+    "resolutionLow": "കുറഞ്ഞത് (<720p)",
+    "sources": "ഉറവിടങ്ങൾ",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "അധ്യായങ്ങൾ",
+    "audiobookBookmarks": "ബുക്ക്മാർക്കുകൾ",
+    "audiobookNotes": "കുറിപ്പുകൾ",
+    "audiobookQueue": "ക്യൂ",
+    "audiobookTimeline": "ടൈംലൈൻ",
+    "audiobookTimelineEmpty": "ടൈംലൈൻ ശൂന്യമാണ്",
+    "audiobookWholeBook": "മുഴുവൻ പുസ്തകം",
+    "audiobookFocusedTimeline": "കേന്ദ്രീകൃത ടൈംലൈൻ",
+    "audiobookExportBookmarks": "ബുക്ക്മാർക്കുകൾ എക്സ്പോർട്ട് ചെയ്യുക",
+    "audiobookExportNotes": "കുറിപ്പുകൾ എക്സ്പോർട്ട് ചെയ്യുക",
+    "audiobookExportAll": "എല്ലാം എക്സ്പോർട്ട് ചെയ്യുക",
+    "audiobookExportSuccess": "{path} ലേക്ക് എക്സ്പോർട്ട് ചെയ്തു",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "എക്സ്പോർട്ട് പരാജയപ്പെട്ടു: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "വരികൾ",
+    "audiobookAddBookmark": "ബുക്ക്മാർക്ക് ചേർക്കുക",
+    "audiobookAddNote": "കുറിപ്പ് ചേർക്കുക",
+    "audiobookEditNote": "കുറിപ്പ് എഡിറ്റ് ചെയ്യുക",
+    "audiobookNoteHint": "ഈ നിമിഷത്തിനായി ഒരു കുറിപ്പ് എഴുതുക",
+    "audiobookSleepTimer": "സ്ലീപ്പ് ടൈമർ",
+    "audiobookSleepOff": "ഓഫ്",
+    "audiobookSleepEndOfChapter": "അധ്യായത്തിന്റെ അവസാനം",
+    "audiobookSleepCustom": "ഇഷ്ടാനുസൃതം",
+    "audiobookSleepRemaining": "{remaining} ബാക്കി",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 മിനി} other{{count} മിനി}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "പ്ലേബാക്ക് വേഗത",
+    "audiobookRemainingTime": "ബാക്കി",
+    "audiobookElapsedTime": "കഴിഞ്ഞത്",
+    "audiobookSkipBackSeconds": "{seconds}സെ പിന്നോട്ട്",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "{seconds}സെ മുന്നോട്ട്",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "മുൻ അധ്യായം",
+    "audiobookNextChapter": "അടുത്ത അധ്യായം",
+    "audiobookChapterIndicator": "{total} ൽ അധ്യായം {current}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "അധ്യായങ്ങളൊന്നുമില്ല",
+    "audiobookNoBookmarks": "ഇതുവരെ ബുക്ക്മാർക്കുകളൊന്നുമില്ല",
+    "audiobookNoNotes": "ഇതുവരെ കുറിപ്പുകളൊന്നുമില്ല",
+    "audiobookBookmarkAdded": "{position} ൽ ബുക്ക്മാർക്ക് ചേർത്തു",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "1.0x ലേക്ക് പുനഃസജ്ജമാക്കുക",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "സംരക്ഷിക്കുക",
+    "audiobookCancel": "റദ്ദാക്കുക",
+    "audiobookDelete": "ഇല്ലാതാക്കുക",
+    "subtitlePreferences": "സബ്ടൈറ്റിൽ മുൻഗണനകൾ",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "സബ്ടൈറ്റിൽ മോഡുകൾ, ഡിഫോൾട്ട് ഭാഷകൾ, രൂപഭാവം, റെൻഡറിംഗ് ഓപ്ഷനുകൾ എന്നിവ മാറ്റുക.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "സബ്ടൈറ്റിൽ റെൻഡറിംഗ്",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "ഡിസ്പ്ലേ ഓപ്ഷനുകൾ",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "റിലീസ് തീയതി (ആരോഹണം)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "റിലീസ് തീയതി (അവരോഹണം)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "സംഭാവനകൾ ഗ്രൂപ്പ് ചെയ്യുക",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "ഒന്നിലധികം റോളുകൾ ഗ്രൂപ്പ് ചെയ്യുക",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "ലൈബ്രറി റൈറ്റ് ആക്സസ് മുന്നറിയിപ്പ്",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "ഇത് എങ്ങനെ പരിഹരിക്കാം:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. സെർവറിലെ നിങ്ങളുടെ മീഡിയ ലൈബ്രറി ഫോൾഡറുകൾക്കായി Jellyfin സേവന ഉപയോക്താവിന് (ഉദാ. jellyfin അല്ലെങ്കിൽ Docker PUID/PGID) റൈറ്റ് അനുമതികൾ നൽകുക.\n\n2. അല്ലെങ്കിൽ, നിങ്ങളുടെ Jellyfin ഡാഷ്ബോർഡ് -> Libraries ലേക്ക് പോയി, ഈ ലൈബ്രറി എഡിറ്റ് ചെയ്യുക, Jellyfin ന്റെ ആന്തരിക ഡാറ്റാബേസിൽ ആർട്ട്‌വർക്ക് സംഭരിക്കാൻ 'Save artwork into media folders' പ്രവർത്തനരഹിതമാക്കുക.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "ഒഴിവാക്കുക",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "നിങ്ങളുടെ '{libraryName}' ലൈബ്രറി ആർട്ട്‌വർക്ക് നേരിട്ട് മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കാൻ കോൺഫിഗർ ചെയ്തിരിക്കുന്നു ('Save artwork into media folders' പ്രവർത്തനക്ഷമമാണ്). എന്നിരുന്നാലും, Jellyfin റൈറ്റ് ആക്സസ് പരീക്ഷിച്ചു, ഈ ഡയറക്ടറിയിലേക്ക് ഫയലുകൾ എഴുതാൻ അനുമതിയില്ല:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Jellyfin ആർട്ട്‌വർക്ക് അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടതായി തോന്നുന്നു. നിങ്ങളുടെ ലൈബ്രറി ആർട്ട്‌വർക്ക് നേരിട്ട് മീഡിയ ഫോൾഡറുകളിൽ സംരക്ഷിക്കാൻ കോൺഫിഗർ ചെയ്തിരിക്കുന്നു ('Save artwork into media folders' പ്രവർത്തനക്ഷമമാണ്). Jellyfin സെർവർ പ്രോസസിന് നിങ്ങളുടെ മീഡിയ ഡയറക്ടറികളിലേക്ക് ഫയലുകൾ എഴുതാൻ അനുമതിയില്ലാത്തപ്പോൾ ഈ പിശക് സാധാരണയായി സംഭവിക്കുന്നു.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "ബാഹ്യ ലിസ്റ്റുകൾ",
+    "replay": "വീണ്ടും പ്ലേ ചെയ്യുക",
+    "fileInformation": "ഫയൽ വിവരം",
+    "fileSizeFormat": "വലുപ്പം: {size}  •  ഫോർമാറ്റ്: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "എല്ലാ ({count}) ഓഡിയോ ട്രാക്കുകളും കാണിക്കുക",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "എല്ലാ ({count}) സബ്ടൈറ്റിൽ ട്രാക്കുകളും കാണിക്കുക",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "ഡയറക്റ്റ് പ്ലേ കഴിവ് പരിശോധിക്കുന്നു...",
+    "directPlayCapabilityLabel": "ഡയറക്റ്റ് പ്ലേ കഴിവ്: ",
+    "forced": "ഫോഴ്സ്ഡ്",
+    "transcodeContainerNotSupported": "കണ്ടെയ്നർ ഫോർമാറ്റ് പ്ലേയർ പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoCodecNotSupported": "വീഡിയോ കോഡെക് പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeAudioCodecNotSupported": "ഓഡിയോ കോഡെക് പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeSubtitleCodecNotSupported": "സബ്ടൈറ്റിൽ ഫോർമാറ്റ് പിന്തുണയ്ക്കുന്നില്ല (ബേണിംഗ് ആവശ്യമാണ്).",
+    "transcodeAudioProfileNotSupported": "ഓഡിയോ പ്രൊഫൈൽ പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoProfileNotSupported": "വീഡിയോ പ്രൊഫൈൽ പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoLevelNotSupported": "വീഡിയോ ലെവൽ പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoResolutionNotSupported": "ഈ ഉപകരണം വീഡിയോ റെസലൂഷൻ പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoBitDepthNotSupported": "വീഡിയോ ബിറ്റ് ഡെപ്ത് പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeVideoFramerateNotSupported": "വീഡിയോ ഫ്രെയിംറേറ്റ് പിന്തുണയ്ക്കുന്നില്ല.",
+    "transcodeContainerBitrateExceedsLimit": "ഫയൽ ബിറ്റ്റേറ്റ് പ്ലേയർ സ്ട്രീമിംഗ് പരിധി കവിയുന്നു.",
+    "transcodeVideoBitrateExceedsLimit": "വീഡിയോ ബിറ്റ്റേറ്റ് സ്ട്രീമിംഗ് പരിധി കവിയുന്നു.",
+    "transcodeAudioBitrateExceedsLimit": "ഓഡിയോ ബിറ്റ്റേറ്റ് സ്ട്രീമിംഗ് പരിധി കവിയുന്നു.",
+    "transcodeAudioChannelsNotSupported": "ഓഡിയോ ചാനലുകളുടെ എണ്ണം പിന്തുണയ്ക്കുന്നില്ല.",
+    "sortAlphabetical": "അക്ഷരമാലാക്രമം",
+    "sortReleaseAscending": "റിലീസ് ക്രമം (ആരോഹണം)",
+    "sortReleaseDescending": "റിലീസ് ക്രമം (അവരോഹണം)",
+    "sortCustomDragDrop": "ഇഷ്ടാനുസൃതം (വലിച്ചിടുക)",
+    "playlistSortOptions": "പ്ലേലിസ്റ്റ് അടുക്കൽ ഓപ്ഷനുകൾ",
+    "resetSort": "അടുക്കൽ പുനഃസജ്ജമാക്കുക",
+    "rewatchSeasonEpisode": "S{season}:E{episode} വീണ്ടും കാണുക",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "പ്ലേലിസ്റ്റ് വീണ്ടും കാണുക",
+    "noSubtitlesFound": "സബ്ടൈറ്റിലുകളൊന്നും കണ്ടെത്തിയില്ല.",
+    "adminControls": "അഡ്മിൻ നിയന്ത്രണങ്ങൾ",
+    "impellerRendering": "റെൻഡറിംഗ് എഞ്ചിൻ (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "സുഗമമായ ആനിമേഷനുകൾക്കും കുറഞ്ഞ സ്റ്റട്ടറിനുമായുള്ള Flutter-ന്റെ ആധുനിക GPU റെൻഡററാണ് Impeller. ചില TV ബോക്സുകളിലും പഴയ GPU-കളിലും ഇത് ഗ്ലിച്ചുകൾക്കോ കറുത്ത വീഡിയോയ്ക്കോ കാരണമായേക്കാം; അവ കാണുകയാണെങ്കിൽ ഇത് ഓഫ് ചെയ്യുക. ഓട്ടോമാറ്റിക് നിങ്ങളുടെ ഉപകരണത്തിനുള്ള മികച്ച ഡിഫോൾട്ട് തിരഞ്ഞെടുക്കുന്നു. പ്രയോഗിക്കാൻ Moonfin പുനരാരംഭിക്കുക.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "ഓട്ടോമാറ്റിക്",
+    "impellerOn": "ഓൺ",
+    "impellerOff": "ഓഫ്",
+    "impellerRestartTitle": "പുനരാരംഭിക്കൽ ആവശ്യമാണ്",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "റെൻഡറിംഗ് എഞ്ചിൻ മാറ്റാൻ Moonfin പുനരാരംഭിക്കേണ്ടതുണ്ട്. ഇപ്പോൾ ആപ്പ് അടയ്ക്കുക, തുടർന്ന് പ്രയോഗിക്കാൻ അത് വീണ്ടും തുറക്കുക.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "ഇപ്പോൾ ആപ്പ് അടയ്ക്കുക",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "ലൈബ്രറി പുതുക്കുക",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "എല്ലാ ലൈബ്രറികളും പുതുക്കുക",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "ചേർത്ത തീയതി (പഴയത് ആദ്യം)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "ചേർത്ത തീയതി (പുതിയത് ആദ്യം)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "അക്ഷരമാലാക്രമം (A മുതൽ Z വരെ)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "അക്ഷരമാലാക്രമം (Z മുതൽ A വരെ)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "സെർവർ അനലിറ്റിക്സ് ലോഡ് ചെയ്യുന്നു... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "സോഴ്സുമായി പൊരുത്തപ്പെടുത്തുക",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb ടോപ്പ് 250 സിനിമകൾ",
+    "imdbTop250TvShows": "IMDb ടോപ്പ് 250 ടിവി ഷോകൾ",
+    "imdbMostPopularMovies": "IMDb ഏറ്റവും ജനപ്രിയ സിനിമകൾ",
+    "imdbMostPopularTvShows": "IMDb ഏറ്റവും ജനപ്രിയ ടിവി ഷോകൾ",
+    "imdbLowestRatedMovies": "IMDb ഏറ്റവും കുറഞ്ഞ റേറ്റിംഗുള്ള സിനിമകൾ",
+    "imdbTopEnglishMovies": "IMDb ഏറ്റവും ഉയർന്ന റേറ്റിംഗുള്ള ഇംഗ്ലീഷ് സിനിമകൾ"
 }

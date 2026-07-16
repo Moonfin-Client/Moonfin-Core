@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Connexió ràpida",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Eliminar",
+    "remove": "Elimina",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -144,7 +144,7 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://your-server.example.com",
+    "serverAddressHint": "https://el-teu-servidor.exemple.com",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Sèrie",
+    "series": "Sèries",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Aplicar",
+    "apply": "Aplica",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Reprendre",
+    "resume": "Reprèn",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Mirat",
+    "watched": "Vist",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Sense mirar",
+    "unwatched": "No vist",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiollibre} other{{count} audiollibres}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 temporada} other{{count} temporades}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Reproduir",
+    "play": "Reprodueix",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Cast",
+    "cast": "Emet",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "ESCRIPTORS",
+    "writers": "GUIONISTES",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 pista} other{{count} pistes}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 capítol} other{{count} capítols}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Barrejar",
+    "shuffle": "Aleatori",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} can.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1530,7 +1530,7 @@
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
-    "stereo": "estèreo",
+    "stereo": "Estèreo",
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
@@ -1651,7 +1651,7 @@
             }
         }
     },
-    "castControlsTitle": "{label} Controls",
+    "castControlsTitle": "Controls de {label}",
     "@castControlsTitle": {
         "description": "Title for cast controls dialog",
         "placeholders": {
@@ -1727,7 +1727,7 @@
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
-    "off": "Apagat",
+    "off": "Desactivat",
     "@off": {
         "description": "Label for subtitle off option"
     },
@@ -2191,7 +2191,7 @@
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Tancar",
+    "close": "Tanca",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "T{season} E{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "T{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 episodi} other{{count} episodis}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2758,7 +2758,7 @@
     "@fireworks": {
         "description": "Seasonal effect: fireworks"
     },
-    "confetti": "Confetti",
+    "confetti": "Confeti",
     "@confetti": {
         "description": "Seasonal effect: confetti"
     },
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Inhabilitat",
+    "disabled": "Desactivat",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS Direct Play",
+    "pgsDirectPlay": "Reproducció nativa de PGS",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3177,7 +3177,7 @@
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "ASS/SSA Direct Play",
+    "assSsaDirectPlay": "Reproducció nativa d'ASS/SSA",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -3436,7 +3436,7 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "Teal",
+    "teal": "Verd blavós",
     "@teal": {
         "description": "Color: teal"
     },
@@ -3464,7 +3464,7 @@
     "@slate": {
         "description": "Color: slate"
     },
-    "indigo": "Indigo",
+    "indigo": "Indi",
     "@indigo": {
         "description": "Color: indigo"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Apagat",
+    "mediaBarModeOff": "Desactivat",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3728,10 +3728,6 @@
     "lastUser": "Últim usuari",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Usuari específic",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Autenticar-se sempre",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Connector",
+    "pluginLabel": "Connector Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "Descobriu les files",
+    "discoverRows": "Pàgina de descobriment de Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Arrossegueu per reordenar. Activa o desactiva les files. S'han activat les sincronitzacions d'ordre de files amb el connector Moonfin.",
+    "discoverRowsDescriptionPlugin": "Activeu les files que voleu veure a la pàgina principal de Seerr. Arrossegueu per reordenar. L'ordre personalitzat es sincronitza amb Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Arrossegueu per reordenar. Activa o desactiva les files.",
+    "discoverRowsDescription": "Activeu les files que voleu veure a la pàgina principal de Seerr. Arrossegueu per reordenar. L'ordre personalitzat es sincronitza amb Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Habilitat",
+    "enabled": "Activat",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Clar",
+    "clear": "Neteja",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4540,7 +4536,7 @@
     "interval": "Interval",
     "name": "Nom",
     "networking": "Treball en xarxa",
-    "next": "A continuació",
+    "next": "Següent",
     "path": "Camí",
     "paused": "En pausa",
     "permissions": "Permisos",
@@ -4548,7 +4544,7 @@
     "profile": "Perfil",
     "provider": "Proveïdor",
     "refresh": "Actualitzar",
-    "remote": "Remot",
+    "remote": "Comandament",
     "rename": "Canvia el nom",
     "revoke": "Revocar",
     "role": "Rol",
@@ -4560,7 +4556,7 @@
     "sessions": "Sessions",
     "set": "Set",
     "status": "Estat",
-    "stop": "Atureu-vos",
+    "stop": "Atura",
     "streaming": "Transmissió en continu",
     "time": "Temps",
     "trickplay": "Trickplay",
@@ -4569,7 +4565,7 @@
     "update": "Actualització",
     "upload": "Carrega",
     "unmute": "Activa el so",
-    "mute": "Silenciar",
+    "mute": "Silencia",
     "branding": "Marca",
     "adminDrawerDashboard": "Tauler de control",
     "adminDrawerAnalytics": "Analítica",
@@ -4578,7 +4574,7 @@
     "adminDrawerUsers": "Usuaris",
     "adminDrawerLibraries": "Biblioteques",
     "adminDrawerTranscoding": "Transcodificació",
-    "adminDrawerResume": "Currículum",
+    "adminDrawerResume": "Reprèn",
     "adminDrawerStreaming": "Transmissió en continu",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Dispositius",
@@ -4675,7 +4671,7 @@
     "sessionPrev": "Anterior",
     "sessionRewind": "Rebobinar",
     "sessionForward": "Endavant",
-    "sessionNext": "A continuació",
+    "sessionNext": "Següent",
     "sessionVolumeDown": "Vol -",
     "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
@@ -4684,7 +4680,7 @@
     "actions": "Accions",
     "videoCodec": "Còdec de vídeo",
     "audioCodec": "Còdec d'àudio",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Accel. HW",
     "completion": "Finalització",
     "direct": "Directe",
     "adminDisconnect": "Desconnecta",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Manteniment del segment (segons)",
     "adminThrottleBuffering": "Amortiment de l'accelerador",
     "adminTrickplaySaved": "S'ha desat la configuració de Trickplay",
-    "adminTrickplayLoadFailed": "No s'ha pogut carregar la configuració de trucada",
+    "adminTrickplayLoadFailed": "No s'ha pogut carregar la configuració de Trickplay",
     "adminEnableHardwareAcceleration": "Activa l'acceleració de maquinari",
     "adminEnableKeyFrameExtraction": "Activa l'extracció només de fotogrames clau",
     "adminKeyFrameSubtitle": "Més ràpid però amb menor precisió",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "Port HTTPS",
     "adminPublicHttpsPort": "Port HTTPS públic",
     "adminBaseUrl": "URL base",
-    "adminBaseUrlHint": "p. ex. /gelatina",
+    "adminBaseUrlHint": "p. ex. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Activa HTTPS",
     "adminLocalNetwork": "Xarxa local",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Cerca persona remota",
     "adminNoRemoteMatches": "No s'han trobat coincidències remotes",
     "adminRemoteResults": "Resultats a distància",
     "adminRemoteMetadataApplied": "S'han aplicat metadades remotes",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Afegeix un sintonitzador",
     "adminTunerType": "Tipus de sintonitzador",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Altres",
-    "adminUrlPath": "URL / Camí",
-    "adminNameOptional": "Nom (opcional)",
     "adminTunerAdded": "S'ha afegit el sintonitzador",
     "adminTunerAddFailed": "No s'ha pogut afegir el sintonitzador: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Afegeix un proveïdor de guia",
     "adminProviderType": "Tipus de proveïdor",
-    "adminProviderTypeHint": "SchedulesDirect o XMLTV",
-    "adminUsernameOptional": "Nom d'usuari (opcional)",
-    "adminRefreshInterval": "Interval d'actualització (hores)",
     "adminProviderAdded": "S'ha afegit el proveïdor",
     "adminProviderAddFailed": "No s'ha pogut afegir el proveïdor: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "Còpia de seguretat sense nom",
     "adminLiveTvNotAvailable": "L'administració de TV en directe no està disponible en aquesta compilació de servidor.",
     "adminLiveTvTitle": "Administració de TV en directe",
-    "adminApply": "Aplicar",
+    "adminApply": "Aplica",
     "adminNotSet": "No configurat",
     "adminReset": "Restableix",
     "adminLogsTitle": "Registres del servidor",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "No hi ha línies coincidents",
     "adminMetadataEditorTitle": "Editor de metadades",
-    "adminMetadataRemote": "Remot",
     "adminMetadataType": "Tipus",
     "adminMetadataDetails": "Detalls",
     "adminMetadataExternalIds": "Identificadors externs",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Eliminar",
+    "adminReposRemove": "Elimina",
     "adminReposSaveFailed": "No s'han pogut desar els dipòsits: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "S'està cancel·lant...",
     "adminTaskRunning": "Córrer...",
     "adminTaskNeverRun": "No córrer mai",
-    "adminTaskStop": "Atureu-vos",
+    "adminTaskStop": "Atura",
     "adminTaskRun": "Corre",
     "adminTaskDetailLastExecution": "Última Execució",
     "adminTaskDetailStarted": "Començat",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Cada 12 hores",
     "adminTaskTriggerEvery24Hours": "Cada 24 hores",
     "adminTaskTriggerEvery2Days": "Cada 2 dies",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hora} other{{count} hores}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "ara",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} d",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6118,7 +6106,7 @@
     "adminTrickplayDescription": "Configura la generació d'imatges Trickplay per a les miniatures de previsualització de cerca.",
     "adminNetworkingPublicHttpsPort": "Port HTTPS públic",
     "adminNetworkingBaseUrl": "URL base",
-    "adminNetworkingBaseUrlHint": "p. ex. /gelatina",
+    "adminNetworkingBaseUrlHint": "p. ex. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Ruta del certificat",
     "adminNetworkingRemoteIpFilter": "Filtre IP remot",
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Recordeu la meva elecció",
     "playHdr10Fallback": "Reprodueix HDR10 alternativa",
     "requestTranscode": "Sol·licita la transcodificació",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# fila descoberta} other {# files descobertes}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6295,7 +6283,7 @@
             }
         }
     },
-    "castKindControls": "{kind} Controls",
+    "castKindControls": "Controls de {kind}",
     "@castKindControls": {
         "placeholders": {
             "kind": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "PIN incorrecte",
     "pinMismatch": "Els PIN no coincideixen",
     "pinForgot": "Heu oblidat el PIN?",
-    "pinClear": "Clar",
+    "pinClear": "Neteja",
     "pinBackspace": "Retrocés",
-    "quickConnectAuthorized": "S'ha autoritzat la sol·licitud de connexió ràpida.",
-    "quickConnectInvalidOrExpired": "El codi de connexió ràpida no és vàlid o ha caducat.",
-    "quickConnectNotSupported": "La connexió ràpida no és compatible amb aquest servidor.",
-    "quickConnectAuthorizeFailed": "No s'ha pogut autoritzar el codi de connexió ràpida.",
-    "quickConnectDisabled": "La connexió ràpida està desactivada en aquest servidor.",
-    "quickConnectForbidden": "El vostre compte no pot autoritzar aquesta sol·licitud de connexió ràpida.",
-    "quickConnectNotFound": "No s'ha trobat el codi de connexió ràpida. Prova amb un codi nou.",
-    "quickConnectFailedWithMessage": "La connexió ràpida ha fallat: {message}",
+    "quickConnectAuthorized": "S'ha autoritzat la sol·licitud de Quick Connect.",
+    "quickConnectInvalidOrExpired": "El codi de Quick Connect no és vàlid o ha caducat.",
+    "quickConnectNotSupported": "Quick Connect no és compatible amb aquest servidor.",
+    "quickConnectAuthorizeFailed": "No s'ha pogut autoritzar el codi de Quick Connect.",
+    "quickConnectDisabled": "Quick Connect està desactivat en aquest servidor.",
+    "quickConnectForbidden": "El vostre compte no pot autoritzar aquesta sol·licitud de Quick Connect.",
+    "quickConnectNotFound": "No s'ha trobat el codi de Quick Connect. Proveu amb un codi nou.",
+    "quickConnectFailedWithMessage": "Quick Connect ha fallat: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "A continuació",
     "playNext": "Reproduir a continuació",
     "stillWatchingContent": "La reproducció s'ha posat en pausa. Encara estàs mirant?",
-    "stillWatchingStop": "Atureu-vos",
+    "stillWatchingStop": "Atura",
     "stillWatchingContinue": "Continua",
     "skipSegment": "Omet {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Comproveu si hi ha actualitzacions",
     "settingsCheckForUpdatesSubtitle": "Comproveu l'últim llançament de Moonfin",
     "settingsPoweredByFlutter": "Desenvolupat per Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# avís de llicència} other {# avisos de llicència}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Registre",
+    "record": "Enregistra",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6807,18 +6795,6 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Passthrough (avançat)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
@@ -6835,7 +6811,7 @@
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "Passthrough EAC3 JOC (Atmos)",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
@@ -6847,11 +6823,11 @@
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "Passthrough TrueHD",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "Passthrough TrueHD Atmos",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} can. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7002,7 +6978,7 @@
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
-    "mapDolbyVisionP7Subtitle": "Reprodueix 7 reproduccions del perfil HDR10 com a HEVC compatible amb HDR10 en dispositius que no siguin DV.",
+    "mapDolbyVisionP7Subtitle": "Reprodueix els fluxos de Dolby Vision perfil 7 com a HEVC compatible amb HDR10 en dispositius sense DV.",
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Obriu el selector de rutes d'iOS",
     "airPlayRoutePickerUnavailable": "El selector de rutes AirPlay no està disponible en aquest dispositiu.",
     "videos": "Vídeos",
-    "trailers": "Remolcs",
+    "trailers": "Tràilers",
     "programs": "Programes",
     "songs": "Cançons",
     "photoAlbums": "Àlbums de fotos",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Els millors artistes",
     "analyticsTopAuthors": "Autors principals",
     "analyticsTopContributors": "Col·laboradors principals",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 biblioteca} other{{count} biblioteques}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7326,9 +7302,9 @@
     "cb7ExtractionPluginUnavailable": "El connector d'extracció CB7 no està disponible en aquesta plataforma.",
     "closeGenrePanel": "Tanca el tauler de gènere",
     "loadingShuffle": "S'està carregant la reproducció aleatòria...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "BARREJA DE LA BIBLIOTECA",
+    "randomShuffleLabel": "BARREJA ALEATÒRIA",
+    "genresShuffleLabel": "BARREJA DE GÈNERES",
     "autoHdrSwitching": "Canvi automàtic HDR",
     "autoHdrSwitchingDescription": "Activa automàticament HDR per a la reproducció de vídeo HDR i restaura el mode de visualització en sortir.",
     "whenFullscreen": "Quan a pantalla completa",
@@ -7379,7 +7355,7 @@
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
-    "scrollWheelActionOff": "Desactivar",
+    "scrollWheelActionOff": "Desactivat",
     "@scrollWheelActionOff": {
         "description": "Scroll wheel action option: do nothing"
     },
@@ -7439,7 +7415,7 @@
     "@settingsMaxAudioChannelsMono": {
         "description": "Option: Mono (1 channel)"
     },
-    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "settingsMaxAudioChannelsStereo": "2.0 Estèreo",
     "@settingsMaxAudioChannelsStereo": {
         "description": "Option: Stereo (2 channels)"
     },
@@ -7447,7 +7423,7 @@
     "@settingsMaxAudioChannels3_0": {
         "description": "Option: 3 channels"
     },
-    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadraphonic",
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadrafònic",
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
@@ -7521,7 +7497,7 @@
     "themeStoreDescription": "Guarda un tema per a usarlo com els altres temes guardats.",
     "themeStoreEmpty": "No hi ha temes disponibles en aquest moment.",
     "themeStoreLoadFailed": "No s'ha pogut carregar la botiga de temes. Verifica la teva conexió i intenta-ho de nou.",
-    "themeStoreSave": "Guardar",
+    "themeStoreSave": "Desa",
     "themeStoreSaveAndApply": "Guardar i aplicar",
     "themeStoreSaved": "Guardat",
     "themeStoreInvalidMessage": "Aquest tema no s'ha pogut carregar.",
@@ -7662,5 +7638,1373 @@
     "detailScreenStyleMoonfin": "Clàssic",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
-    }
+    },
+    "expandedTabs": "Pestanyes desplegades",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Mostra automàticament el contingut de les pestanyes mentre hi navegues. Desactiva-ho per obrir i tancar cada pestanya manualment.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Mostrar els detalls tècnics?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Mostra el còdec, la resolució i la informació del flux al resum del bàner",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystemTmdb": "Similitud de TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Aplicar el límit de classificació parental?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Limita els suggeriments de Recomanacions Moonfin segons la classificació parental del contingut de destinació",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyleSubtitle": "Automàtic s'adapta al teu dispositiu. Tria Apple o Material per forçar un aspecte concret.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Qualitat de Glass",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Auto tria el millor efecte Glass per a aquest dispositiu. Complet força un desenfocament real; Reduït utilitza un efecte lleuger que estalvia energia de la GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "customThemeTitle": "Tema personalitzat",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Els temes personalitzats modifiquen els elements visuals de tot Moonfin. Tria una d'aquestes opcions segons el teu estil.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "theme8BitHeroSubtitle": "Estil retro de pixel art amb una paleta contundent, vores quadrades, ombres marcades i una tipografia de píxels",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "games": "Jocs",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameNoCoreOptions": "Aquest nucli no té opcions ajustables.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Mantén premut per obrir el menú",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Encara no es poden executar jocs en aquest dispositiu.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 llibre} other{{count} llibres}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Llibre",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audiollibre",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% llegit",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Queden {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Llegeix",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Escolta",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Elements",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Extres",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Darrere les càmeres",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Escenes eliminades",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Reportatges",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Entrevistes",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Escenes",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Curtmetratges",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Queden {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "shuffleAllMusic": "Barreja tota la música",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Inicia la sessió a Moonfin al teu telèfon",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "No es pot connectar amb el teu servidor",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "A continuació: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes} min restants",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours} h restants",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} h {minutes} min restants",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Pàgines de detall, files d'inici i volum",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Música del tema en bucle",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Repeteix la pista en comptes de reproduir-la un sol cop",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "fallbackAudioLanguage": "Idioma d'àudio alternatiu",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Prefereix la pista d'àudio predeterminada",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Prefereix la pista d'àudio original en comptes del doblatge localitzat.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Prefereix les pistes d'audiodescripció",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Prefereix les pistes d'audiodescripció en comptes de les normals.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transcodificació (àudio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Transmissió directa (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transcodificació (taxa de bits o resolució)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transcodificació (vídeo i àudio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transcodificació (vídeo)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioFallbackCodecDescription": "Tria el format de destinació per transcodificar l'àudio multicanal quan el flux d'origen no es pot reproduir de manera nativa ni transmetre directament.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Detecció automàtica\n(Recomanat)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Només estèreo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Eficient)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsMaxAudioChannels": "Màxim de canals d'àudio",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsAuto": "Detecció automàtica\n(Predeterminat del maquinari)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsAudioRouteHeadphones": "Auriculars",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Mode de subtítols",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Marcats",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeFlaggedDescription": "Reprodueix les pistes marcades internament a les metadades del fitxer com a \"predeterminada\" o \"forçada\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Carrega i mostra automàticament els subtítols cada vegada que comença un vídeo.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Activa automàticament els subtítols si la pista d'àudio predeterminada és en un idioma estranger.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Només carrega els subtítols marcats explícitament amb l'indicador de metadades \"forçat\".",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Desactiva completament la càrrega automàtica de subtítols.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Idioma de subtítols alternatiu",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Flux de subtítols",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Mostra les descàrregues al servidor",
+    "reportDownloadsActivitySubtitle": "Permet que l'administrador del servidor vegi les teves descàrregues transcodificades al tauler",
+    "navbarAlwaysExpanded": "Mostra sempre les etiquetes de la barra de navegació",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "groupItemsIntoCollections": "Agrupa els elements en col·leccions",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Amaga els elements associats a col·leccions en navegar per les biblioteques",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Avís sobre l'agrupació de biblioteques",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Per utilitzar aquest paràmetre, assegura't que les opcions de biblioteca \"Agrupa les pel·lícules en col·leccions\" i/o \"Agrupa les sèries en col·leccions\" estiguin activades a la configuració de visualització de la teva biblioteca al servidor de Jellyfin o Emby.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Àudio dels tràilers",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Activa l'àudio dels tràilers a la barra multimèdia",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "seerrNotificationsSection": "Notificacions",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Notificacions de sol·licituds noves",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Avisa'm quan algú enviï una sol·licitud",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Actualitzacions de sol·licituds",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Aprovades, rebutjades i afegides a la teva biblioteca",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Actualitzacions d'incidències",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Incidències noves, respostes i resolucions",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Límit de la memòria cau d'imatges",
+    "clearImageCache": "Esborra la memòria cau d'imatges",
+    "imageCacheCleared": "S'ha esborrat la memòria cau d'imatges",
+    "seerrDownloadingPercent": "Descarregant · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "S'està important",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Ha fallat",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "En procés",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Modificat per {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Completada",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Aquest títol ja s'ha sol·licitat",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Has arribat al límit de sol·licituds",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Aquest títol és a la llista de bloqueig",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "No queden temporades per sol·licitar",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "No tens permís per fer aquesta sol·licitud",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Sol·licituds",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Incidències",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Més recents",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Darrera modificació",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Cap incidència",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Et queden {remaining} de {limit} sol·licituds de pel·lícules",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Et queden {remaining} de {limit} sol·licituds de temporades",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Forma part de {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Veure la col·lecció",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Sol·licitar la col·lecció",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} pel·lícules · {available} disponibles",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Sol·licita {count} pel·lícules",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "S'està sol·licitant {current} de {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "S'han sol·licitat {count} pel·lícules",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "S'han sol·licitat {ok} de {total} pel·lícules",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Totes les pel·lícules ja estan disponibles o sol·licitades",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Informar d'una incidència",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Vídeo",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Àudio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Què passa?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Tots els episodis",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episodi",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Obert",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Resolta",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Resoldre",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Reobrir",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Informat per {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} comentaris",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Afegeix un comentari",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Vols suprimir aquesta incidència?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Enviar l'informe",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Visualització",
+    "adminDrawerMetadata": "Metadades",
+    "adminDrawerNfo": "Configuració NFO",
+    "adminActivitySeverityAll": "Totes les gravetats",
+    "adminActivityDateRange": "Interval de dates",
+    "adminRemoveDeviceConfirm": "Vols eliminar el dispositiu '{name}'? L'usuari haurà d'iniciar la sessió de nou en aquest dispositiu.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Suprimeix tots els dispositius",
+    "adminDeleteAllDevicesConfirm": "Vols eliminar {count} dispositius? Els usuaris afectats hauran d'iniciar la sessió de nou. El teu dispositiu actual no es veurà afectat.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "S'han eliminat els dispositius",
+    "adminDevicesDeletedPartial": "S'han eliminat alguns dispositius; {count} no s'han pogut eliminar.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Camins",
+    "adminLibraryTabOptions": "Opcions",
+    "adminLibraryTabDownloaders": "Descarregadors",
+    "adminLibMetadataSavers": "Desadors de metadades",
+    "adminLibSubtitleDownloaders": "Descarregadors de subtítols",
+    "adminLibLyricDownloaders": "Descarregadors de lletres",
+    "adminLibMetadataDownloadersFor": "Descarregadors de metadades: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Obtenidors d'imatges: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Aquest servidor no ofereix cap descarregador per a aquest tipus de biblioteca.",
+    "adminLibrarySectionGeneral": "General",
+    "adminLibrarySectionMetadata": "Metadades",
+    "adminLibrarySectionEmbedded": "Informació incrustada",
+    "adminLibrarySectionSubtitles": "Subtítols",
+    "adminLibrarySectionImages": "Imatges",
+    "adminLibrarySectionSeries": "Sèries",
+    "adminLibrarySectionMusic": "Música",
+    "adminLibrarySectionMovies": "Pel·lícules",
+    "adminLibRealtimeMonitor": "Activa la supervisió en temps real",
+    "adminLibRealtimeMonitorHint": "Detecta els canvis als fitxers i processa'ls automàticament.",
+    "adminLibArchiveMediaFiles": "Tracta els arxius com a fitxers multimèdia",
+    "adminLibEnablePhotos": "Mostra les fotos",
+    "adminLibSaveLocalMetadata": "Desa les il·lustracions a les carpetes multimèdia",
+    "adminLibRefreshInterval": "Actualització automàtica de metadades",
+    "adminLibRefreshNever": "Mai",
+    "adminLibDefault": "Predeterminat",
+    "adminLibDisplayTitle": "Visualització",
+    "adminLibDisplaySection": "Visualització de la biblioteca",
+    "adminLibFolderView": "Mostra una vista de carpetes per veure les carpetes multimèdia simples",
+    "adminLibSpecialsInSeasons": "Mostra els especials dins de les temporades en què es van emetre",
+    "adminLibGroupMovies": "Agrupa les pel·lícules en col·leccions",
+    "adminLibGroupShows": "Agrupa les sèries en col·leccions",
+    "adminLibExternalSuggestions": "Mostra contingut extern als suggeriments",
+    "adminLibDateAddedSection": "Comportament de la data d'addició",
+    "adminLibDateAddedLabel": "Utilitza la data d'addició de",
+    "adminLibDateAddedImport": "Data d'exploració a la biblioteca",
+    "adminLibDateAddedFile": "Data de creació del fitxer",
+    "adminLibMetadataTitle": "Metadades i imatges",
+    "adminLibMetadataLangSection": "Idioma preferit de les metadades",
+    "adminLibChaptersSection": "Capítols",
+    "adminLibDummyChapterDuration": "Durada dels capítols simulats (segons)",
+    "adminLibDummyChapterDurationHint": "Durada dels capítols generats per al contingut que no en té. Estableix-ho a 0 per desactivar-ho.",
+    "adminLibChapterImageResolution": "Resolució de les imatges dels capítols",
+    "adminLibNfoTitle": "Configuració NFO",
+    "adminLibNfoHelp": "Les metadades NFO són compatibles amb Kodi i clients similars. La configuració s'aplica a totes les biblioteques que desen metadades NFO.",
+    "adminLibKodiUser": "Usuari del qual es desaran les dades de visualització als fitxers NFO",
+    "adminLibSaveImagePaths": "Desa els camins de les imatges als fitxers NFO",
+    "adminLibPathSubstitution": "Activa la substitució de camins per als camins d'imatge dels NFO",
+    "adminLibNone": "Cap",
+    "adminLibRefreshDays": "{days} dies",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Utilitza els títols incrustats",
+    "adminLibEmbeddedExtrasTitles": "Utilitza els títols incrustats per als extres",
+    "adminLibEmbeddedEpisodeInfos": "Utilitza la informació d'episodi incrustada",
+    "adminLibAllowEmbeddedSubtitles": "Permet els subtítols incrustats",
+    "adminLibEmbeddedAllowAll": "Permet-ho tot",
+    "adminLibEmbeddedAllowText": "Només text",
+    "adminLibEmbeddedAllowImage": "Només imatge",
+    "adminLibEmbeddedAllowNone": "Cap",
+    "adminLibSkipIfEmbeddedSubs": "Omet la descàrrega si hi ha subtítols incrustats",
+    "adminLibSkipIfAudioMatches": "Omet la descàrrega si la pista d'àudio coincideix amb l'idioma de descàrrega",
+    "adminLibRequirePerfectMatch": "Exigeix una coincidència perfecta dels subtítols",
+    "adminLibSaveSubtitlesWithMedia": "Desa els subtítols a les carpetes multimèdia",
+    "adminLibChapterImageExtraction": "Extreu les imatges dels capítols",
+    "adminLibChapterImagesDuringScan": "Extreu les imatges dels capítols durant l'exploració de la biblioteca",
+    "adminLibTrickplayExtraction": "Activa l'extracció d'imatges de trickplay",
+    "adminLibTrickplayDuringScan": "Extreu les imatges de trickplay durant l'exploració de la biblioteca",
+    "adminLibSaveTrickplayWithMedia": "Desa les imatges de trickplay a les carpetes multimèdia",
+    "adminLibAutomaticSeriesGrouping": "Combina automàticament les sèries repartides en diverses carpetes",
+    "adminLibSeasonZeroName": "Nom que es mostra per a la temporada zero",
+    "adminLibLufsScan": "Activa l'anàlisi LUFS per a la normalització d'àudio",
+    "adminLibPreferNonstandardArtist": "Prefereix l'etiqueta d'artistes no estàndard",
+    "adminLibAutoAddToCollection": "Afegeix automàticament les pel·lícules a les col·leccions",
+    "adminParentalControl": "Control parental",
+    "adminMaxParentalRating": "Classificació parental màxima permesa",
+    "adminMaxParentalRatingHint": "El contingut amb una classificació superior s'amagarà a aquest usuari.",
+    "adminParentalRatingNone": "Cap",
+    "adminBlockUnratedItems": "Bloqueja els elements sense classificació o amb classificació no reconeguda",
+    "adminUnratedBook": "Llibres",
+    "adminUnratedChannelContent": "Canals",
+    "adminUnratedLiveTvChannel": "TV en directe",
+    "adminUnratedMovie": "Pel·lícules",
+    "adminUnratedMusic": "Música",
+    "adminUnratedTrailer": "Tràilers",
+    "adminUnratedSeries": "Sèries",
+    "adminAccessSchedules": "Horaris d'accés",
+    "adminAccessSchedulesHint": "Permet l'accés només durant els horaris programats a continuació. Si no s'ha definit cap horari, l'accés es permet tot el dia.",
+    "adminAddSchedule": "Afegeix un horari",
+    "adminScheduleDay": "Dia",
+    "adminScheduleStart": "Inici",
+    "adminScheduleEnd": "Fi",
+    "adminDayEveryday": "Cada dia",
+    "adminDayWeekday": "Dia laborable",
+    "adminDayWeekend": "Cap de setmana",
+    "adminDaySunday": "Diumenge",
+    "adminDayMonday": "Dilluns",
+    "adminDayTuesday": "Dimarts",
+    "adminDayWednesday": "Dimecres",
+    "adminDayThursday": "Dijous",
+    "adminDayFriday": "Divendres",
+    "adminDaySaturday": "Dissabte",
+    "adminAllowedTags": "Etiquetes permeses",
+    "adminAllowedTagsHint": "Només es mostra el contingut amb aquestes etiquetes. Deixa-ho buit per permetre-ho tot.",
+    "adminBlockedTags": "Etiquetes bloquejades",
+    "adminBlockedTagsHint": "El contingut amb aquestes etiquetes s'amaga a aquest usuari.",
+    "adminAddTag": "Afegeix una etiqueta",
+    "adminEnabledDevices": "Dispositius activats",
+    "adminEnabledChannels": "Canals activats",
+    "adminAuthProvider": "Proveïdor d'autenticació",
+    "adminPasswordResetProvider": "Proveïdor de restabliment de contrasenya",
+    "adminLoginAttemptsBeforeLockout": "Màxim d'intents d'inici de sessió fallits abans del bloqueig",
+    "adminLoginAttemptsHint": "Estableix-ho a 0 per al valor predeterminat, o a -1 per desactivar el bloqueig.",
+    "adminSyncPlayAccess": "Accés a SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Permet crear grups i unir-s'hi",
+    "adminSyncPlayJoin": "Permet unir-se a grups",
+    "adminSyncPlayNone": "Sense accés",
+    "adminContentDeletionFolders": "Permet la supressió de contingut de",
+    "adminBackupOptionsTitle": "Crea una còpia de seguretat",
+    "adminBackupInclude": "Tria què vols incloure a la còpia de seguretat.",
+    "adminBackupDatabase": "Base de dades",
+    "adminBackupDatabaseAlways": "Sempre inclosa",
+    "adminBackupMetadata": "Metadades",
+    "adminBackupSubtitles": "Subtítols",
+    "adminBackupTrickplay": "Imatges de trickplay",
+    "adminEditTuner": "Edita el sintonitzador",
+    "adminTunerTypeM3u": "Sintonitzador M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Fitxer o URL",
+    "adminTunerIpAddress": "Adreça IP del sintonitzador",
+    "adminTunerFriendlyName": "Nom descriptiu",
+    "adminTunerUserAgent": "Agent d'usuari",
+    "adminTunerCount": "Límit de connexions simultànies",
+    "adminTunerCountHelp": "Nombre màxim de fluxos que permet el sintonitzador alhora. Estableix-ho a 0 per il·limitat.",
+    "adminTunerFallbackBitrate": "Taxa de bits màxima de transmissió alternativa",
+    "adminTunerImportFavoritesOnly": "Importa només els canals preferits",
+    "adminTunerAllowHwTranscoding": "Permet la transcodificació per maquinari",
+    "adminTunerAllowFmp4": "Permet el contenidor de transcodificació fMP4",
+    "adminTunerAllowStreamSharing": "Permet compartir fluxos",
+    "adminTunerEnableStreamLooping": "Activa la repetició de fluxos",
+    "adminTunerIgnoreDts": "Ignora DTS",
+    "adminTunerReadAtNativeFramerate": "Llegeix l'entrada a la velocitat de fotogrames nativa",
+    "adminEditProvider": "Edita el proveïdor",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Fitxer o URL",
+    "adminXmltvMoviePrefix": "Prefix de pel·lícula",
+    "adminXmltvMovieCategories": "Categories de pel·lícules",
+    "adminXmltvCategoriesHelp": "Separa les categories amb una barra vertical.",
+    "adminXmltvKidsCategories": "Categories infantils",
+    "adminXmltvNewsCategories": "Categories de notícies",
+    "adminXmltvSportsCategories": "Categories d'esports",
+    "adminSdUsername": "Nom d'usuari",
+    "adminSdPassword": "Contrasenya",
+    "adminSdCountry": "País",
+    "adminSdCountrySelect": "Selecciona un país",
+    "adminSdPostalCode": "Codi postal",
+    "adminSdGetListings": "Obtén la programació",
+    "adminSdListings": "Programació",
+    "adminEnableAllTuners": "Activa tots els sintonitzadors",
+    "adminTunerResetNotSupported": "Aquest tipus de sintonitzador no admet el restabliment.",
+    "adminMovieRecordingPath": "Camí d'enregistrament de pel·lícules",
+    "adminGuideDays": "Dies de dades de la guia",
+    "adminGuideDaysAuto": "Automàtic",
+    "adminGuideDaysValue": "{days} dies",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Camí de l'aplicació de postprocessament",
+    "adminRecordingPostProcessorArgs": "Arguments del postprocessador",
+    "adminSaveRecordingNfo": "Desa les metadades NFO dels enregistraments",
+    "adminSaveRecordingImages": "Desa les imatges dels enregistraments",
+    "adminLiveTvSectionTiming": "Temporització",
+    "adminLiveTvSectionPaths": "Camins d'enregistrament",
+    "adminLiveTvSectionPostProcessing": "Postprocessament",
+    "adminGuideDaysDisplay": "Dades de la guia: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Actualitza les dades de la guia",
+    "adminGuideRefreshStarted": "S'ha iniciat l'actualització de les dades de la guia",
+    "adminGuideRefreshUnavailable": "La tasca d'actualització de la guia no està disponible en aquest servidor.",
+    "adminMetadataIdentify": "Identifica",
+    "adminBrandingSplashUpload": "Carrega una imatge",
+    "adminBrandingSplashUploaded": "S'ha actualitzat la pantalla de presentació",
+    "adminBrandingSplashUploadFailed": "No s'ha pogut carregar la pantalla de presentació",
+    "adminBrandingSplashDeleted": "S'ha eliminat la pantalla de presentació",
+    "adminBrandingNoSplash": "Cap pantalla de presentació personalitzada",
+    "adminPlaybackQsvDevice": "Dispositiu QSV",
+    "adminPlaybackEnhancedNvdec": "Activa el descodificador NVDEC millorat",
+    "adminPlaybackPreferNativeDecoder": "Prefereix el descodificador per maquinari natiu del sistema",
+    "adminPlaybackColorDepth": "Profunditat de color de la descodificació per maquinari",
+    "adminPlaybackColorDepth10Hevc": "Descodificació HEVC de 10 bits",
+    "adminPlaybackColorDepth10Vp9": "Descodificació VP9 de 10 bits",
+    "adminPlaybackColorDepth10HevcRext": "Descodificació HEVC RExt de 8/10 bits",
+    "adminPlaybackColorDepth12HevcRext": "Descodificació HEVC RExt de 12 bits",
+    "adminPlaybackHwEncodingSection": "Codificació per maquinari",
+    "adminPlaybackAllowHevcEncoding": "Permet la codificació HEVC",
+    "adminPlaybackAllowAv1Encoding": "Permet la codificació AV1",
+    "adminPlaybackIntelLowPowerH264": "Activa el codificador H.264 de baix consum d'Intel",
+    "adminPlaybackIntelLowPowerHevc": "Activa el codificador HEVC de baix consum d'Intel",
+    "adminPlaybackToneMapping": "Mapatge de tons",
+    "adminPlaybackEnableTonemapping": "Activa el mapatge de tons",
+    "adminPlaybackEnableVppTonemapping": "Activa el mapatge de tons VPP",
+    "adminPlaybackEnableVtTonemapping": "Activa el mapatge de tons de VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "Algorisme de mapatge de tons",
+    "adminPlaybackTonemappingMode": "Mode de mapatge de tons",
+    "adminPlaybackTonemappingRange": "Interval de mapatge de tons",
+    "adminPlaybackTonemappingDesat": "Dessaturació del mapatge de tons",
+    "adminPlaybackTonemappingPeak": "Pic del mapatge de tons",
+    "adminPlaybackTonemappingParam": "Paràmetre del mapatge de tons",
+    "adminPlaybackVppTonemappingBrightness": "Brillantor del mapatge de tons VPP",
+    "adminPlaybackVppTonemappingContrast": "Contrast del mapatge de tons VPP",
+    "adminPlaybackPresetsQuality": "Predefinits i qualitat",
+    "adminPlaybackEncoderPreset": "Predefinit del codificador",
+    "adminPlaybackH264Crf": "CRF de codificació H.264",
+    "adminPlaybackH265Crf": "CRF de codificació H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "Mètode de desentrellaçat",
+    "adminPlaybackDeinterlaceDoubleRate": "Duplica la velocitat de fotogrames en desentrellaçar",
+    "adminPlaybackAudioSection": "Àudio",
+    "adminPlaybackEnableAudioVbr": "Activa la codificació d'àudio VBR",
+    "adminPlaybackDownmixBoost": "Amplificació del downmix d'àudio",
+    "adminPlaybackDownmixAlgorithm": "Algorisme de downmix a estèreo",
+    "adminPlaybackMaxMuxingQueue": "Mida màxima de la cua de multiplexació",
+    "adminPlaybackAutoOption": "Auto",
+    "adminRunningTasks": "Tasques en execució",
+    "adminNetworkingPublicHttpPort": "Port HTTP públic",
+    "adminNetworkingRequireHttps": "Exigeix HTTPS",
+    "adminNetworkingRequireHttpsHint": "Redirigeix totes les sol·licituds remotes a HTTPS. No té cap efecte si el servidor no té un certificat vàlid.",
+    "adminNetworkingCertPassword": "Contrasenya del certificat",
+    "adminNetworkingIpSettings": "Configuració d'IP",
+    "adminNetworkingEnableIpv4": "Activa IPv4",
+    "adminNetworkingEnableIpv6": "Activa IPv6",
+    "adminNetworkingAutoDiscovery": "Activa l'assignació automàtica de ports",
+    "adminNetworkingLocalSubnets": "Xarxes LAN",
+    "adminNetworkingLocalSubnetsHint": "Llista d'adreces IP o subxarxes CIDR, separades per comes o salts de línia, que es consideren de la xarxa local.",
+    "adminNetworkingPublishedUris": "URI publicats del servidor",
+    "adminNetworkingPublishedUriHint": "Assigna una subxarxa o adreça a una URL publicada, p. ex. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Retard de limitació (segons)",
+    "adminPlaybackEnableSubtitleExtraction": "Permet l'extracció de subtítols sobre la marxa",
+    "adminGeneralEnableSlowResponse": "Activa els avisos de resposta lenta",
+    "adminGeneralQuickConnect": "Activa Quick Connect",
+    "adminGeneralSectionServer": "Servidor",
+    "adminGeneralSectionMetadata": "Metadades",
+    "adminGeneralSectionPaths": "Camins",
+    "adminGeneralSectionPerformance": "Rendiment",
+    "adminGeneralDisplayLanguage": "Idioma de visualització preferit",
+    "offlineBannerTitle": "No tens connexió",
+    "offlineBannerSubtitle": "Es mostren les teves descàrregues",
+    "offlineBannerAction": "Descàrregues",
+    "serverUnreachableBannerTitle": "No es pot connectar amb el teu servidor",
+    "serverUnreachableBannerSubtitle": "Es reprodueix des de les descàrregues fins que torni",
+    "contextMenuHideFromContinueWatching": "Amaga de Continuar mirant",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Amaga d'A continuació",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Afegeix a una col·lecció",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "CONNEXIÓ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Permet els certificats autosignats",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Confia en els servidors que utilitzen certificats TLS autosignats o d'una CA privada. Activa-ho només per als servidors que controlis. Això desactiva la validació de certificats per a totes les connexions.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Pantalla de detalls",
+    "settingsDetailsScreenSubtitle": "Estil, desenfocament del fons i comportament de les pestanyes",
+    "settingsAlwaysExpandNavbarLabels": "Mostra sempre les etiquetes de text a la barra de navegació superior",
+    "hideBackdropsInLibraries": "Amagar les imatges de fons mentre navegues?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "homeRowTogglesSubtitle": "Activa o desactiva les categories de files d'inici basades en biblioteques",
+    "homeRowTogglesDescription": "Activa els interruptors següents per mostrar les files a les seccions d'inici.",
+    "displayPlaylistsRows": "Mostra les files de llistes de reproducció",
+    "displayPlaylistsRowsSubtitle": "Mostra les files de llistes de reproducció a les seccions d'inici.",
+    "playlistsRowSorting": "Ordenació de les files de llistes de reproducció",
+    "playlistsRowSortingDescription": "Ordena les files de llistes de reproducció per data d'addició, data d'estrena, alfabèticament i més.",
+    "displayAudioRows": "Mostra les files d'àudio",
+    "displayAudioRowsSubtitle": "Mostra les files d'àudio a les seccions d'inici.",
+    "audioRowsSorting": "Ordenació de les files d'àudio",
+    "audioRowsSortingDescription": "Ordena les files d'àudio per data d'addició, data d'estrena, alfabèticament i més.",
+    "audioPlaylists": "Llistes de reproducció d'àudio",
+    "layout": "Disposició",
+    "theme": "Tema",
+    "keyboard": "Teclat",
+    "navButtons": "Botons",
+    "rendering": "Renderització",
+    "mpvConfiguration": "Configuració d'MPV",
+    "externalPlayerAppDescription": "Defineix un reproductor extern per activar l'opció de reproduir amb una pulsació llarga",
+    "crewContributionsSeerr": "Contribucions de l'equip (Seerr)",
+    "changeArtwork": "Canvia la il·lustració",
+    "missing": "Falta",
+    "clearAllArtworkButton": "Esborrar totes les il·lustracions?",
+    "clearAllArtworkWarning": "Segur que vols esborrar totes les il·lustracions descarregades?",
+    "confirmClear": "Confirma l'esborrat",
+    "confirmClearMessage": "Segur que vols esborrar aquesta imatge ({itemType})?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Carregar?",
+    "resolutionLabel": "Resolució: ",
+    "onlyShowInterfaceLanguage": "Mostra només les il·lustracions en l'idioma de la interfície",
+    "confirmClearAll": "Confirma l'esborrat de tot",
+    "imageUploadSuccess": "La imatge s'ha carregat correctament!",
+    "imageUploadFailed": "No s'ha pogut carregar la imatge: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "No s'ha pogut establir la imatge: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "No s'ha pogut suprimir la imatge: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "No s'han pogut esborrar totes les il·lustracions: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Sí",
+    "posterCategory": "Pòster",
+    "backdropsCategory": "Fons",
+    "bannerCategory": "Bàner",
+    "logoCategory": "Logotip",
+    "artCategory": "Art",
+    "discArtCategory": "Art del disc",
+    "screenshotCategory": "Captura de pantalla",
+    "boxCoverCategory": "Portada de la caixa",
+    "boxRearCoverCategory": "Contraportada de la caixa",
+    "menuArtCategory": "Art del menú",
+    "confirmItemPoster": "pòster",
+    "confirmItemBackdrop": "fons",
+    "confirmItemBanner": "bàner",
+    "confirmItemLogo": "logotip",
+    "confirmItemArt": "art",
+    "confirmItemDiscArt": "art del disc",
+    "confirmItemScreenshot": "captura de pantalla",
+    "confirmItemBoxCover": "portada de la caixa",
+    "confirmItemBoxRearCover": "contraportada de la caixa",
+    "confirmItemMenuArt": "art del menú",
+    "resolutionAll": "Totes",
+    "resolutionHigh": "Alta (1080p+)",
+    "resolutionMedium": "Mitjana (720p)",
+    "resolutionLow": "Baixa (<720p)",
+    "sources": "Fonts",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Capítols",
+    "audiobookBookmarks": "Marcadors",
+    "audiobookNotes": "Notes",
+    "audiobookQueue": "Cua",
+    "audiobookTimeline": "Cronologia",
+    "audiobookTimelineEmpty": "La cronologia és buida",
+    "audiobookWholeBook": "Tot el llibre",
+    "audiobookFocusedTimeline": "Cronologia enfocada",
+    "audiobookExportBookmarks": "Exporta els marcadors",
+    "audiobookExportNotes": "Exporta les notes",
+    "audiobookExportAll": "Exporta-ho tot",
+    "audiobookExportSuccess": "S'ha exportat a {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "L'exportació ha fallat: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Lletres",
+    "audiobookAddBookmark": "Afegeix un marcador",
+    "audiobookAddNote": "Afegeix una nota",
+    "audiobookEditNote": "Edita la nota",
+    "audiobookNoteHint": "Escriu una nota per a aquest moment",
+    "audiobookSleepTimer": "Temporitzador de son",
+    "audiobookSleepOff": "Desactivat",
+    "audiobookSleepEndOfChapter": "Final del capítol",
+    "audiobookSleepCustom": "Personalitzat",
+    "audiobookSleepRemaining": "Queden {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Velocitat de reproducció",
+    "audiobookRemainingTime": "Restant",
+    "audiobookElapsedTime": "Transcorregut",
+    "audiobookSkipBackSeconds": "Enrere {seconds}s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Endavant {seconds}s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Capítol anterior",
+    "audiobookNextChapter": "Capítol següent",
+    "audiobookChapterIndicator": "Capítol {current} de {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Cap capítol",
+    "audiobookNoBookmarks": "Encara no hi ha cap marcador",
+    "audiobookNoNotes": "Encara no hi ha cap nota",
+    "audiobookBookmarkAdded": "Marcador afegit a {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Restableix a 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Desa",
+    "audiobookCancel": "Cancel·la",
+    "audiobookDelete": "Suprimeix",
+    "subtitlePreferences": "Preferències dels subtítols",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Canvia els modes de subtítols, els idiomes predeterminats, l'aparença i les opcions de renderització.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Renderització dels subtítols",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Opcions de visualització",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "groupContributions": "Agrupa les contribucions",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Agrupa múltiples rols",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Avís d'accés d'escriptura a la biblioteca",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Com solucionar-ho:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Concedeix permisos d'escriptura a l'usuari del servei Jellyfin (p. ex., jellyfin o el PUID/PGID de Docker) per a les carpetes de la teva biblioteca multimèdia al servidor.\n\n2. O bé ves al tauler de control de Jellyfin -> Biblioteques, edita aquesta biblioteca i desactiva 'Desa les il·lustracions a les carpetes multimèdia' per emmagatzemar-les a la base de dades interna de Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Descarta",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "La teva biblioteca '{libraryName}' està configurada per desar les il·lustracions directament a les carpetes multimèdia ('Desa les il·lustracions a les carpetes multimèdia' està activat). Tanmateix, Jellyfin ha comprovat l'accés d'escriptura i no té permís per escriure fitxers en aquest directori:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Sembla que Jellyfin no ha pogut actualitzar la il·lustració. La teva biblioteca està configurada per desar les il·lustracions directament a les carpetes multimèdia ('Desa les il·lustracions a les carpetes multimèdia' està activat). Aquest error normalment es produeix quan el procés del servidor Jellyfin no té permís per escriure fitxers als teus directoris multimèdia.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Llistes externes",
+    "replay": "Torna a reproduir",
+    "fileInformation": "Informació del fitxer",
+    "fileSizeFormat": "Mida: {size}  •  Format: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Mostra totes les pistes d'àudio ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Mostra totes les pistes de subtítols ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "S'està comprovant la capacitat de reproducció nativa...",
+    "directPlayCapabilityLabel": "Capacitat de reproducció nativa: ",
+    "transcodeContainerNotSupported": "El reproductor no admet el format del contenidor.",
+    "transcodeVideoCodecNotSupported": "El còdec de vídeo no és compatible.",
+    "transcodeAudioCodecNotSupported": "El còdec d'àudio no és compatible.",
+    "transcodeSubtitleCodecNotSupported": "El format dels subtítols no és compatible (cal incrustar-los al vídeo).",
+    "transcodeAudioProfileNotSupported": "El perfil d'àudio no és compatible.",
+    "transcodeVideoProfileNotSupported": "El perfil de vídeo no és compatible.",
+    "transcodeVideoLevelNotSupported": "El nivell de vídeo no és compatible.",
+    "transcodeVideoResolutionNotSupported": "Aquest dispositiu no admet la resolució del vídeo.",
+    "transcodeVideoBitDepthNotSupported": "La profunditat de bits del vídeo no és compatible.",
+    "transcodeVideoFramerateNotSupported": "La velocitat de fotogrames del vídeo no és compatible.",
+    "transcodeContainerBitrateExceedsLimit": "La taxa de bits del fitxer supera el límit de transmissió del reproductor.",
+    "transcodeVideoBitrateExceedsLimit": "La taxa de bits del vídeo supera el límit de transmissió.",
+    "transcodeAudioBitrateExceedsLimit": "La taxa de bits de l'àudio supera el límit de transmissió.",
+    "transcodeAudioChannelsNotSupported": "El nombre de canals d'àudio no és compatible.",
+    "sortAlphabetical": "Alfabètic",
+    "sortReleaseAscending": "Ordre d'estrena (ascendent)",
+    "sortCustomDragDrop": "Personalitzat (arrossega i deixa anar)",
+    "playlistSortOptions": "Opcions d'ordenació de la llista de reproducció",
+    "resetSort": "Restableix l'ordenació",
+    "rewatchSeasonEpisode": "Torna a veure T{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Torna a veure la llista de reproducció",
+    "noSubtitlesFound": "No s'han trobat subtítols.",
+    "adminControls": "Controls d'administració",
+    "impellerRendering": "Motor de renderització (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller és el renderitzador de GPU modern de Flutter, per a animacions més fluides i menys interrupcions. En alguns descodificadors de TV i GPU antigues pot provocar defectes visuals o vídeo en negre; desactiva'l si en detectes. Automàtic tria el millor valor predeterminat per al teu dispositiu. Reinicia Moonfin per aplicar-ho.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automàtic",
+    "impellerOn": "Activat",
+    "impellerOff": "Desactivat",
+    "impellerRestartTitle": "Cal reiniciar",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin s'ha de reiniciar per canviar el motor de renderització. Tanca l'aplicació ara i torna a obrir-la per aplicar-ho.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Tanca l'aplicació ara",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Actualitza la biblioteca",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Actualitza totes les biblioteques",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Data d'addició (més antigues primer)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Data d'addició (més recents primer)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alfabètic (A a Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Alfabètic (Z a A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "S'està carregant l'analítica del servidor... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Igual que l'origen",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "Top 250 pel·lícules d'IMDb",
+    "imdbTop250TvShows": "Top 250 sèries de TV d'IMDb",
+    "imdbMostPopularMovies": "Pel·lícules més populars d'IMDb",
+    "imdbMostPopularTvShows": "Sèries de TV més populars d'IMDb",
+    "imdbLowestRatedMovies": "Pel·lícules pitjor valorades d'IMDb",
+    "imdbTopEnglishMovies": "Millors pel·lícules en anglès d'IMDb"
 }

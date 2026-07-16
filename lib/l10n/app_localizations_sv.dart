@@ -12,27 +12,27 @@ class AppLocalizationsSv extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => 'KONTOINSTÄLLNINGAR';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => 'Gränssnittsspråk';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => 'Systemstandard';
 
   @override
   String get signIn => 'Logga in';
 
   @override
-  String get empty => 'Empty';
+  String get empty => 'Tom';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Ansluter till $serverName';
   }
 
   @override
-  String get quickConnect => 'Snabbanslutning';
+  String get quickConnect => 'Quick Connect';
 
   @override
   String get password => 'Losenord';
@@ -61,12 +61,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect är inte tillgängligt: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect är inte tillgängligt ($status): $detail';
   }
 
   @override
@@ -106,7 +106,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Ta bort \"$serverName\" från dina servrar?';
   }
 
   @override
@@ -141,62 +141,62 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAppearanceTheme => 'App-tema';
 
   @override
-  String get detailScreenStyle => 'Detail screen style';
+  String get detailScreenStyle => 'Stil för detaljsida';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
+      'Klassisk är Moonfins ursprungliga centrerade layout. Modern är en responsiv, filmisk layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Classic';
+  String get detailScreenStyleMoonfin => 'Klassisk';
 
   @override
   String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'Expanded Tabs';
+  String get expandedTabs => 'Expanderade flikar';
 
   @override
   String get expandedTabsSubtitle =>
-      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
+      'Visa flikinnehåll automatiskt när du bläddrar bland flikarna. Stäng av för att öppna och stänga varje flik manuellt.';
 
   @override
-  String get showTechnicalDetails => 'Show Technical Details?';
+  String get showTechnicalDetails => 'Visa tekniska detaljer?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Show codec, resolution, and stream information in banner summary';
+      'Visa codec, upplösning och streaminformation i bannersammanfattningen';
 
   @override
-  String get recommendationSystem => 'Recommendation System';
+  String get recommendationSystem => 'Rekommendationssystem';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'Använd Moonfin Recommends lokala biblioteksalgoritm eller TMDb:s likhetsmått online. Obs: Onlinerekommendationer kräver Seerr-integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb Similarity';
+  String get recommendationSystemTmdb => 'TMDb-likhet';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Apply Parental Rating Cap?';
+      'Begränsa efter åldersgräns?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limit Moonfin Recommends suggestions by parental rating of target media';
+      'Begränsa förslag från Moonfin Recommends efter målmediets åldersgräns';
 
   @override
-  String get interfaceStyle => 'Interface Style';
+  String get interfaceStyle => 'Gränssnittsstil';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic matches your device. Choose Apple or Material to force a look.';
+      'Automatiskt matchar din enhet. Välj Apple eller Material för att framtvinga ett utseende.';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => 'Automatiskt';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -205,11 +205,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Glass Quality';
+  String get glassQuality => 'Glaskvalitet';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+      'Auto väljer den bästa glaseffekten för den här enheten. Full framtvingar äkta oskärpa; Reducerad använder ett lättviktigt glas som sparar GPU-kraft.';
 
   @override
   String get glassQualityAuto => 'Auto';
@@ -218,25 +218,25 @@ class AppLocalizationsSv extends AppLocalizations {
   String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'Reduced';
+  String get glassQualityReduced => 'Reducerad';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'Växla mellan Moonfin och Neon Pulse utan att starta om appen';
 
   @override
-  String get customThemeTitle => 'Custom Theme';
+  String get customThemeTitle => 'Anpassat tema';
 
   @override
   String get customThemeSubtitle =>
-      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+      'Anpassade teman ändrar visuella element i hela Moonfin. Välj ett av alternativen som passar din stil.';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Föredra systemtangentbord';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Använd enhetens inmatningsmetod som standard för textinmatning';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -257,14 +257,14 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      'Liquid glass-stil med drivande gradientbakgrund, frostade ytor och Apple-blå accentfärg';
 
   @override
   String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
+      'Retro pixelkonst med kraftig palett, blockiga kanter, hårda skuggor och pixelteckensnitt';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -313,7 +313,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Kan inte ansluta till $target';
   }
 
   @override
@@ -326,35 +326,36 @@ class AppLocalizationsSv extends AppLocalizations {
   String get exit => 'Utgång';
 
   @override
-  String get gameMenu => 'Menu';
+  String get gameMenu => 'Meny';
 
   @override
-  String get gamePaused => 'Paused';
+  String get gamePaused => 'Pausad';
 
   @override
-  String get gameSaveState => 'Save state';
+  String get gameSaveState => 'Spara tillstånd';
 
   @override
-  String get games => 'Games';
+  String get games => 'Spel';
 
   @override
-  String get gameLoadState => 'Load state';
+  String get gameLoadState => 'Ladda tillstånd';
 
   @override
-  String get gameFastForward => 'Fast-forward';
+  String get gameFastForward => 'Snabbspolning framåt';
 
   @override
-  String get gameEmulatorSettings => 'Emulator settings';
+  String get gameEmulatorSettings => 'Emulatorinställningar';
 
   @override
-  String get gameNoCoreOptions => 'This core has no adjustable options.';
+  String get gameNoCoreOptions =>
+      'Den här kärnan har inga justerbara alternativ.';
 
   @override
-  String get gameHoldToOpenMenu => 'Hold to open menu';
+  String get gameHoldToOpenMenu => 'Håll in för att öppna menyn';
 
   @override
   String get gamePlaybackUnsupported =>
-      'Game playback is not supported on this device yet.';
+      'Spel stöds inte på den här enheten än.';
 
   @override
   String get noHomeRowsLoaded => 'Inga hemmarader kunde laddas';
@@ -367,7 +368,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get retryHomeRows => 'Försök Hemrader igen';
 
   @override
-  String get guide => 'Guide';
+  String get guide => 'Tablå';
 
   @override
   String get recordings => 'Inspelningar';
@@ -376,7 +377,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get schedule => 'Schema';
 
   @override
-  String get series => 'Serie';
+  String get series => 'Serier';
 
   @override
   String get noItemsFound => 'Inga föremål hittades';
@@ -425,7 +426,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Kunde inte läsa in mappen: $error';
   }
 
   @override
@@ -433,7 +434,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count objekt';
   }
 
   @override
@@ -450,7 +451,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count objekt';
   }
 
   @override
@@ -481,7 +482,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get small => 'Små';
 
   @override
-  String get medium => 'Medium';
+  String get medium => 'Mellan';
 
   @override
   String get large => 'Stor';
@@ -491,7 +492,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Genrer';
   }
 
   @override
@@ -504,7 +505,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get albumArtists => 'Albumartister';
 
   @override
-  String get artists => 'Konstnärer';
+  String get artists => 'Artister';
 
   @override
   String get bookmarks => 'Bokmärken';
@@ -529,17 +530,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '$count min sedan';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '$count tim sedan';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '$count d sedan';
   }
 
   @override
@@ -550,7 +551,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'Välj vilka ämnesflöden som ska visas i Discover.';
 
   @override
-  String get apply => 'Tillämpas';
+  String get apply => 'Tillämpa';
 
   @override
   String get openLink => 'Öppna länken';
@@ -573,7 +574,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count titlar';
   }
 
   @override
@@ -599,7 +600,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get listen => 'Lyssna';
 
   @override
-  String get resume => 'Ateruppta';
+  String get resume => 'Återuppta';
 
   @override
   String get failedToLoadLibrary => 'Det gick inte att läsa in biblioteket';
@@ -660,17 +661,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count författare';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count genrer';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% klart';
   }
 
   @override
@@ -687,7 +688,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count titlar ordnade för läsvänlig bläddring.';
   }
 
   @override
@@ -724,7 +725,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Inga $label hittades';
   }
 
   @override
@@ -743,13 +744,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get readStatus => 'Läsa';
 
   @override
-  String get watched => 'Tittade';
+  String get watched => 'Sedda';
 
   @override
   String get unread => 'Oläst';
 
   @override
-  String get unwatched => 'Obevakad';
+  String get unwatched => 'Osedda';
 
   @override
   String get seriesStatus => 'Seriestatus';
@@ -761,43 +762,43 @@ class AppLocalizationsSv extends AppLocalizations {
   String get books => 'Böcker';
 
   @override
-  String get latestBooks => 'Latest Books';
+  String get latestBooks => 'Senaste böckerna';
 
   @override
-  String get latestAudiobooks => 'Latest Audiobooks';
+  String get latestAudiobooks => 'Senaste ljudböckerna';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count books',
-      one: '1 book',
+      other: '$count böcker',
+      one: '1 bok',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Book';
+  String get bookFormatBook => 'Bok';
 
   @override
-  String get bookFormatAudiobook => 'Audiobook';
+  String get bookFormatAudiobook => 'Ljudbok';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% read';
+    return '$percent% läst';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time left';
+    return '$time kvar';
   }
 
   @override
-  String get bookHeroRead => 'Read';
+  String get bookHeroRead => 'Läs';
 
   @override
-  String get bookHeroListen => 'Listen';
+  String get bookHeroListen => 'Lyssna';
 
   @override
   String get author => 'Författare';
@@ -835,12 +836,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count delar';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Först utgiven $year';
   }
 
   @override
@@ -855,7 +856,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count böcker';
   }
 
   @override
@@ -867,7 +868,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count författare';
   }
 
   @override
@@ -875,8 +876,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: '$count ljudböcker',
+      one: '1 ljudbok',
     );
     return '$_temp0';
   }
@@ -900,7 +901,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get moreLikeThis => 'Mer sånt här';
 
   @override
-  String get castAndCrew => 'Cast & Crew';
+  String get castAndCrew => 'Skådespelare & team';
 
   @override
   String get collection => 'Samling';
@@ -912,7 +913,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get nextUp => 'Nästa upp';
 
   @override
-  String get seasons => 'Årstider';
+  String get seasons => 'Säsonger';
 
   @override
   String get chapters => 'Kapitel';
@@ -924,7 +925,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get movies => 'Filmer';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Musikvideor';
 
   @override
   String get other => 'Andra';
@@ -943,7 +944,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Skiva $number';
   }
 
   @override
@@ -969,7 +970,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Utgiven $year';
   }
 
   @override
@@ -980,52 +981,52 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count säsonger',
+      one: '1 säsong',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Slutar $time';
   }
 
   @override
-  String get items => 'Items';
+  String get items => 'Objekt';
 
   @override
-  String get extras => 'Extras';
+  String get extras => 'Extramaterial';
 
   @override
-  String get behindTheScenes => 'Behind the Scenes';
+  String get behindTheScenes => 'Bakom kulisserna';
 
   @override
-  String get deletedScenes => 'Deleted Scenes';
+  String get deletedScenes => 'Borttagna scener';
 
   @override
   String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'Interviews';
+  String get interviews => 'Intervjuer';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'Scener';
 
   @override
-  String get shorts => 'Shorts';
+  String get shorts => 'Kortfilmer';
 
   @override
   String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
-    return '$time remaining';
+    return '$time kvar';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return 'Slutar om $time';
   }
 
   @override
@@ -1039,11 +1040,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Återuppta från $position';
   }
 
   @override
-  String get play => 'Spela';
+  String get play => 'Spela upp';
 
   @override
   String get startOver => 'Börja om från början';
@@ -1058,7 +1059,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playOffline => 'Spela offline';
 
   @override
-  String get audio => 'Audio';
+  String get audio => 'Ljud';
 
   @override
   String get subtitles => 'Undertexter';
@@ -1067,7 +1068,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get version => 'Version';
 
   @override
-  String get cast => 'Kasta';
+  String get cast => 'Casta';
 
   @override
   String get trailer => 'Trailer';
@@ -1138,7 +1139,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Ta bort nedladdade spår för \"$title\"?';
   }
 
   @override
@@ -1153,17 +1154,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Inga $itemLabel har lästs in';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Laddar ner $title ($count objekt)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Är du säker på att du vill ta bort \"$name\" från servern? Åtgärden kan inte ångras.';
   }
 
   @override
@@ -1174,7 +1175,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Bokformatet stöds inte: .$extension';
   }
 
   @override
@@ -1201,7 +1202,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Undertext nedladdad och vald: $name';
   }
 
   @override
@@ -1210,7 +1211,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Inga fjärrundertexter hittades för $language.';
   }
 
   @override
@@ -1238,7 +1239,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Laddar ner $name ($quality)...';
   }
 
   @override
@@ -1246,7 +1247,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Ta bort lokala filer för $typeLabel?\n\nDet frigör lagringsutrymme. Du kan ladda ner dem igen senare.';
   }
 
   @override
@@ -1262,25 +1263,25 @@ class AppLocalizationsSv extends AppLocalizations {
   String get director => 'DIREKTÖR';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => 'REGISSÖRER';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => 'MANUSFÖRFATTARE';
 
   @override
-  String get writers => 'FÖRfattare';
+  String get writers => 'MANUSFÖRFATTARE';
 
   @override
   String get studio => 'STUDIO';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count till';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count avsnitt';
   }
 
   @override
@@ -1290,12 +1291,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Avsnitt $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Kapitel $number';
   }
 
   @override
@@ -1303,8 +1304,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count spår',
+      one: '1 spår',
     );
     return '$_temp0';
   }
@@ -1314,25 +1315,25 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count kapitel',
+      one: '1 kapitel',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Född $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Död $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Ålder $age';
   }
 
   @override
@@ -1345,17 +1346,17 @@ class AppLocalizationsSv extends AppLocalizations {
   String get shuffle => 'Blanda';
 
   @override
-  String get shuffleAllMusic => 'Shuffle all music';
+  String get shuffleAllMusic => 'Blanda all musik';
 
   @override
-  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+  String get carSignInPrompt => 'Logga in på Moonfin i din telefon';
 
   @override
-  String get carServerUnreachable => 'Can\'t reach your server';
+  String get carServerUnreachable => 'Kan inte nå din server';
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count nedladdningar';
   }
 
   @override
@@ -1363,7 +1364,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '${count}ch';
+    return '$count kanaler';
   }
 
   @override
@@ -1374,32 +1375,32 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Fjärrundertext $action kräver Jellyfin-behörigheten för undertexthantering för den här användaren.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Objektet kunde inte hittas på servern för fjärrundertext $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Fjärrundertext $action misslyckades: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Fjärrundertext $action misslyckades (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Kunde inte $action fjärrundertexter.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'alla nedladdade avsnitt för \"$name\"';
   }
 
   @override
@@ -1431,17 +1432,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label-åtgärden misslyckades: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Kunde inte ställa in volymen för cast: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label-kontroller';
   }
 
   @override
@@ -1458,7 +1459,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Stoppa $label';
   }
 
   @override
@@ -1466,7 +1467,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Spår $number';
   }
 
   @override
@@ -1483,7 +1484,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds sekunder';
   }
 
   @override
@@ -1525,7 +1526,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get subtitleDelay => 'Undertextfördröjning';
 
   @override
-  String get reset => 'Återställa';
+  String get reset => 'Återställ';
 
   @override
   String get unknown => 'Okänd';
@@ -1576,7 +1577,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get videoBitrate => 'Video bithastighet';
 
   @override
-  String get track => 'Spåra';
+  String get track => 'Spår';
 
   @override
   String get channels => 'Kanaler';
@@ -1598,12 +1599,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol-sessionsfel';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Kunde inte läsa in bokinformation: $error';
   }
 
   @override
@@ -1612,7 +1613,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Det här formatet (.$extension) kan inte visas i appen än.';
   }
 
   @override
@@ -1625,17 +1626,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Kunde inte öppna läsaren i appen: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Bokmärket är redan sparat vid $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Bokmärke tillagt: $label';
   }
 
   @override
@@ -1648,7 +1649,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Sida $number';
   }
 
   @override
@@ -1664,7 +1665,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% läst';
   }
 
   @override
@@ -1687,7 +1688,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Återställ zoom (${zoom}x)';
   }
 
   @override
@@ -1710,7 +1711,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Kunde inte uppdatera lässtatus: $error';
   }
 
   @override
@@ -1742,7 +1743,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Den här plattformen kan inte köra den inbyggda dokumentmotorn för $extension-filer.';
   }
 
   @override
@@ -1781,7 +1782,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Kunde inte läsa in tablån: $error';
   }
 
   @override
@@ -1792,22 +1793,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Next: $time  $title';
+    return 'Nästa: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m left';
+    return '$minutes min kvar';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h left';
+    return '$hours tim kvar';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m left';
+    return '$hours tim $minutes min kvar';
   }
 
   @override
@@ -1830,29 +1831,29 @@ class AppLocalizationsSv extends AppLocalizations {
   String get favoriteChannel => 'Favoritkanal';
 
   @override
-  String get record => 'Record';
+  String get record => 'Spela in';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Avbryt inspelning';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Programmet är inställt för inspelning';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Inspelningen avbröts';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Kunde inte skapa inspelning';
 
   @override
   String get watch => 'Titta';
 
   @override
-  String get close => 'Nära';
+  String get close => 'Stäng';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Kunde inte spela upp $name';
   }
 
   @override
@@ -1879,11 +1880,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Avbryta schemalagd inspelning av \"$name\"?';
   }
 
   @override
-  String get no => 'Inga';
+  String get no => 'Nej';
 
   @override
   String get yesCancel => 'Ja, avbryt';
@@ -1908,7 +1909,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Sluta spela in \"$name\"?';
   }
 
   @override
@@ -1923,12 +1924,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Inga resultat för \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Sökningen misslyckades: $error';
   }
 
   @override
@@ -1969,12 +1970,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Ta bort \"$name\" och dess filer?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count spår';
   }
 
   @override
@@ -1985,12 +1986,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Kunde inte läsa in albumet: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Inga nedladdade spår hittades för $name.';
   }
 
   @override
@@ -2007,7 +2008,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Ta bort \"$name\"?';
   }
 
   @override
@@ -2022,7 +2023,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Avsnitt $number';
   }
 
   @override
@@ -2036,7 +2037,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Säsong $number';
   }
 
   @override
@@ -2052,7 +2053,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Ta bort alla nedladdade avsnitt i $season?';
   }
 
   @override
@@ -2060,8 +2061,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count avsnitt',
+      one: '1 avsnitt',
     );
     return '$_temp0';
   }
@@ -2096,7 +2097,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Ta bort $count nedladdade objekt?';
   }
 
   @override
@@ -2110,7 +2111,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'av gränsen $limit';
   }
 
   @override
@@ -2195,7 +2196,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count alternativ';
   }
 
   @override
@@ -2220,7 +2221,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get never => 'Aldrig';
 
   @override
-  String get focusExpansionAnimation => 'Focus Expansion Animation';
+  String get focusExpansionAnimation => 'Animering vid fokusexpansion';
 
   @override
   String get desktopUiScale => 'Desktop UI-skala';
@@ -2287,8 +2288,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get themeMusicVolume => 'Tema musikvolym';
 
   @override
-  String get themeMusicSettingsSubtitle =>
-      'Detail pages, home rows, and volume';
+  String get themeMusicSettingsSubtitle => 'Detaljsidor, hemrader och volym';
 
   @override
   String percentValue(int value) {
@@ -2303,11 +2303,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Spela när du surfar på startskärmen';
 
   @override
-  String get loopThemeMusic => 'Loop Theme Music';
+  String get loopThemeMusic => 'Loopa temamusik';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'Repeat the track instead of playing it once';
+      'Upprepa spåret i stället för att spela det en gång';
 
   @override
   String get detailsBackgroundBlur => 'Detaljer Bakgrundsskärpa';
@@ -2330,23 +2330,23 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playerZoomMode => 'Spelarens zoomläge';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => 'Mushjul';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      'Välj vad som händer när du rullar med mushjulet över videon under uppspelning.';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => 'Av';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => 'Spola (framåt/bakåt)';
 
   @override
-  String get scrollWheelActionVolume => 'Volume';
+  String get scrollWheelActionVolume => 'Volym';
 
   @override
-  String get playerTooltipVolume => 'Volume';
+  String get playerTooltipVolume => 'Volym';
 
   @override
   String get fit => 'Färdig';
@@ -2400,37 +2400,37 @@ class AppLocalizationsSv extends AppLocalizations {
   String get defaultAudioLanguage => 'Standardljudspråk';
 
   @override
-  String get fallbackAudioLanguage => 'Fallback Audio Language';
+  String get fallbackAudioLanguage => 'Reservspråk för ljud';
 
   @override
-  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+  String get preferDefaultAudioTrack => 'Föredra standardljudspår';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Prefer original audio track over localized dub.';
+      'Föredra originalljudspåret framför lokaliserad dubbning.';
 
   @override
-  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+  String get preferAudioDescription => 'Föredra syntolkningsspår';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Prefer audio description tracks over normal tracks.';
+      'Föredra syntolkningsspår framför vanliga spår.';
 
   @override
-  String get transcodingAudio => 'Transcoding (Audio)';
+  String get transcodingAudio => 'Omkodning (ljud)';
 
   @override
-  String get directStreamRemux => 'Direct Stream (Remux)';
+  String get directStreamRemux => 'Direktström (remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Transcoding (Bitrate or Resolution)';
+      'Omkodning (bithastighet eller upplösning)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+  String get transcodingVideoAndAudio => 'Omkodning (video och ljud)';
 
   @override
-  String get transcodingVideo => 'Transcoding (Video)';
+  String get transcodingVideo => 'Omkodning (video)';
 
   @override
   String get autoServerDefault => 'Auto (serverstandard)';
@@ -2507,27 +2507,28 @@ class AppLocalizationsSv extends AppLocalizations {
       'Aktivera TrueHD-ljud (fungerar kanske inte på alla plattformar)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Ljudutgångsläge';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      'Välj hur ljudet avkodas. AVR Passthrough skickar råa Dolby-/DTS-strömmar till din receiver; Auto eller Nedmixning avkodar lokalt.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Reservcodec för ljud';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      'Välj målformatet för omkodning av flerkanaligt ljud när källströmmen inte kan direktspelas eller skickas vidare.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto =>
+      'Identifiera automatiskt\n(Rekommenderas)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Standard)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2536,26 +2537,27 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Förlustfritt)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Endast stereo)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Effektiv)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Förlustfritt)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => 'Max antal ljudkanaler';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      'Ställ in det maximala antalet kanaler för din ljudanläggning. Flerkanalsströmmar som överskrider gränsen nedmixas eller omkodas.';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto =>
+      'Identifiera automatiskt\n(Hårdvarustandard)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2567,7 +2569,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadrofoni';
 
   @override
   String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
@@ -2582,67 +2584,68 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (avancerat)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'Codec-passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Aktivera endast format som din AVR eller HDMI-mottagare stöder.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'EAC3-passthrough';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos)-passthrough';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'DTS Core-passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA-passthrough';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD-passthrough';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos-passthrough';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Skicka Dolby Digital Plus (EAC3) som bitström till extern avkodare.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Skicka Dolby Atmos över EAC3 (JOC) som bitström till extern avkodare.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Skicka DTS-HD MA (inklusive DTS core) som bitström till extern avkodare.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Skicka Dolby TrueHD med Atmos-metadata som bitström till extern avkodare.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Identifierade ljudfunktioner';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Ingen ögonblicksbild av körtidsfunktioner finns än.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Ljudväg';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Avkodning';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD-ljudväg';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2657,50 +2660,48 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Högtalare';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Headphones';
+  String get settingsAudioRouteHeadphones => 'Hörlurar';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '${count}ch PCM';
+    return '$count kanaler PCM';
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnostik';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Videonivå';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Videoomfång';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Undertextcodec';
 
   @override
-  String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+  String get settingsAudioDiagnosticsAllowedAudioCodecs => 'Tillåtna ljudcodec';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'HLS MPEG-TS-ljudcodec';
 
   @override
-  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs => 'HLS fMP4-ljudcodec';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
       'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Aktiv ljudväg';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'HD-ljudstöd för ljudvägen';
 
   @override
   String get nightMode => 'Nattläge';
@@ -2745,7 +2746,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get minimal => 'Minimal';
 
   @override
-  String get nextUpTimeout => 'Next Up Timeout';
+  String get nextUpTimeout => 'Tidsgräns för Näst på tur';
 
   @override
   String secondsValue(int value) {
@@ -2763,7 +2764,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Efter $episodes avsnitt / $hours tim';
   }
 
   @override
@@ -2839,45 +2840,45 @@ class AppLocalizationsSv extends AppLocalizations {
       'Anpassa undertexternas utseende';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => 'Undertextläge';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => 'Flaggade';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => 'Alltid';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => 'Främmande språk';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => 'Tvingade';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+      'Spelar spår som internt är flaggade som \"default\" eller \"forced\" i mediefilens metadata.';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+      'Läser automatiskt in och visar undertexter varje gång en video startar.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+      'Slår automatiskt på undertexter om standardljudspåret är på ett främmande språk.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+      'Läser bara in undertexter som uttryckligen är märkta med flaggan forced.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+      'Inaktiverar automatisk inläsning av undertexter helt.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => 'Reservspråk för undertexter';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => 'Undertextström';
 
   @override
   String get subtitlePreviewText =>
@@ -2936,17 +2937,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Inställningar för profilen $profile har lästs in.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Kunde inte läsa in inställningar för profilen $profile.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Lokala inställningar har synkats till profilen $profile.';
   }
 
   @override
@@ -2985,11 +2986,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get wifiOnlyDownloads => 'Endast WiFi-nedladdningar';
 
   @override
-  String get reportDownloadsActivity => 'Show downloads on the server';
+  String get reportDownloadsActivity => 'Visa nedladdningar på servern';
 
   @override
   String get reportDownloadsActivitySubtitle =>
-      'Let the server admin see your transcoded downloads in the dashboard';
+      'Låt serveradministratören se dina omkodade nedladdningar i kontrollpanelen';
 
   @override
   String get onlyDownloadOnWifi =>
@@ -3064,7 +3065,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get navigationStyle => 'Navigationsstil';
 
   @override
-  String get topBar => 'Top Bar';
+  String get topBar => 'Övre fält';
 
   @override
   String get leftSidebar => 'Vänster sidofält';
@@ -3082,10 +3083,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get showLibrariesInToolbar => 'Visa bibliotek i verktygsfältet';
 
   @override
-  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
+  String get navbarAlwaysExpanded =>
+      'Visa alltid etiketter i navigeringsfältet';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'Visa Seerr-knapp';
 
   @override
   String get navbarOpacity => 'Navbar Opacitet';
@@ -3160,18 +3162,18 @@ class AppLocalizationsSv extends AppLocalizations {
   String get showFolderBrowsingOption => 'Visa mappsökningsalternativ';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => 'Gruppera objekt i samlingar';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+      'Dölj biblioteksobjekt som hör till en samling när du bläddrar i bibliotek';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle => 'Om biblioteksgruppering';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+      'För att kunna använda den här inställningen måste biblioteksinställningarna \"Group movies into collections\" och/eller \"Group shows into collections\" vara aktiverade under bibliotekets visningsinställningar på din Jellyfin- eller Emby-server.';
 
   @override
   String get libraryVisibility => 'Bibliotekets synlighet';
@@ -3200,11 +3202,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count valda';
   }
 
   @override
-  String get mediaBar => 'Media Bar';
+  String get mediaBar => 'Mediefält';
 
   @override
   String get mediaSources => 'Mediekällor';
@@ -3283,10 +3285,10 @@ class AppLocalizationsSv extends AppLocalizations {
       'Spela upp trailers automatiskt i mediafältet efter 3 sekunder';
 
   @override
-  String get trailerAudio => 'Trailer Audio';
+  String get trailerAudio => 'Trailerljud';
 
   @override
-  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+  String get enableTrailerAudio => 'Aktivera ljud för trailers i mediefältet';
 
   @override
   String get episodePreview => 'Förhandsvisning av avsnitt';
@@ -3364,10 +3366,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Kombinera båda raderna till en enda hemsektion';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => 'Expanderade hemrader';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription =>
+      'Begränsa hemrader till 1 rad per skärm';
 
   @override
   String get perRowImageType => 'Bildtyp per rad';
@@ -3382,7 +3385,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get lastUser => 'Senaste användare';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => 'Nuvarande användare';
 
   @override
   String get alwaysAuthenticate => 'Autentisera alltid';
@@ -3453,7 +3456,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get clock => 'Klocka';
 
   @override
-  String get timeout => 'Timeout';
+  String get timeout => 'Tidsgräns';
 
   @override
   String minutesShort(int minutes) {
@@ -3488,10 +3491,10 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa klockan under skärmsläckare';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => 'Statisk';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => 'Studsande';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritiker)';
@@ -3561,7 +3564,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'Aktivera och ändra ordning på betygskällorna som visas i appen';
 
   @override
-  String get pluginLabel => 'Plugin';
+  String get pluginLabel => 'Moonbase-plugin';
 
   @override
   String get pluginDetected => 'Plugin upptäckt';
@@ -3586,7 +3589,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get availableServices => 'Tillgängliga tjänster';
 
   @override
-  String get serverPluginSync => 'Server Plugin Sync';
+  String get serverPluginSync => 'Synkning av serverplugin';
 
   @override
   String get syncSettingsWithPlugin =>
@@ -3618,7 +3621,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get upcomingMovies => 'Kommande filmer';
 
   @override
-  String get studios => 'Studios';
+  String get studios => 'Studior';
 
   @override
   String get popularSeries => 'Populär serie';
@@ -3633,7 +3636,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get networks => 'Nätverk';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'Seerr-upptäcktsrader';
 
   @override
   String get resetRowsToDefaults => 'Återställ rader till standardvärden';
@@ -3656,44 +3659,43 @@ class AppLocalizationsSv extends AppLocalizations {
   String get hideAdultContent => 'Dölj barnförbjudet innehåll i resultaten';
 
   @override
-  String get seerrNotificationsSection => 'Notifications';
+  String get seerrNotificationsSection => 'Aviseringar';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'New request notifications';
+  String get seerrNotifyNewRequestsTitle => 'Aviseringar om nya förfrågningar';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'Alert me when someone submits a request';
+      'Meddela mig när någon skickar en förfrågan';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Request updates';
+  String get seerrNotifyLibraryAddedTitle => 'Uppdateringar om förfrågningar';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Approved, declined, and added to your library';
+      'Godkända, nekade och tillagda i ditt bibliotek';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Issue updates';
+  String get seerrNotifyIssuesTitle => 'Uppdateringar om problem';
 
   @override
-  String get seerrNotifyIssuesSubtitle =>
-      'New issues, replies, and resolutions';
+  String get seerrNotifyIssuesSubtitle => 'Nya problem, svar och lösningar';
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Inloggad som: $username';
   }
 
   @override
-  String get discoverRows => 'Upptäck rader';
+  String get discoverRows => 'Seerr-upptäcktssida';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Dra för att ändra ordning. Aktivera eller inaktivera rader. Aktiverad radordning synkroniseras med plugin-programmet Moonfin.';
+      'Aktivera raderna du vill se på Seerrs startsida. Dra för att ändra ordning. Den anpassade ordningen synkroniseras med Moonbase.';
 
   @override
   String get discoverRowsDescription =>
-      'Dra för att ändra ordning. Aktivera eller inaktivera rader.';
+      'Aktivera raderna du vill se på Seerrs startsida. Dra för att ändra ordning. Den anpassade ordningen synkroniseras med Moonbase.';
 
   @override
   String get enabled => 'Aktiverad';
@@ -3755,7 +3757,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Uppdatering tillgänglig: v$version';
   }
 
   @override
@@ -3767,7 +3769,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version finns tillgänglig';
   }
 
   @override
@@ -3820,13 +3822,13 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get imageCacheLimit => 'Image cache limit';
+  String get imageCacheLimit => 'Gräns för bildcache';
 
   @override
-  String get clearImageCache => 'Clear image cache';
+  String get clearImageCache => 'Rensa bildcache';
 
   @override
-  String get imageCacheCleared => 'Image cache cleared';
+  String get imageCacheCleared => 'Bildcachen har rensats';
 
   @override
   String get clear => 'Rensa';
@@ -3845,15 +3847,15 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Downloading · $percent%';
+    return 'Laddar ner · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Importing';
+  String get seerrImportingStatus => 'Importerar';
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count objekt';
   }
 
   @override
@@ -3873,7 +3875,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Efterfrågad av $name';
   }
 
   @override
@@ -3890,12 +3892,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Avbryta förfrågan om \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Avbryta $count förfrågningar om \"$title\"?';
   }
 
   @override
@@ -3915,7 +3917,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Intäkter: \$$amount';
   }
 
   @override
@@ -3925,7 +3927,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Efterfråga $type';
   }
 
   @override
@@ -3954,14 +3956,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get showMore => 'Visa mer';
 
   @override
-  String get appearances => 'Framträdanden';
+  String get appearances => 'Medverkan';
 
   @override
   String get crewSection => 'Besättning';
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'ålder $age';
   }
 
   @override
@@ -3992,148 +3994,148 @@ class AppLocalizationsSv extends AppLocalizations {
   String get deletedStatus => 'Raderad';
 
   @override
-  String get failedStatus => 'Failed';
+  String get failedStatus => 'Misslyckades';
 
   @override
-  String get processingStatus => 'Processing';
+  String get processingStatus => 'Bearbetas';
 
   @override
   String modifiedByName(String name) {
-    return 'Modified by $name';
+    return 'Ändrad av $name';
   }
 
   @override
-  String get completedStatus => 'Completed';
+  String get completedStatus => 'Slutförd';
 
   @override
-  String get requestErrorDuplicate => 'This title was already requested';
+  String get requestErrorDuplicate => 'Titeln har redan efterfrågats';
 
   @override
-  String get requestErrorQuota => 'Request limit reached';
+  String get requestErrorQuota => 'Gränsen för förfrågningar har nåtts';
 
   @override
-  String get requestErrorBlocklisted => 'This title is blocklisted';
+  String get requestErrorBlocklisted => 'Titeln är blockerad';
 
   @override
-  String get requestErrorNoSeasons => 'No seasons left to request';
+  String get requestErrorNoSeasons => 'Inga säsonger kvar att efterfråga';
 
   @override
   String get requestErrorPermission =>
-      'You don\'t have permission to make this request';
+      'Du har inte behörighet att göra den här förfrågan';
 
   @override
-  String get seerrRequestsTitle => 'Requests';
+  String get seerrRequestsTitle => 'Förfrågningar';
 
   @override
-  String get seerrIssuesTitle => 'Issues';
+  String get seerrIssuesTitle => 'Problem';
 
   @override
-  String get sortNewest => 'Newest';
+  String get sortNewest => 'Nyast';
 
   @override
-  String get sortLastModified => 'Last Modified';
+  String get sortLastModified => 'Senast ändrad';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => 'Inga problem';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit movie requests remaining';
+    return '$remaining av $limit filmförfrågningar kvar';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit season requests remaining';
+    return '$remaining av $limit säsongsförfrågningar kvar';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Part of $name';
+    return 'Del av $name';
   }
 
   @override
-  String get viewCollection => 'View Collection';
+  String get viewCollection => 'Visa samling';
 
   @override
-  String get requestCollection => 'Request Collection';
+  String get requestCollection => 'Efterfråga samling';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total movies · $available available';
+    return '$total filmer · $available tillgängliga';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Request $count movies';
+    return 'Efterfråga $count filmer';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Requesting $current of $total...';
+    return 'Efterfrågar $current av $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Requested $count movies';
+    return 'Efterfrågade $count filmer';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Requested $ok of $total movies';
+    return 'Efterfrågade $ok av $total filmer';
   }
 
   @override
   String get collectionAllRequested =>
-      'All movies are already available or requested';
+      'Alla filmer är redan tillgängliga eller efterfrågade';
 
   @override
-  String get reportIssue => 'Report Issue';
+  String get reportIssue => 'Rapportera problem';
 
   @override
   String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'Audio';
+  String get issueTypeAudio => 'Ljud';
 
   @override
-  String get whatsWrong => 'What\'s wrong?';
+  String get whatsWrong => 'Vad är fel?';
 
   @override
-  String get allEpisodes => 'All Episodes';
+  String get allEpisodes => 'Alla avsnitt';
 
   @override
-  String get episode => 'Episode';
+  String get episode => 'Avsnitt';
 
   @override
-  String get openStatus => 'Open';
+  String get openStatus => 'Öppen';
 
   @override
-  String get resolvedStatus => 'Resolved';
+  String get resolvedStatus => 'Löst';
 
   @override
-  String get resolveAction => 'Resolve';
+  String get resolveAction => 'Lös';
 
   @override
-  String get reopenAction => 'Reopen';
+  String get reopenAction => 'Öppna igen';
 
   @override
   String reportedByName(String name) {
-    return 'Reported by $name';
+    return 'Rapporterat av $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comments';
+    return '$count kommentarer';
   }
 
   @override
-  String get addComment => 'Add a comment';
+  String get addComment => 'Lägg till en kommentar';
 
   @override
-  String get deleteIssueConfirm => 'Delete this issue?';
+  String get deleteIssueConfirm => 'Ta bort det här problemet?';
 
   @override
-  String get submitReport => 'Submit Report';
+  String get submitReport => 'Skicka rapport';
 
   @override
   String get tmdbScore => 'TMDB-poäng';
@@ -4157,7 +4159,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get originalLanguageLabel => 'Originalspråk';
 
   @override
-  String get seasonsLabel => 'Årstider';
+  String get seasonsLabel => 'Säsonger';
 
   @override
   String get episodesLabel => 'Avsnitt';
@@ -4166,13 +4168,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get access => 'Tillträde';
 
   @override
-  String get add => 'Tillägga';
+  String get add => 'Lägg till';
 
   @override
   String get address => 'Adress';
 
   @override
-  String get analytics => 'Analytics';
+  String get analytics => 'Analys';
 
   @override
   String get catalog => 'Katalog';
@@ -4190,7 +4192,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get disable => 'Inaktivera';
 
   @override
-  String get done => 'Gjort';
+  String get done => 'Klar';
 
   @override
   String get edit => 'Redigera';
@@ -4202,10 +4204,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get error => 'Fel';
 
   @override
-  String get forward => 'Fram';
+  String get forward => 'Framåt';
 
   @override
-  String get general => 'Allmän';
+  String get general => 'Allmänt';
 
   @override
   String get go => 'Gå';
@@ -4250,7 +4252,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get refresh => 'Uppdatera';
 
   @override
-  String get remote => 'Avlägsen';
+  String get remote => 'Fjärrkontroll';
 
   @override
   String get rename => 'Döpa om';
@@ -4268,7 +4270,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get run => 'Sikt';
 
   @override
-  String get search => 'Sok';
+  String get search => 'Sök';
 
   @override
   String get select => 'Välja';
@@ -4286,7 +4288,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get status => 'Status';
 
   @override
-  String get stop => 'Stopp';
+  String get stop => 'Stoppa';
 
   @override
   String get streaming => 'Streaming';
@@ -4295,7 +4297,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get time => 'Tid';
 
   @override
-  String get trickplay => 'Trickspel';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => 'Avinstallera';
@@ -4313,22 +4315,22 @@ class AppLocalizationsSv extends AppLocalizations {
   String get unmute => 'Slå på ljudet';
 
   @override
-  String get mute => 'Stum';
+  String get mute => 'Ljud av';
 
   @override
-  String get branding => 'Branding';
+  String get branding => 'Varumärke';
 
   @override
   String get adminDrawerDashboard => 'Instrumentpanel';
 
   @override
-  String get adminDrawerAnalytics => 'Analytics';
+  String get adminDrawerAnalytics => 'Analys';
 
   @override
   String get adminDrawerSettings => 'Inställningar';
 
   @override
-  String get adminDrawerBranding => 'Branding';
+  String get adminDrawerBranding => 'Varumärke';
 
   @override
   String get adminDrawerUsers => 'Användare';
@@ -4337,25 +4339,25 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminDrawerLibraries => 'Bibliotek';
 
   @override
-  String get adminDrawerDisplay => 'Display';
+  String get adminDrawerDisplay => 'Visning';
 
   @override
   String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'NFO Settings';
+  String get adminDrawerNfo => 'NFO-inställningar';
 
   @override
   String get adminDrawerTranscoding => 'Omkodning';
 
   @override
-  String get adminDrawerResume => 'Resume';
+  String get adminDrawerResume => 'Återuppta';
 
   @override
   String get adminDrawerStreaming => 'Streaming';
 
   @override
-  String get adminDrawerTrickplay => 'Trickspel';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'Enheter';
@@ -4407,29 +4409,29 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Pluginuppdateringar tillgängliga: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Plugins som kräver omstart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Misslyckade schemalagda uppgifter: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Senaste varnings-/felposter: $count';
   }
 
   @override
   String get analyticsMediaDistribution => 'Mediedistribution';
 
   @override
-  String get analyticsVideoCodecs => 'Video Codecs';
+  String get analyticsVideoCodecs => 'Videocodec';
 
   @override
   String get analyticsAudioCodecs => 'Ljudkodekar';
@@ -4447,7 +4449,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get analyticsContentRatings => 'Innehållsklassificeringar';
 
   @override
-  String get analyticsRuntimeBuckets => 'Runtime Buckets';
+  String get analyticsRuntimeBuckets => 'Speltidsintervall';
 
   @override
   String get analyticsFileFormats => 'Filformat';
@@ -4481,7 +4483,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Fel: $error';
   }
 
   @override
@@ -4508,7 +4510,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Kommandot misslyckades: $error';
   }
 
   @override
@@ -4527,7 +4529,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get sessionRewind => 'Spola tillbaka';
 
   @override
-  String get sessionForward => 'Fram';
+  String get sessionForward => 'Framåt';
 
   @override
   String get sessionNext => 'Nästa';
@@ -4551,13 +4553,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get actions => 'Åtgärder';
 
   @override
-  String get videoCodec => 'Video Codec';
+  String get videoCodec => 'Videocodec';
 
   @override
-  String get audioCodec => 'Audio Codec';
+  String get audioCodec => 'Ljudcodec';
 
   @override
-  String get hwAccel => 'HW Accel';
+  String get hwAccel => 'HW-accel';
 
   @override
   String get completion => 'Komplettering';
@@ -4572,14 +4574,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminClearDates => 'Klara datum';
 
   @override
-  String get adminActivitySeverityAll => 'All severities';
+  String get adminActivitySeverityAll => 'Alla allvarlighetsgrader';
 
   @override
-  String get adminActivityDateRange => 'Date range';
+  String get adminActivityDateRange => 'Datumintervall';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Kunde inte läsa in aktivitetsloggen: $error';
   }
 
   @override
@@ -4596,7 +4598,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Kunde inte uppdatera enheten: $error';
   }
 
   @override
@@ -4607,28 +4609,28 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Kunde inte ta bort enheten: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return 'Ta bort enheten \'$name\'? Användaren måste logga in igen på den här enheten.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Delete all devices';
+  String get adminDeleteAllDevices => 'Ta bort alla enheter';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
+    return 'Ta bort $count enheter? Berörda användare måste logga in igen. Din nuvarande enhet påverkas inte.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Devices removed';
+  String get adminDevicesDeletedAll => 'Enheterna har tagits bort';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Removed some devices; $count could not be removed.';
+    return 'Vissa enheter togs bort; $count kunde inte tas bort.';
   }
 
   @override
@@ -4657,7 +4659,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Kunde inte starta genomsökningen: $error';
   }
 
   @override
@@ -4668,12 +4670,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Biblioteket har bytt namn till \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Kunde inte byta namn: $error';
   }
 
   @override
@@ -4681,17 +4683,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Biblioteket \"$name\" har tagits bort';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Kunde inte ta bort biblioteket: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Kunde inte lägga till sökvägen: $error';
   }
 
   @override
@@ -4699,12 +4701,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Ta bort \"$path\" från det här biblioteket?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Kunde inte ta bort sökvägen: $error';
   }
 
   @override
@@ -4712,7 +4714,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Kunde inte spara alternativen: $error';
   }
 
   @override
@@ -4743,251 +4745,258 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminMetadataCountryHint => 'till exempel USA, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'Paths';
+  String get adminLibraryTabPaths => 'Sökvägar';
 
   @override
-  String get adminLibraryTabOptions => 'Options';
+  String get adminLibraryTabOptions => 'Alternativ';
 
   @override
-  String get adminLibraryTabDownloaders => 'Downloaders';
+  String get adminLibraryTabDownloaders => 'Nedladdare';
 
   @override
-  String get adminLibMetadataSavers => 'Metadata savers';
+  String get adminLibMetadataSavers => 'Metadatasparare';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+  String get adminLibSubtitleDownloaders => 'Undertextnedladdare';
 
   @override
-  String get adminLibLyricDownloaders => 'Lyric downloaders';
+  String get adminLibLyricDownloaders => 'Låttextnedladdare';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Metadata downloaders: $type';
+    return 'Metadatanedladdare: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Image fetchers: $type';
+    return 'Bildhämtare: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'This server exposes no downloaders for this library type.';
+      'Servern erbjuder inga nedladdare för den här bibliotekstypen.';
 
   @override
-  String get adminLibrarySectionGeneral => 'General';
+  String get adminLibrarySectionGeneral => 'Allmänt';
 
   @override
   String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Embedded Info';
+  String get adminLibrarySectionEmbedded => 'Inbäddad information';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitles';
+  String get adminLibrarySectionSubtitles => 'Undertexter';
 
   @override
-  String get adminLibrarySectionImages => 'Images';
+  String get adminLibrarySectionImages => 'Bilder';
 
   @override
-  String get adminLibrarySectionSeries => 'Series';
+  String get adminLibrarySectionSeries => 'Serier';
 
   @override
-  String get adminLibrarySectionMusic => 'Music';
+  String get adminLibrarySectionMusic => 'Musik';
 
   @override
-  String get adminLibrarySectionMovies => 'Movies';
+  String get adminLibrarySectionMovies => 'Filmer';
 
   @override
-  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+  String get adminLibRealtimeMonitor => 'Aktivera realtidsövervakning';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Detect file changes and process them automatically.';
+      'Upptäck filändringar och behandla dem automatiskt.';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+  String get adminLibArchiveMediaFiles => 'Behandla arkiv som mediefiler';
 
   @override
-  String get adminLibEnablePhotos => 'Display photos';
+  String get adminLibEnablePhotos => 'Visa foton';
 
   @override
-  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+  String get adminLibSaveLocalMetadata => 'Spara omslagsbilder i mediemapparna';
 
   @override
-  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+  String get adminLibRefreshInterval => 'Automatisk uppdatering av metadata';
 
   @override
-  String get adminLibRefreshNever => 'Never';
+  String get adminLibRefreshNever => 'Aldrig';
 
   @override
-  String get adminLibDefault => 'Default';
+  String get adminLibDefault => 'Standard';
 
   @override
-  String get adminLibDisplayTitle => 'Display';
+  String get adminLibDisplayTitle => 'Visning';
 
   @override
-  String get adminLibDisplaySection => 'Library display';
+  String get adminLibDisplaySection => 'Biblioteksvisning';
 
   @override
-  String get adminLibFolderView =>
-      'Display a folder view to show plain media folders';
+  String get adminLibFolderView => 'Visa en mappvy för vanliga mediemappar';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'Display specials within seasons they aired in';
+      'Visa specialavsnitt i den säsong de sändes';
 
   @override
-  String get adminLibGroupMovies => 'Group movies into collections';
+  String get adminLibGroupMovies => 'Gruppera filmer i samlingar';
 
   @override
-  String get adminLibGroupShows => 'Group shows into collections';
+  String get adminLibGroupShows => 'Gruppera serier i samlingar';
 
   @override
   String get adminLibExternalSuggestions =>
-      'Show external content in suggestions';
+      'Visa externt innehåll bland förslagen';
 
   @override
-  String get adminLibDateAddedSection => 'Date added behavior';
+  String get adminLibDateAddedSection => 'Beteende för tillagt datum';
 
   @override
-  String get adminLibDateAddedLabel => 'Use date added from';
+  String get adminLibDateAddedLabel => 'Hämta tillagt datum från';
 
   @override
-  String get adminLibDateAddedImport => 'Date scanned into the library';
+  String get adminLibDateAddedImport =>
+      'Datum då filen skannades in i biblioteket';
 
   @override
-  String get adminLibDateAddedFile => 'Date the file was created';
+  String get adminLibDateAddedFile => 'Datum då filen skapades';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata and Images';
+  String get adminLibMetadataTitle => 'Metadata och bilder';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferred metadata language';
+  String get adminLibMetadataLangSection => 'Föredraget metadataspråk';
 
   @override
-  String get adminLibChaptersSection => 'Chapters';
+  String get adminLibChaptersSection => 'Kapitel';
 
   @override
-  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
+  String get adminLibDummyChapterDuration =>
+      'Längd på genererade kapitel (sekunder)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Length of chapters generated for media that has none. Set to 0 to disable.';
+      'Längden på kapitel som genereras för media som saknar kapitel. Ange 0 för att inaktivera.';
 
   @override
-  String get adminLibChapterImageResolution => 'Chapter image resolution';
+  String get adminLibChapterImageResolution => 'Upplösning för kapitelbilder';
 
   @override
-  String get adminLibNfoTitle => 'NFO Settings';
+  String get adminLibNfoTitle => 'NFO-inställningar';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
+      'NFO-metadata är kompatibel med Kodi och liknande klienter. Inställningarna gäller alla bibliotek som sparar NFO-metadata.';
 
   @override
-  String get adminLibKodiUser => 'User to store watch data for in NFO files';
+  String get adminLibKodiUser =>
+      'Användare vars visningsdata sparas i NFO-filer';
 
   @override
-  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
+  String get adminLibSaveImagePaths => 'Spara bildsökvägar i NFO-filer';
 
   @override
   String get adminLibPathSubstitution =>
-      'Enable path substitution for NFO image paths';
+      'Aktivera sökvägsersättning för bildsökvägar i NFO';
 
   @override
   String get adminLibExtraThumbs =>
-      'Copy extrafanart images into an extrathumbs folder';
+      'Kopiera extrafanart-bilder till en extrathumbs-mapp';
 
   @override
-  String get adminLibNone => 'None';
+  String get adminLibNone => 'Ingen';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days days';
+    return '$days dagar';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Use embedded titles';
+  String get adminLibEmbeddedTitles => 'Använd inbäddade titlar';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+  String get adminLibEmbeddedExtrasTitles =>
+      'Använd inbäddade titlar för extramaterial';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+  String get adminLibEmbeddedEpisodeInfos =>
+      'Använd inbäddad avsnittsinformation';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+  String get adminLibAllowEmbeddedSubtitles => 'Tillåt inbäddade undertexter';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Allow all';
+  String get adminLibEmbeddedAllowAll => 'Tillåt alla';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Text only';
+  String get adminLibEmbeddedAllowText => 'Endast text';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Image only';
+  String get adminLibEmbeddedAllowImage => 'Endast bild';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'None';
+  String get adminLibEmbeddedAllowNone => 'Ingen';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Skip download if embedded subtitles are present';
+      'Hoppa över nedladdning om inbäddade undertexter finns';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Skip download if the audio track matches the download language';
+      'Hoppa över nedladdning om ljudspåret matchar nedladdningsspråket';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+  String get adminLibRequirePerfectMatch =>
+      'Kräv en perfekt undertextmatchning';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'Save subtitles into media folders';
+      'Spara undertexter i mediemapparna';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extract chapter images';
+  String get adminLibChapterImageExtraction => 'Extrahera kapitelbilder';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Extract chapter images during the library scan';
+      'Extrahera kapitelbilder under biblioteksgenomsökningen';
 
   @override
-  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+  String get adminLibTrickplayExtraction =>
+      'Aktivera extrahering av trickplay-bilder';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Extract trickplay images during the library scan';
+      'Extrahera trickplay-bilder under biblioteksgenomsökningen';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Save trickplay images into media folders';
+      'Spara trickplay-bilder i mediemapparna';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Automatically merge series that are spread across multiple folders';
+      'Slå automatiskt ihop serier som är utspridda över flera mappar';
 
   @override
-  String get adminLibSeasonZeroName => 'Season zero display name';
+  String get adminLibSeasonZeroName => 'Visningsnamn för säsong noll';
 
   @override
-  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+  String get adminLibLufsScan =>
+      'Aktivera LUFS-genomsökning för ljudnormalisering';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Prefer non-standard artists tag';
+      'Föredra icke-standardtaggen för artister';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'Automatically add movies to collections';
+      'Lägg automatiskt till filmer i samlingar';
 
   @override
   String get adminLibraryNameRequired => 'Bibliotekets namn krävs';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Kunde inte skapa biblioteket: $error';
   }
 
   @override
@@ -5014,27 +5023,27 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Inaktivera $name? Användaren kommer inte att kunna logga in.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Aktivera $name? Användaren kommer att kunna logga in igen.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Användaren \"$name\" har inaktiverats';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Användaren \"$name\" har aktiverats';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Kunde inte uppdatera användarpolicyn: $error';
   }
 
   @override
@@ -5051,7 +5060,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Kunde inte skapa användaren: $error';
   }
 
   @override
@@ -5071,7 +5080,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Kunde inte spara: $error';
   }
 
   @override
@@ -5082,7 +5091,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Misslyckades: $error';
   }
 
   @override
@@ -5215,143 +5224,146 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminEnableAllChannels => 'Aktivera åtkomst till alla kanaler';
 
   @override
-  String get adminParentalControl => 'Parental Control';
+  String get adminParentalControl => 'Föräldrakontroll';
 
   @override
-  String get adminMaxParentalRating => 'Maximum allowed parental rating';
+  String get adminMaxParentalRating => 'Högsta tillåtna åldersgräns';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Content with a higher rating will be hidden from this user.';
+      'Innehåll med en högre åldersgräns döljs för den här användaren.';
 
   @override
-  String get adminParentalRatingNone => 'None';
+  String get adminParentalRatingNone => 'Ingen';
 
   @override
   String get adminBlockUnratedItems =>
-      'Block items with no or unrecognized rating information';
+      'Blockera objekt utan eller med okänd åldersgräns';
 
   @override
-  String get adminUnratedBook => 'Books';
+  String get adminUnratedBook => 'Böcker';
 
   @override
-  String get adminUnratedChannelContent => 'Channels';
+  String get adminUnratedChannelContent => 'Kanaler';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Live TV';
+  String get adminUnratedLiveTvChannel => 'Live-TV';
 
   @override
-  String get adminUnratedMovie => 'Movies';
+  String get adminUnratedMovie => 'Filmer';
 
   @override
-  String get adminUnratedMusic => 'Music';
+  String get adminUnratedMusic => 'Musik';
 
   @override
   String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'Shows';
+  String get adminUnratedSeries => 'Serier';
 
   @override
-  String get adminAccessSchedules => 'Access Schedules';
+  String get adminAccessSchedules => 'Åtkomstscheman';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
+      'Tillåt åtkomst endast under de schemalagda tiderna nedan. Åtkomst tillåts hela dygnet när inget schema är angett.';
 
   @override
-  String get adminAddSchedule => 'Add Schedule';
+  String get adminAddSchedule => 'Lägg till schema';
 
   @override
-  String get adminScheduleDay => 'Day';
+  String get adminScheduleDay => 'Dag';
 
   @override
   String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'End';
+  String get adminScheduleEnd => 'Slut';
 
   @override
-  String get adminDayEveryday => 'Every day';
+  String get adminDayEveryday => 'Varje dag';
 
   @override
-  String get adminDayWeekday => 'Weekday';
+  String get adminDayWeekday => 'Vardag';
 
   @override
-  String get adminDayWeekend => 'Weekend';
+  String get adminDayWeekend => 'Helg';
 
   @override
-  String get adminDaySunday => 'Sunday';
+  String get adminDaySunday => 'Söndag';
 
   @override
-  String get adminDayMonday => 'Monday';
+  String get adminDayMonday => 'Måndag';
 
   @override
-  String get adminDayTuesday => 'Tuesday';
+  String get adminDayTuesday => 'Tisdag';
 
   @override
-  String get adminDayWednesday => 'Wednesday';
+  String get adminDayWednesday => 'Onsdag';
 
   @override
-  String get adminDayThursday => 'Thursday';
+  String get adminDayThursday => 'Torsdag';
 
   @override
-  String get adminDayFriday => 'Friday';
+  String get adminDayFriday => 'Fredag';
 
   @override
-  String get adminDaySaturday => 'Saturday';
+  String get adminDaySaturday => 'Lördag';
 
   @override
-  String get adminAllowedTags => 'Allowed tags';
+  String get adminAllowedTags => 'Tillåtna taggar';
 
   @override
   String get adminAllowedTagsHint =>
-      'Only content with these tags is shown. Leave empty to allow all.';
+      'Endast innehåll med dessa taggar visas. Lämna tomt för att tillåta allt.';
 
   @override
-  String get adminBlockedTags => 'Blocked tags';
+  String get adminBlockedTags => 'Blockerade taggar';
 
   @override
   String get adminBlockedTagsHint =>
-      'Content with these tags is hidden from this user.';
+      'Innehåll med dessa taggar döljs för den här användaren.';
 
   @override
-  String get adminAddTag => 'Add tag';
+  String get adminAddTag => 'Lägg till tagg';
 
   @override
-  String get adminEnabledDevices => 'Enabled devices';
+  String get adminEnabledDevices => 'Aktiverade enheter';
 
   @override
-  String get adminEnabledChannels => 'Enabled channels';
+  String get adminEnabledChannels => 'Aktiverade kanaler';
 
   @override
-  String get adminAuthProvider => 'Authentication provider';
+  String get adminAuthProvider => 'Autentiseringsleverantör';
 
   @override
-  String get adminPasswordResetProvider => 'Password reset provider';
+  String get adminPasswordResetProvider =>
+      'Leverantör för lösenordsåterställning';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Maximum failed login attempts before lockout';
+      'Högsta antal misslyckade inloggningsförsök före utelåsning';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Set to 0 for the default, or -1 to disable lockout.';
+      'Ange 0 för standardvärdet, eller -1 för att inaktivera utelåsning.';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay access';
+  String get adminSyncPlayAccess => 'SyncPlay-åtkomst';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
+  String get adminSyncPlayCreateAndJoin =>
+      'Tillåt att skapa och gå med i grupper';
 
   @override
-  String get adminSyncPlayJoin => 'Allow joining groups';
+  String get adminSyncPlayJoin => 'Tillåt att gå med i grupper';
 
   @override
-  String get adminSyncPlayNone => 'No access';
+  String get adminSyncPlayNone => 'Ingen åtkomst';
 
   @override
-  String get adminContentDeletionFolders => 'Allow content deletion from';
+  String get adminContentDeletionFolders =>
+      'Tillåt borttagning av innehåll från';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5359,22 +5371,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Servern svarade med HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Är du säker på att du vill ta bort $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Användaren \"$name\" har tagits bort';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Kunde inte ta bort användaren: $error';
   }
 
   @override
@@ -5395,7 +5407,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Kunde inte skapa nyckeln: $error';
   }
 
   @override
@@ -5406,7 +5418,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Återkalla nyckeln för $name?';
   }
 
   @override
@@ -5414,7 +5426,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Kunde inte återkalla nyckeln: $error';
   }
 
   @override
@@ -5434,29 +5446,29 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Token: $token\\nSkapad: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Create Backup';
+  String get adminBackupOptionsTitle => 'Skapa säkerhetskopia';
 
   @override
-  String get adminBackupInclude => 'Choose what to include in the backup.';
+  String get adminBackupInclude => 'Välj vad som ska ingå i säkerhetskopian.';
 
   @override
-  String get adminBackupDatabase => 'Database';
+  String get adminBackupDatabase => 'Databas';
 
   @override
-  String get adminBackupDatabaseAlways => 'Always included';
+  String get adminBackupDatabaseAlways => 'Ingår alltid';
 
   @override
   String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'Subtitles';
+  String get adminBackupSubtitles => 'Undertexter';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay images';
+  String get adminBackupTrickplay => 'Trickplay-bilder';
 
   @override
   String get adminCreatingBackup => 'Skapar säkerhetskopia...';
@@ -5466,7 +5478,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Kunde inte skapa säkerhetskopian: $error';
   }
 
   @override
@@ -5480,7 +5492,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Kunde inte läsa in manifestet: $error';
   }
 
   @override
@@ -5491,7 +5503,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Kunde inte återställa säkerhetskopian: $error';
   }
 
   @override
@@ -5524,17 +5536,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Sparad till $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Kunde inte spara filen: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Kunde inte läsa in $fileName';
   }
 
   @override
@@ -5545,7 +5557,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Kunde inte läsa in uppgifterna: $error';
   }
 
   @override
@@ -5557,17 +5569,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Kunde inte starta uppgiften: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Kunde inte stoppa uppgiften: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Kunde inte läsa in uppgiften: $error';
   }
 
   @override
@@ -5575,12 +5587,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Kunde inte ta bort utlösaren: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Kunde inte lägga till utlösaren: $error';
   }
 
   @override
@@ -5606,7 +5618,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours timme/timmar';
   }
 
   @override
@@ -5617,7 +5629,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Kunde inte växla pluginet: $error';
   }
 
   @override
@@ -5625,27 +5637,27 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Är du säker på att du vill avinstallera \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Kunde inte avinstallera pluginet: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Kunde inte installera paketet: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Kunde inte installera uppdateringen: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Kunde inte läsa in plugins: $error';
   }
 
   @override
@@ -5656,12 +5668,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Installera uppdatering (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Kunde inte läsa in katalogen: $error';
   }
 
   @override
@@ -5682,17 +5694,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '\"$name\" tas bort efter att servern startats om';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Kunde inte avinstallera: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Uppdaterar \"$name\" till v$version...';
   }
 
   @override
@@ -5701,7 +5713,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Kunde inte läsa in pluginet: $error';
   }
 
   @override
@@ -5729,24 +5741,24 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Är du säker på att du vill ta bort \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Kunde inte spara arkiven: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Kunde inte läsa in arkiven: $error';
   }
 
   @override
   String get adminRepositoryNameHint => 'till exempel Jellyfin Stabil';
 
   @override
-  String get adminRepositoryUrl => 'Repository URL';
+  String get adminRepositoryUrl => 'Arkivets URL';
 
   @override
   String get adminAddEntry => 'Lägg till post';
@@ -5756,12 +5768,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Kunde inte läsa in plugininställningarna: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Kunde inte öppna $uri';
   }
 
   @override
@@ -6042,12 +6054,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Kunde inte läsa in metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Kunde inte spara metadata: $error';
   }
 
   @override
@@ -6067,7 +6079,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Kunde inte uppdatera metadata: $error';
   }
 
   @override
@@ -6081,7 +6093,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Fjärrsökningen misslyckades: $error';
   }
 
   @override
@@ -6095,7 +6107,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Kunde inte uppdatera innehållstypen: $error';
   }
 
   @override
@@ -6110,12 +6122,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType-bilden har uppdaterats';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Kunde inte ladda ner bilden: $error';
   }
 
   @override
@@ -6126,27 +6138,27 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType-bilden har laddats upp';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Kunde inte ladda upp bilden: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Ta bort $imageType-bilden';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType-bilden har tagits bort';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Kunde inte ta bort bilden: $error';
   }
 
   @override
@@ -6157,67 +6169,68 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Sökningen efter tuners misslyckades: $error';
   }
 
   @override
   String get adminAddTuner => 'Lägg till tuner';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => 'Redigera tuner';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'M3U-tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => 'Fil eller URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => 'Tunerns IP-adress';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => 'Visningsnamn';
 
   @override
   String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => 'Gräns för samtidiga anslutningar';
 
   @override
   String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+      'Det största antal strömmar som tunern tillåter samtidigt. Ange 0 för obegränsat.';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate =>
+      'Reservgräns för strömmens bithastighet';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly => 'Importera endast favoritkanaler';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding => 'Tillåt hårdvaruomkodning';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'Tillåt fMP4 som omkodningscontainer';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing => 'Tillåt delning av strömmar';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping => 'Aktivera loopning av strömmar';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'Ignorera DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+      'Läs indata med ursprunglig bildfrekvens';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => 'Redigera leverantör';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6226,50 +6239,50 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => 'Fil eller URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => 'Filmprefix';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => 'Filmkategorier';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+      'Separera flera kategorier med ett lodstreck.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => 'Barnkategorier';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => 'Nyhetskategorier';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => 'Sportkategorier';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => 'Användarnamn';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => 'Lösenord';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => 'Land';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => 'Välj ett land';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => 'Postnummer';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => 'Hämta tablåer';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => 'Tablåer';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => 'Aktivera alla tuners';
 
   @override
   String get adminTunerType => 'Tuner typ';
@@ -6279,7 +6292,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Kunde inte lägga till tunern: $error';
   }
 
   @override
@@ -6293,12 +6306,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Kunde inte lägga till leverantören: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Kunde inte ta bort tunern: $error';
   }
 
   @override
@@ -6306,16 +6319,16 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Kunde inte återställa tunern: $error';
   }
 
   @override
   String get adminTunerResetNotSupported =>
-      'This tuner type does not support resetting.';
+      'Den här tunertypen stöder inte återställning.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Kunde inte ta bort leverantören: $error';
   }
 
   @override
@@ -6334,43 +6347,44 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminSeriesRecordingPath => 'Serieinspelningsväg';
 
   @override
-  String get adminMovieRecordingPath => 'Movie recording path';
+  String get adminMovieRecordingPath => 'Sökväg för filminspelningar';
 
   @override
-  String get adminGuideDays => 'Guide data days';
+  String get adminGuideDays => 'Antal dagar med tablådata';
 
   @override
-  String get adminGuideDaysAuto => 'Automatic';
+  String get adminGuideDaysAuto => 'Automatiskt';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days days';
+    return '$days dagar';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'Post-processing application path';
+  String get adminRecordingPostProcessor =>
+      'Sökväg till efterbehandlingsprogram';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
+  String get adminRecordingPostProcessorArgs => 'Argument för efterbehandling';
 
   @override
-  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
+  String get adminSaveRecordingNfo => 'Spara NFO-metadata för inspelningar';
 
   @override
-  String get adminSaveRecordingImages => 'Save recording images';
+  String get adminSaveRecordingImages => 'Spara bilder för inspelningar';
 
   @override
-  String get adminLiveTvSectionTiming => 'Timing';
+  String get adminLiveTvSectionTiming => 'Tidsinställning';
 
   @override
-  String get adminLiveTvSectionPaths => 'Recording paths';
+  String get adminLiveTvSectionPaths => 'Inspelningssökvägar';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-processing';
+  String get adminLiveTvSectionPostProcessing => 'Efterbehandling';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Guide data: $value';
+    return 'Tablådata: $value';
   }
 
   @override
@@ -6378,7 +6392,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Kunde inte spara inställningarna: $error';
   }
 
   @override
@@ -6395,7 +6409,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Kunde inte uppdatera mappningarna: $error';
   }
 
   @override
@@ -6412,14 +6426,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminGuideProviders => 'Guide leverantörer';
 
   @override
-  String get adminRefreshGuideData => 'Refresh Guide Data';
+  String get adminRefreshGuideData => 'Uppdatera tablådata';
 
   @override
-  String get adminGuideRefreshStarted => 'Guide data refresh started';
+  String get adminGuideRefreshStarted => 'Uppdatering av tablådata har startat';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Guide refresh task is not available on this server.';
+      'Uppgiften för tablåuppdatering är inte tillgänglig på den här servern.';
 
   @override
   String get adminAddProvider => 'Lägg till leverantör';
@@ -6430,26 +6444,26 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Inspelningssökväg: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Seriesökväg: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Marginal före: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Marginal efter: $minutes min';
   }
 
   @override
-  String get adminTunerDiscovery => 'Tuner Discovery';
+  String get adminTunerDiscovery => 'Sök efter tuners';
 
   @override
   String get adminChannelMappings => 'Kanalmappningar';
@@ -6478,7 +6492,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Återställa säkerhetskopian $name nu?';
   }
 
   @override
@@ -6502,13 +6516,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminLiveTvTitle => 'Direktsänd TV-administration';
 
   @override
-  String get adminApply => 'Tillämpas';
+  String get adminApply => 'Tillämpa';
 
   @override
   String get adminNotSet => 'Inte inställt';
 
   @override
-  String get adminReset => 'Återställa';
+  String get adminReset => 'Återställ';
 
   @override
   String get adminLogsTitle => 'Serverloggar';
@@ -6524,27 +6538,27 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes min sedan';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours tim sedan';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days d sedan';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Kunde inte läsa in $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count träffar';
   }
 
   @override
@@ -6554,7 +6568,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminMetadataEditorTitle => 'Metadataredigerare';
 
   @override
-  String get adminMetadataIdentify => 'Identify';
+  String get adminMetadataIdentify => 'Identifiera';
 
   @override
   String get adminMetadataType => 'Typ';
@@ -6596,7 +6610,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminMetadataFieldCriticRating => 'Kritikerbetyg';
 
   @override
-  String get adminMetadataFieldTagline => 'Tagline';
+  String get adminMetadataFieldTagline => 'Slogan';
 
   @override
   String get adminMetadataFieldOverview => 'Översikt';
@@ -6608,7 +6622,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminMetadataTags => 'Taggar';
 
   @override
-  String get adminMetadataStudios => 'Studios';
+  String get adminMetadataStudios => 'Studior';
 
   @override
   String get adminMetadataPeople => 'Personer';
@@ -6654,22 +6668,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType-bilden har uppdaterats';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType-bilden har laddats upp';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType-bilden har tagits bort';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Kunde inte ladda ner bilden: $error';
   }
 
   @override
@@ -6678,12 +6692,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Kunde inte ladda upp bilden: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Ta bort $imageType-bilden';
   }
 
   @override
@@ -6692,12 +6706,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Kunde inte ta bort bilden: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Välj $imageType-bild';
   }
 
   @override
@@ -6729,7 +6743,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Uppdatering tillgänglig: v$version';
   }
 
   @override
@@ -6753,7 +6767,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Installera uppdatering (v$version)';
   }
 
   @override
@@ -6765,7 +6779,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\" installeras...';
   }
 
   @override
@@ -6785,7 +6799,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return 'Inställningar för $name';
   }
 
   @override
@@ -6825,7 +6839,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Kunde inte läsa in arkiven: $error';
   }
 
   @override
@@ -6833,7 +6847,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Är du säker på att du vill ta bort \"$name\"?';
   }
 
   @override
@@ -6841,7 +6855,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Kunde inte spara arkiven: $error';
   }
 
   @override
@@ -6861,7 +6875,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminReposAddTitle => 'Lägg till arkiv';
 
   @override
-  String get adminReposUrl => 'Repository URL';
+  String get adminReposUrl => 'Arkivets URL';
 
   @override
   String get adminReposNameHint => 'till exempel Jellyfin Stabil';
@@ -6948,7 +6962,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminNetworkingAddEntry => 'Lägg till post';
 
   @override
-  String get adminBrandingTitle => 'Branding';
+  String get adminBrandingTitle => 'Varumärke';
 
   @override
   String get adminBrandingLoginDisclaimer =>
@@ -6969,19 +6983,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminBrandingEnableSplash => 'Aktivera startskärm';
 
   @override
-  String get adminBrandingSplashUpload => 'Upload image';
+  String get adminBrandingSplashUpload => 'Ladda upp bild';
 
   @override
-  String get adminBrandingSplashUploaded => 'Splashscreen updated';
+  String get adminBrandingSplashUploaded => 'Startskärmen har uppdaterats';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
+  String get adminBrandingSplashUploadFailed =>
+      'Kunde inte ladda upp startskärmen';
 
   @override
-  String get adminBrandingSplashDeleted => 'Splashscreen removed';
+  String get adminBrandingSplashDeleted => 'Startskärmen har tagits bort';
 
   @override
-  String get adminBrandingNoSplash => 'No custom splashscreen';
+  String get adminBrandingNoSplash => 'Ingen anpassad startskärm';
 
   @override
   String get adminPlaybackHwAccel => 'Hårdvaruacceleration';
@@ -6996,118 +7011,122 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminPlaybackEnableHwDecoding => 'Aktivera hårdvaruavkodning för:';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV device';
+  String get adminPlaybackQsvDevice => 'QSV-enhet';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
+  String get adminPlaybackEnhancedNvdec => 'Aktivera förbättrad NVDEC-avkodare';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Prefer system native hardware decoder';
+      'Föredra systemets inbyggda hårdvaruavkodare';
 
   @override
-  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
+  String get adminPlaybackColorDepth => 'Färgdjup vid hårdvaruavkodning';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
+  String get adminPlaybackColorDepth10Hevc => '10-bitars HEVC-avkodning';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
+  String get adminPlaybackColorDepth10Vp9 => '10-bitars VP9-avkodning';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
+  String get adminPlaybackColorDepth10HevcRext =>
+      'HEVC RExt 8/10-bitars avkodning';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
+  String get adminPlaybackColorDepth12HevcRext =>
+      'HEVC RExt 12-bitars avkodning';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
+  String get adminPlaybackHwEncodingSection => 'Hårdvarukodning';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
+  String get adminPlaybackAllowHevcEncoding => 'Tillåt HEVC-kodning';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
+  String get adminPlaybackAllowAv1Encoding => 'Tillåt AV1-kodning';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Enable Intel low-power H.264 encoder';
+      'Aktivera Intels lågeffekts-H.264-kodare';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Enable Intel low-power HEVC encoder';
+      'Aktivera Intels lågeffekts-HEVC-kodare';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone Mapping';
+  String get adminPlaybackToneMapping => 'Tonmappning';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
+  String get adminPlaybackEnableTonemapping => 'Aktivera tonmappning';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
+  String get adminPlaybackEnableVppTonemapping => 'Aktivera VPP-tonmappning';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Enable VideoToolbox tone mapping';
+      'Aktivera VideoToolbox-tonmappning';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
+  String get adminPlaybackTonemappingAlgorithm => 'Algoritm för tonmappning';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
+  String get adminPlaybackTonemappingMode => 'Läge för tonmappning';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Tone mapping range';
+  String get adminPlaybackTonemappingRange => 'Omfång för tonmappning';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
+  String get adminPlaybackTonemappingDesat => 'Avmättnad vid tonmappning';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
+  String get adminPlaybackTonemappingPeak => 'Topp för tonmappning';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
+  String get adminPlaybackTonemappingParam => 'Parameter för tonmappning';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+      'Ljusstyrka för VPP-tonmappning';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast =>
+      'Kontrast för VPP-tonmappning';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presets & Quality';
+  String get adminPlaybackPresetsQuality => 'Förinställningar och kvalitet';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Encoder preset';
+  String get adminPlaybackEncoderPreset => 'Förinställning för kodare';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
+  String get adminPlaybackH264Crf => 'CRF för H.264-kodning';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
+  String get adminPlaybackH265Crf => 'CRF för H.265 (HEVC)-kodning';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
+  String get adminPlaybackDeinterlaceMethod => 'Avflätningsmetod';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+      'Fördubbla bildfrekvensen vid avflätning';
 
   @override
-  String get adminPlaybackAudioSection => 'Audio';
+  String get adminPlaybackAudioSection => 'Ljud';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
+  String get adminPlaybackEnableAudioVbr => 'Aktivera VBR-kodning för ljud';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
+  String get adminPlaybackDownmixBoost => 'Förstärkning vid nedmixning av ljud';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
+  String get adminPlaybackDownmixAlgorithm =>
+      'Algoritm för nedmixning till stereo';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
+  String get adminPlaybackMaxMuxingQueue => 'Max storlek på muxningskön';
 
   @override
   String get adminPlaybackAutoOption => 'Auto';
@@ -7230,10 +7249,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminTaskNeverRun => 'Spring aldrig';
 
   @override
-  String get adminTaskStop => 'Stopp';
+  String get adminTaskStop => 'Stoppa';
 
   @override
-  String get adminRunningTasks => 'Running Tasks';
+  String get adminRunningTasks => 'Pågående uppgifter';
 
   @override
   String get adminTaskRun => 'Sikt';
@@ -7255,17 +7274,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Dagligen kl. $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Varje $day kl. $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Var $duration';
   }
 
   @override
@@ -7303,8 +7322,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count timmar',
+      one: '1 timme',
     );
     return '$_temp0';
   }
@@ -7332,17 +7351,17 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days d sedan';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours tim sedan';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes min sedan';
   }
 
   @override
@@ -7350,22 +7369,22 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes min';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours tim';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month/$day';
+    return '$day/$month';
   }
 
   @override
@@ -7385,43 +7404,43 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
+  String get adminNetworkingPublicHttpPort => 'Publik HTTP-port';
 
   @override
-  String get adminNetworkingRequireHttps => 'Require HTTPS';
+  String get adminNetworkingRequireHttps => 'Kräv HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
+      'Omdirigera alla fjärranslutningar till HTTPS. Har ingen effekt om servern saknar ett giltigt certifikat.';
 
   @override
-  String get adminNetworkingCertPassword => 'Certificate password';
+  String get adminNetworkingCertPassword => 'Certifikatlösenord';
 
   @override
-  String get adminNetworkingIpSettings => 'IP Settings';
+  String get adminNetworkingIpSettings => 'IP-inställningar';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
+  String get adminNetworkingEnableIpv4 => 'Aktivera IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
+  String get adminNetworkingEnableIpv6 => 'Aktivera IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
+  String get adminNetworkingAutoDiscovery => 'Aktivera automatisk portmappning';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN networks';
+  String get adminNetworkingLocalSubnets => 'LAN-nätverk';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
+      'Komma- eller radseparerad lista med IP-adresser eller CIDR-subnät som räknas som lokalt nätverk.';
 
   @override
-  String get adminNetworkingPublishedUris => 'Published server URIs';
+  String get adminNetworkingPublishedUris => 'Publicerade server-URI:er';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Map a subnet or address to a published URL, e.g. all=https://example.com';
+      'Mappa ett subnät eller en adress till en publicerad URL, t.ex. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'Certifikatsökväg';
@@ -7451,11 +7470,12 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Gasspjällsbuffring';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay =>
+      'Fördröjning för strypning (sekunder)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+      'Tillåt extrahering av undertexter i realtid';
 
   @override
   String get adminResumeMinPct => 'Minsta CV procentsats';
@@ -7505,7 +7525,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Kunde inte uppdatera innehållstypen: $error';
   }
 
   @override
@@ -7513,10 +7533,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Tröskel för långsamt svar (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
+  String get adminGeneralEnableSlowResponse =>
+      'Aktivera varningar om långsamma svar';
 
   @override
-  String get adminGeneralQuickConnect => 'Enable Quick Connect';
+  String get adminGeneralQuickConnect => 'Aktivera Quick Connect';
 
   @override
   String get adminGeneralSectionServer => 'Server';
@@ -7525,10 +7546,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'Paths';
+  String get adminGeneralSectionPaths => 'Sökvägar';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performance';
+  String get adminGeneralSectionPerformance => 'Prestanda';
 
   @override
   String get adminGeneralCachePath => 'Cache-väg';
@@ -7540,7 +7561,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminGeneralServerName => 'Servernamn';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage => 'Föredraget visningsspråk';
 
   @override
   String get adminSettingsLoadFailed =>
@@ -7551,12 +7572,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Kunde inte uppdatera mappningarna: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Tidsgräns: $duration';
   }
 
   @override
@@ -7593,8 +7614,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: '# deltagare',
+      one: '# deltagare',
     );
     return '$_temp0';
   }
@@ -7637,7 +7658,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Objekt $index';
   }
 
   @override
@@ -7685,12 +7706,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName gick med i SyncPlay-gruppen';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName lämnade SyncPlay-gruppen';
   }
 
   @override
@@ -7702,7 +7723,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Synkar uppspelningen till $groupName';
   }
 
   @override
@@ -7740,8 +7761,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: '# rader hittade',
+      one: '# rad hittad',
     );
     return '$_temp0';
   }
@@ -7782,20 +7803,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get offlineSavedMedia => 'Sparade media';
 
   @override
-  String get offlineBannerTitle => 'You\'re offline';
+  String get offlineBannerTitle => 'Du är offline';
 
   @override
-  String get offlineBannerSubtitle => 'Showing your downloads';
+  String get offlineBannerSubtitle => 'Visar dina nedladdningar';
 
   @override
-  String get offlineBannerAction => 'Downloads';
+  String get offlineBannerAction => 'Nedladdningar';
 
   @override
-  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+  String get serverUnreachableBannerTitle => 'Kan inte nå din server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Playing from downloads until it\'s back';
+      'Spelar från nedladdningar tills den är tillbaka';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7811,12 +7832,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Cast-kontrollen misslyckades: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind-kontroller';
   }
 
   @override
@@ -7827,11 +7848,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Stoppa $kind';
   }
 
   @override
-  String get audioLabel => 'Audio';
+  String get audioLabel => 'Ljud';
 
   @override
   String get subtitlesLabel => 'Undertexter';
@@ -7850,12 +7871,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Ange en $length-siffrig PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Ange din $length-siffriga PIN';
   }
 
   @override
@@ -7878,7 +7899,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'Snabbanslutningskoden är ogiltig eller har löpt ut.';
+      'Quick Connect-koden är ogiltig eller har löpt ut.';
 
   @override
   String get quickConnectNotSupported =>
@@ -7898,11 +7919,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get quickConnectNotFound =>
-      'Snabbanslutningskoden hittades inte. Prova en ny kod.';
+      'Quick Connect-koden hittades inte. Prova en ny kod.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Quick Connect misslyckades: $message';
   }
 
   @override
@@ -7913,7 +7934,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Kommandot misslyckades: $error';
   }
 
   @override
@@ -7943,7 +7964,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Kunde inte starta cast: $error';
   }
 
   @override
@@ -7988,7 +8009,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Laddar ner $name...';
   }
 
   @override
@@ -8069,14 +8090,14 @@ class AppLocalizationsSv extends AppLocalizations {
       'Uppspelningen har pausats. Tittar du fortfarande?';
 
   @override
-  String get stillWatchingStop => 'Stopp';
+  String get stillWatchingStop => 'Stoppa';
 
   @override
   String get stillWatchingContinue => 'Fortsätta';
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Hoppa över $segment';
   }
 
   @override
@@ -8087,12 +8108,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Laddar ner $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Laddar ner $fileName';
   }
 
   @override
@@ -8129,7 +8150,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playerTooltipUnlockOrientation => 'Tillåt rotation';
 
   @override
-  String get playerTooltipPrevious => 'Tidigare';
+  String get playerTooltipPrevious => 'Föregående';
 
   @override
   String get playerTooltipSeekBack => 'Sök tillbaka';
@@ -8153,14 +8174,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get contextMenuGoToSeries => 'Gå till serien';
 
   @override
-  String get contextMenuHideFromContinueWatching =>
-      'Hide from Continue Watching';
+  String get contextMenuHideFromContinueWatching => 'Dölj från Fortsätt titta';
 
   @override
-  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+  String get contextMenuHideFromNextUp => 'Dölj från Näst på tur';
 
   @override
-  String get contextMenuAddToCollection => 'Add to Collection';
+  String get contextMenuAddToCollection => 'Lägg till i samling';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8215,14 +8235,14 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAlphabetical => 'Alfabetisk';
 
   @override
-  String get settingsConnectionSection => 'CONNECTION';
+  String get settingsConnectionSection => 'ANSLUTNING';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+  String get settingsAllowSelfSignedCerts => 'Tillåt självsignerade certifikat';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+      'Lita på servrar som använder självsignerade TLS-certifikat eller certifikat från en privat CA. Aktivera bara för servrar du själv styr. Det här inaktiverar certifikatvalidering för alla anslutningar.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'SEKRETESS OCH SÄKERHET';
@@ -8238,11 +8258,11 @@ class AppLocalizationsSv extends AppLocalizations {
       'Temaaccenter, bakgrunder, bevakade indikatorer och temamusik';
 
   @override
-  String get settingsDetailsScreen => 'Details Screen';
+  String get settingsDetailsScreen => 'Detaljsida';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Style, background blur, and tab behavior';
+      'Stil, bakgrundsoskärpa och flikbeteende';
 
   @override
   String get settingsHomePage => 'Hemsida';
@@ -8280,11 +8300,11 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+      'Visa Seerr-knappen i navigeringsfältet';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Always show text labels in the top navigation bar';
+      'Visa alltid textetiketter i det övre navigeringsfältet';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8331,7 +8351,7 @@ class AppLocalizationsSv extends AppLocalizations {
       'Maximalt antal objekt att ladda ner på en gång.';
 
   @override
-  String get settingsAppInfo => 'APP INFO';
+  String get settingsAppInfo => 'APPINFO';
 
   @override
   String get settingsReportAnIssue => 'Rapportera ett problem';
@@ -8352,8 +8372,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsSupportMoonfin => 'Stöd Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => 'Bjud utvecklaren på en kaffe';
 
   @override
   String get settingsLegal => 'RÄTTSLIG';
@@ -8386,8 +8405,8 @@ class AppLocalizationsSv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: '# licensmeddelanden',
+      one: '# licensmeddelande',
     );
     return '$_temp0';
   }
@@ -8437,16 +8456,16 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Hoppa över Intros och Outros?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown => 'Nedräkning för mediesegment';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => 'Förloppsindikator';
 
   @override
   String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => 'Ingen';
 
   @override
   String get settingsPromptUser => 'Fråga användare';
@@ -8470,7 +8489,8 @@ class AppLocalizationsSv extends AppLocalizations {
       'Hur video ska skalas för att passa skärmen.';
 
   @override
-  String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
+  String get settingsPlaybackEngineAndroidTv =>
+      'Uppspelningsmotor (Android TV)';
 
   @override
   String get settingsPlaybackEngineAndroidTvDescription =>
@@ -8481,13 +8501,13 @@ class AppLocalizationsSv extends AppLocalizations {
       'Media3 (rekommenderas)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (äldre)';
 
   @override
-  String get settingsPlaybackEngineMpvLegacy => 'mpv (legacy)';
+  String get settingsPlaybackEngineMpvLegacy => 'mpv (äldre)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (rekommenderas)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Reserv';
@@ -8678,749 +8698,753 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return 'Nyligen släppt i $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'Spela nästa avsnitt automatiskt';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Spela automatiskt nästa avsnitt när det finns tillgängligt.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Hoppa över tystnad';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Hoppa automatiskt över tysta ljudavsnitt när strömmen stöder det.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => 'Tillåt externa ljudeffekter';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Låt equalizer- och effektappar (t.ex. Wavelet) koppla in sig på Media3-uppspelningssessioner.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Inaktivera tunneling';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Framtvinga uppspelning utan tunneling. Användbart på enheter med ljud-/videoavbrott vid tunneling.';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => 'Aktivera tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      'Avancerat. Skickar ljud och video via en kopplad hårdvaruväg. Avstängt som standard eftersom det orsakar ljud-/videobortfall på vissa enheter.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Mappa Dolby Vision-profil 7 till HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Spela upp strömmar med Dolby Vision-profil 7 som HDR10-kompatibel HEVC på enheter utan DV-stöd.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => 'Använd inbäddade undertextstilar';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Använd färger, teckensnitt och positionering som är inbäddade i undertextspåret. Inaktivera för att använda dina egna stilinställningar i stället.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Använd inbäddade teckenstorlekar för undertexter';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Använd de teckenstorlekar som är inbäddade i undertextspåret. Inaktivera för att använda undertextstorleken från dina stilinställningar.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => 'Visa mediedetaljer';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      'Visa detaljer om det valda objektet högst upp på bibliotekssidorna.';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries =>
+      'Dölj bakgrundsbilder när du bläddrar?';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'Använd detaljerade underrubriker';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Visa en detaljerad eller minimal underrad på bibliotekssidorna.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Ta bort sparat tema?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Ta bort \"$themeName\" från den här enhetens cache?';
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => 'Temabutik';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle =>
+      'Bläddra bland och spara teman från communityn';
 
   @override
   String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+      'Spara ett tema för att använda det som dina andra sparade teman.';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => 'Inga teman är tillgängliga just nu.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+      'Kunde inte läsa in Temabutiken. Kontrollera anslutningen och försök igen.';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => 'Spara';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => 'Spara och använd';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => 'Sparat';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'Det här temat kunde inte läsas in.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return '\"$themeName\" har sparats.';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return '\"$themeName\" har tagits bort från den här enheten.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Kunde inte ta bort \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Sparade teman';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Det här är teman som laddats ner från Moonfin-pluginet för den aktuella servern. Borttagning tar endast bort den lokala kopian.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Inga sparade teman hittades för den här servern.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Används nu';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Ta bort sparat tema';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Hantera nedladdade plugin-teman på den här enheten';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Temaredigerare';
 
   @override
   String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+      'Öppna Moonfins temaredigerare i webbläsaren';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Hemskärm';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Nedre fält';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Klassisk';
 
   @override
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Hemrader';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => 'Visning av hemrader';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => 'Sektioner för hemrader';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => 'Reglage för hemrader';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Enable or disable library-based home row categories';
+      'Aktivera eller inaktivera bibliotekbaserade kategorier på hemraderna';
 
   @override
   String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+      'Aktivera reglagen nedan för att visa raderna i hemsektionerna.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Klassisk behåller bildtyp per rad och infoöverlägg. Modern använder rader som går från stående format till bakgrundsbild.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Visa favoritrader';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'Visa favoritfilmer, favoritserier och andra favoritrader i hemsektionerna.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Sortering av favoritrader';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Sortera favoritrader efter tillagt datum, releasedatum, alfabetiskt och mer.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Visa samlingsrader';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'Visa samlingsrader i hemsektionerna.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Sortering av samlingsrader';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Sortera samlingsrader efter tillagt datum, releasedatum, alfabetiskt och mer.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Visa genrerader';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle => 'Visa genrerader i hemsektionerna.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Sortering av genrerader';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Sortera genrerader efter tillagt datum, releasedatum, alfabetiskt och mer.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Objekt på genrerader';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'Visa filmer, serier eller båda på genrerader.';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => 'Visa spellisterader';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+      'Visa spellisterader i hemsektionerna.';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => 'Sortering av spellisterader';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+      'Sortera spellisterader efter tillagt datum, releasedatum, alfabetiskt och mer.';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => 'Visa ljudrader';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle => 'Visa ljudrader i hemsektionerna.';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => 'Sortering av ljudrader';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+      'Sortera ljudrader efter tillagt datum, releasedatum, alfabetiskt och mer.';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => 'Ljudspellistor';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Utseende';
 
   @override
   String get layout => 'Layout';
 
   @override
-  String get theme => 'Theme';
+  String get theme => 'Tema';
 
   @override
-  String get keyboard => 'Keyboard';
+  String get keyboard => 'Tangentbord';
 
   @override
-  String get navButtons => 'Buttons';
+  String get navButtons => 'Knappar';
 
   @override
   String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'MPV configuration';
+  String get mpvConfiguration => 'MPV-konfiguration';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Extern spelarapp';
 
   @override
   String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+      'Ange en extern spelare för att aktivera uppspelning vid långtryck';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Visa appväljaren när uppspelningen startar.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'Läser in installerade spelare...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Anslutning';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Målformat för ljudomkodning';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Stöds på den här enheten';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'Stöds inte på den här enheten';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD)-passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Skicka DTS:X (DTS UHD) som bitström till extern avkodare.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'TrueHD med Atmos (JOC)-passthrough';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Mediespelarens beteende';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Uppspelningsförbättringar';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Alltid på.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Ersätt Hoppa över outro med Näst på tur';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Visa överlägget Näst på tur i stället för knappen Hoppa över outro.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Spelardirigering';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => 'Föredra mjukvaruavkodare';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Använd FFmpeg (ljud) och libgav1 (AV1) före hårdvaruavkodare. Inaktivera om HDMI-ljudpassthrough slutar fungera.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Öppna videouppspelning i din valda externa app på Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Automatisk kö';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Föredra SDH-undertexter';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Prioritera SDH-/CC-undertextspår vid automatiskt val.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Webbdiagnostik';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin webbdiagnostik';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Använd den här sidan för att felsöka anslutningsproblem i webbläsaren (CORS, blandat innehåll och identifieringsinställningar).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Fel med blandat innehåll upptäckt';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'CORS-/preflight-fel upptäckt';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin upptäckte att en HTTPS-sida försöker anropa en server-URL över HTTP. Webbläsare blockerar sådana anrop innan de når din server.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin upptäckte ett anropsfel på webbläsarnivå som vanligtvis beror på att CORS- eller preflight-huvuden saknas på mediaservern.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'Mål-URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'Detaljer: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext => 'Aktuell körtidskontext';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'Ursprung';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Schema';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Pluginläge';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'WebRTC-genomsökning';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'Framtvingad server-URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'Standard-URL för server';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => 'URL till identifieringsproxy';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'inte konfigurerad';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'Blandat innehåll';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Den här sidan läses in över HTTPS, men en eller flera konfigurerade URL:er använder HTTP. Webbläsare blockerar HTTPS-sidor från att anropa HTTP-API:er.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Åtgärd: publicera din mediaserver eller proxyslutpunkt via HTTPS, eller läs in Moonfin över HTTP endast på betrodda lokala nätverk.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'Ingen uppenbar konfiguration med blandat innehåll upptäcktes utifrån de aktuella körtidsinställningarna.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'CORS-checklista';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Tillåt webbläsarens ursprung i Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Inkludera Authorization, X-Emby-Authorization och X-Emby-Token i Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• Exponera Content-Range och Accept-Ranges för streaming och spolning.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• Svara med 204 på OPTIONS-preflight-förfrågningar.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'Exempel på headerkod (nginx-stil)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Obs';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Den här diagnostiksidan är avsedd för webbversioner. Om du ser den på en annan plattform kanske kontrollerna inte är relevanta.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Tillbaka till serverval';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Logga ut alla användare';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Behörighet till mikrofonen är permanent nekad. Aktivera den i systeminställningarna.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Behörighet till mikrofonen krävs för röstsökning.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'Uppfattade inte det. Försök igen.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => 'Inget tal upptäcktes.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Mikrofonfel.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => 'Röstsökning kräver internet.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => 'Rösttjänsten är upptagen. Försök igen.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Behörighet till mikrofonen är permanent nekad.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied =>
+      'Behörighet till mikrofonen är nekad.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Taligenkänning är inte tillgänglig på den här enheten.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Öppna iOS-utgångsväljaren';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'AirPlay-utgångsväljaren är inte tillgänglig på den här enheten.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Videor';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Program';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Låtar';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Fotoalbum';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Foton';
 
   @override
-  String get people => 'People';
+  String get people => 'Personer';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Nyligen släppta avsnitt';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Se igen';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Gästframträdanden';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Framträdanden (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => 'Bidrag från teamet (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Titta med grupp';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Fel';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Varningar';
 
   @override
   String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Öppna i webbläsaren';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Den inbyggda webbläsaren är inte tillgänglig på den här plattformen.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Är du säker på att du vill starta om servern?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Är du säker på att du vill stänga av servern? Du måste starta den manuellt igen.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'Intern';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Inaktiv';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Inga användare hittades';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch => 'Inga användare matchar din sökning';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Inga enheter hittades';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Inga enheter matchar de aktuella filtren';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Lösenord angett';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Inget lösenord konfigurerat';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Fjärråtkomst';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Endast lokalt';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed =>
+      'Kunde inte läsa in mediaanalysen';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Sammanslagen analys för alla mediebibliotek.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Toppartister';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'Toppförfattare';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Främsta bidragsgivare';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '$count bibliotek',
+      one: '1 bibliotek',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Inga indexerade mediesummor är tillgängliga för det här valet än.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Biblioteksdetaljer';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Fördelning per bibliotek';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => 'Inga bibliotek är tillgängliga.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Serveradministration';
 
   @override
   String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Bildcache';
 
   @override
   String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'Loggar';
 
   @override
   String get adminServerPathMetadata => 'Metadata';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'Omkodning';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
-  String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+  String get adminNoServerPathsReturned => 'Servern returnerade inga sökvägar.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% använt';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Användaraktivitet';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Systemhändelser';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Kräver åtgärd';
 
   @override
   String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Uppspelning';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'Enheter';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'Avancerat';
 
   @override
   String get adminDrawerSectionPlugins => 'Plugins';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'Live-TV';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'Hemvideor';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'Blandat innehåll';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'Hemvideor och foton';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'Blandade filmer och serier';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9432,299 +9456,299 @@ class AppLocalizationsSv extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'Inga inspelningar hittades';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'Inga bildsidor hittades i .$extension-arkivet.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'Den inbyggda renderaren misslyckades ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'EPUB-renderaren misslyckades ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'Lokal fil saknas för läsaren: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status när bokdata skulle öppnas från $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'Ingen läsbar bokslutpunkt tillgänglig';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'Serietidningsarkivet stöds inte: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'Pluginet för CBR-extrahering är inte tillgängligt på den här plattformen.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => 'Kunde inte extrahera .cbr-arkivet.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'CB7-extrahering är inte tillgänglig på den här plattformen.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'Pluginet för CB7-extrahering är inte tillgängligt på den här plattformen.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'Stäng genrepanelen';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'Läser in blandning...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'BIBLIOTEKSBLANDNING';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'SLUMPMÄSSIG BLANDNING';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'GENREBLANDNING';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'Automatisk HDR-växling';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'Aktivera HDR automatiskt vid uppspelning av HDR-video och återställ visningsläget när du avslutar.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'I helskärm';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => 'Byt omslagsbild';
 
   @override
-  String get missing => 'Missing';
+  String get missing => 'Saknas';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'Omkodningsgränser';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton => 'Rensa alla omslagsbilder?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+      'Är du säker på att du vill rensa alla nedladdade omslagsbilder?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => 'Bekräfta rensning';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return 'Är du säker på att du vill rensa $itemType?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => 'Ladda upp?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => 'Upplösning: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+      'Visa endast omslagsbilder på gränssnittsspråket';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => 'Bekräfta rensa alla';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => 'Bilden har laddats upp!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Kunde inte ladda upp bilden: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return 'Kunde inte ange bilden: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Kunde inte ta bort bilden: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return 'Kunde inte rensa alla omslagsbilder: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'Ja';
 
   @override
-  String get posterCategory => 'Poster';
+  String get posterCategory => 'Affisch';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => 'Bakgrundsbilder';
 
   @override
   String get bannerCategory => 'Banner';
 
   @override
-  String get logoCategory => 'Logo';
+  String get logoCategory => 'Logotyp';
 
   @override
-  String get thumbnailCategory => 'Thumbnail';
+  String get thumbnailCategory => 'Miniatyrbild';
 
   @override
-  String get artCategory => 'Art';
+  String get artCategory => 'Grafik';
 
   @override
-  String get discArtCategory => 'Disc Art';
+  String get discArtCategory => 'Skivgrafik';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => 'Skärmbild';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => 'Omslag';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => 'Baksidesomslag';
 
   @override
-  String get menuArtCategory => 'Menu Art';
+  String get menuArtCategory => 'Menygrafik';
 
   @override
-  String get confirmItemPoster => 'poster';
+  String get confirmItemPoster => 'affischen';
 
   @override
-  String get confirmItemBackdrop => 'backdrop';
+  String get confirmItemBackdrop => 'bakgrundsbilden';
 
   @override
-  String get confirmItemBanner => 'banner';
+  String get confirmItemBanner => 'bannern';
 
   @override
-  String get confirmItemLogo => 'logo';
+  String get confirmItemLogo => 'logotypen';
 
   @override
-  String get confirmItemThumbnail => 'thumbnail';
+  String get confirmItemThumbnail => 'miniatyrbilden';
 
   @override
-  String get confirmItemArt => 'art';
+  String get confirmItemArt => 'grafiken';
 
   @override
-  String get confirmItemDiscArt => 'disc art';
+  String get confirmItemDiscArt => 'skivgrafiken';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => 'skärmbilden';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => 'omslaget';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => 'baksidesomslaget';
 
   @override
-  String get confirmItemMenuArt => 'menu art';
+  String get confirmItemMenuArt => 'menygrafiken';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => 'Alla';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => 'Hög (1080p+)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => 'Mellan (720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => 'Låg (<720p)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => 'Källor';
 
   @override
-  String get audiobookChapters => 'Chapters';
+  String get audiobookChapters => 'Kapitel';
 
   @override
-  String get audiobookBookmarks => 'Bookmarks';
+  String get audiobookBookmarks => 'Bokmärken';
 
   @override
-  String get audiobookNotes => 'Notes';
+  String get audiobookNotes => 'Anteckningar';
 
   @override
-  String get audiobookQueue => 'Queue';
+  String get audiobookQueue => 'Kö';
 
   @override
-  String get audiobookTimeline => 'Timeline';
+  String get audiobookTimeline => 'Tidslinje';
 
   @override
-  String get audiobookTimelineEmpty => 'Timeline is empty';
+  String get audiobookTimelineEmpty => 'Tidslinjen är tom';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
+  String get audiobookWholeBook => 'Hela boken';
 
   @override
-  String get audiobookFocusedTimeline => 'Focused Timeline';
+  String get audiobookFocusedTimeline => 'Fokuserad tidslinje';
 
   @override
-  String get audiobookExportBookmarks => 'Export Bookmarks';
+  String get audiobookExportBookmarks => 'Exportera bokmärken';
 
   @override
-  String get audiobookExportNotes => 'Export Notes';
+  String get audiobookExportNotes => 'Exportera anteckningar';
 
   @override
-  String get audiobookExportAll => 'Export All';
+  String get audiobookExportAll => 'Exportera allt';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exported to $path';
+    return 'Exporterat till $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export failed: $error';
+    return 'Exporten misslyckades: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Lyrics';
+  String get audiobookLyrics => 'Låttexter';
 
   @override
-  String get audiobookAddBookmark => 'Add bookmark';
+  String get audiobookAddBookmark => 'Lägg till bokmärke';
 
   @override
-  String get audiobookAddNote => 'Add note';
+  String get audiobookAddNote => 'Lägg till anteckning';
 
   @override
-  String get audiobookEditNote => 'Edit note';
+  String get audiobookEditNote => 'Redigera anteckning';
 
   @override
-  String get audiobookNoteHint => 'Write a note for this moment';
+  String get audiobookNoteHint => 'Skriv en anteckning för det här stället';
 
   @override
-  String get audiobookSleepTimer => 'Sleep timer';
+  String get audiobookSleepTimer => 'Insomningstimer';
 
   @override
-  String get audiobookSleepOff => 'Off';
+  String get audiobookSleepOff => 'Av';
 
   @override
-  String get audiobookSleepEndOfChapter => 'End of chapter';
+  String get audiobookSleepEndOfChapter => 'Slutet av kapitlet';
 
   @override
-  String get audiobookSleepCustom => 'Custom';
+  String get audiobookSleepCustom => 'Anpassad';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining left';
+    return '$remaining kvar';
   }
 
   @override
@@ -9739,51 +9763,51 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Playback speed';
+  String get audiobookPlaybackSpeed => 'Uppspelningshastighet';
 
   @override
-  String get audiobookRemainingTime => 'Remaining';
+  String get audiobookRemainingTime => 'Återstår';
 
   @override
-  String get audiobookElapsedTime => 'Elapsed';
+  String get audiobookElapsedTime => 'Förfluten tid';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Back ${seconds}s';
+    return 'Bakåt ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Forward ${seconds}s';
+    return 'Framåt ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Previous chapter';
+  String get audiobookPreviousChapter => 'Föregående kapitel';
 
   @override
-  String get audiobookNextChapter => 'Next chapter';
+  String get audiobookNextChapter => 'Nästa kapitel';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Chapter $current of $total';
+    return 'Kapitel $current av $total';
   }
 
   @override
-  String get audiobookNoChapters => 'No chapters';
+  String get audiobookNoChapters => 'Inga kapitel';
 
   @override
-  String get audiobookNoBookmarks => 'No bookmarks yet';
+  String get audiobookNoBookmarks => 'Inga bokmärken än';
 
   @override
-  String get audiobookNoNotes => 'No notes yet';
+  String get audiobookNoNotes => 'Inga anteckningar än';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Bookmark added at $position';
+    return 'Bokmärke tillagt vid $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'Reset to 1.0x';
+  String get audiobookSpeedReset => 'Återställ till 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9791,249 +9815,249 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Save';
+  String get audiobookSave => 'Spara';
 
   @override
-  String get audiobookCancel => 'Cancel';
+  String get audiobookCancel => 'Avbryt';
 
   @override
-  String get audiobookDelete => 'Delete';
+  String get audiobookDelete => 'Radera';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => 'Undertextinställningar';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+      'Ändra undertextlägen, standardspråk, utseende och renderingsalternativ.';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => 'Undertextrendering';
 
   @override
-  String get displayOptions => 'Display Options';
+  String get displayOptions => 'Visningsalternativ';
 
   @override
-  String get releaseDateAscending => 'Release Date (Ascending)';
+  String get releaseDateAscending => 'Releasedatum (stigande)';
 
   @override
-  String get releaseDateDescending => 'Release Date (Descending)';
+  String get releaseDateDescending => 'Releasedatum (fallande)';
 
   @override
-  String get groupContributions => 'Group Contributions';
+  String get groupContributions => 'Gruppera bidrag';
 
   @override
-  String get groupMultipleRoles => 'Group multiple roles';
+  String get groupMultipleRoles => 'Gruppera flera roller';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+  String get libraryWriteAccessWarningTitle =>
+      'Varning om skrivåtkomst till biblioteket';
 
   @override
-  String get libraryWriteAccessHowToFix => 'How to fix this:';
+  String get libraryWriteAccessHowToFix => 'Så här åtgärdar du det:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+      '1. Ge Jellyfins tjänsteanvändare (t.ex. jellyfin eller Docker PUID/PGID) skrivbehörighet till ditt mediebiblioteks mappar på servern.\n\n2. Eller gå till Jellyfins kontrollpanel -> Bibliotek, redigera det här biblioteket och inaktivera \'Save artwork into media folders\' för att i stället lagra omslagsbilder i Jellyfins interna databas.';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => 'Stäng';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return 'Ditt bibliotek \'$libraryName\' är konfigurerat att spara omslagsbilder direkt i mediemapparna (\'Save artwork into media folders\' är aktiverat). Jellyfin har dock testat skrivåtkomsten och saknar behörighet att skriva filer till den här katalogen:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+      'Det verkar som att Jellyfin inte kunde uppdatera omslagsbilden. Ditt bibliotek är konfigurerat att spara omslagsbilder direkt i mediemapparna (\'Save artwork into media folders\' är aktiverat). Felet uppstår vanligtvis när Jellyfins serverprocess saknar behörighet att skriva filer till dina mediekataloger.';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'Externa listor';
 
   @override
-  String get replay => 'Replay';
+  String get replay => 'Spela upp igen';
 
   @override
-  String get fileInformation => 'File Information';
+  String get fileInformation => 'Filinformation';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Size: $size  •  Format: $format';
+    return 'Storlek: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Show All ($count) Audio Tracks';
+    return 'Visa alla ($count) ljudspår';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Show All ($count) Subtitle Tracks';
+    return 'Visa alla ($count) undertextspår';
   }
 
   @override
-  String get checkingDirectPlay => 'Checking Direct Play capability...';
+  String get checkingDirectPlay => 'Kontrollerar stöd för direktuppspelning...';
 
   @override
-  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+  String get directPlayCapabilityLabel => 'Stöd för direktuppspelning: ';
 
   @override
-  String get forced => 'Forced';
+  String get forced => 'Tvingad';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Container format is not supported by the player.';
+      'Containerformatet stöds inte av spelaren.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+  String get transcodeVideoCodecNotSupported => 'Videocodec stöds inte.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+  String get transcodeAudioCodecNotSupported => 'Ljudcodec stöds inte.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Subtitle format is not supported (requires burning).';
+      'Undertextformatet stöds inte (kräver inbränning).';
 
   @override
-  String get transcodeAudioProfileNotSupported =>
-      'Audio profile is not supported.';
+  String get transcodeAudioProfileNotSupported => 'Ljudprofilen stöds inte.';
 
   @override
-  String get transcodeVideoProfileNotSupported =>
-      'Video profile is not supported.';
+  String get transcodeVideoProfileNotSupported => 'Videoprofilen stöds inte.';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+  String get transcodeVideoLevelNotSupported => 'Videonivån stöds inte.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Video resolution is not supported by this device.';
+      'Videoupplösningen stöds inte av den här enheten.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Video bit depth is not supported.';
+      'Videons bitdjup stöds inte.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Video framerate is not supported.';
+      'Videons bildfrekvens stöds inte.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'File bitrate exceeds player streaming limit.';
+      'Filens bithastighet överskrider spelarens streaminggräns.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Video bitrate exceeds streaming limit.';
+      'Videons bithastighet överskrider streaminggränsen.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Audio bitrate exceeds streaming limit.';
+      'Ljudets bithastighet överskrider streaminggränsen.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Number of audio channels is not supported.';
+      'Antalet ljudkanaler stöds inte.';
 
   @override
-  String get sortAlphabetical => 'Alphabetical';
+  String get sortAlphabetical => 'Alfabetisk';
 
   @override
-  String get sortReleaseAscending => 'Release Order (Ascending)';
+  String get sortReleaseAscending => 'Releaseordning (stigande)';
 
   @override
-  String get sortReleaseDescending => 'Release Order (Descending)';
+  String get sortReleaseDescending => 'Releaseordning (fallande)';
 
   @override
-  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+  String get sortCustomDragDrop => 'Anpassad (dra och släpp)';
 
   @override
-  String get playlistSortOptions => 'Playlist Sort Options';
+  String get playlistSortOptions => 'Sorteringsalternativ för spellistor';
 
   @override
-  String get resetSort => 'Reset Sort';
+  String get resetSort => 'Återställ sortering';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Rewatch S$season:E$episode';
+    return 'Se om S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Rewatch Playlist';
+  String get rewatchPlaylist => 'Se om spellistan';
 
   @override
-  String get noSubtitlesFound => 'No subtitles found.';
+  String get noSubtitlesFound => 'Inga undertexter hittades.';
 
   @override
-  String get adminControls => 'Admin Controls';
+  String get adminControls => 'Administratörskontroller';
 
   @override
-  String get impellerRendering => 'Rendering engine (Impeller)';
+  String get impellerRendering => 'Renderingsmotor (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+      'Impeller är Flutters moderna GPU-renderare som ger mjukare animationer och mindre hackande. På vissa TV-boxar och äldre GPU:er kan den orsaka grafikfel eller svart video – stäng av den om du ser sådant. Automatiskt väljer det bästa standardvärdet för din enhet. Starta om Moonfin för att tillämpa ändringen.';
 
   @override
-  String get impellerAuto => 'Automatic';
+  String get impellerAuto => 'Automatiskt';
 
   @override
-  String get impellerOn => 'On';
+  String get impellerOn => 'På';
 
   @override
-  String get impellerOff => 'Off';
+  String get impellerOff => 'Av';
 
   @override
-  String get impellerRestartTitle => 'Restart required';
+  String get impellerRestartTitle => 'Omstart krävs';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+      'Moonfin måste startas om för att byta renderingsmotor. Stäng appen nu och öppna den igen för att tillämpa ändringen.';
 
   @override
-  String get impellerCloseNow => 'Close app now';
+  String get impellerCloseNow => 'Stäng appen nu';
 
   @override
-  String get adminRefreshLibrary => 'Refresh Library';
+  String get adminRefreshLibrary => 'Uppdatera bibliotek';
 
   @override
-  String get adminRefreshAllLibraries => 'Refresh All Libraries';
+  String get adminRefreshAllLibraries => 'Uppdatera alla bibliotek';
 
   @override
-  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+  String get adminRepoSortDateOldest => 'Tillagt datum (äldsta först)';
 
   @override
-  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+  String get adminRepoSortDateNewest => 'Tillagt datum (nyaste först)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+  String get adminRepoSortNameAsc => 'Alfabetisk (A till Ö)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+  String get adminRepoSortNameDesc => 'Alfabetisk (Ö till A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Loading Server Analytics... $percentage%';
+    return 'Läser in serveranalys... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Match source';
+  String get adminLibChapterImageResolutionMatchSource => 'Matcha källan';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+  String get imdbTop250Movies => 'IMDb Topp 250 filmer';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+  String get imdbTop250TvShows => 'IMDb Topp 250 TV-serier';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+  String get imdbMostPopularMovies => 'IMDb Populäraste filmerna';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+  String get imdbMostPopularTvShows => 'IMDb Populäraste TV-serierna';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+  String get imdbLowestRatedMovies => 'IMDb Lägst betygsatta filmer';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
+  String get imdbTopEnglishMovies =>
+      'IMDb Högst betygsatta engelskspråkiga filmer';
 }

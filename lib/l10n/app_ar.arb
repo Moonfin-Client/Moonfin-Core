@@ -1,6 +1,6 @@
 {
     "@@locale": "ar",
-    "appTitle": "مونفين",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "اتصال سريع",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "خلف",
+    "back": "رجوع",
     "@back": {
         "description": "Back button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "يزيل",
+    "remove": "إزالة",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "مونفين",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "مسلسل",
+    "series": "المسلسلات",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "بيت",
+    "home": "الرئيسية",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "مكتبة",
+    "library": "المكتبة",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "الفنانين",
+    "artists": "الفنانون",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "يتقدم",
+    "apply": "تطبيق",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "سيرة ذاتية",
+    "resume": "استئناف",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "شاهد",
+    "watched": "تمت مشاهدته",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "غير مراقب",
+    "unwatched": "لم تتم مشاهدته",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{كتاب صوتي واحد} zero{لا توجد كتب صوتية} two{كتابان صوتيان} few{{count} كتب صوتية} many{{count} كتابًا صوتيًا} other{{count} كتاب صوتي}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,11 +935,11 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "يمسح",
+    "delete": "حذف",
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "يحفظ",
+    "save": "حفظ",
     "@save": {
         "description": "Save action button label"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{موسم واحد} zero{لا توجد مواسم} two{موسمان} few{{count} مواسم} many{{count} موسمًا} other{{count} موسم}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "يلعب",
+    "play": "تشغيل",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,11 +1107,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "يقذف",
+    "cast": "إرسال",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "جَرَّار",
+    "trailer": "الإعلان التشويقي",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "لا أحد",
+    "none": "بدون",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "الكتاب",
+    "writers": "الكتّاب",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{مسار واحد} zero{لا توجد مسارات} two{مساران} few{{count} مسارات} many{{count} مسارًا} other{{count} مسار}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{فصل واحد} zero{لا توجد فصول} two{فصلان} few{{count} فصول} many{{count} فصلًا} other{{count} فصل}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "خلط",
+    "shuffle": "تشغيل عشوائي",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} قناة",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1526,7 +1526,7 @@
             }
         }
     },
-    "mono": "كثرة الوحيدات",
+    "mono": "أحادي",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "يوقف",
+    "pause": "إيقاف مؤقت",
     "@pause": {
         "description": "Pause action label"
     },
@@ -1727,7 +1727,7 @@
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
-    "off": "عن",
+    "off": "إيقاف",
     "@off": {
         "description": "Label for subtitle off option"
     },
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "إعادة ضبط",
+    "reset": "إعادة تعيين",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "لاعب",
+    "player": "المشغّل",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "مسار",
+    "track": "المسار",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,11 +2187,11 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "يشاهد",
+    "watch": "مشاهدة",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "يغلق",
+    "close": "إغلاق",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "م{season} ح{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "م{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{حلقة واحدة} zero{لا توجد حلقات} two{حلقتان} few{{count} حلقات} many{{count} حلقة} other{{count} حلقة}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "عاجز",
+    "disabled": "معطّل",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} ث",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "مونفين",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "عن",
+    "mediaBarModeOff": "إيقاف",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "مستخدم محدد",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "المصادقة دائما",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3801,7 +3797,7 @@
     "@enableBuiltInScreensaver": {
         "description": "Description for in-app screensaver"
     },
-    "mode": "وضع",
+    "mode": "الوضع",
     "@mode": {
         "description": "Setting for mode"
     },
@@ -3875,7 +3871,7 @@
     "@rottenTomatoesAudience": {
         "description": "Rating source: Rotten Tomatoes Audience"
     },
-    "imdb": "شجونه",
+    "imdb": "IMDb",
     "@imdb": {
         "description": "Rating source: IMDb"
     },
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "تراكت",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "البرنامج المساعد",
+    "pluginLabel": "إضافة Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4055,11 +4051,11 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "تمكين السير",
+    "enableSeerr": "تفعيل Seerr",
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "إظهار Serr في التنقل (يتطلب مكونًا إضافيًا للخادم)",
+    "showSeerrInNavigation": "عرض Seerr في شريط التنقل (يتطلب إضافة الخادم)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "اكتشف الصفوف",
+    "discoverRows": "صفحة استكشاف Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "اسحب لإعادة الترتيب. تمكين أو تعطيل الصفوف. يتم مزامنة ترتيب الصفوف الممكّن مع المكون الإضافي Moonfin.",
+    "discoverRowsDescriptionPlugin": "فعّل الصفوف التي تريد رؤيتها في صفحة Seerr الرئيسية. اسحب لإعادة الترتيب. تتم مزامنة الترتيب المخصص مع Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "اسحب لإعادة الترتيب. تمكين أو تعطيل الصفوف.",
+    "discoverRowsDescription": "فعّل الصفوف التي تريد رؤيتها في صفحة Seerr الرئيسية. اسحب لإعادة الترتيب. تتم مزامنة الترتيب المخصص مع Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "ممكّن",
+    "enabled": "مفعّل",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4239,7 +4235,7 @@
     "@posterSizeImageTypeFolderView": {
         "description": "Library display settings subtitle"
     },
-    "mdbListTmdbRatingSources": "قائمة MDB وTMDB ومصادر التصنيف",
+    "mdbListTmdbRatingSources": "MDBList وTMDB ومصادر التقييم",
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "واضح",
+    "clear": "مسح",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "إعدادات السير",
+    "seerrSettings": "إعدادات Seerr",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "المظاهر",
+    "appearances": "الظهور",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4520,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "وصول",
-    "add": "يضيف",
+    "add": "إضافة",
     "address": "عنوان",
     "analytics": "التحليلات",
     "catalog": "كتالوج",
@@ -4528,11 +4524,11 @@
     "copy": "ينسخ",
     "create": "يخلق",
     "disable": "إبطال",
-    "done": "منتهي",
-    "edit": "يحرر",
+    "done": "تم",
+    "edit": "تعديل",
     "encoding": "الترميز",
     "error": "خطأ",
-    "forward": "إلى الأمام",
+    "forward": "تقديم",
     "general": "عام",
     "go": "يذهب",
     "install": "ثَبَّتَ",
@@ -4548,28 +4544,28 @@
     "profile": "حساب تعريفي",
     "provider": "مزود",
     "refresh": "ينعش",
-    "remote": "بعيد",
+    "remote": "التحكم عن بُعد",
     "rename": "إعادة تسمية",
     "revoke": "إبطال",
     "role": "دور",
     "root": "جذر",
     "run": "يجري",
-    "search": "يبحث",
+    "search": "بحث",
     "select": "يختار",
     "send": "يرسل",
     "sessions": "الجلسات",
     "set": "تعيين",
     "status": "حالة",
-    "stop": "قف",
+    "stop": "إيقاف",
     "streaming": "جاري",
     "time": "وقت",
-    "trickplay": "خدعة",
+    "trickplay": "Trickplay",
     "uninstall": "إلغاء التثبيت",
     "up": "أعلى",
     "update": "تحديث",
     "upload": "رفع",
     "unmute": "إلغاء كتم الصوت",
-    "mute": "صامت",
+    "mute": "كتم الصوت",
     "branding": "العلامة التجارية",
     "adminDrawerDashboard": "لوحة القيادة",
     "adminDrawerAnalytics": "التحليلات",
@@ -4578,9 +4574,9 @@
     "adminDrawerUsers": "المستخدمين",
     "adminDrawerLibraries": "المكتبات",
     "adminDrawerTranscoding": "تحويل الشفرة",
-    "adminDrawerResume": "سيرة ذاتية",
+    "adminDrawerResume": "استئناف",
     "adminDrawerStreaming": "جاري",
-    "adminDrawerTrickplay": "خدعة",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "الأجهزة",
     "adminDrawerActivity": "نشاط",
     "adminDrawerNetworking": "الشبكات",
@@ -4674,13 +4670,13 @@
     "adminSetVolume": "ضبط مستوى الصوت",
     "sessionPrev": "السابق",
     "sessionRewind": "الترجيع",
-    "sessionForward": "إلى الأمام",
+    "sessionForward": "تقديم",
     "sessionNext": "التالي",
     "sessionVolumeDown": "المجلد –",
     "sessionVolumeUp": "المجلد +",
     "uhd4k": "4K",
     "nowPlaying": "التشغيل الآن",
-    "volume": "مقدار",
+    "volume": "مستوى الصوت",
     "actions": "الإجراءات",
     "videoCodec": "برنامج ترميز الفيديو",
     "audioCodec": "ترميز الصوت",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "الاحتفاظ بالمقطع (ثواني)",
     "adminThrottleBuffering": "خنق التخزين المؤقت",
     "adminTrickplaySaved": "تم حفظ إعدادات Trickplay",
-    "adminTrickplayLoadFailed": "فشل تحميل إعدادات الخدعة",
+    "adminTrickplayLoadFailed": "فشل تحميل إعدادات Trickplay",
     "adminEnableHardwareAcceleration": "تمكين تسريع الأجهزة",
     "adminEnableKeyFrameExtraction": "تمكين استخراج الإطار الرئيسي فقط",
     "adminKeyFrameSubtitle": "أسرع ولكن دقة أقل",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "البحث عن شخص بعيد",
     "adminNoRemoteMatches": "لم يتم العثور على تطابقات بعيدة",
     "adminRemoteResults": "النتائج عن بعد",
     "adminRemoteMetadataApplied": "تم تطبيق بيانات التعريف عن بعد",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "أضف موالف",
     "adminTunerType": "نوع الموالف",
-    "adminTunerTypeHint": "HDHomeRun، M3U، أخرى",
-    "adminUrlPath": "عنوان URL/المسار",
-    "adminNameOptional": "الاسم (اختياري)",
     "adminTunerAdded": "وأضاف موالف",
     "adminTunerAddFailed": "فشلت إضافة الموالف: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "إضافة موفر الدليل",
     "adminProviderType": "نوع المزود",
-    "adminProviderTypeHint": "جداول المباشر أو XMLTV",
-    "adminUsernameOptional": "اسم المستخدم (اختياري)",
-    "adminRefreshInterval": "الفاصل الزمني للتحديث (ساعات)",
     "adminProviderAdded": "تمت إضافة المزود",
     "adminProviderAddFailed": "فشلت إضافة الموفر: {error}",
     "@adminProviderAddFailed": {
@@ -5680,9 +5669,9 @@
     "adminUnnamedBackup": "نسخة احتياطية بدون اسم",
     "adminLiveTvNotAvailable": "إدارة البث التلفزيوني المباشر غير متوفرة في إصدار الخادم هذا.",
     "adminLiveTvTitle": "إدارة البث التلفزيوني المباشر",
-    "adminApply": "يتقدم",
+    "adminApply": "تطبيق",
     "adminNotSet": "لم يتم ضبطه",
-    "adminReset": "إعادة ضبط",
+    "adminReset": "إعادة تعيين",
     "adminLogsTitle": "سجلات الخادم",
     "adminLogsNewestFirst": "الأحدث أولا",
     "adminLogsOldestFirst": "الأقدم أولاً",
@@ -5729,12 +5718,11 @@
     },
     "adminLogViewerNoMatches": "لا توجد خطوط مطابقة",
     "adminMetadataEditorTitle": "محرر البيانات الوصفية",
-    "adminMetadataRemote": "بعيد",
     "adminMetadataType": "يكتب",
     "adminMetadataDetails": "تفاصيل",
     "adminMetadataExternalIds": "معرفات خارجية",
     "adminMetadataImages": "الصور",
-    "adminMetadataFieldTitle": "عنوان",
+    "adminMetadataFieldTitle": "العنوان",
     "adminMetadataFieldSortTitle": "فرز العنوان",
     "adminMetadataFieldOriginalTitle": "العنوان الأصلي",
     "adminMetadataFieldPremiereDate": "تاريخ العرض الأول (YYYY-MM-DD)",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "يزيل",
+    "adminReposRemove": "إزالة",
     "adminReposSaveFailed": "فشل في حفظ المستودعات: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "جارٍ الإلغاء...",
     "adminTaskRunning": "جري...",
     "adminTaskNeverRun": "لا تركض أبدًا",
-    "adminTaskStop": "قف",
+    "adminTaskStop": "إيقاف",
     "adminTaskRun": "يجري",
     "adminTaskDetailLastExecution": "التنفيذ الأخير",
     "adminTaskDetailStarted": "بدأت",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "كل 12 ساعة",
     "adminTaskTriggerEvery24Hours": "كل 24 ساعة",
     "adminTaskTriggerEvery2Days": "كل يومين",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, zero{{count} ساعة} one{ساعة واحدة} two{ساعتان} few{{count} ساعات} many{{count} ساعة} other{{count} ساعة}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "الآن",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} د",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} س",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} ي",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6115,7 +6103,7 @@
             }
         }
     },
-    "adminTrickplayDescription": "قم بتكوين إنشاء الصور الخادعة للبحث عن الصور المصغرة للمعاينة.",
+    "adminTrickplayDescription": "اضبط إنشاء صور Trickplay لمعاينات التقديم المصغّرة.",
     "adminNetworkingPublicHttpsPort": "منفذ HTTPS العام",
     "adminNetworkingBaseUrl": "عنوان URL الأساسي",
     "adminNetworkingBaseUrlHint": "على سبيل المثال /jellyfin",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay يتطلب خادم Jellyfin. الخادم الحالي لا يدعمه.",
     "syncPlayGroupFallbackName": "SyncPlay المجموعة",
     "syncPlayGroupTooltip": "SyncPlay المجموعة",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, zero {# مشاركين} one {# مشارك} two {# مشاركان} few {# مشاركين} many {# مشاركًا} other {# مشارك}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "تذكر خياري",
     "playHdr10Fallback": "تشغيل HDR10 احتياطي",
     "requestTranscode": "طلب تحويل الرمز",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, zero {تم اكتشاف # صفوف} one {تم اكتشاف # صف} two {تم اكتشاف # صفّين} few {تم اكتشاف # صفوف} many {تم اكتشاف # صفًا} other {تم اكتشاف # صف}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "رقم التعريف الشخصي غير صحيح",
     "pinMismatch": "أرقام التعريف الشخصية غير متطابقة",
     "pinForgot": "هل نسيت رقم التعريف الشخصي؟",
-    "pinClear": "واضح",
+    "pinClear": "مسح",
     "pinBackspace": "مسافة للخلف",
-    "quickConnectAuthorized": "طلب الاتصال السريع معتمد.",
-    "quickConnectInvalidOrExpired": "رمز الاتصال السريع غير صالح أو منتهي الصلاحية.",
-    "quickConnectNotSupported": "الاتصال السريع غير مدعوم على هذا الخادم.",
-    "quickConnectAuthorizeFailed": "فشل في اعتماد رمز الاتصال السريع.",
-    "quickConnectDisabled": "تم تعطيل الاتصال السريع على هذا الخادم.",
-    "quickConnectForbidden": "لا يمكن لحسابك السماح بطلب الاتصال السريع هذا.",
-    "quickConnectNotFound": "لم يتم العثور على رمز الاتصال السريع. جرب رمزًا جديدًا.",
-    "quickConnectFailedWithMessage": "فشل الاتصال السريع: {message}",
+    "quickConnectAuthorized": "تمت الموافقة على طلب Quick Connect.",
+    "quickConnectInvalidOrExpired": "رمز Quick Connect غير صالح أو منتهي الصلاحية.",
+    "quickConnectNotSupported": "Quick Connect غير مدعوم على هذا الخادم.",
+    "quickConnectAuthorizeFailed": "تعذّرت الموافقة على رمز Quick Connect.",
+    "quickConnectDisabled": "Quick Connect معطّل على هذا الخادم.",
+    "quickConnectForbidden": "لا يمكن لحسابك الموافقة على طلب Quick Connect هذا.",
+    "quickConnectNotFound": "لم يُعثر على رمز Quick Connect. جرّب رمزًا جديدًا.",
+    "quickConnectFailedWithMessage": "فشل Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "خلط ورق اللعب بواسطة",
     "shuffleSelectLibrary": "حدد المكتبة",
     "shuffleSelectGenre": "حدد النوع",
-    "shuffleLibrary": "مكتبة",
+    "shuffleLibrary": "المكتبة",
     "shuffleGenre": "النوع",
     "shuffleNoLibraries": "لا تتوفر مكتبات متوافقة.",
     "shuffleNoGenres": "لم يتم العثور على أنواع لهذا الوضع العشوائي.",
@@ -6427,7 +6415,7 @@
     "upNext": "التالي",
     "playNext": "العب التالي",
     "stillWatchingContent": "تم إيقاف التشغيل مؤقتًا. هل مازلت تشاهد؟",
-    "stillWatchingStop": "قف",
+    "stillWatchingStop": "إيقاف",
     "stillWatchingContinue": "يكمل",
     "skipSegment": "تخطي {segment}",
     "@skipSegment": {
@@ -6491,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "سابق",
+    "playerTooltipPrevious": "السابق",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "التحقق من وجود تحديثات",
     "settingsCheckForUpdatesSubtitle": "تحقق من وجود أحدث إصدار Moonfin",
     "settingsPoweredByFlutter": "مدعوم من رفرفة",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, zero{# إشعارات ترخيص} one{# إشعار ترخيص} two{# إشعارا ترخيص} few{# إشعارات ترخيص} many{# إشعار ترخيص} other{# إشعار ترخيص}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "نوع حساب السير",
+    "seerrAccountType": "نوع حساب Seerr",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "سِجِلّ",
+    "record": "تسجيل",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "ترميز الصوت الاحتياطي",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "ستيريو AAC",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "العبور (متقدم)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} قناة PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7095,7 +7071,7 @@
     "genresRowSortingDescription": "فرز صفوف الأنواع حسب تاريخ الإضافة وتاريخ الإصدار أبجديًا والمزيد.",
     "genresRowItems": "أنواع عناصر الصف",
     "genresRowItemsDescription": "عرض الأفلام أو المسلسلات أو كليهما في صفوف الأنواع.",
-    "appearance": "مظهر",
+    "appearance": "المظهر",
     "cardSize": "حجم البطاقة",
     "externalPlayerApp": "تطبيق مشغل خارجي",
     "externalPlayerAskEachTimeSubtitle": "إظهار منتقي التطبيقات عند بدء التشغيل.",
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "افتح منتقي مسار iOS",
     "airPlayRoutePickerUnavailable": "AirPlay منتقي المسار غير متوفر على هذا الجهاز.",
     "videos": "فيديوهات",
-    "trailers": "مقطورات",
+    "trailers": "الإعلانات التشويقية",
     "programs": "البرامج",
     "songs": "أغاني",
     "photoAlbums": "ألبومات الصور",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "الحلقات التي تم إصدارها مؤخرًا",
     "watchAgain": "شاهد مرة أخرى",
     "guestAppearances": "ظهورات الضيوف",
-    "appearancesSeerr": "المظاهر (العراف)",
+    "appearancesSeerr": "الظهور (Seerr)",
     "watchWithGroup": "شاهد مع المجموعة",
     "errors": "أخطاء",
     "warnings": "تحذيرات",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "كبار الفنانين",
     "analyticsTopAuthors": "كبار المؤلفين",
     "analyticsTopContributors": "المساهمين الأساسيين",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{مكتبة واحدة} zero{لا توجد مكتبات} two{مكتبتان} few{{count} مكتبات} many{{count} مكتبة} other{{count} مكتبة}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "محتوى مختلط",
     "homeVideosAndPhotos": "فيديو وصور منزلية",
     "mixedMoviesAndShows": "أفلام وعروض مختلطة",
-    "intelQuickSync": "إنتل مزامنة سريعة",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "روكشيب MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "لم يتم العثور على تسجيلات",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "البرنامج المساعد لاستخراج CB7 غير متوفر على هذا النظام الأساسي.",
     "closeGenrePanel": "إغلاق لوحة النوع",
     "loadingShuffle": "جارٍ التحميل العشوائي...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "تشغيل عشوائي للمكتبة",
+    "randomShuffleLabel": "تشغيل عشوائي",
+    "genresShuffleLabel": "تشغيل عشوائي حسب النوع",
     "autoHdrSwitching": "التبديل التلقائي لتقنية HDR",
     "autoHdrSwitchingDescription": "تمكين HDR تلقائيًا لتشغيل فيديو HDR واستعادة وضع العرض عند الخروج.",
     "whenFullscreen": "عندما ملء الشاشة",
     "transcodingLimits": "حدود تحويل الترميز",
-    "settingsSupportMoonfinSubtitle": "تبرع بالقهوة للمطور"
+    "settingsSupportMoonfinSubtitle": "تبرع بالقهوة للمطور",
+    "accountPreferences": "تفضيلات الحساب",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "لغة الواجهة",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "افتراضي النظام",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "فارغ",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "نمط شاشة التفاصيل",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "الكلاسيكي هو تخطيط Moonfin الأصلي المتمركز. الحديث تخطيط سينمائي متجاوب.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "كلاسيكي",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "حديث",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "علامات تبويب موسّعة",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "عرض محتوى علامة التبويب تلقائيًا أثناء تصفّح العلامات. عطّل الخيار لفتح كل علامة تبويب وإغلاقها يدويًا.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "عرض التفاصيل التقنية؟",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "عرض معلومات الترميز والدقة والبث في ملخص اللافتة",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "نظام التوصيات",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "استخدم خوارزمية المكتبة المحلية Moonfin Recommends أو مقاييس التشابه من TMDb عبر الإنترنت. ملاحظة: تتطلب التوصيات عبر الإنترنت تكامل Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "تشابه TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "تطبيق حد التصنيف العمري؟",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "تقييد اقتراحات Moonfin Recommends حسب التصنيف العمري للوسائط المستهدفة",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "نمط الواجهة",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "يطابق الوضع التلقائي جهازك. اختر Apple أو Material لفرض مظهر معيّن.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "تلقائي",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "جودة الزجاج",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "يختار الوضع التلقائي أفضل تأثير زجاجي لهذا الجهاز. يفرض الوضع الكامل ضبابية حقيقية، بينما يستخدم الوضع المخفّض زجاجًا خفيفًا يوفّر طاقة GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "تلقائي",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "كامل",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "مخفّض",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "سمة مخصصة",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "تغيّر السمات المخصصة العناصر المرئية في Moonfin. اختر أحد هذه الخيارات بما يناسب ذوقك.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "زجاجي",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "تصميم زجاجي سائل مع خلفية متدرّجة متحرّكة وأسطح مصنفرة ولون تمييز أزرق بأسلوب Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "بطل 8 بت",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "تصميم بكسل كلاسيكي بلوحة ألوان جريئة وحدود مربّعة وظلال حادة وخط بكسلي",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "القائمة",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "متوقف مؤقتًا",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "حفظ الحالة",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "الألعاب",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "تحميل الحالة",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "تقديم سريع",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "إعدادات المحاكي",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "لا تتوفّر خيارات قابلة للتعديل في هذه النواة.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "استمر بالضغط لفتح القائمة",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "تشغيل الألعاب غير مدعوم على هذا الجهاز بعد.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "أحدث الكتب",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "أحدث الكتب الصوتية",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{كتاب واحد} zero{لا توجد كتب} two{كتابان} few{{count} كتب} many{{count} كتابًا} other{{count} كتاب}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "كتاب",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "كتاب صوتي",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% مقروء",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "متبقٍ {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "قراءة",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "استماع",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "العناصر",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "إضافات",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "خلف الكواليس",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "مشاهد محذوفة",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "مقاطع تعريفية",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "مقابلات",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "مشاهد",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "أفلام قصيرة",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "متبقٍ {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "ينتهي خلال {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "المخرجون",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "الكاتب",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "تشغيل كل الموسيقى عشوائيًا",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "سجّل الدخول إلى Moonfin من هاتفك",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "تعذّر الوصول إلى الخادم",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "التالي: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "متبقٍ {minutes} د",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "متبقٍ {hours} س",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "متبقٍ {hours} س {minutes} د",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "صفحات التفاصيل وصفوف الرئيسية ومستوى الصوت",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "تكرار الموسيقى التعريفية",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "تكرار المسار بدلًا من تشغيله مرة واحدة",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "عجلة تمرير الماوس",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "اختر ما تفعله عجلة الماوس عند التمرير فوق الفيديو أثناء التشغيل.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "إيقاف",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "التنقل (تقديم / إرجاع)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "مستوى الصوت",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "مستوى الصوت",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "لغة الصوت الاحتياطية",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "تفضيل مسار الصوت الافتراضي",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "تفضيل مسار الصوت الأصلي على الدبلجة المحلية.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "تفضيل مسارات الوصف الصوتي",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "تفضيل مسارات الوصف الصوتي على المسارات العادية.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "إعادة ترميز (الصوت)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "بث مباشر (إعادة تغليف)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "إعادة ترميز (معدل البت أو الدقة)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "إعادة ترميز (الفيديو والصوت)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "إعادة ترميز (الفيديو)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "اختر طريقة فك ترميز الصوت. يرسل وضع AVR Passthrough تدفقات Dolby/DTS الخام إلى جهاز الاستقبال، بينما يفك الوضع التلقائي أو المزج التنازلي الترميز محليًا.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "حدّد التنسيق الهدف لإعادة ترميز الصوت متعدد القنوات عندما يتعذّر تشغيل تدفق المصدر مباشرةً أو تمريره.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "اكتشاف تلقائي\n(موصى به)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(افتراضي)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(بلا فقدان)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(ستيريو فقط)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(فعّال)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(بلا فقدان)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "الحد الأقصى لقنوات الصوت",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "اضبط الحد الأقصى لقنوات نظامك الصوتي. سيتم مزج التدفقات متعددة القنوات التي تتجاوز هذا الحد أو إعادة ترميزها.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "اكتشاف تلقائي\n(افتراضي العتاد)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 أحادي",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 ستيريو",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 محيطي",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 رباعي",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 محيطي",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 محيطي",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 محيطي",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 محيطي",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "سماعات الرأس",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "وضع الترجمة",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "المُعلَّمة",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "دائمًا",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "الأجنبية",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "المفروضة",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "يشغّل المسارات المُعلَّمة داخليًا في بيانات ملف الوسائط على أنها \"افتراضية\" أو \"مفروضة\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "يحمّل الترجمات ويعرضها تلقائيًا في كل مرة يبدأ فيها الفيديو.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "يفعّل الترجمات تلقائيًا إذا كان مسار الصوت الافتراضي بلغة أجنبية.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "يحمّل الترجمات المُعلَّمة صراحةً بعلامة \"مفروضة\" فقط.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "يعطّل التحميل التلقائي للترجمات تمامًا.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "لغة الترجمة الاحتياطية",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "مسار الترجمة",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "عرض التحميلات على الخادم",
+    "reportDownloadsActivitySubtitle": "السماح لمسؤول الخادم برؤية تحميلاتك المعاد ترميزها في لوحة التحكم",
+    "navbarAlwaysExpanded": "توسيع تسميات شريط التنقل دائمًا",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "عرض زر Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "تجميع العناصر في مجموعات",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "إخفاء عناصر المكتبة المرتبطة بمجموعة عند تصفّح المكتبات",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "تنبيه بشأن تجميع المكتبة",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "لاستخدام هذا الإعداد، تأكّد من تفعيل إعدادَي المكتبة \"تجميع الأفلام في مجموعات\" و/أو \"تجميع المسلسلات في مجموعات\" ضمن إعدادات العرض لمكتبتك على خادم Jellyfin أو Emby.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "صوت المقاطع الدعائية",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "تفعيل الصوت للمقاطع الدعائية في شريط الوسائط",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "صفوف الرئيسية الموسّعة",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "قصر صفوف الرئيسية على صف واحد لكل شاشة",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "المستخدم الحالي",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "ثابت",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "مرتد",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "صفوف استكشاف Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "الإشعارات",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "إشعارات الطلبات الجديدة",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "تنبيهي عندما يقدّم أحدهم طلبًا",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "تحديثات الطلبات",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "المقبولة والمرفوضة والمضافة إلى مكتبتك",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "تحديثات المشكلات",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "المشكلات الجديدة والردود والحلول",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "حد ذاكرة التخزين المؤقت للصور",
+    "clearImageCache": "مسح ذاكرة التخزين المؤقت للصور",
+    "imageCacheCleared": "تم مسح ذاكرة التخزين المؤقت للصور",
+    "seerrDownloadingPercent": "جارٍ التحميل · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "جارٍ الاستيراد",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "فشل",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "قيد المعالجة",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "عُدّل بواسطة {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "مكتمل",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "تم طلب هذا العنوان بالفعل",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "تم بلوغ حد الطلبات",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "هذا العنوان محظور",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "لا توجد مواسم متبقية للطلب",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "ليس لديك إذن لتقديم هذا الطلب",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "الطلبات",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "المشكلات",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "الأحدث",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "آخر تعديل",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "لا توجد مشكلات",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "متبقٍ {remaining} من أصل {limit} من طلبات الأفلام",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "متبقٍ {remaining} من أصل {limit} من طلبات المواسم",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "جزء من {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "عرض المجموعة",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "طلب المجموعة",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} فيلم · {available} متاح",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "طلب {count} فيلم",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "جارٍ طلب {current} من {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "تم طلب {count} فيلم",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "تم طلب {ok} من أصل {total} فيلم",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "جميع الأفلام متاحة أو مطلوبة بالفعل",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "الإبلاغ عن مشكلة",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "فيديو",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "صوت",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "ما المشكلة؟",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "كل الحلقات",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "حلقة",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "مفتوحة",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "محلولة",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "حل",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "إعادة فتح",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "أبلغ عنها {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} تعليق",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "أضف تعليقًا",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "حذف هذه المشكلة؟",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "إرسال البلاغ",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "العرض",
+    "adminDrawerMetadata": "البيانات الوصفية",
+    "adminDrawerNfo": "إعدادات NFO",
+    "adminActivitySeverityAll": "كل مستويات الخطورة",
+    "adminActivityDateRange": "النطاق الزمني",
+    "adminRemoveDeviceConfirm": "إزالة الجهاز '{name}'؟ سيحتاج المستخدم إلى تسجيل الدخول مرة أخرى على هذا الجهاز.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "حذف كل الأجهزة",
+    "adminDeleteAllDevicesConfirm": "إزالة {count} جهاز؟ سيحتاج المستخدمون المتأثرون إلى تسجيل الدخول مرة أخرى. جهازك الحالي غير متأثر.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "تمت إزالة الأجهزة",
+    "adminDevicesDeletedPartial": "تمت إزالة بعض الأجهزة، وتعذّر إزالة {count} منها.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "المسارات",
+    "adminLibraryTabOptions": "الخيارات",
+    "adminLibraryTabDownloaders": "أدوات التحميل",
+    "adminLibMetadataSavers": "أدوات حفظ البيانات الوصفية",
+    "adminLibSubtitleDownloaders": "أدوات تحميل الترجمات",
+    "adminLibLyricDownloaders": "أدوات تحميل كلمات الأغاني",
+    "adminLibMetadataDownloadersFor": "أدوات تحميل البيانات الوصفية: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "أدوات جلب الصور: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "لا يوفّر هذا الخادم أي أدوات تحميل لهذا النوع من المكتبات.",
+    "adminLibrarySectionGeneral": "عام",
+    "adminLibrarySectionMetadata": "البيانات الوصفية",
+    "adminLibrarySectionEmbedded": "المعلومات المضمّنة",
+    "adminLibrarySectionSubtitles": "الترجمات",
+    "adminLibrarySectionImages": "الصور",
+    "adminLibrarySectionSeries": "المسلسلات",
+    "adminLibrarySectionMusic": "الموسيقى",
+    "adminLibrarySectionMovies": "الأفلام",
+    "adminLibRealtimeMonitor": "تفعيل المراقبة الفورية",
+    "adminLibRealtimeMonitorHint": "اكتشاف تغييرات الملفات ومعالجتها تلقائيًا.",
+    "adminLibArchiveMediaFiles": "معاملة الأرشيفات كملفات وسائط",
+    "adminLibEnablePhotos": "عرض الصور",
+    "adminLibSaveLocalMetadata": "حفظ الصور الفنية في مجلدات الوسائط",
+    "adminLibRefreshInterval": "التحديث التلقائي للبيانات الوصفية",
+    "adminLibRefreshNever": "أبدًا",
+    "adminLibDefault": "افتراضي",
+    "adminLibDisplayTitle": "العرض",
+    "adminLibDisplaySection": "عرض المكتبة",
+    "adminLibFolderView": "عرض واجهة المجلدات لإظهار مجلدات الوسائط العادية",
+    "adminLibSpecialsInSeasons": "عرض الحلقات الخاصة ضمن المواسم التي عُرضت فيها",
+    "adminLibGroupMovies": "تجميع الأفلام في مجموعات",
+    "adminLibGroupShows": "تجميع المسلسلات في مجموعات",
+    "adminLibExternalSuggestions": "عرض المحتوى الخارجي ضمن الاقتراحات",
+    "adminLibDateAddedSection": "سلوك تاريخ الإضافة",
+    "adminLibDateAddedLabel": "استخدام تاريخ الإضافة من",
+    "adminLibDateAddedImport": "تاريخ فحص العنصر وإضافته إلى المكتبة",
+    "adminLibDateAddedFile": "تاريخ إنشاء الملف",
+    "adminLibMetadataTitle": "البيانات الوصفية والصور",
+    "adminLibMetadataLangSection": "لغة البيانات الوصفية المفضّلة",
+    "adminLibChaptersSection": "الفصول",
+    "adminLibDummyChapterDuration": "مدة الفصل الوهمي (بالثواني)",
+    "adminLibDummyChapterDurationHint": "مدة الفصول التي تُنشأ للوسائط التي لا تحتوي على فصول. اضبطها على 0 للتعطيل.",
+    "adminLibChapterImageResolution": "دقة صور الفصول",
+    "adminLibNfoTitle": "إعدادات NFO",
+    "adminLibNfoHelp": "بيانات NFO الوصفية متوافقة مع Kodi والتطبيقات المشابهة. تنطبق الإعدادات على جميع المكتبات التي تحفظ بيانات NFO الوصفية.",
+    "adminLibKodiUser": "المستخدم الذي تُحفظ بيانات مشاهدته في ملفات NFO",
+    "adminLibSaveImagePaths": "حفظ مسارات الصور داخل ملفات NFO",
+    "adminLibPathSubstitution": "تفعيل استبدال المسارات لمسارات صور NFO",
+    "adminLibExtraThumbs": "نسخ صور extrafanart إلى مجلد extrathumbs",
+    "adminLibNone": "لا شيء",
+    "adminLibRefreshDays": "{days} يومًا",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "استخدام العناوين المضمّنة",
+    "adminLibEmbeddedExtrasTitles": "استخدام العناوين المضمّنة للإضافات",
+    "adminLibEmbeddedEpisodeInfos": "استخدام معلومات الحلقات المضمّنة",
+    "adminLibAllowEmbeddedSubtitles": "السماح بالترجمات المضمّنة",
+    "adminLibEmbeddedAllowAll": "السماح بالكل",
+    "adminLibEmbeddedAllowText": "النصية فقط",
+    "adminLibEmbeddedAllowImage": "الصورية فقط",
+    "adminLibEmbeddedAllowNone": "لا شيء",
+    "adminLibSkipIfEmbeddedSubs": "تخطي التحميل عند وجود ترجمات مضمّنة",
+    "adminLibSkipIfAudioMatches": "تخطي التحميل إذا كان مسار الصوت مطابقًا للغة التحميل",
+    "adminLibRequirePerfectMatch": "اشتراط تطابق تام للترجمة",
+    "adminLibSaveSubtitlesWithMedia": "حفظ الترجمات في مجلدات الوسائط",
+    "adminLibChapterImageExtraction": "استخراج صور الفصول",
+    "adminLibChapterImagesDuringScan": "استخراج صور الفصول أثناء فحص المكتبة",
+    "adminLibTrickplayExtraction": "تفعيل استخراج صور Trickplay",
+    "adminLibTrickplayDuringScan": "استخراج صور Trickplay أثناء فحص المكتبة",
+    "adminLibSaveTrickplayWithMedia": "حفظ صور Trickplay في مجلدات الوسائط",
+    "adminLibAutomaticSeriesGrouping": "دمج المسلسلات الموزّعة على عدة مجلدات تلقائيًا",
+    "adminLibSeasonZeroName": "اسم عرض الموسم صفر",
+    "adminLibLufsScan": "تفعيل فحص LUFS لتسوية مستوى الصوت",
+    "adminLibPreferNonstandardArtist": "تفضيل وسم الفنانين غير القياسي",
+    "adminLibAutoAddToCollection": "إضافة الأفلام إلى المجموعات تلقائيًا",
+    "adminParentalControl": "الرقابة الأبوية",
+    "adminMaxParentalRating": "الحد الأقصى المسموح به للتصنيف العمري",
+    "adminMaxParentalRatingHint": "سيُخفى المحتوى ذو التصنيف الأعلى عن هذا المستخدم.",
+    "adminParentalRatingNone": "لا شيء",
+    "adminBlockUnratedItems": "حظر العناصر التي لا تحمل معلومات تصنيف أو التي تحمل تصنيفًا غير معروف",
+    "adminUnratedBook": "الكتب",
+    "adminUnratedChannelContent": "القنوات",
+    "adminUnratedLiveTvChannel": "البث التلفزيوني المباشر",
+    "adminUnratedMovie": "الأفلام",
+    "adminUnratedMusic": "الموسيقى",
+    "adminUnratedTrailer": "الإعلانات التشويقية",
+    "adminUnratedSeries": "المسلسلات",
+    "adminAccessSchedules": "جداول الوصول",
+    "adminAccessSchedulesHint": "السماح بالوصول خلال الأوقات المجدولة أدناه فقط. يُسمح بالوصول طوال اليوم عند عدم ضبط أي جدول.",
+    "adminAddSchedule": "إضافة جدول",
+    "adminScheduleDay": "اليوم",
+    "adminScheduleStart": "البداية",
+    "adminScheduleEnd": "النهاية",
+    "adminDayEveryday": "كل يوم",
+    "adminDayWeekday": "أيام الأسبوع",
+    "adminDayWeekend": "عطلة نهاية الأسبوع",
+    "adminDaySunday": "الأحد",
+    "adminDayMonday": "الاثنين",
+    "adminDayTuesday": "الثلاثاء",
+    "adminDayWednesday": "الأربعاء",
+    "adminDayThursday": "الخميس",
+    "adminDayFriday": "الجمعة",
+    "adminDaySaturday": "السبت",
+    "adminAllowedTags": "الوسوم المسموح بها",
+    "adminAllowedTagsHint": "يُعرض المحتوى الذي يحمل هذه الوسوم فقط. اتركه فارغًا للسماح بالكل.",
+    "adminBlockedTags": "الوسوم المحظورة",
+    "adminBlockedTagsHint": "يُخفى المحتوى الذي يحمل هذه الوسوم عن هذا المستخدم.",
+    "adminAddTag": "إضافة وسم",
+    "adminEnabledDevices": "الأجهزة المُفعّلة",
+    "adminEnabledChannels": "القنوات المُفعّلة",
+    "adminAuthProvider": "موفّر المصادقة",
+    "adminPasswordResetProvider": "موفّر إعادة تعيين كلمة المرور",
+    "adminLoginAttemptsBeforeLockout": "الحد الأقصى لمحاولات تسجيل الدخول الفاشلة قبل الحظر",
+    "adminLoginAttemptsHint": "اضبطها على 0 للقيمة الافتراضية، أو على -1 لتعطيل الحظر.",
+    "adminSyncPlayAccess": "الوصول إلى SyncPlay",
+    "adminSyncPlayCreateAndJoin": "السماح بإنشاء المجموعات والانضمام إليها",
+    "adminSyncPlayJoin": "السماح بالانضمام إلى المجموعات",
+    "adminSyncPlayNone": "لا يوجد وصول",
+    "adminContentDeletionFolders": "السماح بحذف المحتوى من",
+    "adminBackupOptionsTitle": "إنشاء نسخة احتياطية",
+    "adminBackupInclude": "اختر ما تريد تضمينه في النسخة الاحتياطية.",
+    "adminBackupDatabase": "قاعدة البيانات",
+    "adminBackupDatabaseAlways": "مُضمّنة دائمًا",
+    "adminBackupMetadata": "البيانات الوصفية",
+    "adminBackupSubtitles": "الترجمات",
+    "adminBackupTrickplay": "صور Trickplay",
+    "adminEditTuner": "تعديل الموالف",
+    "adminTunerTypeM3u": "موالف M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "ملف أو URL",
+    "adminTunerIpAddress": "عنوان IP للموالف",
+    "adminTunerFriendlyName": "الاسم الظاهر",
+    "adminTunerUserAgent": "وكيل المستخدم",
+    "adminTunerCount": "حد الاتصالات المتزامنة",
+    "adminTunerCountHelp": "الحد الأقصى لعدد عمليات البث التي يسمح بها الموالف في وقت واحد. اضبطه على 0 لجعله بلا حدود.",
+    "adminTunerFallbackBitrate": "الحد الأقصى الاحتياطي لمعدل بت البث",
+    "adminTunerImportFavoritesOnly": "استيراد القنوات المفضلة فقط",
+    "adminTunerAllowHwTranscoding": "السماح بتحويل الشفرة بالعتاد",
+    "adminTunerAllowFmp4": "السماح بحاوية تحويل الشفرة fMP4",
+    "adminTunerAllowStreamSharing": "السماح بمشاركة البث",
+    "adminTunerEnableStreamLooping": "تفعيل تكرار البث",
+    "adminTunerIgnoreDts": "تجاهل DTS",
+    "adminTunerReadAtNativeFramerate": "قراءة المُدخل بمعدل الإطارات الأصلي",
+    "adminEditProvider": "تعديل الموفّر",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "ملف أو URL",
+    "adminXmltvMoviePrefix": "بادئة الأفلام",
+    "adminXmltvMovieCategories": "فئات الأفلام",
+    "adminXmltvCategoriesHelp": "افصل بين الفئات المتعددة بشَرطة عمودية.",
+    "adminXmltvKidsCategories": "فئات الأطفال",
+    "adminXmltvNewsCategories": "فئات الأخبار",
+    "adminXmltvSportsCategories": "فئات الرياضة",
+    "adminSdUsername": "اسم المستخدم",
+    "adminSdPassword": "كلمة المرور",
+    "adminSdCountry": "الدولة",
+    "adminSdCountrySelect": "اختر دولة",
+    "adminSdPostalCode": "الرمز البريدي",
+    "adminSdGetListings": "جلب القوائم",
+    "adminSdListings": "القوائم",
+    "adminEnableAllTuners": "تفعيل جميع الموالفات",
+    "adminTunerResetNotSupported": "لا يدعم هذا النوع من الموالفات إعادة الضبط.",
+    "adminMovieRecordingPath": "مسار تسجيل الأفلام",
+    "adminGuideDays": "أيام بيانات الدليل",
+    "adminGuideDaysAuto": "تلقائي",
+    "adminGuideDaysValue": "{days} يومًا",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "مسار تطبيق المعالجة اللاحقة",
+    "adminRecordingPostProcessorArgs": "معاملات المعالج اللاحق",
+    "adminSaveRecordingNfo": "حفظ بيانات NFO الوصفية للتسجيلات",
+    "adminSaveRecordingImages": "حفظ صور التسجيلات",
+    "adminLiveTvSectionTiming": "التوقيت",
+    "adminLiveTvSectionPaths": "مسارات التسجيل",
+    "adminLiveTvSectionPostProcessing": "المعالجة اللاحقة",
+    "adminGuideDaysDisplay": "بيانات الدليل: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "تحديث بيانات الدليل",
+    "adminGuideRefreshStarted": "بدأ تحديث بيانات الدليل",
+    "adminGuideRefreshUnavailable": "مهمة تحديث الدليل غير متوفرة على هذا الخادم.",
+    "adminMetadataIdentify": "تحديد الهوية",
+    "adminBrandingSplashUpload": "رفع صورة",
+    "adminBrandingSplashUploaded": "تم تحديث شاشة البداية",
+    "adminBrandingSplashUploadFailed": "فشل رفع شاشة البداية",
+    "adminBrandingSplashDeleted": "تمت إزالة شاشة البداية",
+    "adminBrandingNoSplash": "لا توجد شاشة بداية مخصّصة",
+    "adminPlaybackQsvDevice": "جهاز QSV",
+    "adminPlaybackEnhancedNvdec": "تفعيل مفكك ترميز NVDEC المحسّن",
+    "adminPlaybackPreferNativeDecoder": "تفضيل مفكك الترميز العتادي الأصلي للنظام",
+    "adminPlaybackColorDepth": "عمق ألوان فك الترميز بالعتاد",
+    "adminPlaybackColorDepth10Hevc": "فك ترميز HEVC بعمق 10 بت",
+    "adminPlaybackColorDepth10Vp9": "فك ترميز VP9 بعمق 10 بت",
+    "adminPlaybackColorDepth10HevcRext": "فك ترميز HEVC RExt بعمق 8/10 بت",
+    "adminPlaybackColorDepth12HevcRext": "فك ترميز HEVC RExt بعمق 12 بت",
+    "adminPlaybackHwEncodingSection": "الترميز بالعتاد",
+    "adminPlaybackAllowHevcEncoding": "السماح بترميز HEVC",
+    "adminPlaybackAllowAv1Encoding": "السماح بترميز AV1",
+    "adminPlaybackIntelLowPowerH264": "تفعيل مُرمِّز H.264 منخفض الطاقة من Intel",
+    "adminPlaybackIntelLowPowerHevc": "تفعيل مُرمِّز HEVC منخفض الطاقة من Intel",
+    "adminPlaybackToneMapping": "تعيين درجات الألوان",
+    "adminPlaybackEnableTonemapping": "تفعيل تعيين درجات الألوان",
+    "adminPlaybackEnableVppTonemapping": "تفعيل تعيين درجات الألوان بـVPP",
+    "adminPlaybackEnableVtTonemapping": "تفعيل تعيين درجات الألوان بـVideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "خوارزمية تعيين درجات الألوان",
+    "adminPlaybackTonemappingMode": "وضع تعيين درجات الألوان",
+    "adminPlaybackTonemappingRange": "نطاق تعيين درجات الألوان",
+    "adminPlaybackTonemappingDesat": "إزالة تشبّع تعيين درجات الألوان",
+    "adminPlaybackTonemappingPeak": "ذروة تعيين درجات الألوان",
+    "adminPlaybackTonemappingParam": "مُعامل تعيين درجات الألوان",
+    "adminPlaybackVppTonemappingBrightness": "سطوع تعيين درجات الألوان بـVPP",
+    "adminPlaybackVppTonemappingContrast": "تباين تعيين درجات الألوان بـVPP",
+    "adminPlaybackPresetsQuality": "الإعدادات المسبقة والجودة",
+    "adminPlaybackEncoderPreset": "الإعداد المسبق للمُرمِّز",
+    "adminPlaybackH264Crf": "قيمة CRF لترميز H.264",
+    "adminPlaybackH265Crf": "قيمة CRF لترميز H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "طريقة إزالة التشابك",
+    "adminPlaybackDeinterlaceDoubleRate": "مضاعفة معدل الإطارات عند إزالة التشابك",
+    "adminPlaybackAudioSection": "الصوت",
+    "adminPlaybackEnableAudioVbr": "تفعيل ترميز الصوت بمعدل بت متغير (VBR)",
+    "adminPlaybackDownmixBoost": "تعزيز خفض مزج الصوت",
+    "adminPlaybackDownmixAlgorithm": "خوارزمية خفض المزج إلى ستيريو",
+    "adminPlaybackMaxMuxingQueue": "الحد الأقصى لحجم طابور المزج",
+    "adminPlaybackAutoOption": "تلقائي",
+    "adminRunningTasks": "المهام قيد التشغيل",
+    "adminNetworkingPublicHttpPort": "منفذ HTTP العام",
+    "adminNetworkingRequireHttps": "اشتراط HTTPS",
+    "adminNetworkingRequireHttpsHint": "إعادة توجيه جميع الطلبات البعيدة إلى HTTPS. لا تأثير لذلك إذا لم يكن لدى الخادم شهادة صالحة.",
+    "adminNetworkingCertPassword": "كلمة مرور الشهادة",
+    "adminNetworkingIpSettings": "إعدادات IP",
+    "adminNetworkingEnableIpv4": "تفعيل IPv4",
+    "adminNetworkingEnableIpv6": "تفعيل IPv6",
+    "adminNetworkingAutoDiscovery": "تفعيل التعيين التلقائي للمنافذ",
+    "adminNetworkingLocalSubnets": "شبكات LAN",
+    "adminNetworkingLocalSubnetsHint": "قائمة بعناوين IP أو شبكات CIDR الفرعية، مفصولة بفواصل أو أسطر، تُعامَل على أنها ضمن الشبكة المحلية.",
+    "adminNetworkingPublishedUris": "عناوين URI المنشورة للخادم",
+    "adminNetworkingPublishedUriHint": "عيّن شبكة فرعية أو عنوانًا إلى URL منشور، مثال: all=https://example.com",
+    "adminPlaybackThrottleDelay": "مهلة التقييد (بالثواني)",
+    "adminPlaybackEnableSubtitleExtraction": "السماح باستخراج الترجمات أثناء التشغيل",
+    "adminGeneralEnableSlowResponse": "تفعيل تحذيرات الاستجابة البطيئة",
+    "adminGeneralQuickConnect": "تفعيل Quick Connect",
+    "adminGeneralSectionServer": "الخادم",
+    "adminGeneralSectionMetadata": "البيانات الوصفية",
+    "adminGeneralSectionPaths": "المسارات",
+    "adminGeneralSectionPerformance": "الأداء",
+    "adminGeneralDisplayLanguage": "لغة العرض المفضّلة",
+    "offlineBannerTitle": "أنت غير متصل بالإنترنت",
+    "offlineBannerSubtitle": "عرض التحميلات الخاصة بك",
+    "offlineBannerAction": "التحميلات",
+    "serverUnreachableBannerTitle": "تعذّر الوصول إلى الخادم",
+    "serverUnreachableBannerSubtitle": "التشغيل من التحميلات حتى عودة الخادم",
+    "contextMenuHideFromContinueWatching": "إخفاء من مواصلة المشاهدة",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "إخفاء من التالي",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "إضافة إلى مجموعة",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "الاتصال",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "السماح بالشهادات الموقّعة ذاتيًا",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "الوثوق بالخوادم التي تستخدم شهادات TLS موقّعة ذاتيًا أو صادرة عن مرجع خاص. فعّل هذا الخيار للخوادم التي تتحكم بها فقط. يؤدي ذلك إلى تعطيل التحقق من الشهادات لجميع الاتصالات.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "شاشة التفاصيل",
+    "settingsDetailsScreenSubtitle": "النمط وتمويه الخلفية وسلوك علامات التبويب",
+    "settingsShowSeerrButtonInNavigation": "إظهار زر Seerr في شريط التنقل",
+    "settingsAlwaysExpandNavbarLabels": "إظهار التسميات النصية دائمًا في شريط التنقل العلوي",
+    "settingsMediaSegmentCountdown": "العد التنازلي لمقاطع الوسائط",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "شريط التقدم",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "المؤقّت",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "بدون",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "صدر حديثًا في {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "تفعيل النفق",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "متقدم. يوجّه الصوت والفيديو عبر مسار عتادي مقترن. مُعطّل افتراضيًا لأنه يسبب انقطاعات في الصوت والفيديو على بعض الأجهزة.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "إظهار تفاصيل الوسائط",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "إظهار تفاصيل العنصر المحدد في أعلى صفحات المكتبة.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "إخفاء الخلفيات أثناء التصفح؟",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "متجر السمات",
+    "themeStoreSubtitle": "تصفّح سمات المجتمع واحفظها",
+    "themeStoreDescription": "احفظ سمة لاستخدامها مثل سماتك المحفوظة الأخرى.",
+    "themeStoreEmpty": "لا تتوفر أي سمات في الوقت الحالي.",
+    "themeStoreLoadFailed": "تعذّر تحميل متجر السمات. تحقق من اتصالك وحاول مرة أخرى.",
+    "themeStoreSave": "حفظ",
+    "themeStoreSaveAndApply": "حفظ وتطبيق",
+    "themeStoreSaved": "تم الحفظ",
+    "themeStoreInvalidMessage": "تعذّر تحميل هذه السمة.",
+    "themeStoreSavedMessage": "تم حفظ \"{themeName}\".",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "عرض صفوف الرئيسية",
+    "homeRowSections": "أقسام صفوف الرئيسية",
+    "homeRowToggles": "مفاتيح صفوف الرئيسية",
+    "homeRowTogglesSubtitle": "تفعيل أو تعطيل فئات صفوف الرئيسية المستندة إلى المكتبات",
+    "homeRowTogglesDescription": "فعّل المفاتيح التالية لعرض الصفوف في أقسام الرئيسية.",
+    "displayPlaylistsRows": "عرض صفوف قوائم التشغيل",
+    "displayPlaylistsRowsSubtitle": "إظهار صفوف قوائم التشغيل في أقسام الرئيسية.",
+    "playlistsRowSorting": "ترتيب صفوف قوائم التشغيل",
+    "playlistsRowSortingDescription": "رتّب صفوف قوائم التشغيل حسب تاريخ الإضافة أو تاريخ الإصدار أو أبجديًا وغير ذلك.",
+    "displayAudioRows": "عرض صفوف الصوت",
+    "displayAudioRowsSubtitle": "إظهار صفوف الصوت في أقسام الرئيسية.",
+    "audioRowsSorting": "ترتيب صفوف الصوت",
+    "audioRowsSortingDescription": "رتّب صفوف الصوت حسب تاريخ الإضافة أو تاريخ الإصدار أو أبجديًا وغير ذلك.",
+    "audioPlaylists": "قوائم تشغيل الصوت",
+    "layout": "التخطيط",
+    "theme": "السمة",
+    "keyboard": "لوحة المفاتيح",
+    "navButtons": "الأزرار",
+    "rendering": "التصيير",
+    "mpvConfiguration": "تهيئة MPV",
+    "externalPlayerAppDescription": "عيّن مشغّلاً خارجيًا لتفعيل خيار التشغيل بالضغط المطوّل",
+    "crewContributionsSeerr": "مساهمات طاقم العمل (Seerr)",
+    "changeArtwork": "تغيير الصور الفنية",
+    "missing": "مفقود",
+    "clearAllArtworkButton": "مسح جميع الصور الفنية؟",
+    "clearAllArtworkWarning": "هل أنت متأكد أنك تريد مسح جميع الصور الفنية التي تم تحميلها؟",
+    "confirmClear": "تأكيد المسح",
+    "confirmClearMessage": "هل أنت متأكد أنك تريد مسح {itemType}؟",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "رفع؟",
+    "resolutionLabel": "الدقة: ",
+    "onlyShowInterfaceLanguage": "إظهار الصور الفنية بلغة الواجهة فقط",
+    "confirmClearAll": "تأكيد مسح الكل",
+    "imageUploadSuccess": "تم رفع الصورة بنجاح!",
+    "imageUploadFailed": "تعذّر رفع الصورة: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "تعذّر تعيين الصورة: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "تعذّر حذف الصورة: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "تعذّر مسح جميع الصور الفنية: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "نعم",
+    "posterCategory": "ملصق",
+    "backdropsCategory": "خلفيات",
+    "bannerCategory": "لافتة",
+    "logoCategory": "شعار",
+    "thumbnailCategory": "صورة مصغّرة",
+    "artCategory": "صورة فنية",
+    "discArtCategory": "صورة القرص",
+    "screenshotCategory": "لقطة شاشة",
+    "boxCoverCategory": "غلاف العلبة",
+    "boxRearCoverCategory": "غلاف العلبة الخلفي",
+    "menuArtCategory": "صورة القائمة",
+    "confirmItemPoster": "الملصق",
+    "confirmItemBackdrop": "الخلفية",
+    "confirmItemBanner": "اللافتة",
+    "confirmItemLogo": "الشعار",
+    "confirmItemThumbnail": "الصورة المصغّرة",
+    "confirmItemArt": "الصورة الفنية",
+    "confirmItemDiscArt": "صورة القرص",
+    "confirmItemScreenshot": "لقطة الشاشة",
+    "confirmItemBoxCover": "غلاف العلبة",
+    "confirmItemBoxRearCover": "غلاف العلبة الخلفي",
+    "confirmItemMenuArt": "صورة القائمة",
+    "resolutionAll": "الكل",
+    "resolutionHigh": "عالية (1080p+)",
+    "resolutionMedium": "متوسطة (720p)",
+    "resolutionLow": "منخفضة (<720p)",
+    "sources": "المصادر",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "الفصول",
+    "audiobookBookmarks": "الإشارات المرجعية",
+    "audiobookNotes": "الملاحظات",
+    "audiobookQueue": "قائمة الانتظار",
+    "audiobookTimeline": "المخطط الزمني",
+    "audiobookTimelineEmpty": "المخطط الزمني فارغ",
+    "audiobookWholeBook": "الكتاب كاملاً",
+    "audiobookFocusedTimeline": "المخطط الزمني المركّز",
+    "audiobookExportBookmarks": "تصدير الإشارات المرجعية",
+    "audiobookExportNotes": "تصدير الملاحظات",
+    "audiobookExportAll": "تصدير الكل",
+    "audiobookExportSuccess": "تم التصدير إلى {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "فشل التصدير: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "الكلمات",
+    "audiobookAddBookmark": "إضافة إشارة مرجعية",
+    "audiobookAddNote": "إضافة ملاحظة",
+    "audiobookEditNote": "تعديل الملاحظة",
+    "audiobookNoteHint": "اكتب ملاحظة لهذه اللحظة",
+    "audiobookSleepTimer": "مؤقّت النوم",
+    "audiobookSleepOff": "إيقاف",
+    "audiobookSleepEndOfChapter": "نهاية الفصل",
+    "audiobookSleepCustom": "مخصص",
+    "audiobookSleepRemaining": "متبقٍ {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{دقيقة واحدة} zero{{count} دقيقة} two{دقيقتان} few{{count} دقائق} many{{count} دقيقة} other{{count} دقيقة}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "سرعة التشغيل",
+    "audiobookRemainingTime": "المتبقي",
+    "audiobookElapsedTime": "المنقضي",
+    "audiobookSkipBackSeconds": "للخلف {seconds} ث",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "للأمام {seconds} ث",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "الفصل السابق",
+    "audiobookNextChapter": "الفصل التالي",
+    "audiobookChapterIndicator": "الفصل {current} من {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "لا توجد فصول",
+    "audiobookNoBookmarks": "لا توجد إشارات مرجعية بعد",
+    "audiobookNoNotes": "لا توجد ملاحظات بعد",
+    "audiobookBookmarkAdded": "تمت إضافة إشارة مرجعية عند {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "إعادة الضبط إلى 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "حفظ",
+    "audiobookCancel": "إلغاء",
+    "audiobookDelete": "حذف",
+    "subtitlePreferences": "تفضيلات الترجمة",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "غيّر أوضاع الترجمة واللغات الافتراضية والمظهر وخيارات التصيير.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "تصيير الترجمة",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "خيارات العرض",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "تاريخ الإصدار (تصاعديًا)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "تاريخ الإصدار (تنازليًا)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "تجميع المساهمات",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "تجميع الأدوار المتعددة",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "تحذير بشأن صلاحية الكتابة في المكتبة",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "كيفية إصلاح ذلك:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. امنح صلاحيات الكتابة لمستخدم خدمة Jellyfin (مثل jellyfin أو PUID/PGID في Docker) على مجلدات مكتبة الوسائط في الخادم.\n\n2. أو انتقل إلى لوحة تحكم Jellyfin ← المكتبات، وعدّل هذه المكتبة، وعطّل خيار 'حفظ الصور الفنية في مجلدات الوسائط' لتخزين الصور الفنية في قاعدة بيانات Jellyfin الداخلية.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "تجاهل",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "مكتبة '{libraryName}' مضبوطة على حفظ الصور الفنية مباشرة في مجلدات الوسائط (خيار 'حفظ الصور الفنية في مجلدات الوسائط' مُفعّل). لكن Jellyfin اختبر صلاحية الكتابة ولا يملك إذنًا بكتابة الملفات في هذا المجلد:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "يبدو أن Jellyfin فشل في تحديث الصور الفنية. مكتبتك مضبوطة على حفظ الصور الفنية مباشرة في مجلدات الوسائط (خيار 'حفظ الصور الفنية في مجلدات الوسائط' مُفعّل). يحدث هذا الخطأ عادةً عندما لا يملك خادم Jellyfin إذنًا بكتابة الملفات في مجلدات الوسائط.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "القوائم الخارجية",
+    "replay": "إعادة التشغيل",
+    "fileInformation": "معلومات الملف",
+    "fileSizeFormat": "الحجم: {size}  •  الصيغة: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "إظهار جميع مسارات الصوت ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "إظهار جميع مسارات الترجمة ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "جارٍ التحقق من إمكانية التشغيل المباشر...",
+    "directPlayCapabilityLabel": "إمكانية التشغيل المباشر: ",
+    "forced": "إجباري",
+    "transcodeContainerNotSupported": "صيغة الحاوية غير مدعومة من المشغّل.",
+    "transcodeVideoCodecNotSupported": "مرمّز الفيديو غير مدعوم.",
+    "transcodeAudioCodecNotSupported": "مرمّز الصوت غير مدعوم.",
+    "transcodeSubtitleCodecNotSupported": "صيغة الترجمة غير مدعومة (تتطلب الدمج).",
+    "transcodeAudioProfileNotSupported": "الملف التعريفي للصوت غير مدعوم.",
+    "transcodeVideoProfileNotSupported": "الملف التعريفي للفيديو غير مدعوم.",
+    "transcodeVideoLevelNotSupported": "مستوى الفيديو غير مدعوم.",
+    "transcodeVideoResolutionNotSupported": "دقة الفيديو غير مدعومة على هذا الجهاز.",
+    "transcodeVideoBitDepthNotSupported": "عمق ألوان الفيديو غير مدعوم.",
+    "transcodeVideoFramerateNotSupported": "معدل إطارات الفيديو غير مدعوم.",
+    "transcodeContainerBitrateExceedsLimit": "معدل بت الملف يتجاوز حد البث في المشغّل.",
+    "transcodeVideoBitrateExceedsLimit": "معدل بت الفيديو يتجاوز حد البث.",
+    "transcodeAudioBitrateExceedsLimit": "معدل بت الصوت يتجاوز حد البث.",
+    "transcodeAudioChannelsNotSupported": "عدد قنوات الصوت غير مدعوم.",
+    "sortAlphabetical": "أبجديًا",
+    "sortReleaseAscending": "ترتيب الإصدار (تصاعديًا)",
+    "sortReleaseDescending": "ترتيب الإصدار (تنازليًا)",
+    "sortCustomDragDrop": "مخصص (سحب وإفلات)",
+    "playlistSortOptions": "خيارات ترتيب قائمة التشغيل",
+    "resetSort": "إعادة ضبط الترتيب",
+    "rewatchSeasonEpisode": "إعادة مشاهدة م{season}:ح{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "إعادة مشاهدة قائمة التشغيل",
+    "noSubtitlesFound": "لم يُعثر على ترجمات.",
+    "adminControls": "أدوات المسؤول",
+    "impellerRendering": "محرك التصيير (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller هو محرك التصيير الحديث في Flutter الذي يعتمد على GPU لحركات أكثر سلاسة وتقطّع أقل. قد يسبب خللاً في الصورة أو فيديو أسود على بعض أجهزة التلفزيون وبطاقات GPU الأقدم؛ اضبطه على إيقاف إذا واجهت ذلك. يختار الوضع التلقائي أفضل إعداد افتراضي لجهازك. أعد تشغيل Moonfin للتطبيق.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "تلقائي",
+    "impellerOn": "تشغيل",
+    "impellerOff": "إيقاف",
+    "impellerRestartTitle": "يلزم إعادة التشغيل",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "يحتاج Moonfin إلى إعادة التشغيل لتغيير محرك التصيير. أغلق التطبيق الآن ثم أعد فتحه للتطبيق.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "إغلاق التطبيق الآن",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "تحديث المكتبة",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "تحديث جميع المكتبات",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "تاريخ الإضافة (الأقدم أولاً)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "تاريخ الإضافة (الأحدث أولاً)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "أبجديًا (من A إلى Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "أبجديًا (من Z إلى A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "جارٍ تحميل تحليلات الخادم... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "مطابقة المصدر",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "أفضل 250 فيلمًا على IMDb",
+    "imdbTop250TvShows": "أفضل 250 مسلسلاً على IMDb",
+    "imdbMostPopularMovies": "أكثر الأفلام شعبية على IMDb",
+    "imdbMostPopularTvShows": "أكثر المسلسلات شعبية على IMDb",
+    "imdbLowestRatedMovies": "الأفلام الأقل تقييمًا على IMDb",
+    "imdbTopEnglishMovies": "أفضل الأفلام الإنجليزية تقييمًا على IMDb"
 }

@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Conexão Rápida",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -906,7 +906,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiolivro} other{{count} audiolivros}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1037,7 +1037,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Temporada} other{{count} Temporadas}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1112,7 +1112,7 @@
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Reboque",
+    "trailer": "Trailer",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1276,7 +1276,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Nenhum",
+    "none": "Nenhuma",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1448,7 +1448,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 faixa} other{{count} faixas}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1457,7 +1457,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 capítulo} other{{count} capítulos}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1518,7 +1518,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} canais",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -2405,7 +2405,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "T{season} E{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 episódio} other{{count} episódios}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2814,7 +2814,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Desabilitado",
+    "disabled": "Desativado",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3511,7 +3511,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Desativada",
+    "mediaBarModeOff": "Desativado",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3670,10 +3670,6 @@
     "lastUser": "Último Usuário",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Usuário Específico",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Sempre Autenticar",
     "@alwaysAuthenticate": {
@@ -3897,7 +3893,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plug-in",
+    "pluginLabel": "Plug-in Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4026,19 +4022,19 @@
             }
         }
     },
-    "discoverRows": "Linhas de Descoberta",
+    "discoverRows": "Página de Descoberta do Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Arraste para reordenar. Habilite ou desabilite linhas. A ordem das linhas habilitadas sincroniza com o plugin Moonfin.",
+    "discoverRowsDescriptionPlugin": "Habilite as linhas que deseja ver na página principal do Seerr. Arraste para reordenar. A ordem personalizada é sincronizada com o Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Arraste para reordenar. Habilite ou desabilite linhas.",
+    "discoverRowsDescription": "Habilite as linhas que deseja ver na página principal do Seerr. Arraste para reordenar. A ordem personalizada é sincronizada com o Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Habilitado",
+    "enabled": "Ativado",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4343,7 +4339,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Aparições",
+    "appearances": "Participações",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4413,7 +4409,7 @@
     "profile": "Perfil",
     "provider": "Provedor",
     "refresh": "Atualizar",
-    "remote": "Remoto",
+    "remote": "Controle remoto",
     "rename": "Renomear",
     "revoke": "Revogar",
     "role": "Papel",
@@ -4428,7 +4424,7 @@
     "stop": "Parar",
     "streaming": "Transmissão",
     "time": "Hora",
-    "trickplay": "Truques",
+    "trickplay": "Trickplay",
     "uninstall": "Desinstalar",
     "up": "Subir",
     "update": "Atualizar",
@@ -4445,7 +4441,7 @@
     "adminDrawerTranscoding": "Transcodificação",
     "adminDrawerResume": "Retomar",
     "adminDrawerStreaming": "Transmissão",
-    "adminDrawerTrickplay": "Truques",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Dispositivos",
     "adminDrawerActivity": "Atividade",
     "adminDrawerNetworking": "Rede",
@@ -5282,7 +5278,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Pesquisar Pessoa Remota",
     "adminNoRemoteMatches": "Nenhuma correspondência remota encontrada",
     "adminRemoteResults": "Resultados Remotos",
     "adminRemoteMetadataApplied": "Metadados remotos aplicados",
@@ -5378,9 +5373,6 @@
     },
     "adminAddTuner": "Adicionar Sintonizador",
     "adminTunerType": "Tipo de Sintonizador",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Outro",
-    "adminUrlPath": "URL / Caminho",
-    "adminNameOptional": "Nome (opcional)",
     "adminTunerAdded": "Sintonizador adicionado",
     "adminTunerAddFailed": "Falha ao adicionar sintonizador: {error}",
     "@adminTunerAddFailed": {
@@ -5392,9 +5384,6 @@
     },
     "adminAddGuideProvider": "Adicionar Provedor de Guia",
     "adminProviderType": "Tipo de Provedor",
-    "adminProviderTypeHint": "SchedulesDirect ou XMLTV",
-    "adminUsernameOptional": "Nome de usuário (opcional)",
-    "adminRefreshInterval": "Intervalo de atualização (horas)",
     "adminProviderAdded": "Provedor adicionado",
     "adminProviderAddFailed": "Falha ao adicionar provedor: {error}",
     "@adminProviderAddFailed": {
@@ -5563,7 +5552,6 @@
     },
     "adminLogViewerNoMatches": "Nenhuma linha correspondente",
     "adminMetadataEditorTitle": "Editor de Metadados",
-    "adminMetadataRemote": "Remoto",
     "adminMetadataType": "Tipo",
     "adminMetadataDetails": "Detalhes",
     "adminMetadataExternalIds": "IDs Externos",
@@ -5874,7 +5862,7 @@
     "adminTaskTriggerEvery12Hours": "A cada 12 horas",
     "adminTaskTriggerEvery24Hours": "A cada 24 horas",
     "adminTaskTriggerEvery2Days": "A cada 2 dias",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hora} other{{count} horas}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -5938,7 +5926,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6084,7 +6072,7 @@
     "quickConnectDisabled": "Quick Connect está desabilitado neste servidor.",
     "quickConnectForbidden": "Sua conta não pode autorizar esta solicitação Quick Connect.",
     "quickConnectNotFound": "Código Quick Connect não encontrado. Tente um novo código.",
-    "quickConnectFailedWithMessage": "Falha na conexão rápida: {message}",
+    "quickConnectFailedWithMessage": "Falha no Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6278,7 +6266,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "T{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -6437,7 +6425,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay requer um servidor Jellyfin. O servidor atual não oferece suporte.",
     "syncPlayGroupFallbackName": "SyncPlay Grupo",
     "syncPlayGroupTooltip": "Grupo SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participante} other {# participantes}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6518,7 +6506,7 @@
     "rememberMyChoice": "Lembre-se da minha escolha",
     "playHdr10Fallback": "Reproduzir substituto HDR10",
     "requestTranscode": "Solicitar transcodificação",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# linha descoberta} other {# linhas descobertas}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6592,7 +6580,7 @@
     "settingsCheckForUpdates": "Verifique se há atualizações",
     "settingsCheckForUpdatesSubtitle": "Verifique a versão mais recente de Moonfin",
     "settingsPoweredByFlutter": "Desenvolvido por Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# aviso de licença} other {# avisos de licença}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Registro",
+    "record": "Gravar",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "Codec substituto de áudio",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "Estéreo AAC",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Passagem (avançado)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} canais PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Abra o seletor de rota do iOS",
     "airPlayRoutePickerUnavailable": "AirPlay o seletor de rota não está disponível neste dispositivo.",
     "videos": "Vídeos",
-    "trailers": "Reboques",
+    "trailers": "Trailers",
     "programs": "Programas",
     "songs": "Músicas",
     "photoAlbums": "Álbuns de fotos",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Principais artistas",
     "analyticsTopAuthors": "Principais autores",
     "analyticsTopContributors": "Principais colaboradores",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Biblioteca} other{{count} Bibliotecas}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "Conteúdo Misto",
     "homeVideosAndPhotos": "Vídeos e fotos caseiras",
     "mixedMoviesAndShows": "Filmes e programas mistos",
-    "intelQuickSync": "Sincronização rápida Intel",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "MPP Rockchip",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Nenhuma gravação encontrada",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "O plugin de extração CB7 não está disponível nesta plataforma.",
     "closeGenrePanel": "Fechar painel de gênero",
     "loadingShuffle": "Carregando ordem aleatória...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "ALEATÓRIO DA BIBLIOTECA",
+    "randomShuffleLabel": "TOTALMENTE ALEATÓRIO",
+    "genresShuffleLabel": "ALEATÓRIO POR GÊNEROS",
     "autoHdrSwitching": "Troca automática de HDR",
     "autoHdrSwitchingDescription": "Ative automaticamente o HDR para reprodução de vídeo HDR e restaure o modo de exibição ao sair.",
     "whenFullscreen": "Quando em tela cheia",
     "transcodingLimits": "Limites de transcodificação",
-    "settingsSupportMoonfinSubtitle": "Doe um café para o desenvolvedor"
+    "settingsSupportMoonfinSubtitle": "Doe um café para o desenvolvedor",
+    "accountPreferences": "PREFERÊNCIAS DA CONTA",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Idioma da Interface",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Padrão do Sistema",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Vazio",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Estilo da tela de detalhes",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Clássico",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Moderno",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Abas Expandidas",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Mostrar automaticamente o conteúdo das abas ao navegar entre elas. Desative para abrir e fechar cada aba manualmente.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Mostrar Detalhes Técnicos?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Mostrar informações de codec, resolução e stream no resumo do banner",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Sistema de Recomendações",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Use o algoritmo de biblioteca local do Moonfin Recomenda ou as métricas de similaridade online do TMDb. Nota: as recomendações online exigem a integração com o Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recomenda",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "Similaridade TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Aplicar Limite de Classificação Etária?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Limitar as sugestões do Moonfin Recomenda pela classificação etária do conteúdo de destino",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Estilo da Interface",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automático acompanha o seu dispositivo. Escolha Apple ou Material para forçar um visual.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automático",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Qualidade do Vidro",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Automático escolhe o melhor efeito de vidro para este dispositivo. Completo força desfoque real; Reduzido usa um vidro leve que poupa energia da GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Automático",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Completo",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Reduzido",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Tema Personalizado",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Os temas personalizados alteram elementos visuais em todo o Moonfin. Escolha uma destas opções para combinar com o seu estilo.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Estilo de vidro líquido com fundo em gradiente flutuante, superfícies foscas e destaque em azul Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Estilo retro em pixel art com paleta robusta, bordas em blocos, sombras marcadas e fonte de pixels",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Menu",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Em pausa",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Salvar estado",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Jogos",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Carregar estado",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Avanço rápido",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Configurações do emulador",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Este core não tem opções ajustáveis.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Segure para abrir o menu",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Este dispositivo ainda não suporta a execução de jogos.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Livros Recentes",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Audiolivros Recentes",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 livro} other{{count} livros}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Livro",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audiolivro",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% lido",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} restantes",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Ler",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Ouvir",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Itens",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Extras",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Bastidores",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Cenas Excluídas",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Featurettes",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Entrevistas",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Cenas",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Curtas",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} restantes",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Termina em {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "DIRETORES",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "ROTEIRO",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Reproduzir toda a música aleatoriamente",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Entre no Moonfin no seu telefone",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Não foi possível conectar ao seu servidor",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "A seguir: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}m restantes",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}h restantes",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}h {minutes}m restantes",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Páginas de detalhes, linhas do início e volume",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Repetir Música-Tema",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Repetir a faixa em vez de reproduzi-la uma única vez",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Roda do mouse",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Escolha o que a rolagem da roda do mouse sobre o vídeo faz durante a reprodução.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Desligado",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Buscar (avançar / retroceder)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volume",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volume",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Idioma de Áudio Alternativo",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Preferir Faixa de Áudio Padrão",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Preferir a faixa de áudio original em vez da dublagem localizada.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Preferir Faixas de Audiodescrição",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Preferir faixas de audiodescrição em vez das faixas normais.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transcodificação (Áudio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Stream Direto (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transcodificação (Taxa de Bits ou Resolução)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transcodificação (Vídeo e Áudio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transcodificação (Vídeo)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Escolha como o áudio é decodificado. O Passthrough AVR envia streams Dolby/DTS brutos para o seu receptor; Automático ou Downmix decodificam localmente.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Selecione o formato de destino para transcodificar áudio multicanal quando o stream de origem não puder ser reproduzido diretamente nem enviado por passthrough.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Detecção Automática\n(Recomendado)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Padrão)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sem perdas)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Apenas Estéreo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Eficiente)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Sem perdas)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Máximo de Canais de Áudio",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Configure o número máximo de canais da sua configuração de áudio. Streams multicanal que excedam este limite serão reduzidos (downmix) ou transcodificados.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Detecção Automática\n(Padrão do Hardware)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Estéreo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadrifônico",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Fones de ouvido",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Modo de Legendas",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Marcadas",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Sempre",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Estrangeiras",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Forçadas",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Reproduz faixas marcadas internamente nos metadados do arquivo de mídia como \"default\" ou \"forced\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Carrega e exibe legendas automaticamente sempre que um vídeo começa.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Ativa as legendas automaticamente se a faixa de áudio padrão estiver em um idioma estrangeiro.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Carrega apenas legendas explicitamente marcadas com o sinalizador de metadados \"forced\".",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Desativa completamente o carregamento automático de legendas.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Idioma de Legendas Alternativo",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Stream de Legendas",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Mostrar downloads no servidor",
+    "reportDownloadsActivitySubtitle": "Permitir que o administrador do servidor veja seus downloads transcodificados no painel",
+    "navbarAlwaysExpanded": "Sempre Expandir Rótulos da Barra de Navegação",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Mostrar Botão do Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Agrupar Itens em Coleções",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Ocultar itens da biblioteca associados a coleções ao navegar pelas bibliotecas",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Aviso de Agrupamento de Bibliotecas",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Para usar esta configuração, certifique-se de que as opções \"Agrupar filmes em coleções\" e/ou \"Agrupar séries em coleções\" estão ativadas nas configurações de Exibição da sua biblioteca no seu servidor Jellyfin ou Emby.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Áudio do Trailer",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Ativar o áudio dos trailers na barra de mídia",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Linhas do Início Expandidas",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Limitar as linhas do início a 1 linha por tela",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Usuário Atual",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Estático",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Saltitante",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Linhas de Descoberta do Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Notificações",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Notificações de novas solicitações",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Avisar quando alguém enviar uma solicitação",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Atualizações de solicitações",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Aprovadas, recusadas e adicionadas à sua biblioteca",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Atualizações de problemas",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Novos problemas, respostas e resoluções",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Limite do cache de imagens",
+    "clearImageCache": "Limpar cache de imagens",
+    "imageCacheCleared": "Cache de imagens limpo",
+    "seerrDownloadingPercent": "Baixando · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Importando",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Falhou",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Processando",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Modificado por {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Concluído",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Este título já foi solicitado",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Limite de solicitações atingido",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Este título está na lista de bloqueio",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Não há mais temporadas para solicitar",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Você não tem permissão para fazer esta solicitação",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Solicitações",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Problemas",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Mais recentes",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Última modificação",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Nenhum problema",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{remaining} de {limit} solicitações de filmes restantes",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{remaining} de {limit} solicitações de temporadas restantes",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Parte de {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Ver Coleção",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Solicitar Coleção",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} filmes · {available} disponíveis",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Solicitar {count} filmes",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Solicitando {current} de {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} filmes solicitados",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{ok} de {total} filmes solicitados",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Todos os filmes já estão disponíveis ou solicitados",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Relatar Problema",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Vídeo",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Áudio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Qual é o problema?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Todos os Episódios",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episódio",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Aberto",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Resolvido",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Resolver",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Reabrir",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Relatado por {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} comentários",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Adicionar um comentário",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Excluir este problema?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Enviar Relato",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Exibição",
+    "adminDrawerMetadata": "Metadados",
+    "adminDrawerNfo": "Configurações de NFO",
+    "adminActivitySeverityAll": "Todas as severidades",
+    "adminActivityDateRange": "Intervalo de datas",
+    "adminRemoveDeviceConfirm": "Remover o dispositivo '{name}'? O usuário precisará entrar novamente neste dispositivo.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Excluir todos os dispositivos",
+    "adminDeleteAllDevicesConfirm": "Remover {count} dispositivos? Os usuários afetados precisarão entrar novamente. O seu dispositivo atual não é afetado.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Dispositivos removidos",
+    "adminDevicesDeletedPartial": "Alguns dispositivos foram removidos; {count} não puderam ser removidos.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Caminhos",
+    "adminLibraryTabOptions": "Opções",
+    "adminLibraryTabDownloaders": "Downloaders",
+    "adminLibMetadataSavers": "Gravadores de metadados",
+    "adminLibSubtitleDownloaders": "Downloaders de legendas",
+    "adminLibLyricDownloaders": "Downloaders de letras",
+    "adminLibMetadataDownloadersFor": "Downloaders de metadados: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Buscadores de imagens: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Este servidor não expõe downloaders para este tipo de biblioteca.",
+    "adminLibrarySectionGeneral": "Geral",
+    "adminLibrarySectionMetadata": "Metadados",
+    "adminLibrarySectionEmbedded": "Informações Incorporadas",
+    "adminLibrarySectionSubtitles": "Legendas",
+    "adminLibrarySectionImages": "Imagens",
+    "adminLibrarySectionSeries": "Séries",
+    "adminLibrarySectionMusic": "Música",
+    "adminLibrarySectionMovies": "Filmes",
+    "adminLibRealtimeMonitor": "Ativar monitoramento em tempo real",
+    "adminLibRealtimeMonitorHint": "Detectar alterações nos arquivos e processá-las automaticamente.",
+    "adminLibArchiveMediaFiles": "Tratar arquivos compactados como arquivos de mídia",
+    "adminLibEnablePhotos": "Exibir fotos",
+    "adminLibSaveLocalMetadata": "Salvar imagens nas pastas de mídia",
+    "adminLibRefreshInterval": "Atualização automática de metadados",
+    "adminLibRefreshNever": "Nunca",
+    "adminLibDefault": "Padrão",
+    "adminLibDisplayTitle": "Exibição",
+    "adminLibDisplaySection": "Exibição da biblioteca",
+    "adminLibFolderView": "Exibir uma visualização de pastas para mostrar pastas de mídia simples",
+    "adminLibSpecialsInSeasons": "Exibir especiais dentro das temporadas em que foram exibidos",
+    "adminLibGroupMovies": "Agrupar filmes em coleções",
+    "adminLibGroupShows": "Agrupar séries em coleções",
+    "adminLibExternalSuggestions": "Mostrar conteúdo externo nas sugestões",
+    "adminLibDateAddedSection": "Comportamento da data de adição",
+    "adminLibDateAddedLabel": "Usar data de adição de",
+    "adminLibDateAddedImport": "Data da análise na biblioteca",
+    "adminLibDateAddedFile": "Data de criação do arquivo",
+    "adminLibMetadataTitle": "Metadados e Imagens",
+    "adminLibMetadataLangSection": "Idioma preferido dos metadados",
+    "adminLibChaptersSection": "Capítulos",
+    "adminLibDummyChapterDuration": "Duração dos capítulos fictícios (segundos)",
+    "adminLibDummyChapterDurationHint": "Duração dos capítulos gerados para mídias que não os possuem. Defina como 0 para desativar.",
+    "adminLibChapterImageResolution": "Resolução das imagens de capítulo",
+    "adminLibNfoTitle": "Configurações de NFO",
+    "adminLibNfoHelp": "Os metadados NFO são compatíveis com o Kodi e clientes semelhantes. As configurações aplicam-se a todas as bibliotecas que salvam metadados NFO.",
+    "adminLibKodiUser": "Usuário cujos dados de exibição serão armazenados nos arquivos NFO",
+    "adminLibSaveImagePaths": "Salvar caminhos das imagens nos arquivos NFO",
+    "adminLibPathSubstitution": "Ativar substituição de caminhos para os caminhos de imagem NFO",
+    "adminLibExtraThumbs": "Copiar imagens extrafanart para uma pasta extrathumbs",
+    "adminLibNone": "Nenhum",
+    "adminLibRefreshDays": "{days} dias",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Usar títulos incorporados",
+    "adminLibEmbeddedExtrasTitles": "Usar títulos incorporados para extras",
+    "adminLibEmbeddedEpisodeInfos": "Usar informações de episódio incorporadas",
+    "adminLibAllowEmbeddedSubtitles": "Permitir legendas incorporadas",
+    "adminLibEmbeddedAllowAll": "Permitir todas",
+    "adminLibEmbeddedAllowText": "Apenas texto",
+    "adminLibEmbeddedAllowImage": "Apenas imagem",
+    "adminLibEmbeddedAllowNone": "Nenhum",
+    "adminLibSkipIfEmbeddedSubs": "Ignorar download se houver legendas incorporadas",
+    "adminLibSkipIfAudioMatches": "Ignorar download se a faixa de áudio corresponder ao idioma do download",
+    "adminLibRequirePerfectMatch": "Exigir correspondência exata de legendas",
+    "adminLibSaveSubtitlesWithMedia": "Salvar legendas nas pastas de mídia",
+    "adminLibChapterImageExtraction": "Extrair imagens de capítulo",
+    "adminLibChapterImagesDuringScan": "Extrair imagens de capítulo durante a análise da biblioteca",
+    "adminLibTrickplayExtraction": "Ativar extração de imagens trickplay",
+    "adminLibTrickplayDuringScan": "Extrair imagens trickplay durante a análise da biblioteca",
+    "adminLibSaveTrickplayWithMedia": "Salvar imagens trickplay nas pastas de mídia",
+    "adminLibAutomaticSeriesGrouping": "Mesclar automaticamente séries distribuídas por várias pastas",
+    "adminLibSeasonZeroName": "Nome de exibição da temporada zero",
+    "adminLibLufsScan": "Ativar análise LUFS para normalização de áudio",
+    "adminLibPreferNonstandardArtist": "Preferir a etiqueta de artistas não padrão",
+    "adminLibAutoAddToCollection": "Adicionar filmes automaticamente às coleções",
+    "adminParentalControl": "Controle Parental",
+    "adminMaxParentalRating": "Classificação etária máxima permitida",
+    "adminMaxParentalRatingHint": "O conteúdo com classificação superior será ocultado deste usuário.",
+    "adminParentalRatingNone": "Nenhuma",
+    "adminBlockUnratedItems": "Bloquear itens sem classificação ou com classificação não reconhecida",
+    "adminUnratedBook": "Livros",
+    "adminUnratedChannelContent": "Canais",
+    "adminUnratedLiveTvChannel": "TV ao Vivo",
+    "adminUnratedMovie": "Filmes",
+    "adminUnratedMusic": "Música",
+    "adminUnratedTrailer": "Trailers",
+    "adminUnratedSeries": "Séries",
+    "adminAccessSchedules": "Horários de Acesso",
+    "adminAccessSchedulesHint": "Permitir o acesso apenas durante os horários agendados abaixo. O acesso é permitido o dia todo quando nenhum horário é definido.",
+    "adminAddSchedule": "Adicionar Horário",
+    "adminScheduleDay": "Dia",
+    "adminScheduleStart": "Início",
+    "adminScheduleEnd": "Fim",
+    "adminDayEveryday": "Todos os dias",
+    "adminDayWeekday": "Dia de semana",
+    "adminDayWeekend": "Fim de semana",
+    "adminDaySunday": "Domingo",
+    "adminDayMonday": "Segunda-feira",
+    "adminDayTuesday": "Terça-feira",
+    "adminDayWednesday": "Quarta-feira",
+    "adminDayThursday": "Quinta-feira",
+    "adminDayFriday": "Sexta-feira",
+    "adminDaySaturday": "Sábado",
+    "adminAllowedTags": "Etiquetas permitidas",
+    "adminAllowedTagsHint": "Apenas o conteúdo com estas etiquetas é exibido. Deixe vazio para permitir tudo.",
+    "adminBlockedTags": "Etiquetas bloqueadas",
+    "adminBlockedTagsHint": "O conteúdo com estas etiquetas fica oculto para este usuário.",
+    "adminAddTag": "Adicionar etiqueta",
+    "adminEnabledDevices": "Dispositivos ativados",
+    "adminEnabledChannels": "Canais ativados",
+    "adminAuthProvider": "Provedor de autenticação",
+    "adminPasswordResetProvider": "Provedor de redefinição de senha",
+    "adminLoginAttemptsBeforeLockout": "Máximo de tentativas de login malsucedidas antes do bloqueio",
+    "adminLoginAttemptsHint": "Defina como 0 para o padrão ou -1 para desativar o bloqueio.",
+    "adminSyncPlayAccess": "Acesso ao SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Permitir criar e entrar em grupos",
+    "adminSyncPlayJoin": "Permitir entrar em grupos",
+    "adminSyncPlayNone": "Sem acesso",
+    "adminContentDeletionFolders": "Permitir exclusão de conteúdo de",
+    "adminBackupOptionsTitle": "Criar Backup",
+    "adminBackupInclude": "Escolha o que incluir no backup.",
+    "adminBackupDatabase": "Banco de Dados",
+    "adminBackupDatabaseAlways": "Sempre incluído",
+    "adminBackupMetadata": "Metadados",
+    "adminBackupSubtitles": "Legendas",
+    "adminBackupTrickplay": "Imagens trickplay",
+    "adminEditTuner": "Editar Sintonizador",
+    "adminTunerTypeM3u": "Sintonizador M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Arquivo ou URL",
+    "adminTunerIpAddress": "Endereço IP do sintonizador",
+    "adminTunerFriendlyName": "Nome amigável",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Limite de conexões simultâneas",
+    "adminTunerCountHelp": "O número máximo de streams que o sintonizador permite ao mesmo tempo. Defina como 0 para ilimitado.",
+    "adminTunerFallbackBitrate": "Taxa de bits máxima de streaming alternativa",
+    "adminTunerImportFavoritesOnly": "Importar apenas canais favoritos",
+    "adminTunerAllowHwTranscoding": "Permitir transcodificação por hardware",
+    "adminTunerAllowFmp4": "Permitir contêiner de transcodificação fMP4",
+    "adminTunerAllowStreamSharing": "Permitir compartilhamento de stream",
+    "adminTunerEnableStreamLooping": "Ativar repetição do stream",
+    "adminTunerIgnoreDts": "Ignorar DTS",
+    "adminTunerReadAtNativeFramerate": "Ler a entrada na taxa de quadros nativa",
+    "adminEditProvider": "Editar Provedor",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Arquivo ou URL",
+    "adminXmltvMoviePrefix": "Prefixo de filme",
+    "adminXmltvMovieCategories": "Categorias de filmes",
+    "adminXmltvCategoriesHelp": "Separe várias categorias com uma barra vertical.",
+    "adminXmltvKidsCategories": "Categorias infantis",
+    "adminXmltvNewsCategories": "Categorias de notícias",
+    "adminXmltvSportsCategories": "Categorias de esportes",
+    "adminSdUsername": "Nome de usuário",
+    "adminSdPassword": "Senha",
+    "adminSdCountry": "País",
+    "adminSdCountrySelect": "Selecione um país",
+    "adminSdPostalCode": "Código postal",
+    "adminSdGetListings": "Obter listagens",
+    "adminSdListings": "Listagens",
+    "adminEnableAllTuners": "Ativar todos os sintonizadores",
+    "adminTunerResetNotSupported": "Este tipo de sintonizador não suporta reinicialização.",
+    "adminMovieRecordingPath": "Caminho de gravação de filmes",
+    "adminGuideDays": "Dias de dados do guia",
+    "adminGuideDaysAuto": "Automático",
+    "adminGuideDaysValue": "{days} dias",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Caminho do aplicativo de pós-processamento",
+    "adminRecordingPostProcessorArgs": "Argumentos do pós-processador",
+    "adminSaveRecordingNfo": "Salvar metadados NFO das gravações",
+    "adminSaveRecordingImages": "Salvar imagens das gravações",
+    "adminLiveTvSectionTiming": "Temporização",
+    "adminLiveTvSectionPaths": "Caminhos de gravação",
+    "adminLiveTvSectionPostProcessing": "Pós-processamento",
+    "adminGuideDaysDisplay": "Dados do guia: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Atualizar Dados do Guia",
+    "adminGuideRefreshStarted": "Atualização dos dados do guia iniciada",
+    "adminGuideRefreshUnavailable": "A tarefa de atualização do guia não está disponível neste servidor.",
+    "adminMetadataIdentify": "Identificar",
+    "adminBrandingSplashUpload": "Enviar imagem",
+    "adminBrandingSplashUploaded": "Tela de abertura atualizada",
+    "adminBrandingSplashUploadFailed": "Falha ao enviar a tela de abertura",
+    "adminBrandingSplashDeleted": "Tela de abertura removida",
+    "adminBrandingNoSplash": "Nenhuma tela de abertura personalizada",
+    "adminPlaybackQsvDevice": "Dispositivo QSV",
+    "adminPlaybackEnhancedNvdec": "Ativar decodificador NVDEC aprimorado",
+    "adminPlaybackPreferNativeDecoder": "Preferir o decodificador de hardware nativo do sistema",
+    "adminPlaybackColorDepth": "Profundidade de cor da decodificação por hardware",
+    "adminPlaybackColorDepth10Hevc": "Decodificação HEVC de 10 bits",
+    "adminPlaybackColorDepth10Vp9": "Decodificação VP9 de 10 bits",
+    "adminPlaybackColorDepth10HevcRext": "Decodificação HEVC RExt de 8/10 bits",
+    "adminPlaybackColorDepth12HevcRext": "Decodificação HEVC RExt de 12 bits",
+    "adminPlaybackHwEncodingSection": "Codificação por hardware",
+    "adminPlaybackAllowHevcEncoding": "Permitir codificação HEVC",
+    "adminPlaybackAllowAv1Encoding": "Permitir codificação AV1",
+    "adminPlaybackIntelLowPowerH264": "Ativar codificador H.264 de baixo consumo da Intel",
+    "adminPlaybackIntelLowPowerHevc": "Ativar codificador HEVC de baixo consumo da Intel",
+    "adminPlaybackToneMapping": "Mapeamento de Tons",
+    "adminPlaybackEnableTonemapping": "Ativar mapeamento de tons",
+    "adminPlaybackEnableVppTonemapping": "Ativar mapeamento de tons VPP",
+    "adminPlaybackEnableVtTonemapping": "Ativar mapeamento de tons do VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "Algoritmo de mapeamento de tons",
+    "adminPlaybackTonemappingMode": "Modo de mapeamento de tons",
+    "adminPlaybackTonemappingRange": "Intervalo de mapeamento de tons",
+    "adminPlaybackTonemappingDesat": "Dessaturação do mapeamento de tons",
+    "adminPlaybackTonemappingPeak": "Pico do mapeamento de tons",
+    "adminPlaybackTonemappingParam": "Parâmetro do mapeamento de tons",
+    "adminPlaybackVppTonemappingBrightness": "Brilho do mapeamento de tons VPP",
+    "adminPlaybackVppTonemappingContrast": "Contraste do mapeamento de tons VPP",
+    "adminPlaybackPresetsQuality": "Predefinições e Qualidade",
+    "adminPlaybackEncoderPreset": "Predefinição do codificador",
+    "adminPlaybackH264Crf": "CRF de codificação H.264",
+    "adminPlaybackH265Crf": "CRF de codificação H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "Método de desentrelaçamento",
+    "adminPlaybackDeinterlaceDoubleRate": "Dobrar a taxa de quadros ao desentrelaçar",
+    "adminPlaybackAudioSection": "Áudio",
+    "adminPlaybackEnableAudioVbr": "Ativar codificação de áudio VBR",
+    "adminPlaybackDownmixBoost": "Reforço do downmix de áudio",
+    "adminPlaybackDownmixAlgorithm": "Algoritmo de downmix estéreo",
+    "adminPlaybackMaxMuxingQueue": "Tamanho máximo da fila de muxing",
+    "adminPlaybackAutoOption": "Automático",
+    "adminRunningTasks": "Tarefas em Execução",
+    "adminNetworkingPublicHttpPort": "Porta HTTP pública",
+    "adminNetworkingRequireHttps": "Exigir HTTPS",
+    "adminNetworkingRequireHttpsHint": "Redirecionar todas as solicitações remotas para HTTPS. Não tem efeito se o servidor não tiver um certificado válido.",
+    "adminNetworkingCertPassword": "Senha do certificado",
+    "adminNetworkingIpSettings": "Configurações de IP",
+    "adminNetworkingEnableIpv4": "Ativar IPv4",
+    "adminNetworkingEnableIpv6": "Ativar IPv6",
+    "adminNetworkingAutoDiscovery": "Ativar mapeamento automático de portas",
+    "adminNetworkingLocalSubnets": "Redes LAN",
+    "adminNetworkingLocalSubnetsHint": "Lista de endereços IP ou sub-redes CIDR, separados por vírgula ou por linha, tratados como pertencentes à rede local.",
+    "adminNetworkingPublishedUris": "URIs publicados do servidor",
+    "adminNetworkingPublishedUriHint": "Mapeie uma sub-rede ou endereço para uma URL publicada, por exemplo, all=https://example.com",
+    "adminPlaybackThrottleDelay": "Atraso de limitação (segundos)",
+    "adminPlaybackEnableSubtitleExtraction": "Permitir extração de legendas em tempo real",
+    "adminGeneralEnableSlowResponse": "Ativar avisos de resposta lenta",
+    "adminGeneralQuickConnect": "Ativar o Quick Connect",
+    "adminGeneralSectionServer": "Servidor",
+    "adminGeneralSectionMetadata": "Metadados",
+    "adminGeneralSectionPaths": "Caminhos",
+    "adminGeneralSectionPerformance": "Desempenho",
+    "adminGeneralDisplayLanguage": "Idioma de exibição preferido",
+    "offlineBannerTitle": "Você está offline",
+    "offlineBannerSubtitle": "Mostrando seus downloads",
+    "offlineBannerAction": "Downloads",
+    "serverUnreachableBannerTitle": "Não foi possível conectar ao seu servidor",
+    "serverUnreachableBannerSubtitle": "Reproduzindo dos downloads até que ele volte",
+    "contextMenuHideFromContinueWatching": "Ocultar de Continuar Assistindo",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Ocultar de A Seguir",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Adicionar à Coleção",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "CONEXÃO",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Permitir certificados autoassinados",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Confiar em servidores que usam certificados TLS autoassinados ou de CA privada. Ative apenas para servidores que você controla. Isto desativa a validação de certificados em todas as conexões.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Tela de Detalhes",
+    "settingsDetailsScreenSubtitle": "Estilo, desfoque de fundo e comportamento das abas",
+    "settingsShowSeerrButtonInNavigation": "Mostrar o botão do Seerr na barra de navegação",
+    "settingsAlwaysExpandNavbarLabels": "Sempre mostrar rótulos de texto na barra de navegação superior",
+    "settingsMediaSegmentCountdown": "Contagem Regressiva de Segmentos de Mídia",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Barra de Progresso",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Cronômetro",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Nenhum",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Lançamentos recentes: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Ativar tunelamento",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Avançado. Encaminha áudio e vídeo por um caminho de hardware acoplado. Desativado por padrão porque causa falhas de áudio/vídeo em alguns dispositivos.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Mostrar Detalhes da Mídia",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Mostrar os detalhes do item selecionado no topo das páginas da Biblioteca.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Ocultar Panos de Fundo ao Navegar?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Loja de Temas",
+    "themeStoreSubtitle": "Explore e salve temas da comunidade",
+    "themeStoreDescription": "Salve um tema para usá-lo como os seus outros temas salvos.",
+    "themeStoreEmpty": "Nenhum tema disponível no momento.",
+    "themeStoreLoadFailed": "Não foi possível carregar a Loja de Temas. Verifique sua conexão e tente novamente.",
+    "themeStoreSave": "Salvar",
+    "themeStoreSaveAndApply": "Salvar e aplicar",
+    "themeStoreSaved": "Salvo",
+    "themeStoreInvalidMessage": "Não foi possível carregar este tema.",
+    "themeStoreSavedMessage": "\"{themeName}\" salvo.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Exibição das Linhas do Início",
+    "homeRowSections": "Seções das Linhas do Início",
+    "homeRowToggles": "Alternadores das Linhas do Início",
+    "homeRowTogglesSubtitle": "Ativar ou desativar categorias de linhas do início baseadas em bibliotecas",
+    "homeRowTogglesDescription": "Ative os alternadores a seguir para exibir as linhas nas Seções Iniciais.",
+    "displayPlaylistsRows": "Exibir Linhas de Listas de Reprodução",
+    "displayPlaylistsRowsSubtitle": "Mostrar linhas de listas de reprodução nas Seções Iniciais.",
+    "playlistsRowSorting": "Ordenação das Linhas de Listas de Reprodução",
+    "playlistsRowSortingDescription": "Ordene as linhas de listas de reprodução por data de adição, data de lançamento, ordem alfabética e mais.",
+    "displayAudioRows": "Exibir Linhas de Áudio",
+    "displayAudioRowsSubtitle": "Mostrar linhas de áudio nas Seções Iniciais.",
+    "audioRowsSorting": "Ordenação das linhas de áudio",
+    "audioRowsSortingDescription": "Ordene as linhas de áudio por data de adição, data de lançamento, ordem alfabética e mais.",
+    "audioPlaylists": "Listas de Reprodução de Áudio",
+    "layout": "Layout",
+    "theme": "Tema",
+    "keyboard": "Teclado",
+    "navButtons": "Botões",
+    "rendering": "Renderização",
+    "mpvConfiguration": "Configuração do MPV",
+    "externalPlayerAppDescription": "Defina um reprodutor externo para ativar a opção de reprodução ao pressionar e segurar",
+    "crewContributionsSeerr": "Contribuições da Equipe (Seerr)",
+    "changeArtwork": "Alterar Imagens",
+    "missing": "Ausente",
+    "clearAllArtworkButton": "Limpar todas as imagens?",
+    "clearAllArtworkWarning": "Tem certeza de que deseja limpar todas as imagens baixadas?",
+    "confirmClear": "Confirmar Limpeza",
+    "confirmClearMessage": "Tem certeza de que deseja limpar {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Enviar?",
+    "resolutionLabel": "Resolução: ",
+    "onlyShowInterfaceLanguage": "Mostrar apenas imagens no idioma da interface",
+    "confirmClearAll": "Confirmar Limpar Tudo",
+    "imageUploadSuccess": "Imagem enviada com sucesso!",
+    "imageUploadFailed": "Falha ao enviar a imagem: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Falha ao definir a imagem: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Falha ao excluir a imagem: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Falha ao limpar todas as imagens: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Sim",
+    "posterCategory": "Pôster",
+    "backdropsCategory": "Panos de Fundo",
+    "bannerCategory": "Banner",
+    "logoCategory": "Logotipo",
+    "thumbnailCategory": "Miniatura",
+    "artCategory": "Arte",
+    "discArtCategory": "Arte do Disco",
+    "screenshotCategory": "Captura de Tela",
+    "boxCoverCategory": "Capa da Caixa",
+    "boxRearCoverCategory": "Capa Traseira da Caixa",
+    "menuArtCategory": "Arte do Menu",
+    "confirmItemPoster": "o pôster",
+    "confirmItemBackdrop": "o pano de fundo",
+    "confirmItemBanner": "o banner",
+    "confirmItemLogo": "o logotipo",
+    "confirmItemThumbnail": "a miniatura",
+    "confirmItemArt": "a arte",
+    "confirmItemDiscArt": "a arte do disco",
+    "confirmItemScreenshot": "a captura de tela",
+    "confirmItemBoxCover": "a capa da caixa",
+    "confirmItemBoxRearCover": "a capa traseira da caixa",
+    "confirmItemMenuArt": "a arte do menu",
+    "resolutionAll": "Todas",
+    "resolutionHigh": "Alta (1080p+)",
+    "resolutionMedium": "Média (720p)",
+    "resolutionLow": "Baixa (<720p)",
+    "sources": "Fontes",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Capítulos",
+    "audiobookBookmarks": "Marcadores",
+    "audiobookNotes": "Notas",
+    "audiobookQueue": "Fila",
+    "audiobookTimeline": "Linha do Tempo",
+    "audiobookTimelineEmpty": "A linha do tempo está vazia",
+    "audiobookWholeBook": "Livro Inteiro",
+    "audiobookFocusedTimeline": "Linha do Tempo Focada",
+    "audiobookExportBookmarks": "Exportar Marcadores",
+    "audiobookExportNotes": "Exportar Notas",
+    "audiobookExportAll": "Exportar Tudo",
+    "audiobookExportSuccess": "Exportado para {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Falha na exportação: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Letras",
+    "audiobookAddBookmark": "Adicionar marcador",
+    "audiobookAddNote": "Adicionar nota",
+    "audiobookEditNote": "Editar nota",
+    "audiobookNoteHint": "Escreva uma nota para este momento",
+    "audiobookSleepTimer": "Temporizador de sono",
+    "audiobookSleepOff": "Desligado",
+    "audiobookSleepEndOfChapter": "Fim do capítulo",
+    "audiobookSleepCustom": "Personalizado",
+    "audiobookSleepRemaining": "{remaining} restantes",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Velocidade de reprodução",
+    "audiobookRemainingTime": "Restante",
+    "audiobookElapsedTime": "Decorrido",
+    "audiobookSkipBackSeconds": "Voltar {seconds}s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Avançar {seconds}s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Capítulo anterior",
+    "audiobookNextChapter": "Próximo capítulo",
+    "audiobookChapterIndicator": "Capítulo {current} de {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Nenhum capítulo",
+    "audiobookNoBookmarks": "Nenhum marcador ainda",
+    "audiobookNoNotes": "Nenhuma nota ainda",
+    "audiobookBookmarkAdded": "Marcador adicionado em {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Redefinir para 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Salvar",
+    "audiobookCancel": "Cancelar",
+    "audiobookDelete": "Excluir",
+    "subtitlePreferences": "Preferências de Legendas",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Altere os modos de legendas, os idiomas padrão, a aparência e as opções de renderização.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Renderização de Legendas",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Opções de Exibição",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Data de Lançamento (Crescente)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Data de Lançamento (Decrescente)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Agrupar Contribuições",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Agrupar múltiplos papéis",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Aviso de Acesso de Escrita à Biblioteca",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Como corrigir:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Conceda permissões de escrita ao usuário do serviço Jellyfin (por exemplo, jellyfin ou PUID/PGID do Docker) para as pastas da sua biblioteca de mídia no servidor.\n\n2. Ou vá ao Painel do Jellyfin -> Bibliotecas, edite esta biblioteca e desative 'Salvar imagens nas pastas de mídia' para armazenar as imagens no banco de dados interno do Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Dispensar",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "A sua biblioteca '{libraryName}' está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). No entanto, o Jellyfin testou o acesso de escrita e não tem permissão para gravar arquivos neste diretório:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Parece que o Jellyfin não conseguiu atualizar as imagens. A sua biblioteca está configurada para salvar as imagens diretamente nas pastas de mídia (a opção 'Salvar imagens nas pastas de mídia' está ativada). Este erro geralmente ocorre quando o processo do servidor Jellyfin não tem permissão para gravar arquivos nos seus diretórios de mídia.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Listas Externas",
+    "replay": "Reproduzir Novamente",
+    "fileInformation": "Informações do Arquivo",
+    "fileSizeFormat": "Tamanho: {size}  •  Formato: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Mostrar Todas as ({count}) Faixas de Áudio",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Mostrar Todas as ({count}) Faixas de Legendas",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Verificando a capacidade de Reprodução Direta...",
+    "directPlayCapabilityLabel": "Capacidade de Reprodução Direta: ",
+    "forced": "Forçada",
+    "transcodeContainerNotSupported": "O formato do contêiner não é suportado pelo reprodutor.",
+    "transcodeVideoCodecNotSupported": "O codec de vídeo não é suportado.",
+    "transcodeAudioCodecNotSupported": "O codec de áudio não é suportado.",
+    "transcodeSubtitleCodecNotSupported": "O formato de legendas não é suportado (requer incorporação).",
+    "transcodeAudioProfileNotSupported": "O perfil de áudio não é suportado.",
+    "transcodeVideoProfileNotSupported": "O perfil de vídeo não é suportado.",
+    "transcodeVideoLevelNotSupported": "O nível de vídeo não é suportado.",
+    "transcodeVideoResolutionNotSupported": "A resolução do vídeo não é suportada por este dispositivo.",
+    "transcodeVideoBitDepthNotSupported": "A profundidade de bits do vídeo não é suportada.",
+    "transcodeVideoFramerateNotSupported": "A taxa de quadros do vídeo não é suportada.",
+    "transcodeContainerBitrateExceedsLimit": "A taxa de bits do arquivo excede o limite de streaming do reprodutor.",
+    "transcodeVideoBitrateExceedsLimit": "A taxa de bits do vídeo excede o limite de streaming.",
+    "transcodeAudioBitrateExceedsLimit": "A taxa de bits do áudio excede o limite de streaming.",
+    "transcodeAudioChannelsNotSupported": "O número de canais de áudio não é suportado.",
+    "sortAlphabetical": "Alfabética",
+    "sortReleaseAscending": "Ordem de Lançamento (Crescente)",
+    "sortReleaseDescending": "Ordem de Lançamento (Decrescente)",
+    "sortCustomDragDrop": "Personalizada (Arrastar e Soltar)",
+    "playlistSortOptions": "Opções de Ordenação da Lista de Reprodução",
+    "resetSort": "Redefinir Ordenação",
+    "rewatchSeasonEpisode": "Rever T{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Rever Lista de Reprodução",
+    "noSubtitlesFound": "Nenhuma legenda encontrada.",
+    "adminControls": "Controles de Administrador",
+    "impellerRendering": "Mecanismo de renderização (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "O Impeller é o renderizador de GPU moderno do Flutter, para animações mais suaves e menos travamentos. Em alguns TV boxes e GPUs antigas, pode causar falhas gráficas ou vídeo preto; desative-o se notar isso. Automático escolhe o melhor padrão para o seu dispositivo. Reinicie o Moonfin para aplicar.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automático",
+    "impellerOn": "Ligado",
+    "impellerOff": "Desligado",
+    "impellerRestartTitle": "Reinicialização necessária",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "O Moonfin precisa reiniciar para alterar o mecanismo de renderização. Feche o aplicativo agora e reabra-o para aplicar.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Fechar o aplicativo agora",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Atualizar Biblioteca",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Atualizar Todas as Bibliotecas",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Data de Adição (Mais Antigas Primeiro)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Data de Adição (Mais Recentes Primeiro)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alfabética (A a Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Alfabética (Z a A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Carregando as Análises do Servidor... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Igual à origem",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Top 250 Filmes",
+    "imdbTop250TvShows": "IMDb Top 250 Séries",
+    "imdbMostPopularMovies": "Filmes Mais Populares do IMDb",
+    "imdbMostPopularTvShows": "Séries Mais Populares do IMDb",
+    "imdbLowestRatedMovies": "Filmes com Pior Avaliação do IMDb",
+    "imdbTopEnglishMovies": "Filmes em Inglês Mais Bem Avaliados do IMDb"
 }

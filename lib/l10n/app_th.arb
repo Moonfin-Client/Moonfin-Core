@@ -1,6 +1,6 @@
 {
     "@@locale": "th",
-    "appTitle": "มูนฟิน",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "เชื่อมต่อด่วน",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "กลับ",
+    "back": "ย้อนกลับ",
     "@back": {
         "description": "Back button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "การเชื่อมต่อด่วนไม่พร้อมใช้งาน: {detail}",
+    "quickConnectUnavailable": "QuickConnect ใช้งานไม่ได้: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "การเชื่อมต่อด่วนไม่พร้อมใช้งาน ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect ใช้งานไม่ได้ ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "ลบ",
+    "remove": "นำออก",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "มูนฟิน",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -277,7 +277,7 @@
     "@guide": {
         "description": "Live TV guide button label"
     },
-    "recordings": "การบันทึก",
+    "recordings": "รายการบันทึก",
     "@recordings": {
         "description": "Live TV recordings button label"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "ชุด",
+    "series": "ซีรีส์",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "บ้าน",
+    "home": "หน้าแรก",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "ห้องสมุด",
+    "library": "ไลบรารี",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "นำมาใช้",
+    "apply": "นำไปใช้",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "ประวัติย่อ",
+    "resume": "อ่านต่อ",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -678,7 +678,7 @@
             }
         }
     },
-    "genresCount": "{count} genres",
+    "genresCount": "{count} แนว",
     "@genresCount": {
         "description": "Metric pill showing genre count",
         "placeholders": {
@@ -721,7 +721,7 @@
             }
         }
     },
-    "titles": "ชื่อเรื่อง",
+    "titles": "เรื่อง",
     "@titles": {
         "description": "Stat card label for total titles"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "ไม่ได้ดู",
+    "unwatched": "ยังไม่ได้ดู",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{หนังสือเสียง 1 เล่ม} other{หนังสือเสียง {count} เล่ม}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "ฤดูกาล",
+    "seasons": "ซีซั่น",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 ซีซัน} other{{count} ซีซัน}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "หล่อ",
+    "cast": "แคสต์",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "นักเขียน",
+    "writers": "ผู้เขียนบท",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 แทร็ก} other{{count} แทร็ก}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 บท} other{{count} บท}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "สับเปลี่ยน",
+    "shuffle": "สุ่มเล่น",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} ช่อง",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "ผู้เล่น",
+    "player": "ตัวเล่น",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "ติดตาม",
+    "track": "แทร็ก",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "ดู",
+    "watch": "รับชม",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "เลขที่",
+    "no": "ไม่",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2388,7 +2388,7 @@
             }
         }
     },
-    "season": "ฤดูกาล",
+    "season": "ซีซั่น",
     "@season": {
         "description": "Fallback name for a season"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 ตอน} other{{count} ตอน}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "พิการ",
+    "disabled": "ปิดใช้งาน",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -2972,7 +2972,7 @@
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
-    "trueHdSupport": "รองรับ True HD",
+    "trueHdSupport": "รองรับ TrueHD",
     "@trueHdSupport": {
         "description": "Setting for TrueHD support"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} วิ",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "มูนฟิน",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "ผู้ใช้เฉพาะ",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "ตรวจสอบสิทธิ์เสมอ",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3875,11 +3871,11 @@
     "@rottenTomatoesAudience": {
         "description": "Rating source: Rotten Tomatoes Audience"
     },
-    "imdb": "ไอเอ็มดีบี",
+    "imdb": "IMDb",
     "@imdb": {
         "description": "Rating source: IMDb"
     },
-    "tmdb": "ทีเอ็มดีบี",
+    "tmdb": "TMDB",
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "แทรคท์",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "ปลั๊กอิน",
+    "pluginLabel": "ปลั๊กอิน Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "ค้นพบแถว",
+    "discoverRows": "หน้าสำรวจของ Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "ลากเพื่อเรียงลำดับใหม่ เปิดหรือปิดการใช้งานแถว เปิดใช้งานการซิงค์ลำดับแถวกับปลั๊กอิน Moonfin",
+    "discoverRowsDescriptionPlugin": "เปิดแถวที่ต้องการแสดงบนหน้าหลักของ Seerr ลากเพื่อจัดลำดับ ลำดับที่กำหนดเองจะซิงค์กับ Moonbase",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "ลากเพื่อเรียงลำดับใหม่ เปิดหรือปิดการใช้งานแถว",
+    "discoverRowsDescription": "เปิดแถวที่ต้องการแสดงบนหน้าหลักของ Seerr ลากเพื่อจัดลำดับ ลำดับที่กำหนดเองจะซิงค์กับ Moonbase",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "เปิดใช้งานแล้ว",
+    "enabled": "เปิดใช้งาน",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "ชัดเจน",
+    "clear": "ล้าง",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "การตั้งค่าเซียร์",
+    "seerrSettings": "การตั้งค่า Seerr",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "การปรากฏตัว",
+    "appearances": "ผลงานการแสดง",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "ฤดูกาล",
+    "seasonsLabel": "ซีซั่น",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4528,11 +4524,11 @@
     "copy": "สำเนา",
     "create": "สร้าง",
     "disable": "ปิดการใช้งาน",
-    "done": "เสร็จแล้ว",
+    "done": "เสร็จสิ้น",
     "edit": "แก้ไข",
     "encoding": "การเข้ารหัส",
     "error": "ข้อผิดพลาด",
-    "forward": "ซึ่งไปข้างหน้า",
+    "forward": "กรอไปข้างหน้า",
     "general": "ทั่วไป",
     "go": "ไป",
     "install": "ติดตั้ง",
@@ -4540,7 +4536,7 @@
     "interval": "ช่วงเวลา",
     "name": "ชื่อ",
     "networking": "เครือข่าย",
-    "next": "ต่อไป",
+    "next": "ถัดไป",
     "path": "เส้นทาง",
     "paused": "หยุดชั่วคราว",
     "permissions": "สิทธิ์",
@@ -4548,7 +4544,7 @@
     "profile": "ประวัติโดยย่อ",
     "provider": "ผู้ให้บริการ",
     "refresh": "รีเฟรช",
-    "remote": "ระยะไกล",
+    "remote": "รีโมต",
     "rename": "เปลี่ยนชื่อ",
     "revoke": "ถอน",
     "role": "บทบาท",
@@ -4563,7 +4559,7 @@
     "stop": "หยุด",
     "streaming": "สตรีมมิ่ง",
     "time": "เวลา",
-    "trickplay": "เล่นกล",
+    "trickplay": "Trickplay",
     "uninstall": "ถอนการติดตั้ง",
     "up": "ขึ้น",
     "update": "อัปเดต",
@@ -4576,11 +4572,11 @@
     "adminDrawerSettings": "การตั้งค่า",
     "adminDrawerBranding": "การสร้างแบรนด์",
     "adminDrawerUsers": "ผู้ใช้",
-    "adminDrawerLibraries": "ห้องสมุด",
+    "adminDrawerLibraries": "ไลบรารี",
     "adminDrawerTranscoding": "การแปลงรหัส",
-    "adminDrawerResume": "ประวัติย่อ",
+    "adminDrawerResume": "เล่นต่อ",
     "adminDrawerStreaming": "สตรีมมิ่ง",
-    "adminDrawerTrickplay": "เล่นกล",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "อุปกรณ์",
     "adminDrawerActivity": "กิจกรรม",
     "adminDrawerNetworking": "เครือข่าย",
@@ -4674,13 +4670,13 @@
     "adminSetVolume": "ตั้งระดับเสียง",
     "sessionPrev": "ก่อนหน้า",
     "sessionRewind": "กรอกลับ",
-    "sessionForward": "ซึ่งไปข้างหน้า",
-    "sessionNext": "ต่อไป",
+    "sessionForward": "กรอไปข้างหน้า",
+    "sessionNext": "ถัดไป",
     "sessionVolumeDown": "เล่ม –",
     "sessionVolumeUp": "เล่ม +",
     "uhd4k": "4เค",
     "nowPlaying": "กำลังเล่นอยู่",
-    "volume": "ปริมาณ",
+    "volume": "ระดับเสียง",
     "actions": "การดำเนินการ",
     "videoCodec": "ตัวแปลงสัญญาณวิดีโอ",
     "audioCodec": "ตัวแปลงสัญญาณเสียง",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "แบ่งกลุ่ม (วินาที)",
     "adminThrottleBuffering": "การบัฟเฟอร์คันเร่ง",
     "adminTrickplaySaved": "บันทึกการตั้งค่า Trickplay แล้ว",
-    "adminTrickplayLoadFailed": "ไม่สามารถโหลดการตั้งค่าการเล่นกล",
+    "adminTrickplayLoadFailed": "โหลดการตั้งค่า Trickplay ไม่สำเร็จ",
     "adminEnableHardwareAcceleration": "เปิดใช้งานการเร่งด้วยฮาร์ดแวร์",
     "adminEnableKeyFrameExtraction": "เปิดใช้งานการแยกคีย์เฟรมเท่านั้น",
     "adminKeyFrameSubtitle": "เร็วกว่าแต่ความแม่นยำต่ำกว่า",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "พอร์ต HTTPS",
     "adminPublicHttpsPort": "พอร์ต HTTPS สาธารณะ",
     "adminBaseUrl": "URL ฐาน",
-    "adminBaseUrlHint": "เช่น /เจลลี่ฟิน",
+    "adminBaseUrlHint": "เช่น /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "เปิดใช้งาน HTTPS",
     "adminLocalNetwork": "เครือข่ายท้องถิ่น",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "ค้นหาบุคคลระยะไกล",
     "adminNoRemoteMatches": "ไม่พบการแข่งขันระยะไกล",
     "adminRemoteResults": "ผลลัพธ์ระยะไกล",
     "adminRemoteMetadataApplied": "ใช้ข้อมูลเมตาระยะไกลแล้ว",
@@ -5523,7 +5518,7 @@
             }
         }
     },
-    "adminImageDeleteFailed": "Failed to delete image: {error}",
+    "adminImageDeleteFailed": "ลบรูปภาพไม่สำเร็จ: {error}",
     "@adminImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "เพิ่มจูนเนอร์",
     "adminTunerType": "ประเภทจูนเนอร์",
-    "adminTunerTypeHint": "HDHomeRun, M3U, อื่นๆ",
-    "adminUrlPath": "URL / เส้นทาง",
-    "adminNameOptional": "ชื่อ (ไม่บังคับ)",
     "adminTunerAdded": "เพิ่มจูนเนอร์แล้ว",
     "adminTunerAddFailed": "ไม่สามารถเพิ่มจูนเนอร์: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "เพิ่มผู้ให้บริการไกด์",
     "adminProviderType": "ประเภทผู้ให้บริการ",
-    "adminProviderTypeHint": "SchedulesDirect หรือ XMLTV",
-    "adminUsernameOptional": "ชื่อผู้ใช้ (ไม่บังคับ)",
-    "adminRefreshInterval": "ช่วงเวลารีเฟรช (ชั่วโมง)",
     "adminProviderAdded": "เพิ่มผู้ให้บริการแล้ว",
     "adminProviderAddFailed": "ไม่สามารถเพิ่มผู้ให้บริการ: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "ข้อมูลสำรองที่ไม่มีชื่อ",
     "adminLiveTvNotAvailable": "การดูแลระบบถ่ายทอดสดทางโทรทัศน์ไม่พร้อมใช้งานบนเซิร์ฟเวอร์รุ่นนี้",
     "adminLiveTvTitle": "การบริหารรายการถ่ายทอดสดทางโทรทัศน์",
-    "adminApply": "นำมาใช้",
+    "adminApply": "นำไปใช้",
     "adminNotSet": "ไม่ได้ตั้งค่า",
     "adminReset": "รีเซ็ต",
     "adminLogsTitle": "บันทึกเซิร์ฟเวอร์",
@@ -5729,12 +5718,11 @@
     },
     "adminLogViewerNoMatches": "ไม่มีบรรทัดที่ตรงกัน",
     "adminMetadataEditorTitle": "ตัวแก้ไขข้อมูลเมตา",
-    "adminMetadataRemote": "ระยะไกล",
     "adminMetadataType": "พิมพ์",
     "adminMetadataDetails": "รายละเอียด",
     "adminMetadataExternalIds": "รหัสภายนอก",
     "adminMetadataImages": "รูปภาพ",
-    "adminMetadataFieldTitle": "ชื่อ",
+    "adminMetadataFieldTitle": "ชื่อเรื่อง",
     "adminMetadataFieldSortTitle": "เรียงลำดับชื่อเรื่อง",
     "adminMetadataFieldOriginalTitle": "ชื่อเดิม",
     "adminMetadataFieldPremiereDate": "วันที่เข้าฉาย (ปปปป-ดด-วว)",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "ลบ",
+    "adminReposRemove": "นำออก",
     "adminReposSaveFailed": "ไม่สามารถบันทึกที่เก็บข้อมูล: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "ทุก ๆ 12 ชั่วโมง",
     "adminTaskTriggerEvery24Hours": "ทุก ๆ 24 ชั่วโมง",
     "adminTaskTriggerEvery2Days": "ทุก 2 วัน",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 ชั่วโมง} other{{count} ชั่วโมง}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "ตอนนี้",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} นาที",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} ชม.",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} วัน",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "กำหนดค่าการสร้างภาพเล่นกลเพื่อค้นหาภาพขนาดย่อตัวอย่าง",
+    "adminTrickplayDescription": "กำหนดค่าการสร้างรูปภาพ Trickplay สำหรับภาพตัวอย่างขณะเลื่อนหา",
     "adminNetworkingPublicHttpsPort": "พอร์ต HTTPS สาธารณะ",
     "adminNetworkingBaseUrl": "URL ฐาน",
-    "adminNetworkingBaseUrlHint": "เช่น /เจลลี่ฟิน",
+    "adminNetworkingBaseUrlHint": "เช่น /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "เส้นทางใบรับรอง",
     "adminNetworkingRemoteIpFilter": "ตัวกรอง IP ระยะไกล",
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "โฟลเดอร์",
-    "libraries": "ห้องสมุด",
+    "libraries": "ไลบรารี",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay ปิดการใช้งาน",
     "syncPlayDisabledMessage": "เปิดใช้งาน SyncPlay ในการตั้งค่าเพื่อใช้การเล่นแบบซิงโครไนซ์",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay ต้องใช้เซิร์ฟเวอร์ Jellyfin เซิร์ฟเวอร์ปัจจุบันไม่รองรับ",
     "syncPlayGroupFallbackName": "SyncPlay กลุ่ม",
     "syncPlayGroupTooltip": "SyncPlay กลุ่ม",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {ผู้เข้าร่วม # คน} other {ผู้เข้าร่วม # คน}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "จำตัวเลือกของฉันไว้",
     "playHdr10Fallback": "เล่นทางเลือก HDR10",
     "requestTranscode": "ขอแปลงรหัส",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {พบ # แถว} other {พบ # แถว}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "PIN ไม่ถูกต้อง",
     "pinMismatch": "PIN ไม่ตรงกัน",
     "pinForgot": "ลืมรหัส PIN?",
-    "pinClear": "ชัดเจน",
+    "pinClear": "ล้าง",
     "pinBackspace": "แบ็คสเปซ",
-    "quickConnectAuthorized": "อนุมัติคำขอเชื่อมต่อด่วนแล้ว",
+    "quickConnectAuthorized": "อนุมัติคำขอ Quick Connect แล้ว",
     "quickConnectInvalidOrExpired": "รหัส Quick Connect ไม่ถูกต้องหรือหมดอายุ",
-    "quickConnectNotSupported": "ไม่รองรับการเชื่อมต่อด่วนบนเซิร์ฟเวอร์นี้",
+    "quickConnectNotSupported": "เซิร์ฟเวอร์นี้ไม่รองรับ Quick Connect",
     "quickConnectAuthorizeFailed": "ไม่สามารถให้สิทธิ์รหัส Quick Connect",
     "quickConnectDisabled": "Quick Connect ถูกปิดใช้งานบนเซิร์ฟเวอร์นี้",
     "quickConnectForbidden": "บัญชีของคุณไม่สามารถอนุญาตคำขอ Quick Connect นี้",
-    "quickConnectNotFound": "ไม่พบรหัสการเชื่อมต่อด่วน ลองรหัสใหม่",
-    "quickConnectFailedWithMessage": "การเชื่อมต่อด่วนล้มเหลว: {message}",
+    "quickConnectNotFound": "ไม่พบรหัส Quick Connect ลองใช้รหัสใหม่",
+    "quickConnectFailedWithMessage": "Quick Connect ล้มเหลว: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "สับเปลี่ยนโดย",
     "shuffleSelectLibrary": "เลือกห้องสมุด",
     "shuffleSelectGenre": "เลือกประเภท",
-    "shuffleLibrary": "ห้องสมุด",
+    "shuffleLibrary": "ไลบรารี",
     "shuffleGenre": "ประเภท",
     "shuffleNoLibraries": "ไม่มีไลบรารีที่เข้ากันได้",
     "shuffleNoGenres": "ไม่พบแนวเพลงสำหรับโหมดสุ่มนี้",
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "ตรวจสอบการอัปเดต",
     "settingsCheckForUpdatesSubtitle": "ตรวจสอบ Moonfin รุ่นล่าสุด",
     "settingsPoweredByFlutter": "ขับเคลื่อนโดยกระพือ",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {ประกาศลิขสิทธิ์ # รายการ} other {ประกาศลิขสิทธิ์ # รายการ}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "บันทึก",
+    "record": "บันทึกรายการ",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "ตัวแปลงสัญญาณสำรองเสียง",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "เอเอซี สเตอริโอ",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "ส่งผ่าน (ขั้นสูง)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "PCM {count} ช่อง",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7095,7 +7071,7 @@
     "genresRowSortingDescription": "จัดเรียงแถวประเภทตามวันที่เพิ่ม วันที่วางจำหน่าย ตามลำดับตัวอักษร และอื่นๆ",
     "genresRowItems": "รายการแถวประเภท",
     "genresRowItemsDescription": "แสดงภาพยนตร์ ซีรีส์ หรือทั้งสองอย่างในแถวประเภท",
-    "appearance": "รูปร่าง",
+    "appearance": "รูปลักษณ์",
     "cardSize": "ขนาดการ์ด",
     "externalPlayerApp": "แอพเครื่องเล่นภายนอก",
     "externalPlayerAskEachTimeSubtitle": "แสดงตัวเลือกแอปเมื่อเริ่มเล่น",
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "เปิดตัวเลือกเส้นทาง iOS",
     "airPlayRoutePickerUnavailable": "AirPlay ตัวเลือกเส้นทางไม่พร้อมใช้งานบนอุปกรณ์นี้",
     "videos": "วิดีโอ",
-    "trailers": "รถพ่วง",
+    "trailers": "ตัวอย่าง",
     "programs": "โปรแกรม",
     "songs": "เพลง",
     "photoAlbums": "อัลบั้มภาพ",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "ตอนที่ออกล่าสุด",
     "watchAgain": "ดูอีกครั้ง",
     "guestAppearances": "การปรากฏตัวของแขก",
-    "appearancesSeerr": "การปรากฏตัว (เซียร์)",
+    "appearancesSeerr": "การปรากฏตัว (Seerr)",
     "watchWithGroup": "ดูกับกลุ่ม.",
     "errors": "ข้อผิดพลาด",
     "warnings": "คำเตือน",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "ศิลปินยอดนิยม",
     "analyticsTopAuthors": "ผู้เขียนยอดนิยม",
     "analyticsTopContributors": "ผู้ร่วมให้ข้อมูลดีเด่น",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 คลังสื่อ} other{{count} คลังสื่อ}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "เนื้อหาผสม",
     "homeVideosAndPhotos": "หน้าแรก วิดีโอและภาพถ่าย",
     "mixedMoviesAndShows": "ภาพยนตร์และรายการผสม",
-    "intelQuickSync": "Intel ซิงค์ด่วน",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "ร็อคชิป เอ็มพีพี",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "ไม่พบการบันทึก",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "ปลั๊กอินการแยก CB7 ไม่พร้อมใช้งานบนแพลตฟอร์มนี้",
     "closeGenrePanel": "ปิดแผงประเภท",
     "loadingShuffle": "กำลังโหลดแบบสุ่ม...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "สุ่มจากคลังสื่อ",
+    "randomShuffleLabel": "สุ่มทั้งหมด",
+    "genresShuffleLabel": "สุ่มตามแนว",
     "autoHdrSwitching": "การสลับ HDR อัตโนมัติ",
     "autoHdrSwitchingDescription": "เปิดใช้งาน HDR โดยอัตโนมัติสำหรับการเล่นวิดีโอ HDR และคืนค่าโหมดการแสดงผลเมื่อออก",
     "whenFullscreen": "เมื่อเปิดเต็มจอ",
     "transcodingLimits": "ขีดจำกัดการแปลงรหัส",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "เลี้ยงกาแฟให้นักพัฒนา",
+    "accountPreferences": "การตั้งค่าบัญชี",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "ภาษาของอินเทอร์เฟซ",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "ค่าเริ่มต้นของระบบ",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "ว่างเปล่า",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "สไตล์หน้ารายละเอียด",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "คลาสสิกคือเลย์เอาต์ Moonfin ดั้งเดิมที่จัดกึ่งกลาง โมเดิร์นคือเลย์เอาต์แนวภาพยนตร์ที่ปรับตามขนาดหน้าจอ",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "คลาสสิก",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "โมเดิร์น",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "แท็บแบบขยาย",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "แสดงเนื้อหาของแท็บโดยอัตโนมัติขณะเลื่อนดูแท็บ ปิดเพื่อเปิดและปิดแต่ละแท็บด้วยตนเอง",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "แสดงรายละเอียดทางเทคนิคหรือไม่?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "แสดงข้อมูลตัวแปลงสัญญาณ ความละเอียด และสตรีมในสรุปแบนเนอร์",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "ระบบแนะนำ",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "ใช้อัลกอริทึม Moonfin แนะนำ ที่ทำงานกับคลังสื่อในเครื่อง หรือใช้ค่าความคล้ายคลึงออนไลน์ของ TMDb หมายเหตุ: การแนะนำแบบออนไลน์ต้องเชื่อมต่อกับ Seerr",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin แนะนำ",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "ความคล้ายคลึงจาก TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "จำกัดตามเรตผู้ปกครองหรือไม่?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "จำกัดคำแนะนำของ Moonfin แนะนำ ตามเรตผู้ปกครองของสื่อเป้าหมาย",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "สไตล์อินเทอร์เฟซ",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "อัตโนมัติจะปรับตามอุปกรณ์ของคุณ เลือก Apple หรือ Material เพื่อกำหนดรูปลักษณ์เอง",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "อัตโนมัติ",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "คุณภาพกระจก",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "อัตโนมัติจะเลือกเอฟเฟกต์กระจกที่ดีที่สุดสำหรับอุปกรณ์นี้ เต็มรูปแบบจะบังคับใช้การเบลอจริง ส่วนลดทอนจะใช้กระจกแบบเบาที่ช่วยประหยัดพลังงาน GPU",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "อัตโนมัติ",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "เต็มรูปแบบ",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "ลดทอน",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "ธีมกำหนดเอง",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "ธีมกำหนดเองจะเปลี่ยนองค์ประกอบภาพทั่วทั้ง Moonfin เลือกหนึ่งตัวเลือกให้เข้ากับสไตล์ของคุณ",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "กระจก",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "สไตล์กระจกเหลว พร้อมพื้นหลังไล่เฉดที่ค่อยๆ เคลื่อน พื้นผิวฝ้า และสีเน้นฟ้าแบบ Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "ฮีโร่ 8-bit",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "สไตล์พิกเซลอาร์ตย้อนยุค พร้อมชุดสีหนา ขอบทึบเป็นบล็อก เงาตกกระทบคมชัด และฟอนต์พิกเซล",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "เมนู",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "หยุดชั่วคราว",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "บันทึกสถานะ",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "เกม",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "โหลดสถานะ",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "เดินหน้าเร็ว",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "การตั้งค่าอีมูเลเตอร์",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "คอร์นี้ไม่มีตัวเลือกที่ปรับได้",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "กดค้างเพื่อเปิดเมนู",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "อุปกรณ์นี้ยังไม่รองรับการเล่นเกม",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "หนังสือล่าสุด",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "หนังสือเสียงล่าสุด",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 เล่ม} other{{count} เล่ม}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "หนังสือ",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "หนังสือเสียง",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "อ่านแล้ว {percent}%",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "เหลือ {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "อ่าน",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "ฟัง",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "รายการ",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "ส่วนเสริม",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "เบื้องหลังการถ่ายทำ",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "ฉากที่ถูกตัดออก",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "สารคดีสั้น",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "บทสัมภาษณ์",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "ฉาก",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "หนังสั้น",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "เหลืออีก {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "จบใน {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "ผู้กำกับ",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "ผู้เขียนบท",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "สุ่มเล่นเพลงทั้งหมด",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "ลงชื่อเข้าใช้ Moonfin บนโทรศัพท์ของคุณ",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "เชื่อมต่อเซิร์ฟเวอร์ของคุณไม่ได้",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "ถัดไป: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "เหลือ {minutes} นาที",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "เหลือ {hours} ชม.",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "เหลือ {hours} ชม. {minutes} นาที",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "หน้ารายละเอียด แถวหน้าแรก และระดับเสียง",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "เล่นเพลงประจำเรื่องวนซ้ำ",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "เล่นแทร็กซ้ำแทนการเล่นเพียงครั้งเดียว",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "ล้อเลื่อนเมาส์",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "เลือกการทำงานเมื่อเลื่อนล้อเมาส์เหนือวิดีโอระหว่างการเล่น",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "ปิด",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "เลื่อนหา (ไปหน้า / ย้อนกลับ)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "ระดับเสียง",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "ระดับเสียง",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "ภาษาเสียงสำรอง",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "ใช้แทร็กเสียงเริ่มต้นก่อน",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "ใช้แทร็กเสียงต้นฉบับแทนเสียงพากย์",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "ใช้แทร็กเสียงบรรยายภาพก่อน",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "ใช้แทร็กเสียงบรรยายภาพแทนแทร็กปกติ",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "แปลงสัญญาณ (เสียง)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "สตรีมโดยตรง (รีมักซ์)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "แปลงสัญญาณ (บิตเรตหรือความละเอียด)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "แปลงสัญญาณ (วิดีโอและเสียง)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "แปลงสัญญาณ (วิดีโอ)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "เลือกวิธีถอดรหัสเสียง AVR Passthrough จะส่งสตรีม Dolby/DTS ดิบไปยังเครื่องรับของคุณ ส่วนอัตโนมัติหรือดาวน์มิกซ์จะถอดรหัสในเครื่อง",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "เลือกรูปแบบปลายทางสำหรับแปลงเสียงหลายช่องสัญญาณ เมื่อสตรีมต้นทางไม่สามารถเล่นโดยตรงหรือส่งผ่านได้",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "ตรวจหาอัตโนมัติ\n(แนะนำ)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(ค่าเริ่มต้น)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(ไม่สูญเสียคุณภาพ)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(สเตอริโอเท่านั้น)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(ประหยัดพื้นที่)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(ไม่สูญเสียคุณภาพ)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "ช่องสัญญาณเสียงสูงสุด",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "กำหนดจำนวนช่องสัญญาณสูงสุดของชุดเครื่องเสียงของคุณ สตรีมหลายช่องสัญญาณที่เกินขีดจำกัดนี้จะถูกดาวน์มิกซ์หรือแปลงสัญญาณ",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "ตรวจหาอัตโนมัติ\n(ค่าเริ่มต้นของฮาร์ดแวร์)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 โมโน",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 สเตอริโอ",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 เซอร์ราวด์",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 ควอดราโฟนิก",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 เซอร์ราวด์",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 เซอร์ราวด์",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 เซอร์ราวด์",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 เซอร์ราวด์",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "หูฟัง",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "โหมดคำบรรยาย",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "ตามการกำกับ",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "เสมอ",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "ภาษาต่างประเทศ",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "บังคับ",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "เล่นแทร็กที่ถูกกำกับไว้ในข้อมูลเมตาของไฟล์สื่อว่าเป็น \"default\" หรือ \"forced\"",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "โหลดและแสดงคำบรรยายโดยอัตโนมัติทุกครั้งที่เริ่มเล่นวิดีโอ",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "เปิดคำบรรยายโดยอัตโนมัติหากแทร็กเสียงเริ่มต้นเป็นภาษาต่างประเทศ",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "โหลดเฉพาะคำบรรยายที่ถูกกำกับด้วยแฟล็ก forced เท่านั้น",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "ปิดการโหลดคำบรรยายอัตโนมัติทั้งหมด",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "ภาษาคำบรรยายสำรอง",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "สตรีมคำบรรยาย",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "แสดงการดาวน์โหลดบนเซิร์ฟเวอร์",
+    "reportDownloadsActivitySubtitle": "อนุญาตให้ผู้ดูแลเซิร์ฟเวอร์เห็นการดาวน์โหลดที่แปลงสัญญาณของคุณในแดชบอร์ด",
+    "navbarAlwaysExpanded": "แสดงชื่อเมนูบนแถบนำทางเสมอ",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "แสดงปุ่ม Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "จัดกลุ่มรายการเป็นคอลเลกชัน",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "ซ่อนรายการในคลังที่อยู่ในคอลเลกชันขณะเรียกดูคลังสื่อ",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "ประกาศเกี่ยวกับการจัดกลุ่มคลังสื่อ",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "หากต้องการใช้การตั้งค่านี้ โปรดตรวจสอบว่าได้เปิดการตั้งค่าคลังสื่อ \"Group movies into collections\" และ/หรือ \"Group shows into collections\" ในการตั้งค่าการแสดงผลของคลังสื่อบนเซิร์ฟเวอร์ Jellyfin หรือ Emby ของคุณแล้ว",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "เสียงตัวอย่าง",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "เปิดเสียงสำหรับตัวอย่างในแถบสื่อ",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "แถวหน้าแรกแบบขยาย",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "จำกัดแถวหน้าแรกให้เหลือ 1 แถวต่อหน้าจอ",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "ผู้ใช้ปัจจุบัน",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "อยู่กับที่",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "เคลื่อนไปมา",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "แถวสำรวจของ Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "การแจ้งเตือน",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "แจ้งเตือนคำขอใหม่",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "แจ้งเตือนฉันเมื่อมีคนส่งคำขอ",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "อัปเดตคำขอ",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "อนุมัติ ปฏิเสธ และเพิ่มลงคลังสื่อของคุณ",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "อัปเดตปัญหา",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "ปัญหาใหม่ การตอบกลับ และการแก้ไข",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "ขีดจำกัดแคชรูปภาพ",
+    "clearImageCache": "ล้างแคชรูปภาพ",
+    "imageCacheCleared": "ล้างแคชรูปภาพแล้ว",
+    "seerrDownloadingPercent": "กำลังดาวน์โหลด · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "กำลังนำเข้า",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "ล้มเหลว",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "กำลังดำเนินการ",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "แก้ไขโดย {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "เสร็จสิ้น",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "มีการขอเรื่องนี้ไปแล้ว",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "ใช้สิทธิ์การขอครบแล้ว",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "เรื่องนี้อยู่ในรายการที่ถูกบล็อก",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "ไม่มีซีซันที่ขอได้เหลืออยู่",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "คุณไม่มีสิทธิ์ส่งคำขอนี้",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "คำขอ",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "ปัญหา",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "ใหม่ที่สุด",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "แก้ไขล่าสุด",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "ไม่มีปัญหา",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "เหลือสิทธิ์ขอภาพยนตร์ {remaining} จาก {limit} ครั้ง",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "เหลือสิทธิ์ขอซีซัน {remaining} จาก {limit} ครั้ง",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "อยู่ในชุด {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "ดูคอลเลกชัน",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "ขอทั้งคอลเลกชัน",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "ภาพยนตร์ {total} เรื่อง · พร้อมดู {available} เรื่อง",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "ขอภาพยนตร์ {count} เรื่อง",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "กำลังส่งคำขอ {current} จาก {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "ขอภาพยนตร์แล้ว {count} เรื่อง",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "ขอภาพยนตร์แล้ว {ok} จาก {total} เรื่อง",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "ภาพยนตร์ทั้งหมดพร้อมดูหรือถูกขอไปแล้ว",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "รายงานปัญหา",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "วิดีโอ",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "เสียง",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "เกิดปัญหาอะไรขึ้น?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "ทุกตอน",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "ตอน",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "เปิดอยู่",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "แก้ไขแล้ว",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "ปิดปัญหา",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "เปิดปัญหาใหม่",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "รายงานโดย {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} ความคิดเห็น",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "เพิ่มความคิดเห็น",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "ลบปัญหานี้หรือไม่?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "ส่งรายงาน",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "การแสดงผล",
+    "adminDrawerMetadata": "ข้อมูลเมตา",
+    "adminDrawerNfo": "การตั้งค่า NFO",
+    "adminActivitySeverityAll": "ทุกระดับความรุนแรง",
+    "adminActivityDateRange": "ช่วงวันที่",
+    "adminRemoveDeviceConfirm": "นำอุปกรณ์ '{name}' ออกหรือไม่? ผู้ใช้จะต้องลงชื่อเข้าใช้บนอุปกรณ์นี้อีกครั้ง",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "ลบอุปกรณ์ทั้งหมด",
+    "adminDeleteAllDevicesConfirm": "นำอุปกรณ์ {count} เครื่องออกหรือไม่? ผู้ใช้ที่ได้รับผลกระทบจะต้องลงชื่อเข้าใช้อีกครั้ง อุปกรณ์ปัจจุบันของคุณจะไม่ได้รับผลกระทบ",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "นำอุปกรณ์ออกแล้ว",
+    "adminDevicesDeletedPartial": "นำอุปกรณ์ออกบางส่วนแล้ว มี {count} เครื่องที่นำออกไม่ได้",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "เส้นทาง",
+    "adminLibraryTabOptions": "ตัวเลือก",
+    "adminLibraryTabDownloaders": "ตัวดาวน์โหลด",
+    "adminLibMetadataSavers": "ตัวบันทึกข้อมูลเมตา",
+    "adminLibSubtitleDownloaders": "ตัวดาวน์โหลดคำบรรยาย",
+    "adminLibLyricDownloaders": "ตัวดาวน์โหลดเนื้อเพลง",
+    "adminLibMetadataDownloadersFor": "ตัวดาวน์โหลดข้อมูลเมตา: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "ตัวดึงรูปภาพ: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "เซิร์ฟเวอร์นี้ไม่มีตัวดาวน์โหลดสำหรับคลังสื่อประเภทนี้",
+    "adminLibrarySectionGeneral": "ทั่วไป",
+    "adminLibrarySectionMetadata": "ข้อมูลเมตา",
+    "adminLibrarySectionEmbedded": "ข้อมูลที่ฝังในไฟล์",
+    "adminLibrarySectionSubtitles": "คำบรรยาย",
+    "adminLibrarySectionImages": "รูปภาพ",
+    "adminLibrarySectionSeries": "ซีรีส์",
+    "adminLibrarySectionMusic": "เพลง",
+    "adminLibrarySectionMovies": "ภาพยนตร์",
+    "adminLibRealtimeMonitor": "เปิดการตรวจสอบแบบเรียลไทม์",
+    "adminLibRealtimeMonitorHint": "ตรวจจับการเปลี่ยนแปลงของไฟล์และประมวลผลโดยอัตโนมัติ",
+    "adminLibArchiveMediaFiles": "ถือว่าไฟล์บีบอัดเป็นไฟล์สื่อ",
+    "adminLibEnablePhotos": "แสดงรูปภาพ",
+    "adminLibSaveLocalMetadata": "บันทึกภาพปกลงในโฟลเดอร์สื่อ",
+    "adminLibRefreshInterval": "รีเฟรชข้อมูลเมตาอัตโนมัติ",
+    "adminLibRefreshNever": "ไม่เลย",
+    "adminLibDefault": "ค่าเริ่มต้น",
+    "adminLibDisplayTitle": "การแสดงผล",
+    "adminLibDisplaySection": "การแสดงผลคลังสื่อ",
+    "adminLibFolderView": "แสดงมุมมองโฟลเดอร์เพื่อดูโฟลเดอร์สื่อแบบธรรมดา",
+    "adminLibSpecialsInSeasons": "แสดงตอนพิเศษในซีซันที่ออกอากาศ",
+    "adminLibGroupMovies": "จัดกลุ่มภาพยนตร์เป็นคอลเลกชัน",
+    "adminLibGroupShows": "จัดกลุ่มรายการเป็นคอลเลกชัน",
+    "adminLibExternalSuggestions": "แสดงเนื้อหาภายนอกในรายการแนะนำ",
+    "adminLibDateAddedSection": "การกำหนดวันที่เพิ่ม",
+    "adminLibDateAddedLabel": "ใช้วันที่เพิ่มจาก",
+    "adminLibDateAddedImport": "วันที่สแกนเข้าคลังสื่อ",
+    "adminLibDateAddedFile": "วันที่สร้างไฟล์",
+    "adminLibMetadataTitle": "ข้อมูลเมตาและรูปภาพ",
+    "adminLibMetadataLangSection": "ภาษาของข้อมูลเมตาที่ต้องการ",
+    "adminLibChaptersSection": "บท",
+    "adminLibDummyChapterDuration": "ความยาวบทจำลอง (วินาที)",
+    "adminLibDummyChapterDurationHint": "ความยาวของบทที่สร้างขึ้นสำหรับสื่อที่ไม่มีบท ตั้งเป็น 0 เพื่อปิดใช้งาน",
+    "adminLibChapterImageResolution": "ความละเอียดรูปภาพของบท",
+    "adminLibNfoTitle": "การตั้งค่า NFO",
+    "adminLibNfoHelp": "ข้อมูลเมตา NFO ใช้ได้กับ Kodi และไคลเอ็นต์ที่คล้ายกัน การตั้งค่านี้มีผลกับทุกคลังสื่อที่บันทึกข้อมูลเมตา NFO",
+    "adminLibKodiUser": "ผู้ใช้ที่จะบันทึกข้อมูลการรับชมลงในไฟล์ NFO",
+    "adminLibSaveImagePaths": "บันทึกเส้นทางรูปภาพในไฟล์ NFO",
+    "adminLibPathSubstitution": "เปิดการแทนที่เส้นทางสำหรับเส้นทางรูปภาพใน NFO",
+    "adminLibExtraThumbs": "คัดลอกรูป extrafanart ไปยังโฟลเดอร์ extrathumbs",
+    "adminLibNone": "ไม่มี",
+    "adminLibRefreshDays": "{days} วัน",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "ใช้ชื่อเรื่องที่ฝังในไฟล์",
+    "adminLibEmbeddedExtrasTitles": "ใช้ชื่อเรื่องที่ฝังในไฟล์สำหรับส่วนเสริม",
+    "adminLibEmbeddedEpisodeInfos": "ใช้ข้อมูลตอนที่ฝังในไฟล์",
+    "adminLibAllowEmbeddedSubtitles": "อนุญาตคำบรรยายที่ฝังในไฟล์",
+    "adminLibEmbeddedAllowAll": "อนุญาตทั้งหมด",
+    "adminLibEmbeddedAllowText": "ข้อความเท่านั้น",
+    "adminLibEmbeddedAllowImage": "รูปภาพเท่านั้น",
+    "adminLibEmbeddedAllowNone": "ไม่มี",
+    "adminLibSkipIfEmbeddedSubs": "ข้ามการดาวน์โหลดหากมีคำบรรยายฝังอยู่ในไฟล์แล้ว",
+    "adminLibSkipIfAudioMatches": "ข้ามการดาวน์โหลดหากแทร็กเสียงตรงกับภาษาที่ดาวน์โหลด",
+    "adminLibRequirePerfectMatch": "ต้องการคำบรรยายที่ตรงกันทุกประการ",
+    "adminLibSaveSubtitlesWithMedia": "บันทึกคำบรรยายลงในโฟลเดอร์สื่อ",
+    "adminLibChapterImageExtraction": "ดึงรูปภาพของบท",
+    "adminLibChapterImagesDuringScan": "ดึงรูปภาพของบทระหว่างการสแกนคลังสื่อ",
+    "adminLibTrickplayExtraction": "เปิดการดึงรูปภาพ Trickplay",
+    "adminLibTrickplayDuringScan": "ดึงรูปภาพ Trickplay ระหว่างการสแกนคลังสื่อ",
+    "adminLibSaveTrickplayWithMedia": "บันทึกรูปภาพ Trickplay ลงในโฟลเดอร์สื่อ",
+    "adminLibAutomaticSeriesGrouping": "รวมซีรีส์ที่กระจายอยู่หลายโฟลเดอร์โดยอัตโนมัติ",
+    "adminLibSeasonZeroName": "ชื่อที่แสดงของซีซัน 0",
+    "adminLibLufsScan": "เปิดการสแกน LUFS เพื่อปรับระดับเสียงให้สม่ำเสมอ",
+    "adminLibPreferNonstandardArtist": "ใช้แท็กศิลปินแบบไม่มาตรฐานก่อน",
+    "adminLibAutoAddToCollection": "เพิ่มภาพยนตร์ลงคอลเลกชันโดยอัตโนมัติ",
+    "adminParentalControl": "การควบคุมโดยผู้ปกครอง",
+    "adminMaxParentalRating": "เรตผู้ปกครองสูงสุดที่อนุญาต",
+    "adminMaxParentalRatingHint": "เนื้อหาที่มีเรตสูงกว่านี้จะถูกซ่อนจากผู้ใช้รายนี้",
+    "adminParentalRatingNone": "ไม่มี",
+    "adminBlockUnratedItems": "บล็อกรายการที่ไม่มีข้อมูลเรตหรือมีเรตที่ไม่รู้จัก",
+    "adminUnratedBook": "หนังสือ",
+    "adminUnratedChannelContent": "ช่อง",
+    "adminUnratedLiveTvChannel": "ทีวีสด",
+    "adminUnratedMovie": "ภาพยนตร์",
+    "adminUnratedMusic": "เพลง",
+    "adminUnratedTrailer": "ตัวอย่าง",
+    "adminUnratedSeries": "รายการ",
+    "adminAccessSchedules": "ตารางการเข้าถึง",
+    "adminAccessSchedulesHint": "อนุญาตให้เข้าถึงเฉพาะช่วงเวลาที่กำหนดไว้ด้านล่าง หากไม่ได้ตั้งตารางไว้จะเข้าถึงได้ตลอดทั้งวัน",
+    "adminAddSchedule": "เพิ่มตาราง",
+    "adminScheduleDay": "วัน",
+    "adminScheduleStart": "เริ่ม",
+    "adminScheduleEnd": "สิ้นสุด",
+    "adminDayEveryday": "ทุกวัน",
+    "adminDayWeekday": "วันธรรมดา",
+    "adminDayWeekend": "วันหยุดสุดสัปดาห์",
+    "adminDaySunday": "วันอาทิตย์",
+    "adminDayMonday": "วันจันทร์",
+    "adminDayTuesday": "วันอังคาร",
+    "adminDayWednesday": "วันพุธ",
+    "adminDayThursday": "วันพฤหัสบดี",
+    "adminDayFriday": "วันศุกร์",
+    "adminDaySaturday": "วันเสาร์",
+    "adminAllowedTags": "แท็กที่อนุญาต",
+    "adminAllowedTagsHint": "แสดงเฉพาะเนื้อหาที่มีแท็กเหล่านี้ เว้นว่างไว้เพื่ออนุญาตทั้งหมด",
+    "adminBlockedTags": "แท็กที่ถูกบล็อก",
+    "adminBlockedTagsHint": "เนื้อหาที่มีแท็กเหล่านี้จะถูกซ่อนจากผู้ใช้รายนี้",
+    "adminAddTag": "เพิ่มแท็ก",
+    "adminEnabledDevices": "อุปกรณ์ที่เปิดใช้งาน",
+    "adminEnabledChannels": "ช่องที่เปิดใช้งาน",
+    "adminAuthProvider": "ผู้ให้บริการการยืนยันตัวตน",
+    "adminPasswordResetProvider": "ผู้ให้บริการรีเซ็ตรหัสผ่าน",
+    "adminLoginAttemptsBeforeLockout": "จำนวนครั้งสูงสุดที่เข้าสู่ระบบล้มเหลวก่อนถูกล็อก",
+    "adminLoginAttemptsHint": "ตั้งเป็น 0 เพื่อใช้ค่าเริ่มต้น หรือ -1 เพื่อปิดการล็อก",
+    "adminSyncPlayAccess": "การเข้าถึง SyncPlay",
+    "adminSyncPlayCreateAndJoin": "อนุญาตให้สร้างและเข้าร่วมกลุ่ม",
+    "adminSyncPlayJoin": "อนุญาตให้เข้าร่วมกลุ่ม",
+    "adminSyncPlayNone": "ไม่มีสิทธิ์เข้าถึง",
+    "adminContentDeletionFolders": "อนุญาตให้ลบเนื้อหาจาก",
+    "adminBackupOptionsTitle": "สร้างข้อมูลสำรอง",
+    "adminBackupInclude": "เลือกสิ่งที่ต้องการรวมไว้ในข้อมูลสำรอง",
+    "adminBackupDatabase": "ฐานข้อมูล",
+    "adminBackupDatabaseAlways": "รวมไว้เสมอ",
+    "adminBackupMetadata": "ข้อมูลเมตา",
+    "adminBackupSubtitles": "คำบรรยาย",
+    "adminBackupTrickplay": "รูปภาพ Trickplay",
+    "adminEditTuner": "แก้ไขจูนเนอร์",
+    "adminTunerTypeM3u": "จูนเนอร์ M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "ไฟล์หรือ URL",
+    "adminTunerIpAddress": "ที่อยู่ IP ของจูนเนอร์",
+    "adminTunerFriendlyName": "ชื่อที่จดจำง่าย",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "ขีดจำกัดการเชื่อมต่อพร้อมกัน",
+    "adminTunerCountHelp": "จำนวนสตรีมสูงสุดที่จูนเนอร์รองรับพร้อมกัน ตั้งเป็น 0 เพื่อไม่จำกัด",
+    "adminTunerFallbackBitrate": "บิตเรตสตรีมมิงสูงสุดสำรอง",
+    "adminTunerImportFavoritesOnly": "นำเข้าเฉพาะช่องรายการโปรด",
+    "adminTunerAllowHwTranscoding": "อนุญาตการแปลงสัญญาณด้วยฮาร์ดแวร์",
+    "adminTunerAllowFmp4": "อนุญาตคอนเทนเนอร์แปลงสัญญาณ fMP4",
+    "adminTunerAllowStreamSharing": "อนุญาตการแชร์สตรีม",
+    "adminTunerEnableStreamLooping": "เปิดการวนซ้ำสตรีม",
+    "adminTunerIgnoreDts": "ละเว้น DTS",
+    "adminTunerReadAtNativeFramerate": "อ่านอินพุตตามอัตราเฟรมดั้งเดิม",
+    "adminEditProvider": "แก้ไขผู้ให้บริการ",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "ไฟล์หรือ URL",
+    "adminXmltvMoviePrefix": "คำนำหน้าภาพยนตร์",
+    "adminXmltvMovieCategories": "หมวดหมู่ภาพยนตร์",
+    "adminXmltvCategoriesHelp": "คั่นหลายหมวดหมู่ด้วยเครื่องหมายขีดตั้ง (|)",
+    "adminXmltvKidsCategories": "หมวดหมู่สำหรับเด็ก",
+    "adminXmltvNewsCategories": "หมวดหมู่ข่าว",
+    "adminXmltvSportsCategories": "หมวดหมู่กีฬา",
+    "adminSdUsername": "ชื่อผู้ใช้",
+    "adminSdPassword": "รหัสผ่าน",
+    "adminSdCountry": "ประเทศ",
+    "adminSdCountrySelect": "เลือกประเทศ",
+    "adminSdPostalCode": "รหัสไปรษณีย์",
+    "adminSdGetListings": "ดึงรายการช่อง",
+    "adminSdListings": "รายการช่อง",
+    "adminEnableAllTuners": "เปิดใช้งานจูนเนอร์ทั้งหมด",
+    "adminTunerResetNotSupported": "จูนเนอร์ประเภทนี้ไม่รองรับการรีเซ็ต",
+    "adminMovieRecordingPath": "เส้นทางบันทึกภาพยนตร์",
+    "adminGuideDays": "จำนวนวันของข้อมูลผังรายการ",
+    "adminGuideDaysAuto": "อัตโนมัติ",
+    "adminGuideDaysValue": "{days} วัน",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "เส้นทางแอปพลิเคชันประมวลผลหลังบันทึก",
+    "adminRecordingPostProcessorArgs": "อาร์กิวเมนต์ของตัวประมวลผลหลังบันทึก",
+    "adminSaveRecordingNfo": "บันทึกข้อมูลเมตา NFO ของรายการที่บันทึก",
+    "adminSaveRecordingImages": "บันทึกรูปภาพของรายการที่บันทึก",
+    "adminLiveTvSectionTiming": "การจับเวลา",
+    "adminLiveTvSectionPaths": "เส้นทางการบันทึก",
+    "adminLiveTvSectionPostProcessing": "การประมวลผลหลังบันทึก",
+    "adminGuideDaysDisplay": "ข้อมูลผังรายการ: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "รีเฟรชข้อมูลผังรายการ",
+    "adminGuideRefreshStarted": "เริ่มรีเฟรชข้อมูลผังรายการแล้ว",
+    "adminGuideRefreshUnavailable": "งานรีเฟรชผังรายการไม่พร้อมใช้งานบนเซิร์ฟเวอร์นี้",
+    "adminMetadataIdentify": "ระบุข้อมูล",
+    "adminBrandingSplashUpload": "อัปโหลดรูปภาพ",
+    "adminBrandingSplashUploaded": "อัปเดตหน้าจอเริ่มต้นแล้ว",
+    "adminBrandingSplashUploadFailed": "อัปโหลดหน้าจอเริ่มต้นไม่สำเร็จ",
+    "adminBrandingSplashDeleted": "นำหน้าจอเริ่มต้นออกแล้ว",
+    "adminBrandingNoSplash": "ไม่มีหน้าจอเริ่มต้นที่กำหนดเอง",
+    "adminPlaybackQsvDevice": "อุปกรณ์ QSV",
+    "adminPlaybackEnhancedNvdec": "เปิดใช้ตัวถอดรหัส NVDEC แบบปรับปรุง",
+    "adminPlaybackPreferNativeDecoder": "ใช้ตัวถอดรหัสฮาร์ดแวร์ดั้งเดิมของระบบก่อน",
+    "adminPlaybackColorDepth": "ความลึกสีของการถอดรหัสด้วยฮาร์ดแวร์",
+    "adminPlaybackColorDepth10Hevc": "การถอดรหัส HEVC 10 บิต",
+    "adminPlaybackColorDepth10Vp9": "การถอดรหัส VP9 10 บิต",
+    "adminPlaybackColorDepth10HevcRext": "การถอดรหัส HEVC RExt 8/10 บิต",
+    "adminPlaybackColorDepth12HevcRext": "การถอดรหัส HEVC RExt 12 บิต",
+    "adminPlaybackHwEncodingSection": "การเข้ารหัสด้วยฮาร์ดแวร์",
+    "adminPlaybackAllowHevcEncoding": "อนุญาตการเข้ารหัส HEVC",
+    "adminPlaybackAllowAv1Encoding": "อนุญาตการเข้ารหัส AV1",
+    "adminPlaybackIntelLowPowerH264": "เปิดใช้ตัวเข้ารหัส H.264 แบบประหยัดพลังงานของ Intel",
+    "adminPlaybackIntelLowPowerHevc": "เปิดใช้ตัวเข้ารหัส HEVC แบบประหยัดพลังงานของ Intel",
+    "adminPlaybackToneMapping": "การแมปโทนสี",
+    "adminPlaybackEnableTonemapping": "เปิดการแมปโทนสี",
+    "adminPlaybackEnableVppTonemapping": "เปิดการแมปโทนสีแบบ VPP",
+    "adminPlaybackEnableVtTonemapping": "เปิดการแมปโทนสีแบบ VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "อัลกอริทึมการแมปโทนสี",
+    "adminPlaybackTonemappingMode": "โหมดการแมปโทนสี",
+    "adminPlaybackTonemappingRange": "ช่วงการแมปโทนสี",
+    "adminPlaybackTonemappingDesat": "การลดความอิ่มตัวสีของการแมปโทนสี",
+    "adminPlaybackTonemappingPeak": "ค่าสูงสุดของการแมปโทนสี",
+    "adminPlaybackTonemappingParam": "พารามิเตอร์การแมปโทนสี",
+    "adminPlaybackVppTonemappingBrightness": "ความสว่างของการแมปโทนสีแบบ VPP",
+    "adminPlaybackVppTonemappingContrast": "คอนทราสต์ของการแมปโทนสีแบบ VPP",
+    "adminPlaybackPresetsQuality": "ค่าที่ตั้งไว้และคุณภาพ",
+    "adminPlaybackEncoderPreset": "ค่าที่ตั้งไว้ของตัวเข้ารหัส",
+    "adminPlaybackH264Crf": "ค่า CRF การเข้ารหัส H.264",
+    "adminPlaybackH265Crf": "ค่า CRF การเข้ารหัส H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "วิธีการดีอินเทอร์เลซ",
+    "adminPlaybackDeinterlaceDoubleRate": "เพิ่มอัตราเฟรมเป็นสองเท่าเมื่อดีอินเทอร์เลซ",
+    "adminPlaybackAudioSection": "เสียง",
+    "adminPlaybackEnableAudioVbr": "เปิดการเข้ารหัสเสียงแบบ VBR",
+    "adminPlaybackDownmixBoost": "การเพิ่มระดับเสียงเมื่อดาวน์มิกซ์",
+    "adminPlaybackDownmixAlgorithm": "อัลกอริทึมดาวน์มิกซ์เป็นสเตอริโอ",
+    "adminPlaybackMaxMuxingQueue": "ขนาดคิวมักซ์สูงสุด",
+    "adminPlaybackAutoOption": "อัตโนมัติ",
+    "adminRunningTasks": "งานที่กำลังทำงาน",
+    "adminNetworkingPublicHttpPort": "พอร์ต HTTP สาธารณะ",
+    "adminNetworkingRequireHttps": "บังคับใช้ HTTPS",
+    "adminNetworkingRequireHttpsHint": "เปลี่ยนเส้นทางคำขอจากระยะไกลทั้งหมดไปยัง HTTPS จะไม่มีผลหากเซิร์ฟเวอร์ไม่มีใบรับรองที่ถูกต้อง",
+    "adminNetworkingCertPassword": "รหัสผ่านใบรับรอง",
+    "adminNetworkingIpSettings": "การตั้งค่า IP",
+    "adminNetworkingEnableIpv4": "เปิดใช้งาน IPv4",
+    "adminNetworkingEnableIpv6": "เปิดใช้งาน IPv6",
+    "adminNetworkingAutoDiscovery": "เปิดการแมปพอร์ตอัตโนมัติ",
+    "adminNetworkingLocalSubnets": "เครือข่าย LAN",
+    "adminNetworkingLocalSubnetsHint": "รายการที่อยู่ IP หรือซับเน็ต CIDR ที่ถือว่าอยู่ในเครือข่ายท้องถิ่น คั่นด้วยเครื่องหมายจุลภาคหรือขึ้นบรรทัดใหม่",
+    "adminNetworkingPublishedUris": "URI ของเซิร์ฟเวอร์ที่เผยแพร่",
+    "adminNetworkingPublishedUriHint": "แมปซับเน็ตหรือที่อยู่ไปยัง URL ที่เผยแพร่ เช่น all=https://example.com",
+    "adminPlaybackThrottleDelay": "ความหน่วงของการจำกัดอัตรา (วินาที)",
+    "adminPlaybackEnableSubtitleExtraction": "อนุญาตให้ดึงคำบรรยายแบบทันที",
+    "adminGeneralEnableSlowResponse": "เปิดคำเตือนเมื่อตอบสนองช้า",
+    "adminGeneralQuickConnect": "เปิดใช้งาน Quick Connect",
+    "adminGeneralSectionServer": "เซิร์ฟเวอร์",
+    "adminGeneralSectionMetadata": "ข้อมูลเมตา",
+    "adminGeneralSectionPaths": "เส้นทาง",
+    "adminGeneralSectionPerformance": "ประสิทธิภาพ",
+    "adminGeneralDisplayLanguage": "ภาษาที่ต้องการแสดงผล",
+    "offlineBannerTitle": "คุณออฟไลน์อยู่",
+    "offlineBannerSubtitle": "กำลังแสดงรายการที่ดาวน์โหลดไว้",
+    "offlineBannerAction": "ดาวน์โหลด",
+    "serverUnreachableBannerTitle": "เชื่อมต่อเซิร์ฟเวอร์ของคุณไม่ได้",
+    "serverUnreachableBannerSubtitle": "กำลังเล่นจากรายการที่ดาวน์โหลดไว้จนกว่าจะกลับมา",
+    "contextMenuHideFromContinueWatching": "ซ่อนจากรายการดูต่อ",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "ซ่อนจากรายการถัดไป",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "เพิ่มลงคอลเลกชัน",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "การเชื่อมต่อ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "อนุญาตใบรับรองที่ลงนามด้วยตนเอง",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "เชื่อถือเซิร์ฟเวอร์ที่ใช้ใบรับรอง TLS แบบลงนามด้วยตนเองหรือจาก CA ส่วนตัว เปิดใช้เฉพาะกับเซิร์ฟเวอร์ที่คุณควบคุมเท่านั้น การตั้งค่านี้จะปิดการตรวจสอบใบรับรองสำหรับทุกการเชื่อมต่อ",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "หน้ารายละเอียด",
+    "settingsDetailsScreenSubtitle": "สไตล์ การเบลอพื้นหลัง และการทำงานของแท็บ",
+    "settingsShowSeerrButtonInNavigation": "แสดงปุ่ม Seerr ในแถบนำทาง",
+    "settingsAlwaysExpandNavbarLabels": "แสดงชื่อเมนูในแถบนำทางด้านบนเสมอ",
+    "settingsMediaSegmentCountdown": "การนับถอยหลังของช่วงสื่อ",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "แถบความคืบหน้า",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "ตัวจับเวลา",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "ไม่มี",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "{libraryName} ที่เพิ่งออกฉาย",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "เปิดใช้งาน Tunneling",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "ขั้นสูง ส่งเสียงและวิดีโอผ่านเส้นทางฮาร์ดแวร์ที่เชื่อมต่อกัน ปิดไว้เป็นค่าเริ่มต้นเพราะทำให้เสียงหรือภาพขาดหายบนอุปกรณ์บางรุ่น",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "แสดงรายละเอียดสื่อ",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "แสดงรายละเอียดของรายการที่เลือกไว้ด้านบนของหน้าคลังสื่อ",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "ซ่อนภาพพื้นหลังขณะเรียกดูหรือไม่?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "ร้านธีม",
+    "themeStoreSubtitle": "เรียกดูและบันทึกธีมจากชุมชน",
+    "themeStoreDescription": "บันทึกธีมเพื่อใช้งานเหมือนธีมอื่นที่คุณบันทึกไว้",
+    "themeStoreEmpty": "ยังไม่มีธีมให้ใช้งานในขณะนี้",
+    "themeStoreLoadFailed": "โหลดร้านธีมไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+    "themeStoreSave": "บันทึก",
+    "themeStoreSaveAndApply": "บันทึกและใช้งาน",
+    "themeStoreSaved": "บันทึกแล้ว",
+    "themeStoreInvalidMessage": "โหลดธีมนี้ไม่สำเร็จ",
+    "themeStoreSavedMessage": "บันทึก \"{themeName}\" แล้ว",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "การแสดงผลแถวหน้าแรก",
+    "homeRowSections": "ส่วนของแถวหน้าแรก",
+    "homeRowToggles": "สวิตช์แถวหน้าแรก",
+    "homeRowTogglesSubtitle": "เปิดหรือปิดหมวดหมู่แถวหน้าแรกที่อิงตามคลังสื่อ",
+    "homeRowTogglesDescription": "เปิดสวิตช์ต่อไปนี้เพื่อแสดงแถวในส่วนของหน้าแรก",
+    "displayPlaylistsRows": "แสดงแถวเพลย์ลิสต์",
+    "displayPlaylistsRowsSubtitle": "แสดงแถวเพลย์ลิสต์ในส่วนของหน้าแรก",
+    "playlistsRowSorting": "การเรียงลำดับแถวเพลย์ลิสต์",
+    "playlistsRowSortingDescription": "เรียงแถวเพลย์ลิสต์ตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ",
+    "displayAudioRows": "แสดงแถวเสียง",
+    "displayAudioRowsSubtitle": "แสดงแถวเสียงในส่วนของหน้าแรก",
+    "audioRowsSorting": "การเรียงลำดับแถวเสียง",
+    "audioRowsSortingDescription": "เรียงแถวเสียงตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ",
+    "audioPlaylists": "เพลย์ลิสต์เสียง",
+    "layout": "เลย์เอาต์",
+    "theme": "ธีม",
+    "keyboard": "แป้นพิมพ์",
+    "navButtons": "ปุ่ม",
+    "rendering": "การเรนเดอร์",
+    "mpvConfiguration": "การกำหนดค่า MPV",
+    "externalPlayerAppDescription": "ตั้งค่าโปรแกรมเล่นภายนอกเพื่อเปิดใช้ตัวเลือกเล่นแบบกดค้าง",
+    "crewContributionsSeerr": "ผลงานทีมงาน (Seerr)",
+    "changeArtwork": "เปลี่ยนภาพปก",
+    "missing": "ไม่มี",
+    "clearAllArtworkButton": "ล้างภาพปกทั้งหมดหรือไม่?",
+    "clearAllArtworkWarning": "คุณแน่ใจหรือไม่ว่าต้องการล้างภาพปกที่ดาวน์โหลดไว้ทั้งหมด?",
+    "confirmClear": "ยืนยันการล้าง",
+    "confirmClearMessage": "คุณแน่ใจหรือไม่ว่าต้องการล้าง{itemType}นี้?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "อัปโหลดหรือไม่?",
+    "resolutionLabel": "ความละเอียด: ",
+    "onlyShowInterfaceLanguage": "แสดงเฉพาะภาพปกที่ตรงกับภาษาอินเทอร์เฟซ",
+    "confirmClearAll": "ยืนยันการล้างทั้งหมด",
+    "imageUploadSuccess": "อัปโหลดรูปภาพสำเร็จ!",
+    "imageUploadFailed": "อัปโหลดรูปภาพไม่สำเร็จ: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "ตั้งค่ารูปภาพไม่สำเร็จ: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "ลบรูปภาพไม่สำเร็จ: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "ล้างภาพปกทั้งหมดไม่สำเร็จ: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "ใช่",
+    "posterCategory": "โปสเตอร์",
+    "backdropsCategory": "ภาพพื้นหลัง",
+    "bannerCategory": "แบนเนอร์",
+    "logoCategory": "โลโก้",
+    "thumbnailCategory": "ภาพขนาดย่อ",
+    "artCategory": "ภาพประกอบ",
+    "discArtCategory": "ภาพหน้าแผ่น",
+    "screenshotCategory": "ภาพหน้าจอ",
+    "boxCoverCategory": "ปกกล่อง",
+    "boxRearCoverCategory": "ปกหลังกล่อง",
+    "menuArtCategory": "ภาพเมนู",
+    "confirmItemPoster": "โปสเตอร์",
+    "confirmItemBackdrop": "ภาพพื้นหลัง",
+    "confirmItemBanner": "แบนเนอร์",
+    "confirmItemLogo": "โลโก้",
+    "confirmItemThumbnail": "ภาพขนาดย่อ",
+    "confirmItemArt": "ภาพประกอบ",
+    "confirmItemDiscArt": "ภาพหน้าแผ่น",
+    "confirmItemScreenshot": "ภาพหน้าจอ",
+    "confirmItemBoxCover": "ปกกล่อง",
+    "confirmItemBoxRearCover": "ปกหลังกล่อง",
+    "confirmItemMenuArt": "ภาพเมนู",
+    "resolutionAll": "ทั้งหมด",
+    "resolutionHigh": "สูง (1080p+)",
+    "resolutionMedium": "ปานกลาง (720p)",
+    "resolutionLow": "ต่ำ (<720p)",
+    "sources": "แหล่งที่มา",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "บท",
+    "audiobookBookmarks": "ที่คั่นหนังสือ",
+    "audiobookNotes": "บันทึก",
+    "audiobookQueue": "คิว",
+    "audiobookTimeline": "ไทม์ไลน์",
+    "audiobookTimelineEmpty": "ไทม์ไลน์ว่างเปล่า",
+    "audiobookWholeBook": "ทั้งเล่ม",
+    "audiobookFocusedTimeline": "ไทม์ไลน์เฉพาะจุด",
+    "audiobookExportBookmarks": "ส่งออกที่คั่นหนังสือ",
+    "audiobookExportNotes": "ส่งออกบันทึก",
+    "audiobookExportAll": "ส่งออกทั้งหมด",
+    "audiobookExportSuccess": "ส่งออกไปยัง {path} แล้ว",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "ส่งออกไม่สำเร็จ: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "เนื้อเพลง",
+    "audiobookAddBookmark": "เพิ่มที่คั่นหนังสือ",
+    "audiobookAddNote": "เพิ่มบันทึก",
+    "audiobookEditNote": "แก้ไขบันทึก",
+    "audiobookNoteHint": "เขียนบันทึกสำหรับช่วงนี้",
+    "audiobookSleepTimer": "ตั้งเวลาปิด",
+    "audiobookSleepOff": "ปิด",
+    "audiobookSleepEndOfChapter": "จบบท",
+    "audiobookSleepCustom": "กำหนดเอง",
+    "audiobookSleepRemaining": "เหลือ {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 นาที} other{{count} นาที}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "ความเร็วในการเล่น",
+    "audiobookRemainingTime": "เวลาที่เหลือ",
+    "audiobookElapsedTime": "เวลาที่ผ่านไป",
+    "audiobookSkipBackSeconds": "ถอยหลัง {seconds} วิ",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "เดินหน้า {seconds} วิ",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "บทก่อนหน้า",
+    "audiobookNextChapter": "บทถัดไป",
+    "audiobookChapterIndicator": "บทที่ {current} จาก {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "ไม่มีบท",
+    "audiobookNoBookmarks": "ยังไม่มีที่คั่นหนังสือ",
+    "audiobookNoNotes": "ยังไม่มีบันทึก",
+    "audiobookBookmarkAdded": "เพิ่มที่คั่นหนังสือที่ {position} แล้ว",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "รีเซ็ตเป็น 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "บันทึก",
+    "audiobookCancel": "ยกเลิก",
+    "audiobookDelete": "ลบ",
+    "subtitlePreferences": "การตั้งค่าคำบรรยาย",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "เปลี่ยนโหมดคำบรรยาย ภาษาเริ่มต้น รูปลักษณ์ และตัวเลือกการเรนเดอร์",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "การเรนเดอร์คำบรรยาย",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "ตัวเลือกการแสดงผล",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "วันที่ออกฉาย (เก่าไปใหม่)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "วันที่ออกฉาย (ใหม่ไปเก่า)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "จัดกลุ่มผลงาน",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "จัดกลุ่มบทบาทหลายบทบาท",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "คำเตือนสิทธิ์การเขียนในคลังสื่อ",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "วิธีแก้ไข:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. ให้สิทธิ์การเขียนแก่ผู้ใช้ของบริการ Jellyfin (เช่น jellyfin หรือ PUID/PGID ของ Docker) สำหรับโฟลเดอร์คลังสื่อของคุณบนเซิร์ฟเวอร์\n\n2. หรือไปที่แดชบอร์ด Jellyfin -> คลังสื่อ แก้ไขคลังสื่อนี้ แล้วปิด 'Save artwork into media folders' เพื่อจัดเก็บภาพปกไว้ในฐานข้อมูลภายในของ Jellyfin",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "ปิด",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "คลังสื่อ '{libraryName}' ของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด 'Save artwork into media folders' ไว้) แต่ Jellyfin ได้ทดสอบสิทธิ์การเขียนแล้วและไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีนี้:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "ดูเหมือนว่า Jellyfin จะอัปเดตภาพปกไม่สำเร็จ คลังสื่อของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด 'Save artwork into media folders' ไว้) ข้อผิดพลาดนี้มักเกิดขึ้นเมื่อโปรเซสของเซิร์ฟเวอร์ Jellyfin ไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีสื่อของคุณ",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "รายการภายนอก",
+    "replay": "เล่นอีกครั้ง",
+    "fileInformation": "ข้อมูลไฟล์",
+    "fileSizeFormat": "ขนาด: {size}  •  รูปแบบ: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "แสดงแทร็กเสียงทั้งหมด ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "แสดงแทร็กคำบรรยายทั้งหมด ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "กำลังตรวจสอบความสามารถในการเล่นโดยตรง...",
+    "directPlayCapabilityLabel": "ความสามารถในการเล่นโดยตรง: ",
+    "forced": "บังคับ",
+    "transcodeContainerNotSupported": "โปรแกรมเล่นไม่รองรับรูปแบบคอนเทนเนอร์นี้",
+    "transcodeVideoCodecNotSupported": "ไม่รองรับตัวแปลงสัญญาณวิดีโอนี้",
+    "transcodeAudioCodecNotSupported": "ไม่รองรับตัวแปลงสัญญาณเสียงนี้",
+    "transcodeSubtitleCodecNotSupported": "ไม่รองรับรูปแบบคำบรรยายนี้ (ต้องฝังลงในภาพ)",
+    "transcodeAudioProfileNotSupported": "ไม่รองรับโปรไฟล์เสียงนี้",
+    "transcodeVideoProfileNotSupported": "ไม่รองรับโปรไฟล์วิดีโอนี้",
+    "transcodeVideoLevelNotSupported": "ไม่รองรับระดับวิดีโอนี้",
+    "transcodeVideoResolutionNotSupported": "อุปกรณ์นี้ไม่รองรับความละเอียดวิดีโอนี้",
+    "transcodeVideoBitDepthNotSupported": "ไม่รองรับความลึกบิตของวิดีโอนี้",
+    "transcodeVideoFramerateNotSupported": "ไม่รองรับอัตราเฟรมของวิดีโอนี้",
+    "transcodeContainerBitrateExceedsLimit": "บิตเรตของไฟล์เกินขีดจำกัดการสตรีมของโปรแกรมเล่น",
+    "transcodeVideoBitrateExceedsLimit": "บิตเรตวิดีโอเกินขีดจำกัดการสตรีม",
+    "transcodeAudioBitrateExceedsLimit": "บิตเรตเสียงเกินขีดจำกัดการสตรีม",
+    "transcodeAudioChannelsNotSupported": "ไม่รองรับจำนวนช่องสัญญาณเสียงนี้",
+    "sortAlphabetical": "ตามตัวอักษร",
+    "sortReleaseAscending": "ลำดับการออกฉาย (เก่าไปใหม่)",
+    "sortReleaseDescending": "ลำดับการออกฉาย (ใหม่ไปเก่า)",
+    "sortCustomDragDrop": "กำหนดเอง (ลากและวาง)",
+    "playlistSortOptions": "ตัวเลือกการเรียงเพลย์ลิสต์",
+    "resetSort": "รีเซ็ตการเรียงลำดับ",
+    "rewatchSeasonEpisode": "ดูซ้ำ S{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "เพลย์ลิสต์ดูซ้ำ",
+    "noSubtitlesFound": "ไม่พบคำบรรยาย",
+    "adminControls": "การควบคุมของผู้ดูแล",
+    "impellerRendering": "เอนจินการเรนเดอร์ (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller คือตัวเรนเดอร์ GPU สมัยใหม่ของ Flutter ที่ให้ภาพเคลื่อนไหวลื่นไหลและกระตุกน้อยลง บนกล่องทีวีบางรุ่นและ GPU รุ่นเก่าอาจทำให้ภาพผิดเพี้ยนหรือวิดีโอเป็นสีดำ หากพบปัญหาให้ปิดไว้ อัตโนมัติจะเลือกค่าที่ดีที่สุดสำหรับอุปกรณ์ของคุณ รีสตาร์ท Moonfin เพื่อใช้งาน",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "อัตโนมัติ",
+    "impellerOn": "เปิด",
+    "impellerOff": "ปิด",
+    "impellerRestartTitle": "ต้องรีสตาร์ท",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin ต้องรีสตาร์ทเพื่อเปลี่ยนเอนจินการเรนเดอร์ ปิดแอปตอนนี้ แล้วเปิดใหม่เพื่อใช้งาน",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "ปิดแอปตอนนี้",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "รีเฟรชคลังสื่อ",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "รีเฟรชคลังสื่อทั้งหมด",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "วันที่เพิ่ม (เก่าสุดก่อน)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "วันที่เพิ่ม (ใหม่สุดก่อน)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "ตามตัวอักษร (A ถึง Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "ตามตัวอักษร (Z ถึง A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "กำลังโหลดข้อมูลวิเคราะห์เซิร์ฟเวอร์... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "ตามต้นฉบับ",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "ภาพยนตร์ 250 อันดับแรกของ IMDb",
+    "imdbTop250TvShows": "รายการทีวี 250 อันดับแรกของ IMDb",
+    "imdbMostPopularMovies": "ภาพยนตร์ยอดนิยมที่สุดของ IMDb",
+    "imdbMostPopularTvShows": "รายการทีวียอดนิยมที่สุดของ IMDb",
+    "imdbLowestRatedMovies": "ภาพยนตร์คะแนนต่ำสุดของ IMDb",
+    "imdbTopEnglishMovies": "ภาพยนตร์ภาษาอังกฤษคะแนนสูงสุดของ IMDb"
 }

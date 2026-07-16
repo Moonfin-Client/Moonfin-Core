@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Pikayhteys",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Poistaa",
+    "remove": "Poista",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Sarja",
+    "series": "Sarjat",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Kotiin",
+    "home": "Koti",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Taiteilijat",
+    "artists": "Artistit",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Jatkaa",
+    "resume": "Jatka",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -613,7 +613,7 @@
     "@savedForLater": {
         "description": "Book rail title for bookmarked items"
     },
-    "topListens": "Top Listens",
+    "topListens": "Kuunnelluimmat",
     "@topListens": {
         "description": "Book rail title for popular audiobooks"
     },
@@ -721,7 +721,7 @@
             }
         }
     },
-    "titles": "Otsikot",
+    "titles": "Nimikkeet",
     "@titles": {
         "description": "Stat card label for total titles"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Katsottu",
+    "watched": "Katsotut",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Katsomaton",
+    "unwatched": "Katsomattomat",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 äänikirja} other{{count} äänikirjaa}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,11 +935,11 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Poistaa",
+    "delete": "Poista",
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "Tallentaa",
+    "save": "Tallenna",
     "@save": {
         "description": "Save action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Vuodenajat",
+    "seasons": "Kaudet",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 kausi} other{{count} kautta}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Pelata",
+    "play": "Toista",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1095,7 +1095,7 @@
     "@playOffline": {
         "description": "Action button label to play offline"
     },
-    "audio": "Audio",
+    "audio": "Ääni",
     "@audio": {
         "description": "Action button label for audio track selection"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Heittää",
+    "cast": "Lähetä laitteelle",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "KIRJOITTAJAT",
+    "writers": "KÄSIKIRJOITTAJAT",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 kappale} other{{count} kappaletta}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 luku} other{{count} lukua}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} kan.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1530,7 +1530,7 @@
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
-    "stereo": "Stereot",
+    "stereo": "Stereo",
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "Tauko",
+    "pause": "Keskeytä",
     "@pause": {
         "description": "Pause action label"
     },
@@ -1743,7 +1743,7 @@
             }
         }
     },
-    "auto": "Auto",
+    "auto": "Automaattinen",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Pelaaja",
+    "player": "Soitin",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1846,7 +1846,7 @@
     "@hdr": {
         "description": "Stream info label for HDR type"
     },
-    "codec": "Codec",
+    "codec": "Koodekki",
     "@codec": {
         "description": "Stream info label for codec"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Seurata",
+    "track": "Raita",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,11 +2187,11 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Katsella",
+    "watch": "Katso",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Lähellä",
+    "close": "Sulje",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "K{season} J{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "K{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 jakso} other{{count} jaksoa}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2778,7 +2778,7 @@
     "@themeMusicVolume": {
         "description": "Setting for theme music volume"
     },
-    "percentValue": "{value}%",
+    "percentValue": "{value} %",
     "@percentValue": {
         "description": "Percentage display",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -2852,7 +2852,7 @@
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "Trick Play",
+    "trickPlay": "Kelauksen esikatselu",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -2964,11 +2964,11 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3 Passthrough",
+    "ac3Passthrough": "AC3-läpivienti",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
-    "dtsPassthrough": "DTS Passthrough",
+    "dtsPassthrough": "DTS-läpivienti",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "PGS Direct Play",
+    "pgsDirectPlay": "Suora PGS-toisto",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3177,7 +3177,7 @@
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "ASS/SSA Direct Play",
+    "assSsaDirectPlay": "Suora ASS/SSA-toisto",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -3617,7 +3617,7 @@
     "@autoAdvanceSlides": {
         "description": "Description for auto advance"
     },
-    "autoAdvanceInterval": "Auto Advance Interval",
+    "autoAdvanceInterval": "Automaattisen vaihdon väli",
     "@autoAdvanceInterval": {
         "description": "Setting for auto advance interval"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Tietty käyttäjä",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Todenna aina",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3801,7 +3797,7 @@
     "@enableBuiltInScreensaver": {
         "description": "Description for in-app screensaver"
     },
-    "mode": "tila",
+    "mode": "Tila",
     "@mode": {
         "description": "Setting for mode"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin",
+    "pluginLabel": "Moonbase-laajennus",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Tutustu riviin",
+    "discoverRows": "Seerrin Discover-sivu",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Järjestä uudelleen vetämällä. Ota rivit käyttöön tai poista ne käytöstä. Käytössä oleva rivijärjestys synkronoituu Moonfin-laajennuksen kanssa.",
+    "discoverRowsDescriptionPlugin": "Ota käyttöön rivit, jotka haluat nähdä Seerrin etusivulla. Järjestä uudelleen vetämällä. Mukautettu järjestys synkronoituu Moonbasen kanssa.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Järjestä uudelleen vetämällä. Ota rivit käyttöön tai poista ne käytöstä.",
+    "discoverRowsDescription": "Ota käyttöön rivit, jotka haluat nähdä Seerrin etusivulla. Järjestä uudelleen vetämällä. Mukautettu järjestys synkronoituu Moonbasen kanssa.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Selkeä",
+    "clear": "Tyhjennä",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Näkijän asetukset",
+    "seerrSettings": "Seerrin asetukset",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Ulkonäkö",
+    "appearances": "Esiintymiset",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Vuodenajat",
+    "seasonsLabel": "Kaudet",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4520,27 +4516,27 @@
         "description": "Stat label for number of episodes"
     },
     "access": "Pääsy",
-    "add": "Lisätä",
+    "add": "Lisää",
     "address": "Osoite",
-    "analytics": "Analytics",
+    "analytics": "Analytiikka",
     "catalog": "Luettelo",
     "content": "Sisältö",
     "copy": "Kopioida",
     "create": "Luoda",
     "disable": "Poista käytöstä",
-    "done": "Tehty",
-    "edit": "Muokata",
+    "done": "Valmis",
+    "edit": "Muokkaa",
     "encoding": "Koodaus",
     "error": "Virhe",
     "forward": "Eteenpäin",
-    "general": "Kenraali",
+    "general": "Yleiset",
     "go": "Mennä",
     "install": "Asentaa",
     "installed": "Asennettu",
     "interval": "Intervalli",
     "name": "Nimi",
     "networking": "Verkostoituminen",
-    "next": "Seuraavaksi",
+    "next": "Seuraava",
     "path": "Polku",
     "paused": "Keskeytetty",
     "permissions": "Käyttöoikeudet",
@@ -4548,7 +4544,7 @@
     "profile": "Profiili",
     "provider": "Palveluntarjoaja",
     "refresh": "Päivitä",
-    "remote": "Kauko",
+    "remote": "Kaukosäädin",
     "rename": "Nimeä uudelleen",
     "revoke": "Peruuttaa",
     "role": "Rooli",
@@ -4559,8 +4555,8 @@
     "send": "Lähetä",
     "sessions": "Istunnot",
     "set": "Sarja",
-    "status": "Status",
-    "stop": "Stop",
+    "status": "Tila",
+    "stop": "Pysäytä",
     "streaming": "Suoratoisto",
     "time": "Aika",
     "trickplay": "Trickplay",
@@ -4572,13 +4568,13 @@
     "mute": "Mykistä",
     "branding": "Brändäys",
     "adminDrawerDashboard": "Kojelauta",
-    "adminDrawerAnalytics": "Analytics",
+    "adminDrawerAnalytics": "Analytiikka",
     "adminDrawerSettings": "Asetukset",
     "adminDrawerBranding": "Brändäys",
     "adminDrawerUsers": "Käyttäjät",
     "adminDrawerLibraries": "Kirjastot",
     "adminDrawerTranscoding": "Transkoodaus",
-    "adminDrawerResume": "Jatkaa",
+    "adminDrawerResume": "Jatka",
     "adminDrawerStreaming": "Suoratoisto",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Laitteet",
@@ -4588,7 +4584,7 @@
     "adminDrawerBackups": "Varmuuskopiot",
     "adminDrawerLogs": "Lokit",
     "adminDrawerScheduledTasks": "Aikataulutetut tehtävät",
-    "adminDrawerPlugins": "Plugins",
+    "adminDrawerPlugins": "Laajennukset",
     "adminDrawerRepositories": "Tietovarastot",
     "adminDrawerLiveTv": "Live-TV",
     "adminExitTooltip": "Poistu järjestelmänvalvojasta",
@@ -4675,16 +4671,16 @@
     "sessionPrev": "Ed",
     "sessionRewind": "Kelaa taaksepäin",
     "sessionForward": "Eteenpäin",
-    "sessionNext": "Seuraavaksi",
-    "sessionVolumeDown": "Vol –",
-    "sessionVolumeUp": "Vol +",
+    "sessionNext": "Seuraava",
+    "sessionVolumeDown": "Ääni –",
+    "sessionVolumeUp": "Ääni +",
     "uhd4k": "4K",
     "nowPlaying": "Nyt pelaa",
     "volume": "Äänenvoimakkuus",
     "actions": "Toiminnot",
-    "videoCodec": "Video Codec",
+    "videoCodec": "Videokoodekki",
     "audioCodec": "Äänikoodekki",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Laitteistokiihdytys",
     "completion": "Valmistuminen",
     "direct": "Suoraan",
     "adminDisconnect": "Katkaise yhteys",
@@ -4908,7 +4904,7 @@
     "adminBackToUsers": "Takaisin Käyttäjiin",
     "adminSaveProfile": "Tallenna profiili",
     "adminDeleteUser": "Poista käyttäjä",
-    "admin": "Admin",
+    "admin": "Ylläpito",
     "adminFullAccessWarning": "Järjestelmänvalvojilla on täydellinen pääsy palvelimeen. Myönnä varoen.",
     "administrator": "Järjestelmänvalvoja",
     "adminHiddenUser": "Piilotettu käyttäjä",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Etsi etähenkilö",
     "adminNoRemoteMatches": "Etäosumia ei löytynyt",
     "adminRemoteResults": "Etätulokset",
     "adminRemoteMetadataApplied": "Etäsisällönkuvaustiedot otettu käyttöön",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Lisää viritin",
     "adminTunerType": "Virittimen tyyppi",
-    "adminTunerTypeHint": "HDHomeRun, M3U, muu",
-    "adminUrlPath": "URL / polku",
-    "adminNameOptional": "Nimi (valinnainen)",
     "adminTunerAdded": "Viritin lisätty",
     "adminTunerAddFailed": "Virittimen lisääminen epäonnistui: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Lisää oppaan tarjoaja",
     "adminProviderType": "Palveluntarjoajan tyyppi",
-    "adminProviderTypeHint": "SchedulesDirect tai XMLTV",
-    "adminUsernameOptional": "Käyttäjätunnus (valinnainen)",
-    "adminRefreshInterval": "Päivitysväli (tunteja)",
     "adminProviderAdded": "Palveluntarjoaja lisätty",
     "adminProviderAddFailed": "Palveluntarjoajan lisääminen epäonnistui: {error}",
     "@adminProviderAddFailed": {
@@ -5729,12 +5718,11 @@
     },
     "adminLogViewerNoMatches": "Ei vastaavia rivejä",
     "adminMetadataEditorTitle": "Metatietoeditori",
-    "adminMetadataRemote": "Kauko",
     "adminMetadataType": "Tyyppi",
     "adminMetadataDetails": "Yksityiskohdat",
     "adminMetadataExternalIds": "Ulkoiset tunnukset",
     "adminMetadataImages": "Kuvat",
-    "adminMetadataFieldTitle": "Otsikko",
+    "adminMetadataFieldTitle": "Nimi",
     "adminMetadataFieldSortTitle": "Lajittele otsikko",
     "adminMetadataFieldOriginalTitle": "Alkuperäinen otsikko",
     "adminMetadataFieldPremiereDate": "Ensiesityspäivä (VVVV-KK-PP)",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Poistaa",
+    "adminReposRemove": "Poista",
     "adminReposSaveFailed": "Tietovarastojen tallentaminen epäonnistui: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Peruutetaan...",
     "adminTaskRunning": "Juokse...",
     "adminTaskNeverRun": "Älä koskaan juokse",
-    "adminTaskStop": "Stop",
+    "adminTaskStop": "Pysäytä",
     "adminTaskRun": "Juokse",
     "adminTaskDetailLastExecution": "Viimeinen teloitus",
     "adminTaskDetailStarted": "Aloitettu",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "12 tunnin välein",
     "adminTaskTriggerEvery24Hours": "24 tunnin välein",
     "adminTaskTriggerEvery2Days": "2 päivän välein",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 tunti} other{{count} tuntia}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "nyt",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} t",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} pv",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}.{month}.",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay vaatii Jellyfin-palvelimen. Nykyinen palvelin ei tue sitä.",
     "syncPlayGroupFallbackName": "SyncPlay Ryhmä",
     "syncPlayGroupTooltip": "SyncPlay-ryhmä",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# osallistuja} other {# osallistujaa}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Muista valintani",
     "playHdr10Fallback": "Pelaa HDR10-varaa",
     "requestTranscode": "Pyydä transkoodausta",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# rivi löytyi} other {# riviä löytyi}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6313,7 +6301,7 @@
             }
         }
     },
-    "audioLabel": "Audio",
+    "audioLabel": "Ääni",
     "subtitlesLabel": "Tekstitykset",
     "pinConfirmTitle": "Vahvista PIN",
     "pinSetTitle": "Aseta PIN",
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Väärä PIN-koodi",
     "pinMismatch": "PIN-koodit eivät täsmää",
     "pinForgot": "Unohditko PIN-koodin?",
-    "pinClear": "Selkeä",
+    "pinClear": "Tyhjennä",
     "pinBackspace": "Askelpalautin",
-    "quickConnectAuthorized": "Pikayhteyspyyntö hyväksytty.",
-    "quickConnectInvalidOrExpired": "Pikayhteyskoodi on virheellinen tai vanhentunut.",
-    "quickConnectNotSupported": "Pikayhteyttä ei tueta tällä palvelimella.",
-    "quickConnectAuthorizeFailed": "Pikayhteyskoodin valtuuttaminen epäonnistui.",
-    "quickConnectDisabled": "Pikayhteys on poistettu käytöstä tällä palvelimella.",
-    "quickConnectForbidden": "Tilisi ei voi valtuuttaa tätä pikayhteyspyyntöä.",
-    "quickConnectNotFound": "Pikayhteyskoodia ei löytynyt. Kokeile uutta koodia.",
-    "quickConnectFailedWithMessage": "Pikayhteys epäonnistui: {message}",
+    "quickConnectAuthorized": "Quick Connect -pyyntö hyväksytty.",
+    "quickConnectInvalidOrExpired": "Quick Connect -koodi on virheellinen tai vanhentunut.",
+    "quickConnectNotSupported": "Quick Connectia ei tueta tällä palvelimella.",
+    "quickConnectAuthorizeFailed": "Quick Connect -koodin valtuuttaminen epäonnistui.",
+    "quickConnectDisabled": "Quick Connect on poistettu käytöstä tällä palvelimella.",
+    "quickConnectForbidden": "Tilisi ei voi valtuuttaa tätä Quick Connect -pyyntöä.",
+    "quickConnectNotFound": "Quick Connect -koodia ei löytynyt. Kokeile uutta koodia.",
+    "quickConnectFailedWithMessage": "Quick Connect epäonnistui: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6404,7 +6392,7 @@
     },
     "trackActionDeletedFile": "Ladattu tiedosto poistettu",
     "trackActionDeleteFileFailed": "Ladattua tiedostoa ei voitu poistaa",
-    "shuffleBy": "Shuffle By",
+    "shuffleBy": "Satunnaistoiston peruste",
     "shuffleSelectLibrary": "Valitse Kirjasto",
     "shuffleSelectGenre": "Valitse Genre",
     "shuffleLibrary": "Kirjasto",
@@ -6427,7 +6415,7 @@
     "upNext": "Seuraavaksi ylös",
     "playNext": "Pelaa seuraavaksi",
     "stillWatchingContent": "Toisto on keskeytetty. Katsotko vielä?",
-    "stillWatchingStop": "Stop",
+    "stillWatchingStop": "Pysäytä",
     "stillWatchingContinue": "Jatkaa",
     "skipSegment": "Ohita {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Tarkista päivitykset",
     "settingsCheckForUpdatesSubtitle": "Tarkista viimeisin Moonfin-julkaisu",
     "settingsPoweredByFlutter": "Voimanlähteenä Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# lisenssi-ilmoitus} other {# lisenssi-ilmoitusta}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6606,7 +6594,7 @@
     "settingsMaxBitrateDescription": "Rajoita suoratoiston bittinopeus. Tämän kynnyksen ylittävä sisältö muunnetaan sopivaksi.",
     "settingsMaxResolutionDescription": "Rajoita soittimen pyytämää enimmäisresoluutiota. Korkeamman resoluution sisältö transkoodataan alaspäin.",
     "settingsPlayerZoomDescription": "Kuinka video tulee skaalata näytölle sopivaksi.",
-    "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
+    "settingsPlaybackEngineAndroidTv": "Toistomoottori (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Valitse oletustoistomoottori Android TV -laitteissa. Muutokset koskevat seuraavaa toistokertaa.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (suositus)",
     "settingsPlaybackEngineMpvLegacy": "mpv (perintö)",
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Näkijätilin tyyppi",
+    "seerrAccountType": "Seerr-tilin tyyppi",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Tallentaa",
+    "record": "Tallenna",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6799,7 +6787,7 @@
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR-läpivienti",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
@@ -6807,23 +6795,11 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Läpivienti (edistynyt)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "Koodekin läpivienti",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
@@ -6831,7 +6807,7 @@
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "EAC3-läpivienti",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
@@ -6839,7 +6815,7 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core -läpivienti",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6847,11 +6823,11 @@
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD-läpivienti",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos -läpivienti",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} kan. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6960,7 +6936,7 @@
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "Reitin HD-äänituki",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -7086,7 +7062,7 @@
     "favoritesRowSorting": "Suosikkirivien lajittelu",
     "favoritesRowSortingDescription": "Lajittele Suosikit-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "displayCollectionsRows": "Näytä kokoelmarivit",
-    "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
+    "displayCollectionsRowsSubtitle": "Näytä kokoelmarivit aloitusnäytön osioissa.",
     "collectionsRowSorting": "Kokoelmat rivien lajittelu",
     "collectionsRowSortingDescription": "Lajittele kokoelmien rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "displayGenresRows": "Näytä lajityypit rivit",
@@ -7095,7 +7071,7 @@
     "genresRowSortingDescription": "Lajittele Genres-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "genresRowItems": "Genret rivikohdat",
     "genresRowItemsDescription": "Näytä elokuvat, sarjat tai molemmat lajityypit-riveillä.",
-    "appearance": "Ulkonäkö",
+    "appearance": "Ulkoasu",
     "cardSize": "Kortin koko",
     "externalPlayerApp": "Ulkoinen soitinsovellus",
     "externalPlayerAskEachTimeSubtitle": "Näytä sovelluksen valitsin, kun toisto alkaa.",
@@ -7182,16 +7158,16 @@
     "openIosRoutePicker": "Avaa iOS-reitinvalitsin",
     "airPlayRoutePickerUnavailable": "AirPlay reitinvalitsin ei ole käytettävissä tässä laitteessa.",
     "videos": "Videot",
-    "trailers": "Perävaunut",
+    "trailers": "Trailerit",
     "programs": "Ohjelmat",
-    "songs": "Songs",
+    "songs": "Kappaleet",
     "photoAlbums": "Valokuva-albumit",
     "photos": "Valokuvat",
     "people": "Ihmiset",
     "recentlyReleasedEpisodes": "Äskettäin julkaistut jaksot",
     "watchAgain": "Katso uudelleen",
     "guestAppearances": "Vierasesityksiä",
-    "appearancesSeerr": "Ulkonäkö (näkijä)",
+    "appearancesSeerr": "Esiintymiset (Seerr)",
     "watchWithGroup": "Katso ryhmän kanssa",
     "errors": "Virheet",
     "warnings": "Varoitukset",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Huippuartistit",
     "analyticsTopAuthors": "Parhaat kirjoittajat",
     "analyticsTopContributors": "Ahkerat kirjoittajat",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 kirjasto} other{{count} kirjastoa}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7252,7 +7228,7 @@
     "adminDrawerSectionPlayback": "Toisto",
     "adminDrawerSectionDevices": "Laitteet",
     "adminDrawerSectionAdvanced": "Edistynyt",
-    "adminDrawerSectionPlugins": "Plugins",
+    "adminDrawerSectionPlugins": "Laajennukset",
     "adminDrawerSectionLiveTv": "Live-TV",
     "homeVideos": "Kotivideot",
     "mixedContent": "Sekoitettu sisältö",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "CB7-poistolaajennus ei ole saatavilla tällä alustalla.",
     "closeGenrePanel": "Sulje genre-paneeli",
     "loadingShuffle": "Ladataan satunnaistoistoa...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "KIRJASTON SEKOITUS",
+    "randomShuffleLabel": "SATUNNAINEN SEKOITUS",
+    "genresShuffleLabel": "GENREJEN SEKOITUS",
     "autoHdrSwitching": "Automaattinen HDR-vaihto",
     "autoHdrSwitchingDescription": "Ota HDR automaattisesti käyttöön HDR-videon toistoa varten ja palauta näyttötila poistuessasi.",
     "whenFullscreen": "Kun koko näyttö",
     "transcodingLimits": "Transkoodausrajat",
-    "settingsSupportMoonfinSubtitle": "Lahjoita kahvi kehittäjälle"
+    "settingsSupportMoonfinSubtitle": "Lahjoita kahvi kehittäjälle",
+    "accountPreferences": "TILIASETUKSET",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Käyttöliittymän kieli",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Järjestelmän oletus",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Tyhjä",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Tietonäkymän tyyli",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Klassinen on alkuperäinen keskitetty Moonfin-asettelu. Moderni on mukautuva, elokuvamainen asettelu.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Klassinen",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Moderni",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Laajennetut välilehdet",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Näytä välilehden sisältö automaattisesti välilehtiä selatessasi. Poista käytöstä, jos haluat avata ja sulkea jokaisen välilehden itse.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Näytetäänkö tekniset tiedot?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Näytä koodekki-, tarkkuus- ja suoratoistotiedot bannerin yhteenvedossa",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Suositusjärjestelmä",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Käytä paikalliseen kirjastoon perustuvaa Moonfin suosittelee -algoritmia tai TMDb:n verkossa toimivia samankaltaisuusmittareita. Huomaa: verkkosuositukset vaativat Seerr-integraation.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin suosittelee",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb-samankaltaisuus",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Rajoitetaanko ikärajan mukaan?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Rajoita Moonfin suosittelee -ehdotuksia kohdemedian ikärajan mukaan",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Käyttöliittymätyyli",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automaattinen mukautuu laitteeseesi. Valitse Apple tai Material pakottaaksesi tietyn ulkoasun.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automaattinen",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Lasin laatu",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Automaattinen valitsee parhaan lasitehosteen tälle laitteelle. Täysi pakottaa aidon sumennuksen, Kevennetty käyttää kevyttä lasia, joka säästää GPU:n tehoa.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Automaattinen",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Täysi",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Kevennetty",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Mukautettu teema",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Mukautetut teemat muuttavat Moonfinin ulkoasua kauttaaltaan. Valitse tyyliisi sopiva vaihtoehto.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Lasi",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Nestemäisen lasin tyyli, jossa on liukuva liukuväritausta, huurteiset pinnat ja Applen sininen korostusväri",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bittinen sankari",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retrohenkinen pikselitaidetyyli, jossa on karkea väripaletti, kulmikkaat reunat, terävät varjot ja pikselifontti",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Valikko",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Tauolla",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Tallenna tila",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Pelit",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Lataa tila",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Pikakelaus",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emulaattorin asetukset",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Tässä ytimessä ei ole säädettäviä asetuksia.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Avaa valikko pitämällä painettuna",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Pelaamista ei vielä tueta tällä laitteella.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Uusimmat kirjat",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Uusimmat äänikirjat",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 kirja} other{{count} kirjaa}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Kirja",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Äänikirja",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent} % luettu",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} jäljellä",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Lue",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Kuuntele",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Kohteet",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Lisämateriaali",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Kulissien takana",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Poistetut kohtaukset",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Lyhytdokumentit",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Haastattelut",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Kohtaukset",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Lyhytelokuvat",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} jäljellä",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Päättyy {time} kuluttua",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "OHJAUS",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "KÄSIKIRJOITUS",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Soita kaikki musiikki satunnaisesti",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Kirjaudu Moonfiniin puhelimellasi",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Palvelimeen ei saada yhteyttä",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Seuraavaksi: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes} min jäljellä",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours} t jäljellä",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} t {minutes} min jäljellä",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Tietosivut, aloitusnäytön rivit ja äänenvoimakkuus",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Toista tunnusmusiikkia jatkuvasti",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Toista kappaletta jatkuvasti kertatoiston sijaan",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Hiiren rulla",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Valitse, mitä hiiren rullan pyörittäminen videon päällä tekee toiston aikana.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Pois",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Kelaus (eteen / taakse)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Äänenvoimakkuus",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Äänenvoimakkuus",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Varaäänen kieli",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Suosi oletusääniraitaa",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Suosi alkuperäistä ääniraitaa dubatun sijaan.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Suosi kuvailutulkkausraitoja",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Suosi kuvailutulkkausraitoja tavallisten raitojen sijaan.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transkoodaus (ääni)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Suora suoratoisto (remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transkoodaus (bittinopeus tai tarkkuus)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transkoodaus (video ja ääni)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transkoodaus (video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Valitse, miten ääni puretaan. AVR-läpivienti lähettää Dolby- ja DTS-raakavirrat vahvistimeen, Automaattinen ja Alasmiksaus purkavat äänen laitteessa.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Valitse kohdemuoto, johon monikanavaääni transkoodataan, kun lähdevirtaa ei voi toistaa suoraan tai viedä läpi.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Automaattinen tunnistus\n(suositus)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(oletus)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(häviötön)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(vain stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(tehokas)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(häviötön)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Äänikanavien enimmäismäärä",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Määritä äänilaitteistosi kanavien enimmäismäärä. Tämän rajan ylittävät monikanavavirrat alasmiksataan tai transkoodataan.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Automaattinen tunnistus\n(laitteiston oletus)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 tilaääni",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 nelikanavaääni",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 tilaääni",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 tilaääni",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 tilaääni",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 tilaääni",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Kuulokkeet",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Tekstitystila",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Merkityt",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Aina",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Vieraskieliset",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Pakotetut",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Toistaa raidat, jotka on merkitty mediatiedoston metatiedoissa \"oletukseksi\" tai \"pakotetuiksi\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Lataa ja näyttää tekstitykset automaattisesti aina, kun video alkaa.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Ottaa tekstitykset käyttöön automaattisesti, jos oletusääniraita on vieraskielinen.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Lataa vain ne tekstitykset, jotka on nimenomaisesti merkitty pakotetuiksi.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Poistaa tekstitysten automaattisen lataamisen kokonaan käytöstä.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Varatekstityksen kieli",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Tekstitysvirta",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Näytä lataukset palvelimella",
+    "reportDownloadsActivitySubtitle": "Anna palvelimen ylläpitäjän nähdä transkoodatut lataukset hallintapaneelissa",
+    "navbarAlwaysExpanded": "Näytä navigointipalkin tekstit aina",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Näytä Seerr-painike",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Ryhmittele kohteet kokoelmiin",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Piilota kokoelmiin kuuluvat kirjastokohteet kirjastoja selatessa",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Kirjaston ryhmittelyn huomautus",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Jotta voit käyttää tätä asetusta, varmista, että kirjaston näyttöasetuksissa Jellyfin- tai Emby-palvelimellasi on käytössä \"Ryhmittele elokuvat kokoelmiin\" ja/tai \"Ryhmittele sarjat kokoelmiin\".",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Trailerin ääni",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Ota trailerien ääni käyttöön mediapalkissa",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Laajennetut aloitusnäytön rivit",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Näytä vain yksi aloitusnäytön rivi kerrallaan",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Nykyinen käyttäjä",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Paikallaan",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Pomppiva",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr-löytörivit",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Ilmoitukset",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Ilmoitukset uusista pyynnöistä",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Ilmoita minulle, kun joku lähettää pyynnön",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Pyyntöjen päivitykset",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Hyväksytty, hylätty ja lisätty kirjastoosi",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Ongelmien päivitykset",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Uudet ongelmat, vastaukset ja ratkaisut",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Kuvavälimuistin raja",
+    "clearImageCache": "Tyhjennä kuvavälimuisti",
+    "imageCacheCleared": "Kuvavälimuisti tyhjennetty",
+    "seerrDownloadingPercent": "Ladataan · {percent} %",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Tuodaan",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Epäonnistui",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Käsitellään",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Muokkaaja: {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Valmis",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Tämä nimike on jo pyydetty",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Pyyntöraja saavutettu",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Tämä nimike on estolistalla",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Ei enää pyydettäviä kausia",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Sinulla ei ole oikeutta tehdä tätä pyyntöä",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Pyynnöt",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Ongelmat",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Uusimmat",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Viimeksi muokattu",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Ei ongelmia",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{remaining}/{limit} elokuvapyyntöä jäljellä",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{remaining}/{limit} kausipyyntöä jäljellä",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Osa kokoelmaa: {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Näytä kokoelma",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Pyydä kokoelma",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} elokuvaa · {available} saatavilla",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Pyydä {count} elokuvaa",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Pyydetään {current}/{total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Pyydettiin {count} elokuvaa",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Pyydettiin {ok}/{total} elokuvasta",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Kaikki elokuvat ovat jo saatavilla tai pyydetty",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Ilmoita ongelmasta",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Ääni",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Mikä on vialla?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Kaikki jaksot",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Jakso",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Avoin",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Ratkaistu",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Merkitse ratkaistuksi",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Avaa uudelleen",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Ilmoittaja: {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} kommenttia",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Lisää kommentti",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Poistetaanko tämä ongelma?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Lähetä ilmoitus",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Näyttö",
+    "adminDrawerMetadata": "Metatiedot",
+    "adminDrawerNfo": "NFO-asetukset",
+    "adminActivitySeverityAll": "Kaikki vakavuusasteet",
+    "adminActivityDateRange": "Aikaväli",
+    "adminRemoveDeviceConfirm": "Poistetaanko laite '{name}'? Käyttäjän on kirjauduttava tällä laitteella uudelleen sisään.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Poista kaikki laitteet",
+    "adminDeleteAllDevicesConfirm": "Poistetaanko {count} laitetta? Kyseisten käyttäjien on kirjauduttava uudelleen sisään. Nykyinen laitteesi ei muutu.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Laitteet poistettu",
+    "adminDevicesDeletedPartial": "Osa laitteista poistettiin, {count} laitetta ei voitu poistaa.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Polut",
+    "adminLibraryTabOptions": "Asetukset",
+    "adminLibraryTabDownloaders": "Lataajat",
+    "adminLibMetadataSavers": "Metatietojen tallentajat",
+    "adminLibSubtitleDownloaders": "Tekstitysten lataajat",
+    "adminLibLyricDownloaders": "Sanoitusten lataajat",
+    "adminLibMetadataDownloadersFor": "Metatietojen lataajat: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Kuvien hakijat: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Tämä palvelin ei tarjoa lataajia tälle kirjastotyypille.",
+    "adminLibrarySectionGeneral": "Yleiset",
+    "adminLibrarySectionMetadata": "Metatiedot",
+    "adminLibrarySectionEmbedded": "Upotetut tiedot",
+    "adminLibrarySectionSubtitles": "Tekstitykset",
+    "adminLibrarySectionImages": "Kuvat",
+    "adminLibrarySectionSeries": "Sarjat",
+    "adminLibrarySectionMusic": "Musiikki",
+    "adminLibrarySectionMovies": "Elokuvat",
+    "adminLibRealtimeMonitor": "Ota reaaliaikainen valvonta käyttöön",
+    "adminLibRealtimeMonitorHint": "Tunnista tiedostomuutokset ja käsittele ne automaattisesti.",
+    "adminLibArchiveMediaFiles": "Käsittele arkistot mediatiedostoina",
+    "adminLibEnablePhotos": "Näytä valokuvat",
+    "adminLibSaveLocalMetadata": "Tallenna kuvitus mediakansioihin",
+    "adminLibRefreshInterval": "Metatietojen automaattinen päivitys",
+    "adminLibRefreshNever": "Ei koskaan",
+    "adminLibDefault": "Oletus",
+    "adminLibDisplayTitle": "Näyttö",
+    "adminLibDisplaySection": "Kirjaston näyttö",
+    "adminLibFolderView": "Näytä kansionäkymä tavallisille mediakansioille",
+    "adminLibSpecialsInSeasons": "Näytä erikoisjaksot niiden esityskausien sisällä",
+    "adminLibGroupMovies": "Ryhmittele elokuvat kokoelmiin",
+    "adminLibGroupShows": "Ryhmittele sarjat kokoelmiin",
+    "adminLibExternalSuggestions": "Näytä ulkoista sisältöä ehdotuksissa",
+    "adminLibDateAddedSection": "Lisäyspäivän toiminta",
+    "adminLibDateAddedLabel": "Käytä lisäyspäivänä",
+    "adminLibDateAddedImport": "Kirjastoon skannauksen päivämäärä",
+    "adminLibDateAddedFile": "Tiedoston luontipäivämäärä",
+    "adminLibMetadataTitle": "Metatiedot ja kuvat",
+    "adminLibMetadataLangSection": "Ensisijainen metatietojen kieli",
+    "adminLibChaptersSection": "Luvut",
+    "adminLibDummyChapterDuration": "Korvikelukujen kesto (sekuntia)",
+    "adminLibDummyChapterDurationHint": "Lukujen pituus medialle, jolla ei ole omia lukuja. Poista käytöstä arvolla 0.",
+    "adminLibChapterImageResolution": "Lukukuvien tarkkuus",
+    "adminLibNfoTitle": "NFO-asetukset",
+    "adminLibNfoHelp": "NFO-metatiedot ovat yhteensopivia Kodin ja vastaavien sovellusten kanssa. Asetukset koskevat kaikkia kirjastoja, jotka tallentavat NFO-metatietoja.",
+    "adminLibKodiUser": "Käyttäjä, jonka katselutiedot tallennetaan NFO-tiedostoihin",
+    "adminLibSaveImagePaths": "Tallenna kuvapolut NFO-tiedostoihin",
+    "adminLibPathSubstitution": "Ota polkujen korvaus käyttöön NFO-kuvapoluille",
+    "adminLibExtraThumbs": "Kopioi extrafanart-kuvat extrathumbs-kansioon",
+    "adminLibNone": "Ei mitään",
+    "adminLibRefreshDays": "{days} päivää",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Käytä upotettuja nimikkeitä",
+    "adminLibEmbeddedExtrasTitles": "Käytä upotettuja nimikkeitä lisämateriaalille",
+    "adminLibEmbeddedEpisodeInfos": "Käytä upotettuja jaksotietoja",
+    "adminLibAllowEmbeddedSubtitles": "Salli upotetut tekstitykset",
+    "adminLibEmbeddedAllowAll": "Salli kaikki",
+    "adminLibEmbeddedAllowText": "Vain teksti",
+    "adminLibEmbeddedAllowImage": "Vain kuva",
+    "adminLibEmbeddedAllowNone": "Ei mitään",
+    "adminLibSkipIfEmbeddedSubs": "Ohita lataus, jos upotetut tekstitykset ovat olemassa",
+    "adminLibSkipIfAudioMatches": "Ohita lataus, jos ääniraita vastaa latauskieltä",
+    "adminLibRequirePerfectMatch": "Vaadi täydellinen tekstitysosuma",
+    "adminLibSaveSubtitlesWithMedia": "Tallenna tekstitykset mediakansioihin",
+    "adminLibChapterImageExtraction": "Pura lukukuvat",
+    "adminLibChapterImagesDuringScan": "Pura lukukuvat kirjastoskannauksen aikana",
+    "adminLibAutomaticSeriesGrouping": "Yhdistä automaattisesti sarjat, jotka on jaettu useaan kansioon",
+    "adminLibSeasonZeroName": "Kauden nolla näyttönimi",
+    "adminLibLufsScan": "Ota LUFS-skannaus käyttöön äänen normalisointia varten",
+    "adminLibPreferNonstandardArtist": "Suosi epästandardia artistitunnistetta",
+    "adminLibAutoAddToCollection": "Lisää elokuvat kokoelmiin automaattisesti",
+    "adminParentalControl": "Lapsilukko",
+    "adminMaxParentalRating": "Suurin sallittu ikäraja",
+    "adminMaxParentalRatingHint": "Tätä korkeamman ikärajan sisältö piilotetaan tältä käyttäjältä.",
+    "adminParentalRatingNone": "Ei mitään",
+    "adminBlockUnratedItems": "Estä kohteet, joiden ikärajatieto puuttuu tai on tuntematon",
+    "adminUnratedBook": "Kirjat",
+    "adminUnratedChannelContent": "Kanavat",
+    "adminUnratedLiveTvChannel": "Live-TV",
+    "adminUnratedMovie": "Elokuvat",
+    "adminUnratedMusic": "Musiikki",
+    "adminUnratedTrailer": "Trailerit",
+    "adminUnratedSeries": "Sarjat",
+    "adminAccessSchedules": "Käyttöaikataulut",
+    "adminAccessSchedulesHint": "Salli käyttö vain alla määritettyinä aikoina. Ilman aikataulua käyttö on sallittu koko päivän.",
+    "adminAddSchedule": "Lisää aikataulu",
+    "adminScheduleDay": "Päivä",
+    "adminScheduleStart": "Alkaa",
+    "adminScheduleEnd": "Päättyy",
+    "adminDayEveryday": "Joka päivä",
+    "adminDayWeekday": "Arkipäivä",
+    "adminDayWeekend": "Viikonloppu",
+    "adminDaySunday": "Sunnuntai",
+    "adminDayMonday": "Maanantai",
+    "adminDayTuesday": "Tiistai",
+    "adminDayWednesday": "Keskiviikko",
+    "adminDayThursday": "Torstai",
+    "adminDayFriday": "Perjantai",
+    "adminDaySaturday": "Lauantai",
+    "adminAllowedTags": "Sallitut tunnisteet",
+    "adminAllowedTagsHint": "Vain näillä tunnisteilla merkitty sisältö näytetään. Jätä tyhjäksi salliaksesi kaiken.",
+    "adminBlockedTags": "Estetyt tunnisteet",
+    "adminBlockedTagsHint": "Näillä tunnisteilla merkitty sisältö piilotetaan tältä käyttäjältä.",
+    "adminAddTag": "Lisää tunniste",
+    "adminEnabledDevices": "Sallitut laitteet",
+    "adminEnabledChannels": "Sallitut kanavat",
+    "adminAuthProvider": "Todennuksen tarjoaja",
+    "adminPasswordResetProvider": "Salasanan palautuksen tarjoaja",
+    "adminLoginAttemptsBeforeLockout": "Epäonnistuneiden kirjautumisyritysten enimmäismäärä ennen lukitusta",
+    "adminLoginAttemptsHint": "Käytä oletusta arvolla 0 tai poista lukitus käytöstä arvolla -1.",
+    "adminSyncPlayAccess": "SyncPlay-käyttöoikeus",
+    "adminSyncPlayCreateAndJoin": "Salli ryhmien luominen ja niihin liittyminen",
+    "adminSyncPlayJoin": "Salli ryhmiin liittyminen",
+    "adminSyncPlayNone": "Ei käyttöoikeutta",
+    "adminContentDeletionFolders": "Salli sisällön poistaminen kansioista",
+    "adminBackupOptionsTitle": "Luo varmuuskopio",
+    "adminBackupInclude": "Valitse, mitä varmuuskopioon sisällytetään.",
+    "adminBackupDatabase": "Tietokanta",
+    "adminBackupDatabaseAlways": "Aina mukana",
+    "adminBackupMetadata": "Metatiedot",
+    "adminBackupSubtitles": "Tekstitykset",
+    "adminEditTuner": "Muokkaa viritintä",
+    "adminTunerTypeM3u": "M3U-viritin",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Tiedosto tai URL",
+    "adminTunerIpAddress": "Virittimen IP-osoite",
+    "adminTunerFriendlyName": "Näyttönimi",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Samanaikaisten yhteyksien raja",
+    "adminTunerCountHelp": "Virittimen kerralla sallimien lähetysvirtojen enimmäismäärä. Rajoittamaton arvolla 0.",
+    "adminTunerFallbackBitrate": "Suoratoiston varabittinopeuden yläraja",
+    "adminTunerImportFavoritesOnly": "Tuo vain suosikkikanavat",
+    "adminTunerAllowHwTranscoding": "Salli laitteistotranskoodaus",
+    "adminTunerAllowFmp4": "Salli fMP4-transkoodaussäiliö",
+    "adminTunerAllowStreamSharing": "Salli lähetysvirran jakaminen",
+    "adminTunerEnableStreamLooping": "Ota lähetysvirran silmukointi käyttöön",
+    "adminTunerIgnoreDts": "Ohita DTS",
+    "adminTunerReadAtNativeFramerate": "Lue syöte natiivilla kuvataajuudella",
+    "adminEditProvider": "Muokkaa tarjoajaa",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Tiedosto tai URL",
+    "adminXmltvMoviePrefix": "Elokuvien etuliite",
+    "adminXmltvMovieCategories": "Elokuvakategoriat",
+    "adminXmltvCategoriesHelp": "Erota useat kategoriat pystyviivalla.",
+    "adminXmltvKidsCategories": "Lastenohjelmien kategoriat",
+    "adminXmltvNewsCategories": "Uutiskategoriat",
+    "adminXmltvSportsCategories": "Urheilukategoriat",
+    "adminSdUsername": "Käyttäjätunnus",
+    "adminSdPassword": "Salasana",
+    "adminSdCountry": "Maa",
+    "adminSdCountrySelect": "Valitse maa",
+    "adminSdPostalCode": "Postinumero",
+    "adminSdGetListings": "Hae ohjelmatiedot",
+    "adminSdListings": "Ohjelmatiedot",
+    "adminEnableAllTuners": "Ota kaikki virittimet käyttöön",
+    "adminTunerResetNotSupported": "Tämä viritintyyppi ei tue nollausta.",
+    "adminMovieRecordingPath": "Elokuvatallenteiden polku",
+    "adminGuideDays": "Ohjelmaoppaan päivien määrä",
+    "adminGuideDaysAuto": "Automaattinen",
+    "adminGuideDaysValue": "{days} päivää",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Jälkikäsittelysovelluksen polku",
+    "adminRecordingPostProcessorArgs": "Jälkikäsittelijän argumentit",
+    "adminSaveRecordingNfo": "Tallenna tallenteen NFO-metatiedot",
+    "adminSaveRecordingImages": "Tallenna tallenteen kuvat",
+    "adminLiveTvSectionTiming": "Ajoitus",
+    "adminLiveTvSectionPaths": "Tallennuspolut",
+    "adminLiveTvSectionPostProcessing": "Jälkikäsittely",
+    "adminGuideDaysDisplay": "Ohjelmaopas: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Päivitä ohjelmaoppaan tiedot",
+    "adminGuideRefreshStarted": "Ohjelmaoppaan päivitys aloitettu",
+    "adminGuideRefreshUnavailable": "Ohjelmaoppaan päivitystehtävä ei ole käytettävissä tällä palvelimella.",
+    "adminMetadataIdentify": "Tunnista",
+    "adminBrandingSplashUpload": "Lataa kuva",
+    "adminBrandingSplashUploaded": "Aloitusruutu päivitetty",
+    "adminBrandingSplashUploadFailed": "Aloitusruudun lataaminen epäonnistui",
+    "adminBrandingSplashDeleted": "Aloitusruutu poistettu",
+    "adminBrandingNoSplash": "Ei mukautettua aloitusruutua",
+    "adminPlaybackQsvDevice": "QSV-laite",
+    "adminPlaybackEnhancedNvdec": "Ota tehostettu NVDEC-purkaja käyttöön",
+    "adminPlaybackPreferNativeDecoder": "Suosi järjestelmän natiivia laitteistopurkajaa",
+    "adminPlaybackColorDepth": "Laitteistopurun värisyvyys",
+    "adminPlaybackColorDepth10Hevc": "10-bittinen HEVC-purku",
+    "adminPlaybackColorDepth10Vp9": "10-bittinen VP9-purku",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bittinen purku",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bittinen purku",
+    "adminPlaybackHwEncodingSection": "Laitteistokoodaus",
+    "adminPlaybackAllowHevcEncoding": "Salli HEVC-koodaus",
+    "adminPlaybackAllowAv1Encoding": "Salli AV1-koodaus",
+    "adminPlaybackIntelLowPowerH264": "Ota Intelin vähävirtainen H.264-koodain käyttöön",
+    "adminPlaybackIntelLowPowerHevc": "Ota Intelin vähävirtainen HEVC-koodain käyttöön",
+    "adminPlaybackToneMapping": "Sävykartoitus",
+    "adminPlaybackEnableTonemapping": "Ota sävykartoitus käyttöön",
+    "adminPlaybackEnableVppTonemapping": "Ota VPP-sävykartoitus käyttöön",
+    "adminPlaybackEnableVtTonemapping": "Ota VideoToolbox-sävykartoitus käyttöön",
+    "adminPlaybackTonemappingAlgorithm": "Sävykartoituksen algoritmi",
+    "adminPlaybackTonemappingMode": "Sävykartoituksen tila",
+    "adminPlaybackTonemappingRange": "Sävykartoituksen alue",
+    "adminPlaybackTonemappingDesat": "Sävykartoituksen värikylläisyyden vähennys",
+    "adminPlaybackTonemappingPeak": "Sävykartoituksen huippuarvo",
+    "adminPlaybackTonemappingParam": "Sävykartoituksen parametri",
+    "adminPlaybackVppTonemappingBrightness": "VPP-sävykartoituksen kirkkaus",
+    "adminPlaybackVppTonemappingContrast": "VPP-sävykartoituksen kontrasti",
+    "adminPlaybackPresetsQuality": "Esiasetukset ja laatu",
+    "adminPlaybackEncoderPreset": "Koodaimen esiasetus",
+    "adminPlaybackH264Crf": "H.264-koodauksen CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) -koodauksen CRF",
+    "adminPlaybackDeinterlaceMethod": "Lomituksenpoiston menetelmä",
+    "adminPlaybackDeinterlaceDoubleRate": "Kaksinkertaista kuvataajuus lomitusta poistettaessa",
+    "adminPlaybackAudioSection": "Ääni",
+    "adminPlaybackEnableAudioVbr": "Ota äänen VBR-koodaus käyttöön",
+    "adminPlaybackDownmixBoost": "Äänen alasmiksauksen korostus",
+    "adminPlaybackDownmixAlgorithm": "Stereoalasmiksauksen algoritmi",
+    "adminPlaybackMaxMuxingQueue": "Muksausjonon enimmäiskoko",
+    "adminPlaybackAutoOption": "Automaattinen",
+    "adminRunningTasks": "Käynnissä olevat tehtävät",
+    "adminNetworkingPublicHttpPort": "Julkinen HTTP-portti",
+    "adminNetworkingRequireHttps": "Vaadi HTTPS",
+    "adminNetworkingRequireHttpsHint": "Ohjaa kaikki etäpyynnöt HTTPS:ään. Ei vaikutusta, jos palvelimella ei ole voimassa olevaa varmennetta.",
+    "adminNetworkingCertPassword": "Varmenteen salasana",
+    "adminNetworkingIpSettings": "IP-asetukset",
+    "adminNetworkingEnableIpv4": "Ota IPv4 käyttöön",
+    "adminNetworkingEnableIpv6": "Ota IPv6 käyttöön",
+    "adminNetworkingAutoDiscovery": "Ota automaattinen porttien ohjaus käyttöön",
+    "adminNetworkingLocalSubnets": "Lähiverkot",
+    "adminNetworkingLocalSubnetsHint": "Pilkulla tai rivinvaihdolla erotettu luettelo IP-osoitteista tai CIDR-aliverkoista, jotka katsotaan lähiverkoksi.",
+    "adminNetworkingPublishedUris": "Julkaistut palvelimen URI-osoitteet",
+    "adminNetworkingPublishedUriHint": "Yhdistä aliverkko tai osoite julkaistuun URL-osoitteeseen, esim. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Kuristuksen viive (sekuntia)",
+    "adminPlaybackEnableSubtitleExtraction": "Salli tekstitysten purku lennossa",
+    "adminGeneralEnableSlowResponse": "Ota hitaiden vastausten varoitukset käyttöön",
+    "adminGeneralQuickConnect": "Ota Quick Connect käyttöön",
+    "adminGeneralSectionServer": "Palvelin",
+    "adminGeneralSectionMetadata": "Metatiedot",
+    "adminGeneralSectionPaths": "Polut",
+    "adminGeneralSectionPerformance": "Suorituskyky",
+    "adminGeneralDisplayLanguage": "Ensisijainen näyttökieli",
+    "offlineBannerTitle": "Olet offline-tilassa",
+    "offlineBannerSubtitle": "Näytetään lataamasi sisältö",
+    "offlineBannerAction": "Lataukset",
+    "serverUnreachableBannerTitle": "Palvelimeen ei saada yhteyttä",
+    "serverUnreachableBannerSubtitle": "Toistetaan latauksista, kunnes yhteys palaa",
+    "contextMenuHideFromContinueWatching": "Piilota Jatka katselua -osiosta",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Piilota Seuraavaksi-osiosta",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Lisää kokoelmaan",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "YHTEYS",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Salli itse allekirjoitetut varmenteet",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Luota palvelimiin, jotka käyttävät itse allekirjoitettuja tai yksityisen CA:n TLS-varmenteita. Ota käyttöön vain hallitsemillesi palvelimille. Tämä poistaa varmenteiden tarkistuksen kaikista yhteyksistä.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Tietonäkymä",
+    "settingsDetailsScreenSubtitle": "Tyyli, taustan sumennus ja välilehtien toiminta",
+    "settingsShowSeerrButtonInNavigation": "Näytä Seerr-painike navigointipalkissa",
+    "settingsAlwaysExpandNavbarLabels": "Näytä tekstit aina ylänavigointipalkissa",
+    "settingsMediaSegmentCountdown": "Mediasegmentin ajastin",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Edistymispalkki",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Ajastin",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Ei mitään",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Äskettäin julkaistut: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Ota tunnelointi käyttöön",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Lisäasetus. Reitittää äänen ja videon kytketyn laitteistopolun kautta. Oletuksena pois päältä, koska se aiheuttaa ääni- ja kuvakatkoja joillakin laitteilla.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Näytä median tiedot",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Näytä valitun kohteen tiedot kirjastosivujen yläosassa.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Piilotetaanko taustakuvat selattaessa?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Teemakauppa",
+    "themeStoreSubtitle": "Selaa ja tallenna yhteisön teemoja",
+    "themeStoreDescription": "Tallenna teema, niin voit käyttää sitä muiden tallentamiesi teemojen tapaan.",
+    "themeStoreEmpty": "Teemoja ei ole juuri nyt saatavilla.",
+    "themeStoreLoadFailed": "Teemakauppaa ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+    "themeStoreSave": "Tallenna",
+    "themeStoreSaveAndApply": "Tallenna ja ota käyttöön",
+    "themeStoreSaved": "Tallennettu",
+    "themeStoreInvalidMessage": "Tätä teemaa ei voitu ladata.",
+    "themeStoreSavedMessage": "Teema \"{themeName}\" tallennettu.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Aloitusnäytön rivien näyttö",
+    "homeRowSections": "Aloitusnäytön riviosiot",
+    "homeRowToggles": "Aloitusnäytön rivivalinnat",
+    "homeRowTogglesSubtitle": "Ota käyttöön tai poista käytöstä kirjastopohjaiset aloitusnäytön riviluokat",
+    "homeRowTogglesDescription": "Ota alla olevat valinnat käyttöön, niin rivit näkyvät aloitusnäytön osioissa.",
+    "displayPlaylistsRows": "Näytä soittolistarivit",
+    "displayPlaylistsRowsSubtitle": "Näytä soittolistarivit aloitusnäytön osioissa.",
+    "playlistsRowSorting": "Soittolistarivien järjestys",
+    "playlistsRowSortingDescription": "Järjestä soittolistarivit lisäyspäivän, julkaisupäivän, aakkosten ja muiden perusteiden mukaan.",
+    "displayAudioRows": "Näytä äänirivit",
+    "displayAudioRowsSubtitle": "Näytä äänirivit aloitusnäytön osioissa.",
+    "audioRowsSorting": "Äänirivien järjestys",
+    "audioRowsSortingDescription": "Järjestä äänirivit lisäyspäivän, julkaisupäivän, aakkosten ja muiden perusteiden mukaan.",
+    "audioPlaylists": "Äänisoittolistat",
+    "layout": "Asettelu",
+    "theme": "Teema",
+    "keyboard": "Näppäimistö",
+    "navButtons": "Painikkeet",
+    "rendering": "Renderöinti",
+    "mpvConfiguration": "MPV-määritykset",
+    "externalPlayerAppDescription": "Määritä ulkoinen soitin, niin pitkä painallus tarjoaa toistovaihtoehdon",
+    "crewContributionsSeerr": "Työryhmän osuudet (Seerr)",
+    "changeArtwork": "Vaihda kuvitus",
+    "missing": "Puuttuu",
+    "clearAllArtworkButton": "Tyhjennetäänkö kaikki kuvitus?",
+    "clearAllArtworkWarning": "Haluatko varmasti tyhjentää kaiken ladatun kuvituksen?",
+    "confirmClear": "Vahvista tyhjennys",
+    "confirmClearMessage": "Haluatko varmasti tyhjentää tämän: {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Ladataanko?",
+    "resolutionLabel": "Tarkkuus: ",
+    "onlyShowInterfaceLanguage": "Näytä vain käyttöliittymän kielinen kuvitus",
+    "confirmClearAll": "Vahvista kaikkien tyhjennys",
+    "imageUploadSuccess": "Kuvan lataus onnistui!",
+    "imageUploadFailed": "Kuvan lataus epäonnistui: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Kuvan asettaminen epäonnistui: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Kuvan poistaminen epäonnistui: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Kaiken kuvituksen tyhjentäminen epäonnistui: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Kyllä",
+    "posterCategory": "Juliste",
+    "backdropsCategory": "Taustakuvat",
+    "bannerCategory": "Banneri",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Pienoiskuva",
+    "artCategory": "Kuvitus",
+    "discArtCategory": "Levykuvitus",
+    "screenshotCategory": "Kuvakaappaus",
+    "boxCoverCategory": "Kotelon kansi",
+    "boxRearCoverCategory": "Kotelon takakansi",
+    "menuArtCategory": "Valikkokuvitus",
+    "confirmItemPoster": "juliste",
+    "confirmItemBackdrop": "taustakuva",
+    "confirmItemBanner": "banneri",
+    "confirmItemLogo": "logo",
+    "confirmItemThumbnail": "pienoiskuva",
+    "confirmItemArt": "kuvitus",
+    "confirmItemDiscArt": "levykuvitus",
+    "confirmItemScreenshot": "kuvakaappaus",
+    "confirmItemBoxCover": "kotelon kansi",
+    "confirmItemBoxRearCover": "kotelon takakansi",
+    "confirmItemMenuArt": "valikkokuvitus",
+    "resolutionAll": "Kaikki",
+    "resolutionHigh": "Korkea (1080p+)",
+    "resolutionMedium": "Keskitaso (720p)",
+    "resolutionLow": "Matala (<720p)",
+    "sources": "Lähteet",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Luvut",
+    "audiobookBookmarks": "Kirjanmerkit",
+    "audiobookNotes": "Muistiinpanot",
+    "audiobookQueue": "Jono",
+    "audiobookTimeline": "Aikajana",
+    "audiobookTimelineEmpty": "Aikajana on tyhjä",
+    "audiobookWholeBook": "Koko kirja",
+    "audiobookFocusedTimeline": "Rajattu aikajana",
+    "audiobookExportBookmarks": "Vie kirjanmerkit",
+    "audiobookExportNotes": "Vie muistiinpanot",
+    "audiobookExportAll": "Vie kaikki",
+    "audiobookExportSuccess": "Viety sijaintiin {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Vienti epäonnistui: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Sanoitukset",
+    "audiobookAddBookmark": "Lisää kirjanmerkki",
+    "audiobookAddNote": "Lisää muistiinpano",
+    "audiobookEditNote": "Muokkaa muistiinpanoa",
+    "audiobookNoteHint": "Kirjoita muistiinpano tähän kohtaan",
+    "audiobookSleepTimer": "Uniajastin",
+    "audiobookSleepOff": "Pois",
+    "audiobookSleepEndOfChapter": "Luvun loppu",
+    "audiobookSleepCustom": "Mukautettu",
+    "audiobookSleepRemaining": "{remaining} jäljellä",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Toistonopeus",
+    "audiobookRemainingTime": "Jäljellä",
+    "audiobookElapsedTime": "Kulunut",
+    "audiobookSkipBackSeconds": "Taakse {seconds} s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Eteen {seconds} s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Edellinen luku",
+    "audiobookNextChapter": "Seuraava luku",
+    "audiobookChapterIndicator": "Luku {current}/{total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Ei lukuja",
+    "audiobookNoBookmarks": "Ei vielä kirjanmerkkejä",
+    "audiobookNoNotes": "Ei vielä muistiinpanoja",
+    "audiobookBookmarkAdded": "Kirjanmerkki lisätty kohtaan {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Palauta nopeuteen 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Tallenna",
+    "audiobookCancel": "Peruuta",
+    "audiobookDelete": "Poista",
+    "subtitlePreferences": "Tekstitysasetukset",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Muuta tekstitystiloja, oletuskieliä, ulkoasua ja renderöintiasetuksia.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Tekstitysten renderöinti",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Näyttöasetukset",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Julkaisupäivä (nouseva)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Julkaisupäivä (laskeva)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Ryhmittele osuudet",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Ryhmittele useat roolit",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Varoitus kirjaston kirjoitusoikeuksista",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Näin korjaat tämän:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Myönnä Jellyfin-palvelun käyttäjälle (esim. jellyfin tai Dockerin PUID/PGID) kirjoitusoikeudet palvelimella oleviin mediakirjastokansioihisi.\n\n2. Tai siirry Jellyfinin hallintapaneeliin -> Kirjastot, muokkaa tätä kirjastoa ja poista käytöstä 'Tallenna kuvitus mediakansioihin', jolloin kuvitus tallennetaan Jellyfinin sisäiseen tietokantaan.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Sulje",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Kirjastosi '{libraryName}' on määritetty tallentamaan kuvitus suoraan mediakansioihin ('Tallenna kuvitus mediakansioihin' on käytössä). Jellyfin on kuitenkin testannut kirjoitusoikeudet, eikä sillä ole oikeutta kirjoittaa tiedostoja tähän hakemistoon:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Jellyfin ei ilmeisesti onnistunut päivittämään kuvitusta. Kirjastosi on määritetty tallentamaan kuvitus suoraan mediakansioihin ('Tallenna kuvitus mediakansioihin' on käytössä). Tämä virhe johtuu yleensä siitä, ettei Jellyfin-palvelinprosessilla ole oikeutta kirjoittaa tiedostoja mediahakemistoihisi.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Ulkoiset listat",
+    "replay": "Toista uudelleen",
+    "fileInformation": "Tiedoston tiedot",
+    "fileSizeFormat": "Koko: {size}  •  Muoto: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Näytä kaikki ({count}) ääniraitaa",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Näytä kaikki ({count}) tekstitysraitaa",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Tarkistetaan suoran toiston tukea...",
+    "directPlayCapabilityLabel": "Suoran toiston tuki: ",
+    "forced": "Pakotettu",
+    "transcodeContainerNotSupported": "Soitin ei tue säiliömuotoa.",
+    "transcodeVideoCodecNotSupported": "Videokoodekkia ei tueta.",
+    "transcodeAudioCodecNotSupported": "Äänikoodekkia ei tueta.",
+    "transcodeSubtitleCodecNotSupported": "Tekstitysmuotoa ei tueta (vaatii polttamisen kuvaan).",
+    "transcodeAudioProfileNotSupported": "Ääniprofiilia ei tueta.",
+    "transcodeVideoProfileNotSupported": "Videoprofiilia ei tueta.",
+    "transcodeVideoLevelNotSupported": "Videotasoa ei tueta.",
+    "transcodeVideoResolutionNotSupported": "Tämä laite ei tue videon tarkkuutta.",
+    "transcodeVideoBitDepthNotSupported": "Videon bittisyvyyttä ei tueta.",
+    "transcodeVideoFramerateNotSupported": "Videon kuvataajuutta ei tueta.",
+    "transcodeContainerBitrateExceedsLimit": "Tiedoston bittinopeus ylittää soittimen suoratoistorajan.",
+    "transcodeVideoBitrateExceedsLimit": "Videon bittinopeus ylittää suoratoistorajan.",
+    "transcodeAudioBitrateExceedsLimit": "Äänen bittinopeus ylittää suoratoistorajan.",
+    "transcodeAudioChannelsNotSupported": "Äänikanavien määrää ei tueta.",
+    "sortAlphabetical": "Aakkosjärjestys",
+    "sortReleaseAscending": "Julkaisujärjestys (nouseva)",
+    "sortReleaseDescending": "Julkaisujärjestys (laskeva)",
+    "sortCustomDragDrop": "Mukautettu (vedä ja pudota)",
+    "playlistSortOptions": "Soittolistan järjestysasetukset",
+    "resetSort": "Palauta järjestys",
+    "rewatchSeasonEpisode": "Katso uudelleen K{season}:J{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Katso soittolista uudelleen",
+    "noSubtitlesFound": "Tekstityksiä ei löytynyt.",
+    "adminControls": "Ylläpidon hallinta",
+    "impellerRendering": "Renderöintimoottori (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller on Flutterin moderni GPU-renderöijä, joka tuo sulavammat animaatiot ja vähemmän nykimistä. Joissakin TV-bokseissa ja vanhemmissa GPU:issa se voi aiheuttaa häiriöitä tai mustan kuvan; valitse silloin Ei käytössä. Automaattinen valitsee laitteellesi parhaan oletuksen. Ota muutos käyttöön käynnistämällä Moonfin uudelleen.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automaattinen",
+    "impellerOn": "Käytössä",
+    "impellerOff": "Ei käytössä",
+    "impellerRestartTitle": "Uudelleenkäynnistys vaaditaan",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin on käynnistettävä uudelleen renderöintimoottorin vaihtamiseksi. Sulje sovellus nyt ja avaa se uudelleen, niin muutos tulee voimaan.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Sulje sovellus nyt",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Päivitä kirjasto",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Päivitä kaikki kirjastot",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Lisäyspäivä (vanhimmat ensin)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Lisäyspäivä (uusimmat ensin)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Aakkosjärjestys (A–Ö)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Aakkosjärjestys (Ö–A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Ladataan palvelimen analytiikkaa... {percentage} %",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Sama kuin lähteessä",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Top 250 -elokuvat",
+    "imdbTop250TvShows": "IMDb Top 250 -sarjat",
+    "imdbMostPopularMovies": "IMDb:n suosituimmat elokuvat",
+    "imdbMostPopularTvShows": "IMDb:n suosituimmat sarjat",
+    "imdbLowestRatedMovies": "IMDb:n huonoimmin arvostellut elokuvat",
+    "imdbTopEnglishMovies": "IMDb:n parhaat englanninkieliset elokuvat",
+    "adminLibTrickplayExtraction": "Ota Trickplay-kuvien purku käyttöön",
+    "adminLibTrickplayDuringScan": "Pura Trickplay-kuvat kirjastoskannauksen aikana",
+    "adminLibSaveTrickplayWithMedia": "Tallenna Trickplay-kuvat mediakansioihin",
+    "adminBackupTrickplay": "Trickplay-kuvat"
 }

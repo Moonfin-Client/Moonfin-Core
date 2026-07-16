@@ -1,6 +1,6 @@
 {
     "@@locale": "te",
-    "appTitle": "మూన్‌ఫిన్",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Connecting to {serverName}",
+    "connectingToServer": "{serverName}కి కనెక్ట్ అవుతోంది",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "త్వరిత కనెక్ట్",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+    "quickConnectUnavailable": "QuickConnect అందుబాటులో లేదు: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect అందుబాటులో లేదు ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Moonfin వెర్షన్ {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -119,7 +119,7 @@
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+    "removeServerConfirmation": "మీ సర్వర్‌ల నుండి \"{serverName}\"ని తీసివేయాలా?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "తొలగించు",
+    "remove": "తీసివేయండి",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "మూన్‌ఫిన్",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -240,7 +240,7 @@
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
-    "unableToConnectTo": "Unable to connect to {target}",
+    "unableToConnectTo": "{target}కి కనెక్ట్ చేయడం సాధ్యపడలేదు",
     "@unableToConnectTo": {
         "description": "Error when connection to a specific server or address fails",
         "placeholders": {
@@ -349,7 +349,7 @@
     "@noGenresFound": {
         "description": "Empty state when no genres are available"
     },
-    "failedToLoadFolderError": "Failed to load folder: {error}",
+    "failedToLoadFolderError": "ఫోల్డర్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@failedToLoadFolderError": {
         "description": "Error when a folder cannot be loaded",
         "placeholders": {
@@ -362,7 +362,7 @@
     "@thisFolderIsEmpty": {
         "description": "Empty state for folder browse screen"
     },
-    "itemCountLabel": "{count} items",
+    "itemCountLabel": "{count} అంశాలు",
     "@itemCountLabel": {
         "description": "Subtitle showing number of items in a folder or collection",
         "placeholders": {
@@ -387,7 +387,7 @@
     "@favorites": {
         "description": "Favorites section heading and filter label"
     },
-    "totalCountItems": "{count} Items",
+    "totalCountItems": "{count} అంశాలు",
     "@totalCountItems": {
         "description": "Header showing total item count",
         "placeholders": {
@@ -444,7 +444,7 @@
     "@extraLarge": {
         "description": "Size option: extra large"
     },
-    "libraryGenresTitle": "{name} — Genres",
+    "libraryGenresTitle": "{name} — శైలులు",
     "@libraryGenresTitle": {
         "description": "Header title showing library name with genres suffix",
         "placeholders": {
@@ -497,7 +497,7 @@
     "@justNow": {
         "description": "Relative time for less than a minute ago"
     },
-    "minutesAgo": "{count}m ago",
+    "minutesAgo": "{count}ని క్రితం",
     "@minutesAgo": {
         "description": "Relative time in minutes",
         "placeholders": {
@@ -506,7 +506,7 @@
             }
         }
     },
-    "hoursAgo": "{count}h ago",
+    "hoursAgo": "{count}గం క్రితం",
     "@hoursAgo": {
         "description": "Relative time in hours",
         "placeholders": {
@@ -515,7 +515,7 @@
             }
         }
     },
-    "daysAgo": "{count}d ago",
+    "daysAgo": "{count}రో క్రితం",
     "@daysAgo": {
         "description": "Relative time in days",
         "placeholders": {
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "దరఖాస్తు చేసుకోండి",
+    "apply": "వర్తింపజేయండి",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -560,7 +560,7 @@
     "@librivoxDescription": {
         "description": "Subtitle for audiobook discovery section"
     },
-    "titlesCount": "{count} titles",
+    "titlesCount": "{count} శీర్షికలు",
     "@titlesCount": {
         "description": "Label showing number of titles",
         "placeholders": {
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "పునఃప్రారంభించండి",
+    "resume": "కొనసాగించండి",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -669,7 +669,7 @@
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
-    "authorsCount": "{count} authors",
+    "authorsCount": "{count} రచయితలు",
     "@authorsCount": {
         "description": "Metric pill showing author count",
         "placeholders": {
@@ -678,7 +678,7 @@
             }
         }
     },
-    "genresCount": "{count} genres",
+    "genresCount": "{count} శైలులు",
     "@genresCount": {
         "description": "Metric pill showing genre count",
         "placeholders": {
@@ -687,7 +687,7 @@
             }
         }
     },
-    "percentCompleted": "{percent}% completed",
+    "percentCompleted": "{percent}% పూర్తయింది",
     "@percentCompleted": {
         "description": "Reading progress percentage label",
         "placeholders": {
@@ -712,7 +712,7 @@
     "@bookmarksAndProgress": {
         "description": "Panel header for bookmarks section"
     },
-    "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+    "titlesArrangedForBrowsing": "చదవడానికి-ప్రాధాన్యత ఇచ్చే బ్రౌజింగ్ కోసం {count} శీర్షికలు అమర్చబడ్డాయి.",
     "@titlesArrangedForBrowsing": {
         "description": "Panel subtitle showing total titles",
         "placeholders": {
@@ -761,7 +761,7 @@
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
-    "noLabelFound": "No {label} found",
+    "noLabelFound": "{label} ఏదీ కనుగొనబడలేదు",
     "@noLabelFound": {
         "description": "Empty state with dynamic label like books or audiobooks",
         "placeholders": {
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "వీక్షించారు",
+    "watched": "వీక్షించినవి",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "చూడలేదు",
+    "unwatched": "వీక్షించనివి",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -858,7 +858,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "{count} sections",
+    "sectionCountLabel": "{count} విభాగాలు",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
@@ -867,7 +867,7 @@
             }
         }
     },
-    "firstPublished": "First published {year}",
+    "firstPublished": "మొదట ప్రచురించబడింది {year}",
     "@firstPublished": {
         "description": "Publication year for a book",
         "placeholders": {
@@ -888,7 +888,7 @@
     "@all": {
         "description": "Filter option for showing all items"
     },
-    "booksCount": "{count} books",
+    "booksCount": "{count} పుస్తకాలు",
     "@booksCount": {
         "description": "Label showing number of books in a discover row",
         "placeholders": {
@@ -905,7 +905,7 @@
     "@audiobookDetails": {
         "description": "AppBar title for LibriVox audiobook detail screen"
     },
-    "authorsCountTitle": "{count} Authors",
+    "authorsCountTitle": "{count} రచయితలు",
     "@authorsCountTitle": {
         "description": "AppBar title for LibriVox authors list screen",
         "placeholders": {
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 ఆడియోబుక్} other{{count} ఆడియోబుక్‌లు}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,7 +935,7 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "తొలగించు",
+    "delete": "తొలగించండి",
     "@delete": {
         "description": "Delete action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "సీజన్లు",
+    "seasons": "సీజన్‌లు",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1023,7 +1023,7 @@
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
-    "published": "Published {year}",
+    "published": "ప్రచురించబడింది {year}",
     "@published": {
         "description": "Publication year for an author book tile",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 సీజన్} other{{count} సీజన్‌లు}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1045,7 +1045,7 @@
             }
         }
     },
-    "endsAt": "Ends at {time}",
+    "endsAt": "{time}కి ముగుస్తుంది",
     "@endsAt": {
         "description": "Label showing when media will end",
         "placeholders": {
@@ -1066,7 +1066,7 @@
     "@read": {
         "description": "Action button label to start reading a book"
     },
-    "resumeFrom": "Resume from {position}",
+    "resumeFrom": "{position} నుండి కొనసాగించండి",
     "@resumeFrom": {
         "description": "Action button label showing resume position",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "ఆడండి",
+    "play": "ప్లే చేయండి",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "తారాగణం",
+    "cast": "కాస్ట్ చేయండి",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1199,7 +1199,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+    "deleteDownloadedTracksMessage": "\"{title}\" కోసం డౌన్‌లోడ్ చేసిన ట్రాక్‌లను తొలగించాలా?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1220,7 +1220,7 @@
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
-    "noItemsLoaded": "No {itemLabel} loaded",
+    "noItemsLoaded": "{itemLabel} ఏదీ లోడ్ కాలేదు",
     "@noItemsLoaded": {
         "description": "Message when no items are loaded for download",
         "placeholders": {
@@ -1229,7 +1229,7 @@
             }
         }
     },
-    "downloadingTitle": "Downloading {title} ({count} items)...",
+    "downloadingTitle": "{title} డౌన్‌లోడ్ అవుతోంది ({count} అంశాలు)...",
     "@downloadingTitle": {
         "description": "Snackbar message when downloading album tracks",
         "placeholders": {
@@ -1241,7 +1241,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+    "deleteConfirmMessage": "సర్వర్ నుండి \"{name}\"ని ఖచ్చితంగా తొలగించాలా? ఈ చర్యను రద్దు చేయలేరు.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -1258,7 +1258,7 @@
     "@noPlayableTrailerFound": {
         "description": "Error message when no trailer can be played"
     },
-    "unsupportedBookFormat": "Unsupported book format: .{extension}",
+    "unsupportedBookFormat": "మద్దతు లేని పుస్తక ఫార్మాట్: .{extension}",
     "@unsupportedBookFormat": {
         "description": "Error message for unsupported book file format",
         "placeholders": {
@@ -1295,7 +1295,7 @@
     "@selectedSubtitleInvalid": {
         "description": "Error message when a selected subtitle is invalid"
     },
-    "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+    "subtitleDownloadedSelected": "సబ్‌టైటిల్ డౌన్‌లోడ్ చేయబడి ఎంపిక చేయబడింది: {name}",
     "@subtitleDownloadedSelected": {
         "description": "Success message after downloading and selecting a subtitle",
         "placeholders": {
@@ -1308,7 +1308,7 @@
     "@subtitleDownloadedPending": {
         "description": "Message when subtitle was downloaded but not yet visible"
     },
-    "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+    "noRemoteSubtitlesFound": "{language} కోసం రిమోట్ సబ్‌టైటిల్‌లు ఏవీ కనుగొనబడలేదు.",
     "@noRemoteSubtitlesFound": {
         "description": "Message when no remote subtitles were found",
         "placeholders": {
@@ -1321,7 +1321,7 @@
     "@selectVersion": {
         "description": "Dialog title for selecting a media version"
     },
-    "versionNumber": "Version {number}",
+    "versionNumber": "వెర్షన్ {number}",
     "@versionNumber": {
         "description": "Default label for a media version",
         "placeholders": {
@@ -1350,7 +1350,7 @@
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
-    "downloadingItem": "Downloading {name} ({quality})...",
+    "downloadingItem": "{name} డౌన్‌లోడ్ అవుతోంది ({quality})...",
     "@downloadingItem": {
         "description": "Snackbar message when downloading an item",
         "placeholders": {
@@ -1366,7 +1366,7 @@
     "@deleteDownloadedFiles": {
         "description": "Dialog title for deleting downloaded files"
     },
-    "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+    "deleteLocalFilesMessage": "{typeLabel} కోసం స్థానిక ఫైల్‌లను తొలగించాలా?\n\nఇది నిల్వ స్థలాన్ని ఖాళీ చేస్తుంది. మీరు తర్వాత మళ్లీ డౌన్‌లోడ్ చేసుకోవచ్చు.",
     "@deleteLocalFilesMessage": {
         "description": "Confirmation message for deleting local downloaded files",
         "placeholders": {
@@ -1399,7 +1399,7 @@
     "@studio": {
         "description": "Metadata label for studio"
     },
-    "studioMoreCount": "+{count} more",
+    "studioMoreCount": "+{count} మరిన్ని",
     "@studioMoreCount": {
         "description": "Label showing additional studio count",
         "placeholders": {
@@ -1408,7 +1408,7 @@
             }
         }
     },
-    "totalEpisodes": "{count} Episodes",
+    "totalEpisodes": "{count} ఎపిసోడ్‌లు",
     "@totalEpisodes": {
         "description": "Season progress label showing total episodes",
         "placeholders": {
@@ -1429,7 +1429,7 @@
             }
         }
     },
-    "episodeLabel": "Episode {number}",
+    "episodeLabel": "ఎపిసోడ్ {number}",
     "@episodeLabel": {
         "description": "Label for an episode number",
         "placeholders": {
@@ -1438,7 +1438,7 @@
             }
         }
     },
-    "chapterNumber": "Chapter {number}",
+    "chapterNumber": "అధ్యాయం {number}",
     "@chapterNumber": {
         "description": "Default name for a chapter",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 ట్రాక్} other{{count} ట్రాక్‌లు}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 అధ్యాయం} other{{count} అధ్యాయాలు}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1465,7 +1465,7 @@
             }
         }
     },
-    "born": "Born {date}",
+    "born": "జననం {date}",
     "@born": {
         "description": "Person birth date label",
         "placeholders": {
@@ -1474,7 +1474,7 @@
             }
         }
     },
-    "died": "Died {date}",
+    "died": "మరణం {date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1483,7 +1483,7 @@
             }
         }
     },
-    "age": "Age {age}",
+    "age": "వయస్సు {age}",
     "@age": {
         "description": "Person age label",
         "placeholders": {
@@ -1504,7 +1504,7 @@
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
-    "downloadsCount": "{count} downloads",
+    "downloadsCount": "{count} డౌన్‌లోడ్‌లు",
     "@downloadsCount": {
         "description": "Subtitle showing number of downloads for a remote subtitle",
         "placeholders": {
@@ -1534,7 +1534,7 @@
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
-    "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
+    "remoteSubtitlePermissionError": "రిమోట్ సబ్‌టైటిల్ {action} కోసం ఈ వినియోగదారుకు Jellyfin సబ్‌టైటిల్ నిర్వహణ అనుమతి అవసరం.",
     "@remoteSubtitlePermissionError": {
         "description": "Error message when user lacks subtitle management permission",
         "placeholders": {
@@ -1543,7 +1543,7 @@
             }
         }
     },
-    "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
+    "remoteSubtitleNotFoundError": "రిమోట్ సబ్‌టైటిల్ {action} కోసం ఈ అంశం సర్వర్‌లో కనుగొనబడలేదు.",
     "@remoteSubtitleNotFoundError": {
         "description": "Error message when item not found for subtitle operation",
         "placeholders": {
@@ -1552,7 +1552,7 @@
             }
         }
     },
-    "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
+    "remoteSubtitleDetailError": "రిమోట్ సబ్‌టైటిల్ {action} విఫలమైంది: {detail}",
     "@remoteSubtitleDetailError": {
         "description": "Error message with detail for subtitle operation",
         "placeholders": {
@@ -1564,7 +1564,7 @@
             }
         }
     },
-    "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
+    "remoteSubtitleHttpError": "రిమోట్ సబ్‌టైటిల్ {action} విఫలమైంది (HTTP {status}).",
     "@remoteSubtitleHttpError": {
         "description": "Error message with HTTP status for subtitle operation",
         "placeholders": {
@@ -1576,7 +1576,7 @@
             }
         }
     },
-    "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
+    "remoteSubtitleGenericError": "రిమోట్ సబ్‌టైటిల్‌లను {action} చేయడం విఫలమైంది.",
     "@remoteSubtitleGenericError": {
         "description": "Generic error message for subtitle operation",
         "placeholders": {
@@ -1585,7 +1585,7 @@
             }
         }
     },
-    "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+    "deleteSeriesFiles": "\"{name}\" కోసం డౌన్‌లోడ్ చేసిన అన్ని ఎపిసోడ్‌లు",
     "@deleteSeriesFiles": {
         "description": "Type label for series file deletion",
         "placeholders": {
@@ -1630,7 +1630,7 @@
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
-    "castActionFailed": "{label} action failed: {error}",
+    "castActionFailed": "{label} చర్య విఫలమైంది: {error}",
     "@castActionFailed": {
         "description": "Error when a cast action fails",
         "placeholders": {
@@ -1642,7 +1642,7 @@
             }
         }
     },
-    "failedToSetCastVolume": "Failed to set cast volume: {error}",
+    "failedToSetCastVolume": "కాస్ట్ వాల్యూమ్‌ను సెట్ చేయడం విఫలమైంది: {error}",
     "@failedToSetCastVolume": {
         "description": "Error when setting cast volume fails",
         "placeholders": {
@@ -1651,7 +1651,7 @@
             }
         }
     },
-    "castControlsTitle": "{label} Controls",
+    "castControlsTitle": "{label} నియంత్రణలు",
     "@castControlsTitle": {
         "description": "Title for cast controls dialog",
         "placeholders": {
@@ -1676,7 +1676,7 @@
     "@syncPosition": {
         "description": "Cast control action to sync playback position"
     },
-    "stopCast": "Stop {label}",
+    "stopCast": "{label}ని ఆపండి",
     "@stopCast": {
         "description": "Cast control action to stop casting",
         "placeholders": {
@@ -1689,7 +1689,7 @@
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
-    "trackNumber": "Track {number}",
+    "trackNumber": "ట్రాక్ {number}",
     "@trackNumber": {
         "description": "Fallback track name in queue",
         "placeholders": {
@@ -1714,7 +1714,7 @@
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
-    "secondsCount": "{seconds} seconds",
+    "secondsCount": "{seconds} సెకన్లు",
     "@secondsCount": {
         "description": "Double-tap skip overlay duration label",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "ఆటగాడు",
+    "player": "ప్లేయర్",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "ట్రాక్ చేయండి",
+    "track": "ట్రాక్",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1882,7 +1882,7 @@
     "@embedded": {
         "description": "Subtitle type label for embedded subtitles"
     },
-    "castSessionError": "{protocol} session error",
+    "castSessionError": "{protocol} సెషన్ లోపం",
     "@castSessionError": {
         "description": "Fallback error message for cast session errors",
         "placeholders": {
@@ -1891,7 +1891,7 @@
             }
         }
     },
-    "failedToLoadBookDetails": "Failed to load book details: {error}",
+    "failedToLoadBookDetails": "పుస్తక వివరాలను లోడ్ చేయడం విఫలమైంది: {error}",
     "@failedToLoadBookDetails": {
         "description": "Error when loading book details fails",
         "placeholders": {
@@ -1904,7 +1904,7 @@
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
-    "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+    "formatCannotRenderInApp": "ఈ ఫార్మాట్ (.{extension})ను యాప్‌లో ఇంకా రెండర్ చేయలేరు.",
     "@formatCannotRenderInApp": {
         "description": "Fallback message for unsupported document format",
         "placeholders": {
@@ -1921,7 +1921,7 @@
     "@couldNotOpenExternalViewer": {
         "description": "Error when external viewer fails to open"
     },
-    "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
+    "failedToOpenInAppReader": "యాప్ రీడర్‌ను తెరవడం విఫలమైంది: {error}",
     "@failedToOpenInAppReader": {
         "description": "Error when in-app reader fails to open",
         "placeholders": {
@@ -1930,7 +1930,7 @@
             }
         }
     },
-    "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
+    "bookmarkAlreadySaved": "{label} వద్ద బుక్‌మార్క్ ఇప్పటికే సేవ్ చేయబడింది.",
     "@bookmarkAlreadySaved": {
         "description": "Snackbar when bookmark already exists",
         "placeholders": {
@@ -1939,7 +1939,7 @@
             }
         }
     },
-    "bookmarkAdded": "Bookmark added: {label}",
+    "bookmarkAdded": "బుక్‌మార్క్ జోడించబడింది: {label}",
     "@bookmarkAdded": {
         "description": "Snackbar confirming bookmark was added",
         "placeholders": {
@@ -1956,7 +1956,7 @@
     "@noTableOfContentsAvailable": {
         "description": "Empty state for table of contents panel"
     },
-    "pageLabel": "Page {number}",
+    "pageLabel": "పేజీ {number}",
     "@pageLabel": {
         "description": "Page number label in TOC or position",
         "placeholders": {
@@ -1973,7 +1973,7 @@
     "@bookReader": {
         "description": "Default title for book reader screen"
     },
-    "formatExtension": "Format: .{extension}",
+    "formatExtension": "ఫార్మాట్: .{extension}",
     "@formatExtension": {
         "description": "Chip label showing file format",
         "placeholders": {
@@ -1982,7 +1982,7 @@
             }
         }
     },
-    "percentRead": "{percent}% read",
+    "percentRead": "{percent}% చదివారు",
     "@percentRead": {
         "description": "Chip label showing reading progress",
         "placeholders": {
@@ -2015,7 +2015,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "Reset Zoom ({zoom}x)",
+    "resetZoom": "జూమ్‌ను రీసెట్ చేయండి ({zoom}x)",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2048,7 +2048,7 @@
     "@markedAsUnread": {
         "description": "Snackbar confirming item marked as unread"
     },
-    "failedToUpdateReadState": "Failed to update read state: {error}",
+    "failedToUpdateReadState": "చదివిన స్థితిని అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@failedToUpdateReadState": {
         "description": "Error when marking read/unread fails",
         "placeholders": {
@@ -2093,7 +2093,7 @@
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
-    "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+    "platformCannotHostDocumentEngine": "{extension} ఫైల్‌ల కోసం ఎంబెడెడ్ డాక్యుమెంట్ ఇంజిన్‌ను ఈ ప్లాట్‌ఫారమ్ హోస్ట్ చేయలేదు.",
     "@platformCannotHostDocumentEngine": {
         "description": "Fallback description when platform lacks document engine",
         "placeholders": {
@@ -2146,7 +2146,7 @@
     "@guideTimeline": {
         "description": "Section title for the TV guide timeline"
     },
-    "failedToLoadGuide": "Failed to load guide: {error}",
+    "failedToLoadGuide": "గైడ్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@failedToLoadGuide": {
         "description": "Error when guide data fails to load",
         "placeholders": {
@@ -2191,11 +2191,11 @@
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "మూసివేయి",
+    "close": "మూసివేయండి",
     "@close": {
         "description": "Button label to close a dialog"
     },
-    "failedToPlayChannel": "Failed to play {name}",
+    "failedToPlayChannel": "{name}ను ప్లే చేయడం విఫలమైంది",
     "@failedToPlayChannel": {
         "description": "Error when live TV channel playback fails",
         "placeholders": {
@@ -2232,7 +2232,7 @@
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+    "cancelScheduledRecordingOf": "\"{name}\" షెడ్యూల్ చేసిన రికార్డింగ్‌ను రద్దు చేయాలా?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "సంఖ్య",
+    "no": "కాదు",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2269,7 +2269,7 @@
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
-    "stopRecordingName": "Stop recording \"{name}\"?",
+    "stopRecordingName": "\"{name}\" రికార్డింగ్‌ను ఆపాలా?",
     "@stopRecordingName": {
         "description": "Confirmation message for stopping a series recording",
         "placeholders": {
@@ -2290,7 +2290,7 @@
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
-    "noResultsForQuery": "No results for \"{query}\"",
+    "noResultsForQuery": "\"{query}\" కోసం ఫలితాలు లేవు",
     "@noResultsForQuery": {
         "description": "Shown when search returns no results",
         "placeholders": {
@@ -2299,7 +2299,7 @@
             }
         }
     },
-    "searchFailedError": "Search failed: {error}",
+    "searchFailedError": "శోధన విఫలమైంది: {error}",
     "@searchFailedError": {
         "description": "Shown when search encounters an error",
         "placeholders": {
@@ -2344,7 +2344,7 @@
     "@deleteDownload": {
         "description": "Dialog title for deleting a download"
     },
-    "removeItemAndFiles": "Remove \"{name}\" and its files?",
+    "removeItemAndFiles": "\"{name}\"ని, దాని ఫైల్‌లను తీసివేయాలా?",
     "@removeItemAndFiles": {
         "description": "Confirmation to delete a downloaded item and its files",
         "placeholders": {
@@ -2353,7 +2353,7 @@
             }
         }
     },
-    "tracksCount": "{count} tracks",
+    "tracksCount": "{count} ట్రాక్‌లు",
     "@tracksCount": {
         "description": "Number of tracks in an album",
         "placeholders": {
@@ -2370,7 +2370,7 @@
     "@playAlbum": {
         "description": "Button to play an album"
     },
-    "failedToLoadAlbum": "Failed to load album: {error}",
+    "failedToLoadAlbum": "ఆల్బమ్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@failedToLoadAlbum": {
         "description": "Error when loading an album fails",
         "placeholders": {
@@ -2379,7 +2379,7 @@
             }
         }
     },
-    "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+    "noDownloadedTracksForAlbum": "{name} కోసం డౌన్‌లోడ్ చేసిన ట్రాక్‌లు ఏవీ లేవు.",
     "@noDownloadedTracksForAlbum": {
         "description": "Shown when an album has no downloaded tracks",
         "placeholders": {
@@ -2404,7 +2404,7 @@
     "@deleteEpisode": {
         "description": "Dialog title for deleting an episode"
     },
-    "removeName": "Remove \"{name}\"?",
+    "removeName": "\"{name}\"ని తీసివేయాలా?",
     "@removeName": {
         "description": "Confirmation to remove an item by name",
         "placeholders": {
@@ -2413,7 +2413,7 @@
             }
         }
     },
-    "durationMinutes": "{minutes} min",
+    "durationMinutes": "{minutes} ని",
     "@durationMinutes": {
         "description": "Duration in minutes",
         "placeholders": {
@@ -2434,7 +2434,7 @@
             }
         }
     },
-    "episodeNumber": "Episode {number}",
+    "episodeNumber": "ఎపిసోడ్ {number}",
     "@episodeNumber": {
         "description": "Episode label with number",
         "placeholders": {
@@ -2455,7 +2455,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "Season {number}",
+    "seasonNumber": "సీజన్ {number}",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2481,7 +2481,7 @@
     "@deleteSeason": {
         "description": "Dialog title for deleting a season"
     },
-    "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+    "deleteAllEpisodesInSeason": "{season}లో డౌన్‌లోడ్ చేసిన అన్ని ఎపిసోడ్‌లను తొలగించాలా?",
     "@deleteAllEpisodesInSeason": {
         "description": "Confirmation to delete all episodes in a season",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 ఎపిసోడ్} other{{count} ఎపిసోడ్‌లు}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2535,7 +2535,7 @@
     "@deleteSelected": {
         "description": "Dialog title for deleting selected items"
     },
-    "deleteSelectedCount": "Delete {count} downloaded items?",
+    "deleteSelectedCount": "డౌన్‌లోడ్ చేసిన {count} అంశాలను తొలగించాలా?",
     "@deleteSelectedCount": {
         "description": "Confirmation to delete selected downloaded items",
         "placeholders": {
@@ -2556,7 +2556,7 @@
     "@database": {
         "description": "Storage breakdown label for database"
     },
-    "ofStorageLimit": "of {limit} limit",
+    "ofStorageLimit": "{limit} పరిమితిలో",
     "@ofStorageLimit": {
         "description": "Text showing storage used of total limit",
         "placeholders": {
@@ -2665,7 +2665,7 @@
     "@customizeAccountPlaybackInterface": {
         "description": "Settings screen subtitle"
     },
-    "optionsCount": "{count} options",
+    "optionsCount": "{count} ఎంపికలు",
     "@optionsCount": {
         "description": "Number of options in a settings section",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "వికలాంగుడు",
+    "disabled": "నిలిపివేయబడింది",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3057,7 +3057,7 @@
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
-    "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+    "afterEpisodesAndHours": "{episodes} ఎపిసోడ్‌లు / {hours}గం తర్వాత",
     "@afterEpisodesAndHours": {
         "description": "Still watching prompt interval",
         "placeholders": {
@@ -3233,7 +3233,7 @@
     "@tv": {
         "description": "Profile: TV"
     },
-    "loadedProfileSettings": "Loaded {profile} profile settings.",
+    "loadedProfileSettings": "{profile} ప్రొఫైల్ సెట్టింగ్‌లు లోడ్ చేయబడ్డాయి.",
     "@loadedProfileSettings": {
         "description": "Message when profile settings are loaded",
         "placeholders": {
@@ -3242,7 +3242,7 @@
             }
         }
     },
-    "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+    "failedToLoadProfileSettings": "{profile} ప్రొఫైల్ సెట్టింగ్‌లను లోడ్ చేయడం విఫలమైంది.",
     "@failedToLoadProfileSettings": {
         "description": "Error when profile settings fail to load",
         "placeholders": {
@@ -3251,7 +3251,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+    "syncedSettingsToProfile": "స్థానిక సెట్టింగ్‌లు {profile} ప్రొఫైల్‌కు సింక్ చేయబడ్డాయి.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3540,7 +3540,7 @@
     "@selectAll": {
         "description": "Button to select all items"
     },
-    "itemsSelected": "{count} selected",
+    "itemsSelected": "{count} ఎంపిక చేయబడ్డాయి",
     "@itemsSelected": {
         "description": "Number of selected items",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "మూన్‌ఫిన్",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "నిర్దిష్ట వినియోగదారు",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "ఎల్లప్పుడూ ప్రమాణీకరించండి",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3821,7 +3817,7 @@
     "@timeout": {
         "description": "Setting for timeout"
     },
-    "minutesShort": "{minutes} min",
+    "minutesShort": "{minutes} ని",
     "@minutesShort": {
         "description": "Minutes duration short format",
         "placeholders": {
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "ట్రాక్ట్",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "ప్లగిన్",
+    "pluginLabel": "Moonbase ప్లగిన్",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3975,7 +3971,7 @@
     "@pluginNotDetectedDescription": {
         "description": "Description when plugin is not detected"
     },
-    "pluginStatusVersion": "{status}\nVersion: {version}",
+    "pluginStatusVersion": "{status}\nవెర్షన్: {version}",
     "@pluginStatusVersion": {
         "description": "Plugin status with version",
         "placeholders": {
@@ -4059,11 +4055,11 @@
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "నావిగేషన్‌లో సీర్‌ని చూపించు (సర్వర్ ప్లగ్ఇన్ అవసరం)",
+    "showSeerrInNavigation": "నావిగేషన్‌లో Seerrను చూపించండి (సర్వర్ ప్లగిన్ అవసరం)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "సర్వర్ ప్లగ్ఇన్ సీర్ మద్దతు నిలిపివేయబడినందున అందుబాటులో లేదు.",
+    "seerrUnavailable": "సర్వర్ ప్లగిన్ Seerr మద్దతు నిలిపివేయబడినందున అందుబాటులో లేదు.",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
@@ -4075,7 +4071,7 @@
     "@hideAdultContent": {
         "description": "Description for NSFW filter"
     },
-    "loggedInAs": "Logged in as: {username}",
+    "loggedInAs": "లాగిన్ అయినవారు: {username}",
     "@loggedInAs": {
         "description": "Label showing logged in username",
         "placeholders": {
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "అడ్డు వరుసలను కనుగొనండి",
+    "discoverRows": "Seerr డిస్కవరీ పేజీ",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "క్రమాన్ని మార్చడానికి లాగండి. అడ్డు వరుసలను ప్రారంభించండి లేదా నిలిపివేయండి. Moonfin ప్లగిన్‌తో ప్రారంభించబడిన అడ్డు వరుస ఆర్డర్ సమకాలీకరణ.",
+    "discoverRowsDescriptionPlugin": "Seerr మెయిన్‌పేజీలో చూడటానికి వరుసలను ప్రారంభించండి. క్రమాన్ని మార్చడానికి లాగండి. అనుకూల క్రమం Moonbaseతో సింక్ అవుతుంది.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "క్రమాన్ని మార్చడానికి లాగండి. అడ్డు వరుసలను ప్రారంభించండి లేదా నిలిపివేయండి.",
+    "discoverRowsDescription": "Seerr మెయిన్‌పేజీలో చూడటానికి వరుసలను ప్రారంభించండి. క్రమాన్ని మార్చడానికి లాగండి. అనుకూల క్రమం Moonbaseతో సింక్ అవుతుంది.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4108,7 +4104,7 @@
     "@aboutTitle": {
         "description": "About screen title"
     },
-    "versionValue": "Version {version}",
+    "versionValue": "వెర్షన్ {version}",
     "@versionValue": {
         "description": "Version display",
         "placeholders": {
@@ -4169,7 +4165,7 @@
     "@updateAvailable": {
         "description": "Message when an update is available"
     },
-    "updateAvailableVersion": "Update available: v{version}",
+    "updateAvailableVersion": "అప్‌డేట్ అందుబాటులో ఉంది: v{version}",
     "@updateAvailableVersion": {
         "description": "Message with specific update version",
         "placeholders": {
@@ -4186,7 +4182,7 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "updateAvailableTitle": "v{version} Available",
+    "updateAvailableTitle": "v{version} అందుబాటులో ఉంది",
     "@updateAvailableTitle": {
         "description": "Title of the update dialog showing the new version",
         "placeholders": {
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "క్లియర్",
+    "clear": "క్లియర్ చేయండి",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4272,7 +4268,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "{count} అంశాలు",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "సీర్ సెట్టింగ్‌లు",
+    "seerrSettings": "Seerr సెట్టింగ్‌లు",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4301,7 +4297,7 @@
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
-    "requestedByName": "Requested by {name}",
+    "requestedByName": "{name} అభ్యర్థించారు",
     "@requestedByName": {
         "description": "Label showing who requested media",
         "placeholders": {
@@ -4326,7 +4322,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+    "cancelRequestForTitle": "\"{title}\" కోసం అభ్యర్థనను రద్దు చేయాలా?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4335,7 +4331,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+    "cancelCountRequestsForTitle": "\"{title}\" కోసం {count} అభ్యర్థనలను రద్దు చేయాలా?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4359,7 +4355,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "Budget: ${amount}",
+    "budgetAmount": "బడ్జెట్: ${amount}",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4368,7 +4364,7 @@
             }
         }
     },
-    "revenueAmount": "Revenue: ${amount}",
+    "revenueAmount": "ఆదాయం: ${amount}",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4389,7 +4385,7 @@
             }
         }
     },
-    "requestSeriesOrMovie": "Request {type}",
+    "requestSeriesOrMovie": "{type}ని అభ్యర్థించండి",
     "@requestSeriesOrMovie": {
         "description": "Bottom sheet title for requesting media",
         "placeholders": {
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "ప్రదర్శనలు",
+    "appearances": "నటించినవి",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4438,7 +4434,7 @@
     "@crewSection": {
         "description": "Section title for crew credits"
     },
-    "ageValue": "age {age}",
+    "ageValue": "వయస్సు {age}",
     "@ageValue": {
         "description": "Person age display",
         "placeholders": {
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "సీజన్లు",
+    "seasonsLabel": "సీజన్‌లు",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4520,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "యాక్సెస్",
-    "add": "జోడించు",
+    "add": "జోడించండి",
     "address": "చిరునామా",
     "analytics": "విశ్లేషణలు",
     "catalog": "కేటలాగ్",
@@ -4529,18 +4525,18 @@
     "create": "సృష్టించు",
     "disable": "ఆపివేయి",
     "done": "పూర్తయింది",
-    "edit": "సవరించు",
+    "edit": "సవరించండి",
     "encoding": "ఎన్కోడింగ్",
     "error": "లోపం",
     "forward": "ముందుకు",
-    "general": "జనరల్",
+    "general": "సాధారణం",
     "go": "వెళ్ళు",
     "install": "ఇన్‌స్టాల్ చేయండి",
     "installed": "ఇన్‌స్టాల్ చేయబడింది",
     "interval": "ఇంటర్వెల్",
     "name": "పేరు",
     "networking": "నెట్వర్కింగ్",
-    "next": "తదుపరి",
+    "next": "తర్వాత",
     "path": "మార్గం",
     "paused": "పాజ్ చేయబడింది",
     "permissions": "అనుమతులు",
@@ -4560,10 +4556,10 @@
     "sessions": "సెషన్స్",
     "set": "సెట్",
     "status": "స్థితి",
-    "stop": "ఆపు",
+    "stop": "ఆపండి",
     "streaming": "స్ట్రీమింగ్",
     "time": "సమయం",
-    "trickplay": "ట్రిక్ ప్లే",
+    "trickplay": "Trickplay",
     "uninstall": "అన్‌ఇన్‌స్టాల్ చేయండి",
     "up": "పైకి",
     "update": "నవీకరించు",
@@ -4576,11 +4572,11 @@
     "adminDrawerSettings": "సెట్టింగ్‌లు",
     "adminDrawerBranding": "బ్రాండింగ్",
     "adminDrawerUsers": "వినియోగదారులు",
-    "adminDrawerLibraries": "గ్రంథాలయాలు",
+    "adminDrawerLibraries": "లైబ్రరీలు",
     "adminDrawerTranscoding": "ట్రాన్స్‌కోడింగ్",
-    "adminDrawerResume": "పునఃప్రారంభించండి",
+    "adminDrawerResume": "కొనసాగింపు",
     "adminDrawerStreaming": "స్ట్రీమింగ్",
-    "adminDrawerTrickplay": "ట్రిక్ ప్లే",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "పరికరాలు",
     "adminDrawerActivity": "కార్యాచరణ",
     "adminDrawerNetworking": "నెట్వర్కింగ్",
@@ -4596,7 +4592,7 @@
     "adminMediaOverview": "మీడియా అవలోకనం",
     "adminMediaTotalsError": "సర్వర్ మీడియా మొత్తాలను లోడ్ చేయడం సాధ్యపడలేదు.",
     "adminMediaOverviewSubtitle": "ఈ సర్వర్‌లో ఎంత కంటెంట్ ఉందో త్వరగా చదవండి.",
-    "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
+    "adminPluginUpdatesAvailable": "ప్లగిన్ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి: {count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
             "count": {
@@ -4604,7 +4600,7 @@
             }
         }
     },
-    "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
+    "adminPluginsRequiringRestart": "పునఃప్రారంభం అవసరమైన ప్లగిన్‌లు: {count}",
     "@adminPluginsRequiringRestart": {
         "placeholders": {
             "count": {
@@ -4612,7 +4608,7 @@
             }
         }
     },
-    "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
+    "adminFailedScheduledTasks": "విఫలమైన షెడ్యూల్డ్ టాస్క్‌లు: {count}",
     "@adminFailedScheduledTasks": {
         "placeholders": {
             "count": {
@@ -4620,7 +4616,7 @@
             }
         }
     },
-    "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+    "adminRecentAlertEntries": "ఇటీవలి హెచ్చరిక/లోపం ఎంట్రీలు: {count}",
     "@adminRecentAlertEntries": {
         "placeholders": {
             "count": {
@@ -4646,7 +4642,7 @@
     "adminShutdownServer": "షట్డౌన్ సర్వర్",
     "adminScanLibraries": "లైబ్రరీలను స్కాన్ చేయండి",
     "adminLibraryScanStarted": "లైబ్రరీ స్కాన్ ప్రారంభించబడింది",
-    "errorGeneric": "Error: {error}",
+    "errorGeneric": "లోపం: {error}",
     "@errorGeneric": {
         "placeholders": {
             "error": {
@@ -4661,7 +4657,7 @@
     "adminNoActiveSessions": "సక్రియ సెషన్‌లు లేవు",
     "adminRecentActivity": "ఇటీవలి కార్యాచరణ",
     "adminNoRecentActivity": "ఇటీవలి కార్యాచరణ లేదు",
-    "adminCommandFailed": "Command failed: {error}",
+    "adminCommandFailed": "కమాండ్ విఫలమైంది: {error}",
     "@adminCommandFailed": {
         "placeholders": {
             "error": {
@@ -4675,7 +4671,7 @@
     "sessionPrev": "మునుపటి",
     "sessionRewind": "రివైండ్ చేయండి",
     "sessionForward": "ముందుకు",
-    "sessionNext": "తదుపరి",
+    "sessionNext": "తర్వాత",
     "sessionVolumeDown": "వాల్యూమ్ -",
     "sessionVolumeUp": "వాల్యూమ్ +",
     "uhd4k": "4K",
@@ -4684,12 +4680,12 @@
     "actions": "చర్యలు",
     "videoCodec": "వీడియో కోడెక్",
     "audioCodec": "ఆడియో కోడెక్",
-    "hwAccel": "HW Accel",
+    "hwAccel": "HW యాక్సెల్",
     "completion": "పూర్తి",
     "direct": "డైరెక్ట్",
     "adminDisconnect": "డిస్‌కనెక్ట్ చేయండి",
     "adminClearDates": "తేదీలను క్లియర్ చేయండి",
-    "adminActivityLoadFailed": "Failed to load activity log: {error}",
+    "adminActivityLoadFailed": "కార్యకలాప లాగ్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminActivityLoadFailed": {
         "placeholders": {
             "error": {
@@ -4701,7 +4697,7 @@
     "adminEditDeviceName": "పరికరం పేరును సవరించండి",
     "adminCustomName": "అనుకూల పేరు",
     "adminDeviceNameUpdated": "పరికరం పేరు నవీకరించబడింది",
-    "adminDeviceUpdateFailed": "Failed to update device: {error}",
+    "adminDeviceUpdateFailed": "పరికరాన్ని అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminDeviceUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4711,7 +4707,7 @@
     },
     "adminDeleteDevice": "పరికరాన్ని తొలగించండి",
     "adminDeviceDeleted": "పరికరం తొలగించబడింది",
-    "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+    "adminDeviceDeleteFailed": "పరికరాన్ని తొలగించడం విఫలమైంది: {error}",
     "@adminDeviceDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4727,7 +4723,7 @@
     "adminNoLibraries": "లైబ్రరీలు ఏవీ కాన్ఫిగర్ చేయబడలేదు",
     "adminScanAllLibraries": "అన్ని లైబ్రరీలను స్కాన్ చేయండి",
     "adminAddLibrary": "లైబ్రరీని జోడించండి",
-    "adminScanFailed": "Failed to start scan: {error}",
+    "adminScanFailed": "స్కాన్‌ను ప్రారంభించడం విఫలమైంది: {error}",
     "@adminScanFailed": {
         "placeholders": {
             "error": {
@@ -4737,7 +4733,7 @@
     },
     "adminRenameLibrary": "లైబ్రరీ పేరు మార్చండి",
     "adminNewName": "కొత్త పేరు",
-    "adminLibraryRenamed": "Library renamed to \"{name}\"",
+    "adminLibraryRenamed": "లైబ్రరీ పేరు \"{name}\"గా మార్చబడింది",
     "@adminLibraryRenamed": {
         "placeholders": {
             "name": {
@@ -4745,7 +4741,7 @@
             }
         }
     },
-    "adminRenameFailed": "Failed to rename: {error}",
+    "adminRenameFailed": "పేరు మార్చడం విఫలమైంది: {error}",
     "@adminRenameFailed": {
         "placeholders": {
             "error": {
@@ -4754,7 +4750,7 @@
         }
     },
     "adminDeleteLibrary": "లైబ్రరీని తొలగించండి",
-    "adminLibraryDeleted": "Library \"{name}\" deleted",
+    "adminLibraryDeleted": "\"{name}\" లైబ్రరీ తొలగించబడింది",
     "@adminLibraryDeleted": {
         "placeholders": {
             "name": {
@@ -4762,7 +4758,7 @@
             }
         }
     },
-    "adminLibraryDeleteFailed": "Failed to delete library: {error}",
+    "adminLibraryDeleteFailed": "లైబ్రరీని తొలగించడం విఫలమైంది: {error}",
     "@adminLibraryDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4770,7 +4766,7 @@
             }
         }
     },
-    "adminAddPathFailed": "Failed to add path: {error}",
+    "adminAddPathFailed": "పాత్‌ను జోడించడం విఫలమైంది: {error}",
     "@adminAddPathFailed": {
         "placeholders": {
             "error": {
@@ -4779,7 +4775,7 @@
         }
     },
     "adminRemovePath": "మార్గాన్ని తీసివేయండి",
-    "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
+    "adminRemovePathConfirm": "ఈ లైబ్రరీ నుండి \"{path}\"ని తీసివేయాలా?",
     "@adminRemovePathConfirm": {
         "placeholders": {
             "path": {
@@ -4787,7 +4783,7 @@
             }
         }
     },
-    "adminRemovePathFailed": "Failed to remove path: {error}",
+    "adminRemovePathFailed": "పాత్‌ను తీసివేయడం విఫలమైంది: {error}",
     "@adminRemovePathFailed": {
         "placeholders": {
             "error": {
@@ -4796,7 +4792,7 @@
         }
     },
     "adminLibraryOptionsSaved": "లైబ్రరీ ఎంపికలు సేవ్ చేయబడ్డాయి",
-    "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+    "adminLibraryOptionsSaveFailed": "ఎంపికలను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminLibraryOptionsSaveFailed": {
         "placeholders": {
             "error": {
@@ -4814,7 +4810,7 @@
     "adminMetadataCountryCode": "మెటాడేటా దేశం కోడ్",
     "adminMetadataCountryHint": "ఉదా US, DE, FR",
     "adminLibraryNameRequired": "లైబ్రరీ పేరు అవసరం",
-    "adminLibraryCreateFailed": "Failed to create library: {error}",
+    "adminLibraryCreateFailed": "లైబ్రరీని సృష్టించడం విఫలమైంది: {error}",
     "@adminLibraryCreateFailed": {
         "placeholders": {
             "error": {
@@ -4829,7 +4825,7 @@
     "paths": "మార్గాలు:",
     "adminDisableUser": "వినియోగదారుని నిలిపివేయండి",
     "adminEnableUser": "వినియోగదారుని ప్రారంభించండి",
-    "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
+    "adminDisableUserConfirm": "{name}ని నిలిపివేయాలా? వారు సైన్ ఇన్ చేయలేరు.",
     "@adminDisableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4837,7 +4833,7 @@
             }
         }
     },
-    "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
+    "adminEnableUserConfirm": "{name}ని ప్రారంభించాలా? వారు మళ్లీ సైన్ ఇన్ చేయగలరు.",
     "@adminEnableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4845,7 +4841,7 @@
             }
         }
     },
-    "adminUserDisabled": "User \"{name}\" disabled",
+    "adminUserDisabled": "\"{name}\" వినియోగదారు నిలిపివేయబడ్డారు",
     "@adminUserDisabled": {
         "placeholders": {
             "name": {
@@ -4853,7 +4849,7 @@
             }
         }
     },
-    "adminUserEnabled": "User \"{name}\" enabled",
+    "adminUserEnabled": "\"{name}\" వినియోగదారు ప్రారంభించబడ్డారు",
     "@adminUserEnabled": {
         "placeholders": {
             "name": {
@@ -4861,7 +4857,7 @@
             }
         }
     },
-    "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+    "adminUserPolicyUpdateFailed": "వినియోగదారు విధానాన్ని అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminUserPolicyUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4873,7 +4869,7 @@
     "adminSearchUsers": "వినియోగదారులను శోధించండి",
     "adminEditUser": "వినియోగదారుని సవరించండి",
     "adminAddUser": "వినియోగదారుని జోడించండి",
-    "adminUserCreateFailed": "Failed to create user: {error}",
+    "adminUserCreateFailed": "వినియోగదారుని సృష్టించడం విఫలమైంది: {error}",
     "@adminUserCreateFailed": {
         "placeholders": {
             "error": {
@@ -4886,7 +4882,7 @@
     "adminUsernameRequired": "వినియోగదారు పేరు ఖాళీగా ఉండకూడదు",
     "adminNoProfileChanges": "సేవ్ చేయడానికి ప్రొఫైల్ మార్పులు లేవు",
     "adminProfileSaved": "ప్రొఫైల్ సేవ్ చేయబడింది",
-    "adminSaveFailed": "Failed to save: {error}",
+    "adminSaveFailed": "సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminSaveFailed": {
         "placeholders": {
             "error": {
@@ -4896,7 +4892,7 @@
     },
     "adminPermissionsSaved": "అనుమతులు సేవ్ చేయబడ్డాయి",
     "adminPasswordsMismatch": "పాస్‌వర్డ్‌లు సరిపోలడం లేదు",
-    "adminFailed": "Failed: {error}",
+    "adminFailed": "విఫలమైంది: {error}",
     "@adminFailed": {
         "placeholders": {
             "error": {
@@ -4947,7 +4943,7 @@
     "adminEnableAllDevices": "అన్ని పరికరాలకు ప్రాప్యతను ప్రారంభించండి",
     "adminEnableAllChannels": "అన్ని ఛానెల్‌లకు ప్రాప్యతను ప్రారంభించండి",
     "adminResetPasswordWarning": "ఇది పాస్వర్డ్ను తొలగిస్తుంది. వినియోగదారు పాస్‌వర్డ్ లేకుండా లాగిన్ చేయగలరు.",
-    "adminServerReturnedHttp": "Server returned HTTP {status}",
+    "adminServerReturnedHttp": "సర్వర్ HTTP {status}ను తిరిగి ఇచ్చింది",
     "@adminServerReturnedHttp": {
         "placeholders": {
             "status": {
@@ -4955,7 +4951,7 @@
             }
         }
     },
-    "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
+    "adminDeleteUserConfirm": "{name}ని ఖచ్చితంగా తొలగించాలా?",
     "@adminDeleteUserConfirm": {
         "placeholders": {
             "name": {
@@ -4963,7 +4959,7 @@
             }
         }
     },
-    "adminUserDeleted": "User \"{name}\" deleted",
+    "adminUserDeleted": "\"{name}\" వినియోగదారు తొలగించబడ్డారు",
     "@adminUserDeleted": {
         "placeholders": {
             "name": {
@@ -4971,7 +4967,7 @@
             }
         }
     },
-    "adminUserDeleteFailed": "Failed to delete user: {error}",
+    "adminUserDeleteFailed": "వినియోగదారుని తొలగించడం విఫలమైంది: {error}",
     "@adminUserDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4984,7 +4980,7 @@
     "adminApiKeyCreated": "API కీ సృష్టించబడింది",
     "adminApiKeyCreatedNoToken": "కీ విజయవంతంగా సృష్టించబడింది. సర్వర్ టోకెన్‌ను తిరిగి ఇవ్వలేదు. సర్వర్ API కీలను తనిఖీ చేయండి.",
     "adminKeyCopied": "కీ క్లిప్‌బోర్డ్‌కి కాపీ చేయబడింది",
-    "adminApiKeyCreateFailed": "Failed to create key: {error}",
+    "adminApiKeyCreateFailed": "కీని సృష్టించడం విఫలమైంది: {error}",
     "@adminApiKeyCreateFailed": {
         "placeholders": {
             "error": {
@@ -4994,7 +4990,7 @@
     },
     "adminKeyTokenMissing": "సర్వర్ ప్రతిస్పందన నుండి కీ టోకెన్ లేదు",
     "adminRevokeApiKey": "API కీని ఉపసంహరించుకోండి",
-    "adminRevokeKeyConfirm": "Revoke key for {name}?",
+    "adminRevokeKeyConfirm": "{name} కోసం కీని ఉపసంహరించాలా?",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
             "name": {
@@ -5003,7 +4999,7 @@
         }
     },
     "adminApiKeyRevoked": "API కీ ఉపసంహరించబడింది",
-    "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+    "adminApiKeyRevokeFailed": "కీని ఉపసంహరించడం విఫలమైంది: {error}",
     "@adminApiKeyRevokeFailed": {
         "placeholders": {
             "error": {
@@ -5016,7 +5012,7 @@
     "adminCreateKey": "కీని సృష్టించండి",
     "adminNoApiKeys": "API కీలు ఏవీ కనుగొనబడలేదు",
     "adminUnknownApp": "తెలియని యాప్",
-    "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+    "adminApiKeyTokenCreated": "టోకెన్: {token}\\nసృష్టించబడింది: {created}",
     "@adminApiKeyTokenCreated": {
         "placeholders": {
             "token": {
@@ -5029,7 +5025,7 @@
     },
     "adminCreatingBackup": "బ్యాకప్ సృష్టిస్తోంది...",
     "adminBackupCreated": "బ్యాకప్ విజయవంతంగా సృష్టించబడింది",
-    "adminBackupCreateFailed": "Failed to create backup: {error}",
+    "adminBackupCreateFailed": "బ్యాకప్‌ను సృష్టించడం విఫలమైంది: {error}",
     "@adminBackupCreateFailed": {
         "placeholders": {
             "error": {
@@ -5038,7 +5034,7 @@
         }
     },
     "adminBackupPathMissing": "సర్వర్ ప్రతిస్పందనలో బ్యాకప్ మార్గం లేదు",
-    "adminBackupManifest": "Manifest: {name}",
+    "adminBackupManifest": "మేనిఫెస్ట్: {name}",
     "@adminBackupManifest": {
         "placeholders": {
             "name": {
@@ -5046,7 +5042,7 @@
             }
         }
     },
-    "adminManifestLoadFailed": "Failed to load manifest: {error}",
+    "adminManifestLoadFailed": "మేనిఫెస్ట్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminManifestLoadFailed": {
         "placeholders": {
             "error": {
@@ -5056,7 +5052,7 @@
     },
     "adminConfirmRestore": "పునరుద్ధరించడాన్ని నిర్ధారించండి",
     "adminRestoringBackup": "బ్యాకప్‌ని పునరుద్ధరిస్తోంది...",
-    "adminRestoreFailed": "Failed to restore backup: {error}",
+    "adminRestoreFailed": "బ్యాకప్‌ను పునరుద్ధరించడం విఫలమైంది: {error}",
     "@adminRestoreFailed": {
         "placeholders": {
             "error": {
@@ -5073,7 +5069,7 @@
     "adminNoLogFiles": "లాగ్ ఫైల్‌లు ఏవీ కనుగొనబడలేదు",
     "adminLogCopied": "లాగ్ క్లిప్‌బోర్డ్‌కి కాపీ చేయబడింది",
     "adminSaveLogFile": "లాగ్ ఫైల్‌ను సేవ్ చేయండి",
-    "adminSavedTo": "Saved to {path}",
+    "adminSavedTo": "{path}కి సేవ్ చేయబడింది",
     "@adminSavedTo": {
         "placeholders": {
             "path": {
@@ -5081,7 +5077,7 @@
             }
         }
     },
-    "adminFileSaveFailed": "Failed to save file: {error}",
+    "adminFileSaveFailed": "ఫైల్‌ను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminFileSaveFailed": {
         "placeholders": {
             "error": {
@@ -5089,7 +5085,7 @@
             }
         }
     },
-    "adminLogFileLoadFailed": "Failed to load {fileName}",
+    "adminLogFileLoadFailed": "{fileName}ను లోడ్ చేయడం విఫలమైంది",
     "@adminLogFileLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5099,7 +5095,7 @@
     },
     "adminSearchInLog": "లాగ్‌లో శోధించండి",
     "adminNoMatchingLines": "సరిపోలే పంక్తులు లేవు",
-    "adminTasksLoadFailed": "Failed to load tasks: {error}",
+    "adminTasksLoadFailed": "టాస్క్‌లను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminTasksLoadFailed": {
         "placeholders": {
             "error": {
@@ -5109,7 +5105,7 @@
     },
     "adminNoScheduledTasks": "షెడ్యూల్ చేయబడిన టాస్క్‌లు ఏవీ కనుగొనబడలేదు",
     "adminNoTasksMatchFilter": "ప్రస్తుత ఫిల్టర్‌తో టాస్క్‌లు ఏవీ సరిపోలలేదు",
-    "adminTaskStartFailed": "Failed to start task: {error}",
+    "adminTaskStartFailed": "టాస్క్‌ను ప్రారంభించడం విఫలమైంది: {error}",
     "@adminTaskStartFailed": {
         "placeholders": {
             "error": {
@@ -5117,7 +5113,7 @@
             }
         }
     },
-    "adminTaskStopFailed": "Failed to stop task: {error}",
+    "adminTaskStopFailed": "టాస్క్‌ను ఆపడం విఫలమైంది: {error}",
     "@adminTaskStopFailed": {
         "placeholders": {
             "error": {
@@ -5125,7 +5121,7 @@
             }
         }
     },
-    "adminTaskLoadFailed": "Failed to load task: {error}",
+    "adminTaskLoadFailed": "టాస్క్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminTaskLoadFailed": {
         "placeholders": {
             "error": {
@@ -5134,7 +5130,7 @@
         }
     },
     "adminRunNow": "ఇప్పుడు అమలు చేయండి",
-    "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
+    "adminTriggerRemoveFailed": "ట్రిగ్గర్‌ను తీసివేయడం విఫలమైంది: {error}",
     "@adminTriggerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5142,7 +5138,7 @@
             }
         }
     },
-    "adminTriggerAddFailed": "Failed to add trigger: {error}",
+    "adminTriggerAddFailed": "ట్రిగ్గర్‌ను జోడించడం విఫలమైంది: {error}",
     "@adminTriggerAddFailed": {
         "placeholders": {
             "error": {
@@ -5157,7 +5153,7 @@
     "adminTriggerType": "ట్రిగ్గర్ రకం",
     "adminTimeLimit": "సమయ పరిమితి (ఐచ్ఛికం)",
     "adminNoLimit": "పరిమితి లేదు",
-    "adminHours": "{hours} hour(s)",
+    "adminHours": "{hours} గంట(లు)",
     "@adminHours": {
         "placeholders": {
             "hours": {
@@ -5167,7 +5163,7 @@
     },
     "adminDayOfWeek": "వారం రోజు",
     "adminSearchPlugins": "ప్లగిన్‌లను శోధించండి...",
-    "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+    "adminPluginToggleFailed": "ప్లగిన్‌ను టోగుల్ చేయడం విఫలమైంది: {error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
             "error": {
@@ -5176,7 +5172,7 @@
         }
     },
     "adminUninstallPlugin": "ప్లగిన్‌ని అన్‌ఇన్‌స్టాల్ చేయండి",
-    "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
+    "adminUninstallPluginConfirm": "\"{name}\"ని ఖచ్చితంగా అన్‌ఇన్‌స్టాల్ చేయాలా?",
     "@adminUninstallPluginConfirm": {
         "placeholders": {
             "name": {
@@ -5184,7 +5180,7 @@
             }
         }
     },
-    "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
+    "adminPluginUninstallFailed": "ప్లగిన్‌ను అన్‌ఇన్‌స్టాల్ చేయడం విఫలమైంది: {error}",
     "@adminPluginUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5192,7 +5188,7 @@
             }
         }
     },
-    "adminPackageInstallFailed": "Failed to install package: {error}",
+    "adminPackageInstallFailed": "ప్యాకేజీని ఇన్‌స్టాల్ చేయడం విఫలమైంది: {error}",
     "@adminPackageInstallFailed": {
         "placeholders": {
             "error": {
@@ -5200,7 +5196,7 @@
             }
         }
     },
-    "adminPluginUpdateFailed": "Failed to install update: {error}",
+    "adminPluginUpdateFailed": "అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయడం విఫలమైంది: {error}",
     "@adminPluginUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5208,7 +5204,7 @@
             }
         }
     },
-    "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+    "adminPluginsLoadFailed": "ప్లగిన్‌లను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminPluginsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5218,7 +5214,7 @@
     },
     "adminNoPluginsMatchSearch": "మీ శోధనకు సరిపోలే ప్లగిన్‌లు లేవు",
     "adminNoPluginsInstalled": "ప్లగిన్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు",
-    "adminInstallUpdate": "Install update (v{version})",
+    "adminInstallUpdate": "అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయండి (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
             "version": {
@@ -5226,7 +5222,7 @@
             }
         }
     },
-    "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+    "adminCatalogLoadFailed": "క్యాటలాగ్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminCatalogLoadFailed": {
         "placeholders": {
             "error": {
@@ -5239,7 +5235,7 @@
     "adminExperimentalIntegration": "ప్రయోగాత్మక ఏకీకరణ",
     "adminExperimentalWarning": "ప్లగిన్ సెట్టింగ్‌ల ఏకీకరణ ఇప్పటికీ ప్రయోగాత్మకంగా ఉంది. కొన్ని సెట్టింగ్‌ల పేజీలు సరిగ్గా రెండర్ కాకపోవచ్చు.",
     "continueAction": "కొనసాగించు",
-    "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
+    "adminPluginRemoveAfterRestart": "సర్వర్ పునఃప్రారంభం తర్వాత \"{name}\" తీసివేయబడుతుంది",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
             "name": {
@@ -5247,7 +5243,7 @@
             }
         }
     },
-    "adminUninstallFailed": "Failed to uninstall: {error}",
+    "adminUninstallFailed": "అన్‌ఇన్‌స్టాల్ చేయడం విఫలమైంది: {error}",
     "@adminUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5255,7 +5251,7 @@
             }
         }
     },
-    "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+    "adminPluginUpdating": "\"{name}\"ని v{version}కి అప్‌డేట్ చేస్తోంది...",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5267,7 +5263,7 @@
         }
     },
     "adminMissingAuthToken": "సెట్టింగ్‌లను తెరవడం సాధ్యం కాలేదు: ప్రామాణీకరణ టోకెన్ లేదు.",
-    "adminPluginLoadFailed": "Failed to load plugin: {error}",
+    "adminPluginLoadFailed": "ప్లగిన్‌ను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminPluginLoadFailed": {
         "placeholders": {
             "error": {
@@ -5276,7 +5272,7 @@
         }
     },
     "adminPluginNotFound": "ప్లగిన్ కనుగొనబడలేదు",
-    "adminPluginVersion": "Version {version}",
+    "adminPluginVersion": "వెర్షన్ {version}",
     "@adminPluginVersion": {
         "placeholders": {
             "version": {
@@ -5289,7 +5285,7 @@
     "adminRevisionHistory": "పునర్విమర్శ చరిత్ర",
     "adminNoChangelog": "చేంజ్లాగ్ అందుబాటులో లేదు.",
     "adminRemoveRepository": "రిపోజిటరీని తీసివేయండి",
-    "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminRemoveRepositoryConfirm": "\"{name}\"ని ఖచ్చితంగా తీసివేయాలా?",
     "@adminRemoveRepositoryConfirm": {
         "placeholders": {
             "name": {
@@ -5297,7 +5293,7 @@
             }
         }
     },
-    "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
+    "adminRepositoriesSaveFailed": "రిపోజిటరీలను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminRepositoriesSaveFailed": {
         "placeholders": {
             "error": {
@@ -5305,7 +5301,7 @@
             }
         }
     },
-    "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+    "adminRepositoriesLoadFailed": "రిపోజిటరీలను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminRepositoriesLoadFailed": {
         "placeholders": {
             "error": {
@@ -5317,7 +5313,7 @@
     "adminRepositoryUrl": "రిపోజిటరీ URL",
     "adminAddEntry": "ఎంట్రీని జోడించండి",
     "adminInvalidUrl": "చెల్లని URL",
-    "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
+    "adminPluginSettingsLoadFailed": "ప్లగిన్ సెట్టింగ్‌లను లోడ్ చేయడం సాధ్యపడలేదు: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5325,7 +5321,7 @@
             }
         }
     },
-    "adminCouldNotOpenUrl": "Could not open {uri}",
+    "adminCouldNotOpenUrl": "{uri}ను తెరవడం సాధ్యపడలేదు",
     "@adminCouldNotOpenUrl": {
         "placeholders": {
             "uri": {
@@ -5370,8 +5366,8 @@
     "adminAllowSegmentDeletion": "సెగ్మెంట్ తొలగింపును అనుమతించండి",
     "adminSegmentKeepSeconds": "సెగ్మెంట్ కీప్ (సెకన్లు)",
     "adminThrottleBuffering": "థొరెటల్ బఫరింగ్",
-    "adminTrickplaySaved": "ట్రిక్‌ప్లే సెట్టింగ్‌లు సేవ్ చేయబడ్డాయి",
-    "adminTrickplayLoadFailed": "ట్రిక్‌ప్లే సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది",
+    "adminTrickplaySaved": "Trickplay సెట్టింగ్‌లు సేవ్ చేయబడ్డాయి",
+    "adminTrickplayLoadFailed": "Trickplay సెట్టింగ్‌లను లోడ్ చేయడం విఫలమైంది",
     "adminEnableHardwareAcceleration": "హార్డ్‌వేర్ త్వరణాన్ని ప్రారంభించండి",
     "adminEnableKeyFrameExtraction": "కీ ఫ్రేమ్ మాత్రమే సంగ్రహణను ప్రారంభించండి",
     "adminKeyFrameSubtitle": "వేగంగా కానీ తక్కువ ఖచ్చితత్వం",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS పోర్ట్",
     "adminPublicHttpsPort": "పబ్లిక్ HTTPS పోర్ట్",
     "adminBaseUrl": "బేస్ URL",
-    "adminBaseUrlHint": "ఉదా / జెల్లీఫిన్",
+    "adminBaseUrlHint": "ఉదా. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPSని ప్రారంభించండి",
     "adminLocalNetwork": "స్థానిక నెట్‌వర్క్",
@@ -5418,7 +5414,7 @@
     "blacklist": "బ్లాక్లిస్ట్",
     "notSet": "సెట్ కాలేదు",
     "adminMetadataSaved": "మెటాడేటా సేవ్ చేయబడింది",
-    "adminMetadataLoadFailed": "Failed to load metadata: {error}",
+    "adminMetadataLoadFailed": "మెటాడేటాను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataLoadFailed": {
         "placeholders": {
             "error": {
@@ -5426,7 +5422,7 @@
             }
         }
     },
-    "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+    "adminMetadataSaveFailed": "మెటాడేటాను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataSaveFailed": {
         "placeholders": {
             "error": {
@@ -5439,7 +5435,7 @@
     "adminReplaceAllMetadata": "మొత్తం మెటాడేటాను భర్తీ చేయండి",
     "adminReplaceAllImages": "అన్ని చిత్రాలను భర్తీ చేయండి",
     "adminMetadataRefreshRequested": "మెటాడేటా రిఫ్రెష్ అభ్యర్థించబడింది",
-    "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+    "adminMetadataRefreshFailed": "మెటాడేటాను రిఫ్రెష్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataRefreshFailed": {
         "placeholders": {
             "error": {
@@ -5447,11 +5443,10 @@
             }
         }
     },
-    "adminSearchRemotePerson": "రిమోట్ వ్యక్తిని శోధించండి",
     "adminNoRemoteMatches": "రిమోట్ సరిపోలికలు ఏవీ కనుగొనబడలేదు",
     "adminRemoteResults": "రిమోట్ ఫలితాలు",
     "adminRemoteMetadataApplied": "రిమోట్ మెటాడేటా వర్తింపజేయబడింది",
-    "adminRemoteSearchFailed": "Remote search failed: {error}",
+    "adminRemoteSearchFailed": "రిమోట్ శోధన విఫలమైంది: {error}",
     "@adminRemoteSearchFailed": {
         "placeholders": {
             "error": {
@@ -5462,7 +5457,7 @@
     "adminUpdateContentType": "కంటెంట్ రకాన్ని నవీకరించండి",
     "adminContentType": "కంటెంట్ రకం",
     "adminContentTypeUpdated": "కంటెంట్ రకం నవీకరించబడింది",
-    "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+    "adminContentTypeUpdateFailed": "కంటెంట్ రకాన్ని అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminContentTypeUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5473,7 +5468,7 @@
     "adminMetadataEditorLoadFailed": "మెటాడేటా ఎడిటర్‌ను లోడ్ చేయడంలో విఫలమైంది",
     "adminNoPeopleEntries": "వ్యక్తుల ఎంట్రీలు లేవు",
     "adminNoExternalIds": "బాహ్య IDలు ఏవీ అందుబాటులో లేవు",
-    "adminImageUpdated": "{imageType} image updated",
+    "adminImageUpdated": "{imageType} ఇమేజ్ అప్‌డేట్ చేయబడింది",
     "@adminImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5481,7 +5476,7 @@
             }
         }
     },
-    "adminImageDownloadFailed": "Failed to download image: {error}",
+    "adminImageDownloadFailed": "ఇమేజ్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5491,7 +5486,7 @@
     },
     "adminUnsupportedImageFormat": "చిత్రం ఆకృతికి మద్దతు లేదు",
     "adminImageReadFailed": "ఎంచుకున్న చిత్రాన్ని చదవడంలో విఫలమైంది",
-    "adminImageUploaded": "{imageType} image uploaded",
+    "adminImageUploaded": "{imageType} ఇమేజ్ అప్‌లోడ్ చేయబడింది",
     "@adminImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5499,7 +5494,7 @@
             }
         }
     },
-    "adminImageUploadFailed": "Failed to upload image: {error}",
+    "adminImageUploadFailed": "ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5507,7 +5502,7 @@
             }
         }
     },
-    "adminDeleteImage": "Delete {imageType} image",
+    "adminDeleteImage": "{imageType} ఇమేజ్‌ను తొలగించండి",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5515,7 +5510,7 @@
             }
         }
     },
-    "adminImageDeleted": "{imageType} image deleted",
+    "adminImageDeleted": "{imageType} ఇమేజ్ తొలగించబడింది",
     "@adminImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5523,7 +5518,7 @@
             }
         }
     },
-    "adminImageDeleteFailed": "Failed to delete image: {error}",
+    "adminImageDeleteFailed": "ఇమేజ్‌ను తొలగించడం విఫలమైంది: {error}",
     "@adminImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5533,7 +5528,7 @@
     },
     "adminAllProviders": "అందరు ప్రొవైడర్లు",
     "adminNoRemoteImages": "రిమోట్ చిత్రాలు ఏవీ కనుగొనబడలేదు",
-    "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+    "adminTunerDiscoveryFailed": "ట్యూనర్ డిస్కవరీ విఫలమైంది: {error}",
     "@adminTunerDiscoveryFailed": {
         "placeholders": {
             "error": {
@@ -5543,11 +5538,8 @@
     },
     "adminAddTuner": "ట్యూనర్‌ని జోడించండి",
     "adminTunerType": "ట్యూనర్ రకం",
-    "adminTunerTypeHint": "HDHomeRun, M3U, ఇతర",
-    "adminUrlPath": "URL / మార్గం",
-    "adminNameOptional": "పేరు (ఐచ్ఛికం)",
     "adminTunerAdded": "ట్యూనర్ జోడించబడింది",
-    "adminTunerAddFailed": "Failed to add tuner: {error}",
+    "adminTunerAddFailed": "ట్యూనర్‌ను జోడించడం విఫలమైంది: {error}",
     "@adminTunerAddFailed": {
         "placeholders": {
             "error": {
@@ -5557,11 +5549,8 @@
     },
     "adminAddGuideProvider": "గైడ్ ప్రొవైడర్‌ని జోడించండి",
     "adminProviderType": "ప్రొవైడర్ రకం",
-    "adminProviderTypeHint": "షెడ్యూల్స్డైరెక్ట్ లేదా XMLTV",
-    "adminUsernameOptional": "వినియోగదారు పేరు (ఐచ్ఛికం)",
-    "adminRefreshInterval": "రిఫ్రెష్ విరామం (గంటలు)",
     "adminProviderAdded": "ప్రొవైడర్ జోడించబడింది",
-    "adminProviderAddFailed": "Failed to add provider: {error}",
+    "adminProviderAddFailed": "ప్రొవైడర్‌ను జోడించడం విఫలమైంది: {error}",
     "@adminProviderAddFailed": {
         "placeholders": {
             "error": {
@@ -5569,7 +5558,7 @@
             }
         }
     },
-    "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+    "adminTunerRemoveFailed": "ట్యూనర్‌ను తీసివేయడం విఫలమైంది: {error}",
     "@adminTunerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5578,7 +5567,7 @@
         }
     },
     "adminTunerResetRequested": "ట్యూనర్ రీసెట్ అభ్యర్థించబడింది",
-    "adminTunerResetFailed": "Failed to reset tuner: {error}",
+    "adminTunerResetFailed": "ట్యూనర్‌ను రీసెట్ చేయడం విఫలమైంది: {error}",
     "@adminTunerResetFailed": {
         "placeholders": {
             "error": {
@@ -5586,7 +5575,7 @@
             }
         }
     },
-    "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+    "adminProviderRemoveFailed": "ప్రొవైడర్‌ను తీసివేయడం విఫలమైంది: {error}",
     "@adminProviderRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5600,7 +5589,7 @@
     "adminRecordingPath": "రికార్డింగ్ మార్గం",
     "adminSeriesRecordingPath": "సిరీస్ రికార్డింగ్ మార్గం",
     "adminRecordingSettingsSaved": "రికార్డింగ్ సెట్టింగ్‌లు సేవ్ చేయబడ్డాయి",
-    "adminSettingsSaveFailed": "Failed to save settings: {error}",
+    "adminSettingsSaveFailed": "సెట్టింగ్‌లను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminSettingsSaveFailed": {
         "placeholders": {
             "error": {
@@ -5612,7 +5601,7 @@
     "adminMappingJson": "JSON మ్యాపింగ్",
     "adminMappingJsonHint": "ఉదాహరణ: మ్యాపింగ్‌లు JSON పేలోడ్",
     "adminChannelMappingsUpdated": "ఛానెల్ మ్యాపింగ్‌లు నవీకరించబడ్డాయి",
-    "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminMappingsUpdateFailed": "మ్యాపింగ్‌లను అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5626,7 +5615,7 @@
     "adminGuideProviders": "గైడ్ ప్రొవైడర్లు",
     "adminAddProvider": "ప్రదాతని జోడించండి",
     "adminNoListingProviders": "లిస్టింగ్ ప్రొవైడర్లు ఏవీ కాన్ఫిగర్ చేయబడలేదు",
-    "adminRecordingPathDisplay": "Recording path: {path}",
+    "adminRecordingPathDisplay": "రికార్డింగ్ పాత్: {path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
             "path": {
@@ -5634,7 +5623,7 @@
             }
         }
     },
-    "adminSeriesPathDisplay": "Series path: {path}",
+    "adminSeriesPathDisplay": "సిరీస్ పాత్: {path}",
     "@adminSeriesPathDisplay": {
         "placeholders": {
             "path": {
@@ -5642,7 +5631,7 @@
             }
         }
     },
-    "adminPrePaddingDisplay": "Pre-padding: {minutes} min",
+    "adminPrePaddingDisplay": "ప్రీ-ప్యాడింగ్: {minutes} ని",
     "@adminPrePaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5650,7 +5639,7 @@
             }
         }
     },
-    "adminPostPaddingDisplay": "Post-padding: {minutes} min",
+    "adminPostPaddingDisplay": "పోస్ట్-ప్యాడింగ్: {minutes} ని",
     "@adminPostPaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5666,7 +5655,7 @@
     "adminRestoreWarning1": "పునరుద్ధరణ మొత్తం ప్రస్తుత సర్వర్ డేటాను బ్యాకప్ డేటాతో భర్తీ చేస్తుంది.",
     "adminRestoreWarning2": "ప్రస్తుత సర్వర్ సెట్టింగ్‌లు, వినియోగదారులు మరియు లైబ్రరీ డేటా ఓవర్‌రైట్ చేయబడతాయి.",
     "adminRestoreWarning3": "పునరుద్ధరణ తర్వాత సర్వర్ పునఃప్రారంభించబడుతుంది.",
-    "adminRestoreConfirmMessage": "Restore backup {name} now?",
+    "adminRestoreConfirmMessage": "{name} బ్యాకప్‌ను ఇప్పుడు పునరుద్ధరించాలా?",
     "@adminRestoreConfirmMessage": {
         "placeholders": {
             "name": {
@@ -5680,14 +5669,14 @@
     "adminUnnamedBackup": "పేరులేని బ్యాకప్",
     "adminLiveTvNotAvailable": "ఈ సర్వర్ బిల్డ్‌లో లైవ్ టీవీ అడ్మినిస్ట్రేషన్ అందుబాటులో లేదు.",
     "adminLiveTvTitle": "లైవ్ టీవీ అడ్మినిస్ట్రేషన్",
-    "adminApply": "దరఖాస్తు చేసుకోండి",
+    "adminApply": "వర్తింపజేయండి",
     "adminNotSet": "సెట్ కాలేదు",
     "adminReset": "రీసెట్ చేయండి",
     "adminLogsTitle": "సర్వర్ లాగ్‌లు",
     "adminLogsNewestFirst": "సరికొత్త మొదటిది",
     "adminLogsOldestFirst": "పురాతన మొదటి",
     "adminLogsJustNow": "ఇప్పుడే",
-    "adminLogsMinutesAgo": "{minutes}m ago",
+    "adminLogsMinutesAgo": "{minutes}ని క్రితం",
     "@adminLogsMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -5695,7 +5684,7 @@
             }
         }
     },
-    "adminLogsHoursAgo": "{hours}h ago",
+    "adminLogsHoursAgo": "{hours}గం క్రితం",
     "@adminLogsHoursAgo": {
         "placeholders": {
             "hours": {
@@ -5703,7 +5692,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d ago",
+    "adminLogsDaysAgo": "{days}రో క్రితం",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5711,7 +5700,7 @@
             }
         }
     },
-    "adminLogViewerLoadFailed": "Failed to load {fileName}",
+    "adminLogViewerLoadFailed": "{fileName}ను లోడ్ చేయడం విఫలమైంది",
     "@adminLogViewerLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5719,7 +5708,7 @@
             }
         }
     },
-    "adminLogViewerMatches": "{count} matches",
+    "adminLogViewerMatches": "{count} సరిపోలికలు",
     "@adminLogViewerMatches": {
         "placeholders": {
             "count": {
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "సరిపోలే పంక్తులు లేవు",
     "adminMetadataEditorTitle": "మెటాడేటా ఎడిటర్",
-    "adminMetadataRemote": "రిమోట్",
     "adminMetadataType": "టైప్ చేయండి",
     "adminMetadataDetails": "వివరాలు",
     "adminMetadataExternalIds": "బాహ్య IDలు",
@@ -5762,7 +5750,7 @@
     "adminMetadataImageThumb": "బొటనవేలు",
     "adminMetadataRecursive": "పునరావృతం",
     "adminMetadataProvider": "ప్రొవైడర్",
-    "adminMetadataImageUpdated": "{imageType} image updated",
+    "adminMetadataImageUpdated": "{imageType} ఇమేజ్ అప్‌డేట్ చేయబడింది",
     "@adminMetadataImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5770,7 +5758,7 @@
             }
         }
     },
-    "adminMetadataImageUploaded": "{imageType} image uploaded",
+    "adminMetadataImageUploaded": "{imageType} ఇమేజ్ అప్‌లోడ్ చేయబడింది",
     "@adminMetadataImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5778,7 +5766,7 @@
             }
         }
     },
-    "adminMetadataImageDeleted": "{imageType} image deleted",
+    "adminMetadataImageDeleted": "{imageType} ఇమేజ్ తొలగించబడింది",
     "@adminMetadataImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5786,7 +5774,7 @@
             }
         }
     },
-    "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+    "adminMetadataImageDownloadFailed": "ఇమేజ్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5795,7 +5783,7 @@
         }
     },
     "adminMetadataImageReadFailed": "ఎంచుకున్న చిత్రాన్ని చదవడంలో విఫలమైంది",
-    "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
+    "adminMetadataImageUploadFailed": "ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5803,7 +5791,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+    "adminMetadataDeleteImageTitle": "{imageType} ఇమేజ్‌ను తొలగించండి",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5812,7 +5800,7 @@
         }
     },
     "adminMetadataDeleteImageContent": "ఇది అంశం నుండి ప్రస్తుత చిత్రాన్ని తీసివేస్తుంది.",
-    "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
+    "adminMetadataImageDeleteFailed": "ఇమేజ్‌ను తొలగించడం విఫలమైంది: {error}",
     "@adminMetadataImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5820,7 +5808,7 @@
             }
         }
     },
-    "adminMetadataChooseImage": "Choose {imageType} image",
+    "adminMetadataChooseImage": "{imageType} ఇమేజ్‌ను ఎంచుకోండి",
     "@adminMetadataChooseImage": {
         "placeholders": {
             "imageType": {
@@ -5837,7 +5825,7 @@
     "adminPluginsRestart": "పునఃప్రారంభించండి",
     "adminPluginsNoSearchResults": "మీ శోధనకు సరిపోలే ప్లగిన్‌లు లేవు",
     "adminPluginsNoneInstalled": "ప్లగిన్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు",
-    "adminPluginsUpdateAvailable": "Update available: v{version}",
+    "adminPluginsUpdateAvailable": "అప్‌డేట్ అందుబాటులో ఉంది: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {
             "version": {
@@ -5851,7 +5839,7 @@
     "adminPluginsEnable": "ప్రారంభించు",
     "adminPluginsDisable": "ఆపివేయి",
     "adminPluginsInstallUpdate": "నవీకరణను ఇన్‌స్టాల్ చేయండి",
-    "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+    "adminPluginsInstallUpdateVersioned": "అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయండి (v{version})",
     "@adminPluginsInstallUpdateVersioned": {
         "placeholders": {
             "version": {
@@ -5861,7 +5849,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "మీ శోధనకు సరిపోలే ప్యాకేజీలు ఏవీ లేవు",
     "adminPluginsCatalogEmpty": "ప్యాకేజీలు అందుబాటులో లేవు",
-    "adminPluginsInstalling": "\"{name}\" is being installed...",
+    "adminPluginsInstalling": "\"{name}\" ఇన్‌స్టాల్ అవుతోంది...",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5873,7 +5861,7 @@
     "adminPluginDetailExperimentalContent": "ప్లగిన్ సెట్టింగ్‌ల ఏకీకరణ ఇప్పటికీ ప్రయోగాత్మకంగా ఉంది. కొన్ని ఫీల్డ్‌లు లేదా లేఅవుట్‌లు ఇంకా సరిగ్గా రెండర్ కాకపోవచ్చు.",
     "adminPluginDetailToggle404": "ప్లగిన్‌ని టోగుల్ చేయడంలో విఫలమైంది. సర్వర్ ఈ ప్లగ్ఇన్ సంస్కరణను కనుగొనలేకపోయింది. ప్లగిన్‌లను రిఫ్రెష్ చేయడానికి ప్రయత్నించండి, ఆపై మళ్లీ ప్రయత్నించండి.",
     "adminPluginDetailToggleDioError": "ప్లగిన్‌ని టోగుల్ చేయడంలో విఫలమైంది. వివరాల కోసం దయచేసి సర్వర్ లాగ్‌లను తనిఖీ చేయండి.",
-    "adminPluginDetailSettingsTitle": "{name} Settings",
+    "adminPluginDetailSettingsTitle": "{name} సెట్టింగ్‌లు",
     "@adminPluginDetailSettingsTitle": {
         "placeholders": {
             "name": {
@@ -5891,7 +5879,7 @@
     "adminPluginDetailMalfunctioned": "ఈ ప్లగ్ఇన్ తప్పుగా పని చేసింది మరియు సరిగ్గా పని చేయకపోవచ్చు.",
     "adminPluginDetailNotSupported": "ఈ ప్లగ్‌ఇన్‌కు ప్రస్తుత సర్వర్ వెర్షన్ మద్దతు లేదు.",
     "adminPluginDetailSuperseded": "ఈ ప్లగ్ఇన్ కొత్త వెర్షన్ ద్వారా భర్తీ చేయబడింది.",
-    "adminReposLoadFailed": "Failed to load repositories: {error}",
+    "adminReposLoadFailed": "రిపోజిటరీలను లోడ్ చేయడం విఫలమైంది: {error}",
     "@adminReposLoadFailed": {
         "placeholders": {
             "error": {
@@ -5900,7 +5888,7 @@
         }
     },
     "adminReposRemoveTitle": "రిపోజిటరీని తీసివేయండి",
-    "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminReposRemoveConfirm": "\"{name}\"ని ఖచ్చితంగా తీసివేయాలా?",
     "@adminReposRemoveConfirm": {
         "placeholders": {
             "name": {
@@ -5908,8 +5896,8 @@
             }
         }
     },
-    "adminReposRemove": "తొలగించు",
-    "adminReposSaveFailed": "Failed to save repositories: {error}",
+    "adminReposRemove": "తీసివేయండి",
+    "adminReposSaveFailed": "రిపోజిటరీలను సేవ్ చేయడం విఫలమైంది: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
             "error": {
@@ -5996,14 +5984,14 @@
     "adminTaskCancelling": "రద్దు చేస్తోంది...",
     "adminTaskRunning": "నడుస్తోంది...",
     "adminTaskNeverRun": "ఎప్పుడూ పరుగెత్తకండి",
-    "adminTaskStop": "ఆపు",
+    "adminTaskStop": "ఆపండి",
     "adminTaskRun": "పరుగు",
     "adminTaskDetailLastExecution": "చివరి అమలు",
     "adminTaskDetailStarted": "ప్రారంభించారు",
     "adminTaskDetailEnded": "ముగిసింది",
     "adminTaskDetailDuration": "వ్యవధి",
     "adminTaskDetailErrorLabel": "లోపం:",
-    "adminTaskTriggerDaily": "Daily at {time}",
+    "adminTaskTriggerDaily": "ప్రతిరోజూ {time}కి",
     "@adminTaskTriggerDaily": {
         "placeholders": {
             "time": {
@@ -6011,7 +5999,7 @@
             }
         }
     },
-    "adminTaskTriggerWeekly": "Every {day} at {time}",
+    "adminTaskTriggerWeekly": "ప్రతి {day} {time}కి",
     "@adminTaskTriggerWeekly": {
         "placeholders": {
             "day": {
@@ -6022,7 +6010,7 @@
             }
         }
     },
-    "adminTaskTriggerInterval": "Every {duration}",
+    "adminTaskTriggerInterval": "ప్రతి {duration}",
     "@adminTaskTriggerInterval": {
         "placeholders": {
             "duration": {
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "ప్రతి 12 గంటలు",
     "adminTaskTriggerEvery24Hours": "ప్రతి 24 గంటలు",
     "adminTaskTriggerEvery2Days": "ప్రతి 2 రోజులు",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 గంట} other{{count} గంటలు}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6055,7 +6043,7 @@
     "adminActivityToday": "ఈరోజు",
     "adminActivityYesterday": "నిన్న",
     "adminActivityOlder": "పాతది",
-    "adminActivityDaysAgo": "{days}d ago",
+    "adminActivityDaysAgo": "{days}రో క్రితం",
     "@adminActivityDaysAgo": {
         "placeholders": {
             "days": {
@@ -6063,7 +6051,7 @@
             }
         }
     },
-    "adminActivityHoursAgo": "{hours}h ago",
+    "adminActivityHoursAgo": "{hours}గం క్రితం",
     "@adminActivityHoursAgo": {
         "placeholders": {
             "hours": {
@@ -6071,7 +6059,7 @@
             }
         }
     },
-    "adminActivityMinutesAgo": "{minutes}m ago",
+    "adminActivityMinutesAgo": "{minutes}ని క్రితం",
     "@adminActivityMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "ఇప్పుడు",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes}ని",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}గం",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days}రో",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "సీక్ ప్రివ్యూ థంబ్‌నెయిల్‌ల కోసం ట్రిక్‌ప్లే ఇమేజ్ జనరేషన్‌ను కాన్ఫిగర్ చేయండి.",
+    "adminTrickplayDescription": "సీక్ ప్రివ్యూ థంబ్‌నెయిల్‌ల కోసం Trickplay ఇమేజ్ ఉత్పత్తిని కాన్ఫిగర్ చేయండి.",
     "adminNetworkingPublicHttpsPort": "పబ్లిక్ HTTPS పోర్ట్",
     "adminNetworkingBaseUrl": "బేస్ URL",
-    "adminNetworkingBaseUrlHint": "ఉదా / జెల్లీఫిన్",
+    "adminNetworkingBaseUrlHint": "ఉదా. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "సర్టిఫికేట్ మార్గం",
     "adminNetworkingRemoteIpFilter": "రిమోట్ IP ఫిల్టర్",
@@ -6143,7 +6131,7 @@
     "adminTrickplayWidthResolutions": "వెడల్పు తీర్మానాలు",
     "adminMetadataDefault": "డిఫాల్ట్",
     "adminMetadataContentTypeUpdated": "కంటెంట్ రకం నవీకరించబడింది",
-    "adminMetadataContentTypeFailed": "Failed to update content type: {error}",
+    "adminMetadataContentTypeFailed": "కంటెంట్ రకాన్ని అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminMetadataContentTypeFailed": {
         "placeholders": {
             "error": {
@@ -6157,7 +6145,7 @@
     "adminGeneralServerName": "సర్వర్ పేరు",
     "adminSettingsLoadFailed": "సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది",
     "adminDiscover": "కనుగొనండి",
-    "adminChannelMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminChannelMappingsUpdateFailed": "మ్యాపింగ్‌లను అప్‌డేట్ చేయడం విఫలమైంది: {error}",
     "@adminChannelMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -6165,7 +6153,7 @@
             }
         }
     },
-    "adminTimeLimitDuration": "Time limit: {duration}",
+    "adminTimeLimitDuration": "సమయ పరిమితి: {duration}",
     "@adminTimeLimitDuration": {
         "placeholders": {
             "duration": {
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "ఫోల్డర్లు",
-    "libraries": "గ్రంథాలయాలు",
+    "libraries": "లైబ్రరీలు",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay నిలిపివేయబడింది",
     "syncPlayDisabledMessage": "సమకాలీకరించబడిన ప్లేబ్యాక్‌ని ఉపయోగించడానికి సెట్టింగ్‌లలో SyncPlayని ప్రారంభించండి.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlayకి Jellyfin సర్వర్ అవసరం. ప్రస్తుత సర్వర్ దీనికి మద్దతు ఇవ్వదు.",
     "syncPlayGroupFallbackName": "SyncPlay గ్రూప్",
     "syncPlayGroupTooltip": "SyncPlay సమూహం",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# పాల్గొనేవారు} other {# పాల్గొనేవారు}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6202,7 +6190,7 @@
     "syncPlaySyncCurrentQueueSubtitle": "సమూహ క్యూను స్థానికంగా ప్లే చేస్తున్న వాటితో భర్తీ చేయండి",
     "syncPlayLeaveGroup": "సమూహం నుండి నిష్క్రమించండి",
     "syncPlayGroupQueue": "సమూహం క్యూ",
-    "syncPlayQueueItemFallback": "Item {index}",
+    "syncPlayQueueItemFallback": "అంశం {index}",
     "@syncPlayQueueItemFallback": {
         "description": "Fallback title for SyncPlay queue item when media title is unavailable",
         "placeholders": {
@@ -6225,7 +6213,7 @@
     "syncPlayStateWaiting": "వేచి ఉంది",
     "syncPlayStatePaused": "పాజ్ చేయబడింది",
     "syncPlayStatePlaying": "ఆడుతున్నారు",
-    "syncPlayUserJoinedGroup": "{userName} joined SyncPlay group",
+    "syncPlayUserJoinedGroup": "{userName} SyncPlay గ్రూప్‌లో చేరారు",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
         "placeholders": {
@@ -6234,7 +6222,7 @@
             }
         }
     },
-    "syncPlayUserLeftGroup": "{userName} left SyncPlay group",
+    "syncPlayUserLeftGroup": "{userName} SyncPlay గ్రూప్ నుండి నిష్క్రమించారు",
     "@syncPlayUserLeftGroup": {
         "description": "Snackbar message when a user leaves a SyncPlay group",
         "placeholders": {
@@ -6245,7 +6233,7 @@
     },
     "syncPlayAccessDeniedTitle": "SyncPlay యాక్సెస్ నిరాకరించబడింది",
     "syncPlayAccessDeniedMessage": "ఈ SyncPlay సమూహంలోని ఒకటి లేదా అంతకంటే ఎక్కువ అంశాలకు మీకు యాక్సెస్ లేదు. లైబ్రరీ అనుమతులను ధృవీకరించమని లేదా వేరొక వరుసను ఎంచుకోమని గుంపు యజమానిని అడగండి.",
-    "syncPlaySyncingPlaybackToGroup": "Syncing playback to {groupName}",
+    "syncPlaySyncingPlaybackToGroup": "{groupName}కి ప్లేబ్యాక్‌ను సింక్ చేస్తోంది",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "నా ఎంపికను గుర్తుంచుకో",
     "playHdr10Fallback": "HDR10 ఫాల్‌బ్యాక్‌ని ప్లే చేయండి",
     "requestTranscode": "ట్రాన్స్‌కోడ్‌ని అభ్యర్థించండి",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# వరుస కనుగొనబడింది} other {# వరుసలు కనుగొనబడ్డాయి}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6287,7 +6275,7 @@
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
     "castRemotePlayback": "రిమోట్ ప్లేబ్యాక్",
-    "castControlFailed": "Cast control failed: {error}",
+    "castControlFailed": "కాస్ట్ నియంత్రణ విఫలమైంది: {error}",
     "@castControlFailed": {
         "placeholders": {
             "error": {
@@ -6295,7 +6283,7 @@
             }
         }
     },
-    "castKindControls": "{kind} Controls",
+    "castKindControls": "{kind} నియంత్రణలు",
     "@castKindControls": {
         "placeholders": {
             "kind": {
@@ -6305,7 +6293,7 @@
     },
     "castDeviceVolume": "పరికర వాల్యూమ్",
     "castVolumeUnavailable": "అందుబాటులో లేదు",
-    "castStopKind": "Stop {kind}",
+    "castStopKind": "{kind}ని ఆపండి",
     "@castStopKind": {
         "placeholders": {
             "kind": {
@@ -6319,7 +6307,7 @@
     "pinSetTitle": "PINని సెట్ చేయండి",
     "pinEnterTitle": "PINని నమోదు చేయండి",
     "pinReenterToConfirm": "నిర్ధారించడానికి మీ PINని మళ్లీ నమోదు చేయండి",
-    "pinEnterNDigit": "Enter a {length}-digit PIN",
+    "pinEnterNDigit": "{length}-అంకెల PINను నమోదు చేయండి",
     "@pinEnterNDigit": {
         "placeholders": {
             "length": {
@@ -6327,7 +6315,7 @@
             }
         }
     },
-    "pinEnterYourNDigit": "Enter your {length}-digit PIN",
+    "pinEnterYourNDigit": "మీ {length}-అంకెల PINను నమోదు చేయండి",
     "@pinEnterYourNDigit": {
         "placeholders": {
             "length": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "తప్పు పిన్",
     "pinMismatch": "పిన్‌లు సరిపోలడం లేదు",
     "pinForgot": "పిన్ మర్చిపోయారా?",
-    "pinClear": "క్లియర్",
+    "pinClear": "క్లియర్ చేయండి",
     "pinBackspace": "బ్యాక్‌స్పేస్",
-    "quickConnectAuthorized": "త్వరిత కనెక్ట్ అభ్యర్థన అధికారం.",
-    "quickConnectInvalidOrExpired": "త్వరిత కనెక్ట్ కోడ్ చెల్లదు లేదా గడువు ముగిసింది.",
-    "quickConnectNotSupported": "ఈ సర్వర్‌లో త్వరిత అనుసంధానానికి మద్దతు లేదు.",
-    "quickConnectAuthorizeFailed": "త్వరిత కనెక్ట్ కోడ్‌ని ప్రామాణీకరించడంలో విఫలమైంది.",
-    "quickConnectDisabled": "ఈ సర్వర్‌లో త్వరిత అనుసంధానం నిలిపివేయబడింది.",
-    "quickConnectForbidden": "మీ ఖాతా ఈ త్వరిత అనుసంధాన అభ్యర్థనను ప్రామాణీకరించలేదు.",
-    "quickConnectNotFound": "త్వరిత కనెక్ట్ కోడ్ కనుగొనబడలేదు. కొత్త కోడ్‌ని ప్రయత్నించండి.",
-    "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
+    "quickConnectAuthorized": "Quick Connect అభ్యర్థన అధీకృతం చేయబడింది.",
+    "quickConnectInvalidOrExpired": "Quick Connect కోడ్ చెల్లదు లేదా గడువు ముగిసింది.",
+    "quickConnectNotSupported": "ఈ సర్వర్‌లో Quick Connectకు మద్దతు లేదు.",
+    "quickConnectAuthorizeFailed": "Quick Connect కోడ్‌ను అధీకృతం చేయడం విఫలమైంది.",
+    "quickConnectDisabled": "ఈ సర్వర్‌లో Quick Connect నిలిపివేయబడింది.",
+    "quickConnectForbidden": "మీ ఖాతా ఈ Quick Connect అభ్యర్థనను అధీకృతం చేయలేదు.",
+    "quickConnectNotFound": "Quick Connect కోడ్ కనుగొనబడలేదు. కొత్త కోడ్‌ను ప్రయత్నించండి.",
+    "quickConnectFailedWithMessage": "Quick Connect విఫలమైంది: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6357,7 +6345,7 @@
     },
     "quickConnectEnterCode": "కోడ్‌ని నమోదు చేయండి",
     "quickConnectAuthorize": "అధికారం ఇవ్వండి",
-    "remoteCommandFailed": "Command failed: {error}",
+    "remoteCommandFailed": "కమాండ్ విఫలమైంది: {error}",
     "@remoteCommandFailed": {
         "placeholders": {
             "error": {
@@ -6373,7 +6361,7 @@
     "unknownItem": "తెలియదు",
     "remoteNothingPlaying": "ఈ సెషన్‌లో ఏదీ ప్లే కావడం లేదు",
     "castingStarted": "ఎంచుకున్న పరికరంలో ప్రసారం ప్రారంభించబడింది",
-    "castingFailed": "Failed to start casting: {error}",
+    "castingFailed": "కాస్టింగ్‌ను ప్రారంభించడం విఫలమైంది: {error}",
     "@castingFailed": {
         "placeholders": {
             "error": {
@@ -6394,7 +6382,7 @@
     "trackActionAddToFavorites": "ఇష్టమైన వాటికి జోడించండి",
     "trackActionGoToAlbum": "ఆల్బమ్‌కి వెళ్లండి",
     "trackActionGoToArtist": "ఆర్టిస్ట్‌కి వెళ్లండి",
-    "trackActionDownloading": "Downloading {name}...",
+    "trackActionDownloading": "{name} డౌన్‌లోడ్ అవుతోంది...",
     "@trackActionDownloading": {
         "placeholders": {
             "name": {
@@ -6427,9 +6415,9 @@
     "upNext": "తదుపరి",
     "playNext": "తదుపరి ప్లే చేయండి",
     "stillWatchingContent": "ప్లేబ్యాక్ పాజ్ చేయబడింది. మీరు ఇంకా చూస్తున్నారా?",
-    "stillWatchingStop": "ఆపు",
+    "stillWatchingStop": "ఆపండి",
     "stillWatchingContinue": "కొనసాగించు",
-    "skipSegment": "Skip {segment}",
+    "skipSegment": "{segment}ను దాటవేయండి",
     "@skipSegment": {
         "placeholders": {
             "segment": {
@@ -6439,7 +6427,7 @@
     },
     "liveTv": "ప్రత్యక్ష TV",
     "continueWatchingAndNextUp": "చూడటం కొనసాగించు & తదుపరి",
-    "downloadingBatchProgress": "Downloading {current}/{total} — {fileName}",
+    "downloadingBatchProgress": "{current}/{total} డౌన్‌లోడ్ అవుతోంది — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
             "current": {
@@ -6453,7 +6441,7 @@
             }
         }
     },
-    "downloadingFile": "Downloading {fileName}",
+    "downloadingFile": "{fileName} డౌన్‌లోడ్ అవుతోంది",
     "@downloadingFile": {
         "placeholders": {
             "fileName": {
@@ -6532,7 +6520,7 @@
     "settingsDynamicContentSubtitle": "మీడియా బార్ మరియు విజువల్ ఓవర్‌లేలు",
     "settingsPlaybackSyncplay": "ప్లేబ్యాక్ & SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "ఆడియో/వీడియో సెట్టింగ్‌లు, ఉపశీర్షికలు, డౌన్‌లోడ్‌లు మరియు SyncPlay నియంత్రణలు",
-    "settingsIntegrationsSubtitle": "ప్లగిన్ సమకాలీకరణ, సీర్, రేటింగ్‌లు మరియు మరిన్ని",
+    "settingsIntegrationsSubtitle": "ప్లగిన్ సింక్, Seerr, రేటింగ్‌లు మరియు మరిన్ని",
     "settingsAboutSubtitle": "యాప్ వెర్షన్, చట్టపరమైన సమాచారం మరియు క్రెడిట్‌లు",
     "settingsAuthenticationSection": "ప్రమాణీకరణ",
     "settingsSortServersBy": "సర్వర్‌లను క్రమబద్ధీకరించండి",
@@ -6556,7 +6544,7 @@
     "settingsVisualOverlays": "విజువల్ ఓవర్లేస్",
     "settingsSeasonalSurprise": "కాలానుగుణ ఆశ్చర్యం",
     "settingsMetadataAndRatings": "మెటాడేటా & రేటింగ్‌లు",
-    "settingsPluginScreenDescription": "Moonbase అదనపు రేటింగ్ మూలాధారాలు, సీర్ అభ్యర్థనలు మరియు సమకాలీకరించబడిన ప్రాధాన్యతలతో సహా సర్వర్-సైడ్ ఇంటిగ్రేషన్‌లకు శక్తినిస్తుంది.",
+    "settingsPluginScreenDescription": "అదనపు రేటింగ్ మూలాలు, Seerr అభ్యర్థనలు, సింక్ చేసిన ప్రాధాన్యతలతో సహా సర్వర్-వైపు ఇంటిగ్రేషన్‌లను Moonbase శక్తివంతం చేస్తుంది.",
     "settingsOfflineDownloads": "ఆఫ్‌లైన్ డౌన్‌లోడ్‌లు",
     "settingsHigh": "అధిక",
     "settingsLow": "తక్కువ",
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "నవీకరణల కోసం తనిఖీ చేయండి",
     "settingsCheckForUpdatesSubtitle": "తాజా Moonfin విడుదల కోసం తనిఖీ చేయండి",
     "settingsPoweredByFlutter": "Flutter ద్వారా ఆధారితం",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# లైసెన్స్ నోటీసు} other {# లైసెన్స్ నోటీసులు}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6689,7 +6677,7 @@
             }
         }
     },
-    "discNumber": "Disc {number}",
+    "discNumber": "డిస్క్ {number}",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "సీర్ ఖాతా రకం",
+    "seerrAccountType": "Seerr ఖాతా రకం",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6763,135 +6751,123 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Prefer system keyboard",
+    "keyboardPreferSystemIme": "సిస్టమ్ కీబోర్డ్‌కు ప్రాధాన్యం ఇవ్వండి",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+    "keyboardPreferSystemImeDescription": "టెక్స్ట్ ఎంట్రీ కోసం డిఫాల్ట్‌గా మీ పరికర ఇన్‌పుట్ పద్ధతిని ఉపయోగించండి",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
-    "musicVideos": "Music Videos",
+    "musicVideos": "మ్యూజిక్ వీడియోలు",
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Record",
+    "record": "రికార్డ్ చేయండి",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
-    "cancelRecordingAction": "Cancel Recording",
+    "cancelRecordingAction": "రికార్డింగ్‌ను రద్దు చేయండి",
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
-    "programSetToRecord": "Program set to record",
+    "programSetToRecord": "ప్రోగ్రామ్ రికార్డ్ చేయడానికి సెట్ చేయబడింది",
     "@programSetToRecord": {
         "description": "Snackbar confirmation after scheduling a live TV program recording"
     },
-    "recordingCancelled": "Recording cancelled",
+    "recordingCancelled": "రికార్డింగ్ రద్దు చేయబడింది",
     "@recordingCancelled": {
         "description": "Snackbar confirmation after cancelling a live TV recording"
     },
-    "unableToCreateRecording": "Unable to create recording",
+    "unableToCreateRecording": "రికార్డింగ్‌ను సృష్టించడం సాధ్యపడలేదు",
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "ఆడియో అవుట్‌పుట్ మోడ్",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR పాస్‌త్రూ",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Audio Fallback Codec",
+    "settingsAudioFallbackCodec": "ఆడియో ప్రత్యామ్నాయ కోడెక్",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
-    "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+    "settingsAudioPassthroughAdvanced": "పాస్‌త్రూ (అధునాతన)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "కోడెక్ పాస్‌త్రూ",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+    "settingsAudioCodecPassthroughDescription": "మీ AVR లేదా HDMI సింక్ మద్దతిచ్చే ఫార్మాట్‌లను మాత్రమే ప్రారంభించండి.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "EAC3 పాస్‌త్రూ",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) పాస్‌త్రూ",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core పాస్‌త్రూ",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA పాస్‌త్రూ",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD పాస్‌త్రూ",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos పాస్‌త్రూ",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
-    "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+    "settingsAudioBitstreamEac3ToExternalDecoder": "Dolby Digital Plus (EAC3)ను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.",
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "EAC3 (JOC) ద్వారా Dolby Atmosను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "DTS-HD MA (DTS core కలిపి)ను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Atmos మెటాడేటాతో Dolby TrueHDను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+    "settingsDetectedAudioCapabilities": "గుర్తించిన ఆడియో సామర్థ్యాలు",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+    "settingsDetectedAudioCapabilitiesUnavailable": "రన్‌టైమ్ సామర్థ్య స్నాప్‌షాట్ ఇంకా అందుబాటులో లేదు.",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "Route",
+    "settingsAudioRouteLabel": "మార్గం",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
-    "settingsAudioDecodeLabel": "Decode",
+    "settingsAudioDecodeLabel": "డీకోడ్",
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
-    "settingsAudioPassthroughLabel": "Passthrough",
+    "settingsAudioPassthroughLabel": "పాస్‌త్రూ",
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD audio route",
+    "settingsAudioHdRoute": "HD ఆడియో మార్గం",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6911,7 +6887,7 @@
     "@settingsAudioRouteBluetooth": {
         "description": "Audio route type Bluetooth"
     },
-    "settingsAudioRouteSpeaker": "Speaker",
+    "settingsAudioRouteSpeaker": "స్పీకర్",
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
@@ -6924,48 +6900,48 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "Diagnostics",
+    "settingsAudioDiagnostics": "డయాగ్నోస్టిక్స్",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "Video Level",
+    "settingsAudioDiagnosticsVideoLevel": "వీడియో లెవల్",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "Video Range",
+    "settingsAudioDiagnosticsVideoRange": "వీడియో పరిధి",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
-    "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+    "settingsAudioDiagnosticsSubtitleCodec": "సబ్‌టైటిల్ కోడెక్",
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "అనుమతించిన ఆడియో కోడెక్‌లు",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS ఆడియో కోడెక్‌లు",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 ఆడియో కోడెక్‌లు",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif పాస్‌త్రూ",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+    "settingsAudioDiagnosticsActiveAudioRoute": "సక్రియ ఆడియో మార్గం",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "మార్గం HD ఆడియో మద్దతు",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
-    "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
-    "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
+    "settingsPlaybackEngineMedia3Legacy": "Media3 (లెగసీ)",
+    "settingsPlaybackEngineMpvRecommended": "mpv (సిఫార్సు చేయబడింది)",
     "autoplayNextEpisode": "తదుపరి ఎపిసోడ్‌ను ఆటోప్లే చేయండి",
     "@autoplayNextEpisode": {
         "description": "Setting title: automatically start the next episode"
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "iOS రూట్ పికర్‌ని తెరవండి",
     "airPlayRoutePickerUnavailable": "AirPlay రూట్ పికర్ ఈ పరికరంలో అందుబాటులో లేదు.",
     "videos": "వీడియోలు",
-    "trailers": "ట్రైలర్స్",
+    "trailers": "ట్రైలర్‌లు",
     "programs": "కార్యక్రమాలు",
     "songs": "పాటలు",
     "photoAlbums": "ఫోటో ఆల్బమ్‌లు",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "ఇటీవల విడుదలైన ఎపిసోడ్స్",
     "watchAgain": "మళ్ళీ చూడండి",
     "guestAppearances": "అతిథి ప్రదర్శనలు",
-    "appearancesSeerr": "ప్రదర్శనలు (సీర్)",
+    "appearancesSeerr": "కనిపించినవి (Seerr)",
     "watchWithGroup": "సమూహంతో చూడండి",
     "errors": "లోపాలు",
     "warnings": "హెచ్చరికలు",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "అగ్ర కళాకారులు",
     "analyticsTopAuthors": "అగ్ర రచయితలు",
     "analyticsTopContributors": "అగ్ర సహకారులు",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 లైబ్రరీ} other{{count} లైబ్రరీలు}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "మిశ్రమ కంటెంట్",
     "homeVideosAndPhotos": "హోమ్ వీడియోలు & ఫోటోలు",
     "mixedMoviesAndShows": "మిశ్రమ చలనచిత్రాలు & ప్రదర్శనలు",
-    "intelQuickSync": "ఇంటెల్ త్వరిత సమకాలీకరణ",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "రాక్‌చిప్ MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "రికార్డింగ్‌లు ఏవీ కనుగొనబడలేదు",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.",
     "closeGenrePanel": "కళా ప్రక్రియ ప్యానెల్‌ను మూసివేయండి",
     "loadingShuffle": "షఫుల్ లోడ్ అవుతోంది...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "లైబ్రరీ షఫుల్",
+    "randomShuffleLabel": "యాదృచ్ఛిక షఫుల్",
+    "genresShuffleLabel": "శైలుల షఫుల్",
     "autoHdrSwitching": "ఆటో HDR స్విచింగ్",
     "autoHdrSwitchingDescription": "HDR వీడియో ప్లేబ్యాక్ కోసం HDRని స్వయంచాలకంగా ప్రారంభించండి మరియు నిష్క్రమణలో ప్రదర్శన మోడ్‌ని పునరుద్ధరించండి.",
     "whenFullscreen": "పూర్తి స్క్రీన్‌లో ఉన్నప్పుడు",
     "transcodingLimits": "ట్రాన్స్‌కోడింగ్ పరిమితులు",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "డెవలపర్‌కు ఒక కాఫీని దానం చేయండి",
+    "accountPreferences": "ఖాతా ప్రాధాన్యతలు",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "ఇంటర్‌ఫేస్ భాష",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "సిస్టమ్ డిఫాల్ట్",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "ఖాళీ",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "వివరాల స్క్రీన్ శైలి",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "క్లాసిక్ అనేది Moonfin అసలైన మధ్యస్థ లేఅవుట్. మోడర్న్ అనేది స్క్రీన్‌కు అనుగుణంగా మారే సినిమాటిక్ లేఅవుట్.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "క్లాసిక్",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "మోడర్న్",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "విస్తరించిన ట్యాబ్‌లు",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "ట్యాబ్‌లను బ్రౌజ్ చేస్తున్నప్పుడు వాటి కంటెంట్‌ను స్వయంచాలకంగా చూపుతుంది. ప్రతి ట్యాబ్‌ను మాన్యువల్‌గా తెరవడానికి, మూసివేయడానికి దీన్ని ఆఫ్ చేయండి.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "సాంకేతిక వివరాలను చూపించాలా?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "బ్యానర్ సారాంశంలో కోడెక్, రిజల్యూషన్, స్ట్రీమ్ సమాచారాన్ని చూపుతుంది",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "సిఫార్సు వ్యవస్థ",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Moonfin సిఫార్సులు అనే స్థానిక-లైబ్రరీ అల్గారిథమ్‌ను లేదా ఆన్‌లైన్ TMDb సారూప్య కొలమానాలను ఉపయోగించండి. గమనిక: ఆన్‌లైన్ సిఫార్సులకు Seerr ఇంటిగ్రేషన్ అవసరం.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin సిఫార్సులు",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb సారూప్యత",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "పేరెంటల్ రేటింగ్ పరిమితిని వర్తింపజేయాలా?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "లక్ష్య మీడియా పేరెంటల్ రేటింగ్ ఆధారంగా Moonfin సిఫార్సులను పరిమితం చేస్తుంది",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "ఇంటర్‌ఫేస్ శైలి",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "ఆటోమేటిక్ మీ పరికరానికి సరిపోతుంది. ఒక రూపాన్ని బలవంతంగా అమలు చేయడానికి Apple లేదా Materialను ఎంచుకోండి.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "ఆటోమేటిక్",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "గ్లాస్ నాణ్యత",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "ఆటో ఈ పరికరానికి ఉత్తమ గ్లాస్ ప్రభావాన్ని ఎంచుకుంటుంది. ఫుల్ నిజమైన బ్లర్‌ను బలవంతంగా అమలు చేస్తుంది; రిడ్యూస్డ్ GPU శక్తిని ఆదా చేసే తేలికపాటి గ్లాస్‌ను ఉపయోగిస్తుంది.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "ఆటో",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "ఫుల్",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "రిడ్యూస్డ్",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "అనుకూల థీమ్",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "అనుకూల థీమ్‌లు Moonfin అంతటా దృశ్య అంశాలను మారుస్తాయి. మీ శైలికి సరిపోయేలా వీటిలో ఒకదాన్ని ఎంచుకోండి.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "గ్లాస్",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "కదిలే గ్రేడియంట్ నేపథ్యం, మంచు లాంటి ఉపరితలాలు, Apple-నీలం యాక్సెంట్‌తో లిక్విడ్-గ్లాస్ శైలి",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-బిట్ హీరో",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "దట్టమైన రంగుల ప్యాలెట్, చతురస్రాకార అంచులు, గట్టి నీడలు, పిక్సెల్ ఫాంట్‌తో రెట్రో పిక్సెల్-ఆర్ట్ శైలి",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "మెను",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "పాజ్ చేయబడింది",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "స్థితిని సేవ్ చేయండి",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "గేమ్‌లు",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "స్థితిని లోడ్ చేయండి",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "ఫాస్ట్-ఫార్వర్డ్",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "ఎమ్యులేటర్ సెట్టింగ్‌లు",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "ఈ కోర్‌కు సర్దుబాటు చేయగల ఎంపికలు లేవు.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "మెనును తెరవడానికి నొక్కి పట్టుకోండి",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "ఈ పరికరంలో గేమ్‌లను ఆడటం ఇంకా మద్దతు లేదు.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "సరికొత్త పుస్తకాలు",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "సరికొత్త ఆడియోబుక్‌లు",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 పుస్తకం} other{{count} పుస్తకాలు}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "పుస్తకం",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "ఆడియోబుక్",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% చదివారు",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} మిగిలి ఉంది",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "చదవండి",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "వినండి",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "అంశాలు",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "అదనపు అంశాలు",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "తెర వెనుక",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "తొలగించిన సన్నివేశాలు",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "ఫీచరెట్‌లు",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "ఇంటర్వ్యూలు",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "సన్నివేశాలు",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "షార్ట్స్",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} మిగిలి ఉంది",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "{time}లో ముగుస్తుంది",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "దర్శకులు",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "రచయిత",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "మొత్తం సంగీతాన్ని షఫుల్ చేయండి",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "మీ ఫోన్‌లో Moonfinకి సైన్ ఇన్ చేయండి",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "మీ సర్వర్‌ను చేరుకోలేకపోతోంది",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "తదుపరి: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}ని మిగిలి ఉంది",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}గం మిగిలి ఉంది",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}గం {minutes}ని మిగిలి ఉంది",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "వివరాల పేజీలు, హోమ్ వరుసలు, వాల్యూమ్",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "థీమ్ మ్యూజిక్‌ను లూప్ చేయండి",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "ట్రాక్‌ను ఒకసారి ప్లే చేయడానికి బదులుగా పునరావృతం చేయండి",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "మౌస్ స్క్రోల్ వీల్",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "ప్లేబ్యాక్ సమయంలో వీడియోపై మౌస్ వీల్‌ను స్క్రోల్ చేస్తే ఏమి జరగాలో ఎంచుకోండి.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "ఆఫ్",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "సీక్ (ముందుకు / వెనుకకు)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "వాల్యూమ్",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "వాల్యూమ్",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "ప్రత్యామ్నాయ ఆడియో భాష",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "డిఫాల్ట్ ఆడియో ట్రాక్‌కు ప్రాధాన్యం ఇవ్వండి",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "స్థానికీకరించిన డబ్ కంటే అసలైన ఆడియో ట్రాక్‌కు ప్రాధాన్యం ఇవ్వండి.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "ఆడియో వివరణ ట్రాక్‌లకు ప్రాధాన్యం ఇవ్వండి",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "సాధారణ ట్రాక్‌ల కంటే ఆడియో వివరణ ట్రాక్‌లకు ప్రాధాన్యం ఇవ్వండి.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "ట్రాన్స్‌కోడింగ్ (ఆడియో)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "డైరెక్ట్ స్ట్రీమ్ (రీమక్స్)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "ట్రాన్స్‌కోడింగ్ (బిట్‌రేట్ లేదా రిజల్యూషన్)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "ట్రాన్స్‌కోడింగ్ (వీడియో & ఆడియో)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "ట్రాన్స్‌కోడింగ్ (వీడియో)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "ఆడియో ఎలా డీకోడ్ చేయబడాలో ఎంచుకోండి. AVR పాస్‌త్రూ ముడి Dolby/DTS స్ట్రీమ్‌లను మీ రిసీవర్‌కు పంపుతుంది; ఆటో లేదా డౌన్‌మిక్స్ స్థానికంగా డీకోడ్ చేస్తుంది.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "మూల స్ట్రీమ్‌ను నేరుగా ప్లే చేయలేని లేదా పాస్‌త్రూ చేయలేని సందర్భంలో మల్టీ-ఛానల్ ఆడియోను ట్రాన్స్‌కోడ్ చేయడానికి లక్ష్య ఫార్మాట్‌ను ఎంచుకోండి.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "ఆటో డిటెక్ట్\n(సిఫార్సు చేయబడింది)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(డిఫాల్ట్)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(నష్టం లేని)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(స్టీరియో మాత్రమే)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(సమర్థవంతమైన)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(నష్టం లేని)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "గరిష్ఠ ఆడియో ఛానెల్‌లు",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "మీ ఆడియో సెటప్ గరిష్ఠ ఛానెల్‌లను కాన్ఫిగర్ చేయండి. ఈ పరిమితిని మించిన మల్టీఛానల్ స్ట్రీమ్‌లు డౌన్‌మిక్స్ లేదా ట్రాన్స్‌కోడ్ అవుతాయి.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "ఆటో డిటెక్ట్\n(హార్డ్‌వేర్ డిఫాల్ట్)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 మోనో",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 స్టీరియో",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 సరౌండ్",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 క్వాడ్రాఫోనిక్",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 సరౌండ్",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 సరౌండ్",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 సరౌండ్",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 సరౌండ్",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "హెడ్‌ఫోన్‌లు",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "సబ్‌టైటిల్ మోడ్",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "ఫ్లాగ్ చేయబడింది",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "ఎల్లప్పుడూ",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "విదేశీ",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "బలవంతం",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "మీడియా ఫైల్ మెటాడేటాలో అంతర్గతంగా \"default\" లేదా \"forced\"గా ఫ్లాగ్ చేయబడిన ట్రాక్‌లను ప్లే చేస్తుంది.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "వీడియో ప్రారంభమయ్యే ప్రతిసారీ సబ్‌టైటిల్‌లను స్వయంచాలకంగా లోడ్ చేసి ప్రదర్శిస్తుంది.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "డిఫాల్ట్ ఆడియో ట్రాక్ విదేశీ భాషలో ఉంటే సబ్‌టైటిల్‌లను స్వయంచాలకంగా ఆన్ చేస్తుంది.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "forced మెటాడేటా ఫ్లాగ్‌తో స్పష్టంగా ట్యాగ్ చేయబడిన సబ్‌టైటిల్‌లను మాత్రమే లోడ్ చేస్తుంది.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "స్వయంచాలక సబ్‌టైటిల్ లోడింగ్‌ను పూర్తిగా నిలిపివేస్తుంది.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "ప్రత్యామ్నాయ సబ్‌టైటిల్ భాష",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "సబ్‌టైటిల్ స్ట్రీమ్",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "సర్వర్‌లో డౌన్‌లోడ్‌లను చూపించండి",
+    "reportDownloadsActivitySubtitle": "మీ ట్రాన్స్‌కోడ్ చేసిన డౌన్‌లోడ్‌లను డాష్‌బోర్డ్‌లో సర్వర్ అడ్మిన్ చూసేందుకు అనుమతించండి",
+    "navbarAlwaysExpanded": "నావ్‌బార్ లేబుల్‌లను ఎల్లప్పుడూ విస్తరించండి",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Seerr బటన్‌ను చూపించండి",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "అంశాలను సేకరణలుగా సమూహపరచండి",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "లైబ్రరీలను బ్రౌజ్ చేస్తున్నప్పుడు సేకరణతో అనుబంధించిన లైబ్రరీ అంశాలను దాచండి",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "లైబ్రరీ సమూహపరిచే గమనిక",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "ఈ సెట్టింగ్‌ను ఉపయోగించడానికి, మీ Jellyfin లేదా Emby సర్వర్‌లో మీ లైబ్రరీ Display సెట్టింగ్‌ల కింద \"Group movies into collections\" మరియు/లేదా \"Group shows into collections\" లైబ్రరీ సెట్టింగ్‌లు ప్రారంభించబడ్డాయని నిర్ధారించుకోండి.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "ట్రైలర్ ఆడియో",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "మీడియా బార్‌లో ట్రైలర్‌ల కోసం ఆడియోను ప్రారంభించండి",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "విస్తరించిన హోమ్ వరుసలు",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "హోమ్ వరుసలను స్క్రీన్‌కు 1 వరుసకు పరిమితం చేయండి",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "ప్రస్తుత వినియోగదారు",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "స్థిరం",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "బౌన్సింగ్",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr డిస్కవరీ వరుసలు",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "నోటిఫికేషన్‌లు",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "కొత్త అభ్యర్థన నోటిఫికేషన్‌లు",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "ఎవరైనా అభ్యర్థన సమర్పించినప్పుడు నాకు తెలియజేయండి",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "అభ్యర్థన అప్‌డేట్‌లు",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "ఆమోదించబడింది, తిరస్కరించబడింది, మీ లైబ్రరీకి జోడించబడింది",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "సమస్య అప్‌డేట్‌లు",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "కొత్త సమస్యలు, ప్రత్యుత్తరాలు, పరిష్కారాలు",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "ఇమేజ్ కాష్ పరిమితి",
+    "clearImageCache": "ఇమేజ్ కాష్‌ను క్లియర్ చేయండి",
+    "imageCacheCleared": "ఇమేజ్ కాష్ క్లియర్ చేయబడింది",
+    "seerrDownloadingPercent": "డౌన్‌లోడ్ అవుతోంది · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "దిగుమతి అవుతోంది",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "విఫలమైంది",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "ప్రాసెస్ అవుతోంది",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "{name} మార్చారు",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "పూర్తయింది",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "ఈ శీర్షిక ఇప్పటికే అభ్యర్థించబడింది",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "అభ్యర్థన పరిమితి చేరుకుంది",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "ఈ శీర్షిక బ్లాక్‌లిస్ట్ చేయబడింది",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "అభ్యర్థించడానికి సీజన్‌లు ఏవీ మిగలలేదు",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "ఈ అభ్యర్థన చేయడానికి మీకు అనుమతి లేదు",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "అభ్యర్థనలు",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "సమస్యలు",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "సరికొత్తవి",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "చివరిగా మార్చినవి",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "సమస్యలు లేవు",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{limit} సినిమా అభ్యర్థనలలో {remaining} మిగిలి ఉన్నాయి",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{limit} సీజన్ అభ్యర్థనలలో {remaining} మిగిలి ఉన్నాయి",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "{name}లో భాగం",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "సేకరణను చూడండి",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "సేకరణను అభ్యర్థించండి",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} సినిమాలు · {available} అందుబాటులో ఉన్నాయి",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "{count} సినిమాలను అభ్యర్థించండి",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "{total}లో {current} అభ్యర్థిస్తోంది...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} సినిమాలు అభ్యర్థించబడ్డాయి",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{total} సినిమాలలో {ok} అభ్యర్థించబడ్డాయి",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "అన్ని సినిమాలు ఇప్పటికే అందుబాటులో ఉన్నాయి లేదా అభ్యర్థించబడ్డాయి",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "సమస్యను నివేదించండి",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "వీడియో",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "ఆడియో",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "ఏమి తప్పు?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "అన్ని ఎపిసోడ్‌లు",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "ఎపిసోడ్",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "తెరిచి ఉంది",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "పరిష్కరించబడింది",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "పరిష్కరించండి",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "మళ్లీ తెరవండి",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "{name} నివేదించారు",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} వ్యాఖ్యలు",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "వ్యాఖ్యను జోడించండి",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "ఈ సమస్యను తొలగించాలా?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "నివేదికను సమర్పించండి",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "డిస్‌ప్లే",
+    "adminDrawerMetadata": "మెటాడేటా",
+    "adminDrawerNfo": "NFO సెట్టింగ్‌లు",
+    "adminActivitySeverityAll": "అన్ని తీవ్రతలు",
+    "adminActivityDateRange": "తేదీ పరిధి",
+    "adminRemoveDeviceConfirm": "'{name}' పరికరాన్ని తీసివేయాలా? ఈ పరికరంలో వినియోగదారు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "అన్ని పరికరాలను తొలగించండి",
+    "adminDeleteAllDevicesConfirm": "{count} పరికరాలను తీసివేయాలా? ప్రభావితమైన వినియోగదారులు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది. మీ ప్రస్తుత పరికరం ప్రభావితం కాదు.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "పరికరాలు తీసివేయబడ్డాయి",
+    "adminDevicesDeletedPartial": "కొన్ని పరికరాలు తీసివేయబడ్డాయి; {count}ని తీసివేయడం సాధ్యపడలేదు.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "పాత్‌లు",
+    "adminLibraryTabOptions": "ఎంపికలు",
+    "adminLibraryTabDownloaders": "డౌన్‌లోడర్‌లు",
+    "adminLibMetadataSavers": "మెటాడేటా సేవర్‌లు",
+    "adminLibSubtitleDownloaders": "సబ్‌టైటిల్ డౌన్‌లోడర్‌లు",
+    "adminLibLyricDownloaders": "సాహిత్య డౌన్‌లోడర్‌లు",
+    "adminLibMetadataDownloadersFor": "మెటాడేటా డౌన్‌లోడర్‌లు: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "ఇమేజ్ ఫెచర్‌లు: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "ఈ లైబ్రరీ రకం కోసం ఈ సర్వర్ ఏ డౌన్‌లోడర్‌లను అందించదు.",
+    "adminLibrarySectionGeneral": "సాధారణం",
+    "adminLibrarySectionMetadata": "మెటాడేటా",
+    "adminLibrarySectionEmbedded": "ఎంబెడెడ్ సమాచారం",
+    "adminLibrarySectionSubtitles": "సబ్‌టైటిల్‌లు",
+    "adminLibrarySectionImages": "ఇమేజ్‌లు",
+    "adminLibrarySectionSeries": "సిరీస్",
+    "adminLibrarySectionMusic": "సంగీతం",
+    "adminLibrarySectionMovies": "సినిమాలు",
+    "adminLibRealtimeMonitor": "రియల్-టైమ్ మానిటరింగ్‌ను ప్రారంభించండి",
+    "adminLibRealtimeMonitorHint": "ఫైల్ మార్పులను గుర్తించి వాటిని స్వయంచాలకంగా ప్రాసెస్ చేస్తుంది.",
+    "adminLibArchiveMediaFiles": "ఆర్కైవ్‌లను మీడియా ఫైల్‌లుగా పరిగణించండి",
+    "adminLibEnablePhotos": "ఫోటోలను ప్రదర్శించండి",
+    "adminLibSaveLocalMetadata": "ఆర్ట్‌వర్క్‌ను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి",
+    "adminLibRefreshInterval": "స్వయంచాలక మెటాడేటా రిఫ్రెష్",
+    "adminLibRefreshNever": "ఎప్పటికీ కాదు",
+    "adminLibDefault": "డిఫాల్ట్",
+    "adminLibDisplayTitle": "డిస్‌ప్లే",
+    "adminLibDisplaySection": "లైబ్రరీ డిస్‌ప్లే",
+    "adminLibFolderView": "సాధారణ మీడియా ఫోల్డర్‌లను చూపడానికి ఫోల్డర్ వీక్షణను ప్రదర్శించండి",
+    "adminLibSpecialsInSeasons": "ప్రసారమైన సీజన్‌లలోనే స్పెషల్‌లను ప్రదర్శించండి",
+    "adminLibGroupMovies": "సినిమాలను సేకరణలుగా సమూహపరచండి",
+    "adminLibGroupShows": "షోలను సేకరణలుగా సమూహపరచండి",
+    "adminLibExternalSuggestions": "సూచనలలో బాహ్య కంటెంట్‌ను చూపించండి",
+    "adminLibDateAddedSection": "జోడించిన తేదీ ప్రవర్తన",
+    "adminLibDateAddedLabel": "జోడించిన తేదీని దీని నుండి ఉపయోగించండి",
+    "adminLibDateAddedImport": "లైబ్రరీలోకి స్కాన్ చేసిన తేదీ",
+    "adminLibDateAddedFile": "ఫైల్ సృష్టించబడిన తేదీ",
+    "adminLibMetadataTitle": "మెటాడేటా మరియు ఇమేజ్‌లు",
+    "adminLibMetadataLangSection": "ప్రాధాన్య మెటాడేటా భాష",
+    "adminLibChaptersSection": "అధ్యాయాలు",
+    "adminLibDummyChapterDuration": "డమ్మీ అధ్యాయ నిడివి (సెకన్లు)",
+    "adminLibDummyChapterDurationHint": "అధ్యాయాలు లేని మీడియా కోసం రూపొందించే అధ్యాయాల నిడివి. నిలిపివేయడానికి 0కి సెట్ చేయండి.",
+    "adminLibChapterImageResolution": "అధ్యాయ ఇమేజ్ రిజల్యూషన్",
+    "adminLibNfoTitle": "NFO సెట్టింగ్‌లు",
+    "adminLibNfoHelp": "NFO మెటాడేటా Kodi మరియు సారూప్య క్లయింట్‌లతో అనుకూలంగా ఉంటుంది. NFO మెటాడేటాను సేవ్ చేసే అన్ని లైబ్రరీలకు సెట్టింగ్‌లు వర్తిస్తాయి.",
+    "adminLibKodiUser": "NFO ఫైల్‌లలో వీక్షణ డేటాను నిల్వ చేయవలసిన వినియోగదారు",
+    "adminLibSaveImagePaths": "NFO ఫైల్‌లలో ఇమేజ్ పాత్‌లను సేవ్ చేయండి",
+    "adminLibPathSubstitution": "NFO ఇమేజ్ పాత్‌ల కోసం పాత్ ప్రత్యామ్నాయాన్ని ప్రారంభించండి",
+    "adminLibExtraThumbs": "extrafanart ఇమేజ్‌లను extrathumbs ఫోల్డర్‌లోకి కాపీ చేయండి",
+    "adminLibNone": "ఏదీ లేదు",
+    "adminLibRefreshDays": "{days} రోజులు",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "ఎంబెడెడ్ శీర్షికలను ఉపయోగించండి",
+    "adminLibEmbeddedExtrasTitles": "అదనపు అంశాల కోసం ఎంబెడెడ్ శీర్షికలను ఉపయోగించండి",
+    "adminLibEmbeddedEpisodeInfos": "ఎంబెడెడ్ ఎపిసోడ్ సమాచారాన్ని ఉపయోగించండి",
+    "adminLibAllowEmbeddedSubtitles": "ఎంబెడెడ్ సబ్‌టైటిల్‌లను అనుమతించండి",
+    "adminLibEmbeddedAllowAll": "అన్నింటిని అనుమతించండి",
+    "adminLibEmbeddedAllowText": "టెక్స్ట్ మాత్రమే",
+    "adminLibEmbeddedAllowImage": "ఇమేజ్ మాత్రమే",
+    "adminLibEmbeddedAllowNone": "ఏదీ లేదు",
+    "adminLibSkipIfEmbeddedSubs": "ఎంబెడెడ్ సబ్‌టైటిల్‌లు ఉంటే డౌన్‌లోడ్‌ను దాటవేయండి",
+    "adminLibSkipIfAudioMatches": "ఆడియో ట్రాక్ డౌన్‌లోడ్ భాషతో సరిపోతే డౌన్‌లోడ్‌ను దాటవేయండి",
+    "adminLibRequirePerfectMatch": "పరిపూర్ణ సబ్‌టైటిల్ సరిపోలిక అవసరం",
+    "adminLibSaveSubtitlesWithMedia": "సబ్‌టైటిల్‌లను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి",
+    "adminLibChapterImageExtraction": "అధ్యాయ ఇమేజ్‌లను వెలికితీయండి",
+    "adminLibChapterImagesDuringScan": "లైబ్రరీ స్కాన్ సమయంలో అధ్యాయ ఇమేజ్‌లను వెలికితీయండి",
+    "adminLibTrickplayExtraction": "Trickplay ఇమేజ్ వెలికితీతను ప్రారంభించండి",
+    "adminLibTrickplayDuringScan": "లైబ్రరీ స్కాన్ సమయంలో Trickplay ఇమేజ్‌లను వెలికితీయండి",
+    "adminLibSaveTrickplayWithMedia": "Trickplay ఇమేజ్‌లను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి",
+    "adminLibAutomaticSeriesGrouping": "బహుళ ఫోల్డర్‌లలో విస్తరించిన సిరీస్‌ను స్వయంచాలకంగా విలీనం చేయండి",
+    "adminLibSeasonZeroName": "సీజన్ జీరో డిస్‌ప్లే పేరు",
+    "adminLibLufsScan": "ఆడియో నార్మలైజేషన్ కోసం LUFS స్కాన్‌ను ప్రారంభించండి",
+    "adminLibPreferNonstandardArtist": "నాన్-స్టాండర్డ్ ఆర్టిస్ట్‌ల ట్యాగ్‌కు ప్రాధాన్యం ఇవ్వండి",
+    "adminLibAutoAddToCollection": "సినిమాలను సేకరణలకు స్వయంచాలకంగా జోడించండి",
+    "adminParentalControl": "పేరెంటల్ కంట్రోల్",
+    "adminMaxParentalRating": "అనుమతించిన గరిష్ఠ పేరెంటల్ రేటింగ్",
+    "adminMaxParentalRatingHint": "అధిక రేటింగ్ ఉన్న కంటెంట్ ఈ వినియోగదారు నుండి దాచబడుతుంది.",
+    "adminParentalRatingNone": "ఏదీ లేదు",
+    "adminBlockUnratedItems": "రేటింగ్ సమాచారం లేని లేదా గుర్తించని అంశాలను నిరోధించండి",
+    "adminUnratedBook": "పుస్తకాలు",
+    "adminUnratedChannelContent": "ఛానెల్‌లు",
+    "adminUnratedLiveTvChannel": "లైవ్ TV",
+    "adminUnratedMovie": "సినిమాలు",
+    "adminUnratedMusic": "సంగీతం",
+    "adminUnratedTrailer": "ట్రైలర్‌లు",
+    "adminUnratedSeries": "షోలు",
+    "adminAccessSchedules": "యాక్సెస్ షెడ్యూల్‌లు",
+    "adminAccessSchedulesHint": "దిగువన ఉన్న షెడ్యూల్ చేసిన సమయాల్లో మాత్రమే యాక్సెస్‌ను అనుమతించండి. షెడ్యూల్ సెట్ చేయనప్పుడు రోజంతా యాక్సెస్ అనుమతించబడుతుంది.",
+    "adminAddSchedule": "షెడ్యూల్‌ను జోడించండి",
+    "adminScheduleDay": "రోజు",
+    "adminScheduleStart": "ప్రారంభం",
+    "adminScheduleEnd": "ముగింపు",
+    "adminDayEveryday": "ప్రతిరోజూ",
+    "adminDayWeekday": "వారంలో పనిదినం",
+    "adminDayWeekend": "వారాంతం",
+    "adminDaySunday": "ఆదివారం",
+    "adminDayMonday": "సోమవారం",
+    "adminDayTuesday": "మంగళవారం",
+    "adminDayWednesday": "బుధవారం",
+    "adminDayThursday": "గురువారం",
+    "adminDayFriday": "శుక్రవారం",
+    "adminDaySaturday": "శనివారం",
+    "adminAllowedTags": "అనుమతించిన ట్యాగ్‌లు",
+    "adminAllowedTagsHint": "ఈ ట్యాగ్‌లు ఉన్న కంటెంట్ మాత్రమే చూపబడుతుంది. అన్నింటిని అనుమతించడానికి ఖాళీగా ఉంచండి.",
+    "adminBlockedTags": "నిరోధించిన ట్యాగ్‌లు",
+    "adminBlockedTagsHint": "ఈ ట్యాగ్‌లు ఉన్న కంటెంట్ ఈ వినియోగదారు నుండి దాచబడుతుంది.",
+    "adminAddTag": "ట్యాగ్‌ను జోడించండి",
+    "adminEnabledDevices": "ప్రారంభించిన పరికరాలు",
+    "adminEnabledChannels": "ప్రారంభించిన ఛానెల్‌లు",
+    "adminAuthProvider": "ప్రామాణీకరణ ప్రొవైడర్",
+    "adminPasswordResetProvider": "పాస్‌వర్డ్ రీసెట్ ప్రొవైడర్",
+    "adminLoginAttemptsBeforeLockout": "లాక్‌అవుట్‌కు ముందు గరిష్ఠ విఫల లాగిన్ ప్రయత్నాలు",
+    "adminLoginAttemptsHint": "డిఫాల్ట్ కోసం 0కి, లేదా లాక్‌అవుట్‌ను నిలిపివేయడానికి -1కి సెట్ చేయండి.",
+    "adminSyncPlayAccess": "SyncPlay యాక్సెస్",
+    "adminSyncPlayCreateAndJoin": "గ్రూప్‌లను సృష్టించడం, చేరడం అనుమతించండి",
+    "adminSyncPlayJoin": "గ్రూప్‌లలో చేరడం అనుమతించండి",
+    "adminSyncPlayNone": "యాక్సెస్ లేదు",
+    "adminContentDeletionFolders": "దీని నుండి కంటెంట్ తొలగింపును అనుమతించండి",
+    "adminBackupOptionsTitle": "బ్యాకప్ సృష్టించండి",
+    "adminBackupInclude": "బ్యాకప్‌లో దేనిని చేర్చాలో ఎంచుకోండి.",
+    "adminBackupDatabase": "డేటాబేస్",
+    "adminBackupDatabaseAlways": "ఎల్లప్పుడూ చేర్చబడుతుంది",
+    "adminBackupMetadata": "మెటాడేటా",
+    "adminBackupSubtitles": "సబ్‌టైటిల్‌లు",
+    "adminBackupTrickplay": "Trickplay ఇమేజ్‌లు",
+    "adminEditTuner": "ట్యూనర్‌ను సవరించండి",
+    "adminTunerTypeM3u": "M3U ట్యూనర్",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "ఫైల్ లేదా URL",
+    "adminTunerIpAddress": "ట్యూనర్ IP చిరునామా",
+    "adminTunerFriendlyName": "సులభ పేరు",
+    "adminTunerUserAgent": "యూజర్ ఏజెంట్",
+    "adminTunerCount": "ఏకకాల కనెక్షన్ పరిమితి",
+    "adminTunerCountHelp": "ట్యూనర్ ఒకేసారి అనుమతించే గరిష్ఠ స్ట్రీమ్‌ల సంఖ్య. అపరిమితం కోసం 0కి సెట్ చేయండి.",
+    "adminTunerFallbackBitrate": "ప్రత్యామ్నాయ గరిష్ఠ స్ట్రీమింగ్ బిట్‌రేట్",
+    "adminTunerImportFavoritesOnly": "ఇష్టమైన ఛానెల్‌లను మాత్రమే దిగుమతి చేయండి",
+    "adminTunerAllowHwTranscoding": "హార్డ్‌వేర్ ట్రాన్స్‌కోడింగ్‌ను అనుమతించండి",
+    "adminTunerAllowFmp4": "fMP4 ట్రాన్స్‌కోడింగ్ కంటైనర్‌ను అనుమతించండి",
+    "adminTunerAllowStreamSharing": "స్ట్రీమ్ షేరింగ్‌ను అనుమతించండి",
+    "adminTunerEnableStreamLooping": "స్ట్రీమ్ లూపింగ్‌ను ప్రారంభించండి",
+    "adminTunerIgnoreDts": "DTSను విస్మరించండి",
+    "adminTunerReadAtNativeFramerate": "ఇన్‌పుట్‌ను నేటివ్ ఫ్రేమ్ రేట్‌లో చదవండి",
+    "adminEditProvider": "ప్రొవైడర్‌ను సవరించండి",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "ఫైల్ లేదా URL",
+    "adminXmltvMoviePrefix": "సినిమా ప్రిఫిక్స్",
+    "adminXmltvMovieCategories": "సినిమా వర్గాలు",
+    "adminXmltvCategoriesHelp": "బహుళ వర్గాలను నిలువు గీతతో వేరు చేయండి.",
+    "adminXmltvKidsCategories": "పిల్లల వర్గాలు",
+    "adminXmltvNewsCategories": "వార్తల వర్గాలు",
+    "adminXmltvSportsCategories": "క్రీడల వర్గాలు",
+    "adminSdUsername": "వినియోగదారు పేరు",
+    "adminSdPassword": "పాస్‌వర్డ్",
+    "adminSdCountry": "దేశం",
+    "adminSdCountrySelect": "ఒక దేశాన్ని ఎంచుకోండి",
+    "adminSdPostalCode": "పోస్టల్ కోడ్",
+    "adminSdGetListings": "జాబితాలను పొందండి",
+    "adminSdListings": "జాబితాలు",
+    "adminEnableAllTuners": "అన్ని ట్యూనర్‌లను ప్రారంభించండి",
+    "adminTunerResetNotSupported": "ఈ ట్యూనర్ రకం రీసెట్ చేయడానికి మద్దతివ్వదు.",
+    "adminMovieRecordingPath": "సినిమా రికార్డింగ్ పాత్",
+    "adminGuideDays": "గైడ్ డేటా రోజులు",
+    "adminGuideDaysAuto": "ఆటోమేటిక్",
+    "adminGuideDaysValue": "{days} రోజులు",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "పోస్ట్-ప్రాసెసింగ్ అప్లికేషన్ పాత్",
+    "adminRecordingPostProcessorArgs": "పోస్ట్-ప్రాసెసర్ ఆర్గ్యుమెంట్‌లు",
+    "adminSaveRecordingNfo": "రికార్డింగ్ NFO మెటాడేటాను సేవ్ చేయండి",
+    "adminSaveRecordingImages": "రికార్డింగ్ ఇమేజ్‌లను సేవ్ చేయండి",
+    "adminLiveTvSectionTiming": "సమయం",
+    "adminLiveTvSectionPaths": "రికార్డింగ్ పాత్‌లు",
+    "adminLiveTvSectionPostProcessing": "పోస్ట్-ప్రాసెసింగ్",
+    "adminGuideDaysDisplay": "గైడ్ డేటా: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "గైడ్ డేటాను రిఫ్రెష్ చేయండి",
+    "adminGuideRefreshStarted": "గైడ్ డేటా రిఫ్రెష్ ప్రారంభమైంది",
+    "adminGuideRefreshUnavailable": "ఈ సర్వర్‌లో గైడ్ రిఫ్రెష్ టాస్క్ అందుబాటులో లేదు.",
+    "adminMetadataIdentify": "గుర్తించండి",
+    "adminBrandingSplashUpload": "ఇమేజ్‌ను అప్‌లోడ్ చేయండి",
+    "adminBrandingSplashUploaded": "స్ప్లాష్‌స్క్రీన్ అప్‌డేట్ చేయబడింది",
+    "adminBrandingSplashUploadFailed": "స్ప్లాష్‌స్క్రీన్‌ను అప్‌లోడ్ చేయడం విఫలమైంది",
+    "adminBrandingSplashDeleted": "స్ప్లాష్‌స్క్రీన్ తీసివేయబడింది",
+    "adminBrandingNoSplash": "అనుకూల స్ప్లాష్‌స్క్రీన్ లేదు",
+    "adminPlaybackQsvDevice": "QSV పరికరం",
+    "adminPlaybackEnhancedNvdec": "మెరుగైన NVDEC డీకోడర్‌ను ప్రారంభించండి",
+    "adminPlaybackPreferNativeDecoder": "సిస్టమ్ నేటివ్ హార్డ్‌వేర్ డీకోడర్‌కు ప్రాధాన్యం ఇవ్వండి",
+    "adminPlaybackColorDepth": "హార్డ్‌వేర్ డీకోడింగ్ కలర్ డెప్త్",
+    "adminPlaybackColorDepth10Hevc": "10-బిట్ HEVC డీకోడింగ్",
+    "adminPlaybackColorDepth10Vp9": "10-బిట్ VP9 డీకోడింగ్",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-బిట్ డీకోడింగ్",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-బిట్ డీకోడింగ్",
+    "adminPlaybackHwEncodingSection": "హార్డ్‌వేర్ ఎన్‌కోడింగ్",
+    "adminPlaybackAllowHevcEncoding": "HEVC ఎన్‌కోడింగ్‌ను అనుమతించండి",
+    "adminPlaybackAllowAv1Encoding": "AV1 ఎన్‌కోడింగ్‌ను అనుమతించండి",
+    "adminPlaybackIntelLowPowerH264": "Intel లో-పవర్ H.264 ఎన్‌కోడర్‌ను ప్రారంభించండి",
+    "adminPlaybackIntelLowPowerHevc": "Intel లో-పవర్ HEVC ఎన్‌కోడర్‌ను ప్రారంభించండి",
+    "adminPlaybackToneMapping": "టోన్ మ్యాపింగ్",
+    "adminPlaybackEnableTonemapping": "టోన్ మ్యాపింగ్‌ను ప్రారంభించండి",
+    "adminPlaybackEnableVppTonemapping": "VPP టోన్ మ్యాపింగ్‌ను ప్రారంభించండి",
+    "adminPlaybackEnableVtTonemapping": "VideoToolbox టోన్ మ్యాపింగ్‌ను ప్రారంభించండి",
+    "adminPlaybackTonemappingAlgorithm": "టోన్ మ్యాపింగ్ అల్గారిథమ్",
+    "adminPlaybackTonemappingMode": "టోన్ మ్యాపింగ్ మోడ్",
+    "adminPlaybackTonemappingRange": "టోన్ మ్యాపింగ్ పరిధి",
+    "adminPlaybackTonemappingDesat": "టోన్ మ్యాపింగ్ డీశాచురేషన్",
+    "adminPlaybackTonemappingPeak": "టోన్ మ్యాపింగ్ పీక్",
+    "adminPlaybackTonemappingParam": "టోన్ మ్యాపింగ్ పరామితి",
+    "adminPlaybackVppTonemappingBrightness": "VPP టోన్ మ్యాపింగ్ ప్రకాశం",
+    "adminPlaybackVppTonemappingContrast": "VPP టోన్ మ్యాపింగ్ కాంట్రాస్ట్",
+    "adminPlaybackPresetsQuality": "ప్రీసెట్‌లు & నాణ్యత",
+    "adminPlaybackEncoderPreset": "ఎన్‌కోడర్ ప్రీసెట్",
+    "adminPlaybackH264Crf": "H.264 ఎన్‌కోడింగ్ CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) ఎన్‌కోడింగ్ CRF",
+    "adminPlaybackDeinterlaceMethod": "డీఇంటర్‌లేస్ పద్ధతి",
+    "adminPlaybackDeinterlaceDoubleRate": "డీఇంటర్‌లేస్ చేసేటప్పుడు ఫ్రేమ్ రేట్‌ను రెట్టింపు చేయండి",
+    "adminPlaybackAudioSection": "ఆడియో",
+    "adminPlaybackEnableAudioVbr": "ఆడియో VBR ఎన్‌కోడింగ్‌ను ప్రారంభించండి",
+    "adminPlaybackDownmixBoost": "ఆడియో డౌన్‌మిక్స్ బూస్ట్",
+    "adminPlaybackDownmixAlgorithm": "స్టీరియో డౌన్‌మిక్స్ అల్గారిథమ్",
+    "adminPlaybackMaxMuxingQueue": "గరిష్ఠ మక్సింగ్ క్యూ పరిమాణం",
+    "adminPlaybackAutoOption": "ఆటో",
+    "adminRunningTasks": "నడుస్తున్న టాస్క్‌లు",
+    "adminNetworkingPublicHttpPort": "పబ్లిక్ HTTP పోర్ట్",
+    "adminNetworkingRequireHttps": "HTTPS అవసరం",
+    "adminNetworkingRequireHttpsHint": "అన్ని రిమోట్ అభ్యర్థనలను HTTPSకి రీడైరెక్ట్ చేస్తుంది. సర్వర్‌కు చెల్లుబాటు అయ్యే సర్టిఫికేట్ లేకపోతే ప్రభావం ఉండదు.",
+    "adminNetworkingCertPassword": "సర్టిఫికేట్ పాస్‌వర్డ్",
+    "adminNetworkingIpSettings": "IP సెట్టింగ్‌లు",
+    "adminNetworkingEnableIpv4": "IPv4ను ప్రారంభించండి",
+    "adminNetworkingEnableIpv6": "IPv6ను ప్రారంభించండి",
+    "adminNetworkingAutoDiscovery": "స్వయంచాలక పోర్ట్ మ్యాపింగ్‌ను ప్రారంభించండి",
+    "adminNetworkingLocalSubnets": "LAN నెట్‌వర్క్‌లు",
+    "adminNetworkingLocalSubnetsHint": "స్థానిక నెట్‌వర్క్‌లో ఉన్నట్లుగా పరిగణించే IP చిరునామాలు లేదా CIDR సబ్‌నెట్‌ల జాబితా, కామా లేదా లైన్ ద్వారా వేరు చేయబడింది.",
+    "adminNetworkingPublishedUris": "ప్రచురించిన సర్వర్ URIలు",
+    "adminNetworkingPublishedUriHint": "సబ్‌నెట్ లేదా చిరునామాను ప్రచురించిన URLకి మ్యాప్ చేయండి, ఉదా. all=https://example.com",
+    "adminPlaybackThrottleDelay": "థ్రొటిల్ ఆలస్యం (సెకన్లు)",
+    "adminPlaybackEnableSubtitleExtraction": "వెంటనే సబ్‌టైటిల్ వెలికితీతను అనుమతించండి",
+    "adminGeneralEnableSlowResponse": "నెమ్మది ప్రతిస్పందన హెచ్చరికలను ప్రారంభించండి",
+    "adminGeneralQuickConnect": "Quick Connectను ప్రారంభించండి",
+    "adminGeneralSectionServer": "సర్వర్",
+    "adminGeneralSectionMetadata": "మెటాడేటా",
+    "adminGeneralSectionPaths": "పాత్‌లు",
+    "adminGeneralSectionPerformance": "పనితీరు",
+    "adminGeneralDisplayLanguage": "ప్రాధాన్య డిస్‌ప్లే భాష",
+    "offlineBannerTitle": "మీరు ఆఫ్‌లైన్‌లో ఉన్నారు",
+    "offlineBannerSubtitle": "మీ డౌన్‌లోడ్‌లను చూపుతోంది",
+    "offlineBannerAction": "డౌన్‌లోడ్‌లు",
+    "serverUnreachableBannerTitle": "మీ సర్వర్‌ను చేరుకోలేకపోతోంది",
+    "serverUnreachableBannerSubtitle": "అది తిరిగి వచ్చే వరకు డౌన్‌లోడ్‌ల నుండి ప్లే చేస్తోంది",
+    "contextMenuHideFromContinueWatching": "చూడటం కొనసాగించండి నుండి దాచండి",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "తదుపరి నుండి దాచండి",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "సేకరణకు జోడించండి",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "కనెక్షన్",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "సెల్ఫ్-సైన్డ్ సర్టిఫికేట్‌లను అనుమతించండి",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "సెల్ఫ్-సైన్డ్ లేదా ప్రైవేట్-CA TLS సర్టిఫికేట్‌లను ఉపయోగించే సర్వర్‌లను విశ్వసించండి. మీరు నియంత్రించే సర్వర్‌లకు మాత్రమే ప్రారంభించండి. ఇది అన్ని కనెక్షన్‌లకు సర్టిఫికేట్ ధ్రువీకరణను నిలిపివేస్తుంది.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "వివరాల స్క్రీన్",
+    "settingsDetailsScreenSubtitle": "శైలి, నేపథ్య బ్లర్, ట్యాబ్ ప్రవర్తన",
+    "settingsShowSeerrButtonInNavigation": "నావిగేషన్ బార్‌లో Seerr బటన్‌ను చూపించండి",
+    "settingsAlwaysExpandNavbarLabels": "టాప్ నావిగేషన్ బార్‌లో టెక్స్ట్ లేబుల్‌లను ఎల్లప్పుడూ చూపించండి",
+    "settingsMediaSegmentCountdown": "మీడియా సెగ్మెంట్ కౌంట్‌డౌన్",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "ప్రోగ్రెస్ బార్",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "టైమర్",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "ఏదీ లేదు",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "ఇటీవల విడుదలైన {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "టన్నెలింగ్‌ను ప్రారంభించండి",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "అధునాతన. ఆడియో మరియు వీడియోను కపుల్డ్ హార్డ్‌వేర్ పాత్ ద్వారా పంపుతుంది. కొన్ని పరికరాల్లో ఆడియో/వీడియో డ్రాప్‌అవుట్‌లను కలిగిస్తుంది కాబట్టి డిఫాల్ట్‌గా ఆఫ్‌లో ఉంటుంది.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "మీడియా వివరాలను చూపించండి",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "లైబ్రరీ పేజీల ఎగువన ఎంచుకున్న అంశం వివరాలను చూపుతుంది.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "బ్రౌజ్ చేస్తున్నప్పుడు బ్యాక్‌డ్రాప్‌లను దాచాలా?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "థీమ్ స్టోర్",
+    "themeStoreSubtitle": "కమ్యూనిటీ థీమ్‌లను బ్రౌజ్ చేసి సేవ్ చేయండి",
+    "themeStoreDescription": "మీ ఇతర సేవ్ చేసిన థీమ్‌ల వలె దాన్ని ఉపయోగించడానికి ఒక థీమ్‌ను సేవ్ చేయండి.",
+    "themeStoreEmpty": "ప్రస్తుతం థీమ్‌లు ఏవీ అందుబాటులో లేవు.",
+    "themeStoreLoadFailed": "థీమ్ స్టోర్‌ను లోడ్ చేయడం సాధ్యపడలేదు. మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+    "themeStoreSave": "సేవ్ చేయండి",
+    "themeStoreSaveAndApply": "సేవ్ చేసి వర్తింపజేయండి",
+    "themeStoreSaved": "సేవ్ చేయబడింది",
+    "themeStoreInvalidMessage": "ఈ థీమ్‌ను లోడ్ చేయడం సాధ్యపడలేదు.",
+    "themeStoreSavedMessage": "\"{themeName}\" సేవ్ చేయబడింది.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "హోమ్ వరుస డిస్‌ప్లే",
+    "homeRowSections": "హోమ్ వరుస విభాగాలు",
+    "homeRowToggles": "హోమ్ వరుస టోగుల్‌లు",
+    "homeRowTogglesSubtitle": "లైబ్రరీ-ఆధారిత హోమ్ వరుస వర్గాలను ప్రారంభించండి లేదా నిలిపివేయండి",
+    "homeRowTogglesDescription": "హోమ్ విభాగాలలో వరుసలను ప్రదర్శించడానికి కింది టోగుల్‌లను ప్రారంభించండి.",
+    "displayPlaylistsRows": "ప్లేజాబితా వరుసలను చూపించండి",
+    "displayPlaylistsRowsSubtitle": "హోమ్ విభాగాలలో ప్లేజాబితా వరుసలను చూపుతుంది.",
+    "playlistsRowSorting": "ప్లేజాబితా వరుస క్రమబద్ధీకరణ",
+    "playlistsRowSortingDescription": "ప్లేజాబితా వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.",
+    "displayAudioRows": "ఆడియో వరుసలను చూపించండి",
+    "displayAudioRowsSubtitle": "హోమ్ విభాగాలలో ఆడియో వరుసలను చూపుతుంది.",
+    "audioRowsSorting": "ఆడియో వరుసల క్రమబద్ధీకరణ",
+    "audioRowsSortingDescription": "ఆడియో వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.",
+    "audioPlaylists": "ఆడియో ప్లేజాబితాలు",
+    "layout": "లేఅవుట్",
+    "theme": "థీమ్",
+    "keyboard": "కీబోర్డ్",
+    "navButtons": "బటన్‌లు",
+    "rendering": "రెండరింగ్",
+    "mpvConfiguration": "MPV కాన్ఫిగరేషన్",
+    "externalPlayerAppDescription": "లాంగ్-ప్రెస్ ప్లే ఎంపికను ప్రారంభించడానికి బాహ్య ప్లేయర్‌ను సెట్ చేయండి",
+    "crewContributionsSeerr": "సిబ్బంది సహకారాలు (Seerr)",
+    "changeArtwork": "ఆర్ట్‌వర్క్‌ను మార్చండి",
+    "missing": "తప్పిపోయింది",
+    "clearAllArtworkButton": "మొత్తం ఆర్ట్‌వర్క్‌ను క్లియర్ చేయాలా?",
+    "clearAllArtworkWarning": "డౌన్‌లోడ్ చేసిన మొత్తం ఆర్ట్‌వర్క్‌ను ఖచ్చితంగా క్లియర్ చేయాలా?",
+    "confirmClear": "క్లియర్‌ను నిర్ధారించండి",
+    "confirmClearMessage": "ఈ {itemType}ను ఖచ్చితంగా క్లియర్ చేయాలా?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "అప్‌లోడ్ చేయాలా?",
+    "resolutionLabel": "రిజల్యూషన్: ",
+    "onlyShowInterfaceLanguage": "ఇంటర్‌ఫేస్ భాషలో మాత్రమే ఆర్ట్‌వర్క్‌ను చూపించండి",
+    "confirmClearAll": "అన్నింటిని క్లియర్ చేయడాన్ని నిర్ధారించండి",
+    "imageUploadSuccess": "ఇమేజ్ విజయవంతంగా అప్‌లోడ్ చేయబడింది!",
+    "imageUploadFailed": "ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "ఇమేజ్‌ను సెట్ చేయడం విఫలమైంది: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "ఇమేజ్‌ను తొలగించడం విఫలమైంది: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "మొత్తం ఆర్ట్‌వర్క్‌ను క్లియర్ చేయడం విఫలమైంది: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "అవును",
+    "posterCategory": "పోస్టర్",
+    "backdropsCategory": "బ్యాక్‌డ్రాప్‌లు",
+    "bannerCategory": "బ్యానర్",
+    "logoCategory": "లోగో",
+    "thumbnailCategory": "థంబ్‌నెయిల్",
+    "artCategory": "ఆర్ట్",
+    "discArtCategory": "డిస్క్ ఆర్ట్",
+    "screenshotCategory": "స్క్రీన్‌షాట్",
+    "boxCoverCategory": "బాక్స్ కవర్",
+    "boxRearCoverCategory": "బాక్స్ వెనుక కవర్",
+    "menuArtCategory": "మెను ఆర్ట్",
+    "confirmItemPoster": "పోస్టర్",
+    "confirmItemBackdrop": "బ్యాక్‌డ్రాప్",
+    "confirmItemBanner": "బ్యానర్",
+    "confirmItemLogo": "లోగో",
+    "confirmItemThumbnail": "థంబ్‌నెయిల్",
+    "confirmItemArt": "ఆర్ట్",
+    "confirmItemDiscArt": "డిస్క్ ఆర్ట్",
+    "confirmItemScreenshot": "స్క్రీన్‌షాట్",
+    "confirmItemBoxCover": "బాక్స్ కవర్",
+    "confirmItemBoxRearCover": "బాక్స్ వెనుక కవర్",
+    "confirmItemMenuArt": "మెను ఆర్ట్",
+    "resolutionAll": "అన్నీ",
+    "resolutionHigh": "అధిక (1080p+)",
+    "resolutionMedium": "మధ్యస్థ (720p)",
+    "resolutionLow": "తక్కువ (<720p)",
+    "sources": "మూలాలు",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "అధ్యాయాలు",
+    "audiobookBookmarks": "బుక్‌మార్క్‌లు",
+    "audiobookNotes": "గమనికలు",
+    "audiobookQueue": "క్యూ",
+    "audiobookTimeline": "టైమ్‌లైన్",
+    "audiobookTimelineEmpty": "టైమ్‌లైన్ ఖాళీగా ఉంది",
+    "audiobookWholeBook": "మొత్తం పుస్తకం",
+    "audiobookFocusedTimeline": "కేంద్రీకృత టైమ్‌లైన్",
+    "audiobookExportBookmarks": "బుక్‌మార్క్‌లను ఎగుమతి చేయండి",
+    "audiobookExportNotes": "గమనికలను ఎగుమతి చేయండి",
+    "audiobookExportAll": "అన్నింటిని ఎగుమతి చేయండి",
+    "audiobookExportSuccess": "{path}కి ఎగుమతి చేయబడింది",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "ఎగుమతి విఫలమైంది: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "సాహిత్యం",
+    "audiobookAddBookmark": "బుక్‌మార్క్‌ను జోడించండి",
+    "audiobookAddNote": "గమనికను జోడించండి",
+    "audiobookEditNote": "గమనికను సవరించండి",
+    "audiobookNoteHint": "ఈ క్షణం కోసం ఒక గమనిక రాయండి",
+    "audiobookSleepTimer": "స్లీప్ టైమర్",
+    "audiobookSleepOff": "ఆఫ్",
+    "audiobookSleepEndOfChapter": "అధ్యాయం ముగింపు",
+    "audiobookSleepCustom": "అనుకూలం",
+    "audiobookSleepRemaining": "{remaining} మిగిలి ఉంది",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 ని} other{{count} ని}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "ప్లేబ్యాక్ వేగం",
+    "audiobookRemainingTime": "మిగిలి ఉంది",
+    "audiobookElapsedTime": "గడిచింది",
+    "audiobookSkipBackSeconds": "వెనుకకు {seconds}s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "ముందుకు {seconds}s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "మునుపటి అధ్యాయం",
+    "audiobookNextChapter": "తదుపరి అధ్యాయం",
+    "audiobookChapterIndicator": "అధ్యాయం {current} / {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "అధ్యాయాలు లేవు",
+    "audiobookNoBookmarks": "ఇంకా బుక్‌మార్క్‌లు లేవు",
+    "audiobookNoNotes": "ఇంకా గమనికలు లేవు",
+    "audiobookBookmarkAdded": "{position} వద్ద బుక్‌మార్క్ జోడించబడింది",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "1.0xకి రీసెట్ చేయండి",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "సేవ్ చేయండి",
+    "audiobookCancel": "రద్దు చేయండి",
+    "audiobookDelete": "తొలగించండి",
+    "subtitlePreferences": "సబ్‌టైటిల్ ప్రాధాన్యతలు",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "సబ్‌టైటిల్ మోడ్‌లు, డిఫాల్ట్ భాషలు, రూపం, రెండరింగ్ ఎంపికలను మార్చండి.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "సబ్‌టైటిల్ రెండరింగ్",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "డిస్‌ప్లే ఎంపికలు",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "విడుదల తేదీ (ఆరోహణ)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "విడుదల తేదీ (అవరోహణ)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "సహకారాలను సమూహపరచండి",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "బహుళ పాత్రలను సమూహపరచండి",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "లైబ్రరీ రైట్ యాక్సెస్ హెచ్చరిక",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "దీన్ని ఎలా సరిచేయాలి:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. సర్వర్‌లో మీ మీడియా లైబ్రరీ ఫోల్డర్‌ల కోసం Jellyfin సర్వీస్ వినియోగదారుకు (ఉదా. jellyfin లేదా Docker PUID/PGID) రైట్ అనుమతులను మంజూరు చేయండి.\n\n2. లేదా, మీ Jellyfin Dashboard -> Librariesకి వెళ్లి, ఈ లైబ్రరీని సవరించి, ఆర్ట్‌వర్క్‌ను Jellyfin అంతర్గత డేటాబేస్‌లో నిల్వ చేయడానికి 'Save artwork into media folders'ను నిలిపివేయండి.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "కొట్టివేయండి",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "మీ '{libraryName}' లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది ('Save artwork into media folders' ప్రారంభించబడింది). అయితే, Jellyfin రైట్ యాక్సెస్‌ను పరీక్షించింది మరియు ఈ డైరెక్టరీలో ఫైల్‌లను రాయడానికి అనుమతి లేదు:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Jellyfin ఆర్ట్‌వర్క్‌ను అప్‌డేట్ చేయడంలో విఫలమైనట్లు కనిపిస్తోంది. మీ లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది ('Save artwork into media folders' ప్రారంభించబడింది). Jellyfin సర్వర్ ప్రాసెస్‌కు మీ మీడియా డైరెక్టరీలలో ఫైల్‌లను రాయడానికి అనుమతి లేనప్పుడు ఈ లోపం సాధారణంగా సంభవిస్తుంది.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "బాహ్య జాబితాలు",
+    "replay": "మళ్లీ ప్లే చేయండి",
+    "fileInformation": "ఫైల్ సమాచారం",
+    "fileSizeFormat": "పరిమాణం: {size}  •  ఫార్మాట్: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "అన్ని ({count}) ఆడియో ట్రాక్‌లను చూపించండి",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "అన్ని ({count}) సబ్‌టైటిల్ ట్రాక్‌లను చూపించండి",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "డైరెక్ట్ ప్లే సామర్థ్యాన్ని తనిఖీ చేస్తోంది...",
+    "directPlayCapabilityLabel": "డైరెక్ట్ ప్లే సామర్థ్యం: ",
+    "forced": "బలవంతం",
+    "transcodeContainerNotSupported": "కంటైనర్ ఫార్మాట్‌కు ప్లేయర్ మద్దతివ్వదు.",
+    "transcodeVideoCodecNotSupported": "వీడియో కోడెక్‌కు మద్దతు లేదు.",
+    "transcodeAudioCodecNotSupported": "ఆడియో కోడెక్‌కు మద్దతు లేదు.",
+    "transcodeSubtitleCodecNotSupported": "సబ్‌టైటిల్ ఫార్మాట్‌కు మద్దతు లేదు (బర్నింగ్ అవసరం).",
+    "transcodeAudioProfileNotSupported": "ఆడియో ప్రొఫైల్‌కు మద్దతు లేదు.",
+    "transcodeVideoProfileNotSupported": "వీడియో ప్రొఫైల్‌కు మద్దతు లేదు.",
+    "transcodeVideoLevelNotSupported": "వీడియో లెవల్‌కు మద్దతు లేదు.",
+    "transcodeVideoResolutionNotSupported": "ఈ పరికరం వీడియో రిజల్యూషన్‌కు మద్దతివ్వదు.",
+    "transcodeVideoBitDepthNotSupported": "వీడియో బిట్ డెప్త్‌కు మద్దతు లేదు.",
+    "transcodeVideoFramerateNotSupported": "వీడియో ఫ్రేమ్‌రేట్‌కు మద్దతు లేదు.",
+    "transcodeContainerBitrateExceedsLimit": "ఫైల్ బిట్‌రేట్ ప్లేయర్ స్ట్రీమింగ్ పరిమితిని మించింది.",
+    "transcodeVideoBitrateExceedsLimit": "వీడియో బిట్‌రేట్ స్ట్రీమింగ్ పరిమితిని మించింది.",
+    "transcodeAudioBitrateExceedsLimit": "ఆడియో బిట్‌రేట్ స్ట్రీమింగ్ పరిమితిని మించింది.",
+    "transcodeAudioChannelsNotSupported": "ఆడియో ఛానెల్‌ల సంఖ్యకు మద్దతు లేదు.",
+    "sortAlphabetical": "అక్షర క్రమం",
+    "sortReleaseAscending": "విడుదల క్రమం (ఆరోహణ)",
+    "sortReleaseDescending": "విడుదల క్రమం (అవరోహణ)",
+    "sortCustomDragDrop": "అనుకూలం (డ్రాగ్-అండ్-డ్రాప్)",
+    "playlistSortOptions": "ప్లేజాబితా క్రమబద్ధీకరణ ఎంపికలు",
+    "resetSort": "క్రమబద్ధీకరణను రీసెట్ చేయండి",
+    "rewatchSeasonEpisode": "S{season}:E{episode}ను మళ్లీ చూడండి",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "ప్లేజాబితాను మళ్లీ చూడండి",
+    "noSubtitlesFound": "సబ్‌టైటిల్‌లు ఏవీ కనుగొనబడలేదు.",
+    "adminControls": "అడ్మిన్ నియంత్రణలు",
+    "impellerRendering": "రెండరింగ్ ఇంజిన్ (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller అనేది సున్నితమైన యానిమేషన్‌లు మరియు తక్కువ స్టటర్ కోసం Flutter ఆధునిక GPU రెండరర్. కొన్ని TV బాక్స్‌లు మరియు పాత GPUలలో ఇది గ్లిచ్‌లు లేదా బ్లాక్ వీడియోను కలిగిస్తుంది; అవి కనిపిస్తే దీన్ని ఆఫ్ చేయండి. ఆటోమేటిక్ మీ పరికరానికి ఉత్తమ డిఫాల్ట్‌ను ఎంచుకుంటుంది. వర్తింపజేయడానికి Moonfinను పునఃప్రారంభించండి.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "ఆటోమేటిక్",
+    "impellerOn": "ఆన్",
+    "impellerOff": "ఆఫ్",
+    "impellerRestartTitle": "పునఃప్రారంభం అవసరం",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "రెండరింగ్ ఇంజిన్‌ను మార్చడానికి Moonfin పునఃప్రారంభం కావాలి. ఇప్పుడు యాప్‌ను మూసివేసి, వర్తింపజేయడానికి మళ్లీ తెరవండి.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "ఇప్పుడు యాప్‌ను మూసివేయండి",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "లైబ్రరీని రిఫ్రెష్ చేయండి",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "అన్ని లైబ్రరీలను రిఫ్రెష్ చేయండి",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "జోడించిన తేదీ (పాతవి ముందుగా)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "జోడించిన తేదీ (కొత్తవి ముందుగా)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "అక్షర క్రమం (A నుండి Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "అక్షర క్రమం (Z నుండి A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "సర్వర్ అనలిటిక్స్ లోడ్ అవుతోంది... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "మూలంతో సరిపోల్చండి",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb టాప్ 250 సినిమాలు",
+    "imdbTop250TvShows": "IMDb టాప్ 250 TV షోలు",
+    "imdbMostPopularMovies": "IMDb అత్యంత జనాదరణ పొందిన సినిమాలు",
+    "imdbMostPopularTvShows": "IMDb అత్యంత జనాదరణ పొందిన TV షోలు",
+    "imdbLowestRatedMovies": "IMDb అత్యల్ప రేటింగ్ సినిమాలు",
+    "imdbTopEnglishMovies": "IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు"
 }

@@ -1,6 +1,6 @@
 {
     "@@locale": "lt",
-    "appTitle": "Mėnulio pelekas",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Connecting to {serverName}",
+    "connectingToServer": "Jungiamasi prie {serverName}",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Greitas prisijungimas",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+    "quickConnectUnavailable": "QuickConnect nepasiekiamas: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect nepasiekiamas ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Moonfin versija {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -119,7 +119,7 @@
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+    "removeServerConfirmation": "Pašalinti „{serverName}“ iš jūsų serverių?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Mėnulio pelekas",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -240,7 +240,7 @@
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
-    "unableToConnectTo": "Unable to connect to {target}",
+    "unableToConnectTo": "Nepavyko prisijungti prie {target}",
     "@unableToConnectTo": {
         "description": "Error when connection to a specific server or address fails",
         "placeholders": {
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Serija",
+    "series": "Serialai",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "biblioteka",
+    "library": "Biblioteka",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -349,7 +349,7 @@
     "@noGenresFound": {
         "description": "Empty state when no genres are available"
     },
-    "failedToLoadFolderError": "Failed to load folder: {error}",
+    "failedToLoadFolderError": "Nepavyko įkelti aplanko: {error}",
     "@failedToLoadFolderError": {
         "description": "Error when a folder cannot be loaded",
         "placeholders": {
@@ -362,7 +362,7 @@
     "@thisFolderIsEmpty": {
         "description": "Empty state for folder browse screen"
     },
-    "itemCountLabel": "{count} items",
+    "itemCountLabel": "Elementų: {count}",
     "@itemCountLabel": {
         "description": "Subtitle showing number of items in a folder or collection",
         "placeholders": {
@@ -387,7 +387,7 @@
     "@favorites": {
         "description": "Favorites section heading and filter label"
     },
-    "totalCountItems": "{count} Items",
+    "totalCountItems": "Elementų: {count}",
     "@totalCountItems": {
         "description": "Header showing total item count",
         "placeholders": {
@@ -444,7 +444,7 @@
     "@extraLarge": {
         "description": "Size option: extra large"
     },
-    "libraryGenresTitle": "{name} — Genres",
+    "libraryGenresTitle": "{name} — žanrai",
     "@libraryGenresTitle": {
         "description": "Header title showing library name with genres suffix",
         "placeholders": {
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Menininkai",
+    "artists": "Atlikėjai",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -497,7 +497,7 @@
     "@justNow": {
         "description": "Relative time for less than a minute ago"
     },
-    "minutesAgo": "{count}m ago",
+    "minutesAgo": "prieš {count} min.",
     "@minutesAgo": {
         "description": "Relative time in minutes",
         "placeholders": {
@@ -506,7 +506,7 @@
             }
         }
     },
-    "hoursAgo": "{count}h ago",
+    "hoursAgo": "prieš {count} val.",
     "@hoursAgo": {
         "description": "Relative time in hours",
         "placeholders": {
@@ -515,7 +515,7 @@
             }
         }
     },
-    "daysAgo": "{count}d ago",
+    "daysAgo": "prieš {count} d.",
     "@daysAgo": {
         "description": "Relative time in days",
         "placeholders": {
@@ -560,7 +560,7 @@
     "@librivoxDescription": {
         "description": "Subtitle for audiobook discovery section"
     },
-    "titlesCount": "{count} titles",
+    "titlesCount": "Pavadinimų: {count}",
     "@titlesCount": {
         "description": "Label showing number of titles",
         "placeholders": {
@@ -669,7 +669,7 @@
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
-    "authorsCount": "{count} authors",
+    "authorsCount": "Autorių: {count}",
     "@authorsCount": {
         "description": "Metric pill showing author count",
         "placeholders": {
@@ -678,7 +678,7 @@
             }
         }
     },
-    "genresCount": "{count} genres",
+    "genresCount": "Žanrų: {count}",
     "@genresCount": {
         "description": "Metric pill showing genre count",
         "placeholders": {
@@ -687,7 +687,7 @@
             }
         }
     },
-    "percentCompleted": "{percent}% completed",
+    "percentCompleted": "Užbaigta {percent}%",
     "@percentCompleted": {
         "description": "Reading progress percentage label",
         "placeholders": {
@@ -712,7 +712,7 @@
     "@bookmarksAndProgress": {
         "description": "Panel header for bookmarks section"
     },
-    "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+    "titlesArrangedForBrowsing": "Pavadinimų: {count}. Išdėstyta patogiam skaitymui.",
     "@titlesArrangedForBrowsing": {
         "description": "Panel subtitle showing total titles",
         "placeholders": {
@@ -761,7 +761,7 @@
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
-    "noLabelFound": "No {label} found",
+    "noLabelFound": "{label} nerasta",
     "@noLabelFound": {
         "description": "Empty state with dynamic label like books or audiobooks",
         "placeholders": {
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Žiūrėjo",
+    "watched": "Žiūrėta",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Nežiūrėtas",
+    "unwatched": "Nežiūrėta",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -858,7 +858,7 @@
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
-    "sectionCountLabel": "{count} sections",
+    "sectionCountLabel": "Skyrių: {count}",
     "@sectionCountLabel": {
         "description": "Detail chip showing number of sections in audiobook",
         "placeholders": {
@@ -867,7 +867,7 @@
             }
         }
     },
-    "firstPublished": "First published {year}",
+    "firstPublished": "Pirmą kartą išleista {year}",
     "@firstPublished": {
         "description": "Publication year for a book",
         "placeholders": {
@@ -888,7 +888,7 @@
     "@all": {
         "description": "Filter option for showing all items"
     },
-    "booksCount": "{count} books",
+    "booksCount": "Knygų: {count}",
     "@booksCount": {
         "description": "Label showing number of books in a discover row",
         "placeholders": {
@@ -905,7 +905,7 @@
     "@audiobookDetails": {
         "description": "AppBar title for LibriVox audiobook detail screen"
     },
-    "authorsCountTitle": "{count} Authors",
+    "authorsCountTitle": "Autorių: {count}",
     "@authorsCountTitle": {
         "description": "AppBar title for LibriVox authors list screen",
         "placeholders": {
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 garso knyga} one{{count} garso knyga} few{{count} garso knygos} many{{count} garso knygos} other{{count} garso knygų}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Metų laikai",
+    "seasons": "Sezonai",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -995,7 +995,7 @@
     "@tableOfContents": {
         "description": "Section header for audiobook chapters"
     },
-    "tracklist": "Tracklist",
+    "tracklist": "Takelių sąrašas",
     "@tracklist": {
         "description": "Section header for album track listing"
     },
@@ -1023,7 +1023,7 @@
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
-    "published": "Published {year}",
+    "published": "Išleista {year}",
     "@published": {
         "description": "Publication year for an author book tile",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 sezonas} one{{count} sezonas} few{{count} sezonai} many{{count} sezono} other{{count} sezonų}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1045,7 +1045,7 @@
             }
         }
     },
-    "endsAt": "Ends at {time}",
+    "endsAt": "Baigsis {time}",
     "@endsAt": {
         "description": "Label showing when media will end",
         "placeholders": {
@@ -1066,7 +1066,7 @@
     "@read": {
         "description": "Action button label to start reading a book"
     },
-    "resumeFrom": "Resume from {position}",
+    "resumeFrom": "Tęsti nuo {position}",
     "@resumeFrom": {
         "description": "Action button label showing resume position",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Žaisti",
+    "play": "Leisti",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,11 +1107,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Aktoriai",
+    "cast": "Transliuoti",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Priekaba",
+    "trailer": "Anonsas",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1199,7 +1199,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+    "deleteDownloadedTracksMessage": "Ištrinti atsisiųstus „{title}“ takelius?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1220,7 +1220,7 @@
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
-    "noItemsLoaded": "No {itemLabel} loaded",
+    "noItemsLoaded": "{itemLabel} neįkelta",
     "@noItemsLoaded": {
         "description": "Message when no items are loaded for download",
         "placeholders": {
@@ -1229,7 +1229,7 @@
             }
         }
     },
-    "downloadingTitle": "Downloading {title} ({count} items)...",
+    "downloadingTitle": "Atsisiunčiama {title} ({count} elem.)...",
     "@downloadingTitle": {
         "description": "Snackbar message when downloading album tracks",
         "placeholders": {
@@ -1241,7 +1241,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+    "deleteConfirmMessage": "Ar tikrai norite ištrinti „{name}“ iš serverio? Šio veiksmo anuliuoti nepavyks.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -1258,7 +1258,7 @@
     "@noPlayableTrailerFound": {
         "description": "Error message when no trailer can be played"
     },
-    "unsupportedBookFormat": "Unsupported book format: .{extension}",
+    "unsupportedBookFormat": "Nepalaikomas knygos formatas: .{extension}",
     "@unsupportedBookFormat": {
         "description": "Error message for unsupported book file format",
         "placeholders": {
@@ -1295,7 +1295,7 @@
     "@selectedSubtitleInvalid": {
         "description": "Error message when a selected subtitle is invalid"
     },
-    "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+    "subtitleDownloadedSelected": "Subtitrai atsisiųsti ir pasirinkti: {name}",
     "@subtitleDownloadedSelected": {
         "description": "Success message after downloading and selecting a subtitle",
         "placeholders": {
@@ -1308,7 +1308,7 @@
     "@subtitleDownloadedPending": {
         "description": "Message when subtitle was downloaded but not yet visible"
     },
-    "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+    "noRemoteSubtitlesFound": "Nuotolinių subtitrų ({language}) nerasta.",
     "@noRemoteSubtitlesFound": {
         "description": "Message when no remote subtitles were found",
         "placeholders": {
@@ -1321,7 +1321,7 @@
     "@selectVersion": {
         "description": "Dialog title for selecting a media version"
     },
-    "versionNumber": "Version {number}",
+    "versionNumber": "{number} versija",
     "@versionNumber": {
         "description": "Default label for a media version",
         "placeholders": {
@@ -1350,7 +1350,7 @@
     "@noEpisodesLoaded": {
         "description": "Message when no episodes are available for download"
     },
-    "downloadingItem": "Downloading {name} ({quality})...",
+    "downloadingItem": "Atsisiunčiama {name} ({quality})...",
     "@downloadingItem": {
         "description": "Snackbar message when downloading an item",
         "placeholders": {
@@ -1366,7 +1366,7 @@
     "@deleteDownloadedFiles": {
         "description": "Dialog title for deleting downloaded files"
     },
-    "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+    "deleteLocalFilesMessage": "Ištrinti vietinius failus: {typeLabel}?\n\nTaip atlaisvinsite vietos saugykloje. Vėliau galėsite atsisiųsti iš naujo.",
     "@deleteLocalFilesMessage": {
         "description": "Confirmation message for deleting local downloaded files",
         "placeholders": {
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "RAŠYTOJAI",
+    "writers": "SCENARISTAI",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1399,7 +1399,7 @@
     "@studio": {
         "description": "Metadata label for studio"
     },
-    "studioMoreCount": "+{count} more",
+    "studioMoreCount": "+{count} daugiau",
     "@studioMoreCount": {
         "description": "Label showing additional studio count",
         "placeholders": {
@@ -1408,7 +1408,7 @@
             }
         }
     },
-    "totalEpisodes": "{count} Episodes",
+    "totalEpisodes": "Serijų: {count}",
     "@totalEpisodes": {
         "description": "Season progress label showing total episodes",
         "placeholders": {
@@ -1429,7 +1429,7 @@
             }
         }
     },
-    "episodeLabel": "Episode {number}",
+    "episodeLabel": "{number} serija",
     "@episodeLabel": {
         "description": "Label for an episode number",
         "placeholders": {
@@ -1438,7 +1438,7 @@
             }
         }
     },
-    "chapterNumber": "Chapter {number}",
+    "chapterNumber": "{number} skyrius",
     "@chapterNumber": {
         "description": "Default name for a chapter",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 takelis} one{{count} takelis} few{{count} takeliai} many{{count} takelio} other{{count} takelių}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 skyrius} one{{count} skyrius} few{{count} skyriai} many{{count} skyriaus} other{{count} skyrių}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1465,7 +1465,7 @@
             }
         }
     },
-    "born": "Born {date}",
+    "born": "Gimė {date}",
     "@born": {
         "description": "Person birth date label",
         "placeholders": {
@@ -1474,7 +1474,7 @@
             }
         }
     },
-    "died": "Died {date}",
+    "died": "Mirė {date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1483,7 +1483,7 @@
             }
         }
     },
-    "age": "Age {age}",
+    "age": "Amžius: {age}",
     "@age": {
         "description": "Person age label",
         "placeholders": {
@@ -1504,7 +1504,7 @@
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
-    "downloadsCount": "{count} downloads",
+    "downloadsCount": "Atsisiuntimų: {count}",
     "@downloadsCount": {
         "description": "Subtitle showing number of downloads for a remote subtitle",
         "placeholders": {
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} kan.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1534,7 +1534,7 @@
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
-    "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
+    "remoteSubtitlePermissionError": "Nuotolinių subtitrų veiksmui „{action}“ šiam naudotojui reikia Jellyfin subtitrų valdymo teisės.",
     "@remoteSubtitlePermissionError": {
         "description": "Error message when user lacks subtitle management permission",
         "placeholders": {
@@ -1543,7 +1543,7 @@
             }
         }
     },
-    "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
+    "remoteSubtitleNotFoundError": "Šio elemento serveryje rasti nepavyko, todėl nuotolinių subtitrų veiksmas „{action}“ neįmanomas.",
     "@remoteSubtitleNotFoundError": {
         "description": "Error message when item not found for subtitle operation",
         "placeholders": {
@@ -1552,7 +1552,7 @@
             }
         }
     },
-    "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
+    "remoteSubtitleDetailError": "Nuotolinių subtitrų veiksmas „{action}“ nepavyko: {detail}",
     "@remoteSubtitleDetailError": {
         "description": "Error message with detail for subtitle operation",
         "placeholders": {
@@ -1564,7 +1564,7 @@
             }
         }
     },
-    "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
+    "remoteSubtitleHttpError": "Nuotolinių subtitrų veiksmas „{action}“ nepavyko (HTTP {status}).",
     "@remoteSubtitleHttpError": {
         "description": "Error message with HTTP status for subtitle operation",
         "placeholders": {
@@ -1576,7 +1576,7 @@
             }
         }
     },
-    "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
+    "remoteSubtitleGenericError": "Nepavyko atlikti nuotolinių subtitrų veiksmo „{action}“.",
     "@remoteSubtitleGenericError": {
         "description": "Generic error message for subtitle operation",
         "placeholders": {
@@ -1585,7 +1585,7 @@
             }
         }
     },
-    "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+    "deleteSeriesFiles": "visos atsisiųstos „{name}“ serijos",
     "@deleteSeriesFiles": {
         "description": "Type label for series file deletion",
         "placeholders": {
@@ -1630,7 +1630,7 @@
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
-    "castActionFailed": "{label} action failed: {error}",
+    "castActionFailed": "{label} veiksmas nepavyko: {error}",
     "@castActionFailed": {
         "description": "Error when a cast action fails",
         "placeholders": {
@@ -1642,7 +1642,7 @@
             }
         }
     },
-    "failedToSetCastVolume": "Failed to set cast volume: {error}",
+    "failedToSetCastVolume": "Nepavyko nustatyti transliavimo garsumo: {error}",
     "@failedToSetCastVolume": {
         "description": "Error when setting cast volume fails",
         "placeholders": {
@@ -1651,7 +1651,7 @@
             }
         }
     },
-    "castControlsTitle": "{label} Controls",
+    "castControlsTitle": "{label} valdikliai",
     "@castControlsTitle": {
         "description": "Title for cast controls dialog",
         "placeholders": {
@@ -1676,7 +1676,7 @@
     "@syncPosition": {
         "description": "Cast control action to sync playback position"
     },
-    "stopCast": "Stop {label}",
+    "stopCast": "Sustabdyti {label}",
     "@stopCast": {
         "description": "Cast control action to stop casting",
         "placeholders": {
@@ -1689,7 +1689,7 @@
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
-    "trackNumber": "Track {number}",
+    "trackNumber": "{number} takelis",
     "@trackNumber": {
         "description": "Fallback track name in queue",
         "placeholders": {
@@ -1714,7 +1714,7 @@
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
-    "secondsCount": "{seconds} seconds",
+    "secondsCount": "{seconds} sek.",
     "@secondsCount": {
         "description": "Double-tap skip overlay duration label",
         "placeholders": {
@@ -1743,7 +1743,7 @@
             }
         }
     },
-    "auto": "Auto",
+    "auto": "Automatinis",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "Nustatyti iš naujo",
+    "reset": "Atstatyti",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Žaidėjas",
+    "player": "Grotuvas",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1830,7 +1830,7 @@
     "@container": {
         "description": "Stream info label for media container"
     },
-    "bitrate": "Bitrate",
+    "bitrate": "Bitų sparta",
     "@bitrate": {
         "description": "Stream info label for bitrate"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Trasa",
+    "track": "Takelis",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1882,7 +1882,7 @@
     "@embedded": {
         "description": "Subtitle type label for embedded subtitles"
     },
-    "castSessionError": "{protocol} session error",
+    "castSessionError": "{protocol} seanso klaida",
     "@castSessionError": {
         "description": "Fallback error message for cast session errors",
         "placeholders": {
@@ -1891,7 +1891,7 @@
             }
         }
     },
-    "failedToLoadBookDetails": "Failed to load book details: {error}",
+    "failedToLoadBookDetails": "Nepavyko įkelti knygos informacijos: {error}",
     "@failedToLoadBookDetails": {
         "description": "Error when loading book details fails",
         "placeholders": {
@@ -1904,7 +1904,7 @@
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
-    "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+    "formatCannotRenderInApp": "Šis formatas (.{extension}) programoje kol kas nerodomas.",
     "@formatCannotRenderInApp": {
         "description": "Fallback message for unsupported document format",
         "placeholders": {
@@ -1921,7 +1921,7 @@
     "@couldNotOpenExternalViewer": {
         "description": "Error when external viewer fails to open"
     },
-    "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
+    "failedToOpenInAppReader": "Nepavyko atidaryti programos skaityklės: {error}",
     "@failedToOpenInAppReader": {
         "description": "Error when in-app reader fails to open",
         "placeholders": {
@@ -1930,7 +1930,7 @@
             }
         }
     },
-    "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
+    "bookmarkAlreadySaved": "Žymė ties {label} jau išsaugota.",
     "@bookmarkAlreadySaved": {
         "description": "Snackbar when bookmark already exists",
         "placeholders": {
@@ -1939,7 +1939,7 @@
             }
         }
     },
-    "bookmarkAdded": "Bookmark added: {label}",
+    "bookmarkAdded": "Žymė pridėta: {label}",
     "@bookmarkAdded": {
         "description": "Snackbar confirming bookmark was added",
         "placeholders": {
@@ -1956,7 +1956,7 @@
     "@noTableOfContentsAvailable": {
         "description": "Empty state for table of contents panel"
     },
-    "pageLabel": "Page {number}",
+    "pageLabel": "{number} psl.",
     "@pageLabel": {
         "description": "Page number label in TOC or position",
         "placeholders": {
@@ -1973,7 +1973,7 @@
     "@bookReader": {
         "description": "Default title for book reader screen"
     },
-    "formatExtension": "Format: .{extension}",
+    "formatExtension": "Formatas: .{extension}",
     "@formatExtension": {
         "description": "Chip label showing file format",
         "placeholders": {
@@ -1982,7 +1982,7 @@
             }
         }
     },
-    "percentRead": "{percent}% read",
+    "percentRead": "Perskaityta {percent}%",
     "@percentRead": {
         "description": "Chip label showing reading progress",
         "placeholders": {
@@ -2015,7 +2015,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "Reset Zoom ({zoom}x)",
+    "resetZoom": "Atstatyti mastelį ({zoom}x)",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2048,7 +2048,7 @@
     "@markedAsUnread": {
         "description": "Snackbar confirming item marked as unread"
     },
-    "failedToUpdateReadState": "Failed to update read state: {error}",
+    "failedToUpdateReadState": "Nepavyko atnaujinti skaitymo būsenos: {error}",
     "@failedToUpdateReadState": {
         "description": "Error when marking read/unread fails",
         "placeholders": {
@@ -2093,7 +2093,7 @@
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
-    "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+    "platformCannotHostDocumentEngine": "Ši platforma negali paleisti integruoto {extension} failų dokumentų variklio.",
     "@platformCannotHostDocumentEngine": {
         "description": "Fallback description when platform lacks document engine",
         "placeholders": {
@@ -2146,7 +2146,7 @@
     "@guideTimeline": {
         "description": "Section title for the TV guide timeline"
     },
-    "failedToLoadGuide": "Failed to load guide: {error}",
+    "failedToLoadGuide": "Nepavyko įkelti programų gido: {error}",
     "@failedToLoadGuide": {
         "description": "Error when guide data fails to load",
         "placeholders": {
@@ -2195,7 +2195,7 @@
     "@close": {
         "description": "Button label to close a dialog"
     },
-    "failedToPlayChannel": "Failed to play {name}",
+    "failedToPlayChannel": "Nepavyko paleisti {name}",
     "@failedToPlayChannel": {
         "description": "Error when live TV channel playback fails",
         "placeholders": {
@@ -2232,7 +2232,7 @@
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+    "cancelScheduledRecordingOf": "Atšaukti suplanuotą „{name}“ įrašymą?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "Nr",
+    "no": "Ne",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2269,7 +2269,7 @@
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
-    "stopRecordingName": "Stop recording \"{name}\"?",
+    "stopRecordingName": "Nutraukti „{name}“ įrašymą?",
     "@stopRecordingName": {
         "description": "Confirmation message for stopping a series recording",
         "placeholders": {
@@ -2290,7 +2290,7 @@
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
-    "noResultsForQuery": "No results for \"{query}\"",
+    "noResultsForQuery": "Nieko nerasta pagal „{query}“",
     "@noResultsForQuery": {
         "description": "Shown when search returns no results",
         "placeholders": {
@@ -2299,7 +2299,7 @@
             }
         }
     },
-    "searchFailedError": "Search failed: {error}",
+    "searchFailedError": "Paieška nepavyko: {error}",
     "@searchFailedError": {
         "description": "Shown when search encounters an error",
         "placeholders": {
@@ -2344,7 +2344,7 @@
     "@deleteDownload": {
         "description": "Dialog title for deleting a download"
     },
-    "removeItemAndFiles": "Remove \"{name}\" and its files?",
+    "removeItemAndFiles": "Pašalinti „{name}“ ir susijusius failus?",
     "@removeItemAndFiles": {
         "description": "Confirmation to delete a downloaded item and its files",
         "placeholders": {
@@ -2353,7 +2353,7 @@
             }
         }
     },
-    "tracksCount": "{count} tracks",
+    "tracksCount": "Takelių: {count}",
     "@tracksCount": {
         "description": "Number of tracks in an album",
         "placeholders": {
@@ -2370,7 +2370,7 @@
     "@playAlbum": {
         "description": "Button to play an album"
     },
-    "failedToLoadAlbum": "Failed to load album: {error}",
+    "failedToLoadAlbum": "Nepavyko įkelti albumo: {error}",
     "@failedToLoadAlbum": {
         "description": "Error when loading an album fails",
         "placeholders": {
@@ -2379,7 +2379,7 @@
             }
         }
     },
-    "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+    "noDownloadedTracksForAlbum": "Atsisiųstų „{name}“ takelių nerasta.",
     "@noDownloadedTracksForAlbum": {
         "description": "Shown when an album has no downloaded tracks",
         "placeholders": {
@@ -2404,7 +2404,7 @@
     "@deleteEpisode": {
         "description": "Dialog title for deleting an episode"
     },
-    "removeName": "Remove \"{name}\"?",
+    "removeName": "Pašalinti „{name}“?",
     "@removeName": {
         "description": "Confirmation to remove an item by name",
         "placeholders": {
@@ -2434,7 +2434,7 @@
             }
         }
     },
-    "episodeNumber": "Episode {number}",
+    "episodeNumber": "{number} serija",
     "@episodeNumber": {
         "description": "Episode label with number",
         "placeholders": {
@@ -2455,7 +2455,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "Season {number}",
+    "seasonNumber": "{number} sezonas",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "{number} sez.",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2481,7 +2481,7 @@
     "@deleteSeason": {
         "description": "Dialog title for deleting a season"
     },
-    "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+    "deleteAllEpisodesInSeason": "Ištrinti visas atsisiųstas {season} serijas?",
     "@deleteAllEpisodesInSeason": {
         "description": "Confirmation to delete all episodes in a season",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 serija} one{{count} serija} few{{count} serijos} many{{count} serijos} other{{count} serijų}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2535,7 +2535,7 @@
     "@deleteSelected": {
         "description": "Dialog title for deleting selected items"
     },
-    "deleteSelectedCount": "Delete {count} downloaded items?",
+    "deleteSelectedCount": "Ištrinti atsisiųstus elementus ({count})?",
     "@deleteSelectedCount": {
         "description": "Confirmation to delete selected downloaded items",
         "placeholders": {
@@ -2556,7 +2556,7 @@
     "@database": {
         "description": "Storage breakdown label for database"
     },
-    "ofStorageLimit": "of {limit} limit",
+    "ofStorageLimit": "iš {limit} limito",
     "@ofStorageLimit": {
         "description": "Text showing storage used of total limit",
         "placeholders": {
@@ -2665,7 +2665,7 @@
     "@customizeAccountPlaybackInterface": {
         "description": "Settings screen subtitle"
     },
-    "optionsCount": "{count} options",
+    "optionsCount": "Parinkčių: {count}",
     "@optionsCount": {
         "description": "Number of options in a settings section",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3057,7 +3057,7 @@
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
-    "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+    "afterEpisodesAndHours": "Po {episodes} serijų / {hours} val.",
     "@afterEpisodesAndHours": {
         "description": "Still watching prompt interval",
         "placeholders": {
@@ -3233,7 +3233,7 @@
     "@tv": {
         "description": "Profile: TV"
     },
-    "loadedProfileSettings": "Loaded {profile} profile settings.",
+    "loadedProfileSettings": "Įkelti {profile} profilio nustatymai.",
     "@loadedProfileSettings": {
         "description": "Message when profile settings are loaded",
         "placeholders": {
@@ -3242,7 +3242,7 @@
             }
         }
     },
-    "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+    "failedToLoadProfileSettings": "Nepavyko įkelti {profile} profilio nustatymų.",
     "@failedToLoadProfileSettings": {
         "description": "Error when profile settings fail to load",
         "placeholders": {
@@ -3251,7 +3251,7 @@
             }
         }
     },
-    "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+    "syncedSettingsToProfile": "Vietiniai nustatymai sinchronizuoti su {profile} profiliu.",
     "@syncedSettingsToProfile": {
         "description": "Message when settings are synced to a profile",
         "placeholders": {
@@ -3440,7 +3440,7 @@
     "@teal": {
         "description": "Color: teal"
     },
-    "navy": "Navy",
+    "navy": "Tamsiai mėlyna",
     "@navy": {
         "description": "Color: navy"
     },
@@ -3540,7 +3540,7 @@
     "@selectAll": {
         "description": "Button to select all items"
     },
-    "itemsSelected": "{count} selected",
+    "itemsSelected": "Pasirinkta: {count}",
     "@itemsSelected": {
         "description": "Number of selected items",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Mėnulio pelekas",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3609,7 +3609,7 @@
     "@noneExcluded": {
         "description": "Label when no genres are excluded"
     },
-    "autoAdvance": "Auto Advance",
+    "autoAdvance": "Automatinis perėjimas",
     "@autoAdvance": {
         "description": "Setting for auto advance"
     },
@@ -3617,7 +3617,7 @@
     "@autoAdvanceSlides": {
         "description": "Description for auto advance"
     },
-    "autoAdvanceInterval": "Auto Advance Interval",
+    "autoAdvanceInterval": "Automatinio perėjimo intervalas",
     "@autoAdvanceInterval": {
         "description": "Setting for auto advance interval"
     },
@@ -3728,10 +3728,6 @@
     "lastUser": "Paskutinis vartotojas",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Konkretus vartotojas",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Visada autentifikuoti",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Papildinys",
+    "pluginLabel": "Moonbase papildinys",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3975,7 +3971,7 @@
     "@pluginNotDetectedDescription": {
         "description": "Description when plugin is not detected"
     },
-    "pluginStatusVersion": "{status}\nVersion: {version}",
+    "pluginStatusVersion": "{status}\nVersija: {version}",
     "@pluginStatusVersion": {
         "description": "Plugin status with version",
         "placeholders": {
@@ -4075,7 +4071,7 @@
     "@hideAdultContent": {
         "description": "Description for NSFW filter"
     },
-    "loggedInAs": "Logged in as: {username}",
+    "loggedInAs": "Prisijungta kaip: {username}",
     "@loggedInAs": {
         "description": "Label showing logged in username",
         "placeholders": {
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Atraskite eilutes",
+    "discoverRows": "Seerr atradimų puslapis",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Norėdami pertvarkyti, vilkite. Įjungti arba išjungti eilutes. Įjungta eilučių tvarka sinchronizuojama su „Moonfin“ papildiniu.",
+    "discoverRowsDescriptionPlugin": "Įjunkite eilutes, kurias norite matyti Seerr pagrindiniame puslapyje. Vilkite, kad pertvarkytumėte. Pasirinktinė tvarka sinchronizuojama su Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Norėdami pertvarkyti, vilkite. Įjungti arba išjungti eilutes.",
+    "discoverRowsDescription": "Įjunkite eilutes, kurias norite matyti Seerr pagrindiniame puslapyje. Vilkite, kad pertvarkytumėte. Pasirinktinė tvarka sinchronizuojama su Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4108,7 +4104,7 @@
     "@aboutTitle": {
         "description": "About screen title"
     },
-    "versionValue": "Version {version}",
+    "versionValue": "{version} versija",
     "@versionValue": {
         "description": "Version display",
         "placeholders": {
@@ -4169,7 +4165,7 @@
     "@updateAvailable": {
         "description": "Message when an update is available"
     },
-    "updateAvailableVersion": "Update available: v{version}",
+    "updateAvailableVersion": "Galimas naujinys: v{version}",
     "@updateAvailableVersion": {
         "description": "Message with specific update version",
         "placeholders": {
@@ -4186,7 +4182,7 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "updateAvailableTitle": "v{version} Available",
+    "updateAvailableTitle": "Galima v{version}",
     "@updateAvailableTitle": {
         "description": "Title of the update dialog showing the new version",
         "placeholders": {
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Aišku",
+    "clear": "Išvalyti",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4272,7 +4268,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "Elementų: {count}",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Seller nustatymai",
+    "seerrSettings": "Seerr nustatymai",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4301,7 +4297,7 @@
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
-    "requestedByName": "Requested by {name}",
+    "requestedByName": "Užklausą pateikė {name}",
     "@requestedByName": {
         "description": "Label showing who requested media",
         "placeholders": {
@@ -4326,7 +4322,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+    "cancelRequestForTitle": "Atšaukti „{title}“ užklausą?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4335,7 +4331,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+    "cancelCountRequestsForTitle": "Atšaukti „{title}“ užklausas ({count})?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4359,7 +4355,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "Budget: ${amount}",
+    "budgetAmount": "Biudžetas: {amount} $",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4368,7 +4364,7 @@
             }
         }
     },
-    "revenueAmount": "Revenue: ${amount}",
+    "revenueAmount": "Pajamos: {amount} $",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4389,7 +4385,7 @@
             }
         }
     },
-    "requestSeriesOrMovie": "Request {type}",
+    "requestSeriesOrMovie": "Pateikti {type} užklausą",
     "@requestSeriesOrMovie": {
         "description": "Bottom sheet title for requesting media",
         "placeholders": {
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Išvaizdos",
+    "appearances": "Filmografija",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4438,7 +4434,7 @@
     "@crewSection": {
         "description": "Section title for crew credits"
     },
-    "ageValue": "age {age}",
+    "ageValue": "amžius {age}",
     "@ageValue": {
         "description": "Person age display",
         "placeholders": {
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Metų laikai",
+    "seasonsLabel": "Sezonai",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4533,7 +4529,7 @@
     "encoding": "Kodavimas",
     "error": "Klaida",
     "forward": "Pirmyn",
-    "general": "Generolas",
+    "general": "Bendra",
     "go": "Eik",
     "install": "Įdiegti",
     "installed": "Įdiegta",
@@ -4560,7 +4556,7 @@
     "sessions": "Sesijos",
     "set": "Nustatyti",
     "status": "Būsena",
-    "stop": "Sustok",
+    "stop": "Stabdyti",
     "streaming": "Srautinis perdavimas",
     "time": "Laikas",
     "trickplay": "Trickplay",
@@ -4674,17 +4670,17 @@
     "adminSetVolume": "Nustatykite garsumą",
     "sessionPrev": "Ankst",
     "sessionRewind": "Atsukti atgal",
-    "sessionForward": "Pirmyn",
+    "sessionForward": "Prasukti pirmyn",
     "sessionNext": "Kitas",
     "sessionVolumeDown": "tomas –",
-    "sessionVolumeUp": "Vol +",
+    "sessionVolumeUp": "Gars. +",
     "uhd4k": "4K",
     "nowPlaying": "Dabar žaidžiama",
-    "volume": "Apimtis",
+    "volume": "Garsumas",
     "actions": "Veiksmai",
     "videoCodec": "Vaizdo įrašų kodekas",
     "audioCodec": "Garso kodekas",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Aparat. spartinimas",
     "completion": "Užbaigimas",
     "direct": "Tiesioginis",
     "adminDisconnect": "Atsijungti",
@@ -4908,7 +4904,7 @@
     "adminBackToUsers": "Grįžti į Vartotojus",
     "adminSaveProfile": "Išsaugoti profilį",
     "adminDeleteUser": "Ištrinti vartotoją",
-    "admin": "Admin",
+    "admin": "Administravimas",
     "adminFullAccessWarning": "Administratoriai turi visišką prieigą prie serverio. Suteikite atsargiai.",
     "administrator": "Administratorius",
     "adminHiddenUser": "Paslėptas vartotojas",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Segmento išlaikymas (sekundėmis)",
     "adminThrottleBuffering": "Droselio buferis",
     "adminTrickplaySaved": "Trickplay nustatymai išsaugoti",
-    "adminTrickplayLoadFailed": "Nepavyko įkelti gudrybės nustatymų",
+    "adminTrickplayLoadFailed": "Nepavyko įkelti Trickplay nustatymų",
     "adminEnableHardwareAcceleration": "Įgalinti aparatinės įrangos pagreitį",
     "adminEnableKeyFrameExtraction": "Įgalinti tik rakto rėmelio ištraukimą",
     "adminKeyFrameSubtitle": "Greitesnis, bet mažesnis tikslumas",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS prievadas",
     "adminPublicHttpsPort": "Viešas HTTPS prievadas",
     "adminBaseUrl": "Bazinis URL",
-    "adminBaseUrlHint": "pvz. / želė",
+    "adminBaseUrlHint": "pvz. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Įgalinti HTTPS",
     "adminLocalNetwork": "Vietinis tinklas",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Ieškoti nuotolinio asmens",
     "adminNoRemoteMatches": "Nuotolinių atitikmenų nerasta",
     "adminRemoteResults": "Nuotoliniai rezultatai",
     "adminRemoteMetadataApplied": "Taikyti nuotoliniai metaduomenys",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Pridėti imtuvą",
     "adminTunerType": "Tunerio tipas",
-    "adminTunerTypeHint": "HDHomeRun, M3U, kita",
-    "adminUrlPath": "URL / kelias",
-    "adminNameOptional": "Vardas (neprivaloma)",
     "adminTunerAdded": "Pridėtas derintuvas",
     "adminTunerAddFailed": "Nepavyko pridėti imtuvo: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Pridėti vadovo teikėją",
     "adminProviderType": "Teikėjo tipas",
-    "adminProviderTypeHint": "SchedulesDirect arba XMLTV",
-    "adminUsernameOptional": "Vartotojo vardas (neprivaloma)",
-    "adminRefreshInterval": "Atnaujinimo intervalas (valandomis)",
     "adminProviderAdded": "Teikėjas pridėtas",
     "adminProviderAddFailed": "Nepavyko pridėti teikėjo: {error}",
     "@adminProviderAddFailed": {
@@ -5682,7 +5671,7 @@
     "adminLiveTvTitle": "Tiesioginės televizijos administravimas",
     "adminApply": "Taikyti",
     "adminNotSet": "Nenustatyta",
-    "adminReset": "Nustatyti iš naujo",
+    "adminReset": "Atstatyti",
     "adminLogsTitle": "Serverio žurnalai",
     "adminLogsNewestFirst": "Naujausi pirmiausia",
     "adminLogsOldestFirst": "Seniausi Pirma",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Nėra atitinkančių eilučių",
     "adminMetadataEditorTitle": "Metaduomenų redaktorius",
-    "adminMetadataRemote": "Nuotolinis",
     "adminMetadataType": "Tipas",
     "adminMetadataDetails": "Detalės",
     "adminMetadataExternalIds": "Išoriniai ID",
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Atšaukiama...",
     "adminTaskRunning": "Bėga...",
     "adminTaskNeverRun": "Niekada nebėgioti",
-    "adminTaskStop": "Sustok",
+    "adminTaskStop": "Stabdyti",
     "adminTaskRun": "Bėk",
     "adminTaskDetailLastExecution": "Paskutinis vykdymas",
     "adminTaskDetailStarted": "Prasidėjo",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Kas 12 valandų",
     "adminTaskTriggerEvery24Hours": "Kas 24 valandas",
     "adminTaskTriggerEvery2Days": "Kas 2 dienas",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{{count} valanda} few{{count} valandos} many{{count} valandos} other{{count} valandų}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "dabar",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} min.",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} val.",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} d.",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{month}-{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6118,7 +6106,7 @@
     "adminTrickplayDescription": "Konfigūruokite „Trickplay“ vaizdo generavimą, kad galėtumėte peržiūrėti peržiūros miniatiūras.",
     "adminNetworkingPublicHttpsPort": "Viešas HTTPS prievadas",
     "adminNetworkingBaseUrl": "Bazinis URL",
-    "adminNetworkingBaseUrlHint": "pvz. / želė",
+    "adminNetworkingBaseUrlHint": "pvz. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Sertifikato kelias",
     "adminNetworkingRemoteIpFilter": "Nuotolinis IP filtras",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay reikalingas Jellyfin serveris. Dabartinis serveris jo nepalaiko.",
     "syncPlayGroupFallbackName": "„SyncPlay“ grupė",
     "syncPlayGroupTooltip": "„SyncPlay“ grupė",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# dalyvis} few {# dalyviai} many {# dalyvio} other {# dalyvių}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Prisimink mano pasirinkimą",
     "playHdr10Fallback": "Leiskite atsarginę HDR10 versiją",
     "requestTranscode": "Prašyti perkoduoti",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {rasta # eilutė} few {rastos # eilutės} many {rasta # eilutės} other {rasta # eilučių}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Neteisingas PIN kodas",
     "pinMismatch": "PIN kodai nesutampa",
     "pinForgot": "Pamiršote PIN kodą?",
-    "pinClear": "Aišku",
-    "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Greitojo prisijungimo užklausa patvirtinta.",
-    "quickConnectInvalidOrExpired": "Greito prisijungimo kodas neteisingas arba pasibaigęs.",
-    "quickConnectNotSupported": "Greitasis prisijungimas šiame serveryje nepalaikomas.",
-    "quickConnectAuthorizeFailed": "Nepavyko įgalioti greitojo prisijungimo kodo.",
-    "quickConnectDisabled": "Greitasis prisijungimas šiame serveryje išjungtas.",
-    "quickConnectForbidden": "Jūsų paskyra negali patvirtinti šios greitojo prisijungimo užklausos.",
-    "quickConnectNotFound": "Greito prisijungimo kodas nerastas. Išbandykite naują kodą.",
-    "quickConnectFailedWithMessage": "Greitas prisijungimas nepavyko: {message}",
+    "pinClear": "Išvalyti",
+    "pinBackspace": "Naikinti",
+    "quickConnectAuthorized": "Quick Connect užklausa patvirtinta.",
+    "quickConnectInvalidOrExpired": "Quick Connect kodas neteisingas arba nebegalioja.",
+    "quickConnectNotSupported": "Šis serveris nepalaiko Quick Connect.",
+    "quickConnectAuthorizeFailed": "Nepavyko patvirtinti Quick Connect kodo.",
+    "quickConnectDisabled": "Šiame serveryje Quick Connect išjungtas.",
+    "quickConnectForbidden": "Jūsų paskyra negali patvirtinti šios Quick Connect užklausos.",
+    "quickConnectNotFound": "Quick Connect kodas nerastas. Pabandykite naują kodą.",
+    "quickConnectFailedWithMessage": "Quick Connect nepavyko: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "Maišyti pagal",
     "shuffleSelectLibrary": "Pasirinkite Biblioteka",
     "shuffleSelectGenre": "Pasirinkite Žanras",
-    "shuffleLibrary": "biblioteka",
+    "shuffleLibrary": "Biblioteka",
     "shuffleGenre": "Žanras",
     "shuffleNoLibraries": "Nėra suderinamų bibliotekų.",
     "shuffleNoGenres": "Šiam maišymo režimui nerasta jokių žanrų.",
@@ -6427,7 +6415,7 @@
     "upNext": "Aukštyn Kitas",
     "playNext": "Žaisti toliau",
     "stillWatchingContent": "Atkūrimas buvo pristabdytas. Ar vis dar žiūrite?",
-    "stillWatchingStop": "Sustok",
+    "stillWatchingStop": "Stabdyti",
     "stillWatchingContinue": "Tęsti",
     "skipSegment": "Praleisti {segment}",
     "@skipSegment": {
@@ -6471,7 +6459,7 @@
     "@playerTooltipCastControls": {
         "description": "Tooltip label for active cast controls button in player"
     },
-    "playerTooltipPlaybackQuality": "Bitrate",
+    "playerTooltipPlaybackQuality": "Bitų sparta",
     "@playerTooltipPlaybackQuality": {
         "description": "Tooltip label for playback quality/bitrate control in player"
     },
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Patikrinkite, ar nėra atnaujinimų",
     "settingsCheckForUpdatesSubtitle": "Patikrinkite naujausią „Moonfin“ leidimą",
     "settingsPoweredByFlutter": "Maitinamas Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# licencijos pranešimas} few {# licencijos pranešimai} many {# licencijos pranešimo} other {# licencijos pranešimų}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6689,7 +6677,7 @@
             }
         }
     },
-    "discNumber": "Disc {number}",
+    "discNumber": "{number} diskas",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Serr paskyros tipas",
+    "seerrAccountType": "Seerr paskyros tipas",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6763,135 +6751,123 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Prefer system keyboard",
+    "keyboardPreferSystemIme": "Pirmenybė sistemos klaviatūrai",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+    "keyboardPreferSystemImeDescription": "Tekstui įvesti pagal numatytuosius nustatymus naudoti įrenginio įvesties metodą",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
-    "musicVideos": "Music Videos",
+    "musicVideos": "Muzikiniai vaizdo klipai",
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Record",
+    "record": "Įrašyti",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
-    "cancelRecordingAction": "Cancel Recording",
+    "cancelRecordingAction": "Atšaukti įrašymą",
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
-    "programSetToRecord": "Program set to record",
+    "programSetToRecord": "Laida suplanuota įrašyti",
     "@programSetToRecord": {
         "description": "Snackbar confirmation after scheduling a live TV program recording"
     },
-    "recordingCancelled": "Recording cancelled",
+    "recordingCancelled": "Įrašymas atšauktas",
     "@recordingCancelled": {
         "description": "Snackbar confirmation after cancelling a live TV recording"
     },
-    "unableToCreateRecording": "Unable to create recording",
+    "unableToCreateRecording": "Nepavyko sukurti įrašo",
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "Garso išvesties režimas",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR tiesioginis perdavimas",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Audio Fallback Codec",
+    "settingsAudioFallbackCodec": "Atsarginis garso kodekas",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
-    "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+    "settingsAudioPassthroughAdvanced": "Tiesioginis perdavimas (išplėstiniai)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec Passthrough",
+    "settingsAudioCodecPassthrough": "Kodekų tiesioginis perdavimas",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+    "settingsAudioCodecPassthroughDescription": "Įjunkite tik tuos formatus, kuriuos palaiko jūsų AVR arba HDMI imtuvas.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "EAC3 tiesioginis perdavimas",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) tiesioginis perdavimas",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core tiesioginis perdavimas",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA tiesioginis perdavimas",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD tiesioginis perdavimas",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos tiesioginis perdavimas",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
-    "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+    "settingsAudioBitstreamEac3ToExternalDecoder": "Perduoti Dolby Digital Plus (EAC3) bitų srautą į išorinį dekoderį.",
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "Perduoti Dolby Atmos per EAC3 (JOC) bitų srautą į išorinį dekoderį.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "Perduoti DTS-HD MA (įskaitant DTS Core) bitų srautą į išorinį dekoderį.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Perduoti Dolby TrueHD su Atmos metaduomenimis bitų srautą į išorinį dekoderį.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+    "settingsDetectedAudioCapabilities": "Aptiktos garso galimybės",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+    "settingsDetectedAudioCapabilitiesUnavailable": "Vykdymo aplinkos galimybių momentinė kopija dar nepasiekiama.",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "Route",
+    "settingsAudioRouteLabel": "Maršrutas",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
-    "settingsAudioDecodeLabel": "Decode",
+    "settingsAudioDecodeLabel": "Dekodavimas",
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
-    "settingsAudioPassthroughLabel": "Passthrough",
+    "settingsAudioPassthroughLabel": "Tiesioginis perdavimas",
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "HD audio route",
+    "settingsAudioHdRoute": "HD garso maršrutas",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6911,11 +6887,11 @@
     "@settingsAudioRouteBluetooth": {
         "description": "Audio route type Bluetooth"
     },
-    "settingsAudioRouteSpeaker": "Speaker",
+    "settingsAudioRouteSpeaker": "Garsiakalbis",
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} kan. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6924,43 +6900,43 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "Diagnostics",
+    "settingsAudioDiagnostics": "Diagnostika",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "Video Level",
+    "settingsAudioDiagnosticsVideoLevel": "Vaizdo lygis",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "Video Range",
+    "settingsAudioDiagnosticsVideoRange": "Vaizdo diapazonas",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
-    "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+    "settingsAudioDiagnosticsSubtitleCodec": "Subtitrų kodekas",
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "Leidžiami garso kodekai",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS garso kodekai",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 garso kodekai",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif tiesioginis perdavimas",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+    "settingsAudioDiagnosticsActiveAudioRoute": "Aktyvus garso maršrutas",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "Maršruto HD garso palaikymas",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Atidarykite „iOS“ maršruto parinkiklį",
     "airPlayRoutePickerUnavailable": "AirPlay maršruto parinkiklis nepasiekiamas šiame įrenginyje.",
     "videos": "Vaizdo įrašai",
-    "trailers": "Priekabos",
+    "trailers": "Anonsai",
     "programs": "Programos",
     "songs": "Dainos",
     "photoAlbums": "Nuotraukų albumai",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "Neseniai išleisti epizodai",
     "watchAgain": "Žiūrėti dar kartą",
     "guestAppearances": "Svečių pasirodymai",
-    "appearancesSeerr": "Pasirodymai (Serr)",
+    "appearancesSeerr": "Pasirodymai (Seerr)",
     "watchWithGroup": "Žiūrėkite su grupe",
     "errors": "Klaidos",
     "warnings": "Įspėjimai",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Geriausi atlikėjai",
     "analyticsTopAuthors": "Geriausi autoriai",
     "analyticsTopContributors": "Geriausi bendradarbiai",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 biblioteka} one{{count} biblioteka} few{{count} bibliotekos} many{{count} bibliotekos} other{{count} bibliotekų}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "Mišrus turinys",
     "homeVideosAndPhotos": "Namų vaizdo įrašai ir nuotraukos",
     "mixedMoviesAndShows": "Mišrūs filmai ir laidos",
-    "intelQuickSync": "„Intel“ greitasis sinchronizavimas",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Įrašų nerasta",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "CB7 ištraukimo įskiepis nepasiekiamas šioje platformoje.",
     "closeGenrePanel": "Uždaryti žanro skydelį",
     "loadingShuffle": "Įkeliamas maišymas...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "BIBLIOTEKOS MAIŠYMAS",
+    "randomShuffleLabel": "ATSITIKTINIS MAIŠYMAS",
+    "genresShuffleLabel": "ŽANRŲ MAIŠYMAS",
     "autoHdrSwitching": "Automatinis HDR perjungimas",
     "autoHdrSwitchingDescription": "Automatiškai įgalinkite HDR HDR vaizdo įrašams atkurti ir atkurkite rodymo režimą išėjus.",
     "whenFullscreen": "Kai per visą ekraną",
     "transcodingLimits": "Perkodavimo ribos",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "Pavaišinkite kūrėją kava",
+    "accountPreferences": "PASKYROS NUOSTATOS",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Sąsajos kalba",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Sistemos numatytoji",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Tuščia",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Detalių ekrano stilius",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Klasikinis – originalus centruotas Moonfin išdėstymas. Modernus – prisitaikantis kinematografinis išdėstymas.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Klasikinis",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modernus",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Išskleisti skirtukai",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Automatiškai rodyti skirtuko turinį naršant skirtukus. Išjunkite, kad kiekvieną skirtuką atidarytumėte ir uždarytumėte rankiniu būdu.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Rodyti techninę informaciją?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Rodyti kodeko, raiškos ir srauto informaciją antraštės santraukoje",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Rekomendacijų sistema",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Naudokite Moonfin Recommends vietinės bibliotekos algoritmą arba internetinius TMDB panašumo rodiklius. Pastaba: internetinėms rekomendacijoms reikia Seerr integracijos.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb panašumas",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Taikyti amžiaus cenzo ribą?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Riboti Moonfin Recommends pasiūlymus pagal pasirinktos medijos amžiaus cenzą",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Sąsajos stilius",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Automatinis prisitaiko prie jūsų įrenginio. Pasirinkite Apple arba Material, kad nustatytumėte konkrečią išvaizdą.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automatinis",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Stiklo kokybė",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Automatinis parenka geriausią stiklo efektą šiam įrenginiui. Visas įjungia tikrą suliejimą; Sumažintas naudoja lengvą stiklą, taupantį GPU energiją.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Automatinis",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Visas",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Sumažintas",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Pasirinktinė tema",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Pasirinktinės temos keičia vaizdo elementus visoje Moonfin programoje. Pasirinkite vieną iš šių parinkčių pagal savo stilių.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Stiklas",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Skysto stiklo stilius su slenkančiu gradiento fonu, matiniais paviršiais ir Apple mėlynu akcentu",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8 bitų herojus",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retro pikselių meno stilius su stambia palete, blokiniais rėmeliais, ryškiais šešėliais ir pikselių šriftu",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Meniu",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Pristabdyta",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Įrašyti būseną",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Žaidimai",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Įkelti būseną",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Pagreitinti",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emuliatoriaus nustatymai",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Šis branduolys neturi keičiamų parinkčių.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Palaikykite, kad atidarytumėte meniu",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Žaidimai šiame įrenginyje kol kas nepalaikomi.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Naujausios knygos",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Naujausios garso knygos",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 knyga} one{{count} knyga} few{{count} knygos} many{{count} knygos} other{{count} knygų}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Knyga",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Garso knyga",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "Perskaityta {percent}%",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Liko {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Skaityti",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Klausyti",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Elementai",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Priedai",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Užkulisiai",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Iškirptos scenos",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Apžvalginiai filmukai",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Interviu",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Scenos",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Trumpametražiai filmai",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Liko {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Baigsis po {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "REŽISIERIAI",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "SCENARISTAS",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Maišyti visą muziką",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Prisijunkite prie Moonfin telefone",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Nepavyksta pasiekti serverio",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Toliau: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "Liko {minutes} min.",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "Liko {hours} val.",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "Liko {hours} val. {minutes} min.",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Išsamios informacijos puslapiai, pradžios ekrano eilutės ir garsumas",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Kartoti temos muziką",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Kartoti takelį, o ne paleisti jį vieną kartą",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Pelės slinkties ratukas",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Pasirinkite, ką atlieka pelės ratuko sukimas virš vaizdo įrašo atkūrimo metu.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Išjungta",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Peršokti (pirmyn / atgal)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Garsumas",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Garsumas",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Atsarginė garso takelio kalba",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Pirmenybė numatytajam garso takeliui",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Teikti pirmenybę originaliam garso takeliui, o ne lokalizuotam įgarsinimui.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Pirmenybė garsinio vaizdavimo takeliams",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Teikti pirmenybę garsinio vaizdavimo takeliams, o ne įprastiems.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Perkodavimas (garsas)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Tiesioginis srautas (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Perkodavimas (bitų sparta arba raiška)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Perkodavimas (vaizdas ir garsas)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Perkodavimas (vaizdas)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Pasirinkite, kaip dekoduojamas garsas. „AVR tiesioginis perdavimas“ siunčia neapdorotus Dolby / DTS srautus į imtuvą; „Automatinis“ arba „Sumaišymas“ dekoduoja vietoje.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Pasirinkite formatą, į kurį bus perkoduojamas daugiakanalis garsas, kai šaltinio srauto negalima paleisti tiesiogiai ar perduoti be pakeitimų.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Aptikti automatiškai\n(rekomenduojama)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(numatytasis)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(be nuostolių)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(tik stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(efektyvus)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(be nuostolių)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Daugiausia garso kanalų",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Nurodykite didžiausią garso sistemos kanalų skaičių. Šią ribą viršijantys daugiakanaliai srautai bus sumaišyti arba perkoduoti.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Aptikti automatiškai\n(įrangos numatytasis)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 erdvinis",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 kvadrofoninis",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 erdvinis",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 erdvinis",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 erdvinis",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 erdvinis",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Ausinės",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Subtitrų režimas",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Pažymėti",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Visada",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Užsienio kalba",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Priverstiniai",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Rodo takelius, kurie medijos failo metaduomenyse pažymėti kaip „default“ arba „forced“.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Automatiškai įkelia ir rodo subtitrus kaskart, kai pradedamas vaizdo įrašas.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Automatiškai įjungia subtitrus, jei numatytasis garso takelis yra užsienio kalba.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Įkelia tik subtitrus, aiškiai pažymėtus „forced“ metaduomenų žyme.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Visiškai išjungia automatinį subtitrų įkėlimą.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Atsarginė subtitrų kalba",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Subtitrų srautas",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Rodyti atsisiuntimus serveryje",
+    "reportDownloadsActivitySubtitle": "Leisti serverio administratoriui matyti jūsų perkoduotus atsisiuntimus valdymo skydelyje",
+    "navbarAlwaysExpanded": "Visada rodyti naršymo juostos pavadinimus",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Rodyti Seerr mygtuką",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Grupuoti elementus į rinkinius",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Naršant bibliotekas slėpti su rinkiniais susietus bibliotekos elementus",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Pranešimas apie bibliotekos grupavimą",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Kad galėtumėte naudoti šį nustatymą, savo Jellyfin arba Emby serveryje, bibliotekos rodymo nustatymuose, įjunkite bibliotekos parinktį „Grupuoti filmus į rinkinius“ ir (arba) „Grupuoti serialus į rinkinius“.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Anonsų garsas",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Įjungti anonsų garsą medijos juostoje",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Išplėstos pradžios ekrano eilutės",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Rodyti tik po vieną pradžios ekrano eilutę",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Dabartinis naudotojas",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Statiškas",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Šokinėjantis",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr atradimų eilutės",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Pranešimai",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Pranešimai apie naujas užklausas",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Pranešti, kai kas nors pateikia užklausą",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Užklausų naujienos",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Patvirtinta, atmesta ir įtraukta į jūsų biblioteką",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Problemų naujienos",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Naujos problemos, atsakymai ir sprendimai",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Vaizdų talpyklos limitas",
+    "clearImageCache": "Išvalyti vaizdų talpyklą",
+    "imageCacheCleared": "Vaizdų talpykla išvalyta",
+    "seerrDownloadingPercent": "Atsisiunčiama · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Importuojama",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Nepavyko",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Apdorojama",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Pakeitė {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Užbaigta",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Šio pavadinimo užklausa jau pateikta",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Pasiektas užklausų limitas",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Šis pavadinimas įtrauktas į blokuojamųjų sąrašą",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Nebeliko sezonų, kuriems būtų galima pateikti užklausą",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Neturite teisės pateikti šios užklausos",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Užklausos",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Problemos",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Naujausi",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Paskutinį kartą keista",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Problemų nėra",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Liko {remaining} iš {limit} filmų užklausų",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Liko {remaining} iš {limit} sezonų užklausų",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Priklauso rinkiniui {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Peržiūrėti rinkinį",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Pateikti rinkinio užklausą",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "Filmų: {total} · pasiekiama: {available}",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Pateikti užklausą dėl {count} filmų",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Pateikiama {current} iš {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Pateikta užklausų dėl {count} filmų",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Pateikta {ok} iš {total} filmų užklausų",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Visi filmai jau pasiekiami arba jų užklausos pateiktos",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Pranešti apie problemą",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Vaizdas",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Garsas",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Kas negerai?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Visos serijos",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Serija",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Atvira",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Išspręsta",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Išspręsti",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Atidaryti iš naujo",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Pranešė {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "Komentarų: {count}",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Pridėti komentarą",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Ištrinti šią problemą?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Pateikti pranešimą",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Rodymas",
+    "adminDrawerMetadata": "Metaduomenys",
+    "adminDrawerNfo": "NFO nustatymai",
+    "adminActivitySeverityAll": "Visi svarbumo lygiai",
+    "adminActivityDateRange": "Datų intervalas",
+    "adminRemoveDeviceConfirm": "Pašalinti įrenginį „{name}“? Naudotojui reikės iš naujo prisijungti šiame įrenginyje.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Ištrinti visus įrenginius",
+    "adminDeleteAllDevicesConfirm": "Pašalinti įrenginius ({count})? Paveiktiems naudotojams reikės prisijungti iš naujo. Jūsų dabartinis įrenginys nebus paveiktas.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Įrenginiai pašalinti",
+    "adminDevicesDeletedPartial": "Kai kurie įrenginiai pašalinti; {count} pašalinti nepavyko.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Keliai",
+    "adminLibraryTabOptions": "Parinktys",
+    "adminLibraryTabDownloaders": "Atsisiuntimo šaltiniai",
+    "adminLibMetadataSavers": "Metaduomenų saugotojai",
+    "adminLibSubtitleDownloaders": "Subtitrų atsisiuntimo šaltiniai",
+    "adminLibLyricDownloaders": "Dainų tekstų atsisiuntimo šaltiniai",
+    "adminLibMetadataDownloadersFor": "Metaduomenų atsisiuntimo šaltiniai: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Vaizdų šaltiniai: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Šis serveris nesiūlo atsisiuntimo šaltinių šio tipo bibliotekai.",
+    "adminLibrarySectionGeneral": "Bendra",
+    "adminLibrarySectionMetadata": "Metaduomenys",
+    "adminLibrarySectionEmbedded": "Įterptoji informacija",
+    "adminLibrarySectionSubtitles": "Subtitrai",
+    "adminLibrarySectionImages": "Vaizdai",
+    "adminLibrarySectionSeries": "Serialai",
+    "adminLibrarySectionMusic": "Muzika",
+    "adminLibrarySectionMovies": "Filmai",
+    "adminLibRealtimeMonitor": "Įjungti stebėjimą realiuoju laiku",
+    "adminLibRealtimeMonitorHint": "Aptikti failų pakeitimus ir apdoroti juos automatiškai.",
+    "adminLibArchiveMediaFiles": "Laikyti archyvus medijos failais",
+    "adminLibEnablePhotos": "Rodyti nuotraukas",
+    "adminLibSaveLocalMetadata": "Įrašyti viršelius į medijos aplankus",
+    "adminLibRefreshInterval": "Automatinis metaduomenų atnaujinimas",
+    "adminLibRefreshNever": "Niekada",
+    "adminLibDefault": "Numatytasis",
+    "adminLibDisplayTitle": "Rodymas",
+    "adminLibDisplaySection": "Bibliotekos rodymas",
+    "adminLibFolderView": "Rodyti aplankų rodinį su paprastais medijos aplankais",
+    "adminLibSpecialsInSeasons": "Rodyti specialiąsias serijas tuose sezonuose, kuriuose jos buvo rodomos",
+    "adminLibGroupMovies": "Grupuoti filmus į rinkinius",
+    "adminLibGroupShows": "Grupuoti serialus į rinkinius",
+    "adminLibExternalSuggestions": "Rodyti išorinį turinį pasiūlymuose",
+    "adminLibDateAddedSection": "Pridėjimo datos veikimas",
+    "adminLibDateAddedLabel": "Pridėjimo datą imti iš",
+    "adminLibDateAddedImport": "Nuskaitymo į biblioteką data",
+    "adminLibDateAddedFile": "Failo sukūrimo data",
+    "adminLibMetadataTitle": "Metaduomenys ir vaizdai",
+    "adminLibMetadataLangSection": "Pageidaujama metaduomenų kalba",
+    "adminLibChaptersSection": "Skyriai",
+    "adminLibDummyChapterDuration": "Fiktyvių skyrių trukmė (sekundėmis)",
+    "adminLibDummyChapterDurationHint": "Skyrių, sugeneruotų medijai, kuri jų neturi, trukmė. Nustatykite 0, kad išjungtumėte.",
+    "adminLibChapterImageResolution": "Skyrių vaizdų raiška",
+    "adminLibNfoTitle": "NFO nustatymai",
+    "adminLibNfoHelp": "NFO metaduomenys suderinami su Kodi ir panašiomis programomis. Nustatymai taikomi visoms bibliotekoms, kurios įrašo NFO metaduomenis.",
+    "adminLibKodiUser": "Naudotojas, kurio žiūrėjimo duomenys bus įrašomi į NFO failus",
+    "adminLibSaveImagePaths": "Įrašyti vaizdų kelius į NFO failus",
+    "adminLibPathSubstitution": "Įjungti NFO vaizdų kelių pakeitimą",
+    "adminLibExtraThumbs": "Kopijuoti extrafanart vaizdus į extrathumbs aplanką",
+    "adminLibNone": "Nėra",
+    "adminLibRefreshDays": "{days} d.",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Naudoti įterptuosius pavadinimus",
+    "adminLibEmbeddedExtrasTitles": "Naudoti įterptuosius priedų pavadinimus",
+    "adminLibEmbeddedEpisodeInfos": "Naudoti įterptąją serijų informaciją",
+    "adminLibAllowEmbeddedSubtitles": "Leisti įterptuosius subtitrus",
+    "adminLibEmbeddedAllowAll": "Leisti visus",
+    "adminLibEmbeddedAllowText": "Tik tekstinius",
+    "adminLibEmbeddedAllowImage": "Tik vaizdinius",
+    "adminLibEmbeddedAllowNone": "Nėra",
+    "adminLibSkipIfEmbeddedSubs": "Praleisti atsisiuntimą, jei yra įterptųjų subtitrų",
+    "adminLibSkipIfAudioMatches": "Praleisti atsisiuntimą, jei garso takelio kalba sutampa su atsisiuntimo kalba",
+    "adminLibRequirePerfectMatch": "Reikalauti tikslaus subtitrų atitikmens",
+    "adminLibSaveSubtitlesWithMedia": "Įrašyti subtitrus į medijos aplankus",
+    "adminLibChapterImageExtraction": "Išgauti skyrių vaizdus",
+    "adminLibChapterImagesDuringScan": "Išgauti skyrių vaizdus nuskaitant biblioteką",
+    "adminLibTrickplayExtraction": "Įjungti Trickplay vaizdų išgavimą",
+    "adminLibTrickplayDuringScan": "Išgauti Trickplay vaizdus nuskaitant biblioteką",
+    "adminLibSaveTrickplayWithMedia": "Įrašyti Trickplay vaizdus į medijos aplankus",
+    "adminLibAutomaticSeriesGrouping": "Automatiškai sujungti serialus, išsklaidytus keliuose aplankuose",
+    "adminLibSeasonZeroName": "Nulinio sezono rodomas pavadinimas",
+    "adminLibLufsScan": "Įjungti LUFS nuskaitymą garsui normalizuoti",
+    "adminLibPreferNonstandardArtist": "Teikti pirmenybę nestandartinei atlikėjų žymai",
+    "adminLibAutoAddToCollection": "Automatiškai pridėti filmus į rinkinius",
+    "adminParentalControl": "Tėvų kontrolė",
+    "adminMaxParentalRating": "Didžiausias leidžiamas amžiaus cenzas",
+    "adminMaxParentalRatingHint": "Aukštesnio cenzo turinys šiam naudotojui bus paslėptas.",
+    "adminParentalRatingNone": "Nėra",
+    "adminBlockUnratedItems": "Blokuoti elementus be cenzo informacijos arba su neatpažinta informacija",
+    "adminUnratedBook": "Knygos",
+    "adminUnratedChannelContent": "Kanalai",
+    "adminUnratedLiveTvChannel": "Tiesioginė TV",
+    "adminUnratedMovie": "Filmai",
+    "adminUnratedMusic": "Muzika",
+    "adminUnratedTrailer": "Anonsai",
+    "adminUnratedSeries": "Serialai",
+    "adminAccessSchedules": "Prieigos tvarkaraščiai",
+    "adminAccessSchedulesHint": "Leisti prieigą tik toliau nurodytu tvarkaraščio laiku. Kai tvarkaraštis nenustatytas, prieiga leidžiama visą parą.",
+    "adminAddSchedule": "Pridėti tvarkaraštį",
+    "adminScheduleDay": "Diena",
+    "adminScheduleStart": "Pradžia",
+    "adminScheduleEnd": "Pabaiga",
+    "adminDayEveryday": "Kasdien",
+    "adminDayWeekday": "Darbo diena",
+    "adminDayWeekend": "Savaitgalis",
+    "adminDaySunday": "Sekmadienis",
+    "adminDayMonday": "Pirmadienis",
+    "adminDayTuesday": "Antradienis",
+    "adminDayWednesday": "Trečiadienis",
+    "adminDayThursday": "Ketvirtadienis",
+    "adminDayFriday": "Penktadienis",
+    "adminDaySaturday": "Šeštadienis",
+    "adminAllowedTags": "Leidžiamos žymos",
+    "adminAllowedTagsHint": "Rodomas tik turinys su šiomis žymomis. Palikite tuščią, kad būtų leidžiama viskas.",
+    "adminBlockedTags": "Blokuojamos žymos",
+    "adminBlockedTagsHint": "Turinys su šiomis žymomis šiam naudotojui bus paslėptas.",
+    "adminAddTag": "Pridėti žymą",
+    "adminEnabledDevices": "Įjungti įrenginiai",
+    "adminEnabledChannels": "Įjungti kanalai",
+    "adminAuthProvider": "Tapatybės nustatymo tiekėjas",
+    "adminPasswordResetProvider": "Slaptažodžio atkūrimo tiekėjas",
+    "adminLoginAttemptsBeforeLockout": "Didžiausias nepavykusių prisijungimų skaičius iki užrakinimo",
+    "adminLoginAttemptsHint": "Nustatykite 0 numatytajai reikšmei arba -1, kad išjungtumėte užrakinimą.",
+    "adminSyncPlayAccess": "SyncPlay prieiga",
+    "adminSyncPlayCreateAndJoin": "Leisti kurti grupes ir prie jų prisijungti",
+    "adminSyncPlayJoin": "Leisti prisijungti prie grupių",
+    "adminSyncPlayNone": "Prieigos nėra",
+    "adminContentDeletionFolders": "Leisti trinti turinį iš",
+    "adminBackupOptionsTitle": "Kurti atsarginę kopiją",
+    "adminBackupInclude": "Pasirinkite, ką įtraukti į atsarginę kopiją.",
+    "adminBackupDatabase": "Duomenų bazė",
+    "adminBackupDatabaseAlways": "Įtraukiama visada",
+    "adminBackupMetadata": "Metaduomenys",
+    "adminBackupSubtitles": "Subtitrai",
+    "adminBackupTrickplay": "Trickplay vaizdai",
+    "adminEditTuner": "Redaguoti imtuvą",
+    "adminTunerTypeM3u": "M3U imtuvas",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Failas arba URL",
+    "adminTunerIpAddress": "Imtuvo IP adresas",
+    "adminTunerFriendlyName": "Patogus pavadinimas",
+    "adminTunerUserAgent": "Naudotojo agentas",
+    "adminTunerCount": "Vienalaikių ryšių limitas",
+    "adminTunerCountHelp": "Didžiausias srautų skaičius, kurį imtuvas leidžia vienu metu. Nustatykite 0, kad būtų neribota.",
+    "adminTunerFallbackBitrate": "Atsarginė didžiausia transliavimo bitų sparta",
+    "adminTunerImportFavoritesOnly": "Importuoti tik mėgstamiausius kanalus",
+    "adminTunerAllowHwTranscoding": "Leisti aparatinį perkodavimą",
+    "adminTunerAllowFmp4": "Leisti fMP4 perkodavimo konteinerį",
+    "adminTunerAllowStreamSharing": "Leisti bendrinti srautą",
+    "adminTunerEnableStreamLooping": "Įjungti srauto kartojimą",
+    "adminTunerIgnoreDts": "Nepaisyti DTS",
+    "adminTunerReadAtNativeFramerate": "Skaityti įvestį natūraliu kadrų dažniu",
+    "adminEditProvider": "Redaguoti tiekėją",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Failas arba URL",
+    "adminXmltvMoviePrefix": "Filmų prefiksas",
+    "adminXmltvMovieCategories": "Filmų kategorijos",
+    "adminXmltvCategoriesHelp": "Kelias kategorijas atskirkite vertikaliu brūkšniu.",
+    "adminXmltvKidsCategories": "Vaikų kategorijos",
+    "adminXmltvNewsCategories": "Naujienų kategorijos",
+    "adminXmltvSportsCategories": "Sporto kategorijos",
+    "adminSdUsername": "Naudotojo vardas",
+    "adminSdPassword": "Slaptažodis",
+    "adminSdCountry": "Šalis",
+    "adminSdCountrySelect": "Pasirinkite šalį",
+    "adminSdPostalCode": "Pašto kodas",
+    "adminSdGetListings": "Gauti sąrašus",
+    "adminSdListings": "Sąrašai",
+    "adminEnableAllTuners": "Įjungti visus imtuvus",
+    "adminTunerResetNotSupported": "Šio tipo imtuvas nepalaiko atstatymo.",
+    "adminMovieRecordingPath": "Filmų įrašymo kelias",
+    "adminGuideDays": "Gido duomenų dienos",
+    "adminGuideDaysAuto": "Automatiškai",
+    "adminGuideDaysValue": "{days} d.",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Papildomo apdorojimo programos kelias",
+    "adminRecordingPostProcessorArgs": "Papildomo apdorojimo argumentai",
+    "adminSaveRecordingNfo": "Įrašyti įrašų NFO metaduomenis",
+    "adminSaveRecordingImages": "Įrašyti įrašų vaizdus",
+    "adminLiveTvSectionTiming": "Laikas",
+    "adminLiveTvSectionPaths": "Įrašymo keliai",
+    "adminLiveTvSectionPostProcessing": "Papildomas apdorojimas",
+    "adminGuideDaysDisplay": "Gido duomenys: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Atnaujinti gido duomenis",
+    "adminGuideRefreshStarted": "Pradėtas gido duomenų atnaujinimas",
+    "adminGuideRefreshUnavailable": "Gido atnaujinimo užduotis šiame serveryje nepasiekiama.",
+    "adminMetadataIdentify": "Identifikuoti",
+    "adminBrandingSplashUpload": "Įkelti vaizdą",
+    "adminBrandingSplashUploaded": "Pasveikinimo ekranas atnaujintas",
+    "adminBrandingSplashUploadFailed": "Nepavyko įkelti pasveikinimo ekrano",
+    "adminBrandingSplashDeleted": "Pasveikinimo ekranas pašalintas",
+    "adminBrandingNoSplash": "Pasirinktinio pasveikinimo ekrano nėra",
+    "adminPlaybackQsvDevice": "QSV įrenginys",
+    "adminPlaybackEnhancedNvdec": "Įjungti patobulintą NVDEC dekoderį",
+    "adminPlaybackPreferNativeDecoder": "Teikti pirmenybę sistemos aparatiniam dekoderiui",
+    "adminPlaybackColorDepth": "Aparatinio dekodavimo spalvų gylis",
+    "adminPlaybackColorDepth10Hevc": "10 bitų HEVC dekodavimas",
+    "adminPlaybackColorDepth10Vp9": "10 bitų VP9 dekodavimas",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10 bitų dekodavimas",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12 bitų dekodavimas",
+    "adminPlaybackHwEncodingSection": "Aparatinis kodavimas",
+    "adminPlaybackAllowHevcEncoding": "Leisti HEVC kodavimą",
+    "adminPlaybackAllowAv1Encoding": "Leisti AV1 kodavimą",
+    "adminPlaybackIntelLowPowerH264": "Įjungti Intel mažos galios H.264 koduotuvą",
+    "adminPlaybackIntelLowPowerHevc": "Įjungti Intel mažos galios HEVC koduotuvą",
+    "adminPlaybackToneMapping": "Tonų atvaizdavimas",
+    "adminPlaybackEnableTonemapping": "Įjungti tonų atvaizdavimą",
+    "adminPlaybackEnableVppTonemapping": "Įjungti VPP tonų atvaizdavimą",
+    "adminPlaybackEnableVtTonemapping": "Įjungti VideoToolbox tonų atvaizdavimą",
+    "adminPlaybackTonemappingAlgorithm": "Tonų atvaizdavimo algoritmas",
+    "adminPlaybackTonemappingMode": "Tonų atvaizdavimo režimas",
+    "adminPlaybackTonemappingRange": "Tonų atvaizdavimo diapazonas",
+    "adminPlaybackTonemappingDesat": "Tonų atvaizdavimo sodrumo mažinimas",
+    "adminPlaybackTonemappingPeak": "Tonų atvaizdavimo pikas",
+    "adminPlaybackTonemappingParam": "Tonų atvaizdavimo parametras",
+    "adminPlaybackVppTonemappingBrightness": "VPP tonų atvaizdavimo ryškumas",
+    "adminPlaybackVppTonemappingContrast": "VPP tonų atvaizdavimo kontrastas",
+    "adminPlaybackPresetsQuality": "Šablonai ir kokybė",
+    "adminPlaybackEncoderPreset": "Koduotuvo šablonas",
+    "adminPlaybackH264Crf": "H.264 kodavimo CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) kodavimo CRF",
+    "adminPlaybackDeinterlaceMethod": "Eilučių išpynimo metodas",
+    "adminPlaybackDeinterlaceDoubleRate": "Dvigubinti kadrų dažnį išpinant eilutes",
+    "adminPlaybackAudioSection": "Garsas",
+    "adminPlaybackEnableAudioVbr": "Įjungti garso VBR kodavimą",
+    "adminPlaybackDownmixBoost": "Garso sumaišymo stiprinimas",
+    "adminPlaybackDownmixAlgorithm": "Stereo sumaišymo algoritmas",
+    "adminPlaybackMaxMuxingQueue": "Didžiausias multipleksavimo eilės dydis",
+    "adminPlaybackAutoOption": "Automatiškai",
+    "adminRunningTasks": "Vykdomos užduotys",
+    "adminNetworkingPublicHttpPort": "Viešasis HTTP prievadas",
+    "adminNetworkingRequireHttps": "Reikalauti HTTPS",
+    "adminNetworkingRequireHttpsHint": "Nukreipti visas nuotolines užklausas į HTTPS. Neveikia, jei serveris neturi galiojančio sertifikato.",
+    "adminNetworkingCertPassword": "Sertifikato slaptažodis",
+    "adminNetworkingIpSettings": "IP nustatymai",
+    "adminNetworkingEnableIpv4": "Įjungti IPv4",
+    "adminNetworkingEnableIpv6": "Įjungti IPv6",
+    "adminNetworkingAutoDiscovery": "Įjungti automatinį prievadų susiejimą",
+    "adminNetworkingLocalSubnets": "LAN tinklai",
+    "adminNetworkingLocalSubnetsHint": "Kableliais arba naujomis eilutėmis atskirtų IP adresų ar CIDR potinklių sąrašas, laikomas vietiniu tinklu.",
+    "adminNetworkingPublishedUris": "Paskelbti serverio URI",
+    "adminNetworkingPublishedUriHint": "Susiekite potinklį ar adresą su paskelbtu URL, pvz. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Ribojimo delsa (sekundėmis)",
+    "adminPlaybackEnableSubtitleExtraction": "Leisti išgauti subtitrus realiuoju laiku",
+    "adminGeneralEnableSlowResponse": "Įjungti įspėjimus apie lėtą atsaką",
+    "adminGeneralQuickConnect": "Įjungti Quick Connect",
+    "adminGeneralSectionServer": "Serveris",
+    "adminGeneralSectionMetadata": "Metaduomenys",
+    "adminGeneralSectionPaths": "Keliai",
+    "adminGeneralSectionPerformance": "Našumas",
+    "adminGeneralDisplayLanguage": "Pageidaujama rodymo kalba",
+    "offlineBannerTitle": "Esate neprisijungę",
+    "offlineBannerSubtitle": "Rodomi jūsų atsisiuntimai",
+    "offlineBannerAction": "Atsisiuntimai",
+    "serverUnreachableBannerTitle": "Nepavyksta pasiekti serverio",
+    "serverUnreachableBannerSubtitle": "Kol serveris neveikia, leidžiama iš atsisiuntimų",
+    "contextMenuHideFromContinueWatching": "Slėpti iš „Tęsti žiūrėjimą“",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Slėpti iš „Toliau“",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Pridėti į rinkinį",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "RYŠYS",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Leisti savarankiškai pasirašytus sertifikatus",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Pasitikėti serveriais, naudojančiais savarankiškai pasirašytus arba privačios CA TLS sertifikatus. Įjunkite tik savo valdomiems serveriams. Tai išjungia sertifikatų tikrinimą visiems ryšiams.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Išsamios informacijos ekranas",
+    "settingsDetailsScreenSubtitle": "Stilius, fono suliejimas ir skirtukų veikimas",
+    "settingsShowSeerrButtonInNavigation": "Rodyti Seerr mygtuką naršymo juostoje",
+    "settingsAlwaysExpandNavbarLabels": "Visada rodyti tekstinius pavadinimus viršutinėje naršymo juostoje",
+    "settingsMediaSegmentCountdown": "Medijos segmento atgalinis skaičiavimas",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Eigos juosta",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Laikmatis",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Nėra",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Neseniai išleista: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Įjungti tuneliavimą",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Išplėstinis. Nukreipia garsą ir vaizdą per susietą aparatinį kelią. Pagal numatytuosius nustatymus išjungta, nes kai kuriuose įrenginiuose sukelia garso ir vaizdo trikdžius.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Rodyti medijos informaciją",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Rodyti pasirinkto elemento informaciją bibliotekos puslapių viršuje.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Slėpti fono vaizdus naršant?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Temų parduotuvė",
+    "themeStoreSubtitle": "Naršykite ir išsaugokite bendruomenės temas",
+    "themeStoreDescription": "Išsaugokite temą, kad galėtumėte ją naudoti kaip ir kitas išsaugotas temas.",
+    "themeStoreEmpty": "Šiuo metu temų nėra.",
+    "themeStoreLoadFailed": "Nepavyko įkelti temų parduotuvės. Patikrinkite ryšį ir bandykite dar kartą.",
+    "themeStoreSave": "Išsaugoti",
+    "themeStoreSaveAndApply": "Išsaugoti ir taikyti",
+    "themeStoreSaved": "Išsaugota",
+    "themeStoreInvalidMessage": "Šios temos įkelti nepavyko.",
+    "themeStoreSavedMessage": "Išsaugota „{themeName}“.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Pradžios ekrano eilučių rodymas",
+    "homeRowSections": "Pradžios ekrano eilučių skiltys",
+    "homeRowToggles": "Pradžios ekrano eilučių jungikliai",
+    "homeRowTogglesSubtitle": "Įjunkite arba išjunkite bibliotekomis pagrįstas pradžios ekrano eilučių kategorijas",
+    "homeRowTogglesDescription": "Įjunkite toliau esančius jungiklius, kad eilutės būtų rodomos pradžios ekrano skiltyse.",
+    "displayPlaylistsRows": "Rodyti grojaraščių eilutes",
+    "displayPlaylistsRowsSubtitle": "Rodyti grojaraščių eilutes pradžios ekrano skiltyse.",
+    "playlistsRowSorting": "Grojaraščių eilučių rikiavimas",
+    "playlistsRowSortingDescription": "Rikiuokite grojaraščių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.",
+    "displayAudioRows": "Rodyti garso eilutes",
+    "displayAudioRowsSubtitle": "Rodyti garso eilutes pradžios ekrano skiltyse.",
+    "audioRowsSorting": "Garso eilučių rikiavimas",
+    "audioRowsSortingDescription": "Rikiuokite garso eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.",
+    "audioPlaylists": "Garso grojaraščiai",
+    "layout": "Išdėstymas",
+    "theme": "Tema",
+    "keyboard": "Klaviatūra",
+    "navButtons": "Mygtukai",
+    "rendering": "Atvaizdavimas",
+    "mpvConfiguration": "MPV konfigūracija",
+    "externalPlayerAppDescription": "Nustatykite išorinę leistuvę, kad įjungtumėte paleidimą ilgai spaudžiant",
+    "crewContributionsSeerr": "Kūrybinės grupės darbai (Seerr)",
+    "changeArtwork": "Keisti viršelį",
+    "missing": "Trūksta",
+    "clearAllArtworkButton": "Išvalyti visus viršelius?",
+    "clearAllArtworkWarning": "Ar tikrai norite išvalyti visus atsisiųstus viršelius?",
+    "confirmClear": "Patvirtinti išvalymą",
+    "confirmClearMessage": "Ar tikrai norite išvalyti šį elementą: {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Įkelti?",
+    "resolutionLabel": "Raiška: ",
+    "onlyShowInterfaceLanguage": "Rodyti tik sąsajos kalbos viršelius",
+    "confirmClearAll": "Patvirtinti visų išvalymą",
+    "imageUploadSuccess": "Vaizdas sėkmingai įkeltas!",
+    "imageUploadFailed": "Nepavyko įkelti vaizdo: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Nepavyko nustatyti vaizdo: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Nepavyko ištrinti vaizdo: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Nepavyko išvalyti visų viršelių: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Taip",
+    "posterCategory": "Plakatas",
+    "backdropsCategory": "Fono vaizdai",
+    "bannerCategory": "Reklamjuostė",
+    "logoCategory": "Logotipas",
+    "thumbnailCategory": "Miniatiūra",
+    "artCategory": "Grafika",
+    "discArtCategory": "Disko grafika",
+    "screenshotCategory": "Ekrano kopija",
+    "boxCoverCategory": "Dėžutės viršelis",
+    "boxRearCoverCategory": "Dėžutės galinis viršelis",
+    "menuArtCategory": "Meniu grafika",
+    "confirmItemPoster": "plakatas",
+    "confirmItemBackdrop": "fono vaizdas",
+    "confirmItemBanner": "reklamjuostė",
+    "confirmItemLogo": "logotipas",
+    "confirmItemThumbnail": "miniatiūra",
+    "confirmItemArt": "grafika",
+    "confirmItemDiscArt": "disko grafika",
+    "confirmItemScreenshot": "ekrano kopija",
+    "confirmItemBoxCover": "dėžutės viršelis",
+    "confirmItemBoxRearCover": "dėžutės galinis viršelis",
+    "confirmItemMenuArt": "meniu grafika",
+    "resolutionAll": "Visos",
+    "resolutionHigh": "Aukšta (1080p+)",
+    "resolutionMedium": "Vidutinė (720p)",
+    "resolutionLow": "Žema (<720p)",
+    "sources": "Šaltiniai",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Skyriai",
+    "audiobookBookmarks": "Žymės",
+    "audiobookNotes": "Pastabos",
+    "audiobookQueue": "Eilė",
+    "audiobookTimeline": "Laiko juosta",
+    "audiobookTimelineEmpty": "Laiko juosta tuščia",
+    "audiobookWholeBook": "Visa knyga",
+    "audiobookFocusedTimeline": "Sutelkta laiko juosta",
+    "audiobookExportBookmarks": "Eksportuoti žymes",
+    "audiobookExportNotes": "Eksportuoti pastabas",
+    "audiobookExportAll": "Eksportuoti viską",
+    "audiobookExportSuccess": "Eksportuota į {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Eksportuoti nepavyko: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Dainų tekstai",
+    "audiobookAddBookmark": "Pridėti žymę",
+    "audiobookAddNote": "Pridėti pastabą",
+    "audiobookEditNote": "Redaguoti pastabą",
+    "audiobookNoteHint": "Parašykite pastabą šiai akimirkai",
+    "audiobookSleepTimer": "Miego laikmatis",
+    "audiobookSleepOff": "Išjungta",
+    "audiobookSleepEndOfChapter": "Skyriaus pabaigoje",
+    "audiobookSleepCustom": "Pasirinktinis",
+    "audiobookSleepRemaining": "Liko {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Atkūrimo greitis",
+    "audiobookRemainingTime": "Liko",
+    "audiobookElapsedTime": "Praėjo",
+    "audiobookSkipBackSeconds": "Atgal {seconds} s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Pirmyn {seconds} s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Ankstesnis skyrius",
+    "audiobookNextChapter": "Kitas skyrius",
+    "audiobookChapterIndicator": "{current} skyrius iš {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Skyrių nėra",
+    "audiobookNoBookmarks": "Žymių dar nėra",
+    "audiobookNoNotes": "Pastabų dar nėra",
+    "audiobookBookmarkAdded": "Žymė pridėta ties {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Atstatyti į 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Išsaugoti",
+    "audiobookCancel": "Atšaukti",
+    "audiobookDelete": "Ištrinti",
+    "subtitlePreferences": "Subtitrų nuostatos",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Keiskite subtitrų režimus, numatytąsias kalbas, išvaizdą ir atvaizdavimo parinktis.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Subtitrų atvaizdavimas",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Rodymo parinktys",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Išleidimo data (didėjančiai)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Išleidimo data (mažėjančiai)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Grupuoti darbus",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Grupuoti kelis vaidmenis",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Įspėjimas apie bibliotekos rašymo teises",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Kaip tai ištaisyti:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Suteikite Jellyfin tarnybos naudotojui (pvz., jellyfin arba Docker PUID/PGID) rašymo teises į serveryje esančius medijos bibliotekos aplankus.\n\n2. Arba eikite į Jellyfin valdymo skydelį -> Bibliotekos, redaguokite šią biblioteką ir išjunkite parinktį „Įrašyti viršelius į medijos aplankus“, kad viršeliai būtų saugomi vidinėje Jellyfin duomenų bazėje.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Atmesti",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Jūsų biblioteka „{libraryName}“ sukonfigūruota įrašyti viršelius tiesiai į medijos aplankus (įjungta parinktis „Įrašyti viršelius į medijos aplankus“). Tačiau Jellyfin patikrino rašymo teises ir neturi leidimo įrašyti failų į šį katalogą:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Panašu, kad Jellyfin nepavyko atnaujinti viršelio. Jūsų biblioteka sukonfigūruota įrašyti viršelius tiesiai į medijos aplankus (įjungta parinktis „Įrašyti viršelius į medijos aplankus“). Ši klaida paprastai atsiranda, kai Jellyfin serverio procesas neturi leidimo įrašyti failų į jūsų medijos katalogus.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Išoriniai sąrašai",
+    "replay": "Paleisti iš naujo",
+    "fileInformation": "Failo informacija",
+    "fileSizeFormat": "Dydis: {size}  •  Formatas: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Rodyti visus garso takelius ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Rodyti visus subtitrų takelius ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Tikrinama tiesioginio atkūrimo galimybė...",
+    "directPlayCapabilityLabel": "Tiesioginio atkūrimo galimybė: ",
+    "forced": "Priverstiniai",
+    "transcodeContainerNotSupported": "Leistuvė nepalaiko konteinerio formato.",
+    "transcodeVideoCodecNotSupported": "Vaizdo kodekas nepalaikomas.",
+    "transcodeAudioCodecNotSupported": "Garso kodekas nepalaikomas.",
+    "transcodeSubtitleCodecNotSupported": "Subtitrų formatas nepalaikomas (reikia įdeginti).",
+    "transcodeAudioProfileNotSupported": "Garso profilis nepalaikomas.",
+    "transcodeVideoProfileNotSupported": "Vaizdo profilis nepalaikomas.",
+    "transcodeVideoLevelNotSupported": "Vaizdo lygis nepalaikomas.",
+    "transcodeVideoResolutionNotSupported": "Šis įrenginys nepalaiko vaizdo raiškos.",
+    "transcodeVideoBitDepthNotSupported": "Vaizdo bitų gylis nepalaikomas.",
+    "transcodeVideoFramerateNotSupported": "Vaizdo kadrų dažnis nepalaikomas.",
+    "transcodeContainerBitrateExceedsLimit": "Failo bitų sparta viršija leistuvės transliavimo limitą.",
+    "transcodeVideoBitrateExceedsLimit": "Vaizdo bitų sparta viršija transliavimo limitą.",
+    "transcodeAudioBitrateExceedsLimit": "Garso bitų sparta viršija transliavimo limitą.",
+    "transcodeAudioChannelsNotSupported": "Garso kanalų skaičius nepalaikomas.",
+    "sortAlphabetical": "Pagal abėcėlę",
+    "sortReleaseAscending": "Išleidimo tvarka (didėjančiai)",
+    "sortReleaseDescending": "Išleidimo tvarka (mažėjančiai)",
+    "sortCustomDragDrop": "Pasirinktinė (vilkimu)",
+    "playlistSortOptions": "Grojaraščio rikiavimo parinktys",
+    "resetSort": "Atstatyti rikiavimą",
+    "rewatchSeasonEpisode": "Žiūrėti iš naujo S{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Žiūrėti grojaraštį iš naujo",
+    "noSubtitlesFound": "Subtitrų nerasta.",
+    "adminControls": "Administratoriaus valdikliai",
+    "impellerRendering": "Atvaizdavimo variklis (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller – modernus Flutter GPU atvaizdavimo variklis, užtikrinantis sklandesnes animacijas ir mažiau trūkčiojimų. Kai kuriuose TV priedėliuose ir senesniuose GPU jis gali sukelti trikdžius ar juodą vaizdą; tokiu atveju jį išjunkite. „Automatinis“ parenka geriausią numatytąjį variantą jūsų įrenginiui. Kad pakeitimai įsigaliotų, paleiskite Moonfin iš naujo.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automatinis",
+    "impellerOn": "Įjungta",
+    "impellerOff": "Išjungta",
+    "impellerRestartTitle": "Reikia paleisti iš naujo",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Kad būtų pakeistas atvaizdavimo variklis, Moonfin reikia paleisti iš naujo. Uždarykite programą dabar ir vėl ją atidarykite.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Uždaryti programą dabar",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Atnaujinti biblioteką",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Atnaujinti visas bibliotekas",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Pridėjimo data (nuo seniausių)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Pridėjimo data (nuo naujausių)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Pagal abėcėlę (A–Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Pagal abėcėlę (Z–A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Įkeliama serverio analitika... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Kaip šaltinio",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb 250 geriausių filmų",
+    "imdbTop250TvShows": "IMDb 250 geriausių serialų",
+    "imdbMostPopularMovies": "IMDb populiariausi filmai",
+    "imdbMostPopularTvShows": "IMDb populiariausi serialai",
+    "imdbLowestRatedMovies": "IMDb prasčiausiai vertinami filmai",
+    "imdbTopEnglishMovies": "IMDb geriausiai vertinami filmai anglų kalba"
 }

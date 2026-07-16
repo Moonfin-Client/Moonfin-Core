@@ -1,6 +1,6 @@
 {
     "@@locale": "af",
-    "appTitle": "Maanvin",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Vinnige verbinding",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Maanvin",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Reeks",
+    "series": "Reekse",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Doen aansoek",
+    "apply": "Pas toe",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -770,7 +770,7 @@
             }
         }
     },
-    "folder": "Folder",
+    "folder": "Vouer",
     "@folder": {
         "description": "Fallback subtitle for navigable folder items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 oudioboek} other{{count} oudioboeke}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,7 +935,7 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Vee uit",
+    "delete": "Skrap",
     "@delete": {
         "description": "Delete action button label"
     },
@@ -947,7 +947,7 @@
     "@moreLikeThis": {
         "description": "Section header for similar items"
     },
-    "castAndCrew": "Cast & Crew",
+    "castAndCrew": "Rolverdeling en span",
     "@castAndCrew": {
         "description": "Section header for cast and crew section"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Seisoen} other{{count} Seisoene}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1111,7 +1111,7 @@
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Sleepwa",
+    "trailer": "Lokprent",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 snit} other{{count} snitte}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 hoofstuk} other{{count} hoofstukke}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "Pouse",
+    "pause": "Onderbreek",
     "@pause": {
         "description": "Pause action label"
     },
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "Stel terug",
+    "reset": "Herstel",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Spoor",
+    "track": "Snit",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1866,7 +1866,7 @@
     "@audioBitrate": {
         "description": "Stream info label for audio bitrate"
     },
-    "sampleRate": "Sample Rate",
+    "sampleRate": "Monsterkoers",
     "@sampleRate": {
         "description": "Stream info label for audio sample rate"
     },
@@ -2742,7 +2742,7 @@
     "@inMenus": {
         "description": "Option: show in menus"
     },
-    "inVideo": "In Video",
+    "inVideo": "In video",
     "@inVideo": {
         "description": "Option: show in video"
     },
@@ -2828,7 +2828,7 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Auto Crop",
+    "autoCrop": "Outo-snoei",
     "@autoCrop": {
         "description": "Zoom mode: auto crop"
     },
@@ -2924,7 +2924,7 @@
     "@korean": {
         "description": "Language: Korean"
     },
-    "chinese": "Chinese",
+    "chinese": "Sjinees",
     "@chinese": {
         "description": "Language: Chinese"
     },
@@ -3221,7 +3221,7 @@
     "@global": {
         "description": "Profile: global"
     },
-    "desktop": "Desktop",
+    "desktop": "Rekenaar",
     "@desktop": {
         "description": "Profile: desktop"
     },
@@ -3392,7 +3392,7 @@
     "@navigationStyle": {
         "description": "Setting for navigation style"
     },
-    "topBar": "Top Bar",
+    "topBar": "Boonste balk",
     "@topBar": {
         "description": "Navigation style: top bar"
     },
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Maanvin",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3609,7 +3609,7 @@
     "@noneExcluded": {
         "description": "Label when no genres are excluded"
     },
-    "autoAdvance": "Auto Advance",
+    "autoAdvance": "Outo-wissel",
     "@autoAdvance": {
         "description": "Setting for auto advance"
     },
@@ -3617,7 +3617,7 @@
     "@autoAdvanceSlides": {
         "description": "Description for auto advance"
     },
-    "autoAdvanceInterval": "Auto Advance Interval",
+    "autoAdvanceInterval": "Outo-wisselinterval",
     "@autoAdvanceInterval": {
         "description": "Setting for auto advance interval"
     },
@@ -3653,7 +3653,7 @@
     "@recentlyReleased": {
         "description": "Home section: recently released"
     },
-    "myMedia": "My Media",
+    "myMedia": "My media",
     "@myMedia": {
         "description": "Home section: my media"
     },
@@ -3728,10 +3728,6 @@
     "lastUser": "Laaste gebruiker",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Spesifieke gebruiker",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Verifieer altyd",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Inprop",
+    "pluginLabel": "Moonbase-inprop",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4015,7 +4011,7 @@
     "@recentlyAdded": {
         "description": "Seerr row: recently added"
     },
-    "trending": "Trending",
+    "trending": "Tans gewild",
     "@trending": {
         "description": "Seerr row: trending"
     },
@@ -4031,7 +4027,7 @@
     "@upcomingMovies": {
         "description": "Seerr row: upcoming movies"
     },
-    "studios": "Studios",
+    "studios": "Ateljees",
     "@studios": {
         "description": "Seerr row: studios"
     },
@@ -4055,7 +4051,7 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "Aktiveer Siener",
+    "enableSeerr": "Aktiveer Seerr",
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Ontdek rye",
+    "discoverRows": "Seerr-ontdekkingsbladsy",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Sleep om te herrangskik. Aktiveer of deaktiveer rye. Geaktiveerde ryvolgorde sinchroniseer met die Moonfin-inprop.",
+    "discoverRowsDescriptionPlugin": "Aktiveer rye om op die Seerr-hoofblad te sien. Sleep om te herrangskik. Pasgemaakte volgorde sinkroniseer met Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Sleep om te herrangskik. Aktiveer of deaktiveer rye.",
+    "discoverRowsDescription": "Aktiveer rye om op die Seerr-hoofblad te sien. Sleep om te herrangskik. Pasgemaakte volgorde sinkroniseer met Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Duidelik",
+    "clear": "Vee uit",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4281,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Siener-instellings",
+    "seerrSettings": "Seerr-instellings",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4548,7 +4544,7 @@
     "profile": "Profiel",
     "provider": "Verskaffer",
     "refresh": "Verfris",
-    "remote": "Afgeleë",
+    "remote": "Afstandsbeheer",
     "rename": "Hernoem",
     "revoke": "Herroep",
     "role": "Rol",
@@ -4563,7 +4559,7 @@
     "stop": "Stop",
     "streaming": "Stroom",
     "time": "Tyd",
-    "trickplay": "Truukspel",
+    "trickplay": "Trickplay",
     "uninstall": "Deïnstalleer",
     "up": "Op",
     "update": "Dateer op",
@@ -4571,7 +4567,7 @@
     "unmute": "Ontdemp",
     "mute": "Demp",
     "branding": "Handelsmerk",
-    "adminDrawerDashboard": "Dashboard",
+    "adminDrawerDashboard": "Kontrolepaneel",
     "adminDrawerAnalytics": "Ontleding",
     "adminDrawerSettings": "Instellings",
     "adminDrawerBranding": "Handelsmerk",
@@ -4580,13 +4576,13 @@
     "adminDrawerTranscoding": "Transkodering",
     "adminDrawerResume": "Hervat",
     "adminDrawerStreaming": "Stroom",
-    "adminDrawerTrickplay": "Truukspel",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Toestelle",
     "adminDrawerActivity": "Aktiwiteit",
     "adminDrawerNetworking": "Netwerk",
     "adminDrawerApiKeys": "API-sleutels",
     "adminDrawerBackups": "Rugsteun",
-    "adminDrawerLogs": "Logs",
+    "adminDrawerLogs": "Logboeke",
     "adminDrawerScheduledTasks": "Geskeduleerde take",
     "adminDrawerPlugins": "Inproppe",
     "adminDrawerRepositories": "Bewaarplekke",
@@ -4632,7 +4628,7 @@
     "analyticsVideoCodecs": "Video-kodeks",
     "analyticsAudioCodecs": "Oudio-kodeks",
     "analyticsContainers": "Houers",
-    "analyticsTopGenres": "Top Genres",
+    "analyticsTopGenres": "Topgenres",
     "analyticsReleaseYears": "Vrystellingsjare",
     "analyticsContentRatings": "Inhoudgraderings",
     "analyticsRuntimeBuckets": "Runtime Emmers",
@@ -4684,7 +4680,7 @@
     "actions": "Aksies",
     "videoCodec": "Video-kodek",
     "audioCodec": "Oudio-kodek",
-    "hwAccel": "HW Accel",
+    "hwAccel": "HW-versnelling",
     "completion": "Voltooiing",
     "direct": "Direkte",
     "adminDisconnect": "Ontkoppel",
@@ -5369,7 +5365,7 @@
     "adminFallbackFontPath": "Terugval font pad",
     "adminAllowSegmentDeletion": "Laat segmentuitvee toe",
     "adminSegmentKeepSeconds": "Segment hou (sekondes)",
-    "adminThrottleBuffering": "Throttle buffering",
+    "adminThrottleBuffering": "Beperk buffering",
     "adminTrickplaySaved": "Trickplay-instellings gestoor",
     "adminTrickplayLoadFailed": "Kon nie trickplay-instellings laai nie",
     "adminEnableHardwareAcceleration": "Aktiveer hardewareversnelling",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS-poort",
     "adminPublicHttpsPort": "Openbare HTTPS-poort",
     "adminBaseUrl": "Basis URL",
-    "adminBaseUrlHint": "bv. /jellietjie",
+    "adminBaseUrlHint": "bv. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Aktiveer HTTPS",
     "adminLocalNetwork": "Plaaslike netwerk",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Soek afgeleë persoon",
     "adminNoRemoteMatches": "Geen afstandpassings gevind nie",
     "adminRemoteResults": "Afgeleë resultate",
     "adminRemoteMetadataApplied": "Afgeleë metadata toegepas",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Voeg Tuner by",
     "adminTunerType": "Tuner Tipe",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Ander",
-    "adminUrlPath": "URL / Pad",
-    "adminNameOptional": "Naam (opsioneel)",
     "adminTunerAdded": "Tuner bygevoeg",
     "adminTunerAddFailed": "Kon nie ontvanger byvoeg nie: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Voeg gidsverskaffer by",
     "adminProviderType": "Verskaffer tipe",
-    "adminProviderTypeHint": "SkedulesDirect of XMLTV",
-    "adminUsernameOptional": "Gebruikersnaam (opsioneel)",
-    "adminRefreshInterval": "Herlaai interval (ure)",
     "adminProviderAdded": "Verskaffer bygevoeg",
     "adminProviderAddFailed": "Kon nie verskaffer byvoeg nie: {error}",
     "@adminProviderAddFailed": {
@@ -5658,7 +5647,7 @@
             }
         }
     },
-    "adminTunerDiscovery": "Tuner Discovery",
+    "adminTunerDiscovery": "Tuner-ontdekking",
     "adminChannelMappings": "Kanaalkaarte",
     "adminNoDiscoveredTuners": "Nog geen tuners ontdek nie",
     "adminSettingsSaved": "Instellings gestoor",
@@ -5680,9 +5669,9 @@
     "adminUnnamedBackup": "Naamlose rugsteun",
     "adminLiveTvNotAvailable": "Regstreekse TV-administrasie is nie beskikbaar op hierdie bedienerbou nie.",
     "adminLiveTvTitle": "Regstreekse TV-administrasie",
-    "adminApply": "Doen aansoek",
+    "adminApply": "Pas toe",
     "adminNotSet": "Nie gestel nie",
-    "adminReset": "Stel terug",
+    "adminReset": "Herstel",
     "adminLogsTitle": "Bediener logs",
     "adminLogsNewestFirst": "Nuutste Eerste",
     "adminLogsOldestFirst": "Oudste Eerste",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Geen ooreenstemmende lyne nie",
     "adminMetadataEditorTitle": "Metadata-redigeerder",
-    "adminMetadataRemote": "Afgeleë",
     "adminMetadataType": "Tik",
     "adminMetadataDetails": "Besonderhede",
     "adminMetadataExternalIds": "Eksterne ID's",
@@ -5747,7 +5735,7 @@
     "adminMetadataFieldOverview": "Oorsig",
     "adminMetadataGenres": "Genres",
     "adminMetadataTags": "Merkers",
-    "adminMetadataStudios": "Studios",
+    "adminMetadataStudios": "Ateljees",
     "adminMetadataPeople": "Mense",
     "adminMetadataAddGenre": "Voeg genre by",
     "adminMetadataAddTag": "Voeg merker by",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Elke 12 uur",
     "adminTaskTriggerEvery24Hours": "Elke 24 uur",
     "adminTaskTriggerEvery2Days": "Elke 2 dae",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 uur} other{{count} ure}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}u",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}/{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6118,7 +6106,7 @@
     "adminTrickplayDescription": "Stel trickplay-beeldgenerering op vir soekvoorskou-kleinkiekies.",
     "adminNetworkingPublicHttpsPort": "Openbare HTTPS-poort",
     "adminNetworkingBaseUrl": "Basis URL",
-    "adminNetworkingBaseUrlHint": "bv. /jellietjie",
+    "adminNetworkingBaseUrlHint": "bv. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Sertifikaat pad",
     "adminNetworkingRemoteIpFilter": "Afgeleë IP-filter",
@@ -6128,7 +6116,7 @@
     "adminPlaybackTranscodeTempPath": "Transkodering temp pad",
     "adminPlaybackSegmentDeletion": "Laat segmentuitvee toe",
     "adminPlaybackSegmentKeep": "Segment hou (sekondes)",
-    "adminPlaybackThrottleBuffering": "Throttle buffering",
+    "adminPlaybackThrottleBuffering": "Beperk buffering",
     "adminResumeMinPct": "Minimum hervat persentasie",
     "adminResumeMinPctSubtitle": "Inhoud moet verby hierdie persentasie gespeel word om vordering te bespaar",
     "adminResumeMaxPct": "Maksimum hervat persentasie",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay vereis 'n Jellyfin-bediener. Die huidige bediener ondersteun dit nie.",
     "syncPlayGroupFallbackName": "SyncPlay Groep",
     "syncPlayGroupTooltip": "SyncPlay-groep",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# deelnemer} other {# deelnemers}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Onthou my keuse",
     "playHdr10Fallback": "Speel HDR10 terugval",
     "requestTranscode": "Versoek transkodeer",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# ry ontdek} other {# rye ontdek}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Verkeerde PIN",
     "pinMismatch": "PIN's stem nie ooreen nie",
     "pinForgot": "PIN vergeet?",
-    "pinClear": "Duidelik",
-    "pinBackspace": "Backspace",
+    "pinClear": "Vee uit",
+    "pinBackspace": "Terugvee",
     "quickConnectAuthorized": "Quick Connect-versoek gemagtig.",
     "quickConnectInvalidOrExpired": "Quick Connect-kode is ongeldig of het verval.",
-    "quickConnectNotSupported": "Vinnige verbinding word nie op hierdie bediener ondersteun nie.",
+    "quickConnectNotSupported": "Quick Connect word nie op hierdie bediener ondersteun nie.",
     "quickConnectAuthorizeFailed": "Kon nie Quick Connect-kode magtig nie.",
-    "quickConnectDisabled": "Vinnige verbinding is op hierdie bediener gedeaktiveer.",
+    "quickConnectDisabled": "Quick Connect is op hierdie bediener gedeaktiveer.",
     "quickConnectForbidden": "Jou rekening kan nie hierdie Quick Connect-versoek magtig nie.",
     "quickConnectNotFound": "Quick Connect-kode is nie gevind nie. Probeer 'n nuwe kode.",
-    "quickConnectFailedWithMessage": "Vinnige verbinding het misluk: {message}",
+    "quickConnectFailedWithMessage": "Quick Connect het misluk: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Kyk vir opdaterings",
     "settingsCheckForUpdatesSubtitle": "Kyk vir die nuutste Moonfin-vrystelling",
     "settingsPoweredByFlutter": "Aangedryf deur Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# lisensiekennisgewing} other {# lisensiekennisgewings}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Rekord",
+    "record": "Neem op",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "Oudio-terugvalkodek",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Deurloop (Gevorderd)",
     "@settingsAudioPassthroughAdvanced": {
@@ -7153,7 +7129,7 @@
     "webDiagnosticsWebRtcScan": "WebRTC-skandering",
     "webDiagnosticsForcedServerUrl": "Geforseerde bediener-URL",
     "webDiagnosticsDefaultServerUrl": "Verstek bediener URL",
-    "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
+    "webDiagnosticsDiscoveryProxyUrl": "URL vir ontdekkingsproksi",
     "notConfigured": "nie gekonfigureer nie",
     "webDiagnosticsMixedContent": "Gemengde inhoud",
     "webDiagnosticsMixedContentDetected": "Hierdie bladsy word oor HTTPS gelaai, maar een of meer gekonfigureerde URL's is HTTP. Blaaiers blokkeer HTTPS-bladsye om HTTP API's te roep.",
@@ -7182,7 +7158,7 @@
     "openIosRoutePicker": "Maak iOS-roetekieser oop",
     "airPlayRoutePickerUnavailable": "AirPlay roetekieser is nie op hierdie toestel beskikbaar nie.",
     "videos": "Video's",
-    "trailers": "Sleepwaens",
+    "trailers": "Lokprente",
     "programs": "Programme",
     "songs": "Liedjies",
     "photoAlbums": "Foto Albums",
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "Onlangs vrygestelde episodes",
     "watchAgain": "Kyk weer",
     "guestAppearances": "Gasverskynings",
-    "appearancesSeerr": "Voorkoms (Siener)",
+    "appearancesSeerr": "Verskynings (Seerr)",
     "watchWithGroup": "Kyk saam met die groep",
     "errors": "Foute",
     "warnings": "Waarskuwings",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Top kunstenaars",
     "analyticsTopAuthors": "Top Skrywers",
     "analyticsTopContributors": "Top bydraers",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Biblioteek} other{{count} Biblioteke}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7232,7 +7208,7 @@
     "adminServerPathData": "Data",
     "adminServerPathImageCache": "Beeldkas",
     "adminServerPathCache": "Kas",
-    "adminServerPathLogs": "Logs",
+    "adminServerPathLogs": "Logboeke",
     "adminServerPathMetadata": "Metadata",
     "adminServerPathTranscode": "Transkodeer",
     "adminServerPathWeb": "Web",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "CB7-onttrekking-inprop is nie op hierdie platform beskikbaar nie.",
     "closeGenrePanel": "Maak genrepaneel toe",
     "loadingShuffle": "Laai tans shuffle …",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "BIBLIOTEEK-SKOMMEL",
+    "randomShuffleLabel": "LUKRAAK SKOMMEL",
+    "genresShuffleLabel": "GENRE-SKOMMEL",
     "autoHdrSwitching": "Outo-HDR-skakeling",
     "autoHdrSwitchingDescription": "Aktiveer HDR outomaties vir HDR-videoterugspeel en herstel vertoonmodus by uitgang.",
     "whenFullscreen": "Wanneer volskerm",
     "transcodingLimits": "Transkoderingslimiete",
-    "settingsSupportMoonfinSubtitle": "Skenk 'n koffie aan die ontwikkelaar"
+    "settingsSupportMoonfinSubtitle": "Skenk 'n koffie aan die ontwikkelaar",
+    "accountPreferences": "REKENINGVOORKEURE",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Koppelvlaktaal",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Stelselverstek",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Leeg",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Besonderhedeskermstyl",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Klassiek is die oorspronklike gesentreerde Moonfin-uitleg. Modern is 'n responsiewe filmiese uitleg.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Klassiek",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modern",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Uitgebreide oortjies",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Wys oortjie-inhoud outomaties terwyl jy deur die oortjies blaai. Skakel af om elke oortjie self oop en toe te maak.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Wys tegniese besonderhede?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Wys kodek-, resolusie- en stroominligting in die baniersamevatting",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Aanbevelingstelsel",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Gebruik die Moonfin Recommends-algoritme vir jou plaaslike biblioteek of TMDb se aanlyn ooreenkomsmetrieke. Let wel: aanlyn aanbevelings vereis Seerr-integrasie.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb-ooreenkoms",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Beperk volgens ouderdomsgradering?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Beperk Moonfin Recommends-voorstelle volgens die ouderdomsgradering van die teikenmedia",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Koppelvlakstyl",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Outomaties pas by jou toestel aan. Kies Apple of Material om 'n spesifieke voorkoms af te dwing.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Outomaties",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Glaskwaliteit",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Outo kies die beste glaseffek vir hierdie toestel. Vol dwing werklike vervaging af; Verminderd gebruik 'n ligte glas wat GPU-krag spaar.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Outo",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Vol",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Verminderd",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Pasgemaakte tema",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Pasgemaakte temas verander visuele elemente regoor Moonfin. Kies een van hierdie opsies wat by jou styl pas.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glas",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Vloeibare-glas-styl met 'n drywende gradiëntagtergrond, gevroste oppervlakke en 'n Apple-blou aksent",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit-held",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retro pixelkuns-styl met 'n growwe palet, blokkerige rande, harde valskaduwees en 'n pixel-lettertipe",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Kieslys",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Gepouseer",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Stoor toestand",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Speletjies",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Laai toestand",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Vinnig vorentoe",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emulator-instellings",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Hierdie kern het geen verstelbare opsies nie.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Hou in om die kieslys oop te maak",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Speletjies word nog nie op hierdie toestel ondersteun nie.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Nuutste boeke",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Nuutste oudioboeke",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 boek} other{{count} boeke}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Boek",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Oudioboek",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% gelees",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} oor",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Lees",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Luister",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Items",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Ekstras",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Agter die skerms",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Geskrapte tonele",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Featurettes",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Onderhoude",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Tonele",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Kortfilms",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} oor",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Eindig oor {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "REGISSEURS",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "SKRYWER",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Skommel alle musiek",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Meld op jou foon by Moonfin aan",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Kan nie jou bediener bereik nie",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Volgende: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}m oor",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}u oor",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}u {minutes}m oor",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Besonderhedebladsye, tuisrye en volume",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Herhaal temamusiek",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Herhaal die snit in plaas daarvan om dit net een keer te speel",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Muis-rolwiel",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Kies wat gebeur wanneer jy die muiswiel tydens terugspeel oor die video rol.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Af",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Spring (vorentoe / terug)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volume",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volume",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Terugvaltaal vir oudio",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Verkies verstek-oudiosnit",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Verkies die oorspronklike oudiosnit bo 'n gelokaliseerde oorklanking.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Verkies oudiobeskrywingsnitte",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Verkies oudiobeskrywingsnitte bo gewone snitte.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transkodering (oudio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Direkte stroom (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transkodering (bistempo of resolusie)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transkodering (video en oudio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transkodering (video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Kies hoe oudio gedekodeer word. AVR-deurgee stuur rou Dolby/DTS-strome na jou ontvanger; Outo of Afmeng dekodeer plaaslik.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Kies die teikenformaat waarna multikanaal-oudio getranskodeer word wanneer die bronstroom nie direk gespeel of deurgegee kan word nie.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Outospeur\n(Aanbeveel)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Verstek)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Verliesloos)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Slegs stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Doeltreffend)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Verliesloos)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Maksimum oudiokanale",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Stel die maksimum kanale van jou oudio-opstelling. Multikanaalstrome wat hierdie limiet oorskry, word afgemeng of getranskodeer.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Outospeur\n(Hardeware-verstek)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Omringklank",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Kwadrofonies",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Omringklank",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Omringklank",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Omringklank",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Omringklank",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Kopfone",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Onderskrifmodus",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Gemerk",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Altyd",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Vreemdtalig",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Geforseer",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Speel snitte wat in die medialêer se metadata intern as \"default\" of \"forced\" gemerk is.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Laai en wys onderskrifte outomaties elke keer wanneer 'n video begin.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Skakel onderskrifte outomaties aan as die verstek-oudiosnit in 'n vreemde taal is.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Laai slegs onderskrifte wat uitdruklik met die \"forced\"-metadatamerker gemerk is.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Skakel outomatiese laai van onderskrifte heeltemal af.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Terugvaltaal vir onderskrifte",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Onderskrifstroom",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Wys aflaaie op die bediener",
+    "reportDownloadsActivitySubtitle": "Laat die bedieneradministrateur jou getranskodeerde aflaaie in die kontrolepaneel sien",
+    "navbarAlwaysExpanded": "Wys navigasie-etikette altyd",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Wys Seerr-knoppie",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Groepeer items in versamelings",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Versteek biblioteekitems wat aan 'n versameling behoort wanneer jy deur biblioteke blaai",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Kennisgewing oor biblioteekgroepering",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Om hierdie instelling te gebruik, maak seker dat die biblioteekinstellings \"Groepeer flieks in versamelings\" en/of \"Groepeer reekse in versamelings\" onder jou biblioteek se Vertoon-instellings op jou Jellyfin- of Emby-bediener geaktiveer is.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Lokprent-oudio",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Aktiveer oudio vir lokprente in die mediabalk",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Uitgebreide tuisrye",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Beperk tuisrye tot 1 ry per skerm",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Huidige gebruiker",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Staties",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Bonsend",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr-ontdekkingsrye",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Kennisgewings",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Kennisgewings vir nuwe versoeke",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Stel my in kennis wanneer iemand 'n versoek indien",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Versoekopdaterings",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Goedgekeur, afgekeur en by jou biblioteek gevoeg",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Kwessie-opdaterings",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Nuwe kwessies, antwoorde en oplossings",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Beeldkas-limiet",
+    "clearImageCache": "Maak beeldkas skoon",
+    "imageCacheCleared": "Beeldkas skoongemaak",
+    "seerrDownloadingPercent": "Laai af · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Voer in",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Misluk",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Verwerk tans",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Gewysig deur {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Voltooi",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Hierdie titel is reeds versoek",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Versoeklimiet bereik",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Hierdie titel is geblokkeer",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Geen seisoene oor om te versoek nie",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Jy het nie toestemming om hierdie versoek te maak nie",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Versoeke",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Kwessies",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Nuutste",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Laas gewysig",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Geen kwessies nie",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{remaining} van {limit} fliekversoeke oor",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{remaining} van {limit} seisoenversoeke oor",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Deel van {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Bekyk versameling",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Versoek versameling",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} flieks · {available} beskikbaar",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Versoek {count} flieks",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Versoek tans {current} van {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} flieks versoek",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{ok} van {total} flieks versoek",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Alle flieks is reeds beskikbaar of versoek",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Rapporteer kwessie",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Oudio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Wat is verkeerd?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Alle episodes",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episode",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Oop",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Opgelos",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Los op",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Heropen",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Gerapporteer deur {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} kommentare",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Voeg 'n kommentaar by",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Vee hierdie kwessie uit?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Dien verslag in",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Vertoon",
+    "adminDrawerMetadata": "Metadata",
+    "adminDrawerNfo": "NFO-instellings",
+    "adminActivitySeverityAll": "Alle ernsgrade",
+    "adminActivityDateRange": "Datumreeks",
+    "adminRemoveDeviceConfirm": "Verwyder toestel '{name}'? Die gebruiker sal weer op hierdie toestel moet aanmeld.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Vee alle toestelle uit",
+    "adminDeleteAllDevicesConfirm": "Verwyder {count} toestelle? Geaffekteerde gebruikers sal weer moet aanmeld. Jou huidige toestel word nie geraak nie.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Toestelle verwyder",
+    "adminDevicesDeletedPartial": "Sommige toestelle is verwyder; {count} kon nie verwyder word nie.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Paaie",
+    "adminLibraryTabOptions": "Opsies",
+    "adminLibraryTabDownloaders": "Aflaaiers",
+    "adminLibMetadataSavers": "Metadata-stoorders",
+    "adminLibSubtitleDownloaders": "Onderskrif-aflaaiers",
+    "adminLibLyricDownloaders": "Lirieke-aflaaiers",
+    "adminLibMetadataDownloadersFor": "Metadata-aflaaiers: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Beeldophalers: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Hierdie bediener bied geen aflaaiers vir hierdie biblioteektipe nie.",
+    "adminLibrarySectionGeneral": "Algemeen",
+    "adminLibrarySectionMetadata": "Metadata",
+    "adminLibrarySectionEmbedded": "Ingebedde inligting",
+    "adminLibrarySectionSubtitles": "Onderskrifte",
+    "adminLibrarySectionImages": "Beelde",
+    "adminLibrarySectionSeries": "Reekse",
+    "adminLibrarySectionMusic": "Musiek",
+    "adminLibrarySectionMovies": "Flieks",
+    "adminLibRealtimeMonitor": "Aktiveer intydse monitering",
+    "adminLibRealtimeMonitorHint": "Bespeur lêerveranderinge en verwerk hulle outomaties.",
+    "adminLibArchiveMediaFiles": "Hanteer argiewe as medialêers",
+    "adminLibEnablePhotos": "Wys foto's",
+    "adminLibSaveLocalMetadata": "Stoor kunswerk in mediavouers",
+    "adminLibRefreshInterval": "Outomatiese metadata-verfrissing",
+    "adminLibRefreshNever": "Nooit",
+    "adminLibDefault": "Verstek",
+    "adminLibDisplayTitle": "Vertoon",
+    "adminLibDisplaySection": "Biblioteekvertoning",
+    "adminLibFolderView": "Wys 'n vouer-aansig om gewone mediavouers te vertoon",
+    "adminLibSpecialsInSeasons": "Wys spesiale episodes binne die seisoene waarin hulle uitgesaai is",
+    "adminLibGroupMovies": "Groepeer flieks in versamelings",
+    "adminLibGroupShows": "Groepeer reekse in versamelings",
+    "adminLibExternalSuggestions": "Wys eksterne inhoud in voorstelle",
+    "adminLibDateAddedSection": "Gedrag van datum bygevoeg",
+    "adminLibDateAddedLabel": "Gebruik datum bygevoeg vanaf",
+    "adminLibDateAddedImport": "Datum waarop dit in die biblioteek geskandeer is",
+    "adminLibDateAddedFile": "Datum waarop die lêer geskep is",
+    "adminLibMetadataTitle": "Metadata en beelde",
+    "adminLibMetadataLangSection": "Voorkeurtaal vir metadata",
+    "adminLibChaptersSection": "Hoofstukke",
+    "adminLibDummyChapterDuration": "Duur van plekhouer-hoofstukke (sekondes)",
+    "adminLibDummyChapterDurationHint": "Lengte van hoofstukke wat geskep word vir media wat geen het nie. Stel op 0 om af te skakel.",
+    "adminLibChapterImageResolution": "Resolusie van hoofstukbeelde",
+    "adminLibNfoTitle": "NFO-instellings",
+    "adminLibNfoHelp": "NFO-metadata is versoenbaar met Kodi en soortgelyke kliënte. Instellings geld vir alle biblioteke wat NFO-metadata stoor.",
+    "adminLibKodiUser": "Gebruiker vir wie kykdata in NFO-lêers gestoor word",
+    "adminLibSaveImagePaths": "Stoor beeldpaaie in NFO-lêers",
+    "adminLibPathSubstitution": "Aktiveer padvervanging vir NFO-beeldpaaie",
+    "adminLibExtraThumbs": "Kopieer extrafanart-beelde na 'n extrathumbs-vouer",
+    "adminLibNone": "Geen",
+    "adminLibRefreshDays": "{days} dae",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Gebruik ingebedde titels",
+    "adminLibEmbeddedExtrasTitles": "Gebruik ingebedde titels vir ekstras",
+    "adminLibEmbeddedEpisodeInfos": "Gebruik ingebedde episode-inligting",
+    "adminLibAllowEmbeddedSubtitles": "Laat ingebedde onderskrifte toe",
+    "adminLibEmbeddedAllowAll": "Laat alles toe",
+    "adminLibEmbeddedAllowText": "Slegs teks",
+    "adminLibEmbeddedAllowImage": "Slegs beeld",
+    "adminLibEmbeddedAllowNone": "Geen",
+    "adminLibSkipIfEmbeddedSubs": "Slaan aflaai oor as ingebedde onderskrifte teenwoordig is",
+    "adminLibSkipIfAudioMatches": "Slaan aflaai oor as die oudiosnit met die aflaaitaal ooreenstem",
+    "adminLibRequirePerfectMatch": "Vereis 'n perfekte onderskrif-passing",
+    "adminLibSaveSubtitlesWithMedia": "Stoor onderskrifte in mediavouers",
+    "adminLibChapterImageExtraction": "Onttrek hoofstukbeelde",
+    "adminLibChapterImagesDuringScan": "Onttrek hoofstukbeelde tydens die biblioteekskandering",
+    "adminLibTrickplayExtraction": "Aktiveer onttrekking van Trickplay-beelde",
+    "adminLibTrickplayDuringScan": "Onttrek Trickplay-beelde tydens die biblioteekskandering",
+    "adminLibSaveTrickplayWithMedia": "Stoor Trickplay-beelde in mediavouers",
+    "adminLibAutomaticSeriesGrouping": "Voeg reekse wat oor verskeie vouers versprei is outomaties saam",
+    "adminLibSeasonZeroName": "Vertoonnaam vir seisoen nul",
+    "adminLibLufsScan": "Aktiveer LUFS-skandering vir oudionormalisering",
+    "adminLibPreferNonstandardArtist": "Verkies nie-standaard kunstenaarsetiket",
+    "adminLibAutoAddToCollection": "Voeg flieks outomaties by versamelings",
+    "adminParentalControl": "Ouerbeheer",
+    "adminMaxParentalRating": "Maksimum toegelate ouderdomsgradering",
+    "adminMaxParentalRatingHint": "Inhoud met 'n hoër gradering word vir hierdie gebruiker versteek.",
+    "adminParentalRatingNone": "Geen",
+    "adminBlockUnratedItems": "Blokkeer items sonder of met onherkenbare graderingsinligting",
+    "adminUnratedBook": "Boeke",
+    "adminUnratedChannelContent": "Kanale",
+    "adminUnratedLiveTvChannel": "Regstreekse TV",
+    "adminUnratedMovie": "Flieks",
+    "adminUnratedMusic": "Musiek",
+    "adminUnratedTrailer": "Lokprente",
+    "adminUnratedSeries": "Reekse",
+    "adminAccessSchedules": "Toegangskedules",
+    "adminAccessSchedulesHint": "Laat toegang slegs gedurende die geskeduleerde tye hieronder toe. Wanneer geen skedule gestel is nie, word toegang die hele dag toegelaat.",
+    "adminAddSchedule": "Voeg skedule by",
+    "adminScheduleDay": "Dag",
+    "adminScheduleStart": "Begin",
+    "adminScheduleEnd": "Einde",
+    "adminDayEveryday": "Elke dag",
+    "adminDayWeekday": "Weeksdag",
+    "adminDayWeekend": "Naweek",
+    "adminDaySunday": "Sondag",
+    "adminDayMonday": "Maandag",
+    "adminDayTuesday": "Dinsdag",
+    "adminDayWednesday": "Woensdag",
+    "adminDayThursday": "Donderdag",
+    "adminDayFriday": "Vrydag",
+    "adminDaySaturday": "Saterdag",
+    "adminAllowedTags": "Toegelate etikette",
+    "adminAllowedTagsHint": "Slegs inhoud met hierdie etikette word gewys. Los leeg om alles toe te laat.",
+    "adminBlockedTags": "Geblokkeerde etikette",
+    "adminBlockedTagsHint": "Inhoud met hierdie etikette word vir hierdie gebruiker versteek.",
+    "adminAddTag": "Voeg etiket by",
+    "adminEnabledDevices": "Geaktiveerde toestelle",
+    "adminEnabledChannels": "Geaktiveerde kanale",
+    "adminAuthProvider": "Verifikasieverskaffer",
+    "adminPasswordResetProvider": "Verskaffer vir wagwoordherstel",
+    "adminLoginAttemptsBeforeLockout": "Maksimum mislukte aanmeldpogings voor uitsluiting",
+    "adminLoginAttemptsHint": "Stel op 0 vir die verstek, of -1 om uitsluiting af te skakel.",
+    "adminSyncPlayAccess": "SyncPlay-toegang",
+    "adminSyncPlayCreateAndJoin": "Laat toe om groepe te skep en by groepe aan te sluit",
+    "adminSyncPlayJoin": "Laat toe om by groepe aan te sluit",
+    "adminSyncPlayNone": "Geen toegang",
+    "adminContentDeletionFolders": "Laat inhoud uitgevee word uit",
+    "adminBackupOptionsTitle": "Skep rugsteun",
+    "adminBackupInclude": "Kies wat in die rugsteun ingesluit moet word.",
+    "adminBackupDatabase": "Databasis",
+    "adminBackupDatabaseAlways": "Altyd ingesluit",
+    "adminBackupMetadata": "Metadata",
+    "adminBackupSubtitles": "Onderskrifte",
+    "adminBackupTrickplay": "Trickplay-beelde",
+    "adminEditTuner": "Wysig tuner",
+    "adminTunerTypeM3u": "M3U-tuner",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Lêer of URL",
+    "adminTunerIpAddress": "Tuner se IP-adres",
+    "adminTunerFriendlyName": "Vriendelike naam",
+    "adminTunerUserAgent": "Gebruikeragent",
+    "adminTunerCount": "Limiet vir gelyktydige verbindings",
+    "adminTunerCountHelp": "Die maksimum aantal strome wat die tuner gelyktydig toelaat. Stel op 0 vir onbeperk.",
+    "adminTunerFallbackBitrate": "Terugval-maksimum stroom-bistempo",
+    "adminTunerImportFavoritesOnly": "Voer slegs gunsteling-kanale in",
+    "adminTunerAllowHwTranscoding": "Laat hardeware-transkodering toe",
+    "adminTunerAllowFmp4": "Laat fMP4-transkoderingshouer toe",
+    "adminTunerAllowStreamSharing": "Laat stroomdeling toe",
+    "adminTunerEnableStreamLooping": "Aktiveer stroomherhaling",
+    "adminTunerIgnoreDts": "Ignoreer DTS",
+    "adminTunerReadAtNativeFramerate": "Lees inset teen inheemse raamtempo",
+    "adminEditProvider": "Wysig verskaffer",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Lêer of URL",
+    "adminXmltvMoviePrefix": "Fliekvoorvoegsel",
+    "adminXmltvMovieCategories": "Fliekkategorieë",
+    "adminXmltvCategoriesHelp": "Skei veelvuldige kategorieë met 'n vertikale streep.",
+    "adminXmltvKidsCategories": "Kinderkategorieë",
+    "adminXmltvNewsCategories": "Nuuskategorieë",
+    "adminXmltvSportsCategories": "Sportkategorieë",
+    "adminSdUsername": "Gebruikersnaam",
+    "adminSdPassword": "Wagwoord",
+    "adminSdCountry": "Land",
+    "adminSdCountrySelect": "Kies 'n land",
+    "adminSdPostalCode": "Poskode",
+    "adminSdGetListings": "Kry lyste",
+    "adminSdListings": "Lyste",
+    "adminEnableAllTuners": "Aktiveer alle tuners",
+    "adminTunerResetNotSupported": "Hierdie tunertipe ondersteun nie terugstelling nie.",
+    "adminMovieRecordingPath": "Opnamepad vir flieks",
+    "adminGuideDays": "Dae se gidsdata",
+    "adminGuideDaysAuto": "Outomaties",
+    "adminGuideDaysValue": "{days} dae",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Pad na naverwerkingstoepassing",
+    "adminRecordingPostProcessorArgs": "Naverwerker-argumente",
+    "adminSaveRecordingNfo": "Stoor NFO-metadata vir opnames",
+    "adminSaveRecordingImages": "Stoor opnamebeelde",
+    "adminLiveTvSectionTiming": "Tydsberekening",
+    "adminLiveTvSectionPaths": "Opnamepaaie",
+    "adminLiveTvSectionPostProcessing": "Naverwerking",
+    "adminGuideDaysDisplay": "Gidsdata: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Verfris gidsdata",
+    "adminGuideRefreshStarted": "Verfrissing van gidsdata het begin",
+    "adminGuideRefreshUnavailable": "Die taak om die gids te verfris is nie op hierdie bediener beskikbaar nie.",
+    "adminMetadataIdentify": "Identifiseer",
+    "adminBrandingSplashUpload": "Laai beeld op",
+    "adminBrandingSplashUploaded": "Plonsskerm opgedateer",
+    "adminBrandingSplashUploadFailed": "Kon nie plonsskerm oplaai nie",
+    "adminBrandingSplashDeleted": "Plonsskerm verwyder",
+    "adminBrandingNoSplash": "Geen pasgemaakte plonsskerm",
+    "adminPlaybackQsvDevice": "QSV-toestel",
+    "adminPlaybackEnhancedNvdec": "Aktiveer verbeterde NVDEC-dekodeerder",
+    "adminPlaybackPreferNativeDecoder": "Verkies die stelsel se inheemse hardeware-dekodeerder",
+    "adminPlaybackColorDepth": "Kleurdiepte vir hardeware-dekodering",
+    "adminPlaybackColorDepth10Hevc": "10-bis HEVC-dekodering",
+    "adminPlaybackColorDepth10Vp9": "10-bis VP9-dekodering",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bis-dekodering",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bis-dekodering",
+    "adminPlaybackHwEncodingSection": "Hardeware-enkodering",
+    "adminPlaybackAllowHevcEncoding": "Laat HEVC-enkodering toe",
+    "adminPlaybackAllowAv1Encoding": "Laat AV1-enkodering toe",
+    "adminPlaybackIntelLowPowerH264": "Aktiveer Intel se laekrag-H.264-enkodeerder",
+    "adminPlaybackIntelLowPowerHevc": "Aktiveer Intel se laekrag-HEVC-enkodeerder",
+    "adminPlaybackToneMapping": "Toonkartering",
+    "adminPlaybackEnableTonemapping": "Aktiveer toonkartering",
+    "adminPlaybackEnableVppTonemapping": "Aktiveer VPP-toonkartering",
+    "adminPlaybackEnableVtTonemapping": "Aktiveer VideoToolbox-toonkartering",
+    "adminPlaybackTonemappingAlgorithm": "Toonkarteringsalgoritme",
+    "adminPlaybackTonemappingMode": "Toonkarteringsmodus",
+    "adminPlaybackTonemappingRange": "Toonkarteringsbereik",
+    "adminPlaybackTonemappingDesat": "Toonkartering-ontversadiging",
+    "adminPlaybackTonemappingPeak": "Toonkarteringspiek",
+    "adminPlaybackTonemappingParam": "Toonkarteringsparameter",
+    "adminPlaybackVppTonemappingBrightness": "VPP-toonkartering se helderheid",
+    "adminPlaybackVppTonemappingContrast": "VPP-toonkartering se kontras",
+    "adminPlaybackPresetsQuality": "Voorinstellings en kwaliteit",
+    "adminPlaybackEncoderPreset": "Enkodeerder-voorinstelling",
+    "adminPlaybackH264Crf": "H.264-enkodering se CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC)-enkodering se CRF",
+    "adminPlaybackDeinterlaceMethod": "Ontvlegtingsmetode",
+    "adminPlaybackDeinterlaceDoubleRate": "Verdubbel die raamtempo tydens ontvlegting",
+    "adminPlaybackAudioSection": "Oudio",
+    "adminPlaybackEnableAudioVbr": "Aktiveer VBR-enkodering vir oudio",
+    "adminPlaybackDownmixBoost": "Versterking vir oudio-afmenging",
+    "adminPlaybackDownmixAlgorithm": "Algoritme vir stereo-afmenging",
+    "adminPlaybackMaxMuxingQueue": "Maksimum grootte van muxing-tou",
+    "adminPlaybackAutoOption": "Outo",
+    "adminRunningTasks": "Lopende take",
+    "adminNetworkingPublicHttpPort": "Openbare HTTP-poort",
+    "adminNetworkingRequireHttps": "Vereis HTTPS",
+    "adminNetworkingRequireHttpsHint": "Herlei alle afgeleë versoeke na HTTPS. Het geen effek as die bediener nie 'n geldige sertifikaat het nie.",
+    "adminNetworkingCertPassword": "Sertifikaatwagwoord",
+    "adminNetworkingIpSettings": "IP-instellings",
+    "adminNetworkingEnableIpv4": "Aktiveer IPv4",
+    "adminNetworkingEnableIpv6": "Aktiveer IPv6",
+    "adminNetworkingAutoDiscovery": "Aktiveer outomatiese poortkartering",
+    "adminNetworkingLocalSubnets": "LAN-netwerke",
+    "adminNetworkingLocalSubnetsHint": "Komma- of reëlgeskeide lys van IP-adresse of CIDR-subnette wat as deel van die plaaslike netwerk hanteer word.",
+    "adminNetworkingPublishedUris": "Gepubliseerde bediener-URI's",
+    "adminNetworkingPublishedUriHint": "Karteer 'n subnet of adres na 'n gepubliseerde URL, bv. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Beperkingsvertraging (sekondes)",
+    "adminPlaybackEnableSubtitleExtraction": "Laat intydse onttrekking van onderskrifte toe",
+    "adminGeneralEnableSlowResponse": "Aktiveer waarskuwings oor stadige response",
+    "adminGeneralQuickConnect": "Aktiveer Quick Connect",
+    "adminGeneralSectionServer": "Bediener",
+    "adminGeneralSectionMetadata": "Metadata",
+    "adminGeneralSectionPaths": "Paaie",
+    "adminGeneralSectionPerformance": "Werkverrigting",
+    "adminGeneralDisplayLanguage": "Voorkeurtaal vir vertoning",
+    "offlineBannerTitle": "Jy is aflyn",
+    "offlineBannerSubtitle": "Wys jou aflaaie",
+    "offlineBannerAction": "Aflaaie",
+    "serverUnreachableBannerTitle": "Kan nie jou bediener bereik nie",
+    "serverUnreachableBannerSubtitle": "Speel uit jou aflaaie totdat dit terug is",
+    "contextMenuHideFromContinueWatching": "Versteek uit Hou aan kyk",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Versteek uit Volgende",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Voeg by versameling",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "VERBINDING",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Laat selfondertekende sertifikate toe",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Vertrou bedieners wat selfondertekende of privaat-CA TLS-sertifikate gebruik. Aktiveer dit slegs vir bedieners wat jy self beheer. Dit skakel sertifikaatvalidering vir alle verbindings af.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Besonderhedeskerm",
+    "settingsDetailsScreenSubtitle": "Styl, agtergrondvervaging en oortjiegedrag",
+    "settingsShowSeerrButtonInNavigation": "Wys die Seerr-knoppie in die navigasiebalk",
+    "settingsAlwaysExpandNavbarLabels": "Wys altyd teksetikette in die boonste navigasiebalk",
+    "settingsMediaSegmentCountdown": "Aftelling vir mediasegmente",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Vorderingsbalk",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Tydteller",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Geen",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Onlangs vrygestelde {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Aktiveer tonneling",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Gevorderd. Stuur oudio en video deur 'n gekoppelde hardewarepad. Standaard af, want dit veroorsaak oudio-/videowegvalle op sommige toestelle.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Wys mediabesonderhede",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Wys besonderhede van die gekose item boaan biblioteekbladsye.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Versteek agtergronde tydens blaai?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Temawinkel",
+    "themeStoreSubtitle": "Blaai deur en stoor gemeenskapstemas",
+    "themeStoreDescription": "Stoor 'n tema om dit soos jou ander gestoorde temas te gebruik.",
+    "themeStoreEmpty": "Geen temas is tans beskikbaar nie.",
+    "themeStoreLoadFailed": "Kon nie die Temawinkel laai nie. Gaan jou verbinding na en probeer weer.",
+    "themeStoreSave": "Stoor",
+    "themeStoreSaveAndApply": "Stoor en pas toe",
+    "themeStoreSaved": "Gestoor",
+    "themeStoreInvalidMessage": "Hierdie tema kon nie gelaai word nie.",
+    "themeStoreSavedMessage": "\"{themeName}\" gestoor.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Vertoon van tuisrye",
+    "homeRowSections": "Tuisry-afdelings",
+    "homeRowToggles": "Tuisry-skakelaars",
+    "homeRowTogglesSubtitle": "Aktiveer of deaktiveer biblioteekgebaseerde tuisry-kategorieë",
+    "homeRowTogglesDescription": "Aktiveer die volgende skakelaars om die rye in Tuis-afdelings te wys.",
+    "displayPlaylistsRows": "Wys snitlysrye",
+    "displayPlaylistsRowsSubtitle": "Wys snitlysrye in Tuis-afdelings.",
+    "playlistsRowSorting": "Sortering van snitlysrye",
+    "playlistsRowSortingDescription": "Sorteer snitlysrye volgens datum bygevoeg, vrystellingsdatum, alfabeties en meer.",
+    "displayAudioRows": "Wys oudiorye",
+    "displayAudioRowsSubtitle": "Wys oudiorye in Tuis-afdelings.",
+    "audioRowsSorting": "Sortering van oudiorye",
+    "audioRowsSortingDescription": "Sorteer oudiorye volgens datum bygevoeg, vrystellingsdatum, alfabeties en meer.",
+    "audioPlaylists": "Oudio-snitlyste",
+    "layout": "Uitleg",
+    "theme": "Tema",
+    "keyboard": "Sleutelbord",
+    "navButtons": "Knoppies",
+    "rendering": "Weergee",
+    "mpvConfiguration": "MPV-konfigurasie",
+    "externalPlayerAppDescription": "Stel 'n eksterne speler om die lang-druk-speel-opsie te aktiveer",
+    "crewContributionsSeerr": "Spanbydraes (Seerr)",
+    "changeArtwork": "Verander kunswerk",
+    "missing": "Ontbreek",
+    "clearAllArtworkButton": "Vee alle kunswerk uit?",
+    "clearAllArtworkWarning": "Is jy seker jy wil alle afgelaaide kunswerk uitvee?",
+    "confirmClear": "Bevestig uitvee",
+    "confirmClearMessage": "Is jy seker jy wil hierdie {itemType} uitvee?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Laai op?",
+    "resolutionLabel": "Resolusie: ",
+    "onlyShowInterfaceLanguage": "Wys slegs kunswerk in die koppelvlaktaal",
+    "confirmClearAll": "Bevestig om alles uit te vee",
+    "imageUploadSuccess": "Beeld suksesvol opgelaai!",
+    "imageUploadFailed": "Kon nie beeld oplaai nie: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Kon nie beeld stel nie: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Kon nie beeld uitvee nie: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Kon nie alle kunswerk uitvee nie: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Ja",
+    "posterCategory": "Plakkaat",
+    "backdropsCategory": "Agtergronde",
+    "bannerCategory": "Banier",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Duimnael",
+    "artCategory": "Kuns",
+    "discArtCategory": "Skyfkuns",
+    "screenshotCategory": "Skermkiekie",
+    "boxCoverCategory": "Voorblad",
+    "boxRearCoverCategory": "Agterblad",
+    "menuArtCategory": "Kieslyskuns",
+    "confirmItemPoster": "plakkaat",
+    "confirmItemBackdrop": "agtergrond",
+    "confirmItemBanner": "banier",
+    "confirmItemLogo": "logo",
+    "confirmItemThumbnail": "duimnael",
+    "confirmItemArt": "kuns",
+    "confirmItemDiscArt": "skyfkuns",
+    "confirmItemScreenshot": "skermkiekie",
+    "confirmItemBoxCover": "voorblad",
+    "confirmItemBoxRearCover": "agterblad",
+    "confirmItemMenuArt": "kieslyskuns",
+    "resolutionAll": "Alle",
+    "resolutionHigh": "Hoog (1080p+)",
+    "resolutionMedium": "Medium (720p)",
+    "resolutionLow": "Laag (<720p)",
+    "sources": "Bronne",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Hoofstukke",
+    "audiobookBookmarks": "Boekmerke",
+    "audiobookNotes": "Notas",
+    "audiobookQueue": "Tou",
+    "audiobookTimeline": "Tydlyn",
+    "audiobookTimelineEmpty": "Die tydlyn is leeg",
+    "audiobookWholeBook": "Hele boek",
+    "audiobookFocusedTimeline": "Gefokusde tydlyn",
+    "audiobookExportBookmarks": "Voer boekmerke uit",
+    "audiobookExportNotes": "Voer notas uit",
+    "audiobookExportAll": "Voer alles uit",
+    "audiobookExportSuccess": "Uitgevoer na {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Uitvoer het misluk: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Lirieke",
+    "audiobookAddBookmark": "Voeg boekmerk by",
+    "audiobookAddNote": "Voeg nota by",
+    "audiobookEditNote": "Wysig nota",
+    "audiobookNoteHint": "Skryf 'n nota vir hierdie oomblik",
+    "audiobookSleepTimer": "Slaaptydteller",
+    "audiobookSleepOff": "Af",
+    "audiobookSleepEndOfChapter": "Einde van hoofstuk",
+    "audiobookSleepCustom": "Pasgemaak",
+    "audiobookSleepRemaining": "{remaining} oor",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Terugspeelspoed",
+    "audiobookRemainingTime": "Oor",
+    "audiobookElapsedTime": "Verloop",
+    "audiobookSkipBackSeconds": "{seconds}s terug",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "{seconds}s vorentoe",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Vorige hoofstuk",
+    "audiobookNextChapter": "Volgende hoofstuk",
+    "audiobookChapterIndicator": "Hoofstuk {current} van {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Geen hoofstukke",
+    "audiobookNoBookmarks": "Nog geen boekmerke nie",
+    "audiobookNoNotes": "Nog geen notas nie",
+    "audiobookBookmarkAdded": "Boekmerk by {position} bygevoeg",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Stel terug na 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Stoor",
+    "audiobookCancel": "Kanselleer",
+    "audiobookDelete": "Skrap",
+    "subtitlePreferences": "Onderskrifvoorkeure",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Verander onderskrifmodusse, verstektale, voorkoms en weergee-opsies.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Weergee van onderskrifte",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Vertoonopsies",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Vrystellingsdatum (opgaande)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Vrystellingsdatum (afgaande)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Groepeer bydraes",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Groepeer veelvuldige rolle",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Waarskuwing oor skryftoegang tot biblioteek",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Hoe om dit reg te stel:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Gee skryfregte aan die Jellyfin-diensgebruiker (bv. jellyfin of Docker PUID/PGID) vir jou mediabiblioteek-vouers op die bediener.\n\n2. Of gaan na jou Jellyfin-kontrolepaneel -> Biblioteke, wysig hierdie biblioteek en deaktiveer 'Stoor kunswerk in mediavouers' om kunswerk in Jellyfin se interne databasis te stoor.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Maak toe",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Jou '{libraryName}'-biblioteek is opgestel om kunswerk direk in die mediavouers te stoor ('Stoor kunswerk in mediavouers' is geaktiveer). Jellyfin het egter skryftoegang getoets en het nie toestemming om lêers na hierdie gids te skryf nie:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Dit lyk of Jellyfin nie die kunswerk kon opdateer nie. Jou biblioteek is opgestel om kunswerk direk in die mediavouers te stoor ('Stoor kunswerk in mediavouers' is geaktiveer). Hierdie fout gebeur gewoonlik wanneer die Jellyfin-bedienerproses nie toestemming het om lêers na jou mediagidse te skryf nie.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Eksterne lyste",
+    "replay": "Speel weer",
+    "fileInformation": "Lêerinligting",
+    "fileSizeFormat": "Grootte: {size}  •  Formaat: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Wys al ({count}) die oudiosnitte",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Wys al ({count}) die onderskrifsnitte",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Kontroleer Direct Play-vermoë...",
+    "directPlayCapabilityLabel": "Direct Play-vermoë: ",
+    "forced": "Geforseer",
+    "transcodeContainerNotSupported": "Die houerformaat word nie deur die speler ondersteun nie.",
+    "transcodeVideoCodecNotSupported": "Die videokodek word nie ondersteun nie.",
+    "transcodeAudioCodecNotSupported": "Die oudiokodek word nie ondersteun nie.",
+    "transcodeSubtitleCodecNotSupported": "Die onderskrifformaat word nie ondersteun nie (moet ingebrand word).",
+    "transcodeAudioProfileNotSupported": "Die oudioprofiel word nie ondersteun nie.",
+    "transcodeVideoProfileNotSupported": "Die videoprofiel word nie ondersteun nie.",
+    "transcodeVideoLevelNotSupported": "Die videovlak word nie ondersteun nie.",
+    "transcodeVideoResolutionNotSupported": "Die videoresolusie word nie deur hierdie toestel ondersteun nie.",
+    "transcodeVideoBitDepthNotSupported": "Die video se bisdiepte word nie ondersteun nie.",
+    "transcodeVideoFramerateNotSupported": "Die video se raamtempo word nie ondersteun nie.",
+    "transcodeContainerBitrateExceedsLimit": "Die lêer se bistempo oorskry die speler se stroomlimiet.",
+    "transcodeVideoBitrateExceedsLimit": "Die video se bistempo oorskry die stroomlimiet.",
+    "transcodeAudioBitrateExceedsLimit": "Die oudio se bistempo oorskry die stroomlimiet.",
+    "transcodeAudioChannelsNotSupported": "Die aantal oudiokanale word nie ondersteun nie.",
+    "sortAlphabetical": "Alfabeties",
+    "sortReleaseAscending": "Vrystellingsvolgorde (opgaande)",
+    "sortReleaseDescending": "Vrystellingsvolgorde (afgaande)",
+    "sortCustomDragDrop": "Pasgemaak (sleep-en-los)",
+    "playlistSortOptions": "Snitlys-sorteeropsies",
+    "resetSort": "Stel sortering terug",
+    "rewatchSeasonEpisode": "Kyk S{season}:E{episode} weer",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Kyk snitlys weer",
+    "noSubtitlesFound": "Geen onderskrifte gevind nie.",
+    "adminControls": "Adminkontroles",
+    "impellerRendering": "Weergee-enjin (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller is Flutter se moderne GPU-weergeër vir gladder animasies en minder hakkel. Op sommige TV-bokse en ouer GPU's kan dit foute of swart video veroorsaak; skakel dit af as jy dit sien. Outomaties kies die beste verstek vir jou toestel. Herbegin Moonfin om dit toe te pas.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Outomaties",
+    "impellerOn": "Aan",
+    "impellerOff": "Af",
+    "impellerRestartTitle": "Herbegin vereis",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Moonfin moet herbegin om die weergee-enjin te verander. Maak die app nou toe en heropen dit om die verandering toe te pas.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Maak app nou toe",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Verfris biblioteek",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Verfris alle biblioteke",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Datum bygevoeg (oudste eerste)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Datum bygevoeg (nuutste eerste)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alfabeties (A tot Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Alfabeties (Z tot A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Laai bediener-analise... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Pas by bron",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb se top 250 flieks",
+    "imdbTop250TvShows": "IMDb se top 250 TV-reekse",
+    "imdbMostPopularMovies": "IMDb se gewildste flieks",
+    "imdbMostPopularTvShows": "IMDb se gewildste TV-reekse",
+    "imdbLowestRatedMovies": "IMDb se laagsgegradeerde flieks",
+    "imdbTopEnglishMovies": "IMDb se topgegradeerde Engelse flieks"
 }

@@ -337,7 +337,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get gameSaveState => 'Állás mentése';
 
   @override
-  String get games => 'Games';
+  String get games => 'Játékok';
 
   @override
   String get gameLoadState => 'Állás betöltése';
@@ -385,7 +385,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsFound => 'Nem találhatók elemek';
 
   @override
-  String get home => 'Kezdőképernyő';
+  String get home => 'Kezdőlap';
 
   @override
   String get browseAll => 'Összes böngészése';
@@ -1191,7 +1191,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subtitleTrack => 'Feliratsáv';
 
   @override
-  String get none => 'Egyik sem';
+  String get none => 'Nincs';
 
   @override
   String get downloadSubtitlesLabel => 'Feliratok letöltése...';
@@ -3000,11 +3000,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get wifiOnlyDownloads => 'Csak WiFi letöltések';
 
   @override
-  String get reportDownloadsActivity => 'Show downloads on the server';
+  String get reportDownloadsActivity => 'Letöltések megjelenítése a szerveren';
 
   @override
   String get reportDownloadsActivitySubtitle =>
-      'Let the server admin see your transcoded downloads in the dashboard';
+      'A szerver adminisztrátora láthatja az átkódolt letöltéseidet az irányítópulton';
 
   @override
   String get onlyDownloadOnWifi => 'Csak Wi-Fi-hálózaton töltsd le';
@@ -3255,7 +3255,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => 'Kikapcsolva';
+  String get mediaBarModeOff => 'Ki';
 
   @override
   String get enableMediaBar => 'Médiasáv engedélyezése';
@@ -3852,13 +3852,13 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get imageCacheLimit => 'Image cache limit';
+  String get imageCacheLimit => 'Képgyorsítótár korlátja';
 
   @override
-  String get clearImageCache => 'Clear image cache';
+  String get clearImageCache => 'Képgyorsítótár törlése';
 
   @override
-  String get imageCacheCleared => 'Image cache cleared';
+  String get imageCacheCleared => 'Képgyorsítótár törölve';
 
   @override
   String get clear => 'Törlés';
@@ -3986,7 +3986,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get showMore => 'Továbbiak megjelenítése';
 
   @override
-  String get appearances => 'Megjelenések';
+  String get appearances => 'Szereplések';
 
   @override
   String get crewSection => 'Stáb';
@@ -4561,7 +4561,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sessionRewind => 'Visszatekerés';
 
   @override
-  String get sessionForward => 'Előre';
+  String get sessionForward => 'Előretekerés';
 
   @override
   String get sessionNext => 'Következő';
@@ -6228,60 +6228,65 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminAddTuner => 'Hangoló hozzáadása';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => 'Tuner szerkesztése';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'M3U tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => 'Fájl vagy URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => 'Tuner IP-címe';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => 'Megjelenített név';
 
   @override
-  String get adminTunerUserAgent => 'User agent';
+  String get adminTunerUserAgent => 'Felhasználói ügynök';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => 'Egyidejű kapcsolatok korlátja';
 
   @override
   String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+      'A tuner által egyszerre engedélyezett adatfolyamok maximális száma. A korlátlanhoz állítsd 0-ra.';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate =>
+      'Tartalék maximális streamelési bitráta';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly =>
+      'Csak a kedvenc csatornák importálása';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding =>
+      'Hardveres átkódolás engedélyezése';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'fMP4 átkódolási konténer engedélyezése';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing =>
+      'Adatfolyam megosztásának engedélyezése';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping =>
+      'Adatfolyam ismétlésének engedélyezése';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'DTS figyelmen kívül hagyása';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+      'Bemenet beolvasása natív képkockasebességgel';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => 'Szolgáltató szerkesztése';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6290,50 +6295,50 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => 'Fájl vagy URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => 'Filmek előtagja';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => 'Filmkategóriák';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+      'A kategóriákat függőleges vonallal válaszd el egymástól.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => 'Gyerekkategóriák';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => 'Hírkategóriák';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => 'Sportkategóriák';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => 'Felhasználónév';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => 'Jelszó';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => 'Ország';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => 'Válassz egy országot';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => 'Irányítószám';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => 'Műsorújság lekérése';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => 'Műsorújság';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => 'Az összes tuner engedélyezése';
 
   @override
   String get adminTunerType => 'Tuner típusa';
@@ -7144,10 +7149,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+      'VPP tónusleképezési fényerő';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast =>
+      'VPP tónusleképezési kontraszt';
 
   @override
   String get adminPlaybackPresetsQuality => 'Előbeállítások és minőség';
@@ -7166,7 +7172,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+      'Képkockasebesség megduplázása váltottsoros bontáskor';
 
   @override
   String get adminPlaybackAudioSection => 'Hang';
@@ -7441,7 +7447,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month/$day';
+    return '$month. $day.';
   }
 
   @override
@@ -7530,11 +7536,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Pufferelés korlátozása';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay =>
+      'Korlátozási késleltetés (másodperc)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+      'Feliratok menet közbeni kinyerésének engedélyezése';
 
   @override
   String get adminResumeMinPct => 'Minimális folytatási százalék';
@@ -7619,7 +7626,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminGeneralServerName => 'Szerver neve';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage =>
+      'Előnyben részesített megjelenítési nyelv';
 
   @override
   String get adminSettingsLoadFailed =>
@@ -8836,7 +8844,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'A kijelölt elem részleteinek megjelenítése a könyvtároldalak tetején.';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries =>
+      'Elrejted a háttérképeket böngészés közben?';
 
   @override
   String get useDetailedSubHeadings => 'Részletes alcímek használata';

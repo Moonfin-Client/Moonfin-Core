@@ -1,6 +1,6 @@
 {
     "@@locale": "mn",
-    "appTitle": "Сарны фин",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Түргэн холболт",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Устгах",
+    "remove": "Хасах",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Сарны фин",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Гэр",
+    "home": "Нүүр",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "Номын сан",
+    "library": "Медиа сан",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Өргөдөл гаргах",
+    "apply": "Хэрэглэх",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Үргэлжлэл",
+    "resume": "Үргэлжлүүлэх",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -741,7 +741,7 @@
     "@browseByGenre": {
         "description": "Collection picker dialog title for genre browse"
     },
-    "discover": "Discover",
+    "discover": "Танилцах",
     "@discover": {
         "description": "Section title for book discovery"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 аудио ном} other{{count} аудио ном}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Улирал",
+    "seasons": "Улирлууд",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Улирал} other{{count} Улирал}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Тогло",
+    "play": "Тоглуулах",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,11 +1107,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Жүжигчин",
+    "cast": "Дамжуулах",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Чиргүүл",
+    "trailer": "Трейлер",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 дуу} other{{count} дуу}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 бүлэг} other{{count} бүлэг}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Холимог",
+    "shuffle": "Холих",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} суваг",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1689,7 +1689,7 @@
     "@queueIsEmpty": {
         "description": "Empty state text for playback queue"
     },
-    "trackNumber": "Track {number}",
+    "trackNumber": "{number}-р дуу",
     "@trackNumber": {
         "description": "Fallback track name in queue",
         "placeholders": {
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value}мс",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value}мс",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Тоглогч",
+    "player": "Тоглуулагч",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1846,7 +1846,7 @@
     "@hdr": {
         "description": "Stream info label for HDR type"
     },
-    "codec": "Codec",
+    "codec": "Кодек",
     "@codec": {
         "description": "Stream info label for codec"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Зам",
+    "track": "Трек",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "үзэх",
+    "watch": "Үзэх",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 анги} other{{count} анги}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value}с",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3549,7 +3549,7 @@
             }
         }
     },
-    "mediaBar": "Media Bar",
+    "mediaBar": "Медиа самбар",
     "@mediaBar": {
         "description": "Media bar section title"
     },
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Сарны фин",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3669,7 +3669,7 @@
     "@resumeAudio": {
         "description": "Home section: resume audio"
     },
-    "resumeBooks": "Resume Books",
+    "resumeBooks": "Үргэлжлүүлэн унших",
     "@resumeBooks": {
         "description": "Home section: resume books"
     },
@@ -3728,10 +3728,6 @@
     "lastUser": "Сүүлийн хэрэглэгч",
     "@lastUser": {
         "description": "Option: last user"
-    },
-    "specificUser": "Тодорхой хэрэглэгч",
-    "@specificUser": {
-        "description": "Option: specific user"
     },
     "alwaysAuthenticate": "Үргэлж баталгаажуулах",
     "@alwaysAuthenticate": {
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin",
+    "pluginLabel": "Moonbase залгаас",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "Мөрүүдийг нээх",
+    "discoverRows": "Seerr-ийн танилцах хуудас",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Дахин эрэмбэлэхийн тулд чирнэ үү. Мөрүүдийг идэвхжүүлэх эсвэл идэвхгүй болгох. Идэвхжүүлсэн эгнээний дарааллыг Moonfin залгаастай синк хийнэ.",
+    "discoverRowsDescriptionPlugin": "Seerr-ийн үндсэн хуудсанд харуулах эгнээг идэвхжүүлнэ. Чирж эрэмбийг өөрчилнө. Захиалгат эрэмбэ Moonbase-тэй синк болно.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Дахин эрэмбэлэхийн тулд чирнэ үү. Мөрүүдийг идэвхжүүлэх эсвэл идэвхгүй болгох.",
+    "discoverRowsDescription": "Seerr-ийн үндсэн хуудсанд харуулах эгнээг идэвхжүүлнэ. Чирж эрэмбийг өөрчилнө. Захиалгат эрэмбэ Moonbase-тэй синк болно.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Идэвхжүүлсэн",
+    "enabled": "Идэвхтэй",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Тодорхой",
+    "clear": "Цэвэрлэх",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Гадаад төрх",
+    "appearances": "Оролцоо",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Улирал",
+    "seasonsLabel": "Улирлууд",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4528,19 +4524,19 @@
     "copy": "Хуулбарлах",
     "create": "Үүсгэх",
     "disable": "Идэвхгүй болгох",
-    "done": "Дууслаа",
-    "edit": "Засварлах",
+    "done": "Болсон",
+    "edit": "Засах",
     "encoding": "Кодлох",
     "error": "Алдаа",
-    "forward": "Урагшаа",
-    "general": "Генерал",
+    "forward": "Урагш",
+    "general": "Ерөнхий",
     "go": "Яв",
     "install": "Суулгах",
     "installed": "Суулгасан",
     "interval": "Интервал",
     "name": "Нэр",
     "networking": "Сүлжээ",
-    "next": "Дараа нь",
+    "next": "Дараагийн",
     "path": "Зам",
     "paused": "Түр зогсоосон",
     "permissions": "Зөвшөөрөл",
@@ -4560,10 +4556,10 @@
     "sessions": "Хурал",
     "set": "Тохируулах",
     "status": "Статус",
-    "stop": "Зогс",
+    "stop": "Зогсоох",
     "streaming": "Дамжуулж байна",
     "time": "Цаг хугацаа",
-    "trickplay": "Трик тоглоом",
+    "trickplay": "Trickplay",
     "uninstall": "Устгах",
     "up": "Дээшээ",
     "update": "Шинэчлэх",
@@ -4576,11 +4572,11 @@
     "adminDrawerSettings": "Тохиргоо",
     "adminDrawerBranding": "Брэнд хийх",
     "adminDrawerUsers": "Хэрэглэгчид",
-    "adminDrawerLibraries": "Номын сангууд",
+    "adminDrawerLibraries": "Медиа сангууд",
     "adminDrawerTranscoding": "Код хувиргах",
-    "adminDrawerResume": "Үргэлжлэл",
+    "adminDrawerResume": "Үргэлжлүүлэх",
     "adminDrawerStreaming": "Дамжуулж байна",
-    "adminDrawerTrickplay": "Трик тоглоом",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Төхөөрөмжүүд",
     "adminDrawerActivity": "Үйл ажиллагаа",
     "adminDrawerNetworking": "Сүлжээ",
@@ -4588,7 +4584,7 @@
     "adminDrawerBackups": "Нөөцлөлт",
     "adminDrawerLogs": "Бүртгэл",
     "adminDrawerScheduledTasks": "Төлөвлөсөн ажлууд",
-    "adminDrawerPlugins": "Plugins",
+    "adminDrawerPlugins": "Залгаасууд",
     "adminDrawerRepositories": "Хадгалах газрууд",
     "adminDrawerLiveTv": "Шууд ТВ",
     "adminExitTooltip": "Админаас гарах",
@@ -4635,7 +4631,7 @@
     "analyticsTopGenres": "Шилдэг жанрууд",
     "analyticsReleaseYears": "Гарсан он жилүүд",
     "analyticsContentRatings": "Агуулгын үнэлгээ",
-    "analyticsRuntimeBuckets": "Runtime Buckets",
+    "analyticsRuntimeBuckets": "Үргэлжлэх хугацааны бүлгүүд",
     "analyticsFileFormats": "Файлын форматууд",
     "analyticsNoData": "Өгөгдөл байхгүй.",
     "adminServerInfo": "Серверийн мэдээлэл",
@@ -4674,17 +4670,17 @@
     "adminSetVolume": "Дууны хэмжээг тохируулах",
     "sessionPrev": "Өмнөх",
     "sessionRewind": "Ухраах",
-    "sessionForward": "Урагшаа",
-    "sessionNext": "Дараа нь",
+    "sessionForward": "Урагш",
+    "sessionNext": "Дараагийн",
     "sessionVolumeDown": "Боть –",
     "sessionVolumeUp": "Боть +",
     "uhd4k": "4К",
     "nowPlaying": "Одоо тоглож байна",
-    "volume": "Эзлэхүүн",
+    "volume": "Дууны хэмжээ",
     "actions": "Үйлдлүүд",
     "videoCodec": "Видео кодлогч",
     "audioCodec": "Аудио кодлогч",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Техник хурдасгалт",
     "completion": "Дуусгах",
     "direct": "Шууд",
     "adminDisconnect": "Салгах",
@@ -5371,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Сегмент хадгалах (секунд)",
     "adminThrottleBuffering": "Тохируулагч буфер",
     "adminTrickplaySaved": "Trickplay тохиргоог хадгалсан",
-    "adminTrickplayLoadFailed": "Трик тоглох тохиргоог ачаалж чадсангүй",
+    "adminTrickplayLoadFailed": "Trickplay тохиргоог ачаалж чадсангүй",
     "adminEnableHardwareAcceleration": "Техник хангамжийн хурдатгалыг идэвхжүүлэх",
     "adminEnableKeyFrameExtraction": "Зөвхөн түлхүүрийн хүрээг задлахыг идэвхжүүлнэ",
     "adminKeyFrameSubtitle": "Илүү хурдан боловч нарийвчлал багатай",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS порт",
     "adminPublicHttpsPort": "Нийтийн HTTPS порт",
     "adminBaseUrl": "Үндсэн URL",
-    "adminBaseUrlHint": "жишээ нь /желлифин",
+    "adminBaseUrlHint": "жишээ нь /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPS-г идэвхжүүлнэ үү",
     "adminLocalNetwork": "Орон нутгийн сүлжээ",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Алсын хүн хайх",
     "adminNoRemoteMatches": "Алсын тохирох зүйл олдсонгүй",
     "adminRemoteResults": "Алсын үр дүн",
     "adminRemoteMetadataApplied": "Алсын мета өгөгдлийг ашигласан",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Таалагч нэмнэ үү",
     "adminTunerType": "Тохируулагчийн төрөл",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Бусад",
-    "adminUrlPath": "URL / Зам",
-    "adminNameOptional": "Нэр (заавал биш)",
     "adminTunerAdded": "Тохируулагч нэмсэн",
     "adminTunerAddFailed": "Тохируулагч нэмж чадсангүй: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Хөтөч нийлүүлэгч нэмнэ үү",
     "adminProviderType": "Үйлчилгээ үзүүлэгчийн төрөл",
-    "adminProviderTypeHint": "SchedulesDirect эсвэл XMLTV",
-    "adminUsernameOptional": "Хэрэглэгчийн нэр (заавал биш)",
-    "adminRefreshInterval": "Сэргээх интервал (цаг)",
     "adminProviderAdded": "Үйлчилгээ үзүүлэгч нэмэгдсэн",
     "adminProviderAddFailed": "Үйлчилгээ үзүүлэгчийг нэмж чадсангүй: {error}",
     "@adminProviderAddFailed": {
@@ -5569,7 +5558,7 @@
             }
         }
     },
-    "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+    "adminTunerRemoveFailed": "Тюнер устгаж чадсангүй: {error}",
     "@adminTunerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "Нэргүй нөөцлөлт",
     "adminLiveTvNotAvailable": "Шууд ТВ-ийн удирдлага энэ серверийн бүтэц дээр боломжгүй.",
     "adminLiveTvTitle": "Шууд ТВ-ийн удирдлага",
-    "adminApply": "Өргөдөл гаргах",
+    "adminApply": "Хэрэглэх",
     "adminNotSet": "Тохируулаагүй",
     "adminReset": "Дахин тохируулах",
     "adminLogsTitle": "Серверийн бүртгэл",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Тохирох шугам байхгүй",
     "adminMetadataEditorTitle": "Мета өгөгдөл засварлагч",
-    "adminMetadataRemote": "Алсын удирдлага",
     "adminMetadataType": "Төрөл",
     "adminMetadataDetails": "Дэлгэрэнгүй мэдээлэл",
     "adminMetadataExternalIds": "Гадаад ID",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Устгах",
+    "adminReposRemove": "Хасах",
     "adminReposSaveFailed": "Хадгалах газрыг хадгалж чадсангүй: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Цуцалж байна...",
     "adminTaskRunning": "Гүйж байна...",
     "adminTaskNeverRun": "Хэзээ ч гүйхгүй",
-    "adminTaskStop": "Зогс",
+    "adminTaskStop": "Зогсоох",
     "adminTaskRun": "Гүй",
     "adminTaskDetailLastExecution": "Сүүлийн гүйцэтгэл",
     "adminTaskDetailStarted": "Эхэлсэн",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "12 цаг тутамд",
     "adminTaskTriggerEvery24Hours": "24 цаг тутамд",
     "adminTaskTriggerEvery2Days": "2 өдөр тутамд",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 цаг} other{{count} цаг}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "одоо",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes}м",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}ц",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days}ө",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Урьдчилан үзэх өнгөц зургийг хайхын тулд трик тоглох дүрс үүсгэх тохиргоог хийнэ үү.",
+    "adminTrickplayDescription": "Гүйлгэх урьдчилсан харагдацын зурагт зориулсан Trickplay зураг үүсгэлтийг тохируулна.",
     "adminNetworkingPublicHttpsPort": "Нийтийн HTTPS порт",
     "adminNetworkingBaseUrl": "Үндсэн URL",
-    "adminNetworkingBaseUrlHint": "жишээ нь /желлифин",
+    "adminNetworkingBaseUrlHint": "жишээ нь /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Гэрчилгээний зам",
     "adminNetworkingRemoteIpFilter": "Алсын IP шүүлтүүр",
@@ -6156,7 +6144,7 @@
     "adminGeneralMetadataPath": "Мета өгөгдлийн зам",
     "adminGeneralServerName": "Серверийн нэр",
     "adminSettingsLoadFailed": "Тохиргоог ачаалж чадсангүй",
-    "adminDiscover": "Discover",
+    "adminDiscover": "Танилцах",
     "adminChannelMappingsUpdateFailed": "Зураглалыг шинэчилж чадсангүй: {error}",
     "@adminChannelMappingsUpdateFailed": {
         "placeholders": {
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "Хавтас",
-    "libraries": "Номын сангууд",
+    "libraries": "Медиа сангууд",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay идэвхгүй",
     "syncPlayDisabledMessage": "Синхрон тоглуулахыг ашиглахын тулд Тохиргоо дотроос SyncPlay-г идэвхжүүлнэ үү.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay нь Jellyfin сервер шаарддаг. Одоогийн сервер үүнийг дэмждэггүй.",
     "syncPlayGroupFallbackName": "SyncPlay Групп",
     "syncPlayGroupTooltip": "SyncPlay бүлэг",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# оролцогч} other {# оролцогч}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Миний сонголтыг санаарай",
     "playHdr10Fallback": "HDR10 нөөцөөр тогло",
     "requestTranscode": "Код хувиргах хүсэлт гаргах",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# эгнээ олдлоо} other {# эгнээ олдлоо}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "ПИН код буруу",
     "pinMismatch": "ПИН код таарахгүй байна",
     "pinForgot": "ПИН кодоо мартсан уу?",
-    "pinClear": "Тодорхой",
-    "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Түргэн холболтын хүсэлтийг зөвшөөрсөн.",
-    "quickConnectInvalidOrExpired": "Түргэн холболтын код хүчингүй эсвэл хугацаа нь дууссан.",
-    "quickConnectNotSupported": "Түргэн холболтыг энэ сервер дээр дэмждэггүй.",
-    "quickConnectAuthorizeFailed": "Түргэн холболтын кодыг зөвшөөрч чадсангүй.",
-    "quickConnectDisabled": "Түргэн холболтыг энэ сервер дээр идэвхгүй болгосон.",
-    "quickConnectForbidden": "Таны бүртгэл энэ Түргэн холболтын хүсэлтийг зөвшөөрөх боломжгүй.",
-    "quickConnectNotFound": "Түргэн холболтын код олдсонгүй. Шинэ код оруулж үзнэ үү.",
-    "quickConnectFailedWithMessage": "Түргэн холболт амжилтгүй болсон: {message}",
+    "pinClear": "Цэвэрлэх",
+    "pinBackspace": "Устгах",
+    "quickConnectAuthorized": "Quick Connect хүсэлтийг зөвшөөрлөө.",
+    "quickConnectInvalidOrExpired": "Quick Connect код буруу эсвэл хугацаа нь дууссан байна.",
+    "quickConnectNotSupported": "Энэ сервер дээр Quick Connect дэмжигдэхгүй.",
+    "quickConnectAuthorizeFailed": "Quick Connect кодыг зөвшөөрч чадсангүй.",
+    "quickConnectDisabled": "Энэ сервер дээр Quick Connect идэвхгүй байна.",
+    "quickConnectForbidden": "Таны бүртгэл энэ Quick Connect хүсэлтийг зөвшөөрөх боломжгүй.",
+    "quickConnectNotFound": "Quick Connect код олдсонгүй. Шинэ код оролдоно уу.",
+    "quickConnectFailedWithMessage": "Quick Connect амжилтгүй боллоо: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "Холимог",
     "shuffleSelectLibrary": "Номын санг сонгоно уу",
     "shuffleSelectGenre": "Төрөл зүйл сонгоно уу",
-    "shuffleLibrary": "Номын сан",
+    "shuffleLibrary": "Медиа сан",
     "shuffleGenre": "Төрөл",
     "shuffleNoLibraries": "Тохиромжтой номын сан байхгүй.",
     "shuffleNoGenres": "Энэ холих горимд төрөл олдсонгүй.",
@@ -6427,7 +6415,7 @@
     "upNext": "Дараа нь",
     "playNext": "Дараа нь тоглуул",
     "stillWatchingContent": "Тоглуулахыг түр зогсоосон. Та үзэж байгаа хэвээр байна уу?",
-    "stillWatchingStop": "Зогс",
+    "stillWatchingStop": "Зогсоох",
     "stillWatchingContinue": "Үргэлжлүүлэх",
     "skipSegment": "Алгасах {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Шинэчлэлтүүдийг шалгана уу",
     "settingsCheckForUpdatesSubtitle": "Хамгийн сүүлийн үеийн Moonfin хувилбарыг шалгана уу",
     "settingsPoweredByFlutter": "Flutter-ээр дэмжигдсэн",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# лицензийн мэдэгдэл} other {# лицензийн мэдэгдэл}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6635,7 +6623,7 @@
     "settingsLong": "Урт",
     "settingsVeryLong": "Маш урт",
     "settingsVideoStartDelay": "Видео эхлэх саатал",
-    "settingsMillisecondsValue": "{value} ms",
+    "settingsMillisecondsValue": "{value} мс",
     "@settingsMillisecondsValue": {
         "description": "Milliseconds duration label",
         "placeholders": {
@@ -6719,7 +6707,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Үзмэрч дансны төрөл",
+    "seerrAccountType": "Seerr бүртгэлийн төрөл",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Бичлэг",
+    "record": "Бичих",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6807,18 +6795,6 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC стерео",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Дамжуулах (Дэвшилтэт)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
@@ -6839,7 +6815,7 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core дамжуулалт",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6851,7 +6827,7 @@
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos дамжуулалт",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} суваг PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7095,7 +7071,7 @@
     "genresRowSortingDescription": "Төрөл бүрийн мөрүүдийг нэмсэн огноо, гарсан огноо, цагаан толгойн үсгийн дарааллаар болон бусад зүйлээр эрэмбэлэх.",
     "genresRowItems": "Төрөл мөрийн зүйлүүд",
     "genresRowItemsDescription": "Төрөл бүрийн мөрөнд Кино, Цуврал эсвэл хоёуланг нь харуул.",
-    "appearance": "Гадаад төрх",
+    "appearance": "Харагдах байдал",
     "cardSize": "Картын хэмжээ",
     "externalPlayerApp": "Гадаад тоглуулагчийн програм",
     "externalPlayerAskEachTimeSubtitle": "Дахин тоглуулах үед програм сонгогчийг харуул.",
@@ -7127,8 +7103,8 @@
     "webDiagnosticsDetectedMixedContentFailure": "Холимог агуулгын алдаа илэрсэн",
     "webDiagnosticsDetectedCorsPreflightFailure": "Илэрсэн CORS/Нислэгийн өмнөх алдаа",
     "webDiagnosticsMixedContentFailureBody": "Moonfin HTTP серверийн URL руу залгахыг оролдож буй HTTPS хуудсыг илрүүллээ. Хөтөчүүд энэ хүсэлтийг таны серверт хүрэхээс өмнө блоклодог.",
-    "webDiagnosticsCorsFailureBody": "Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.",
-    "webDiagnosticsTargetUrl": "Target URL: {url}",
+    "webDiagnosticsCorsFailureBody": "Moonfin хөтчийн түвшний хүсэлтийн алдаа илрүүллээ. Энэ нь ихэвчлэн медиа сервер дээр CORS эсвэл preflight толгой дутуугаас үүсдэг.",
+    "webDiagnosticsTargetUrl": "Зорилтот URL: {url}",
     "@webDiagnosticsTargetUrl": {
         "description": "Target URL shown in diagnostics summary",
         "placeholders": {
@@ -7137,7 +7113,7 @@
             }
         }
     },
-    "webDiagnosticsDetail": "Detail: {detail}",
+    "webDiagnosticsDetail": "Дэлгэрэнгүй: {detail}",
     "@webDiagnosticsDetail": {
         "description": "Error detail shown in diagnostics summary",
         "placeholders": {
@@ -7146,77 +7122,77 @@
             }
         }
     },
-    "webDiagnosticsCurrentRuntimeContext": "Current Runtime Context",
+    "webDiagnosticsCurrentRuntimeContext": "Одоогийн ажиллах орчин",
     "webDiagnosticsOrigin": "Origin",
-    "webDiagnosticsScheme": "Scheme",
-    "webDiagnosticsPluginMode": "Plugin Mode",
-    "webDiagnosticsWebRtcScan": "WebRTC Scan",
-    "webDiagnosticsForcedServerUrl": "Forced Server URL",
-    "webDiagnosticsDefaultServerUrl": "Default Server URL",
-    "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
-    "notConfigured": "not configured",
-    "webDiagnosticsMixedContent": "Mixed Content",
-    "webDiagnosticsMixedContentDetected": "This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.",
-    "webDiagnosticsMixedContentFix": "Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.",
-    "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
-    "webDiagnosticsCorsChecklist": "CORS Checklist",
-    "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
-    "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
-    "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
-    "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
-    "note": "Note",
-    "webDiagnosticsNonWebNote": "This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.",
-    "backToServerSelect": "Back To Server Select",
-    "signOutAllUsers": "Sign Out All Users",
-    "voiceSearchPermissionPermanentlyDenied": "Microphone permission is permanently denied. Enable it in system settings.",
-    "voiceSearchPermissionRequired": "Microphone permission is required for voice search.",
-    "voiceSearchNoMatch": "Did not catch that. Try again.",
-    "voiceSearchNoSpeechDetected": "No speech detected.",
-    "voiceSearchMicrophoneError": "Microphone error.",
-    "voiceSearchNeedsInternet": "Voice search needs internet.",
-    "voiceSearchServiceBusy": "Voice service is busy. Try again.",
-    "microphonePermissionPermanentlyDenied": "Microphone permission is permanently denied.",
-    "microphonePermissionDenied": "Microphone permission is denied.",
-    "speechRecognitionUnavailable": "Speech recognition is unavailable on this device.",
-    "openIosRoutePicker": "Open iOS route picker",
-    "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
-    "videos": "Videos",
-    "trailers": "Trailers",
-    "programs": "Programs",
-    "songs": "Songs",
-    "photoAlbums": "Photo Albums",
-    "photos": "Photos",
-    "people": "People",
-    "recentlyReleasedEpisodes": "Recently Released Episodes",
-    "watchAgain": "Watch Again",
-    "guestAppearances": "Guest Appearances",
-    "appearancesSeerr": "Appearances (Seerr)",
-    "watchWithGroup": "Watch with group",
-    "errors": "Errors",
-    "warnings": "Warnings",
-    "disk": "Disk",
-    "openInBrowser": "Open in Browser",
-    "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
-    "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
-    "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
-    "internal": "Internal",
-    "idle": "Idle",
+    "webDiagnosticsScheme": "Схем",
+    "webDiagnosticsPluginMode": "Залгаасын горим",
+    "webDiagnosticsWebRtcScan": "WebRTC скан",
+    "webDiagnosticsForcedServerUrl": "Албадсан серверийн URL",
+    "webDiagnosticsDefaultServerUrl": "Үндсэн серверийн URL",
+    "webDiagnosticsDiscoveryProxyUrl": "Илрүүлэлтийн прокси URL",
+    "notConfigured": "тохируулаагүй",
+    "webDiagnosticsMixedContent": "Холимог контент",
+    "webDiagnosticsMixedContentDetected": "Энэ хуудсыг HTTPS-ээр ачаалсан боловч тохируулсан нэг буюу хэд хэдэн URL нь HTTP байна. Хөтчүүд HTTPS хуудсыг HTTP API дуудахыг хориглодог.",
+    "webDiagnosticsMixedContentFix": "Засвар: медиа сервер эсвэл прокси цэгээ HTTPS-ээр нийлүүлнэ үү, эсвэл Moonfin-ийг зөвхөн итгэмжлэгдсэн дотоод сүлжээнд HTTP-ээр ачаална уу.",
+    "webDiagnosticsNoMixedContentDetected": "Одоогийн ажиллах тохиргооноос холимог контентын илэрхий тохиргоо илрээгүй.",
+    "webDiagnosticsCorsChecklist": "CORS шалгах жагсаалт",
+    "webDiagnosticsCorsChecklistItem1": "• Access-Control-Allow-Origin-д хөтчийн origin-ыг зөвшөөрнө үү.",
+    "webDiagnosticsCorsChecklistItem2": "• Access-Control-Allow-Headers-д Authorization, X-Emby-Authorization, X-Emby-Token-ыг оруулна уу.",
+    "webDiagnosticsCorsChecklistItem3": "• Дамжуулалт болон гүйлгэх үйлдэлд Content-Range, Accept-Ranges-ыг ил гаргана уу.",
+    "webDiagnosticsCorsChecklistItem4": "• OPTIONS preflight хүсэлтэд 204 буцаана уу.",
+    "webDiagnosticsHeaderSnippetTitle": "Толгойн жишээ хэсэг (nginx маягийн)",
+    "note": "Тэмдэглэл",
+    "webDiagnosticsNonWebNote": "Энэ оношилгооны хуудас нь вэб хувилбарт зориулагдсан. Хэрэв та үүнийг өөр платформ дээр харж байгаа бол эдгээр шалгалт хамаарахгүй байж болно.",
+    "backToServerSelect": "Сервер сонголт руу буцах",
+    "signOutAllUsers": "Бүх хэрэглэгчийг гаргах",
+    "voiceSearchPermissionPermanentlyDenied": "Микрофоны зөвшөөрлийг бүрмөсөн татгалзсан байна. Системийн тохиргооноос идэвхжүүлнэ үү.",
+    "voiceSearchPermissionRequired": "Дуут хайлтад микрофоны зөвшөөрөл шаардлагатай.",
+    "voiceSearchNoMatch": "Ойлгосонгүй. Дахин оролдоно уу.",
+    "voiceSearchNoSpeechDetected": "Яриа илрээгүй.",
+    "voiceSearchMicrophoneError": "Микрофоны алдаа.",
+    "voiceSearchNeedsInternet": "Дуут хайлтад интернэт шаардлагатай.",
+    "voiceSearchServiceBusy": "Дуут үйлчилгээ завгүй байна. Дахин оролдоно уу.",
+    "microphonePermissionPermanentlyDenied": "Микрофоны зөвшөөрлийг бүрмөсөн татгалзсан байна.",
+    "microphonePermissionDenied": "Микрофоны зөвшөөрлийг татгалзсан байна.",
+    "speechRecognitionUnavailable": "Энэ төхөөрөмж дээр яриа таних боломжгүй.",
+    "openIosRoutePicker": "iOS-ийн гаралт сонгогчийг нээх",
+    "airPlayRoutePickerUnavailable": "Энэ төхөөрөмж дээр AirPlay гаралт сонгогч боломжгүй.",
+    "videos": "Видеонууд",
+    "trailers": "Трейлерүүд",
+    "programs": "Нэвтрүүлгүүд",
+    "songs": "Дуунууд",
+    "photoAlbums": "Зургийн цомог",
+    "photos": "Гэрэл зураг",
+    "people": "Хүмүүс",
+    "recentlyReleasedEpisodes": "Саяхан гарсан ангиуд",
+    "watchAgain": "Дахин үзэх",
+    "guestAppearances": "Зочны оролцоо",
+    "appearancesSeerr": "Оролцоо (Seerr)",
+    "watchWithGroup": "Бүлгээр үзэх",
+    "errors": "Алдаанууд",
+    "warnings": "Сануулгууд",
+    "disk": "Диск",
+    "openInBrowser": "Хөтчөөр нээх",
+    "embeddedBrowserNotAvailable": "Энэ платформ дээр суулгагдсан хөтөч боломжгүй.",
+    "adminRestartServerConfirmation": "Серверийг дахин эхлүүлэхдээ итгэлтэй байна уу?",
+    "adminShutdownServerConfirmation": "Серверийг унтраахдаа итгэлтэй байна уу? Та үүнийг гараар дахин эхлүүлэх шаардлагатай болно.",
+    "internal": "Дотоод",
+    "idle": "Сул",
     "os": "OS",
-    "adminNoUsersFound": "No users found",
-    "adminNoUsersMatchSearch": "No users match your search",
-    "adminNoDevicesFound": "No devices found",
-    "adminNoDevicesMatchCurrentFilters": "No devices match the current filters",
-    "passwordSet": "Password set",
-    "noPasswordConfigured": "No password configured",
-    "remoteAccess": "Remote Access",
-    "localOnly": "Local Only",
-    "adminMediaAnalyticsLoadFailed": "Failed to load media analytics",
-    "analyticsCombinedAcrossLibraries": "Combined analytics across all media libraries.",
-    "analyticsTopArtists": "Top Artists",
-    "analyticsTopAuthors": "Top Authors",
-    "analyticsTopContributors": "Top Contributors",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "adminNoUsersFound": "Хэрэглэгч олдсонгүй",
+    "adminNoUsersMatchSearch": "Таны хайлтад тохирох хэрэглэгч алга",
+    "adminNoDevicesFound": "Төхөөрөмж олдсонгүй",
+    "adminNoDevicesMatchCurrentFilters": "Одоогийн шүүлтүүрт тохирох төхөөрөмж алга",
+    "passwordSet": "Нууц үг тохируулсан",
+    "noPasswordConfigured": "Нууц үг тохируулаагүй",
+    "remoteAccess": "Алсын хандалт",
+    "localOnly": "Зөвхөн дотоод",
+    "adminMediaAnalyticsLoadFailed": "Медиа аналитикийг ачаалж чадсангүй",
+    "analyticsCombinedAcrossLibraries": "Бүх медиа сангийн нэгдсэн аналитик.",
+    "analyticsTopArtists": "Шилдэг уран бүтээлчид",
+    "analyticsTopAuthors": "Шилдэг зохиолчид",
+    "analyticsTopContributors": "Шилдэг оролцогчид",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Сан} other{{count} Сан}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7224,20 +7200,20 @@
             }
         }
     },
-    "analyticsNoIndexedMediaTotals": "No indexed media totals are available for this selection yet.",
-    "analyticsLibraryDetails": "Library Details",
-    "analyticsLibraryBreakdown": "Library Breakdown",
-    "analyticsNoLibrariesAvailable": "No libraries are available.",
-    "adminServerAdministrationTitle": "Server Administration",
-    "adminServerPathData": "Data",
-    "adminServerPathImageCache": "Image Cache",
-    "adminServerPathCache": "Cache",
-    "adminServerPathLogs": "Logs",
-    "adminServerPathMetadata": "Metadata",
-    "adminServerPathTranscode": "Transcode",
+    "analyticsNoIndexedMediaTotals": "Энэ сонголтод индексжүүлсэн медиагийн нийлбэр хараахан байхгүй байна.",
+    "analyticsLibraryDetails": "Сангийн дэлгэрэнгүй",
+    "analyticsLibraryBreakdown": "Сангийн задаргаа",
+    "analyticsNoLibrariesAvailable": "Боломжтой сан байхгүй байна.",
+    "adminServerAdministrationTitle": "Серверийн удирдлага",
+    "adminServerPathData": "Өгөгдөл",
+    "adminServerPathImageCache": "Зургийн кэш",
+    "adminServerPathCache": "Кэш",
+    "adminServerPathLogs": "Логууд",
+    "adminServerPathMetadata": "Мета өгөгдөл",
+    "adminServerPathTranscode": "Хөрвүүлэлт",
     "adminServerPathWeb": "Web",
-    "adminNoServerPathsReturned": "No server paths returned by this server.",
-    "adminPercentUsed": "{percent}% used",
+    "adminNoServerPathsReturned": "Энэ сервер серверийн зам буцаасангүй.",
+    "adminPercentUsed": "{percent}% ашигласан",
     "@adminPercentUsed": {
         "placeholders": {
             "percent": {
@@ -7245,24 +7221,24 @@
             }
         }
     },
-    "userActivity": "User Activity",
-    "systemEvents": "System Events",
-    "needsAttention": "Needs Attention",
-    "adminDrawerSectionServer": "Server",
-    "adminDrawerSectionPlayback": "Playback",
-    "adminDrawerSectionDevices": "Devices",
-    "adminDrawerSectionAdvanced": "Advanced",
-    "adminDrawerSectionPlugins": "Plugins",
-    "adminDrawerSectionLiveTv": "Live TV",
-    "homeVideos": "Home Videos",
-    "mixedContent": "Mixed Content",
-    "homeVideosAndPhotos": "Home Videos & Photos",
-    "mixedMoviesAndShows": "Mixed Movies & Shows",
+    "userActivity": "Хэрэглэгчийн үйл ажиллагаа",
+    "systemEvents": "Системийн үйл явдал",
+    "needsAttention": "Анхаарал шаардлагатай",
+    "adminDrawerSectionServer": "Сервер",
+    "adminDrawerSectionPlayback": "Тоглуулалт",
+    "adminDrawerSectionDevices": "Төхөөрөмжүүд",
+    "adminDrawerSectionAdvanced": "Дэвшилтэт",
+    "adminDrawerSectionPlugins": "Залгаасууд",
+    "adminDrawerSectionLiveTv": "Шууд ТВ",
+    "homeVideos": "Гэрийн видео",
+    "mixedContent": "Холимог контент",
+    "homeVideosAndPhotos": "Гэрийн видео ба гэрэл зураг",
+    "mixedMoviesAndShows": "Холимог кино ба цуврал",
     "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
-    "noRecordingsFound": "No recordings found",
-    "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+    "noRecordingsFound": "Бичлэг олдсонгүй",
+    "noImagePagesFoundInArchive": ".{extension} архиваас зургийн хуудас олдсонгүй.",
     "@noImagePagesFoundInArchive": {
         "placeholders": {
             "extension": {
@@ -7270,7 +7246,7 @@
             }
         }
     },
-    "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+    "embeddedRendererFailed": "Суулгагдсан дүрслэгч алдаа гаргалаа ({code}): {description}",
     "@embeddedRendererFailed": {
         "placeholders": {
             "code": {
@@ -7281,7 +7257,7 @@
             }
         }
     },
-    "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+    "epubRendererFailed": "EPUB дүрслэгч алдаа гаргалаа ({code}): {description}",
     "@epubRendererFailed": {
         "placeholders": {
             "code": {
@@ -7292,7 +7268,7 @@
             }
         }
     },
-    "missingLocalFileForReader": "Missing local file for reader: {uri}",
+    "missingLocalFileForReader": "Уншигчид дотоод файл алга: {uri}",
     "@missingLocalFileForReader": {
         "placeholders": {
             "uri": {
@@ -7300,7 +7276,7 @@
             }
         }
     },
-    "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+    "httpStatusWhileOpeningBookData": "{uri}-аас номын өгөгдөл нээх үед HTTP {status}",
     "@httpStatusWhileOpeningBookData": {
         "placeholders": {
             "status": {
@@ -7311,8 +7287,8 @@
             }
         }
     },
-    "noReadableBookEndpointAvailable": "No readable book endpoint available",
-    "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+    "noReadableBookEndpointAvailable": "Уншиж болох номын цэг байхгүй",
+    "unsupportedComicArchiveFormat": "Дэмжигдээгүй комик архивын формат: .{extension}",
     "@unsupportedComicArchiveFormat": {
         "placeholders": {
             "extension": {
@@ -7320,18 +7296,1715 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
-    "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
-    "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
-    "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
-    "closeGenrePanel": "Close genre panel",
-    "loadingShuffle": "Loading shuffle...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
-    "autoHdrSwitching": "Auto HDR Switching",
-    "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
-    "whenFullscreen": "When fullscreen",
-    "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "cbrExtractionPluginUnavailable": "Энэ платформ дээр CBR задлах залгаас боломжгүй.",
+    "failedToExtractCbrArchive": ".cbr архивыг задалж чадсангүй.",
+    "cb7ExtractionUnavailable": "Энэ платформ дээр CB7 задлалт боломжгүй.",
+    "cb7ExtractionPluginUnavailable": "Энэ платформ дээр CB7 задлах залгаас боломжгүй.",
+    "closeGenrePanel": "Төрлийн самбарыг хаах",
+    "loadingShuffle": "Холимогийг ачаалж байна...",
+    "libraryShuffleLabel": "САНГИЙН ХОЛИМОГ",
+    "randomShuffleLabel": "САНАМСАРГҮЙ ХОЛИМОГ",
+    "genresShuffleLabel": "ТӨРЛИЙН ХОЛИМОГ",
+    "autoHdrSwitching": "Автомат HDR шилжилт",
+    "autoHdrSwitchingDescription": "HDR видео тоглуулахад HDR-ийг автоматаар идэвхжүүлж, гарахад дэлгэцийн горимыг сэргээнэ.",
+    "whenFullscreen": "Бүрэн дэлгэцэд байхад",
+    "transcodingLimits": "Хөрвүүлэлтийн хязгаар",
+    "settingsSupportMoonfinSubtitle": "Хөгжүүлэгчид кофе хандивлах",
+    "accountPreferences": "БҮРТГЭЛИЙН ТОХИРГОО",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Интерфейсийн хэл",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Системийн үндсэн",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Хоосон",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Дэлгэрэнгүй дэлгэцийн хэв маяг",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Сонгодог нь Moonfin-ий анхны төвлөрсөн байрлал. Орчин үеийн нь дэлгэцэд зохицдог кино маягийн байрлал.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Сонгодог",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Орчин үеийн",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Дэлгэсэн табууд",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Табуудыг үзэж байхад агуулгыг нь автоматаар харуулна. Унтраавал таб бүрийг гараар нээж хаана.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Техникийн дэлгэрэнгүйг харуулах уу?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Кодек, нягтрал, урсгалын мэдээллийг баннерын хураангуйд харуулна",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Зөвлөмжийн систем",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Moonfin Recommends дотоод сангийн алгоритм эсвэл онлайн TMDb-ийн ижил төстэй байдлын хэмжүүрийг ашиглана. Тэмдэглэл: Онлайн зөвлөмжид Seerr холболт шаардлагатай.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb-ийн ижил төстэй байдал",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Насны ангиллын хязгаар тавих уу?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Moonfin Recommends-ийн саналыг сонгосон медиагийн насны ангиллаар хязгаарлана",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Интерфейсийн хэв маяг",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Автомат нь таны төхөөрөмжид тохирно. Тодорхой хэлбэрийг албадахыг хүсвэл Apple эсвэл Material-ыг сонгоно уу.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Автомат",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Шилэн эффектийн чанар",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Авто нь энэ төхөөрөмжид тохирох шилэн эффектийг сонгоно. Бүрэн нь жинхэнэ бүдгэрүүлэлтийг албадана; Багасгасан нь GPU-ийн хүчийг хэмнэх хөнгөн шил ашиглана.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Авто",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Бүрэн",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Багасгасан",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Захиалгат загвар",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Захиалгат загвар нь Moonfin даяарх харагдах байдлыг өөрчилнө. Өөрийн хэв маягт тохирох нэгийг сонгоно уу.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Шил",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Хөвөгч градиент дэвсгэр, бүрхэг гадаргуу, Apple-ийн цэнхэр өргөлттэй шингэн шилэн хэв маяг",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit баатар",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Бүдүүн өнгөний палитр, дөрвөлжин хүрээ, хатуу сүүдэр, пиксел фонттой ретро пиксел-арт хэв маяг",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Цэс",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Түр зогссон",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Төлөв хадгалах",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Тоглоомууд",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Төлөв ачаалах",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Хурдан урагшлуулах",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Эмуляторын тохиргоо",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Энэ цөмд тохируулах сонголт байхгүй.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Цэс нээхийн тулд удаан дарна уу",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Энэ төхөөрөмж дээр тоглоом тоглуулахыг хараахан дэмжээгүй байна.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Шинэ номууд",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Шинэ аудио номууд",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 ном} other{{count} ном}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Ном",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Аудио ном",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% уншсан",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} үлдсэн",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Унших",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Сонсох",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Зүйлс",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Нэмэлтүүд",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Хөшигний ард",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Хасагдсан үзэгдлүүд",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Богино баримтат",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Ярилцлага",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Үзэгдлүүд",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Богино кино",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} үлдсэн",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "{time}-ийн дараа дуусна",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "НАЙРУУЛАГЧИД",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "ЗОХИОЛЧ",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Бүх хөгжмийг холих",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Утсан дээрээ Moonfin-д нэвтэрнэ үү",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Таны сервертэй холбогдож чадсангүй",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Дараах: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}м үлдсэн",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}ц үлдсэн",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}ц {minutes}м үлдсэн",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Дэлгэрэнгүй хуудас, нүүр хуудасны эгнээ, дууны хэмжээ",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Сэдвийн хөгжмийг давтах",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Нэг удаа тоглуулахын оронд дууг давтана",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Хулганы гүйлгэх дугуй",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Тоглуулж байх үед видеон дээр хулганы дугуйг гүйлгэхэд юу хийхийг сонгоно уу.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Унтраах",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Гүйлгэх (урагш / хойш)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Дууны хэмжээ",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Дууны хэмжээ",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Нөөц аудио хэл",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Үндсэн аудио замыг эрхэмлэх",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Орчуулсан дубляжаас илүү эх аудио замыг эрхэмлэнэ.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Аудио тайлбарын замыг эрхэмлэх",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Энгийн замаас илүү аудио тайлбарын замыг эрхэмлэнэ.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Хөрвүүлэлт (Аудио)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Шууд урсгал (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Хөрвүүлэлт (Битрэйт эсвэл Нягтрал)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Хөрвүүлэлт (Видео ба Аудио)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Хөрвүүлэлт (Видео)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Аудиог хэрхэн задлахыг сонгоно уу. AVR дамжуулалт нь Dolby/DTS-ийн түүхий урсгалыг таны хүлээн авагч руу шууд илгээнэ; Авто эсвэл Буулгах нь дотооддоо задална.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Эх урсгалыг шууд тоглуулах буюу дамжуулах боломжгүй үед олон сувгийн аудиог хөрвүүлэх зорилтот форматыг сонгоно уу.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Автоматаар илрүүлэх\n(Зөвлөмжтэй)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Үндсэн)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Алдагдалгүй)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Зөвхөн стерео)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Үр ашигтай)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Алдагдалгүй)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Аудио сувгийн дээд хязгаар",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Аудио тохируулгынхаа сувгийн дээд хязгаарыг тохируулна уу. Энэ хязгаараас хэтэрсэн олон сувгийн урсгалыг буулгах буюу хөрвүүлнэ.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Автоматаар илрүүлэх\n(Тоног төхөөрөмжийн үндсэн)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Моно",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Стерео",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Орчны дуу",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Квадрафоник",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Орчны дуу",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Орчны дуу",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Орчны дуу",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Орчны дуу",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Чихэвч",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Хадмалын горим",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Тэмдэглэгдсэн",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Үргэлж",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Гадаад",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Албадсан",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Медиа файлын мета өгөгдөлд \"default\" эсвэл \"forced\" гэж тэмдэглэсэн замыг тоглуулна.",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Видео эхлэх бүрд хадмалыг автоматаар ачаалж харуулна.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Үндсэн аудио зам гадаад хэл дээр байвал хадмалыг автоматаар асаана.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Зөвхөн forced мета тэмдэгтэй хадмалыг ачаална.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Хадмалыг автоматаар ачаалахыг бүрэн унтраана.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Нөөц хадмалын хэл",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Хадмалын урсгал",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Татаж авалтыг сервер дээр харуулах",
+    "reportDownloadsActivitySubtitle": "Серверийн админд таны хөрвүүлсэн татаж авалтыг хяналтын самбараас харах боломж олгоно",
+    "navbarAlwaysExpanded": "Навигацийн самбарын шошгыг үргэлж дэлгэх",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Seerr товчийг харуулах",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Зүйлсийг цуглуулгад бүлэглэх",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Сан үзэж байхад цуглуулгад хамаарах зүйлсийг нуух",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Сан бүлэглэх тухай мэдэгдэл",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Энэ тохиргоог ашиглахын тулд Jellyfin эсвэл Emby сервер дээрх сангийнхаа Дэлгэцийн тохиргоонд \"Кинонуудыг цуглуулгад бүлэглэх\" болон/эсвэл \"Цувралуудыг цуглуулгад бүлэглэх\" гэсэн сангийн тохиргоог идэвхжүүлсэн эсэхийг шалгана уу.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Трейлерийн дуу",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Медиа самбар дахь трейлерийн дууг идэвхжүүлэх",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Дэлгэсэн нүүр эгнээ",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Нэг дэлгэцэд нүүр хуудасны 1 эгнээ харуулна",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Одоогийн хэрэглэгч",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Тогтмол",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Үсрэх",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr-ийн танилцах эгнээ",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Мэдэгдэл",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Шинэ хүсэлтийн мэдэгдэл",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Хэн нэгэн хүсэлт илгээхэд надад мэдэгдэнэ",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Хүсэлтийн шинэчлэл",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Зөвшөөрсөн, татгалзсан, санд нэмэгдсэн",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Асуудлын шинэчлэл",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Шинэ асуудал, хариу, шийдвэрлэлт",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Зургийн кэшийн хязгаар",
+    "clearImageCache": "Зургийн кэшийг цэвэрлэх",
+    "imageCacheCleared": "Зургийн кэшийг цэвэрлэлээ",
+    "seerrDownloadingPercent": "Татаж байна · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Импортлож байна",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Амжилтгүй",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Боловсруулж байна",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "{name} өөрчилсөн",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Дууссан",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Энэ гарчигт аль хэдийн хүсэлт гаргасан байна",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Хүсэлтийн хязгаарт хүрсэн",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Энэ гарчиг хар жагсаалтад байна",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Хүсэлт гаргах улирал үлдээгүй",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Танд энэ хүсэлтийг гаргах эрх байхгүй",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Хүсэлтүүд",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Асуудлууд",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Хамгийн шинэ",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Сүүлд өөрчилсөн",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Асуудал байхгүй",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{limit} киноны хүсэлтээс {remaining} үлдсэн",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{limit} улирлын хүсэлтээс {remaining} үлдсэн",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "{name}-ийн нэг хэсэг",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Цуглуулгыг үзэх",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Цуглуулгыг хүсэх",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} кино · {available} боломжтой",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "{count} кино хүсэх",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "{total}-аас {current} дахийг хүсэж байна...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} кино хүслээ",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{total} киноноос {ok}-ийг хүслээ",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Бүх кино аль хэдийн боломжтой эсвэл хүссэн байна",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Асуудал мэдэгдэх",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Видео",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Аудио",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Юу буруу байна?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Бүх анги",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Анги",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Нээлттэй",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Шийдэгдсэн",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Шийдвэрлэх",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Дахин нээх",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "{name} мэдэгдсэн",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} сэтгэгдэл",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Сэтгэгдэл нэмэх",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Энэ асуудлыг устгах уу?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Мэдэгдэл илгээх",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Дэлгэц",
+    "adminDrawerMetadata": "Мета өгөгдөл",
+    "adminDrawerNfo": "NFO тохиргоо",
+    "adminActivitySeverityAll": "Бүх түвшин",
+    "adminActivityDateRange": "Огнооны хязгаар",
+    "adminRemoveDeviceConfirm": "'{name}' төхөөрөмжийг устгах уу? Хэрэглэгч энэ төхөөрөмж дээр дахин нэвтрэх шаардлагатай болно.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Бүх төхөөрөмжийг устгах",
+    "adminDeleteAllDevicesConfirm": "{count} төхөөрөмжийг устгах уу? Холбогдох хэрэглэгчид дахин нэвтрэх шаардлагатай болно. Таны одоогийн төхөөрөмжид нөлөөлөхгүй.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Төхөөрөмжүүдийг устгалаа",
+    "adminDevicesDeletedPartial": "Зарим төхөөрөмжийг устгалаа; {count}-ийг устгаж чадсангүй.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Замууд",
+    "adminLibraryTabOptions": "Сонголтууд",
+    "adminLibraryTabDownloaders": "Татагчид",
+    "adminLibMetadataSavers": "Мета өгөгдөл хадгалагчид",
+    "adminLibSubtitleDownloaders": "Хадмал татагчид",
+    "adminLibLyricDownloaders": "Дууны үг татагчид",
+    "adminLibMetadataDownloadersFor": "Мета өгөгдөл татагчид: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Зураг татагчид: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Энэ сервер нь сангийн энэ төрөлд татагч санал болгохгүй байна.",
+    "adminLibrarySectionGeneral": "Ерөнхий",
+    "adminLibrarySectionMetadata": "Мета өгөгдөл",
+    "adminLibrarySectionEmbedded": "Суулгагдсан мэдээлэл",
+    "adminLibrarySectionSubtitles": "Хадмал",
+    "adminLibrarySectionImages": "Зургууд",
+    "adminLibrarySectionSeries": "Цуврал",
+    "adminLibrarySectionMusic": "Хөгжим",
+    "adminLibrarySectionMovies": "Кино",
+    "adminLibRealtimeMonitor": "Бодит цагийн хяналтыг идэвхжүүлэх",
+    "adminLibRealtimeMonitorHint": "Файлын өөрчлөлтийг илрүүлж автоматаар боловсруулна.",
+    "adminLibArchiveMediaFiles": "Архивыг медиа файл гэж үзэх",
+    "adminLibEnablePhotos": "Гэрэл зургийг харуулах",
+    "adminLibSaveLocalMetadata": "Зургийг медиа хавтсанд хадгалах",
+    "adminLibRefreshInterval": "Мета өгөгдлийн автомат шинэчлэл",
+    "adminLibRefreshNever": "Хэзээ ч үгүй",
+    "adminLibDefault": "Үндсэн",
+    "adminLibDisplayTitle": "Дэлгэц",
+    "adminLibDisplaySection": "Сангийн дэлгэц",
+    "adminLibFolderView": "Энгийн медиа хавтсыг харуулах хавтасны харагдацыг гаргах",
+    "adminLibSpecialsInSeasons": "Тусгай ангиудыг гарсан улиралд нь харуулах",
+    "adminLibGroupMovies": "Кинонуудыг цуглуулгад бүлэглэх",
+    "adminLibGroupShows": "Цувралуудыг цуглуулгад бүлэглэх",
+    "adminLibExternalSuggestions": "Саналд гадаад контентыг харуулах",
+    "adminLibDateAddedSection": "Нэмсэн огнооны үйлдэл",
+    "adminLibDateAddedLabel": "Нэмсэн огноог эндээс авах",
+    "adminLibDateAddedImport": "Санд сканнердсан огноо",
+    "adminLibDateAddedFile": "Файл үүсгэсэн огноо",
+    "adminLibMetadataTitle": "Мета өгөгдөл ба зураг",
+    "adminLibMetadataLangSection": "Мета өгөгдлийн сонгосон хэл",
+    "adminLibChaptersSection": "Бүлгүүд",
+    "adminLibDummyChapterDuration": "Түр бүлгийн үргэлжлэх хугацаа (секунд)",
+    "adminLibDummyChapterDurationHint": "Бүлэггүй медиад үүсгэх бүлгийн урт. Унтраахын тулд 0 болгоно уу.",
+    "adminLibChapterImageResolution": "Бүлгийн зургийн нягтрал",
+    "adminLibNfoTitle": "NFO тохиргоо",
+    "adminLibNfoHelp": "NFO мета өгөгдөл нь Kodi болон түүнтэй төстэй клиентүүдтэй нийцнэ. Тохиргоо нь NFO мета өгөгдөл хадгалдаг бүх санд үйлчилнэ.",
+    "adminLibKodiUser": "NFO файлд үзсэн өгөгдлийг нь хадгалах хэрэглэгч",
+    "adminLibSaveImagePaths": "Зургийн замыг NFO файлд хадгалах",
+    "adminLibPathSubstitution": "NFO зургийн замд зам орлуулахыг идэвхжүүлэх",
+    "adminLibExtraThumbs": "extrafanart зургийг extrathumbs хавтсанд хуулах",
+    "adminLibNone": "Байхгүй",
+    "adminLibRefreshDays": "{days} хоног",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Суулгагдсан гарчгийг ашиглах",
+    "adminLibEmbeddedExtrasTitles": "Нэмэлтэд суулгагдсан гарчгийг ашиглах",
+    "adminLibEmbeddedEpisodeInfos": "Суулгагдсан ангийн мэдээллийг ашиглах",
+    "adminLibAllowEmbeddedSubtitles": "Суулгагдсан хадмалыг зөвшөөрөх",
+    "adminLibEmbeddedAllowAll": "Бүгдийг зөвшөөрөх",
+    "adminLibEmbeddedAllowText": "Зөвхөн текст",
+    "adminLibEmbeddedAllowImage": "Зөвхөн зураг",
+    "adminLibEmbeddedAllowNone": "Байхгүй",
+    "adminLibSkipIfEmbeddedSubs": "Суулгагдсан хадмал байвал татахыг алгасах",
+    "adminLibSkipIfAudioMatches": "Аудио зам татах хэлтэй таарвал татахыг алгасах",
+    "adminLibRequirePerfectMatch": "Хадмал яг таарахыг шаардах",
+    "adminLibSaveSubtitlesWithMedia": "Хадмалыг медиа хавтсанд хадгалах",
+    "adminLibChapterImageExtraction": "Бүлгийн зургийг задлах",
+    "adminLibChapterImagesDuringScan": "Сан сканнердах үед бүлгийн зургийг задлах",
+    "adminLibTrickplayExtraction": "Trickplay зураг задлахыг идэвхжүүлэх",
+    "adminLibTrickplayDuringScan": "Сан сканнердах үед Trickplay зургийг задлах",
+    "adminLibSaveTrickplayWithMedia": "Trickplay зургийг медиа хавтсанд хадгалах",
+    "adminLibAutomaticSeriesGrouping": "Олон хавтсанд тархсан цувралыг автоматаар нэгтгэх",
+    "adminLibSeasonZeroName": "Тэг улирлын харагдах нэр",
+    "adminLibLufsScan": "Аудио нормчлолын LUFS сканыг идэвхжүүлэх",
+    "adminLibPreferNonstandardArtist": "Стандарт бус уран бүтээлчийн шошгыг эрхэмлэх",
+    "adminLibAutoAddToCollection": "Кинонуудыг цуглуулгад автоматаар нэмэх",
+    "adminParentalControl": "Эцэг эхийн хяналт",
+    "adminMaxParentalRating": "Зөвшөөрөх насны ангиллын дээд хязгаар",
+    "adminMaxParentalRatingHint": "Үүнээс өндөр ангилалтай контентыг энэ хэрэглэгчээс нуух болно.",
+    "adminParentalRatingNone": "Байхгүй",
+    "adminBlockUnratedItems": "Ангиллын мэдээлэлгүй эсвэл танигдаагүй зүйлсийг хориглох",
+    "adminUnratedBook": "Номууд",
+    "adminUnratedChannelContent": "Сувгууд",
+    "adminUnratedLiveTvChannel": "Шууд ТВ",
+    "adminUnratedMovie": "Кино",
+    "adminUnratedMusic": "Хөгжим",
+    "adminUnratedTrailer": "Трейлерүүд",
+    "adminUnratedSeries": "Цуврал",
+    "adminAccessSchedules": "Хандалтын хуваарь",
+    "adminAccessSchedulesHint": "Зөвхөн доорх хуваарийн цагт хандалтыг зөвшөөрнө. Хуваарь тохируулаагүй бол өдөржин хандах боломжтой.",
+    "adminAddSchedule": "Хуваарь нэмэх",
+    "adminScheduleDay": "Өдөр",
+    "adminScheduleStart": "Эхлэх",
+    "adminScheduleEnd": "Дуусах",
+    "adminDayEveryday": "Өдөр бүр",
+    "adminDayWeekday": "Ажлын өдөр",
+    "adminDayWeekend": "Амралтын өдөр",
+    "adminDaySunday": "Ням",
+    "adminDayMonday": "Даваа",
+    "adminDayTuesday": "Мягмар",
+    "adminDayWednesday": "Лхагва",
+    "adminDayThursday": "Пүрэв",
+    "adminDayFriday": "Баасан",
+    "adminDaySaturday": "Бямба",
+    "adminAllowedTags": "Зөвшөөрсөн шошго",
+    "adminAllowedTagsHint": "Зөвхөн эдгээр шошготой контентыг харуулна. Бүгдийг зөвшөөрөхийн тулд хоосон орхино уу.",
+    "adminBlockedTags": "Хориглосон шошго",
+    "adminBlockedTagsHint": "Эдгээр шошготой контентыг энэ хэрэглэгчээс нууна.",
+    "adminAddTag": "Шошго нэмэх",
+    "adminEnabledDevices": "Идэвхжүүлсэн төхөөрөмж",
+    "adminEnabledChannels": "Идэвхжүүлсэн суваг",
+    "adminAuthProvider": "Баталгаажуулалтын үйлчилгээ үзүүлэгч",
+    "adminPasswordResetProvider": "Нууц үг сэргээх үйлчилгээ үзүүлэгч",
+    "adminLoginAttemptsBeforeLockout": "Түгжихээс өмнөх амжилтгүй нэвтрэлтийн дээд хязгаар",
+    "adminLoginAttemptsHint": "Үндсэн утгад 0, түгжээг унтраахад -1 гэж тохируулна уу.",
+    "adminSyncPlayAccess": "SyncPlay хандалт",
+    "adminSyncPlayCreateAndJoin": "Бүлэг үүсгэх, нэгдэхийг зөвшөөрөх",
+    "adminSyncPlayJoin": "Бүлэгт нэгдэхийг зөвшөөрөх",
+    "adminSyncPlayNone": "Хандалтгүй",
+    "adminContentDeletionFolders": "Контент устгахыг эндээс зөвшөөрөх",
+    "adminBackupOptionsTitle": "Нөөцлөлт үүсгэх",
+    "adminBackupInclude": "Нөөцлөлтөд юу оруулахаа сонгоно уу.",
+    "adminBackupDatabase": "Өгөгдлийн сан",
+    "adminBackupDatabaseAlways": "Үргэлж багтана",
+    "adminBackupMetadata": "Мета өгөгдөл",
+    "adminBackupSubtitles": "Хадмал",
+    "adminBackupTrickplay": "Trickplay зураг",
+    "adminEditTuner": "Тюнер засах",
+    "adminTunerTypeM3u": "M3U тюнер",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Файл эсвэл URL",
+    "adminTunerIpAddress": "Тюнерийн IP хаяг",
+    "adminTunerFriendlyName": "Ойлгомжтой нэр",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Зэрэг холболтын хязгаар",
+    "adminTunerCountHelp": "Тюнерийн зэрэг зөвшөөрөх урсгалын дээд тоо. Хязгааргүй бол 0 гэж тохируулна уу.",
+    "adminTunerFallbackBitrate": "Нөөц дамжуулалтын дээд битрэйт",
+    "adminTunerImportFavoritesOnly": "Зөвхөн дуртай сувгийг импортлох",
+    "adminTunerAllowHwTranscoding": "Техник хангамжийн хөрвүүлэлтийг зөвшөөрөх",
+    "adminTunerAllowFmp4": "fMP4 хөрвүүлэлтийн савыг зөвшөөрөх",
+    "adminTunerAllowStreamSharing": "Урсгал хуваалцахыг зөвшөөрөх",
+    "adminTunerEnableStreamLooping": "Урсгалыг давтахыг идэвхжүүлэх",
+    "adminTunerIgnoreDts": "DTS-ийг үл хэрэгсэх",
+    "adminTunerReadAtNativeFramerate": "Оролтыг үндсэн кадрын давтамжаар унших",
+    "adminEditProvider": "Үйлчилгээ үзүүлэгч засах",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Файл эсвэл URL",
+    "adminXmltvMoviePrefix": "Киноны угтвар",
+    "adminXmltvMovieCategories": "Киноны ангилал",
+    "adminXmltvCategoriesHelp": "Олон ангиллыг босоо зураасаар тусгаарлана уу.",
+    "adminXmltvKidsCategories": "Хүүхдийн ангилал",
+    "adminXmltvNewsCategories": "Мэдээний ангилал",
+    "adminXmltvSportsCategories": "Спортын ангилал",
+    "adminSdUsername": "Хэрэглэгчийн нэр",
+    "adminSdPassword": "Нууц үг",
+    "adminSdCountry": "Улс",
+    "adminSdCountrySelect": "Улс сонгоно уу",
+    "adminSdPostalCode": "Шуудангийн код",
+    "adminSdGetListings": "Жагсаалт авах",
+    "adminSdListings": "Жагсаалт",
+    "adminEnableAllTuners": "Бүх тюнерийг идэвхжүүлэх",
+    "adminTunerResetNotSupported": "Энэ төрлийн тюнер дахин тохируулахыг дэмждэггүй.",
+    "adminMovieRecordingPath": "Кино бичлэгийн зам",
+    "adminGuideDays": "Хөтөлбөрийн өгөгдлийн хоног",
+    "adminGuideDaysAuto": "Автомат",
+    "adminGuideDaysValue": "{days} хоног",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Дараах боловсруулалтын програмын зам",
+    "adminRecordingPostProcessorArgs": "Дараах боловсруулагчийн аргумент",
+    "adminSaveRecordingNfo": "Бичлэгийн NFO мета өгөгдлийг хадгалах",
+    "adminSaveRecordingImages": "Бичлэгийн зургийг хадгалах",
+    "adminLiveTvSectionTiming": "Цаг тохируулга",
+    "adminLiveTvSectionPaths": "Бичлэгийн замууд",
+    "adminLiveTvSectionPostProcessing": "Дараах боловсруулалт",
+    "adminGuideDaysDisplay": "Хөтөлбөрийн өгөгдөл: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Хөтөлбөрийн өгөгдлийг шинэчлэх",
+    "adminGuideRefreshStarted": "Хөтөлбөрийн өгөгдлийн шинэчлэл эхэллээ",
+    "adminGuideRefreshUnavailable": "Энэ сервер дээр хөтөлбөр шинэчлэх ажил боломжгүй байна.",
+    "adminMetadataIdentify": "Таних",
+    "adminBrandingSplashUpload": "Зураг байршуулах",
+    "adminBrandingSplashUploaded": "Эхлэлийн дэлгэцийг шинэчиллээ",
+    "adminBrandingSplashUploadFailed": "Эхлэлийн дэлгэцийг байршуулж чадсангүй",
+    "adminBrandingSplashDeleted": "Эхлэлийн дэлгэцийг устгалаа",
+    "adminBrandingNoSplash": "Захиалгат эхлэлийн дэлгэц байхгүй",
+    "adminPlaybackQsvDevice": "QSV төхөөрөмж",
+    "adminPlaybackEnhancedNvdec": "Сайжруулсан NVDEC задлагчийг идэвхжүүлэх",
+    "adminPlaybackPreferNativeDecoder": "Системийн уугуул техник задлагчийг эрхэмлэх",
+    "adminPlaybackColorDepth": "Техник задлалтын өнгөний гүн",
+    "adminPlaybackColorDepth10Hevc": "10-бит HEVC задлалт",
+    "adminPlaybackColorDepth10Vp9": "10-бит VP9 задлалт",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-бит задлалт",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-бит задлалт",
+    "adminPlaybackHwEncodingSection": "Техник кодчилол",
+    "adminPlaybackAllowHevcEncoding": "HEVC кодчилолыг зөвшөөрөх",
+    "adminPlaybackAllowAv1Encoding": "AV1 кодчилолыг зөвшөөрөх",
+    "adminPlaybackIntelLowPowerH264": "Intel-ийн бага чадлын H.264 кодлогчийг идэвхжүүлэх",
+    "adminPlaybackIntelLowPowerHevc": "Intel-ийн бага чадлын HEVC кодлогчийг идэвхжүүлэх",
+    "adminPlaybackToneMapping": "Тон зураглал",
+    "adminPlaybackEnableTonemapping": "Тон зураглалыг идэвхжүүлэх",
+    "adminPlaybackEnableVppTonemapping": "VPP тон зураглалыг идэвхжүүлэх",
+    "adminPlaybackEnableVtTonemapping": "VideoToolbox тон зураглалыг идэвхжүүлэх",
+    "adminPlaybackTonemappingAlgorithm": "Тон зураглалын алгоритм",
+    "adminPlaybackTonemappingMode": "Тон зураглалын горим",
+    "adminPlaybackTonemappingRange": "Тон зураглалын хүрээ",
+    "adminPlaybackTonemappingDesat": "Тон зураглалын өнгө сулралт",
+    "adminPlaybackTonemappingPeak": "Тон зураглалын оргил",
+    "adminPlaybackTonemappingParam": "Тон зураглалын параметр",
+    "adminPlaybackVppTonemappingBrightness": "VPP тон зураглалын гэрэлтэлт",
+    "adminPlaybackVppTonemappingContrast": "VPP тон зураглалын тодрол",
+    "adminPlaybackPresetsQuality": "Урьдчилсан тохиргоо ба чанар",
+    "adminPlaybackEncoderPreset": "Кодлогчийн урьдчилсан тохиргоо",
+    "adminPlaybackH264Crf": "H.264 кодчилолын CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) кодчилолын CRF",
+    "adminPlaybackDeinterlaceMethod": "Деинтерлэйс арга",
+    "adminPlaybackDeinterlaceDoubleRate": "Деинтерлэйс хийхэд кадрын давтамжийг хоёр дахин нэмэгдүүлэх",
+    "adminPlaybackAudioSection": "Аудио",
+    "adminPlaybackEnableAudioVbr": "Аудио VBR кодчилолыг идэвхжүүлэх",
+    "adminPlaybackDownmixBoost": "Аудио буулгалтын өсгөлт",
+    "adminPlaybackDownmixAlgorithm": "Стерео буулгалтын алгоритм",
+    "adminPlaybackMaxMuxingQueue": "Муксинг дарааллын дээд хэмжээ",
+    "adminPlaybackAutoOption": "Авто",
+    "adminRunningTasks": "Ажиллаж буй ажлууд",
+    "adminNetworkingPublicHttpPort": "Нийтийн HTTP порт",
+    "adminNetworkingRequireHttps": "HTTPS шаардах",
+    "adminNetworkingRequireHttpsHint": "Алсын бүх хүсэлтийг HTTPS руу чиглүүлнэ. Серверт хүчинтэй гэрчилгээ байхгүй бол нөлөөгүй.",
+    "adminNetworkingCertPassword": "Гэрчилгээний нууц үг",
+    "adminNetworkingIpSettings": "IP тохиргоо",
+    "adminNetworkingEnableIpv4": "IPv4-ийг идэвхжүүлэх",
+    "adminNetworkingEnableIpv6": "IPv6-г идэвхжүүлэх",
+    "adminNetworkingAutoDiscovery": "Автомат порт зураглалыг идэвхжүүлэх",
+    "adminNetworkingLocalSubnets": "LAN сүлжээ",
+    "adminNetworkingLocalSubnetsHint": "Дотоод сүлжээнд байна гэж үзэх IP хаяг эсвэл CIDR дэд сүлжээний жагсаалт, таслал эсвэл мөрөөр тусгаарлана.",
+    "adminNetworkingPublishedUris": "Нийтэлсэн серверийн URI",
+    "adminNetworkingPublishedUriHint": "Дэд сүлжээ эсвэл хаягийг нийтэлсэн URL-д холбоно, жишээ нь all=https://example.com",
+    "adminPlaybackThrottleDelay": "Хязгаарлалтын саатал (секунд)",
+    "adminPlaybackEnableSubtitleExtraction": "Хадмалыг шууд задлахыг зөвшөөрөх",
+    "adminGeneralEnableSlowResponse": "Удаан хариултын сануулгыг идэвхжүүлэх",
+    "adminGeneralQuickConnect": "Quick Connect-ийг идэвхжүүлэх",
+    "adminGeneralSectionServer": "Сервер",
+    "adminGeneralSectionMetadata": "Мета өгөгдөл",
+    "adminGeneralSectionPaths": "Замууд",
+    "adminGeneralSectionPerformance": "Гүйцэтгэл",
+    "adminGeneralDisplayLanguage": "Сонгосон харуулах хэл",
+    "offlineBannerTitle": "Та офлайн байна",
+    "offlineBannerSubtitle": "Таны татсан зүйлсийг харуулж байна",
+    "offlineBannerAction": "Татсан зүйлс",
+    "serverUnreachableBannerTitle": "Таны сервертэй холбогдож чадсангүй",
+    "serverUnreachableBannerSubtitle": "Сэргэх хүртэл татсан зүйлсээс тоглуулж байна",
+    "contextMenuHideFromContinueWatching": "Үргэлжлүүлэн үзэхээс нуух",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Дараагийн хэсгээс нуух",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Цуглуулгад нэмэх",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "ХОЛБОЛТ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Өөрөө гарын үсэг зурсан гэрчилгээг зөвшөөрөх",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Өөрөө гарын үсэг зурсан эсвэл хувийн CA-ийн TLS гэрчилгээ хэрэглэдэг серверт итгэнэ. Зөвхөн өөрийн хянадаг серверт идэвхжүүлнэ үү. Энэ нь бүх холболтын гэрчилгээний шалгалтыг унтраана.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Дэлгэрэнгүй дэлгэц",
+    "settingsDetailsScreenSubtitle": "Хэв маяг, дэвсгэрийн бүдгэрэлт, табын үйлдэл",
+    "settingsShowSeerrButtonInNavigation": "Навигацийн самбарт Seerr товчийг харуулах",
+    "settingsAlwaysExpandNavbarLabels": "Дээд навигацийн самбарт текст шошгыг үргэлж харуулах",
+    "settingsMediaSegmentCountdown": "Медиа сегментийн тоолол",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Явцын мөр",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Таймер",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Байхгүй",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Саяхан гарсан {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Туннелийг идэвхжүүлэх",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Дэвшилтэт. Аудио, видеог хосолсон техник хангамжийн замаар дамжуулна. Зарим төхөөрөмж дээр аудио/видео тасалдал үүсгэдэг тул үндсэндээ унтраалттай.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Медиагийн дэлгэрэнгүйг харуулах",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Сангийн хуудасны дээд хэсэгт сонгосон зүйлийн дэлгэрэнгүйг харуулна.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Үзэж байхад дэвсгэр зургийг нуух уу?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Загварын дэлгүүр",
+    "themeStoreSubtitle": "Нийгэмлэгийн загваруудыг үзэж хадгална",
+    "themeStoreDescription": "Загварыг хадгалснаар бусад хадгалсан загварынхаа адил ашиглана.",
+    "themeStoreEmpty": "Одоогоор боломжтой загвар байхгүй байна.",
+    "themeStoreLoadFailed": "Загварын дэлгүүрийг ачаалж чадсангүй. Холболтоо шалгаад дахин оролдоно уу.",
+    "themeStoreSave": "Хадгалах",
+    "themeStoreSaveAndApply": "Хадгалж хэрэглэх",
+    "themeStoreSaved": "Хадгалсан",
+    "themeStoreInvalidMessage": "Энэ загварыг ачаалж чадсангүй.",
+    "themeStoreSavedMessage": "\"{themeName}\"-ийг хадгаллаа.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Нүүр эгнээний харагдац",
+    "homeRowSections": "Нүүр эгнээний хэсгүүд",
+    "homeRowToggles": "Нүүр эгнээний унтраалга",
+    "homeRowTogglesSubtitle": "Сан дээр суурилсан нүүр эгнээний ангиллыг идэвхжүүлэх эсвэл унтраах",
+    "homeRowTogglesDescription": "Нүүр хэсгүүдэд эгнээг харуулахын тулд дараах унтраалгыг идэвхжүүлнэ үү.",
+    "displayPlaylistsRows": "Тоглуулах жагсаалтын эгнээг харуулах",
+    "displayPlaylistsRowsSubtitle": "Нүүр хэсгүүдэд тоглуулах жагсаалтын эгнээг харуулна.",
+    "playlistsRowSorting": "Тоглуулах жагсаалтын эгнээний эрэмбэ",
+    "playlistsRowSortingDescription": "Тоглуулах жагсаалтын эгнээг нэмсэн огноо, гарсан огноо, цагаан толгойн дараалал болон бусад байдлаар эрэмбэлнэ.",
+    "displayAudioRows": "Аудио эгнээг харуулах",
+    "displayAudioRowsSubtitle": "Нүүр хэсгүүдэд аудио эгнээг харуулна.",
+    "audioRowsSorting": "Аудио эгнээний эрэмбэ",
+    "audioRowsSortingDescription": "Аудио эгнээг нэмсэн огноо, гарсан огноо, цагаан толгойн дараалал болон бусад байдлаар эрэмбэлнэ.",
+    "audioPlaylists": "Аудио тоглуулах жагсаалт",
+    "layout": "Байрлал",
+    "theme": "Загвар",
+    "keyboard": "Гар",
+    "navButtons": "Товчнууд",
+    "rendering": "Дүрслэл",
+    "mpvConfiguration": "MPV тохиргоо",
+    "externalPlayerAppDescription": "Удаан дарж тоглуулах сонголтыг идэвхжүүлэхийн тулд гадаад тоглуулагч тохируулна уу",
+    "crewContributionsSeerr": "Багийн оролцоо (Seerr)",
+    "changeArtwork": "Зургийг солих",
+    "missing": "Дутуу",
+    "clearAllArtworkButton": "Бүх зургийг цэвэрлэх үү?",
+    "clearAllArtworkWarning": "Татсан бүх зургийг цэвэрлэхдээ итгэлтэй байна уу?",
+    "confirmClear": "Цэвэрлэхийг баталгаажуулах",
+    "confirmClearMessage": "Энэ {itemType}-ийг цэвэрлэхдээ итгэлтэй байна уу?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Байршуулах уу?",
+    "resolutionLabel": "Нягтрал: ",
+    "onlyShowInterfaceLanguage": "Зөвхөн интерфейсийн хэл дээрх зургийг харуулах",
+    "confirmClearAll": "Бүгдийг цэвэрлэхийг баталгаажуулах",
+    "imageUploadSuccess": "Зургийг амжилттай байршууллаа!",
+    "imageUploadFailed": "Зураг байршуулж чадсангүй: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Зураг тохируулж чадсангүй: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Зураг устгаж чадсангүй: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Бүх зургийг цэвэрлэж чадсангүй: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Тийм",
+    "posterCategory": "Постер",
+    "backdropsCategory": "Дэвсгэр зураг",
+    "bannerCategory": "Баннер",
+    "logoCategory": "Лого",
+    "thumbnailCategory": "Товч зураг",
+    "artCategory": "Арт",
+    "discArtCategory": "Дискний арт",
+    "screenshotCategory": "Дэлгэцийн зураг",
+    "boxCoverCategory": "Хайрцгийн нүүр",
+    "boxRearCoverCategory": "Хайрцгийн ар тал",
+    "menuArtCategory": "Цэсний арт",
+    "confirmItemPoster": "постер",
+    "confirmItemBackdrop": "дэвсгэр зураг",
+    "confirmItemBanner": "баннер",
+    "confirmItemLogo": "лого",
+    "confirmItemThumbnail": "товч зураг",
+    "confirmItemArt": "арт",
+    "confirmItemDiscArt": "дискний арт",
+    "confirmItemScreenshot": "дэлгэцийн зураг",
+    "confirmItemBoxCover": "хайрцгийн нүүр",
+    "confirmItemBoxRearCover": "хайрцгийн ар тал",
+    "confirmItemMenuArt": "цэсний арт",
+    "resolutionAll": "Бүгд",
+    "resolutionHigh": "Өндөр (1080p+)",
+    "resolutionMedium": "Дунд (720p)",
+    "resolutionLow": "Бага (<720p)",
+    "sources": "Эх сурвалж",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Бүлгүүд",
+    "audiobookBookmarks": "Хавчуургууд",
+    "audiobookNotes": "Тэмдэглэл",
+    "audiobookQueue": "Дараалал",
+    "audiobookTimeline": "Цагийн шугам",
+    "audiobookTimelineEmpty": "Цагийн шугам хоосон байна",
+    "audiobookWholeBook": "Бүтэн ном",
+    "audiobookFocusedTimeline": "Төвлөрсөн цагийн шугам",
+    "audiobookExportBookmarks": "Хавчуургыг экспортлох",
+    "audiobookExportNotes": "Тэмдэглэлийг экспортлох",
+    "audiobookExportAll": "Бүгдийг экспортлох",
+    "audiobookExportSuccess": "{path} руу экспортлолоо",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Экспорт амжилтгүй боллоо: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Дууны үг",
+    "audiobookAddBookmark": "Хавчуурга нэмэх",
+    "audiobookAddNote": "Тэмдэглэл нэмэх",
+    "audiobookEditNote": "Тэмдэглэл засах",
+    "audiobookNoteHint": "Энэ агшинд тэмдэглэл бичих",
+    "audiobookSleepTimer": "Унтах таймер",
+    "audiobookSleepOff": "Унтраах",
+    "audiobookSleepEndOfChapter": "Бүлгийн төгсгөл",
+    "audiobookSleepCustom": "Захиалгат",
+    "audiobookSleepRemaining": "{remaining} үлдсэн",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 мин} other{{count} мин}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Тоглуулах хурд",
+    "audiobookRemainingTime": "Үлдсэн",
+    "audiobookElapsedTime": "Өнгөрсөн",
+    "audiobookSkipBackSeconds": "{seconds}с ухраах",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "{seconds}с урагшлуулах",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Өмнөх бүлэг",
+    "audiobookNextChapter": "Дараагийн бүлэг",
+    "audiobookChapterIndicator": "{total}-аас {current}-р бүлэг",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Бүлэг байхгүй",
+    "audiobookNoBookmarks": "Одоогоор хавчуурга байхгүй",
+    "audiobookNoNotes": "Одоогоор тэмдэглэл байхгүй",
+    "audiobookBookmarkAdded": "{position}-д хавчуурга нэмлээ",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "1.0x болгож сэргээх",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Хадгалах",
+    "audiobookCancel": "Цуцлах",
+    "audiobookDelete": "Устгах",
+    "subtitlePreferences": "Хадмалын тохиргоо",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Хадмалын горим, үндсэн хэл, харагдах байдал, дүрслэлийн сонголтыг өөрчилнө.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Хадмалын дүрслэл",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Харуулах сонголтууд",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Гарсан огноо (өсөхөөр)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Гарсан огноо (буурахаар)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Оролцоог бүлэглэх",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Олон дүрийг бүлэглэх",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Санд бичих эрхийн сануулга",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Үүнийг хэрхэн засах вэ:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Сервер дээрх медиа сангийнхаа хавтсуудад Jellyfin үйлчилгээний хэрэглэгчид (жишээ нь jellyfin эсвэл Docker PUID/PGID) бичих эрх олгоно уу.\n\n2. Эсвэл Jellyfin-ий Хяналтын самбар -> Сангууд руу орж, энэ санг засаад, зургийг Jellyfin-ий дотоод өгөгдлийн санд хадгалахын тулд 'Зургийг медиа хавтсанд хадгалах' тохиргоог унтраана уу.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Хаах",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Таны '{libraryName}' сан нь зургийг медиа хавтсанд шууд хадгалахаар тохируулагдсан байна ('Зургийг медиа хавтсанд хадгалах' идэвхтэй). Гэвч Jellyfin бичих эрхийг шалгасан бөгөөд энэ хавтсанд файл бичих зөвшөөрөлгүй байна:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Jellyfin зургийг шинэчилж чадаагүй бололтой. Таны сан нь зургийг медиа хавтсанд шууд хадгалахаар тохируулагдсан байна ('Зургийг медиа хавтсанд хадгалах' идэвхтэй). Энэ алдаа нь ихэвчлэн Jellyfin серверийн процесс таны медиа хавтсанд файл бичих зөвшөөрөлгүй үед гардаг.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Гадаад жагсаалт",
+    "replay": "Дахин тоглуулах",
+    "fileInformation": "Файлын мэдээлэл",
+    "fileSizeFormat": "Хэмжээ: {size}  •  Формат: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Бүх ({count}) аудио замыг харуулах",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Бүх ({count}) хадмал замыг харуулах",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Шууд тоглуулах боломжийг шалгаж байна...",
+    "directPlayCapabilityLabel": "Шууд тоглуулах боломж: ",
+    "forced": "Албадсан",
+    "transcodeContainerNotSupported": "Тоглуулагч савны форматыг дэмждэггүй.",
+    "transcodeVideoCodecNotSupported": "Видео кодек дэмжигдэхгүй.",
+    "transcodeAudioCodecNotSupported": "Аудио кодек дэмжигдэхгүй.",
+    "transcodeSubtitleCodecNotSupported": "Хадмалын формат дэмжигдэхгүй (шатаах шаардлагатай).",
+    "transcodeAudioProfileNotSupported": "Аудио профайл дэмжигдэхгүй.",
+    "transcodeVideoProfileNotSupported": "Видео профайл дэмжигдэхгүй.",
+    "transcodeVideoLevelNotSupported": "Видео түвшин дэмжигдэхгүй.",
+    "transcodeVideoResolutionNotSupported": "Энэ төхөөрөмж видеоны нягтралыг дэмждэггүй.",
+    "transcodeVideoBitDepthNotSupported": "Видеоны битийн гүн дэмжигдэхгүй.",
+    "transcodeVideoFramerateNotSupported": "Видеоны кадрын давтамж дэмжигдэхгүй.",
+    "transcodeContainerBitrateExceedsLimit": "Файлын битрэйт тоглуулагчийн дамжуулалтын хязгаараас хэтэрсэн.",
+    "transcodeVideoBitrateExceedsLimit": "Видеоны битрэйт дамжуулалтын хязгаараас хэтэрсэн.",
+    "transcodeAudioBitrateExceedsLimit": "Аудионы битрэйт дамжуулалтын хязгаараас хэтэрсэн.",
+    "transcodeAudioChannelsNotSupported": "Аудио сувгийн тоо дэмжигдэхгүй.",
+    "sortAlphabetical": "Цагаан толгойн дарааллаар",
+    "sortReleaseAscending": "Гарсан дараалал (өсөхөөр)",
+    "sortReleaseDescending": "Гарсан дараалал (буурахаар)",
+    "sortCustomDragDrop": "Захиалгат (чирж буулгах)",
+    "playlistSortOptions": "Тоглуулах жагсаалтын эрэмбийн сонголт",
+    "resetSort": "Эрэмбийг сэргээх",
+    "rewatchSeasonEpisode": "S{season}:E{episode}-г дахин үзэх",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Тоглуулах жагсаалтыг дахин үзэх",
+    "noSubtitlesFound": "Хадмал олдсонгүй.",
+    "adminControls": "Админы удирдлага",
+    "impellerRendering": "Дүрслэлийн хөдөлгүүр (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller бол илүү жигд хөдөлгөөн, бага доголдолтой байхад зориулсан Flutter-ийн орчин үеийн GPU дүрслэгч юм. Зарим ТВ хайрцаг болон хуучин GPU дээр гажилт эсвэл хар дэлгэц үүсгэж болзошгүй; тийм зүйл харвал Унтраах болгоно уу. Автомат нь таны төхөөрөмжид тохирох үндсэн утгыг сонгоно. Хэрэглэхийн тулд Moonfin-ийг дахин эхлүүлнэ үү.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Автомат",
+    "impellerOn": "Асаах",
+    "impellerOff": "Унтраах",
+    "impellerRestartTitle": "Дахин эхлүүлэх шаардлагатай",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Дүрслэлийн хөдөлгүүрийг солихын тулд Moonfin дахин эхлэх шаардлагатай. Аппыг одоо хаагаад дахин нээж хэрэглэнэ үү.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Аппыг одоо хаах",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Санг шинэчлэх",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Бүх санг шинэчлэх",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Нэмсэн огноо (хуучнаас)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Нэмсэн огноо (шинээс)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Цагаан толгойн дараалал (А-аас Я)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Цагаан толгойн дараалал (Я-гаас А)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Серверийн аналитикийг ачаалж байна... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Эх сурвалжтай тааруулах",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb-ийн шилдэг 250 кино",
+    "imdbTop250TvShows": "IMDb-ийн шилдэг 250 ТВ цуврал",
+    "imdbMostPopularMovies": "IMDb-ийн хамгийн алдартай кино",
+    "imdbMostPopularTvShows": "IMDb-ийн хамгийн алдартай ТВ цуврал",
+    "imdbLowestRatedMovies": "IMDb-ийн хамгийн бага үнэлгээтэй кино",
+    "imdbTopEnglishMovies": "IMDb-ийн шилдэг үнэлгээтэй англи кино"
 }

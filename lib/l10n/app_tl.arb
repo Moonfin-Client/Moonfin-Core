@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Mabilis na Kumonekta",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Bahay",
+    "home": "Home",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -333,7 +333,7 @@
     "@noLibrariesFound": {
         "description": "Empty state when no libraries are available"
     },
-    "library": "Aklatan",
+    "library": "Library",
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
@@ -440,7 +440,7 @@
     "@large": {
         "description": "Poster size option"
     },
-    "extraLarge": "Extra Large",
+    "extraLarge": "Napakalaki",
     "@extraLarge": {
         "description": "Size option: extra large"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Mga artista",
+    "artists": "Mga artist",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Mag-apply",
+    "apply": "Ilapat",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Ipagpatuloy",
+    "resume": "Ituloy",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -721,7 +721,7 @@
             }
         }
     },
-    "titles": "Mga pamagat",
+    "titles": "Mga title",
     "@titles": {
         "description": "Stat card label for total titles"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Napanood",
+    "watched": "Napanood na",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Hindi napanood",
+    "unwatched": "Hindi pa napanood",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} na audiobook}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,7 +935,7 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Tanggalin",
+    "delete": "I-delete",
     "@delete": {
         "description": "Delete action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Mga panahon",
+    "seasons": "Mga season",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Season} other{{count} na Season}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Maglaro",
+    "play": "I-play",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Cast",
+    "cast": "I-cast",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "wala",
+    "none": "Wala",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 track} other{{count} na track}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 kabanata} other{{count} na kabanata}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Balasahin",
+    "shuffle": "I-shuffle",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1513,7 +1513,7 @@
             }
         }
     },
-    "perfectMatch": "Perfect match",
+    "perfectMatch": "Perpektong tugma",
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Manlalaro",
+    "player": "Player",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Subaybayan",
+    "track": "Track",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 episode} other{{count} na episode}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2812,7 +2812,7 @@
     "@browsingBackgroundBlur": {
         "description": "Setting for browsing background blur"
     },
-    "maxStreamingBitrate": "Max Streaming Bitrate",
+    "maxStreamingBitrate": "Max na Streaming Bitrate",
     "@maxStreamingBitrate": {
         "description": "Setting for max streaming bitrate"
     },
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Hindi pinagana",
+    "disabled": "Naka-disable",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -2932,7 +2932,7 @@
     "@russian": {
         "description": "Language: Russian"
     },
-    "arabic": "Arabic",
+    "arabic": "Arabe",
     "@arabic": {
         "description": "Language: Arabic"
     },
@@ -2940,27 +2940,27 @@
     "@hindi": {
         "description": "Language: Hindi"
     },
-    "dutch": "Dutch",
+    "dutch": "Olandes",
     "@dutch": {
         "description": "Language: Dutch"
     },
-    "swedish": "Swedish",
+    "swedish": "Suweko",
     "@swedish": {
         "description": "Language: Swedish"
     },
-    "norwegian": "Norwegian",
+    "norwegian": "Norwego",
     "@norwegian": {
         "description": "Language: Norwegian"
     },
-    "danish": "Danish",
+    "danish": "Danes",
     "@danish": {
         "description": "Language: Danish"
     },
-    "finnish": "Finnish",
+    "finnish": "Finlandes",
     "@finnish": {
         "description": "Language: Finnish"
     },
-    "polish": "Polish",
+    "polish": "Polako",
     "@polish": {
         "description": "Language: Polish"
     },
@@ -3300,7 +3300,7 @@
     "@network": {
         "description": "Section title for network settings"
     },
-    "wifiOnlyDownloads": "WiFi-Only Downloads",
+    "wifiOnlyDownloads": "Mga Download sa WiFi Lang",
     "@wifiOnlyDownloads": {
         "description": "Setting for wifi-only downloads"
     },
@@ -3416,7 +3416,7 @@
     "@showLibrariesInToolbar": {
         "description": "Setting for showing libraries in toolbar"
     },
-    "navbarOpacity": "Navbar Opacity",
+    "navbarOpacity": "Opacity ng Navbar",
     "@navbarOpacity": {
         "description": "Setting for navbar opacity"
     },
@@ -3528,7 +3528,7 @@
     "@sourceLibraries": {
         "description": "Setting for source libraries"
     },
-    "sourceCollections": "Source Collections",
+    "sourceCollections": "Mga Source Collection",
     "@sourceCollections": {
         "description": "Setting for source collections"
     },
@@ -3617,7 +3617,7 @@
     "@autoAdvanceSlides": {
         "description": "Description for auto advance"
     },
-    "autoAdvanceInterval": "Auto Advance Interval",
+    "autoAdvanceInterval": "Interval ng Auto Advance",
     "@autoAdvanceInterval": {
         "description": "Setting for auto advance interval"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Partikular na Gumagamit",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Palaging Authenticate",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3793,7 +3789,7 @@
     "@screensaver": {
         "description": "Settings title for screensaver"
     },
-    "inAppScreensaver": "In-App Screensaver",
+    "inAppScreensaver": "In-App na Screensaver",
     "@inAppScreensaver": {
         "description": "Setting for in-app screensaver"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin",
+    "pluginLabel": "Moonbase Plugin",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "Tuklasin ang Mga Row",
+    "discoverRows": "Seerr Discovery Page",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "I-drag upang muling ayusin. Paganahin o huwag paganahin ang mga hilera. Ang naka-enable na row order ay nagsi-sync sa Moonfin plugin.",
+    "discoverRowsDescriptionPlugin": "I-enable ang mga row na makikita sa mainpage ng Seerr. I-drag para baguhin ang pagkakasunod-sunod. Nagsi-sync ang custom na order sa Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "I-drag upang muling ayusin. Paganahin o huwag paganahin ang mga hilera.",
+    "discoverRowsDescription": "I-enable ang mga row na makikita sa mainpage ng Seerr. I-drag para baguhin ang pagkakasunod-sunod. Nagsi-sync ang custom na order sa Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Pinagana",
+    "enabled": "Naka-enable",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4169,7 +4165,7 @@
     "@updateAvailable": {
         "description": "Message when an update is available"
     },
-    "updateAvailableVersion": "Update available: v{version}",
+    "updateAvailableVersion": "May available na update: v{version}",
     "@updateAvailableVersion": {
         "description": "Message with specific update version",
         "placeholders": {
@@ -4186,7 +4182,7 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "updateAvailableTitle": "v{version} Available",
+    "updateAvailableTitle": "Available na ang v{version}",
     "@updateAvailableTitle": {
         "description": "Title of the update dialog showing the new version",
         "placeholders": {
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Maaliwalas",
+    "clear": "I-clear",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4272,7 +4268,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "{count} na Item",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4301,7 +4297,7 @@
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
-    "requestedByName": "Requested by {name}",
+    "requestedByName": "Hiniling ni {name}",
     "@requestedByName": {
         "description": "Label showing who requested media",
         "placeholders": {
@@ -4326,7 +4322,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+    "cancelRequestForTitle": "Kanselahin ang request para sa \"{title}\"?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4335,7 +4331,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+    "cancelCountRequestsForTitle": "Kanselahin ang {count} na request para sa \"{title}\"?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4368,7 +4364,7 @@
             }
         }
     },
-    "revenueAmount": "Revenue: ${amount}",
+    "revenueAmount": "Kita: ${amount}",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4389,7 +4385,7 @@
             }
         }
     },
-    "requestSeriesOrMovie": "Request {type}",
+    "requestSeriesOrMovie": "Mag-request ng {type}",
     "@requestSeriesOrMovie": {
         "description": "Bottom sheet title for requesting media",
         "placeholders": {
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Mga pagpapakita",
+    "appearances": "Mga appearance",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4438,7 +4434,7 @@
     "@crewSection": {
         "description": "Section title for crew credits"
     },
-    "ageValue": "age {age}",
+    "ageValue": "edad {age}",
     "@ageValue": {
         "description": "Person age display",
         "placeholders": {
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Mga panahon",
+    "seasonsLabel": "Mga season",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4532,8 +4528,8 @@
     "edit": "I-edit",
     "encoding": "Encoding",
     "error": "Error",
-    "forward": "Pasulong",
-    "general": "Heneral",
+    "forward": "I-forward",
+    "general": "Pangkalahatan",
     "go": "Pumunta ka",
     "install": "I-install",
     "installed": "Naka-install",
@@ -4560,7 +4556,7 @@
     "sessions": "Mga session",
     "set": "Itakda",
     "status": "Katayuan",
-    "stop": "Tumigil ka",
+    "stop": "Ihinto",
     "streaming": "Streaming",
     "time": "Oras",
     "trickplay": "Trickplay",
@@ -4576,9 +4572,9 @@
     "adminDrawerSettings": "Mga setting",
     "adminDrawerBranding": "Pagba-brand",
     "adminDrawerUsers": "Mga gumagamit",
-    "adminDrawerLibraries": "Mga aklatan",
+    "adminDrawerLibraries": "Mga library",
     "adminDrawerTranscoding": "Transcoding",
-    "adminDrawerResume": "Ipagpatuloy",
+    "adminDrawerResume": "Resume",
     "adminDrawerStreaming": "Streaming",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Mga device",
@@ -4596,7 +4592,7 @@
     "adminMediaOverview": "Pangkalahatang-ideya ng Media",
     "adminMediaTotalsError": "Hindi ma-load ang mga kabuuan ng media ng server.",
     "adminMediaOverviewSubtitle": "Isang mabilis na pagbabasa sa kung gaano karaming nilalaman ang nasa server na ito.",
-    "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
+    "adminPluginUpdatesAvailable": "Mga available na update ng plugin: {count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
             "count": {
@@ -4604,7 +4600,7 @@
             }
         }
     },
-    "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
+    "adminPluginsRequiringRestart": "Mga plugin na kailangang i-restart: {count}",
     "@adminPluginsRequiringRestart": {
         "placeholders": {
             "count": {
@@ -4612,7 +4608,7 @@
             }
         }
     },
-    "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
+    "adminFailedScheduledTasks": "Mga nabigong scheduled task: {count}",
     "@adminFailedScheduledTasks": {
         "placeholders": {
             "count": {
@@ -4620,7 +4616,7 @@
             }
         }
     },
-    "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+    "adminRecentAlertEntries": "Mga kamakailang warning/error entry: {count}",
     "@adminRecentAlertEntries": {
         "placeholders": {
             "count": {
@@ -4661,7 +4657,7 @@
     "adminNoActiveSessions": "Walang aktibong session",
     "adminRecentActivity": "Kamakailang Aktibidad",
     "adminNoRecentActivity": "Walang kamakailang aktibidad",
-    "adminCommandFailed": "Command failed: {error}",
+    "adminCommandFailed": "Nabigo ang command: {error}",
     "@adminCommandFailed": {
         "placeholders": {
             "error": {
@@ -4674,13 +4670,13 @@
     "adminSetVolume": "Itakda ang Volume",
     "sessionPrev": "Nakaraan",
     "sessionRewind": "I-rewind",
-    "sessionForward": "Pasulong",
+    "sessionForward": "I-forward",
     "sessionNext": "Susunod",
     "sessionVolumeDown": "Vol –",
     "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
     "nowPlaying": "Naglalaro Ngayon",
-    "volume": "Dami",
+    "volume": "Volume",
     "actions": "Mga aksyon",
     "videoCodec": "Video Codec",
     "audioCodec": "Audio Codec",
@@ -4689,7 +4685,7 @@
     "direct": "Direkta",
     "adminDisconnect": "Idiskonekta",
     "adminClearDates": "I-clear ang mga petsa",
-    "adminActivityLoadFailed": "Failed to load activity log: {error}",
+    "adminActivityLoadFailed": "Nabigong i-load ang activity log: {error}",
     "@adminActivityLoadFailed": {
         "placeholders": {
             "error": {
@@ -4701,7 +4697,7 @@
     "adminEditDeviceName": "I-edit ang Pangalan ng Device",
     "adminCustomName": "Custom na Pangalan",
     "adminDeviceNameUpdated": "Na-update ang pangalan ng device",
-    "adminDeviceUpdateFailed": "Failed to update device: {error}",
+    "adminDeviceUpdateFailed": "Nabigong i-update ang device: {error}",
     "@adminDeviceUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4711,7 +4707,7 @@
     },
     "adminDeleteDevice": "Tanggalin ang Device",
     "adminDeviceDeleted": "Na-delete ang device",
-    "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+    "adminDeviceDeleteFailed": "Nabigong tanggalin ang device: {error}",
     "@adminDeviceDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4727,7 +4723,7 @@
     "adminNoLibraries": "Walang mga library na na-configure",
     "adminScanAllLibraries": "I-scan ang Lahat ng Aklatan",
     "adminAddLibrary": "Magdagdag ng Library",
-    "adminScanFailed": "Failed to start scan: {error}",
+    "adminScanFailed": "Nabigong simulan ang scan: {error}",
     "@adminScanFailed": {
         "placeholders": {
             "error": {
@@ -4737,7 +4733,7 @@
     },
     "adminRenameLibrary": "Palitan ang pangalan ng Library",
     "adminNewName": "Bagong pangalan",
-    "adminLibraryRenamed": "Library renamed to \"{name}\"",
+    "adminLibraryRenamed": "Pinalitan ang pangalan ng library sa \"{name}\"",
     "@adminLibraryRenamed": {
         "placeholders": {
             "name": {
@@ -4745,7 +4741,7 @@
             }
         }
     },
-    "adminRenameFailed": "Failed to rename: {error}",
+    "adminRenameFailed": "Nabigong palitan ang pangalan: {error}",
     "@adminRenameFailed": {
         "placeholders": {
             "error": {
@@ -4754,7 +4750,7 @@
         }
     },
     "adminDeleteLibrary": "Tanggalin ang Library",
-    "adminLibraryDeleted": "Library \"{name}\" deleted",
+    "adminLibraryDeleted": "Tinanggal ang library na \"{name}\"",
     "@adminLibraryDeleted": {
         "placeholders": {
             "name": {
@@ -4762,7 +4758,7 @@
             }
         }
     },
-    "adminLibraryDeleteFailed": "Failed to delete library: {error}",
+    "adminLibraryDeleteFailed": "Nabigong tanggalin ang library: {error}",
     "@adminLibraryDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4770,7 +4766,7 @@
             }
         }
     },
-    "adminAddPathFailed": "Failed to add path: {error}",
+    "adminAddPathFailed": "Nabigong magdagdag ng path: {error}",
     "@adminAddPathFailed": {
         "placeholders": {
             "error": {
@@ -4779,7 +4775,7 @@
         }
     },
     "adminRemovePath": "Alisin ang Landas",
-    "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
+    "adminRemovePathConfirm": "Alisin ang \"{path}\" mula sa library na ito?",
     "@adminRemovePathConfirm": {
         "placeholders": {
             "path": {
@@ -4787,7 +4783,7 @@
             }
         }
     },
-    "adminRemovePathFailed": "Failed to remove path: {error}",
+    "adminRemovePathFailed": "Nabigong alisin ang path: {error}",
     "@adminRemovePathFailed": {
         "placeholders": {
             "error": {
@@ -4796,7 +4792,7 @@
         }
     },
     "adminLibraryOptionsSaved": "Nai-save ang mga opsyon sa library",
-    "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+    "adminLibraryOptionsSaveFailed": "Nabigong i-save ang mga opsyon: {error}",
     "@adminLibraryOptionsSaveFailed": {
         "placeholders": {
             "error": {
@@ -4814,7 +4810,7 @@
     "adminMetadataCountryCode": "Code ng bansa ng metadata",
     "adminMetadataCountryHint": "hal. US, DE, FR",
     "adminLibraryNameRequired": "Kinakailangan ang pangalan ng library",
-    "adminLibraryCreateFailed": "Failed to create library: {error}",
+    "adminLibraryCreateFailed": "Nabigong gumawa ng library: {error}",
     "@adminLibraryCreateFailed": {
         "placeholders": {
             "error": {
@@ -4829,7 +4825,7 @@
     "paths": "Mga landas:",
     "adminDisableUser": "Huwag paganahin ang User",
     "adminEnableUser": "Paganahin ang User",
-    "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
+    "adminDisableUserConfirm": "I-disable si {name}? Hindi na siya makakapag-sign in.",
     "@adminDisableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4837,7 +4833,7 @@
             }
         }
     },
-    "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
+    "adminEnableUserConfirm": "I-enable si {name}? Makakapag-sign in na siya muli.",
     "@adminEnableUserConfirm": {
         "placeholders": {
             "name": {
@@ -4845,7 +4841,7 @@
             }
         }
     },
-    "adminUserDisabled": "User \"{name}\" disabled",
+    "adminUserDisabled": "Na-disable ang user na \"{name}\"",
     "@adminUserDisabled": {
         "placeholders": {
             "name": {
@@ -4853,7 +4849,7 @@
             }
         }
     },
-    "adminUserEnabled": "User \"{name}\" enabled",
+    "adminUserEnabled": "Na-enable ang user na \"{name}\"",
     "@adminUserEnabled": {
         "placeholders": {
             "name": {
@@ -4861,7 +4857,7 @@
             }
         }
     },
-    "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+    "adminUserPolicyUpdateFailed": "Nabigong i-update ang user policy: {error}",
     "@adminUserPolicyUpdateFailed": {
         "placeholders": {
             "error": {
@@ -4873,7 +4869,7 @@
     "adminSearchUsers": "Maghanap ng mga gumagamit",
     "adminEditUser": "I-edit ang User",
     "adminAddUser": "Magdagdag ng User",
-    "adminUserCreateFailed": "Failed to create user: {error}",
+    "adminUserCreateFailed": "Nabigong gumawa ng user: {error}",
     "@adminUserCreateFailed": {
         "placeholders": {
             "error": {
@@ -4886,7 +4882,7 @@
     "adminUsernameRequired": "Hindi maaaring walang laman ang username",
     "adminNoProfileChanges": "Walang mga pagbabago sa profile na ise-save",
     "adminProfileSaved": "Na-save ang profile",
-    "adminSaveFailed": "Failed to save: {error}",
+    "adminSaveFailed": "Nabigong i-save: {error}",
     "@adminSaveFailed": {
         "placeholders": {
             "error": {
@@ -4896,7 +4892,7 @@
     },
     "adminPermissionsSaved": "Na-save ang mga pahintulot",
     "adminPasswordsMismatch": "Hindi tugma ang mga password",
-    "adminFailed": "Failed: {error}",
+    "adminFailed": "Nabigo: {error}",
     "@adminFailed": {
         "placeholders": {
             "error": {
@@ -4947,7 +4943,7 @@
     "adminEnableAllDevices": "Paganahin ang access sa lahat ng device",
     "adminEnableAllChannels": "Paganahin ang access sa lahat ng channel",
     "adminResetPasswordWarning": "Aalisin nito ang password. Ang user ay makakapag-log in nang walang password.",
-    "adminServerReturnedHttp": "Server returned HTTP {status}",
+    "adminServerReturnedHttp": "Nagbalik ang server ng HTTP {status}",
     "@adminServerReturnedHttp": {
         "placeholders": {
             "status": {
@@ -4955,7 +4951,7 @@
             }
         }
     },
-    "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
+    "adminDeleteUserConfirm": "Sigurado ka bang gusto mong tanggalin si {name}?",
     "@adminDeleteUserConfirm": {
         "placeholders": {
             "name": {
@@ -4963,7 +4959,7 @@
             }
         }
     },
-    "adminUserDeleted": "User \"{name}\" deleted",
+    "adminUserDeleted": "Tinanggal ang user na \"{name}\"",
     "@adminUserDeleted": {
         "placeholders": {
             "name": {
@@ -4971,7 +4967,7 @@
             }
         }
     },
-    "adminUserDeleteFailed": "Failed to delete user: {error}",
+    "adminUserDeleteFailed": "Nabigong tanggalin ang user: {error}",
     "@adminUserDeleteFailed": {
         "placeholders": {
             "error": {
@@ -4984,7 +4980,7 @@
     "adminApiKeyCreated": "Nagawa ang API Key",
     "adminApiKeyCreatedNoToken": "Matagumpay na nagawa ang susi. Hindi ibinalik ng server ang token. Suriin ang mga server API key.",
     "adminKeyCopied": "Nakopya ang key sa clipboard",
-    "adminApiKeyCreateFailed": "Failed to create key: {error}",
+    "adminApiKeyCreateFailed": "Nabigong gumawa ng key: {error}",
     "@adminApiKeyCreateFailed": {
         "placeholders": {
             "error": {
@@ -4994,7 +4990,7 @@
     },
     "adminKeyTokenMissing": "Nawawala ang key token sa tugon ng server",
     "adminRevokeApiKey": "Bawiin ang API Key",
-    "adminRevokeKeyConfirm": "Revoke key for {name}?",
+    "adminRevokeKeyConfirm": "Bawiin ang key para kay {name}?",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
             "name": {
@@ -5003,7 +4999,7 @@
         }
     },
     "adminApiKeyRevoked": "Binawi ang API key",
-    "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+    "adminApiKeyRevokeFailed": "Nabigong bawiin ang key: {error}",
     "@adminApiKeyRevokeFailed": {
         "placeholders": {
             "error": {
@@ -5016,7 +5012,7 @@
     "adminCreateKey": "Lumikha ng Key",
     "adminNoApiKeys": "Walang nakitang mga API key",
     "adminUnknownApp": "Hindi kilalang App",
-    "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+    "adminApiKeyTokenCreated": "Token: {token}\\nGinawa: {created}",
     "@adminApiKeyTokenCreated": {
         "placeholders": {
             "token": {
@@ -5029,7 +5025,7 @@
     },
     "adminCreatingBackup": "Gumagawa ng backup...",
     "adminBackupCreated": "Matagumpay na nagawa ang backup",
-    "adminBackupCreateFailed": "Failed to create backup: {error}",
+    "adminBackupCreateFailed": "Nabigong gumawa ng backup: {error}",
     "@adminBackupCreateFailed": {
         "placeholders": {
             "error": {
@@ -5046,7 +5042,7 @@
             }
         }
     },
-    "adminManifestLoadFailed": "Failed to load manifest: {error}",
+    "adminManifestLoadFailed": "Nabigong i-load ang manifest: {error}",
     "@adminManifestLoadFailed": {
         "placeholders": {
             "error": {
@@ -5056,7 +5052,7 @@
     },
     "adminConfirmRestore": "Kumpirmahin ang Pagpapanumbalik",
     "adminRestoringBackup": "Nire-restore ang backup...",
-    "adminRestoreFailed": "Failed to restore backup: {error}",
+    "adminRestoreFailed": "Nabigong ibalik ang backup: {error}",
     "@adminRestoreFailed": {
         "placeholders": {
             "error": {
@@ -5073,7 +5069,7 @@
     "adminNoLogFiles": "Walang nakitang log file",
     "adminLogCopied": "Nakopya ang log sa clipboard",
     "adminSaveLogFile": "I-save ang log file",
-    "adminSavedTo": "Saved to {path}",
+    "adminSavedTo": "Na-save sa {path}",
     "@adminSavedTo": {
         "placeholders": {
             "path": {
@@ -5081,7 +5077,7 @@
             }
         }
     },
-    "adminFileSaveFailed": "Failed to save file: {error}",
+    "adminFileSaveFailed": "Nabigong i-save ang file: {error}",
     "@adminFileSaveFailed": {
         "placeholders": {
             "error": {
@@ -5089,7 +5085,7 @@
             }
         }
     },
-    "adminLogFileLoadFailed": "Failed to load {fileName}",
+    "adminLogFileLoadFailed": "Nabigong i-load ang {fileName}",
     "@adminLogFileLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5099,7 +5095,7 @@
     },
     "adminSearchInLog": "Maghanap sa log",
     "adminNoMatchingLines": "Walang tugmang linya",
-    "adminTasksLoadFailed": "Failed to load tasks: {error}",
+    "adminTasksLoadFailed": "Nabigong i-load ang mga task: {error}",
     "@adminTasksLoadFailed": {
         "placeholders": {
             "error": {
@@ -5109,7 +5105,7 @@
     },
     "adminNoScheduledTasks": "Walang nakitang nakaiskedyul na gawain",
     "adminNoTasksMatchFilter": "Walang mga gawain na tumutugma sa kasalukuyang filter",
-    "adminTaskStartFailed": "Failed to start task: {error}",
+    "adminTaskStartFailed": "Nabigong simulan ang task: {error}",
     "@adminTaskStartFailed": {
         "placeholders": {
             "error": {
@@ -5117,7 +5113,7 @@
             }
         }
     },
-    "adminTaskStopFailed": "Failed to stop task: {error}",
+    "adminTaskStopFailed": "Nabigong ihinto ang task: {error}",
     "@adminTaskStopFailed": {
         "placeholders": {
             "error": {
@@ -5125,7 +5121,7 @@
             }
         }
     },
-    "adminTaskLoadFailed": "Failed to load task: {error}",
+    "adminTaskLoadFailed": "Nabigong i-load ang task: {error}",
     "@adminTaskLoadFailed": {
         "placeholders": {
             "error": {
@@ -5134,7 +5130,7 @@
         }
     },
     "adminRunNow": "Tumakbo Ngayon",
-    "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
+    "adminTriggerRemoveFailed": "Nabigong alisin ang trigger: {error}",
     "@adminTriggerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5142,7 +5138,7 @@
             }
         }
     },
-    "adminTriggerAddFailed": "Failed to add trigger: {error}",
+    "adminTriggerAddFailed": "Nabigong magdagdag ng trigger: {error}",
     "@adminTriggerAddFailed": {
         "placeholders": {
             "error": {
@@ -5157,7 +5153,7 @@
     "adminTriggerType": "Uri ng Trigger",
     "adminTimeLimit": "Limitasyon sa oras (opsyonal)",
     "adminNoLimit": "Walang limitasyon",
-    "adminHours": "{hours} hour(s)",
+    "adminHours": "{hours} (na) oras",
     "@adminHours": {
         "placeholders": {
             "hours": {
@@ -5167,7 +5163,7 @@
     },
     "adminDayOfWeek": "Araw ng linggo",
     "adminSearchPlugins": "Maghanap ng mga plugin...",
-    "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+    "adminPluginToggleFailed": "Nabigong i-toggle ang plugin: {error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
             "error": {
@@ -5176,7 +5172,7 @@
         }
     },
     "adminUninstallPlugin": "I-uninstall ang Plugin",
-    "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
+    "adminUninstallPluginConfirm": "Sigurado ka bang gusto mong i-uninstall ang \"{name}\"?",
     "@adminUninstallPluginConfirm": {
         "placeholders": {
             "name": {
@@ -5184,7 +5180,7 @@
             }
         }
     },
-    "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
+    "adminPluginUninstallFailed": "Nabigong i-uninstall ang plugin: {error}",
     "@adminPluginUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5192,7 +5188,7 @@
             }
         }
     },
-    "adminPackageInstallFailed": "Failed to install package: {error}",
+    "adminPackageInstallFailed": "Nabigong i-install ang package: {error}",
     "@adminPackageInstallFailed": {
         "placeholders": {
             "error": {
@@ -5200,7 +5196,7 @@
             }
         }
     },
-    "adminPluginUpdateFailed": "Failed to install update: {error}",
+    "adminPluginUpdateFailed": "Nabigong i-install ang update: {error}",
     "@adminPluginUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5208,7 +5204,7 @@
             }
         }
     },
-    "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+    "adminPluginsLoadFailed": "Nabigong i-load ang mga plugin: {error}",
     "@adminPluginsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5218,7 +5214,7 @@
     },
     "adminNoPluginsMatchSearch": "Walang mga plugin na tumutugma sa iyong paghahanap",
     "adminNoPluginsInstalled": "Walang naka-install na plugin",
-    "adminInstallUpdate": "Install update (v{version})",
+    "adminInstallUpdate": "I-install ang update (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
             "version": {
@@ -5226,7 +5222,7 @@
             }
         }
     },
-    "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+    "adminCatalogLoadFailed": "Nabigong i-load ang catalog: {error}",
     "@adminCatalogLoadFailed": {
         "placeholders": {
             "error": {
@@ -5239,7 +5235,7 @@
     "adminExperimentalIntegration": "Eksperimental na Pagsasama",
     "adminExperimentalWarning": "Eksperimento pa rin ang pagsasama ng mga setting ng plugin. Maaaring hindi mai-render nang tama ang ilang page ng mga setting.",
     "continueAction": "Magpatuloy",
-    "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
+    "adminPluginRemoveAfterRestart": "Aalisin ang \"{name}\" pagkatapos i-restart ang server",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
             "name": {
@@ -5247,7 +5243,7 @@
             }
         }
     },
-    "adminUninstallFailed": "Failed to uninstall: {error}",
+    "adminUninstallFailed": "Nabigong i-uninstall: {error}",
     "@adminUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5255,7 +5251,7 @@
             }
         }
     },
-    "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+    "adminPluginUpdating": "Ina-update ang \"{name}\" sa v{version}...",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5267,7 +5263,7 @@
         }
     },
     "adminMissingAuthToken": "Hindi mabuksan ang mga setting: nawawala ang auth token.",
-    "adminPluginLoadFailed": "Failed to load plugin: {error}",
+    "adminPluginLoadFailed": "Nabigong i-load ang plugin: {error}",
     "@adminPluginLoadFailed": {
         "placeholders": {
             "error": {
@@ -5276,7 +5272,7 @@
         }
     },
     "adminPluginNotFound": "Hindi nahanap ang plugin",
-    "adminPluginVersion": "Version {version}",
+    "adminPluginVersion": "Bersyon {version}",
     "@adminPluginVersion": {
         "placeholders": {
             "version": {
@@ -5289,7 +5285,7 @@
     "adminRevisionHistory": "Kasaysayan ng Pagbabago",
     "adminNoChangelog": "Walang available na changelog.",
     "adminRemoveRepository": "Alisin ang Repository",
-    "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminRemoveRepositoryConfirm": "Sigurado ka bang gusto mong alisin ang \"{name}\"?",
     "@adminRemoveRepositoryConfirm": {
         "placeholders": {
             "name": {
@@ -5297,7 +5293,7 @@
             }
         }
     },
-    "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
+    "adminRepositoriesSaveFailed": "Nabigong i-save ang mga repository: {error}",
     "@adminRepositoriesSaveFailed": {
         "placeholders": {
             "error": {
@@ -5305,7 +5301,7 @@
             }
         }
     },
-    "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+    "adminRepositoriesLoadFailed": "Nabigong i-load ang mga repository: {error}",
     "@adminRepositoriesLoadFailed": {
         "placeholders": {
             "error": {
@@ -5317,7 +5313,7 @@
     "adminRepositoryUrl": "URL ng imbakan",
     "adminAddEntry": "Magdagdag ng entry",
     "adminInvalidUrl": "Di-wastong URL",
-    "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
+    "adminPluginSettingsLoadFailed": "Hindi ma-load ang mga setting ng plugin: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5325,7 +5321,7 @@
             }
         }
     },
-    "adminCouldNotOpenUrl": "Could not open {uri}",
+    "adminCouldNotOpenUrl": "Hindi mabuksan ang {uri}",
     "@adminCouldNotOpenUrl": {
         "placeholders": {
             "uri": {
@@ -5340,8 +5336,8 @@
     "adminPreferredMetadataCountry": "Ginustong metadata na bansa",
     "adminCachePath": "Cache path",
     "adminMetadataPath": "path ng metadata",
-    "adminLibraryScanConcurrency": "Library scan concurrency",
-    "adminParallelImageEncodingLimit": "Parallel image encoding limit",
+    "adminLibraryScanConcurrency": "Concurrency ng library scan",
+    "adminParallelImageEncodingLimit": "Limitasyon ng parallel image encoding",
     "adminSlowResponseThreshold": "Mabagal na threshold ng pagtugon (ms)",
     "adminBrandingSaved": "Na-save ang mga setting ng pagba-brand",
     "adminBrandingLoadFailed": "Nabigong i-load ang mga setting ng pagba-brand",
@@ -5418,7 +5414,7 @@
     "blacklist": "Blacklist",
     "notSet": "Hindi nakatakda",
     "adminMetadataSaved": "Na-save ang metadata",
-    "adminMetadataLoadFailed": "Failed to load metadata: {error}",
+    "adminMetadataLoadFailed": "Nabigong i-load ang metadata: {error}",
     "@adminMetadataLoadFailed": {
         "placeholders": {
             "error": {
@@ -5426,7 +5422,7 @@
             }
         }
     },
-    "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+    "adminMetadataSaveFailed": "Nabigong i-save ang metadata: {error}",
     "@adminMetadataSaveFailed": {
         "placeholders": {
             "error": {
@@ -5439,7 +5435,7 @@
     "adminReplaceAllMetadata": "Palitan ang lahat ng metadata",
     "adminReplaceAllImages": "Palitan ang lahat ng mga larawan",
     "adminMetadataRefreshRequested": "Hiniling ang pag-refresh ng metadata",
-    "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+    "adminMetadataRefreshFailed": "Nabigong i-refresh ang metadata: {error}",
     "@adminMetadataRefreshFailed": {
         "placeholders": {
             "error": {
@@ -5447,11 +5443,10 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Maghanap ng Malayong Tao",
     "adminNoRemoteMatches": "Walang nakitang malalayong tugma",
     "adminRemoteResults": "Malayong Resulta",
     "adminRemoteMetadataApplied": "Inilapat ang malayuang metadata",
-    "adminRemoteSearchFailed": "Remote search failed: {error}",
+    "adminRemoteSearchFailed": "Nabigo ang remote search: {error}",
     "@adminRemoteSearchFailed": {
         "placeholders": {
             "error": {
@@ -5462,7 +5457,7 @@
     "adminUpdateContentType": "I-update ang Uri ng Nilalaman",
     "adminContentType": "Uri ng nilalaman",
     "adminContentTypeUpdated": "Na-update ang uri ng nilalaman",
-    "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+    "adminContentTypeUpdateFailed": "Nabigong i-update ang content type: {error}",
     "@adminContentTypeUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5473,7 +5468,7 @@
     "adminMetadataEditorLoadFailed": "Nabigong i-load ang metadata editor",
     "adminNoPeopleEntries": "Walang entry ng mga tao",
     "adminNoExternalIds": "Walang available na external na ID",
-    "adminImageUpdated": "{imageType} image updated",
+    "adminImageUpdated": "Na-update ang larawang {imageType}",
     "@adminImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5481,7 +5476,7 @@
             }
         }
     },
-    "adminImageDownloadFailed": "Failed to download image: {error}",
+    "adminImageDownloadFailed": "Nabigong i-download ang larawan: {error}",
     "@adminImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5491,7 +5486,7 @@
     },
     "adminUnsupportedImageFormat": "Hindi sinusuportahang format ng larawan",
     "adminImageReadFailed": "Nabigong basahin ang napiling larawan",
-    "adminImageUploaded": "{imageType} image uploaded",
+    "adminImageUploaded": "Na-upload ang larawang {imageType}",
     "@adminImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5499,7 +5494,7 @@
             }
         }
     },
-    "adminImageUploadFailed": "Failed to upload image: {error}",
+    "adminImageUploadFailed": "Nabigong i-upload ang larawan: {error}",
     "@adminImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5507,7 +5502,7 @@
             }
         }
     },
-    "adminDeleteImage": "Delete {imageType} image",
+    "adminDeleteImage": "Tanggalin ang larawang {imageType}",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5515,7 +5510,7 @@
             }
         }
     },
-    "adminImageDeleted": "{imageType} image deleted",
+    "adminImageDeleted": "Tinanggal ang larawang {imageType}",
     "@adminImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5523,7 +5518,7 @@
             }
         }
     },
-    "adminImageDeleteFailed": "Failed to delete image: {error}",
+    "adminImageDeleteFailed": "Nabigong tanggalin ang larawan: {error}",
     "@adminImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5533,7 +5528,7 @@
     },
     "adminAllProviders": "Lahat ng provider",
     "adminNoRemoteImages": "Walang nakitang malayuang larawan",
-    "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+    "adminTunerDiscoveryFailed": "Nabigo ang tuner discovery: {error}",
     "@adminTunerDiscoveryFailed": {
         "placeholders": {
             "error": {
@@ -5543,11 +5538,8 @@
     },
     "adminAddTuner": "Magdagdag ng Tuner",
     "adminTunerType": "Uri ng Tuner",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Iba pa",
-    "adminUrlPath": "URL / Landas",
-    "adminNameOptional": "Pangalan (opsyonal)",
     "adminTunerAdded": "Idinagdag ni Tuner",
-    "adminTunerAddFailed": "Failed to add tuner: {error}",
+    "adminTunerAddFailed": "Nabigong magdagdag ng tuner: {error}",
     "@adminTunerAddFailed": {
         "placeholders": {
             "error": {
@@ -5557,11 +5549,8 @@
     },
     "adminAddGuideProvider": "Magdagdag ng Tagabigay ng Gabay",
     "adminProviderType": "Uri ng Provider",
-    "adminProviderTypeHint": "SchedulesDirect o XMLTV",
-    "adminUsernameOptional": "Username (opsyonal)",
-    "adminRefreshInterval": "Refresh interval (oras)",
     "adminProviderAdded": "Idinagdag ng provider",
-    "adminProviderAddFailed": "Failed to add provider: {error}",
+    "adminProviderAddFailed": "Nabigong magdagdag ng provider: {error}",
     "@adminProviderAddFailed": {
         "placeholders": {
             "error": {
@@ -5569,7 +5558,7 @@
             }
         }
     },
-    "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+    "adminTunerRemoveFailed": "Nabigong alisin ang tuner: {error}",
     "@adminTunerRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5578,7 +5567,7 @@
         }
     },
     "adminTunerResetRequested": "Hiniling ang pag-reset ng tuner",
-    "adminTunerResetFailed": "Failed to reset tuner: {error}",
+    "adminTunerResetFailed": "Nabigong i-reset ang tuner: {error}",
     "@adminTunerResetFailed": {
         "placeholders": {
             "error": {
@@ -5586,7 +5575,7 @@
             }
         }
     },
-    "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+    "adminProviderRemoveFailed": "Nabigong alisin ang provider: {error}",
     "@adminProviderRemoveFailed": {
         "placeholders": {
             "error": {
@@ -5600,7 +5589,7 @@
     "adminRecordingPath": "Landas sa pagre-record",
     "adminSeriesRecordingPath": "Landas ng pag-record ng serye",
     "adminRecordingSettingsSaved": "Na-save ang mga setting ng pag-record",
-    "adminSettingsSaveFailed": "Failed to save settings: {error}",
+    "adminSettingsSaveFailed": "Nabigong i-save ang mga setting: {error}",
     "@adminSettingsSaveFailed": {
         "placeholders": {
             "error": {
@@ -5612,7 +5601,7 @@
     "adminMappingJson": "Pagmamapa ng JSON",
     "adminMappingJsonHint": "Halimbawa: mappings JSON payload",
     "adminChannelMappingsUpdated": "Na-update ang mga channel mapping",
-    "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminMappingsUpdateFailed": "Nabigong i-update ang mga mapping: {error}",
     "@adminMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -5626,7 +5615,7 @@
     "adminGuideProviders": "Mga Tagabigay ng Gabay",
     "adminAddProvider": "Magdagdag ng Provider",
     "adminNoListingProviders": "Walang naka-configure na provider ng listahan",
-    "adminRecordingPathDisplay": "Recording path: {path}",
+    "adminRecordingPathDisplay": "Path ng recording: {path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
             "path": {
@@ -5634,7 +5623,7 @@
             }
         }
     },
-    "adminSeriesPathDisplay": "Series path: {path}",
+    "adminSeriesPathDisplay": "Path ng serye: {path}",
     "@adminSeriesPathDisplay": {
         "placeholders": {
             "path": {
@@ -5666,7 +5655,7 @@
     "adminRestoreWarning1": "Papalitan ng pagpapanumbalik ang LAHAT ng kasalukuyang data ng server ng backup na data.",
     "adminRestoreWarning2": "Ang mga kasalukuyang setting ng server, mga user, at data ng library ay mapapatungan.",
     "adminRestoreWarning3": "Ang server ay magre-restart pagkatapos ng pagpapanumbalik.",
-    "adminRestoreConfirmMessage": "Restore backup {name} now?",
+    "adminRestoreConfirmMessage": "Ibalik ang backup na {name} ngayon?",
     "@adminRestoreConfirmMessage": {
         "placeholders": {
             "name": {
@@ -5679,15 +5668,15 @@
     "adminUnknownDate": "Hindi alam na petsa",
     "adminUnnamedBackup": "Walang Pangalan na Backup",
     "adminLiveTvNotAvailable": "Hindi available ang live TV administration sa server build na ito.",
-    "adminLiveTvTitle": "Live TV Administration",
-    "adminApply": "Mag-apply",
+    "adminLiveTvTitle": "Administrasyon ng Live TV",
+    "adminApply": "Ilapat",
     "adminNotSet": "Hindi nakatakda",
     "adminReset": "I-reset",
     "adminLogsTitle": "Mga Log ng Server",
     "adminLogsNewestFirst": "Pinakabago Una",
     "adminLogsOldestFirst": "Pinakamatanda Una",
     "adminLogsJustNow": "Ngayon lang",
-    "adminLogsMinutesAgo": "{minutes}m ago",
+    "adminLogsMinutesAgo": "{minutes}m ang nakalipas",
     "@adminLogsMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -5695,7 +5684,7 @@
             }
         }
     },
-    "adminLogsHoursAgo": "{hours}h ago",
+    "adminLogsHoursAgo": "{hours}h ang nakalipas",
     "@adminLogsHoursAgo": {
         "placeholders": {
             "hours": {
@@ -5703,7 +5692,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d ago",
+    "adminLogsDaysAgo": "{days}d ang nakalipas",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5711,7 +5700,7 @@
             }
         }
     },
-    "adminLogViewerLoadFailed": "Failed to load {fileName}",
+    "adminLogViewerLoadFailed": "Nabigong i-load ang {fileName}",
     "@adminLogViewerLoadFailed": {
         "placeholders": {
             "fileName": {
@@ -5719,7 +5708,7 @@
             }
         }
     },
-    "adminLogViewerMatches": "{count} matches",
+    "adminLogViewerMatches": "{count} na tugma",
     "@adminLogViewerMatches": {
         "placeholders": {
             "count": {
@@ -5729,12 +5718,11 @@
     },
     "adminLogViewerNoMatches": "Walang tugmang linya",
     "adminMetadataEditorTitle": "Metadata Editor",
-    "adminMetadataRemote": "Remote",
     "adminMetadataType": "Uri",
     "adminMetadataDetails": "Mga Detalye",
     "adminMetadataExternalIds": "Mga panlabas na ID",
     "adminMetadataImages": "Mga imahe",
-    "adminMetadataFieldTitle": "Pamagat",
+    "adminMetadataFieldTitle": "Title",
     "adminMetadataFieldSortTitle": "Pagbukud-bukurin ang pamagat",
     "adminMetadataFieldOriginalTitle": "Orihinal na pamagat",
     "adminMetadataFieldPremiereDate": "Petsa ng premiere (YYYY-MM-DD)",
@@ -5762,7 +5750,7 @@
     "adminMetadataImageThumb": "hinlalaki",
     "adminMetadataRecursive": "Recursive",
     "adminMetadataProvider": "Provider",
-    "adminMetadataImageUpdated": "{imageType} image updated",
+    "adminMetadataImageUpdated": "Na-update ang larawang {imageType}",
     "@adminMetadataImageUpdated": {
         "placeholders": {
             "imageType": {
@@ -5770,7 +5758,7 @@
             }
         }
     },
-    "adminMetadataImageUploaded": "{imageType} image uploaded",
+    "adminMetadataImageUploaded": "Na-upload ang larawang {imageType}",
     "@adminMetadataImageUploaded": {
         "placeholders": {
             "imageType": {
@@ -5778,7 +5766,7 @@
             }
         }
     },
-    "adminMetadataImageDeleted": "{imageType} image deleted",
+    "adminMetadataImageDeleted": "Tinanggal ang larawang {imageType}",
     "@adminMetadataImageDeleted": {
         "placeholders": {
             "imageType": {
@@ -5786,7 +5774,7 @@
             }
         }
     },
-    "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+    "adminMetadataImageDownloadFailed": "Nabigong i-download ang larawan: {error}",
     "@adminMetadataImageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -5795,7 +5783,7 @@
         }
     },
     "adminMetadataImageReadFailed": "Nabigong basahin ang napiling larawan",
-    "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
+    "adminMetadataImageUploadFailed": "Nabigong i-upload ang larawan: {error}",
     "@adminMetadataImageUploadFailed": {
         "placeholders": {
             "error": {
@@ -5803,7 +5791,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+    "adminMetadataDeleteImageTitle": "Tanggalin ang larawang {imageType}",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5812,7 +5800,7 @@
         }
     },
     "adminMetadataDeleteImageContent": "Inaalis nito ang kasalukuyang larawan mula sa item.",
-    "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
+    "adminMetadataImageDeleteFailed": "Nabigong tanggalin ang larawan: {error}",
     "@adminMetadataImageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -5820,7 +5808,7 @@
             }
         }
     },
-    "adminMetadataChooseImage": "Choose {imageType} image",
+    "adminMetadataChooseImage": "Pumili ng larawang {imageType}",
     "@adminMetadataChooseImage": {
         "placeholders": {
             "imageType": {
@@ -5829,7 +5817,7 @@
         }
     },
     "adminMetadataUpload": "Mag-upload",
-    "adminMetadataUpdate": "Update",
+    "adminMetadataUpdate": "I-update",
     "adminMetadataRemoteImage": "Malayong larawan",
     "adminPluginsInstalled": "Naka-install",
     "adminPluginsCatalog": "Catalog",
@@ -5837,7 +5825,7 @@
     "adminPluginsRestart": "I-restart",
     "adminPluginsNoSearchResults": "Walang mga plugin na tumutugma sa iyong paghahanap",
     "adminPluginsNoneInstalled": "Walang naka-install na plugin",
-    "adminPluginsUpdateAvailable": "Update available: v{version}",
+    "adminPluginsUpdateAvailable": "May available na update: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {
             "version": {
@@ -5851,7 +5839,7 @@
     "adminPluginsEnable": "Paganahin",
     "adminPluginsDisable": "Huwag paganahin",
     "adminPluginsInstallUpdate": "I-install ang update",
-    "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+    "adminPluginsInstallUpdateVersioned": "I-install ang update (v{version})",
     "@adminPluginsInstallUpdateVersioned": {
         "placeholders": {
             "version": {
@@ -5861,7 +5849,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "Walang mga pakete na tumutugma sa iyong paghahanap",
     "adminPluginsCatalogEmpty": "Walang available na package",
-    "adminPluginsInstalling": "\"{name}\" is being installed...",
+    "adminPluginsInstalling": "Ini-install ang \"{name}\"...",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5873,7 +5861,7 @@
     "adminPluginDetailExperimentalContent": "Eksperimento pa rin ang pagsasama ng mga setting ng plugin. Ang ilang mga field o layout ay maaaring hindi pa mag-render nang tama.",
     "adminPluginDetailToggle404": "Nabigong i-toggle ang plugin. Hindi mahanap ng server ang bersyon ng plugin na ito. Subukan ang pag-refresh ng mga plugin, pagkatapos ay subukang muli.",
     "adminPluginDetailToggleDioError": "Nabigong i-toggle ang plugin. Pakisuri ang mga log ng server para sa mga detalye.",
-    "adminPluginDetailSettingsTitle": "{name} Settings",
+    "adminPluginDetailSettingsTitle": "Mga Setting ng {name}",
     "@adminPluginDetailSettingsTitle": {
         "placeholders": {
             "name": {
@@ -5891,7 +5879,7 @@
     "adminPluginDetailMalfunctioned": "Ang plugin na ito ay hindi gumagana at maaaring hindi gumana nang tama.",
     "adminPluginDetailNotSupported": "Ang plugin na ito ay hindi sinusuportahan ng kasalukuyang bersyon ng server.",
     "adminPluginDetailSuperseded": "Ang plugin na ito ay pinalitan ng isang mas bagong bersyon.",
-    "adminReposLoadFailed": "Failed to load repositories: {error}",
+    "adminReposLoadFailed": "Nabigong i-load ang mga repository: {error}",
     "@adminReposLoadFailed": {
         "placeholders": {
             "error": {
@@ -5900,7 +5888,7 @@
         }
     },
     "adminReposRemoveTitle": "Alisin ang Repository",
-    "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+    "adminReposRemoveConfirm": "Sigurado ka bang gusto mong alisin ang \"{name}\"?",
     "@adminReposRemoveConfirm": {
         "placeholders": {
             "name": {
@@ -5909,7 +5897,7 @@
         }
     },
     "adminReposRemove": "Alisin",
-    "adminReposSaveFailed": "Failed to save repositories: {error}",
+    "adminReposSaveFailed": "Nabigong i-save ang mga repository: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
             "error": {
@@ -5930,8 +5918,8 @@
     "adminGeneralMetadataLanguageHint": "hal. en, de, fr",
     "adminGeneralMetadataCountry": "Ginustong metadata na bansa",
     "adminGeneralMetadataCountryHint": "hal. US, DE, FR",
-    "adminGeneralLibraryScanConcurrency": "Library scan concurrency",
-    "adminGeneralImageEncodingLimit": "Parallel image encoding limit",
+    "adminGeneralLibraryScanConcurrency": "Concurrency ng library scan",
+    "adminGeneralImageEncodingLimit": "Limitasyon ng parallel image encoding",
     "adminUnknownError": "Hindi kilalang error",
     "adminBrowse": "Mag-browse",
     "adminCloseBrowser": "Isara ang browser",
@@ -5996,14 +5984,14 @@
     "adminTaskCancelling": "Kinakansela...",
     "adminTaskRunning": "Tumatakbo...",
     "adminTaskNeverRun": "Huwag tumakbo",
-    "adminTaskStop": "Tumigil ka",
+    "adminTaskStop": "Ihinto",
     "adminTaskRun": "Takbo",
     "adminTaskDetailLastExecution": "Huling Pagbitay",
     "adminTaskDetailStarted": "Nagsimula",
     "adminTaskDetailEnded": "Natapos na",
     "adminTaskDetailDuration": "Tagal",
     "adminTaskDetailErrorLabel": "Error:",
-    "adminTaskTriggerDaily": "Daily at {time}",
+    "adminTaskTriggerDaily": "Araw-araw nang {time}",
     "@adminTaskTriggerDaily": {
         "placeholders": {
             "time": {
@@ -6011,7 +5999,7 @@
             }
         }
     },
-    "adminTaskTriggerWeekly": "Every {day} at {time}",
+    "adminTaskTriggerWeekly": "Tuwing {day} nang {time}",
     "@adminTaskTriggerWeekly": {
         "placeholders": {
             "day": {
@@ -6022,7 +6010,7 @@
             }
         }
     },
-    "adminTaskTriggerInterval": "Every {duration}",
+    "adminTaskTriggerInterval": "Tuwing {duration}",
     "@adminTaskTriggerInterval": {
         "placeholders": {
             "duration": {
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Bawat 12 oras",
     "adminTaskTriggerEvery24Hours": "Tuwing 24 na oras",
     "adminTaskTriggerEvery2Days": "Bawat 2 araw",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 oras} other{{count} na oras}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6055,7 +6043,7 @@
     "adminActivityToday": "Ngayong araw",
     "adminActivityYesterday": "Kahapon",
     "adminActivityOlder": "Mas matanda",
-    "adminActivityDaysAgo": "{days}d ago",
+    "adminActivityDaysAgo": "{days}d ang nakalipas",
     "@adminActivityDaysAgo": {
         "placeholders": {
             "days": {
@@ -6063,7 +6051,7 @@
             }
         }
     },
-    "adminActivityHoursAgo": "{hours}h ago",
+    "adminActivityHoursAgo": "{hours}h ang nakalipas",
     "@adminActivityHoursAgo": {
         "placeholders": {
             "hours": {
@@ -6071,7 +6059,7 @@
             }
         }
     },
-    "adminActivityMinutesAgo": "{minutes}m ago",
+    "adminActivityMinutesAgo": "{minutes}m ang nakalipas",
     "@adminActivityMinutesAgo": {
         "placeholders": {
             "minutes": {
@@ -6143,7 +6131,7 @@
     "adminTrickplayWidthResolutions": "Mga resolusyon ng lapad",
     "adminMetadataDefault": "Default",
     "adminMetadataContentTypeUpdated": "Na-update ang uri ng nilalaman",
-    "adminMetadataContentTypeFailed": "Failed to update content type: {error}",
+    "adminMetadataContentTypeFailed": "Nabigong i-update ang content type: {error}",
     "@adminMetadataContentTypeFailed": {
         "placeholders": {
             "error": {
@@ -6157,7 +6145,7 @@
     "adminGeneralServerName": "Pangalan ng server",
     "adminSettingsLoadFailed": "Nabigong i-load ang mga setting",
     "adminDiscover": "Tuklasin",
-    "adminChannelMappingsUpdateFailed": "Failed to update mappings: {error}",
+    "adminChannelMappingsUpdateFailed": "Nabigong i-update ang mga mapping: {error}",
     "@adminChannelMappingsUpdateFailed": {
         "placeholders": {
             "error": {
@@ -6165,7 +6153,7 @@
             }
         }
     },
-    "adminTimeLimitDuration": "Time limit: {duration}",
+    "adminTimeLimitDuration": "Limitasyon sa oras: {duration}",
     "@adminTimeLimitDuration": {
         "placeholders": {
             "duration": {
@@ -6174,7 +6162,7 @@
         }
     },
     "folders": "Mga folder",
-    "libraries": "Mga aklatan",
+    "libraries": "Mga library",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "Hindi pinagana ang SyncPlay",
     "syncPlayDisabledMessage": "Paganahin ang SyncPlay sa Mga Setting upang magamit ang naka-synchronize na pag-playback.",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "Ang SyncPlay ay nangangailangan ng isang Jellyfin server. Hindi ito sinusuportahan ng kasalukuyang server.",
     "syncPlayGroupFallbackName": "SyncPlay Pangkat",
     "syncPlayGroupTooltip": "SyncPlay pangkat",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# kalahok} other {# na kalahok}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6225,7 +6213,7 @@
     "syncPlayStateWaiting": "Naghihintay",
     "syncPlayStatePaused": "Naka-pause",
     "syncPlayStatePlaying": "Naglalaro",
-    "syncPlayUserJoinedGroup": "{userName} joined SyncPlay group",
+    "syncPlayUserJoinedGroup": "Sumali si {userName} sa SyncPlay group",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
         "placeholders": {
@@ -6234,7 +6222,7 @@
             }
         }
     },
-    "syncPlayUserLeftGroup": "{userName} left SyncPlay group",
+    "syncPlayUserLeftGroup": "Umalis si {userName} sa SyncPlay group",
     "@syncPlayUserLeftGroup": {
         "description": "Snackbar message when a user leaves a SyncPlay group",
         "placeholders": {
@@ -6245,7 +6233,7 @@
     },
     "syncPlayAccessDeniedTitle": "Tinanggihan ang pag-access sa SyncPlay",
     "syncPlayAccessDeniedMessage": "Wala kang access sa isa o higit pang mga item sa pangkat ng SyncPlay na ito. Hilingin sa may-ari ng grupo na i-verify ang mga pahintulot sa library o pumili ng ibang queue.",
-    "syncPlaySyncingPlaybackToGroup": "Syncing playback to {groupName}",
+    "syncPlaySyncingPlaybackToGroup": "Nagsi-sync ng playback sa {groupName}",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Tandaan ang aking pinili",
     "playHdr10Fallback": "Maglaro ng HDR10 fallback",
     "requestTranscode": "Humiling ng transcode",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# row ang natuklasan} other {# na row ang natuklasan}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6287,7 +6275,7 @@
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
     "castRemotePlayback": "Remote Playback",
-    "castControlFailed": "Cast control failed: {error}",
+    "castControlFailed": "Nabigo ang kontrol ng cast: {error}",
     "@castControlFailed": {
         "placeholders": {
             "error": {
@@ -6295,7 +6283,7 @@
             }
         }
     },
-    "castKindControls": "{kind} Controls",
+    "castKindControls": "Mga Kontrol ng {kind}",
     "@castKindControls": {
         "placeholders": {
             "kind": {
@@ -6305,7 +6293,7 @@
     },
     "castDeviceVolume": "Dami ng Device",
     "castVolumeUnavailable": "Hindi magagamit",
-    "castStopKind": "Stop {kind}",
+    "castStopKind": "Ihinto ang {kind}",
     "@castStopKind": {
         "placeholders": {
             "kind": {
@@ -6319,7 +6307,7 @@
     "pinSetTitle": "Itakda ang PIN",
     "pinEnterTitle": "Ilagay ang PIN",
     "pinReenterToConfirm": "Ipasok muli ang iyong PIN upang kumpirmahin",
-    "pinEnterNDigit": "Enter a {length}-digit PIN",
+    "pinEnterNDigit": "Maglagay ng {length}-digit na PIN",
     "@pinEnterNDigit": {
         "placeholders": {
             "length": {
@@ -6327,7 +6315,7 @@
             }
         }
     },
-    "pinEnterYourNDigit": "Enter your {length}-digit PIN",
+    "pinEnterYourNDigit": "Ilagay ang iyong {length}-digit na PIN",
     "@pinEnterYourNDigit": {
         "placeholders": {
             "length": {
@@ -6338,7 +6326,7 @@
     "pinIncorrect": "Maling PIN",
     "pinMismatch": "Hindi tugma ang mga PIN",
     "pinForgot": "Nakalimutan ang PIN?",
-    "pinClear": "Maaliwalas",
+    "pinClear": "I-clear",
     "pinBackspace": "Backspace",
     "quickConnectAuthorized": "Pinahintulutan ang kahilingan sa Quick Connect.",
     "quickConnectInvalidOrExpired": "Ang Quick Connect code ay hindi wasto o nag-expire.",
@@ -6347,7 +6335,7 @@
     "quickConnectDisabled": "Naka-disable ang Quick Connect sa server na ito.",
     "quickConnectForbidden": "Hindi maaaring pahintulutan ng iyong account ang kahilingan sa Quick Connect na ito.",
     "quickConnectNotFound": "Hindi nahanap ang Quick Connect code. Subukan ang isang bagong code.",
-    "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
+    "quickConnectFailedWithMessage": "Nabigo ang Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6357,7 +6345,7 @@
     },
     "quickConnectEnterCode": "Ipasok ang code",
     "quickConnectAuthorize": "Pahintulutan",
-    "remoteCommandFailed": "Command failed: {error}",
+    "remoteCommandFailed": "Nabigo ang command: {error}",
     "@remoteCommandFailed": {
         "placeholders": {
             "error": {
@@ -6373,7 +6361,7 @@
     "unknownItem": "Hindi kilala",
     "remoteNothingPlaying": "Walang naglalaro sa session na ito",
     "castingStarted": "Nagsimula ang pag-cast sa napiling device",
-    "castingFailed": "Failed to start casting: {error}",
+    "castingFailed": "Nabigong simulan ang casting: {error}",
     "@castingFailed": {
         "placeholders": {
             "error": {
@@ -6383,18 +6371,18 @@
     },
     "noRemoteDevices": "Walang available na remote playback device.",
     "noRemoteDevicesIos": "Walang available na remote playback device.\n\nSa iOS, maaaring hindi available ang mga target ng AirPlay sa simulator.",
-    "trackActionPlayNext": "Play Next",
+    "trackActionPlayNext": "I-play Susunod",
     "trackActionAddToQueue": "Idagdag sa Queue",
     "trackActionAddToPlaylist": "Idagdag sa Playlist",
     "trackActionCancelDownload": "Kanselahin ang Pag-download",
     "trackActionDeleteFromPlaylist": "Tanggalin sa Playlist",
-    "trackActionMoveUp": "Move Up",
+    "trackActionMoveUp": "Ilipat Pataas",
     "trackActionMoveDown": "Ilipat Pababa",
     "trackActionRemoveFromFavorites": "Alisin sa Mga Paborito",
     "trackActionAddToFavorites": "Idagdag sa Mga Paborito",
     "trackActionGoToAlbum": "Pumunta sa Album",
     "trackActionGoToArtist": "Pumunta sa Artist",
-    "trackActionDownloading": "Downloading {name}...",
+    "trackActionDownloading": "Nagda-download ng {name}...",
     "@trackActionDownloading": {
         "placeholders": {
             "name": {
@@ -6407,7 +6395,7 @@
     "shuffleBy": "Balasahin Ni",
     "shuffleSelectLibrary": "Piliin ang Library",
     "shuffleSelectGenre": "Piliin ang Genre",
-    "shuffleLibrary": "Aklatan",
+    "shuffleLibrary": "Library",
     "shuffleGenre": "Genre",
     "shuffleNoLibraries": "Walang magagamit na mga katugmang aklatan.",
     "shuffleNoGenres": "Walang nakitang genre para sa shuffle mode na ito.",
@@ -6425,11 +6413,11 @@
     "addToPlaylist": "Idagdag sa Playlist",
     "lyricsNotAvailable": "Walang available na lyrics",
     "upNext": "Susunod",
-    "playNext": "Play Next",
+    "playNext": "I-play Susunod",
     "stillWatchingContent": "Na-pause ang pag-playback. Nanonood ka pa ba?",
-    "stillWatchingStop": "Tumigil ka",
+    "stillWatchingStop": "Ihinto",
     "stillWatchingContinue": "Magpatuloy",
-    "skipSegment": "Skip {segment}",
+    "skipSegment": "Laktawan ang {segment}",
     "@skipSegment": {
         "placeholders": {
             "segment": {
@@ -6439,7 +6427,7 @@
     },
     "liveTv": "Live na TV",
     "continueWatchingAndNextUp": "Magpatuloy sa Panonood at Susunod",
-    "downloadingBatchProgress": "Downloading {current}/{total} — {fileName}",
+    "downloadingBatchProgress": "Nagda-download ng {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
             "current": {
@@ -6453,7 +6441,7 @@
             }
         }
     },
-    "downloadingFile": "Downloading {fileName}",
+    "downloadingFile": "Nagda-download ng {fileName}",
     "@downloadingFile": {
         "placeholders": {
             "fileName": {
@@ -6491,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "Nakaraang",
+    "playerTooltipPrevious": "Nakaraan",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -6537,7 +6525,7 @@
     "settingsAuthenticationSection": "AUTENTICATION",
     "settingsSortServersBy": "Pagbukud-bukurin ang mga Server Ayon sa",
     "settingsLastUsed": "Huling Ginamit",
-    "settingsAlphabetical": "Alphabetical",
+    "settingsAlphabetical": "Alpabetiko",
     "settingsPrivacyAndSafetySection": "PRIVACY at KALIGTASAN",
     "settingsBlockedRatings": "Mga Naka-block na Rating",
     "settingsGeneralStyle": "Pangkalahatang Estilo",
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Tingnan ang Mga Update",
     "settingsCheckForUpdatesSubtitle": "Tingnan ang pinakabagong release ng Moonfin",
     "settingsPoweredByFlutter": "Pinapatakbo ng Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# na license notice}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6600,7 +6588,7 @@
     "settingsSyncplaySubtitle": "Logic ng pag-synchronize para sa mga session ng grupo",
     "settingsAdvancedOptionsSubtitle": "Mga tampok na dalubhasang manlalaro. Gumamit nang may pag-iingat, dahil maaaring magdulot ng mga isyu sa pag-playback ang ilang opsyon",
     "settingsSkipIntrosAndOutros": "Laktawan ang Intro at Outros?",
-    "settingsPromptUser": "Prompt User",
+    "settingsPromptUser": "Itanong sa User",
     "settingsSkip": "Laktawan",
     "settingsDoNothing": "Walang Gawin",
     "settingsMaxBitrateDescription": "Takpan ang streaming bitrate. Ang nilalaman sa itaas ng threshold na ito ay ita-transcode upang magkasya.",
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Itala",
+    "record": "I-record",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6795,7 +6783,7 @@
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "Mode ng Audio Output",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
@@ -6803,21 +6791,9 @@
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Audio Fallback Codec",
+    "settingsAudioFallbackCodec": "Fallback na Audio Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6965,73 +6941,73 @@
         "description": "Diagnostics label for route HD audio support"
     },
     "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
-    "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
-    "autoplayNextEpisode": "Autoplay Next Episode",
+    "settingsPlaybackEngineMpvRecommended": "mpv (inirerekomenda)",
+    "autoplayNextEpisode": "Awtomatikong I-play ang Susunod na Episode",
     "@autoplayNextEpisode": {
         "description": "Setting title: automatically start the next episode"
     },
-    "autoplayNextEpisodeSubtitle": "Automatically play the next episode when available.",
+    "autoplayNextEpisodeSubtitle": "Awtomatikong i-play ang susunod na episode kapag available.",
     "@autoplayNextEpisodeSubtitle": {
         "description": "Setting subtitle for autoplay next episode"
     },
-    "skipSilenceTitle": "Skip silence",
+    "skipSilenceTitle": "Laktawan ang katahimikan",
     "@skipSilenceTitle": {
         "description": "Setting title: skip silent audio segments during playback"
     },
-    "skipSilenceSubtitle": "Automatically skip silent audio segments when supported by the stream.",
+    "skipSilenceSubtitle": "Awtomatikong laktawan ang mga tahimik na audio segment kapag sinusuportahan ng stream.",
     "@skipSilenceSubtitle": {
         "description": "Setting subtitle for skip silence"
     },
-    "allowExternalAudioEffectsTitle": "Allow external audio effects",
+    "allowExternalAudioEffectsTitle": "Payagan ang mga external na audio effect",
     "@allowExternalAudioEffectsTitle": {
         "description": "Setting title: allow equalizer apps to attach to Media3"
     },
-    "allowExternalAudioEffectsSubtitle": "Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.",
+    "allowExternalAudioEffectsSubtitle": "Payagan ang mga equalizer at effects app (hal. Wavelet) na kumabit sa mga Media3 playback session.",
     "@allowExternalAudioEffectsSubtitle": {
         "description": "Setting subtitle for external audio effects"
     },
-    "disableTunnelingTitle": "Disable tunneling",
+    "disableTunnelingTitle": "I-disable ang tunneling",
     "@disableTunnelingTitle": {
         "description": "Setting title: force non-tunneled video playback"
     },
-    "disableTunnelingSubtitle": "Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.",
+    "disableTunnelingSubtitle": "Piliting non-tunneled ang playback. Kapaki-pakinabang sa mga device na may audio/video discontinuity sa tunneling.",
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+    "mapDolbyVisionP7Title": "I-map ang Dolby Vision profile 7 sa HEVC",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
-    "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+    "mapDolbyVisionP7Subtitle": "I-play ang mga Dolby Vision profile 7 stream bilang HDR10-compatible na HEVC sa mga non-DV device.",
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
-    "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+    "subtitlesUseEmbeddedStyles": "Gamitin ang mga embedded na estilo ng subtitle",
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
-    "subtitlesUseEmbeddedStylesSubtitle": "Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.",
+    "subtitlesUseEmbeddedStylesSubtitle": "Ilapat ang mga kulay, font, at posisyon na naka-embed sa subtitle track. I-disable para gamitin ang iyong mga kagustuhan sa estilo ng caption.",
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
-    "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+    "subtitlesUseEmbeddedFontSizes": "Gamitin ang mga embedded na laki ng font ng subtitle",
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
-    "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
+    "subtitlesUseEmbeddedFontSizesSubtitle": "Ilapat ang mga font-size hint na naka-embed sa subtitle track. I-disable para gamitin ang laki ng subtitle mula sa iyong mga kagustuhan sa estilo.",
     "@subtitlesUseEmbeddedFontSizesSubtitle": {
         "description": "Setting subtitle for embedded font sizes toggle"
     },
-    "useDetailedSubHeadings": "Use Detailed Sub-Headings",
+    "useDetailedSubHeadings": "Gamitin ang Mga Detalyadong Sub-Heading",
     "@useDetailedSubHeadings": {
         "description": "Label for setting to toggle detailed or minimal subrow on library pages"
     },
-    "useDetailedSubHeadingsDescription": "Show detailed or minimal subrow on Library pages.",
+    "useDetailedSubHeadingsDescription": "Ipakita ang detalyado o minimal na subrow sa mga Library page.",
     "@useDetailedSubHeadingsDescription": {
         "description": "Subtitle for the use detailed sub headings setting"
     },
-    "savedThemesDeleteDialogTitle": "Delete saved theme?",
-    "savedThemesDeleteDialogMessage": "Remove \"{themeName}\" from this device cache?",
+    "savedThemesDeleteDialogTitle": "Tanggalin ang naka-save na theme?",
+    "savedThemesDeleteDialogMessage": "Alisin ang \"{themeName}\" mula sa cache ng device na ito?",
     "@savedThemesDeleteDialogMessage": {
         "description": "Confirmation message for deleting a saved custom theme",
         "placeholders": {
@@ -7040,7 +7016,7 @@
             }
         }
     },
-    "savedThemesDeletedMessage": "Deleted \"{themeName}\" from this device.",
+    "savedThemesDeletedMessage": "Tinanggal ang \"{themeName}\" mula sa device na ito.",
     "@savedThemesDeletedMessage": {
         "description": "Status message shown after deleting a saved custom theme",
         "placeholders": {
@@ -7049,7 +7025,7 @@
             }
         }
     },
-    "savedThemesDeleteFailedMessage": "Could not delete \"{themeName}\".",
+    "savedThemesDeleteFailedMessage": "Hindi matanggal ang \"{themeName}\".",
     "@savedThemesDeleteFailedMessage": {
         "description": "Status message shown when deleting a saved custom theme fails",
         "placeholders": {
@@ -7058,10 +7034,10 @@
             }
         }
     },
-    "savedThemesTitle": "Saved themes",
-    "savedThemesDescription": "These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.",
-    "savedThemesEmpty": "No saved themes were found for this server.",
-    "savedThemesCurrentThemeId": "{themeId} • Currently active",
+    "savedThemesTitle": "Mga naka-save na theme",
+    "savedThemesDescription": "Ito ang mga theme na na-download mula sa Moonfin plugin para sa kasalukuyang server. Ang pagtanggal ay nag-aalis lamang ng lokal na kopyang ito.",
+    "savedThemesEmpty": "Walang nakitang naka-save na theme para sa server na ito.",
+    "savedThemesCurrentThemeId": "{themeId} • Kasalukuyang aktibo",
     "@savedThemesCurrentThemeId": {
         "description": "Subtitle showing the saved theme id when it is currently selected",
         "placeholders": {
@@ -7070,65 +7046,65 @@
             }
         }
     },
-    "savedThemesDeleteTooltip": "Delete saved theme",
-    "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
+    "savedThemesDeleteTooltip": "Tanggalin ang naka-save na theme",
+    "savedThemesManageSubtitle": "Pamahalaan ang mga na-download na plugin theme sa device na ito",
     "themeEditor": "Theme Editor",
-    "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
+    "themeEditorSubtitle": "Buksan ang Moonfin Theme Editor sa iyong browser",
     "homeScreen": "Home Screen",
     "bottomBar": "Bottom Bar",
     "homeRowsStyleClassic": "Classic",
     "homeRowsStyleModern": "Modern",
-    "homeRowsSection": "Home Rows",
+    "homeRowsSection": "Mga Home Row",
     "rowsType": "Rows Type",
-    "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
-    "displayFavoritesRows": "Display Favorites Rows",
-    "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
-    "favoritesRowSorting": "Favorites Row Sorting",
-    "favoritesRowSortingDescription": "Sort Favorites rows by date added, release date, alphabetically, and more.",
-    "displayCollectionsRows": "Display Collections Rows",
-    "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
-    "collectionsRowSorting": "Collections Row Sorting",
-    "collectionsRowSortingDescription": "Sort Collections rows by date added, release date, alphabetically, and more.",
-    "displayGenresRows": "Display Genres Rows",
-    "displayGenresRowsSubtitle": "Show Genres rows in Home Sections.",
-    "genresRowSorting": "Genres Row Sorting",
-    "genresRowSortingDescription": "Sort Genres rows by date added, release date, alphabetically, and more.",
-    "genresRowItems": "Genres Row Items",
-    "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
-    "appearance": "Appearance",
+    "rowsTypeDescription": "Pinapanatili ng Classic ang per-row na uri ng larawan at info overlay. Gumagamit ang Modern ng mga portrait-to-backdrop na row.",
+    "displayFavoritesRows": "Ipakita ang Mga Favorites Row",
+    "displayFavoritesRowsSubtitle": "Ipakita ang Mga Paboritong Pelikula, Serye, at iba pang paboritong row sa Mga Home Section.",
+    "favoritesRowSorting": "Pag-sort ng Favorites Row",
+    "favoritesRowSortingDescription": "I-sort ang mga Favorites row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.",
+    "displayCollectionsRows": "Ipakita ang Mga Collections Row",
+    "displayCollectionsRowsSubtitle": "Ipakita ang mga Collections row sa Mga Home Section.",
+    "collectionsRowSorting": "Pag-sort ng Collections Row",
+    "collectionsRowSortingDescription": "I-sort ang mga Collections row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.",
+    "displayGenresRows": "Ipakita ang Mga Genres Row",
+    "displayGenresRowsSubtitle": "Ipakita ang mga Genres row sa Mga Home Section.",
+    "genresRowSorting": "Pag-sort ng Genres Row",
+    "genresRowSortingDescription": "I-sort ang mga Genres row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.",
+    "genresRowItems": "Mga Item ng Genres Row",
+    "genresRowItemsDescription": "Ipakita ang Mga Pelikula, Serye, o pareho sa mga Genres row.",
+    "appearance": "Hitsura",
     "cardSize": "Card Size",
     "externalPlayerApp": "External player app",
-    "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
-    "loadingInstalledPlayers": "Loading installed players...",
-    "connection": "Connection",
+    "externalPlayerAskEachTimeSubtitle": "Ipakita ang app chooser kapag nagsimula ang playback.",
+    "loadingInstalledPlayers": "Nilo-load ang mga naka-install na player...",
+    "connection": "Koneksyon",
     "audioTranscodeTarget": "Audio Transcode Target",
     "passthrough": "Passthrough",
-    "supportedOnThisDevice": "Supported on this device",
-    "notSupportedOnThisDevice": "Not Supported on this device",
+    "supportedOnThisDevice": "Suportado sa device na ito",
+    "notSupportedOnThisDevice": "Hindi Suportado sa device na ito",
     "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
-    "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) to external decoder.",
-    "settingsAudioTrueHdJocPassthrough": "TrueHD with Atmos (JOC) Passthrough",
-    "mediaPlayerBehavior": "Media Player Behavior",
-    "playbackEnhancements": "Playback Enhancements",
-    "alwaysOn": "Always on.",
-    "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
-    "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
+    "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) sa external decoder.",
+    "settingsAudioTrueHdJocPassthrough": "TrueHD na may Atmos (JOC) Passthrough",
+    "mediaPlayerBehavior": "Kilos ng Media Player",
+    "playbackEnhancements": "Mga Pagpapahusay sa Playback",
+    "alwaysOn": "Palaging naka-on.",
+    "replaceSkipOutroWithNextUpDisplay": "Palitan ang Skip Outro ng Next Up Display",
+    "replaceSkipOutroWithNextUpDisplaySubtitle": "Ipakita ang Next Up overlay sa halip na ang Skip Outro button.",
     "playerRouting": "Player Routing",
-    "preferSoftwareDecoders": "Prefer software decoders",
-    "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
+    "preferSoftwareDecoders": "Piliin ang mga software decoder",
+    "preferSoftwareDecodersSubtitle": "Gamitin ang FFmpeg (audio) at libgav1 (AV1) bago ang mga hardware decoder. I-disable kung nasisira ang HDMI audio passthrough.",
     "useExternalPlayer": "Use external player",
-    "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
+    "useExternalPlayerSubtitle": "Buksan ang video playback sa iyong napiling external app sa Android TV.",
     "automaticQueuing": "Automatic Queuing",
-    "preferSdhSubtitles": "Prefer SDH subtitles",
-    "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
+    "preferSdhSubtitles": "Piliin ang mga SDH subtitle",
+    "preferSdhSubtitlesSubtitle": "Unahin ang mga SDH/CC subtitle track kapag awtomatikong pumipili.",
     "webDiagnostics": "Web diagnostics",
     "webDiagnosticsTitle": "Moonfin Web Diagnostics",
-    "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",
-    "webDiagnosticsDetectedMixedContentFailure": "Detected Mixed-Content Failure",
-    "webDiagnosticsDetectedCorsPreflightFailure": "Detected CORS/Preflight Failure",
-    "webDiagnosticsMixedContentFailureBody": "Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.",
-    "webDiagnosticsCorsFailureBody": "Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.",
-    "webDiagnosticsTargetUrl": "Target URL: {url}",
+    "webDiagnosticsIntro": "Gamitin ang page na ito para i-diagnose ang mga isyu sa connectivity ng browser (CORS, mixed content, at mga discovery setting).",
+    "webDiagnosticsDetectedMixedContentFailure": "Natukoy na Mixed-Content Failure",
+    "webDiagnosticsDetectedCorsPreflightFailure": "Natukoy na CORS/Preflight Failure",
+    "webDiagnosticsMixedContentFailureBody": "Nakakita ang Moonfin ng HTTPS page na sumusubok tumawag sa isang HTTP server URL. Bina-block ng mga browser ang request na ito bago ito umabot sa iyong server.",
+    "webDiagnosticsCorsFailureBody": "Nakakita ang Moonfin ng browser-level na request failure na karaniwang sanhi ng kulang na CORS o preflight header sa media server.",
+    "webDiagnosticsTargetUrl": "Target na URL: {url}",
     "@webDiagnosticsTargetUrl": {
         "description": "Target URL shown in diagnostics summary",
         "placeholders": {
@@ -7137,7 +7113,7 @@
             }
         }
     },
-    "webDiagnosticsDetail": "Detail: {detail}",
+    "webDiagnosticsDetail": "Detalye: {detail}",
     "@webDiagnosticsDetail": {
         "description": "Error detail shown in diagnostics summary",
         "placeholders": {
@@ -7146,77 +7122,77 @@
             }
         }
     },
-    "webDiagnosticsCurrentRuntimeContext": "Current Runtime Context",
+    "webDiagnosticsCurrentRuntimeContext": "Kasalukuyang Runtime Context",
     "webDiagnosticsOrigin": "Origin",
     "webDiagnosticsScheme": "Scheme",
     "webDiagnosticsPluginMode": "Plugin Mode",
     "webDiagnosticsWebRtcScan": "WebRTC Scan",
     "webDiagnosticsForcedServerUrl": "Forced Server URL",
-    "webDiagnosticsDefaultServerUrl": "Default Server URL",
+    "webDiagnosticsDefaultServerUrl": "Default na Server URL",
     "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
-    "notConfigured": "not configured",
+    "notConfigured": "hindi naka-configure",
     "webDiagnosticsMixedContent": "Mixed Content",
-    "webDiagnosticsMixedContentDetected": "This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.",
-    "webDiagnosticsMixedContentFix": "Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.",
-    "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
+    "webDiagnosticsMixedContentDetected": "Nilo-load ang page na ito sa HTTPS, ngunit isa o higit pang naka-configure na URL ang HTTP. Bina-block ng mga browser ang mga HTTPS page sa pagtawag sa mga HTTP API.",
+    "webDiagnosticsMixedContentFix": "Ayos: ihatid ang iyong media server o proxy endpoint sa pamamagitan ng HTTPS, o i-load ang Moonfin sa HTTP sa mga pinagkakatiwalaang lokal na network lamang.",
+    "webDiagnosticsNoMixedContentDetected": "Walang malinaw na mixed-content na configuration na natukoy mula sa kasalukuyang mga runtime setting.",
     "webDiagnosticsCorsChecklist": "CORS Checklist",
-    "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
-    "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
-    "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
-    "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
-    "note": "Note",
-    "webDiagnosticsNonWebNote": "This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.",
-    "backToServerSelect": "Back To Server Select",
-    "signOutAllUsers": "Sign Out All Users",
-    "voiceSearchPermissionPermanentlyDenied": "Microphone permission is permanently denied. Enable it in system settings.",
-    "voiceSearchPermissionRequired": "Microphone permission is required for voice search.",
-    "voiceSearchNoMatch": "Did not catch that. Try again.",
-    "voiceSearchNoSpeechDetected": "No speech detected.",
-    "voiceSearchMicrophoneError": "Microphone error.",
-    "voiceSearchNeedsInternet": "Voice search needs internet.",
-    "voiceSearchServiceBusy": "Voice service is busy. Try again.",
-    "microphonePermissionPermanentlyDenied": "Microphone permission is permanently denied.",
-    "microphonePermissionDenied": "Microphone permission is denied.",
-    "speechRecognitionUnavailable": "Speech recognition is unavailable on this device.",
-    "openIosRoutePicker": "Open iOS route picker",
-    "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
-    "videos": "Videos",
-    "trailers": "Trailers",
-    "programs": "Programs",
-    "songs": "Songs",
-    "photoAlbums": "Photo Albums",
-    "photos": "Photos",
-    "people": "People",
-    "recentlyReleasedEpisodes": "Recently Released Episodes",
-    "watchAgain": "Watch Again",
-    "guestAppearances": "Guest Appearances",
-    "appearancesSeerr": "Appearances (Seerr)",
-    "watchWithGroup": "Watch with group",
-    "errors": "Errors",
-    "warnings": "Warnings",
+    "webDiagnosticsCorsChecklistItem1": "• Payagan ang browser origin sa Access-Control-Allow-Origin.",
+    "webDiagnosticsCorsChecklistItem2": "• Isama ang Authorization, X-Emby-Authorization, at X-Emby-Token sa Access-Control-Allow-Headers.",
+    "webDiagnosticsCorsChecklistItem3": "• Ilantad ang Content-Range at Accept-Ranges para sa streaming at seek behavior.",
+    "webDiagnosticsCorsChecklistItem4": "• Magbalik ng 204 sa mga OPTIONS preflight request.",
+    "webDiagnosticsHeaderSnippetTitle": "Halimbawang Header Snippet (nginx-style)",
+    "note": "Tandaan",
+    "webDiagnosticsNonWebNote": "Ang diagnostics route na ito ay para sa mga web build. Kung nakikita mo ito sa ibang platform, maaaring hindi nalalapat ang mga pagsusuring ito.",
+    "backToServerSelect": "Bumalik sa Pagpili ng Server",
+    "signOutAllUsers": "I-sign Out ang Lahat ng User",
+    "voiceSearchPermissionPermanentlyDenied": "Permanenteng tinanggihan ang pahintulot sa mikropono. I-enable ito sa mga system setting.",
+    "voiceSearchPermissionRequired": "Kailangan ang pahintulot sa mikropono para sa voice search.",
+    "voiceSearchNoMatch": "Hindi ko naintindihan iyon. Subukan muli.",
+    "voiceSearchNoSpeechDetected": "Walang natukoy na pananalita.",
+    "voiceSearchMicrophoneError": "Error sa mikropono.",
+    "voiceSearchNeedsInternet": "Kailangan ng internet ang voice search.",
+    "voiceSearchServiceBusy": "Abala ang voice service. Subukan muli.",
+    "microphonePermissionPermanentlyDenied": "Permanenteng tinanggihan ang pahintulot sa mikropono.",
+    "microphonePermissionDenied": "Tinanggihan ang pahintulot sa mikropono.",
+    "speechRecognitionUnavailable": "Hindi available ang speech recognition sa device na ito.",
+    "openIosRoutePicker": "Buksan ang iOS route picker",
+    "airPlayRoutePickerUnavailable": "Hindi available ang AirPlay route picker sa device na ito.",
+    "videos": "Mga Video",
+    "trailers": "Mga trailer",
+    "programs": "Mga Programa",
+    "songs": "Mga Kanta",
+    "photoAlbums": "Mga Photo Album",
+    "photos": "Mga Larawan",
+    "people": "Mga Tao",
+    "recentlyReleasedEpisodes": "Kamakailang Inilabas na Mga Episode",
+    "watchAgain": "Panoorin Muli",
+    "guestAppearances": "Mga Guest Appearance",
+    "appearancesSeerr": "Mga Appearance (Seerr)",
+    "watchWithGroup": "Manood kasama ang grupo",
+    "errors": "Mga Error",
+    "warnings": "Mga Babala",
     "disk": "Disk",
-    "openInBrowser": "Open in Browser",
-    "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
-    "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
-    "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
+    "openInBrowser": "Buksan sa Browser",
+    "embeddedBrowserNotAvailable": "Hindi available ang embedded browser sa platform na ito.",
+    "adminRestartServerConfirmation": "Sigurado ka bang gusto mong i-restart ang server?",
+    "adminShutdownServerConfirmation": "Sigurado ka bang gusto mong i-shut down ang server? Kakailanganin mong i-restart ito nang manu-mano.",
     "internal": "Internal",
     "idle": "Idle",
     "os": "OS",
-    "adminNoUsersFound": "No users found",
-    "adminNoUsersMatchSearch": "No users match your search",
-    "adminNoDevicesFound": "No devices found",
-    "adminNoDevicesMatchCurrentFilters": "No devices match the current filters",
-    "passwordSet": "Password set",
-    "noPasswordConfigured": "No password configured",
+    "adminNoUsersFound": "Walang nakitang user",
+    "adminNoUsersMatchSearch": "Walang user na tumutugma sa iyong paghahanap",
+    "adminNoDevicesFound": "Walang nakitang device",
+    "adminNoDevicesMatchCurrentFilters": "Walang device na tumutugma sa kasalukuyang mga filter",
+    "passwordSet": "Naitakda ang password",
+    "noPasswordConfigured": "Walang naka-configure na password",
     "remoteAccess": "Remote Access",
-    "localOnly": "Local Only",
-    "adminMediaAnalyticsLoadFailed": "Failed to load media analytics",
-    "analyticsCombinedAcrossLibraries": "Combined analytics across all media libraries.",
-    "analyticsTopArtists": "Top Artists",
-    "analyticsTopAuthors": "Top Authors",
-    "analyticsTopContributors": "Top Contributors",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "localOnly": "Lokal Lamang",
+    "adminMediaAnalyticsLoadFailed": "Nabigong i-load ang media analytics",
+    "analyticsCombinedAcrossLibraries": "Pinagsamang analytics sa lahat ng media library.",
+    "analyticsTopArtists": "Nangungunang Mga Artist",
+    "analyticsTopAuthors": "Nangungunang Mga May-akda",
+    "analyticsTopContributors": "Nangungunang Mga Kontribyutor",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} na Library}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7224,20 +7200,20 @@
             }
         }
     },
-    "analyticsNoIndexedMediaTotals": "No indexed media totals are available for this selection yet.",
-    "analyticsLibraryDetails": "Library Details",
-    "analyticsLibraryBreakdown": "Library Breakdown",
-    "analyticsNoLibrariesAvailable": "No libraries are available.",
-    "adminServerAdministrationTitle": "Server Administration",
+    "analyticsNoIndexedMediaTotals": "Wala pang available na indexed media total para sa piniling ito.",
+    "analyticsLibraryDetails": "Mga Detalye ng Library",
+    "analyticsLibraryBreakdown": "Breakdown ng Library",
+    "analyticsNoLibrariesAvailable": "Walang available na library.",
+    "adminServerAdministrationTitle": "Administrasyon ng Server",
     "adminServerPathData": "Data",
     "adminServerPathImageCache": "Image Cache",
     "adminServerPathCache": "Cache",
-    "adminServerPathLogs": "Logs",
+    "adminServerPathLogs": "Mga Log",
     "adminServerPathMetadata": "Metadata",
     "adminServerPathTranscode": "Transcode",
     "adminServerPathWeb": "Web",
-    "adminNoServerPathsReturned": "No server paths returned by this server.",
-    "adminPercentUsed": "{percent}% used",
+    "adminNoServerPathsReturned": "Walang server path na ibinalik ng server na ito.",
+    "adminPercentUsed": "{percent}% ang nagamit",
     "@adminPercentUsed": {
         "placeholders": {
             "percent": {
@@ -7245,24 +7221,24 @@
             }
         }
     },
-    "userActivity": "User Activity",
-    "systemEvents": "System Events",
-    "needsAttention": "Needs Attention",
+    "userActivity": "Aktibidad ng User",
+    "systemEvents": "Mga Kaganapan sa System",
+    "needsAttention": "Kailangan ng Atensyon",
     "adminDrawerSectionServer": "Server",
     "adminDrawerSectionPlayback": "Playback",
-    "adminDrawerSectionDevices": "Devices",
+    "adminDrawerSectionDevices": "Mga Device",
     "adminDrawerSectionAdvanced": "Advanced",
-    "adminDrawerSectionPlugins": "Plugins",
-    "adminDrawerSectionLiveTv": "Live TV",
-    "homeVideos": "Home Videos",
+    "adminDrawerSectionPlugins": "Mga Plugin",
+    "adminDrawerSectionLiveTv": "Live na TV",
+    "homeVideos": "Mga Home Video",
     "mixedContent": "Mixed Content",
-    "homeVideosAndPhotos": "Home Videos & Photos",
-    "mixedMoviesAndShows": "Mixed Movies & Shows",
+    "homeVideosAndPhotos": "Mga Home Video at Larawan",
+    "mixedMoviesAndShows": "Halong Mga Pelikula at Palabas",
     "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
-    "noRecordingsFound": "No recordings found",
-    "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+    "noRecordingsFound": "Walang nakitang recording",
+    "noImagePagesFoundInArchive": "Walang nakitang image page sa loob ng .{extension} archive.",
     "@noImagePagesFoundInArchive": {
         "placeholders": {
             "extension": {
@@ -7270,7 +7246,7 @@
             }
         }
     },
-    "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+    "embeddedRendererFailed": "Nabigo ang embedded renderer ({code}): {description}",
     "@embeddedRendererFailed": {
         "placeholders": {
             "code": {
@@ -7281,7 +7257,7 @@
             }
         }
     },
-    "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+    "epubRendererFailed": "Nabigo ang EPUB renderer ({code}): {description}",
     "@epubRendererFailed": {
         "placeholders": {
             "code": {
@@ -7292,7 +7268,7 @@
             }
         }
     },
-    "missingLocalFileForReader": "Missing local file for reader: {uri}",
+    "missingLocalFileForReader": "Nawawalang lokal na file para sa reader: {uri}",
     "@missingLocalFileForReader": {
         "placeholders": {
             "uri": {
@@ -7300,7 +7276,7 @@
             }
         }
     },
-    "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+    "httpStatusWhileOpeningBookData": "HTTP {status} habang binubuksan ang data ng aklat mula sa {uri}",
     "@httpStatusWhileOpeningBookData": {
         "placeholders": {
             "status": {
@@ -7311,8 +7287,8 @@
             }
         }
     },
-    "noReadableBookEndpointAvailable": "No readable book endpoint available",
-    "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+    "noReadableBookEndpointAvailable": "Walang available na nababasang book endpoint",
+    "unsupportedComicArchiveFormat": "Hindi suportadong format ng comic archive: .{extension}",
     "@unsupportedComicArchiveFormat": {
         "placeholders": {
             "extension": {
@@ -7320,18 +7296,1715 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
-    "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
-    "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
-    "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
-    "closeGenrePanel": "Close genre panel",
-    "loadingShuffle": "Loading shuffle...",
+    "cbrExtractionPluginUnavailable": "Hindi available ang CBR extraction plugin sa platform na ito.",
+    "failedToExtractCbrArchive": "Nabigong i-extract ang .cbr archive.",
+    "cb7ExtractionUnavailable": "Hindi available ang CB7 extraction sa platform na ito.",
+    "cb7ExtractionPluginUnavailable": "Hindi available ang CB7 extraction plugin sa platform na ito.",
+    "closeGenrePanel": "Isara ang genre panel",
+    "loadingShuffle": "Nilo-load ang shuffle...",
     "libraryShuffleLabel": "LIBRARY SHUFFLE",
     "randomShuffleLabel": "RANDOM SHUFFLE",
     "genresShuffleLabel": "GENRES SHUFFLE",
     "autoHdrSwitching": "Auto HDR Switching",
-    "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
-    "whenFullscreen": "When fullscreen",
-    "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "autoHdrSwitchingDescription": "Awtomatikong i-enable ang HDR para sa HDR video playback at ibalik ang display mode pag-labas.",
+    "whenFullscreen": "Kapag fullscreen",
+    "transcodingLimits": "Mga Limitasyon sa Transcoding",
+    "settingsSupportMoonfinSubtitle": "Mag-donate ng kape sa developer",
+    "accountPreferences": "MGA KAGUSTUHAN SA ACCOUNT",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Wika ng Interface",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Default ng System",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Walang laman",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Istilo ng detail screen",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Ang Classic ay ang orihinal na nakasentrong layout ng Moonfin. Ang Modern ay isang responsive na cinematic na layout.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Classic",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modern",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Mga Naka-expand na Tab",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Awtomatikong ipakita ang nilalaman ng tab habang nagba-browse ng mga tab. I-off para manu-manong buksan at isara ang bawat tab.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Ipakita ang Mga Teknikal na Detalye?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Ipakita ang impormasyon ng codec, resolution, at stream sa buod ng banner",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Sistema ng Rekomendasyon",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Gamitin ang local-library na algorithm ng Moonfin Recommends o ang online na Similarity Metrics ng TMDb. Tandaan: Kailangan ng Seerr integration para sa mga online na rekomendasyon.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb Similarity",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Ilapat ang Limitasyon sa Parental Rating?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Limitahan ang mga suhestiyon ng Moonfin Recommends ayon sa parental rating ng target na media",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Istilo ng Interface",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "Tumutugma ang Automatic sa iyong device. Pumili ng Apple o Material para piliting gamitin ang isang hitsura.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Automatic",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Kalidad ng Glass",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "Pinipili ng Auto ang pinakamahusay na glass effect para sa device na ito. Pinipilit ng Full ang tunay na blur; gumagamit ang Reduced ng magaan na glass na nakakatipid ng GPU power.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Auto",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Full",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Reduced",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Custom na Theme",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Binabago ng mga custom na theme ang mga visual na elemento sa buong Moonfin. Pumili ng isa sa mga opsyong ito para tumugma sa iyong istilo.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Liquid-glass na istilo na may gumagalaw na gradient na backdrop, mga frosted na surface, at Apple-blue na accent",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Retro na pixel-art na istilo na may makapal na palette, blocky na mga border, matitinding drop-shadow, at pixel font",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Menu",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Naka-pause",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "I-save ang state",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Mga Laro",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "I-load ang state",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Fast-forward",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Mga setting ng emulator",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Walang naaayos na opsyon ang core na ito.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Pindutin nang matagal para buksan ang menu",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Hindi pa suportado ang paglalaro sa device na ito.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Mga Pinakabagong Aklat",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Mga Pinakabagong Audiobook",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 aklat} other{{count} na aklat}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Aklat",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Audiobook",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% nabasa",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} na natitira",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Basahin",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Pakinggan",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Mga Item",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Mga Extra",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "Behind the Scenes",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Mga Deleted Scene",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Mga Featurette",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Mga Panayam",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Mga Eksena",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Mga Short",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} na natitira",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Matatapos sa {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "MGA DIREKTOR",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "MANUNULAT",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "I-shuffle ang lahat ng musika",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Mag-sign in sa Moonfin sa iyong telepono",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Hindi maabot ang iyong server",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Susunod: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}m na natitira",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}h na natitira",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}h {minutes}m na natitira",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Mga detail page, home row, at volume",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "I-loop ang Theme Music",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Ulitin ang track sa halip na patugtugin ito nang isang beses",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Mouse scroll wheel",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Piliin kung ano ang ginagawa ng pag-scroll ng mouse wheel sa ibabaw ng video habang nagpe-playback.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Naka-off",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Seek (pasulong / paatras)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volume",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volume",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Fallback na Wika ng Audio",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Piliin ang Default na Audio Track",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Piliin ang orihinal na audio track kaysa sa localized na dub.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Piliin ang Mga Audio Description Track",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Piliin ang mga audio description track kaysa sa mga normal na track.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Transcoding (Audio)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Direct Stream (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Transcoding (Bitrate o Resolution)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Transcoding (Video at Audio)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Transcoding (Video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Piliin kung paano ide-decode ang audio. Ipinapadala ng AVR Passthrough ang mga raw na Dolby/DTS stream sa iyong receiver; nagde-decode nang lokal ang Auto o Downmix.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Piliin ang target na format para i-transcode ang multi-channel na audio kapag hindi maaaring direct-play o mapasa ang source stream.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Auto Detect\n(Inirerekomenda)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Default)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Lossless)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Stereo Lang)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Efficient)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Lossless)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Max na Audio Channel",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "I-configure ang pinakamaraming channel ng iyong audio setup. Ang mga multichannel na stream na lumalampas sa limitasyong ito ay ida-downmix o ita-transcode.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Auto Detect\n(Default ng Hardware)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadraphonic",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Headphones",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Subtitle Mode",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Flagged",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Palagi",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Dayuhan",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Forced",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Nagpe-play ng mga track na panloob na na-flag sa metadata ng media file bilang \"default\" o \"forced\".",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Awtomatikong nilo-load at ipinapakita ang mga subtitle sa tuwing magsisimula ang isang video.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Awtomatikong ino-on ang mga subtitle kung ang default na audio track ay nasa wikang dayuhan.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Nilo-load lang ang mga subtitle na tahasang na-tag ng forced na metadata flag.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Ganap na hindi pinapagana ang awtomatikong pag-load ng subtitle.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Fallback na Wika ng Subtitle",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Subtitle Stream",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Ipakita ang mga download sa server",
+    "reportDownloadsActivitySubtitle": "Hayaang makita ng admin ng server ang iyong mga transcoded na download sa dashboard",
+    "navbarAlwaysExpanded": "Palaging I-expand ang Mga Label ng Navbar",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Ipakita ang Seerr Button",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Pagsama-samahin ang Mga Item sa Mga Collection",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Itago ang mga library item na kaugnay ng Collection kapag nagba-browse ng mga library",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Paunawa sa Paggrupo ng Library",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Para gamitin ang setting na ito, pakisiguro na naka-enable ang mga Library setting na \"Group movies into collections\" at/o \"Group shows into collections\" sa ilalim ng Display setting ng iyong library sa iyong Jellyfin o Emby server.",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Audio ng Trailer",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "I-enable ang audio para sa mga trailer sa media bar",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Mga Naka-expand na Home Row",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Limitahan ang mga home row sa 1 row bawat screen",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Kasalukuyang User",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Static",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Bouncing",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Mga Seerr Discovery Row",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Mga Notification",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Mga notification ng bagong request",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Abisuhan ako kapag may nagsumite ng request",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Mga update sa request",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Naaprubahan, natanggihan, at naidagdag sa iyong library",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Mga update sa issue",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Mga bagong issue, tugon, at resolusyon",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Limitasyon ng image cache",
+    "clearImageCache": "I-clear ang image cache",
+    "imageCacheCleared": "Na-clear ang image cache",
+    "seerrDownloadingPercent": "Nagda-download · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Nag-i-import",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Nabigo",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Pinoproseso",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Binago ni {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Nakumpleto",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Na-request na ang title na ito",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Naabot na ang limitasyon ng request",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Naka-blocklist ang title na ito",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Wala nang natitirang season na i-request",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Wala kang pahintulot na gawin ang request na ito",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Mga Request",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Mga Issue",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Pinakabago",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Huling Binago",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Walang issue",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{remaining} sa {limit} na movie request ang natitira",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{remaining} sa {limit} na season request ang natitira",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Bahagi ng {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Tingnan ang Collection",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "I-request ang Collection",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} na pelikula · {available} available",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Mag-request ng {count} na pelikula",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Nire-request ang {current} sa {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Na-request ang {count} na pelikula",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Na-request ang {ok} sa {total} na pelikula",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Available na o na-request na ang lahat ng pelikula",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Mag-ulat ng Issue",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Audio",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Ano ang mali?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Lahat ng Episode",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Episode",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Bukas",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Naresolba",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Iresolba",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Buksang muli",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Iniulat ni {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} na komento",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Magdagdag ng komento",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Tanggalin ang issue na ito?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Isumite ang Ulat",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Display",
+    "adminDrawerMetadata": "Metadata",
+    "adminDrawerNfo": "Mga Setting ng NFO",
+    "adminActivitySeverityAll": "Lahat ng severity",
+    "adminActivityDateRange": "Saklaw ng petsa",
+    "adminRemoveDeviceConfirm": "Alisin ang device na '{name}'? Kakailanganin ng user na mag-sign in muli sa device na ito.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Tanggalin ang lahat ng device",
+    "adminDeleteAllDevicesConfirm": "Alisin ang {count} na device? Kakailanganin ng mga apektadong user na mag-sign in muli. Hindi apektado ang iyong kasalukuyang device.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Naalis ang mga device",
+    "adminDevicesDeletedPartial": "Naalis ang ilang device; {count} ang hindi maalis.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Mga Path",
+    "adminLibraryTabOptions": "Mga Opsyon",
+    "adminLibraryTabDownloaders": "Mga Downloader",
+    "adminLibMetadataSavers": "Mga metadata saver",
+    "adminLibSubtitleDownloaders": "Mga subtitle downloader",
+    "adminLibLyricDownloaders": "Mga lyric downloader",
+    "adminLibMetadataDownloadersFor": "Mga metadata downloader: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Mga image fetcher: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Walang inilalantad na downloader ang server na ito para sa uri ng library na ito.",
+    "adminLibrarySectionGeneral": "Pangkalahatan",
+    "adminLibrarySectionMetadata": "Metadata",
+    "adminLibrarySectionEmbedded": "Embedded na Impormasyon",
+    "adminLibrarySectionSubtitles": "Mga Subtitle",
+    "adminLibrarySectionImages": "Mga Larawan",
+    "adminLibrarySectionSeries": "Serye",
+    "adminLibrarySectionMusic": "Musika",
+    "adminLibrarySectionMovies": "Mga Pelikula",
+    "adminLibRealtimeMonitor": "I-enable ang real-time na pagsubaybay",
+    "adminLibRealtimeMonitorHint": "Tuklasin ang mga pagbabago sa file at awtomatikong iproseso ang mga ito.",
+    "adminLibArchiveMediaFiles": "Ituring ang mga archive bilang media file",
+    "adminLibEnablePhotos": "Ipakita ang mga larawan",
+    "adminLibSaveLocalMetadata": "I-save ang artwork sa mga media folder",
+    "adminLibRefreshInterval": "Awtomatikong pag-refresh ng metadata",
+    "adminLibRefreshNever": "Hindi kailanman",
+    "adminLibDefault": "Default",
+    "adminLibDisplayTitle": "Display",
+    "adminLibDisplaySection": "Display ng library",
+    "adminLibFolderView": "Magpakita ng folder view para ipakita ang mga plain na media folder",
+    "adminLibSpecialsInSeasons": "Ipakita ang mga special sa loob ng mga season kung saan sila unang ipinalabas",
+    "adminLibGroupMovies": "Pagsama-samahin ang mga pelikula sa mga collection",
+    "adminLibGroupShows": "Pagsama-samahin ang mga palabas sa mga collection",
+    "adminLibExternalSuggestions": "Ipakita ang external na nilalaman sa mga suhestiyon",
+    "adminLibDateAddedSection": "Kilos ng petsang idinagdag",
+    "adminLibDateAddedLabel": "Gamitin ang petsang idinagdag mula sa",
+    "adminLibDateAddedImport": "Petsang na-scan sa library",
+    "adminLibDateAddedFile": "Petsang ginawa ang file",
+    "adminLibMetadataTitle": "Metadata at Mga Larawan",
+    "adminLibMetadataLangSection": "Gustong wika ng metadata",
+    "adminLibChaptersSection": "Mga Kabanata",
+    "adminLibDummyChapterDuration": "Tagal ng dummy chapter (segundo)",
+    "adminLibDummyChapterDurationHint": "Haba ng mga kabanatang binuo para sa media na walang kabanata. Itakda sa 0 para i-disable.",
+    "adminLibChapterImageResolution": "Resolution ng larawan ng kabanata",
+    "adminLibNfoTitle": "Mga Setting ng NFO",
+    "adminLibNfoHelp": "Ang NFO metadata ay compatible sa Kodi at mga katulad na client. Nalalapat ang mga setting sa lahat ng library na nagse-save ng NFO metadata.",
+    "adminLibKodiUser": "User na pagta-store-an ng watch data sa mga NFO file",
+    "adminLibSaveImagePaths": "I-save ang mga image path sa loob ng mga NFO file",
+    "adminLibPathSubstitution": "I-enable ang path substitution para sa mga NFO image path",
+    "adminLibExtraThumbs": "Kopyahin ang mga extrafanart na larawan sa isang extrathumbs folder",
+    "adminLibNone": "Wala",
+    "adminLibRefreshDays": "{days} na araw",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Gamitin ang mga embedded na title",
+    "adminLibEmbeddedExtrasTitles": "Gamitin ang mga embedded na title para sa mga extra",
+    "adminLibEmbeddedEpisodeInfos": "Gamitin ang embedded na impormasyon ng episode",
+    "adminLibAllowEmbeddedSubtitles": "Payagan ang mga embedded na subtitle",
+    "adminLibEmbeddedAllowAll": "Payagan lahat",
+    "adminLibEmbeddedAllowText": "Text lang",
+    "adminLibEmbeddedAllowImage": "Larawan lang",
+    "adminLibEmbeddedAllowNone": "Wala",
+    "adminLibSkipIfEmbeddedSubs": "Laktawan ang download kung may mga embedded na subtitle",
+    "adminLibSkipIfAudioMatches": "Laktawan ang download kung tumutugma ang audio track sa wika ng download",
+    "adminLibRequirePerfectMatch": "Mangailangan ng perpektong tugma ng subtitle",
+    "adminLibSaveSubtitlesWithMedia": "I-save ang mga subtitle sa mga media folder",
+    "adminLibChapterImageExtraction": "I-extract ang mga larawan ng kabanata",
+    "adminLibChapterImagesDuringScan": "I-extract ang mga larawan ng kabanata habang nagsa-scan ng library",
+    "adminLibTrickplayExtraction": "I-enable ang pag-extract ng larawan ng Trickplay",
+    "adminLibTrickplayDuringScan": "I-extract ang mga larawan ng Trickplay habang nagsa-scan ng library",
+    "adminLibSaveTrickplayWithMedia": "I-save ang mga larawan ng Trickplay sa mga media folder",
+    "adminLibAutomaticSeriesGrouping": "Awtomatikong pagsamahin ang mga seryeng nakakalat sa maraming folder",
+    "adminLibSeasonZeroName": "Display name ng season zero",
+    "adminLibLufsScan": "I-enable ang LUFS scan para sa audio normalization",
+    "adminLibPreferNonstandardArtist": "Piliin ang non-standard na artists tag",
+    "adminLibAutoAddToCollection": "Awtomatikong idagdag ang mga pelikula sa mga collection",
+    "adminParentalControl": "Parental Control",
+    "adminMaxParentalRating": "Pinakamataas na pinapayagang parental rating",
+    "adminMaxParentalRatingHint": "Itatago sa user na ito ang nilalamang may mas mataas na rating.",
+    "adminParentalRatingNone": "Wala",
+    "adminBlockUnratedItems": "I-block ang mga item na walang o hindi kilalang impormasyon ng rating",
+    "adminUnratedBook": "Mga Aklat",
+    "adminUnratedChannelContent": "Mga Channel",
+    "adminUnratedLiveTvChannel": "Live na TV",
+    "adminUnratedMovie": "Mga Pelikula",
+    "adminUnratedMusic": "Musika",
+    "adminUnratedTrailer": "Mga trailer",
+    "adminUnratedSeries": "Mga Palabas",
+    "adminAccessSchedules": "Mga Schedule ng Access",
+    "adminAccessSchedulesHint": "Payagan ang access lamang sa mga nakatakdang oras sa ibaba. Pinapayagan ang access buong araw kapag walang nakatakdang schedule.",
+    "adminAddSchedule": "Magdagdag ng Schedule",
+    "adminScheduleDay": "Araw",
+    "adminScheduleStart": "Simula",
+    "adminScheduleEnd": "Katapusan",
+    "adminDayEveryday": "Araw-araw",
+    "adminDayWeekday": "Araw ng pasukan",
+    "adminDayWeekend": "Katapusan ng linggo",
+    "adminDaySunday": "Linggo",
+    "adminDayMonday": "Lunes",
+    "adminDayTuesday": "Martes",
+    "adminDayWednesday": "Miyerkules",
+    "adminDayThursday": "Huwebes",
+    "adminDayFriday": "Biyernes",
+    "adminDaySaturday": "Sabado",
+    "adminAllowedTags": "Mga pinapayagang tag",
+    "adminAllowedTagsHint": "Nilalamang may mga tag na ito lang ang ipinapakita. Iwanang blangko para payagan lahat.",
+    "adminBlockedTags": "Mga naka-block na tag",
+    "adminBlockedTagsHint": "Itinatago sa user na ito ang nilalamang may mga tag na ito.",
+    "adminAddTag": "Magdagdag ng tag",
+    "adminEnabledDevices": "Mga naka-enable na device",
+    "adminEnabledChannels": "Mga naka-enable na channel",
+    "adminAuthProvider": "Authentication provider",
+    "adminPasswordResetProvider": "Password reset provider",
+    "adminLoginAttemptsBeforeLockout": "Pinakamaraming nabigong login attempt bago mag-lockout",
+    "adminLoginAttemptsHint": "Itakda sa 0 para sa default, o -1 para i-disable ang lockout.",
+    "adminSyncPlayAccess": "SyncPlay access",
+    "adminSyncPlayCreateAndJoin": "Payagan ang paggawa at pagsali sa mga grupo",
+    "adminSyncPlayJoin": "Payagan ang pagsali sa mga grupo",
+    "adminSyncPlayNone": "Walang access",
+    "adminContentDeletionFolders": "Payagan ang pagtanggal ng nilalaman mula sa",
+    "adminBackupOptionsTitle": "Gumawa ng Backup",
+    "adminBackupInclude": "Piliin kung ano ang isasama sa backup.",
+    "adminBackupDatabase": "Database",
+    "adminBackupDatabaseAlways": "Palaging kasama",
+    "adminBackupMetadata": "Metadata",
+    "adminBackupSubtitles": "Mga Subtitle",
+    "adminBackupTrickplay": "Mga larawan ng Trickplay",
+    "adminEditTuner": "I-edit ang Tuner",
+    "adminTunerTypeM3u": "M3U Tuner",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "File o URL",
+    "adminTunerIpAddress": "IP address ng tuner",
+    "adminTunerFriendlyName": "Friendly na pangalan",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Limitasyon ng sabayang koneksyon",
+    "adminTunerCountHelp": "Ang pinakamaraming stream na pinapayagan ng tuner nang sabay-sabay. Itakda sa 0 para sa walang limitasyon.",
+    "adminTunerFallbackBitrate": "Fallback na max streaming bitrate",
+    "adminTunerImportFavoritesOnly": "Mag-import lang ng mga paboritong channel",
+    "adminTunerAllowHwTranscoding": "Payagan ang hardware transcoding",
+    "adminTunerAllowFmp4": "Payagan ang fMP4 transcoding container",
+    "adminTunerAllowStreamSharing": "Payagan ang stream sharing",
+    "adminTunerEnableStreamLooping": "I-enable ang stream looping",
+    "adminTunerIgnoreDts": "Balewalain ang DTS",
+    "adminTunerReadAtNativeFramerate": "Basahin ang input sa native frame rate",
+    "adminEditProvider": "I-edit ang Provider",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "File o URL",
+    "adminXmltvMoviePrefix": "Prefix ng pelikula",
+    "adminXmltvMovieCategories": "Mga kategorya ng pelikula",
+    "adminXmltvCategoriesHelp": "Paghiwalayin ang maraming kategorya gamit ang vertical bar.",
+    "adminXmltvKidsCategories": "Mga kategorya ng bata",
+    "adminXmltvNewsCategories": "Mga kategorya ng balita",
+    "adminXmltvSportsCategories": "Mga kategorya ng sports",
+    "adminSdUsername": "Username",
+    "adminSdPassword": "Password",
+    "adminSdCountry": "Bansa",
+    "adminSdCountrySelect": "Pumili ng bansa",
+    "adminSdPostalCode": "Postal code",
+    "adminSdGetListings": "Kunin ang mga listing",
+    "adminSdListings": "Mga Listing",
+    "adminEnableAllTuners": "I-enable ang lahat ng tuner",
+    "adminTunerResetNotSupported": "Hindi sinusuportahan ng uri ng tuner na ito ang pag-reset.",
+    "adminMovieRecordingPath": "Path ng recording ng pelikula",
+    "adminGuideDays": "Mga araw ng guide data",
+    "adminGuideDaysAuto": "Automatic",
+    "adminGuideDaysValue": "{days} na araw",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Path ng post-processing application",
+    "adminRecordingPostProcessorArgs": "Mga argumento ng post-processor",
+    "adminSaveRecordingNfo": "I-save ang NFO metadata ng recording",
+    "adminSaveRecordingImages": "I-save ang mga larawan ng recording",
+    "adminLiveTvSectionTiming": "Timing",
+    "adminLiveTvSectionPaths": "Mga path ng recording",
+    "adminLiveTvSectionPostProcessing": "Post-processing",
+    "adminGuideDaysDisplay": "Guide data: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "I-refresh ang Guide Data",
+    "adminGuideRefreshStarted": "Nagsimula ang pag-refresh ng guide data",
+    "adminGuideRefreshUnavailable": "Hindi available ang guide refresh task sa server na ito.",
+    "adminMetadataIdentify": "Tukuyin",
+    "adminBrandingSplashUpload": "Mag-upload ng larawan",
+    "adminBrandingSplashUploaded": "Na-update ang splashscreen",
+    "adminBrandingSplashUploadFailed": "Nabigong i-upload ang splashscreen",
+    "adminBrandingSplashDeleted": "Naalis ang splashscreen",
+    "adminBrandingNoSplash": "Walang custom na splashscreen",
+    "adminPlaybackQsvDevice": "QSV device",
+    "adminPlaybackEnhancedNvdec": "I-enable ang enhanced NVDEC decoder",
+    "adminPlaybackPreferNativeDecoder": "Piliin ang system native hardware decoder",
+    "adminPlaybackColorDepth": "Color depth ng hardware decoding",
+    "adminPlaybackColorDepth10Hevc": "10-bit HEVC decoding",
+    "adminPlaybackColorDepth10Vp9": "10-bit VP9 decoding",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bit decoding",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bit decoding",
+    "adminPlaybackHwEncodingSection": "Hardware encoding",
+    "adminPlaybackAllowHevcEncoding": "Payagan ang HEVC encoding",
+    "adminPlaybackAllowAv1Encoding": "Payagan ang AV1 encoding",
+    "adminPlaybackIntelLowPowerH264": "I-enable ang Intel low-power H.264 encoder",
+    "adminPlaybackIntelLowPowerHevc": "I-enable ang Intel low-power HEVC encoder",
+    "adminPlaybackToneMapping": "Tone Mapping",
+    "adminPlaybackEnableTonemapping": "I-enable ang tone mapping",
+    "adminPlaybackEnableVppTonemapping": "I-enable ang VPP tone mapping",
+    "adminPlaybackEnableVtTonemapping": "I-enable ang VideoToolbox tone mapping",
+    "adminPlaybackTonemappingAlgorithm": "Algorithm ng tone mapping",
+    "adminPlaybackTonemappingMode": "Mode ng tone mapping",
+    "adminPlaybackTonemappingRange": "Range ng tone mapping",
+    "adminPlaybackTonemappingDesat": "Desaturation ng tone mapping",
+    "adminPlaybackTonemappingPeak": "Peak ng tone mapping",
+    "adminPlaybackTonemappingParam": "Parameter ng tone mapping",
+    "adminPlaybackVppTonemappingBrightness": "Brightness ng VPP tone mapping",
+    "adminPlaybackVppTonemappingContrast": "Contrast ng VPP tone mapping",
+    "adminPlaybackPresetsQuality": "Mga Preset at Kalidad",
+    "adminPlaybackEncoderPreset": "Encoder preset",
+    "adminPlaybackH264Crf": "H.264 encoding CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) encoding CRF",
+    "adminPlaybackDeinterlaceMethod": "Paraan ng deinterlace",
+    "adminPlaybackDeinterlaceDoubleRate": "Doblehin ang frame rate kapag nagde-deinterlace",
+    "adminPlaybackAudioSection": "Audio",
+    "adminPlaybackEnableAudioVbr": "I-enable ang audio VBR encoding",
+    "adminPlaybackDownmixBoost": "Audio downmix boost",
+    "adminPlaybackDownmixAlgorithm": "Stereo downmix algorithm",
+    "adminPlaybackMaxMuxingQueue": "Max na laki ng muxing queue",
+    "adminPlaybackAutoOption": "Auto",
+    "adminRunningTasks": "Mga Tumatakbong Task",
+    "adminNetworkingPublicHttpPort": "Public HTTP port",
+    "adminNetworkingRequireHttps": "Mangailangan ng HTTPS",
+    "adminNetworkingRequireHttpsHint": "I-redirect ang lahat ng remote request sa HTTPS. Walang epekto kung walang valid na certificate ang server.",
+    "adminNetworkingCertPassword": "Password ng certificate",
+    "adminNetworkingIpSettings": "Mga Setting ng IP",
+    "adminNetworkingEnableIpv4": "I-enable ang IPv4",
+    "adminNetworkingEnableIpv6": "I-enable ang IPv6",
+    "adminNetworkingAutoDiscovery": "I-enable ang awtomatikong port mapping",
+    "adminNetworkingLocalSubnets": "Mga LAN network",
+    "adminNetworkingLocalSubnetsHint": "Listahan ng mga IP address o CIDR subnet na pinaghihiwalay ng kuwit o linya, na ituturing na nasa lokal na network.",
+    "adminNetworkingPublishedUris": "Mga na-publish na server URI",
+    "adminNetworkingPublishedUriHint": "I-map ang isang subnet o address sa isang na-publish na URL, hal. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Throttle delay (segundo)",
+    "adminPlaybackEnableSubtitleExtraction": "Payagan ang subtitle extraction on the fly",
+    "adminGeneralEnableSlowResponse": "I-enable ang mga babala sa mabagal na tugon",
+    "adminGeneralQuickConnect": "I-enable ang Quick Connect",
+    "adminGeneralSectionServer": "Server",
+    "adminGeneralSectionMetadata": "Metadata",
+    "adminGeneralSectionPaths": "Mga Path",
+    "adminGeneralSectionPerformance": "Performance",
+    "adminGeneralDisplayLanguage": "Gustong wika ng display",
+    "offlineBannerTitle": "Offline ka",
+    "offlineBannerSubtitle": "Ipinapakita ang iyong mga download",
+    "offlineBannerAction": "Mga Download",
+    "serverUnreachableBannerTitle": "Hindi maabot ang iyong server",
+    "serverUnreachableBannerSubtitle": "Nagpe-play mula sa mga download hanggang sa bumalik ito",
+    "contextMenuHideFromContinueWatching": "Itago mula sa Continue Watching",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Itago mula sa Next Up",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Idagdag sa Collection",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "KONEKSYON",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Payagan ang mga self-signed na certificate",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Pagkatiwalaan ang mga server na gumagamit ng self-signed o private-CA na TLS certificate. I-enable lang para sa mga server na kontrolado mo. Ide-disable nito ang certificate validation para sa lahat ng koneksyon.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Details Screen",
+    "settingsDetailsScreenSubtitle": "Istilo, background blur, at kilos ng tab",
+    "settingsShowSeerrButtonInNavigation": "Ipakita ang Seerr button sa navigation bar",
+    "settingsAlwaysExpandNavbarLabels": "Palaging ipakita ang mga text label sa itaas na navigation bar",
+    "settingsMediaSegmentCountdown": "Media Segment Countdown",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Progress Bar",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Timer",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Wala",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Kamakailang Inilabas na {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "I-enable ang tunneling",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Advanced. Idinadaan ang audio at video sa isang coupled na hardware path. Naka-off bilang default dahil nagdudulot ito ng audio/video dropout sa ilang device.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Ipakita ang Mga Detalye ng Media",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Ipakita ang mga detalye ng napiling item sa itaas ng mga Library page.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Itago ang Mga Backdrop habang Nagba-browse?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Theme Store",
+    "themeStoreSubtitle": "Mag-browse at mag-save ng mga community theme",
+    "themeStoreDescription": "Mag-save ng theme para magamit ito tulad ng iyong ibang naka-save na theme.",
+    "themeStoreEmpty": "Walang available na theme sa ngayon.",
+    "themeStoreLoadFailed": "Hindi ma-load ang Theme Store. Suriin ang iyong koneksyon at subukan muli.",
+    "themeStoreSave": "I-save",
+    "themeStoreSaveAndApply": "I-save at ilapat",
+    "themeStoreSaved": "Na-save",
+    "themeStoreInvalidMessage": "Hindi ma-load ang theme na ito.",
+    "themeStoreSavedMessage": "Na-save ang \"{themeName}\".",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Display ng Home Row",
+    "homeRowSections": "Mga Seksyon ng Home Row",
+    "homeRowToggles": "Mga Toggle ng Home Row",
+    "homeRowTogglesSubtitle": "I-enable o i-disable ang mga library-based na kategorya ng home row",
+    "homeRowTogglesDescription": "I-enable ang mga sumusunod na toggle para ipakita ang mga row sa Mga Home Section.",
+    "displayPlaylistsRows": "Ipakita ang Mga Playlist Row",
+    "displayPlaylistsRowsSubtitle": "Ipakita ang mga Playlist row sa Mga Home Section.",
+    "playlistsRowSorting": "Pag-sort ng Playlist Row",
+    "playlistsRowSortingDescription": "I-sort ang mga Playlist row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.",
+    "displayAudioRows": "Ipakita ang Mga Audio Row",
+    "displayAudioRowsSubtitle": "Ipakita ang mga Audio row sa Mga Home Section.",
+    "audioRowsSorting": "Pag-sort ng Audio Row",
+    "audioRowsSortingDescription": "I-sort ang mga Audio row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.",
+    "audioPlaylists": "Mga Audio Playlist",
+    "layout": "Layout",
+    "theme": "Theme",
+    "keyboard": "Keyboard",
+    "navButtons": "Mga Button",
+    "rendering": "Rendering",
+    "mpvConfiguration": "MPV configuration",
+    "externalPlayerAppDescription": "Magtakda ng external player para i-enable ang long-press play na opsyon",
+    "crewContributionsSeerr": "Mga Kontribusyon ng Crew (Seerr)",
+    "changeArtwork": "Palitan ang Artwork",
+    "missing": "Nawawala",
+    "clearAllArtworkButton": "I-clear ang lahat ng artwork?",
+    "clearAllArtworkWarning": "Sigurado ka bang gusto mong i-clear ang lahat ng na-download na artwork?",
+    "confirmClear": "Kumpirmahin ang Pag-clear",
+    "confirmClearMessage": "Sigurado ka bang gusto mong i-clear ang {itemType} na ito?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "I-upload?",
+    "resolutionLabel": "Resolution: ",
+    "onlyShowInterfaceLanguage": "Ipakita lang ang artwork sa wika ng interface",
+    "confirmClearAll": "Kumpirmahin ang Pag-clear ng Lahat",
+    "imageUploadSuccess": "Matagumpay na na-upload ang larawan!",
+    "imageUploadFailed": "Nabigong i-upload ang larawan: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Nabigong itakda ang larawan: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Nabigong tanggalin ang larawan: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Nabigong i-clear ang lahat ng artwork: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Oo",
+    "posterCategory": "Poster",
+    "backdropsCategory": "Mga Backdrop",
+    "bannerCategory": "Banner",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Thumbnail",
+    "artCategory": "Art",
+    "discArtCategory": "Disc Art",
+    "screenshotCategory": "Screenshot",
+    "boxCoverCategory": "Box Cover",
+    "boxRearCoverCategory": "Box Rear Cover",
+    "menuArtCategory": "Menu Art",
+    "confirmItemPoster": "poster",
+    "confirmItemBackdrop": "backdrop",
+    "confirmItemBanner": "banner",
+    "confirmItemLogo": "logo",
+    "confirmItemThumbnail": "thumbnail",
+    "confirmItemArt": "art",
+    "confirmItemDiscArt": "disc art",
+    "confirmItemScreenshot": "screenshot",
+    "confirmItemBoxCover": "box cover",
+    "confirmItemBoxRearCover": "box rear cover",
+    "confirmItemMenuArt": "menu art",
+    "resolutionAll": "Lahat",
+    "resolutionHigh": "High (1080p+)",
+    "resolutionMedium": "Medium (720p)",
+    "resolutionLow": "Low (<720p)",
+    "sources": "Mga Source",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Mga Kabanata",
+    "audiobookBookmarks": "Mga Bookmark",
+    "audiobookNotes": "Mga Tala",
+    "audiobookQueue": "Queue",
+    "audiobookTimeline": "Timeline",
+    "audiobookTimelineEmpty": "Walang laman ang timeline",
+    "audiobookWholeBook": "Buong Aklat",
+    "audiobookFocusedTimeline": "Focused Timeline",
+    "audiobookExportBookmarks": "I-export ang Mga Bookmark",
+    "audiobookExportNotes": "I-export ang Mga Tala",
+    "audiobookExportAll": "I-export Lahat",
+    "audiobookExportSuccess": "Na-export sa {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Nabigo ang pag-export: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Lyrics",
+    "audiobookAddBookmark": "Magdagdag ng bookmark",
+    "audiobookAddNote": "Magdagdag ng tala",
+    "audiobookEditNote": "I-edit ang tala",
+    "audiobookNoteHint": "Magsulat ng tala para sa sandaling ito",
+    "audiobookSleepTimer": "Sleep timer",
+    "audiobookSleepOff": "Naka-off",
+    "audiobookSleepEndOfChapter": "Katapusan ng kabanata",
+    "audiobookSleepCustom": "Custom",
+    "audiobookSleepRemaining": "{remaining} na natitira",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Bilis ng playback",
+    "audiobookRemainingTime": "Natitira",
+    "audiobookElapsedTime": "Lumipas",
+    "audiobookSkipBackSeconds": "Paatras {seconds}s",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Pasulong {seconds}s",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Nakaraang kabanata",
+    "audiobookNextChapter": "Susunod na kabanata",
+    "audiobookChapterIndicator": "Kabanata {current} ng {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Walang kabanata",
+    "audiobookNoBookmarks": "Wala pang bookmark",
+    "audiobookNoNotes": "Wala pang tala",
+    "audiobookBookmarkAdded": "Naidagdag ang bookmark sa {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "I-reset sa 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "I-save",
+    "audiobookCancel": "Kanselahin",
+    "audiobookDelete": "I-delete",
+    "subtitlePreferences": "Mga Kagustuhan sa Subtitle",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Baguhin ang mga subtitle mode, default na wika, hitsura, at mga rendering na opsyon.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Subtitle Rendering",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Mga Opsyon sa Display",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Petsa ng Paglabas (Pataas)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Petsa ng Paglabas (Pababa)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Pagsama-samahin ang Mga Kontribusyon",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Pagsama-samahin ang maraming role",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Babala sa Library Write Access",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Paano ito ayusin:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Magbigay ng write permission sa Jellyfin service user (hal. jellyfin o Docker PUID/PGID) para sa mga media library folder mo sa server.\n\n2. O, pumunta sa iyong Jellyfin Dashboard -> Libraries, i-edit ang library na ito, at i-disable ang 'Save artwork into media folders' para i-store ang artwork sa internal database ng Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "I-dismiss",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Ang iyong '{libraryName}' library ay naka-configure na mag-save ng artwork diretso sa mga media folder (naka-enable ang 'Save artwork into media folders'). Ngunit, sinubukan ng Jellyfin ang write access at walang pahintulot na magsulat ng mga file sa directory na ito:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Mukhang nabigo ang Jellyfin na i-update ang artwork. Ang iyong library ay naka-configure na mag-save ng artwork diretso sa mga media folder (naka-enable ang 'Save artwork into media folders'). Karaniwang nangyayari ang error na ito kapag walang pahintulot ang Jellyfin server process na magsulat ng mga file sa iyong mga media directory.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Mga External na Listahan",
+    "replay": "I-replay",
+    "fileInformation": "Impormasyon ng File",
+    "fileSizeFormat": "Laki: {size}  •  Format: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Ipakita Lahat ({count}) na Audio Track",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Ipakita Lahat ({count}) na Subtitle Track",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Sinusuri ang kakayahan sa Direct Play...",
+    "directPlayCapabilityLabel": "Kakayahan sa Direct Play: ",
+    "forced": "Forced",
+    "transcodeContainerNotSupported": "Hindi suportado ng player ang container format.",
+    "transcodeVideoCodecNotSupported": "Hindi suportado ang video codec.",
+    "transcodeAudioCodecNotSupported": "Hindi suportado ang audio codec.",
+    "transcodeSubtitleCodecNotSupported": "Hindi suportado ang format ng subtitle (nangangailangan ng burning).",
+    "transcodeAudioProfileNotSupported": "Hindi suportado ang audio profile.",
+    "transcodeVideoProfileNotSupported": "Hindi suportado ang video profile.",
+    "transcodeVideoLevelNotSupported": "Hindi suportado ang video level.",
+    "transcodeVideoResolutionNotSupported": "Hindi suportado ng device na ito ang video resolution.",
+    "transcodeVideoBitDepthNotSupported": "Hindi suportado ang video bit depth.",
+    "transcodeVideoFramerateNotSupported": "Hindi suportado ang video framerate.",
+    "transcodeContainerBitrateExceedsLimit": "Lumalampas ang bitrate ng file sa streaming limit ng player.",
+    "transcodeVideoBitrateExceedsLimit": "Lumalampas ang video bitrate sa streaming limit.",
+    "transcodeAudioBitrateExceedsLimit": "Lumalampas ang audio bitrate sa streaming limit.",
+    "transcodeAudioChannelsNotSupported": "Hindi suportado ang bilang ng mga audio channel.",
+    "sortAlphabetical": "Alpabetiko",
+    "sortReleaseAscending": "Pagkakasunod ng Paglabas (Pataas)",
+    "sortReleaseDescending": "Pagkakasunod ng Paglabas (Pababa)",
+    "sortCustomDragDrop": "Custom (Drag-and-Drop)",
+    "playlistSortOptions": "Mga Opsyon sa Pag-sort ng Playlist",
+    "resetSort": "I-reset ang Pag-sort",
+    "rewatchSeasonEpisode": "Panoorin Muli ang S{season}:E{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Panoorin Muli ang Playlist",
+    "noSubtitlesFound": "Walang nakitang subtitle.",
+    "adminControls": "Mga Admin Control",
+    "impellerRendering": "Rendering engine (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Ang Impeller ay ang modernong GPU renderer ng Flutter para sa mas maayos na animation at mas kaunting stutter. Sa ilang TV box at mas lumang GPU, maaari itong magdulot ng glitch o itim na video; i-off ito kung nakikita mo ang mga iyon. Pinipili ng Automatic ang pinakamahusay na default para sa iyong device. I-restart ang Moonfin para ilapat.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Automatic",
+    "impellerOn": "Naka-on",
+    "impellerOff": "Naka-off",
+    "impellerRestartTitle": "Kailangan ng restart",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Kailangang mag-restart ang Moonfin para baguhin ang rendering engine. Isara ang app ngayon, pagkatapos ay buksang muli ito para ilapat.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Isara ang app ngayon",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "I-refresh ang Library",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "I-refresh ang Lahat ng Library",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Petsang Idinagdag (Pinakaluma Muna)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Petsang Idinagdag (Pinakabago Muna)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alpabetiko (A hanggang Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Alpabetiko (Z hanggang A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Nilo-load ang Server Analytics... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Itugma sa source",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Top 250 na Pelikula",
+    "imdbTop250TvShows": "IMDb Top 250 na TV Show",
+    "imdbMostPopularMovies": "IMDb Pinakasikat na Mga Pelikula",
+    "imdbMostPopularTvShows": "IMDb Pinakasikat na Mga TV Show",
+    "imdbLowestRatedMovies": "IMDb Pinakamababang Rating na Mga Pelikula",
+    "imdbTopEnglishMovies": "IMDb Pinakamataas na Rating na Mga Pelikulang Ingles"
 }

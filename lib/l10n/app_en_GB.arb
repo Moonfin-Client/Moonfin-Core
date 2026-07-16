@@ -3737,10 +3737,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Specific User",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Always Authenticate",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -4091,18 +4087,6 @@
                 "type": "String"
             }
         }
-    },
-    "discoverRows": "Discover Rows",
-    "@discoverRows": {
-        "description": "Section title for discover rows"
-    },
-    "discoverRowsDescriptionPlugin": "Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.",
-    "@discoverRowsDescriptionPlugin": {
-        "description": "Description for discover rows with plugin"
-    },
-    "discoverRowsDescription": "Drag to reorder. Enable or disable rows.",
-    "@discoverRowsDescription": {
-        "description": "Description for discover rows without plugin"
     },
     "enabled": "Enabled",
     "@enabled": {
@@ -5455,7 +5439,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Search Remote Person",
     "adminNoRemoteMatches": "No remote matches found",
     "adminRemoteResults": "Remote Results",
     "adminRemoteMetadataApplied": "Remote metadata applied",
@@ -5551,9 +5534,6 @@
     },
     "adminAddTuner": "Add Tuner",
     "adminTunerType": "Tuner Type",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Other",
-    "adminUrlPath": "URL / Path",
-    "adminNameOptional": "Name (optional)",
     "adminTunerAdded": "Tuner added",
     "adminTunerAddFailed": "Failed to add tuner: {error}",
     "@adminTunerAddFailed": {
@@ -5565,9 +5545,6 @@
     },
     "adminAddGuideProvider": "Add Guide Provider",
     "adminProviderType": "Provider Type",
-    "adminProviderTypeHint": "SchedulesDirect or XMLTV",
-    "adminUsernameOptional": "Username (optional)",
-    "adminRefreshInterval": "Refresh interval (hours)",
     "adminProviderAdded": "Provider added",
     "adminProviderAddFailed": "Failed to add provider: {error}",
     "@adminProviderAddFailed": {
@@ -5737,7 +5714,6 @@
     },
     "adminLogViewerNoMatches": "No matching lines",
     "adminMetadataEditorTitle": "Metadata Editor",
-    "adminMetadataRemote": "Remote",
     "adminMetadataType": "Type",
     "adminMetadataDetails": "Details",
     "adminMetadataExternalIds": "External IDs",
@@ -6826,18 +6802,6 @@
     "settingsAudioFallbackCodec": "Audio Fallback Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "AAC Stereo",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
     "@settingsAudioPassthroughAdvanced": {

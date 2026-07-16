@@ -1,9 +1,5 @@
 {
     "@@locale": "es_AR",
-    "appTitle": "aleta lunar",
-    "@appTitle": {
-        "description": "The application title"
-    },
     "signIn": "Iniciar sesión",
     "@signIn": {
         "description": "Sign in heading and button label"
@@ -16,10 +12,6 @@
                 "type": "String"
             }
         }
-    },
-    "quickConnect": "Conexión rápida",
-    "@quickConnect": {
-        "description": "Quick Connect toggle button label"
     },
     "password": "Contraseña",
     "@password": {
@@ -48,15 +40,6 @@
     "loginFailed": "error de inicio de sesion",
     "@loginFailed": {
         "description": "Generic login failure message"
-    },
-    "quickConnectUnavailable": "Conexión rápida no disponible: {detail}",
-    "@quickConnectUnavailable": {
-        "description": "Quick Connect generic error message",
-        "placeholders": {
-            "detail": {
-                "type": "String"
-            }
-        }
     },
     "quickConnectUnavailableWithStatus": "QuickConnect no disponible ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
@@ -171,10 +154,6 @@
     "settingsAppearanceThemeSubtitle": "Cambia entre Moonfin y Neon Pulse sin reiniciar la aplicación",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
-    },
-    "themeMoonfin": "aleta lunar",
-    "@themeMoonfin": {
-        "description": "Display name for the Moonfin theme"
     },
     "themeMoonfinSubtitle": "Aspecto actual de Moonfin que a todos les encanta",
     "@themeMoonfinSubtitle": {
@@ -845,10 +824,6 @@
     "librivoxPage": "Página de LibriVox",
     "@librivoxPage": {
         "description": "Button label for LibriVox external link"
-    },
-    "internetArchive": "Archivo de Internet",
-    "@internetArchive": {
-        "description": "Button label for Internet Archive external link"
     },
     "rssFeed": "Fuente RSS",
     "@rssFeed": {
@@ -3585,10 +3560,6 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "aleta lunar",
-    "@mediaBarModeMoonfin": {
-        "description": "Media bar style option: Moonfin"
-    },
     "mediaBarModeMakd": "MakD",
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
@@ -3761,10 +3732,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Usuario específico",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Autenticar siempre",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3899,14 +3866,6 @@
     "@displayClockDuringScreensaver": {
         "description": "Description for show clock"
     },
-    "rottenTomatoesCritics": "Tomates podridos (críticos)",
-    "@rottenTomatoesCritics": {
-        "description": "Rating source: Rotten Tomatoes Critics"
-    },
-    "rottenTomatoesAudience": "Tomates podridos (público)",
-    "@rottenTomatoesAudience": {
-        "description": "Rating source: Rotten Tomatoes Audience"
-    },
     "imdb": "IMDb",
     "@imdb": {
         "description": "Rating source: IMDb"
@@ -3915,25 +3874,9 @@
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
-    "metacritic": "metacrítico",
-    "@metacritic": {
-        "description": "Rating source: Metacritic"
-    },
-    "metacriticUser": "Metacrítico (Usuario)",
-    "@metacriticUser": {
-        "description": "Rating source: Metacritic User"
-    },
-    "trakt": "Tracto",
-    "@trakt": {
-        "description": "Rating source: Trakt"
-    },
     "letterboxd": "Buzón",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
-    },
-    "myAnimeList": "Mi lista de animes",
-    "@myAnimeList": {
-        "description": "Rating source: MyAnimeList"
     },
     "aniList": "AniLista",
     "@aniList": {
@@ -3986,10 +3929,6 @@
     "ratingSourcesDescription": "Habilite y reordene las fuentes de calificación que se muestran en toda la aplicación",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
-    },
-    "pluginLabel": "Complemento",
-    "@pluginLabel": {
-        "description": "Settings title for plugin"
     },
     "pluginDetected": "Complemento detectado",
     "@pluginDetected": {
@@ -4087,10 +4026,6 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "Habilitar vidente",
-    "@enableSeerr": {
-        "description": "Setting for enabling Seerr"
-    },
     "showSeerrInNavigation": "Mostrar Seerr en la navegación (requiere complemento del servidor)",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
@@ -4115,18 +4050,6 @@
                 "type": "String"
             }
         }
-    },
-    "discoverRows": "Descubrir filas",
-    "@discoverRows": {
-        "description": "Section title for discover rows"
-    },
-    "discoverRowsDescriptionPlugin": "Arrastre para reordenar. Activar o desactivar filas. Se ha habilitado la sincronización del orden de filas con el complemento Moonfin.",
-    "@discoverRowsDescriptionPlugin": {
-        "description": "Description for discover rows with plugin"
-    },
-    "discoverRowsDescription": "Arrastre para reordenar. Activar o desactivar filas.",
-    "@discoverRowsDescription": {
-        "description": "Description for discover rows without plugin"
     },
     "enabled": "Activado",
     "@enabled": {
@@ -4312,10 +4235,6 @@
                 "type": "int"
             }
         }
-    },
-    "seerrSettings": "Configuración de vidente",
-    "@seerrSettings": {
-        "description": "Dialog title for Seerr browse settings"
     },
     "requestMore": "Solicitar más",
     "@requestMore": {
@@ -4595,7 +4514,6 @@
     "stop": "Detener",
     "streaming": "Transmisión",
     "time": "Tiempo",
-    "trickplay": "truco",
     "uninstall": "Desinstalar",
     "up": "Arriba",
     "update": "Actualizar",
@@ -4612,7 +4530,6 @@
     "adminDrawerTranscoding": "Transcodificación",
     "adminDrawerResume": "Reanudar",
     "adminDrawerStreaming": "Transmisión",
-    "adminDrawerTrickplay": "truco",
     "adminDrawerDevices": "Dispositivos",
     "adminDrawerActivity": "Actividad",
     "adminDrawerNetworking": "Redes",
@@ -5402,8 +5319,6 @@
     "adminAllowSegmentDeletion": "Permitir la eliminación de segmentos",
     "adminSegmentKeepSeconds": "Mantener segmento (segundos)",
     "adminThrottleBuffering": "Amortiguación del acelerador",
-    "adminTrickplaySaved": "Configuración de trucos guardada",
-    "adminTrickplayLoadFailed": "No se pudo cargar la configuración de trucos",
     "adminEnableHardwareAcceleration": "Habilitar la aceleración de hardware",
     "adminEnableKeyFrameExtraction": "Habilitar la extracción solo de fotogramas clave",
     "adminKeyFrameSubtitle": "Más rápido pero con menor precisión",
@@ -5437,7 +5352,6 @@
     "adminHttpsPort": "Puerto HTTPS",
     "adminPublicHttpsPort": "Puerto HTTPS público",
     "adminBaseUrl": "URL básica",
-    "adminBaseUrlHint": "p.ej. /gelatina",
     "https": "HTTPS",
     "adminEnableHttps": "Habilitar HTTPS",
     "adminLocalNetwork": "Red Local",
@@ -5479,7 +5393,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Buscar persona remota",
     "adminNoRemoteMatches": "No se encontraron coincidencias remotas",
     "adminRemoteResults": "Resultados remotos",
     "adminRemoteMetadataApplied": "Metadatos remotos aplicados",
@@ -5575,9 +5488,6 @@
     },
     "adminAddTuner": "Agregar sintonizador",
     "adminTunerType": "Tipo de sintonizador",
-    "adminTunerTypeHint": "HDHomeRun, M3U, Otro",
-    "adminUrlPath": "URL/ruta",
-    "adminNameOptional": "Nombre (opcional)",
     "adminTunerAdded": "Sintonizador añadido",
     "adminTunerAddFailed": "No se pudo agregar el sintonizador: {error}",
     "@adminTunerAddFailed": {
@@ -5589,9 +5499,6 @@
     },
     "adminAddGuideProvider": "Agregar proveedor de guía",
     "adminProviderType": "Tipo de proveedor",
-    "adminProviderTypeHint": "HorariosDirect o XMLTV",
-    "adminUsernameOptional": "Nombre de usuario (opcional)",
-    "adminRefreshInterval": "Intervalo de actualización (horas)",
     "adminProviderAdded": "Proveedor agregado",
     "adminProviderAddFailed": "No se pudo agregar el proveedor: {error}",
     "@adminProviderAddFailed": {
@@ -5761,7 +5668,6 @@
     },
     "adminLogViewerNoMatches": "No hay líneas coincidentes",
     "adminMetadataEditorTitle": "Editor de metadatos",
-    "adminMetadataRemote": "Remoto",
     "adminMetadataType": "Tipo",
     "adminMetadataDetails": "Detalles",
     "adminMetadataExternalIds": "ID externos",
@@ -6147,10 +6053,8 @@
             }
         }
     },
-    "adminTrickplayDescription": "Configure la generación de imágenes de trucos para buscar miniaturas de vista previa.",
     "adminNetworkingPublicHttpsPort": "Puerto HTTPS público",
     "adminNetworkingBaseUrl": "URL básica",
-    "adminNetworkingBaseUrlHint": "p.ej. /gelatina",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Ruta del certificado",
     "adminNetworkingRemoteIpFilter": "Filtro IP remoto",
@@ -6372,21 +6276,8 @@
     "pinForgot": "¿Olvidaste tu PIN?",
     "pinClear": "Claro",
     "pinBackspace": "Retroceso",
-    "quickConnectAuthorized": "Solicitud de Conexión Rápida autorizada.",
-    "quickConnectInvalidOrExpired": "El código de Conexión Rápida no es válido o ha caducado.",
     "quickConnectNotSupported": "Quick Connect no es compatible con este servidor.",
-    "quickConnectAuthorizeFailed": "No se pudo autorizar el código de Conexión rápida.",
     "quickConnectDisabled": "Quick Connect está deshabilitado en este servidor.",
-    "quickConnectForbidden": "Su cuenta no puede autorizar esta solicitud de Conexión rápida.",
-    "quickConnectNotFound": "No se encontró el código de conexión rápida. Pruebe un nuevo código.",
-    "quickConnectFailedWithMessage": "Error de conexión rápida: {message}",
-    "@quickConnectFailedWithMessage": {
-        "placeholders": {
-            "message": {
-                "type": "String"
-            }
-        }
-    },
     "quickConnectEnterCode": "Introduce el código",
     "quickConnectAuthorize": "Autorizar",
     "remoteCommandFailed": "El comando falló: {error}",
@@ -6751,10 +6642,6 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Tipo de cuenta vidente",
-    "@seerrAccountType": {
-        "description": "Header for selecting Seerr authentication account type"
-    },
     "jellyfinAccount": "Jellyfin",
     "@jellyfinAccount": {
         "description": "Auth option label for Seerr sign in using Jellyfin credentials"
@@ -6806,18 +6693,6 @@
     "settingsAudioFallbackCodec": "Códec de reserva de audio",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "Estéreo AAC",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "Paso a través (avanzado)",
     "@settingsAudioPassthroughAdvanced": {
@@ -7191,7 +7066,6 @@
     "recentlyReleasedEpisodes": "Episodios lanzados recientemente",
     "watchAgain": "Ver de nuevo",
     "guestAppearances": "Apariciones de invitados",
-    "appearancesSeerr": "Apariciones (Vidente)",
     "watchWithGroup": "Ver con grupo",
     "errors": "Errores",
     "warnings": "Advertencias",
@@ -7258,7 +7132,6 @@
     "mixedContent": "Contenido mixto",
     "homeVideosAndPhotos": "Inicio Vídeos y fotos",
     "mixedMoviesAndShows": "Películas y programas mixtos",
-    "intelQuickSync": "Sincronización rápida Intel",
     "rockchipMpp": "MPP de chip de roca",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "No se encontraron grabaciones",

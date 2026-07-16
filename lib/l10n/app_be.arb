@@ -1,6 +1,6 @@
 {
     "@@locale": "be",
-    "appTitle": "Месяцовы плаўнік",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Хуткае падключэнне",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Зняць",
+    "remove": "Прыбраць",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Месяцовы плаўнік",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "серыял",
+    "series": "Серыялы",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "дадому",
+    "home": "Галоўная",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Мастакі",
+    "artists": "Выканаўцы",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Рэзюмэ",
+    "resume": "Працягнуць",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Глядзеў",
+    "watched": "Прагледжана",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Непрагледжаны",
+    "unwatched": "Непрагледжана",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 аўдыякніга} one{{count} аўдыякніга} few{{count} аўдыякнігі} many{{count} аўдыякніг} other{{count} аўдыякнігі}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Поры года",
+    "seasons": "Сезоны",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Сезон} one{{count} Сезон} few{{count} Сезоны} many{{count} Сезонаў} other{{count} Сезона}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "гуляць",
+    "play": "Прайграць",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "У ролях",
+    "cast": "Трансляваць",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "ПІСЬМЕННІКІ",
+    "writers": "СЦЭНАРЫСТЫ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{1 трэк} one{{count} трэк} few{{count} трэкі} many{{count} трэкаў} other{{count} трэка}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{1 раздзел} one{{count} раздзел} few{{count} раздзелы} many{{count} раздзелаў} other{{count} раздзела}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Ператасаваць",
+    "shuffle": "Перамяшаць",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count} кан.",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1727,7 +1727,7 @@
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
-    "off": "Выкл",
+    "off": "Выкл.",
     "@off": {
         "description": "Label for subtitle off option"
     },
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} мс",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} мс",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Гулец",
+    "player": "Прайгравальнік",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Трэк",
+    "track": "Дарожка",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2191,7 +2191,7 @@
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Блізка",
+    "close": "Закрыць",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "няма",
+    "no": "Не",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2422,7 +2422,7 @@
             }
         }
     },
-    "seasonEpisodeLabel": "S{season} E{episode}",
+    "seasonEpisodeLabel": "С{season} Э{episode}",
     "@seasonEpisodeLabel": {
         "description": "Season and episode label like S1 E2",
         "placeholders": {
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "С{number}",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{1 эпізод} one{{count} эпізод} few{{count} эпізоды} many{{count} эпізодаў} other{{count} эпізода}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} пкс",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Інваліды",
+    "disabled": "Адключана",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} с",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Месяцовы плаўнік",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Выкл",
+    "mediaBarModeOff": "Выкл.",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "Канкрэтны карыстальнік",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "Заўсёды правяраць сапраўднасць",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "Тракт",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Убудова",
+    "pluginLabel": "Плагін Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Адкрыйце для сябе радкі",
+    "discoverRows": "Старонка агляду Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Перацягнуць, каб змяніць парадак. Уключыць або выключыць радкі. Уключаны парадак радкоў сінхранізуецца з убудовай Moonfin.",
+    "discoverRowsDescriptionPlugin": "Уключыце радкі, якія трэба паказваць на галоўнай старонцы Seerr. Перацягвайце, каб змяніць парадак. Уласны парадак сінхранізуецца з Moonbase.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Перацягнуць, каб змяніць парадак. Уключыць або выключыць радкі.",
+    "discoverRowsDescription": "Уключыце радкі, якія трэба паказваць на галоўнай старонцы Seerr. Перацягвайце, каб змяніць парадак. Уласны парадак сінхранізуецца з Moonbase.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4243,7 +4239,7 @@
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
-    "gbValue": "{value} GB",
+    "gbValue": "{value} ГБ",
     "@gbValue": {
         "description": "Gigabyte value display",
         "placeholders": {
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "Ясна",
+    "clear": "Ачысціць",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4430,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "З'яўленне",
+    "appearances": "Ролі",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Поры года",
+    "seasonsLabel": "Сезоны",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4533,7 +4529,7 @@
     "encoding": "Кадзіроўка",
     "error": "Памылка",
     "forward": "Наперад",
-    "general": "Генерал",
+    "general": "Агульныя",
     "go": "Ідзі",
     "install": "Усталяваць",
     "installed": "Усталяваны",
@@ -4548,7 +4544,7 @@
     "profile": "Профіль",
     "provider": "Правайдэр",
     "refresh": "Абнавіць",
-    "remote": "Дыстанцыйнае",
+    "remote": "Пульт",
     "rename": "Перайменаваць",
     "revoke": "Адклікаць",
     "role": "Роля",
@@ -4560,16 +4556,16 @@
     "sessions": "Сесіі",
     "set": "Набор",
     "status": "Статус",
-    "stop": "Стоп",
+    "stop": "Спыніць",
     "streaming": "Паток",
     "time": "Час",
-    "trickplay": "Выкрут",
+    "trickplay": "Trickplay",
     "uninstall": "Выдаліць",
     "up": "Уверх",
     "update": "Абнаўленне",
     "upload": "Загрузіць",
     "unmute": "Уключыць гук",
-    "mute": "Адключыць гук",
+    "mute": "Без гуку",
     "branding": "Брэндынг",
     "adminDrawerDashboard": "Прыборная панэль",
     "adminDrawerAnalytics": "Аналітыка",
@@ -4578,9 +4574,9 @@
     "adminDrawerUsers": "Карыстальнікі",
     "adminDrawerLibraries": "Бібліятэкі",
     "adminDrawerTranscoding": "Перакадзіроўка",
-    "adminDrawerResume": "Рэзюмэ",
+    "adminDrawerResume": "Працягнуць",
     "adminDrawerStreaming": "Паток",
-    "adminDrawerTrickplay": "Выкрут",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "прылады",
     "adminDrawerActivity": "актыўнасць",
     "adminDrawerNetworking": "Сеткавыя сувязі",
@@ -4680,11 +4676,11 @@
     "sessionVolumeUp": "Аб'ём +",
     "uhd4k": "4K",
     "nowPlaying": "Зараз іграе",
-    "volume": "Аб'ём",
+    "volume": "Гучнасць",
     "actions": "Дзеянні",
     "videoCodec": "Відэа кодэк",
     "audioCodec": "Аўдыё кодэк",
-    "hwAccel": "HW Accel",
+    "hwAccel": "Апаратнае паскарэнне",
     "completion": "Завяршэнне",
     "direct": "Прамая",
     "adminDisconnect": "Адключыцца",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "Порт HTTPS",
     "adminPublicHttpsPort": "Публічны порт HTTPS",
     "adminBaseUrl": "Базавы URL",
-    "adminBaseUrlHint": "напр. /жэле",
+    "adminBaseUrlHint": "напр. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "Уключыць HTTPS",
     "adminLocalNetwork": "Лакальная сетка",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "Пошук аддаленага чалавека",
     "adminNoRemoteMatches": "Аддаленых супадзенняў не знойдзена",
     "adminRemoteResults": "Аддаленыя вынікі",
     "adminRemoteMetadataApplied": "Ужытыя аддаленыя метаданыя",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "Дадаць цюнэр",
     "adminTunerType": "Тып цюнэра",
-    "adminTunerTypeHint": "HDHomeRun, M3U, іншае",
-    "adminUrlPath": "URL / шлях",
-    "adminNameOptional": "Імя (неабавязкова)",
     "adminTunerAdded": "Цюнэр дададзены",
     "adminTunerAddFailed": "Не атрымалася дадаць цюнэр: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "Дадаць пастаўшчыка гіда",
     "adminProviderType": "Тып пастаўшчыка",
-    "adminProviderTypeHint": "SchedulesDirect або XMLTV",
-    "adminUsernameOptional": "Імя карыстальніка (неабавязкова)",
-    "adminRefreshInterval": "Інтэрвал абнаўлення (гадзіны)",
     "adminProviderAdded": "Пастаўшчык дададзены",
     "adminProviderAddFailed": "Не атрымалася дадаць пастаўшчыка: {error}",
     "@adminProviderAddFailed": {
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "Няма адпаведных радкоў",
     "adminMetadataEditorTitle": "Рэдактар ​​метададзеных",
-    "adminMetadataRemote": "Дыстанцыйнае",
     "adminMetadataType": "Тып",
     "adminMetadataDetails": "Дэталі",
     "adminMetadataExternalIds": "Знешнія ідэнтыфікатары",
@@ -5908,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Зняць",
+    "adminReposRemove": "Прыбраць",
     "adminReposSaveFailed": "Не ўдалося захаваць рэпазітары: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "Адмена...",
     "adminTaskRunning": "Запуск...",
     "adminTaskNeverRun": "Ніколі не бегайце",
-    "adminTaskStop": "Стоп",
+    "adminTaskStop": "Спыніць",
     "adminTaskRun": "Бегчы",
     "adminTaskDetailLastExecution": "Апошняе пакаранне",
     "adminTaskDetailStarted": "Пачалі",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Кожныя 12 гадзін",
     "adminTaskTriggerEvery24Hours": "Кожныя 24 гадзіны",
     "adminTaskTriggerEvery2Days": "Кожныя 2 дні",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{{count} гадзіна} few{{count} гадзіны} many{{count} гадзін} other{{count} гадзіны}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "зараз",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} хв",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} гадз",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} дз",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6104,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}/{day}",
+    "adminActivityDateShort": "{day}.{month}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Наладзьце генерацыю відарысаў падману для эскізаў папярэдняга прагляду.",
+    "adminTrickplayDescription": "Наладзьце генерацыю відарысаў trickplay для эскізаў папярэдняга прагляду пры перамотцы.",
     "adminNetworkingPublicHttpsPort": "Публічны порт HTTPS",
     "adminNetworkingBaseUrl": "Базавы URL",
-    "adminNetworkingBaseUrlHint": "напр. /жэле",
+    "adminNetworkingBaseUrlHint": "напр. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Шлях сертыфіката",
     "adminNetworkingRemoteIpFilter": "Аддалены IP-фільтр",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "Для SyncPlay патрабуецца сервер Jellyfin. Бягучы сервер не падтрымлівае гэта.",
     "syncPlayGroupFallbackName": "SyncPlay Група",
     "syncPlayGroupTooltip": "SyncPlay група",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# удзельнік} few {# удзельнікі} many {# удзельнікаў} other {# удзельніка}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "Запомні мой выбар",
     "playHdr10Fallback": "Гуляць HDR10 запасны",
     "requestTranscode": "Запытаць перакадзіраванне",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {знойдзены # радок} few {знойдзена # радкі} many {знойдзена # радкоў} other {знойдзена # радка}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "Няправільны PIN-код",
     "pinMismatch": "PIN-коды не супадаюць",
     "pinForgot": "Забыўся PIN-код?",
-    "pinClear": "Ясна",
-    "pinBackspace": "Backspace",
+    "pinClear": "Ачысціць",
+    "pinBackspace": "Выдаліць",
     "quickConnectAuthorized": "Запыт Quick Connect дазволены.",
     "quickConnectInvalidOrExpired": "Код Quick Connect несапраўдны або пратэрмінаваны.",
-    "quickConnectNotSupported": "Хуткае злучэнне не падтрымліваецца на гэтым серверы.",
-    "quickConnectAuthorizeFailed": "Не ўдалося аўтарызаваць код хуткага злучэння.",
-    "quickConnectDisabled": "Хуткае падключэнне адключана на гэтым серверы.",
+    "quickConnectNotSupported": "Quick Connect не падтрымліваецца на гэтым серверы.",
+    "quickConnectAuthorizeFailed": "Не ўдалося аўтарызаваць код Quick Connect.",
+    "quickConnectDisabled": "Quick Connect адключаны на гэтым серверы.",
     "quickConnectForbidden": "Ваш уліковы запіс не можа аўтарызаваць гэты запыт Quick Connect.",
-    "quickConnectNotFound": "Код хуткага злучэння не знойдзены. Паспрабуйце новы код.",
-    "quickConnectFailedWithMessage": "Памылка хуткага злучэння: {message}",
+    "quickConnectNotFound": "Код Quick Connect не знойдзены. Паспрабуйце новы код.",
+    "quickConnectFailedWithMessage": "Памылка Quick Connect: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "Далей",
     "playNext": "Гуляць далей",
     "stillWatchingContent": "Прайграванне прыпынена. Вы ўсё яшчэ глядзіце?",
-    "stillWatchingStop": "Стоп",
+    "stillWatchingStop": "Спыніць",
     "stillWatchingContinue": "Працягнуць",
     "skipSegment": "Прапусціць {segment}",
     "@skipSegment": {
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "Праверце наяўнасць абнаўленняў",
     "settingsCheckForUpdatesSubtitle": "Праверце апошнюю версію Moonfin",
     "settingsPoweredByFlutter": "Працуе на Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# ліцэнзійная заўвага} few {# ліцэнзійныя заўвагі} many {# ліцэнзійных заўваг} other {# ліцэнзійнай заўвагі}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6635,7 +6623,7 @@
     "settingsLong": "Доўгі",
     "settingsVeryLong": "Вельмі доўга",
     "settingsVideoStartDelay": "Затрымка запуску відэа",
-    "settingsMillisecondsValue": "{value} ms",
+    "settingsMillisecondsValue": "{value} мс",
     "@settingsMillisecondsValue": {
         "description": "Milliseconds duration label",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Запіс",
+    "record": "Запісаць",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6807,18 +6795,6 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC Стэрэа",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
-    },
     "settingsAudioPassthroughAdvanced": "Праходжанне (пашыраны)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
@@ -6839,7 +6815,7 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "Транзіт ядра DTS",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
@@ -6915,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}ch PCM",
+    "settingsAudioPcmChannels": "{count} кан. PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "Лепшыя выканаўцы",
     "analyticsTopAuthors": "Лепшыя аўтары",
     "analyticsTopContributors": "Лепшыя ўдзельнікі",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Бібліятэка} one{{count} Бібліятэка} few{{count} Бібліятэкі} many{{count} Бібліятэк} other{{count} Бібліятэкі}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "Убудова для здабывання CB7 недаступны на гэтай платформе.",
     "closeGenrePanel": "Закрыць панэль жанраў",
     "loadingShuffle": "Загрузка перамешвання...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "ПЕРАМЯШАЦЬ БІБЛІЯТЭКУ",
+    "randomShuffleLabel": "ВЫПАДКОВЫ ПАРАДАК",
+    "genresShuffleLabel": "ПЕРАМЯШАЦЬ ЖАНРЫ",
     "autoHdrSwitching": "Аўтаматычнае пераключэнне HDR",
     "autoHdrSwitchingDescription": "Аўтаматычна ўключыць HDR для прайгравання HDR-відэа і аднавіць рэжым адлюстравання пры выхадзе.",
     "whenFullscreen": "У поўнаэкранным рэжыме",
     "transcodingLimits": "Абмежаванні перакадавання",
-    "settingsSupportMoonfinSubtitle": "Ахвяруйце каву распрацоўніку"
+    "settingsSupportMoonfinSubtitle": "Ахвяруйце каву распрацоўніку",
+    "accountPreferences": "НАЛАДЫ ЎЛІКОВАГА ЗАПІСУ",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Мова інтэрфейсу",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Як у сістэме",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Пуста",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "Стыль экрана звестак",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "«Класічны» — арыгінальная цэнтраваная кампаноўка Moonfin. «Сучасны» — адаптыўная кінематаграфічная кампаноўка.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Класічны",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Сучасны",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Разгорнутыя ўкладкі",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Аўтаматычна паказваць змесціва ўкладак пры пераглядзе. Выключыце, каб адкрываць і закрываць кожную ўкладку ўручную.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "Паказваць тэхнічныя звесткі?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Паказваць кодэк, раздзяляльнасць і звесткі пра паток у кароткім апісанні банера",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "Сістэма рэкамендацый",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Выкарыстоўвайце алгарытм лакальнай бібліятэкі «Moonfin рэкамендуе» або сеціўныя метрыкі падабенства TMDb. Заўвага: сеціўныя рэкамендацыі патрабуюць інтэграцыі з Seerr.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin рэкамендуе",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "Падабенства TMDb",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "Ужываць абмежаванне па ўзроставым рэйтынгу?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Абмяжоўваць прапановы «Moonfin рэкамендуе» паводле ўзроставага рэйтынгу выбранага медыя",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "Стыль інтэрфейсу",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "«Аўтаматычна» адпавядае вашай прыладзе. Выберыце Apple або Material, каб задаць выгляд прымусова.",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "Аўтаматычна",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Якасць шкла",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "«Аўта» выбірае найлепшы эфект шкла для гэтай прылады. «Поўная» уключае сапраўднае размыццё, «Зніжаная» выкарыстоўвае лёгкае шкло, якое эканоміць рэсурсы GPU.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "Аўта",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Поўная",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Зніжаная",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "Уласная тэма",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "Уласныя тэмы змяняюць візуальныя элементы ва ўсім Moonfin. Выберыце адзін з варыянтаў пад свой густ.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Шкло",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Аздабленне ў стылі вадкага шкла з плыўным градыентным фонам, матавымі паверхнямі і сінім акцэнтам Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "8-бітны герой",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "Рэтра-аздабленне ў стылі піксель-арт з грубай палітрай, блочнымі рамкамі, рэзкімі ценямі і піксельным шрыфтом",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "Меню",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "Паўза",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "Захаваць стан",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "Гульні",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "Загрузіць стан",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "Паскарэнне",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Налады эмулятара",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "Гэтае ядро не мае наладжвальных параметраў.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Утрымлівайце, каб адкрыць меню",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Гульні пакуль не падтрымліваюцца на гэтай прыладзе.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "Апошнія кнігі",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Апошнія аўдыякнігі",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 кніга} one{{count} кніга} few{{count} кнігі} many{{count} кніг} other{{count} кнігі}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Кніга",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Аўдыякніга",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "Прачытана {percent}%",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "Засталося {time}",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Чытаць",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Слухаць",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "Элементы",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "Дадаткі",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "За кадрам",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "Выдаленыя сцэны",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "Кароткія сюжэты",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "Інтэрв'ю",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "Сцэны",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Кароткаметражкі",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "Засталося {time}",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "Скончыцца праз {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "РЭЖЫСЁРЫ",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "СЦЭНАРЫСТ",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "Перамяшаць усю музыку",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Увайдзіце ў Moonfin на тэлефоне",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "Не ўдаецца звязацца з серверам",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "Далей: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "Засталося {minutes} хв",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "Засталося {hours} гадз",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "Засталося {hours} гадз {minutes} хв",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "Старонкі звестак, радкі на галоўнай і гучнасць",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "Паўтараць музычную тэму",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Прайграваць трэк цыклічна, а не адзін раз",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "Кола пракруткі мышы",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Выберыце, што робіць пракрутка кола мышы над відэа падчас прайгравання.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Выкл.",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Перамотка (наперад / назад)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Гучнасць",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Гучнасць",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "Рэзервовая мова аўдыё",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "Аддаваць перавагу стандартнай аўдыядарожцы",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "Аддаваць перавагу арыгінальнай аўдыядарожцы замест лакалізаванага дубляжу.",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "Аддаваць перавагу дарожкам з аўдыяапісаннем",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "Аддаваць перавагу дарожкам з аўдыяапісаннем замест звычайных.",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "Транскадаванне (аўдыё)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "Прамы паток (рэмультыплексаванне)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Транскадаванне (бітрэйт або раздзяляльнасць)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Транскадаванне (відэа і аўдыё)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Транскадаванне (відэа)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "Выберыце, як дэкадуецца гук. Транзіт праз AVR адпраўляе неапрацаваныя патокі Dolby/DTS на ваш рэсівер, а «Аўта» і «Звядзенне» дэкадуюць лакальна.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Выберыце фармат для транскадавання шматканальнага гуку, калі зыходны паток нельга прайграць напрамую або перадаць транзітам.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Аўтавызначэнне\n(рэкамендуецца)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(стандартна)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(без страт)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(толькі стэрэа)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(эканомны)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(без страт)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Максімум аўдыяканалаў",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Задайце максімальную колькасць каналаў вашай аўдыясістэмы. Шматканальныя патокі звыш гэтага ліміту будуць зведзены або транскадаваны.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Аўтавызначэнне\n(стандарт абсталявання)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Мона",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Стэрэа",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Аб'ёмны гук",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Квадрафанічны",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Аб'ёмны гук",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Аб'ёмны гук",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Аб'ёмны гук",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Аб'ёмны гук",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "Навушнікі",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "Рэжым субтытраў",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "Пазначаныя",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "Заўсёды",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "Замежныя",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "Прымусовыя",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "Прайграе дарожкі, пазначаныя ў метаданых медыяфайла як «default» або «forced».",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "Аўтаматычна загружае і паказвае субтытры пры кожным запуску відэа.",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "Аўтаматычна ўключае субтытры, калі стандартная аўдыядарожка на замежнай мове.",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "Загружае толькі субтытры з яўнай пазнакай forced у метаданых.",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "Цалкам адключае аўтаматычную загрузку субтытраў.",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "Рэзервовая мова субтытраў",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "Паток субтытраў",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "Паказваць спампоўкі на серверы",
+    "reportDownloadsActivitySubtitle": "Дазволіць адміністратару сервера бачыць вашы транскадаваныя спампоўкі на панэлі кіравання",
+    "navbarAlwaysExpanded": "Заўсёды паказваць подпісы панэлі навігацыі",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Паказваць кнопку Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "Групаваць элементы ў калекцыі",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "Хаваць элементы бібліятэкі, звязаныя з калекцыямі, пры праглядзе бібліятэк",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "Заўвага пра групаванне бібліятэкі",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "Каб выкарыстоўваць гэтую наладу, пераканайцеся, што ў наладах адлюстравання вашай бібліятэкі на серверы Jellyfin або Emby ўключаны параметры «Групаваць фільмы ў калекцыі» і/або «Групаваць серыялы ў калекцыі».",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "Гук трэйлераў",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Уключыць гук трэйлераў у медыяпанэлі",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "Разгорнутыя радкі галоўнай",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Паказваць не больш за адзін радок галоўнай на экран",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Бягучы карыстальнік",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Нерухомы",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Скачучы",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Радкі агляду Seerr",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "Апавяшчэнні",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Апавяшчэнні пра новыя запыты",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Паведамляць, калі хтосьці адпраўляе запыт",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Абнаўленні запытаў",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Ухвалена, адхілена і дададзена ў вашу бібліятэку",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "Абнаўленні праблем",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Новыя праблемы, адказы і рашэнні",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} МБ",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "Ліміт кэшу відарысаў",
+    "clearImageCache": "Ачысціць кэш відарысаў",
+    "imageCacheCleared": "Кэш відарысаў ачышчаны",
+    "seerrDownloadingPercent": "Спампоўванне · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "Імпартаванне",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Не ўдалося",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "Апрацоўка",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "Зменена: {name}",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Завершана",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Гэтая назва ўжо запытана",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "Дасягнуты ліміт запытаў",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Гэтая назва ў чорным спісе",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Не засталося сезонаў для запыту",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "У вас няма дазволу на гэты запыт",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "Запыты",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Праблемы",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "Найноўшыя",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Апошнія змены",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Няма праблем",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Засталося {remaining} з {limit} запытаў на фільмы",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Засталося {remaining} з {limit} запытаў на сезоны",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "Уваходзіць у {name}",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Адкрыць калекцыю",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Запытаць калекцыю",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} фільмаў · {available} даступна",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "Запытаць {count} фільмаў",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "Запыт {current} з {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "Запытана {count} фільмаў",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "Запытана {ok} з {total} фільмаў",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Усе фільмы ўжо даступныя або запытаныя",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Паведаміць пра праблему",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Відэа",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Аўдыё",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Што не так?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Усе эпізоды",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Эпізод",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Адкрыта",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Вырашана",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Вырашыць",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Адкрыць зноў",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "Паведаміў {name}",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} каментарыяў",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Дадаць каментарый",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Выдаліць гэтую праблему?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Адправіць паведамленне",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "Адлюстраванне",
+    "adminDrawerMetadata": "Метаданыя",
+    "adminDrawerNfo": "Налады NFO",
+    "adminActivitySeverityAll": "Усе ўзроўні",
+    "adminActivityDateRange": "Дыяпазон дат",
+    "adminRemoveDeviceConfirm": "Выдаліць прыладу «{name}»? Карыстальніку спатрэбіцца ўвайсці зноў на гэтай прыладзе.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "Выдаліць усе прылады",
+    "adminDeleteAllDevicesConfirm": "Выдаліць {count} прылад? Закранутым карыстальнікам спатрэбіцца ўвайсці зноў. Вашай бягучай прылады гэта не тычыцца.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "Прылады выдалены",
+    "adminDevicesDeletedPartial": "Некаторыя прылады выдалены; {count} выдаліць не ўдалося.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "Шляхі",
+    "adminLibraryTabOptions": "Параметры",
+    "adminLibraryTabDownloaders": "Спампоўшчыкі",
+    "adminLibMetadataSavers": "Захавальнікі метаданых",
+    "adminLibSubtitleDownloaders": "Спампоўшчыкі субтытраў",
+    "adminLibLyricDownloaders": "Спампоўшчыкі тэкстаў песень",
+    "adminLibMetadataDownloadersFor": "Спампоўшчыкі метаданых: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Крыніцы відарысаў: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "Гэты сервер не прапануе спампоўшчыкаў для гэтага тыпу бібліятэкі.",
+    "adminLibrarySectionGeneral": "Агульныя",
+    "adminLibrarySectionMetadata": "Метаданыя",
+    "adminLibrarySectionEmbedded": "Убудаваныя звесткі",
+    "adminLibrarySectionSubtitles": "Субтытры",
+    "adminLibrarySectionImages": "Відарысы",
+    "adminLibrarySectionSeries": "Серыялы",
+    "adminLibrarySectionMusic": "Музыка",
+    "adminLibrarySectionMovies": "Фільмы",
+    "adminLibRealtimeMonitor": "Уключыць маніторынг у рэальным часе",
+    "adminLibRealtimeMonitorHint": "Выяўляць змены файлаў і апрацоўваць іх аўтаматычна.",
+    "adminLibArchiveMediaFiles": "Лічыць архівы медыяфайламі",
+    "adminLibEnablePhotos": "Паказваць фота",
+    "adminLibSaveLocalMetadata": "Захоўваць ілюстрацыі ў медыяпапках",
+    "adminLibRefreshInterval": "Аўтаматычнае абнаўленне метаданых",
+    "adminLibRefreshNever": "Ніколі",
+    "adminLibDefault": "Стандартна",
+    "adminLibDisplayTitle": "Адлюстраванне",
+    "adminLibDisplaySection": "Адлюстраванне бібліятэкі",
+    "adminLibFolderView": "Паказваць выгляд папак для звычайных медыяпапак",
+    "adminLibSpecialsInSeasons": "Паказваць спецвыпускі ў сезонах, дзе яны выйшлі",
+    "adminLibGroupMovies": "Групаваць фільмы ў калекцыі",
+    "adminLibGroupShows": "Групаваць серыялы ў калекцыі",
+    "adminLibExternalSuggestions": "Паказваць знешняе змесціва ў прапановах",
+    "adminLibDateAddedSection": "Паводзіны даты дадання",
+    "adminLibDateAddedLabel": "Браць дату дадання з",
+    "adminLibDateAddedImport": "Дата сканавання ў бібліятэку",
+    "adminLibDateAddedFile": "Дата стварэння файла",
+    "adminLibMetadataTitle": "Метаданыя і відарысы",
+    "adminLibMetadataLangSection": "Пажаданая мова метаданых",
+    "adminLibChaptersSection": "Раздзелы",
+    "adminLibDummyChapterDuration": "Працягласць фіктыўнага раздзела (секунды)",
+    "adminLibDummyChapterDurationHint": "Даўжыня раздзелаў, якія ствараюцца для медыя без іх. Задайце 0, каб адключыць.",
+    "adminLibChapterImageResolution": "Раздзяляльнасць відарысаў раздзелаў",
+    "adminLibNfoTitle": "Налады NFO",
+    "adminLibNfoHelp": "Метаданыя NFO сумяшчальныя з Kodi і падобнымі кліентамі. Налады прымяняюцца да ўсіх бібліятэк, якія захоўваюць метаданыя NFO.",
+    "adminLibKodiUser": "Карыстальнік, чые звесткі пра прагляд захоўваюцца ў файлах NFO",
+    "adminLibSaveImagePaths": "Захоўваць шляхі відарысаў у файлах NFO",
+    "adminLibPathSubstitution": "Уключыць падмену шляхоў для відарысаў NFO",
+    "adminLibExtraThumbs": "Капіраваць відарысы extrafanart у папку extrathumbs",
+    "adminLibNone": "Няма",
+    "adminLibRefreshDays": "{days} дзён",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "Выкарыстоўваць убудаваныя назвы",
+    "adminLibEmbeddedExtrasTitles": "Выкарыстоўваць убудаваныя назвы для дадаткаў",
+    "adminLibEmbeddedEpisodeInfos": "Выкарыстоўваць убудаваныя звесткі пра эпізоды",
+    "adminLibAllowEmbeddedSubtitles": "Дазволіць убудаваныя субтытры",
+    "adminLibEmbeddedAllowAll": "Дазволіць усе",
+    "adminLibEmbeddedAllowText": "Толькі тэкставыя",
+    "adminLibEmbeddedAllowImage": "Толькі відарысы",
+    "adminLibEmbeddedAllowNone": "Няма",
+    "adminLibSkipIfEmbeddedSubs": "Прапускаць спампоўку, калі ёсць убудаваныя субтытры",
+    "adminLibSkipIfAudioMatches": "Прапускаць спампоўку, калі аўдыядарожка адпавядае мове спампоўкі",
+    "adminLibRequirePerfectMatch": "Патрабаваць дакладнае супадзенне субтытраў",
+    "adminLibSaveSubtitlesWithMedia": "Захоўваць субтытры ў медыяпапках",
+    "adminLibChapterImageExtraction": "Здабываць відарысы раздзелаў",
+    "adminLibChapterImagesDuringScan": "Здабываць відарысы раздзелаў падчас сканавання бібліятэкі",
+    "adminLibTrickplayExtraction": "Уключыць здабыванне відарысаў trickplay",
+    "adminLibTrickplayDuringScan": "Здабываць відарысы trickplay падчас сканавання бібліятэкі",
+    "adminLibSaveTrickplayWithMedia": "Захоўваць відарысы trickplay у медыяпапках",
+    "adminLibAutomaticSeriesGrouping": "Аўтаматычна аб'ядноўваць серыялы, размеркаваныя па некалькіх папках",
+    "adminLibSeasonZeroName": "Назва нулявога сезона",
+    "adminLibLufsScan": "Уключыць сканаванне LUFS для нармалізацыі гуку",
+    "adminLibPreferNonstandardArtist": "Аддаваць перавагу нестандартнаму тэгу выканаўцаў",
+    "adminLibAutoAddToCollection": "Аўтаматычна дадаваць фільмы ў калекцыі",
+    "adminParentalControl": "Бацькоўскі кантроль",
+    "adminMaxParentalRating": "Максімальны дазволены ўзроставы рэйтынг",
+    "adminMaxParentalRatingHint": "Змесціва з вышэйшым рэйтынгам будзе схавана ад гэтага карыстальніка.",
+    "adminParentalRatingNone": "Няма",
+    "adminBlockUnratedItems": "Блакаваць элементы без рэйтынгу або з нераспазнаным рэйтынгам",
+    "adminUnratedBook": "Кнігі",
+    "adminUnratedChannelContent": "Каналы",
+    "adminUnratedLiveTvChannel": "Жывое тэлебачанне",
+    "adminUnratedMovie": "Фільмы",
+    "adminUnratedMusic": "Музыка",
+    "adminUnratedTrailer": "Трэйлеры",
+    "adminUnratedSeries": "Серыялы",
+    "adminAccessSchedules": "Расклады доступу",
+    "adminAccessSchedulesHint": "Дазваляць доступ толькі ў пазначаны ніжэй час. Калі расклад не зададзены, доступ дазволены цэлы дзень.",
+    "adminAddSchedule": "Дадаць расклад",
+    "adminScheduleDay": "Дзень",
+    "adminScheduleStart": "Пачатак",
+    "adminScheduleEnd": "Канец",
+    "adminDayEveryday": "Кожны дзень",
+    "adminDayWeekday": "Будні дзень",
+    "adminDayWeekend": "Выхадныя",
+    "adminDaySunday": "Нядзеля",
+    "adminDayMonday": "Панядзелак",
+    "adminDayTuesday": "Аўторак",
+    "adminDayWednesday": "Серада",
+    "adminDayThursday": "Чацвер",
+    "adminDayFriday": "Пятніца",
+    "adminDaySaturday": "Субота",
+    "adminAllowedTags": "Дазволеныя тэгі",
+    "adminAllowedTagsHint": "Паказваецца толькі змесціва з гэтымі тэгамі. Пакіньце пустым, каб дазволіць усё.",
+    "adminBlockedTags": "Заблакаваныя тэгі",
+    "adminBlockedTagsHint": "Змесціва з гэтымі тэгамі схавана ад гэтага карыстальніка.",
+    "adminAddTag": "Дадаць тэг",
+    "adminEnabledDevices": "Уключаныя прылады",
+    "adminEnabledChannels": "Уключаныя каналы",
+    "adminAuthProvider": "Пастаўшчык аўтэнтыфікацыі",
+    "adminPasswordResetProvider": "Пастаўшчык скіду пароля",
+    "adminLoginAttemptsBeforeLockout": "Максімум няўдалых спроб уваходу да блакіроўкі",
+    "adminLoginAttemptsHint": "Задайце 0 для стандартнага значэння або -1, каб адключыць блакіроўку.",
+    "adminSyncPlayAccess": "Доступ да SyncPlay",
+    "adminSyncPlayCreateAndJoin": "Дазволіць ствараць групы і далучацца да іх",
+    "adminSyncPlayJoin": "Дазволіць далучацца да груп",
+    "adminSyncPlayNone": "Няма доступу",
+    "adminContentDeletionFolders": "Дазволіць выдаленне змесціва з",
+    "adminBackupOptionsTitle": "Стварыць рэзервовую копію",
+    "adminBackupInclude": "Выберыце, што ўключыць у рэзервовую копію.",
+    "adminBackupDatabase": "База даных",
+    "adminBackupDatabaseAlways": "Уключаецца заўсёды",
+    "adminBackupMetadata": "Метаданыя",
+    "adminBackupSubtitles": "Субтытры",
+    "adminBackupTrickplay": "Відарысы Trickplay",
+    "adminEditTuner": "Змяніць цюнер",
+    "adminTunerTypeM3u": "Цюнер M3U",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "Файл або URL",
+    "adminTunerIpAddress": "IP-адрас цюнера",
+    "adminTunerFriendlyName": "Зручная назва",
+    "adminTunerUserAgent": "User agent",
+    "adminTunerCount": "Ліміт адначасовых злучэнняў",
+    "adminTunerCountHelp": "Максімальная колькасць патокаў, якія цюнер дазваляе адначасова. Задайце 0 для неабмежаванай колькасці.",
+    "adminTunerFallbackBitrate": "Рэзервовы максімальны бітрэйт патоку",
+    "adminTunerImportFavoritesOnly": "Імпартаваць толькі выбраныя каналы",
+    "adminTunerAllowHwTranscoding": "Дазволіць апаратнае транскадаванне",
+    "adminTunerAllowFmp4": "Дазволіць кантэйнер транскадавання fMP4",
+    "adminTunerAllowStreamSharing": "Дазволіць сумеснае выкарыстанне патоку",
+    "adminTunerEnableStreamLooping": "Уключыць зацыкліванне патоку",
+    "adminTunerIgnoreDts": "Ігнараваць DTS",
+    "adminTunerReadAtNativeFramerate": "Чытаць уваход з зыходнай частатой кадраў",
+    "adminEditProvider": "Змяніць пастаўшчыка",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "Файл або URL",
+    "adminXmltvMoviePrefix": "Прэфікс фільмаў",
+    "adminXmltvMovieCategories": "Катэгорыі фільмаў",
+    "adminXmltvCategoriesHelp": "Раздзяляйце некалькі катэгорый вертыкальнай рыскай.",
+    "adminXmltvKidsCategories": "Дзіцячыя катэгорыі",
+    "adminXmltvNewsCategories": "Катэгорыі навін",
+    "adminXmltvSportsCategories": "Спартыўныя катэгорыі",
+    "adminSdUsername": "Імя карыстальніка",
+    "adminSdPassword": "Пароль",
+    "adminSdCountry": "Краіна",
+    "adminSdCountrySelect": "Выберыце краіну",
+    "adminSdPostalCode": "Паштовы індэкс",
+    "adminSdGetListings": "Атрымаць праграму",
+    "adminSdListings": "Праграма перадач",
+    "adminEnableAllTuners": "Уключыць усе цюнеры",
+    "adminTunerResetNotSupported": "Гэты тып цюнера не падтрымлівае скід.",
+    "adminMovieRecordingPath": "Шлях для запісу фільмаў",
+    "adminGuideDays": "Дзён даных праграмы",
+    "adminGuideDaysAuto": "Аўтаматычна",
+    "adminGuideDaysValue": "{days} дзён",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "Шлях да праграмы постапрацоўкі",
+    "adminRecordingPostProcessorArgs": "Аргументы постапрацоўшчыка",
+    "adminSaveRecordingNfo": "Захоўваць метаданыя NFO для запісаў",
+    "adminSaveRecordingImages": "Захоўваць відарысы запісаў",
+    "adminLiveTvSectionTiming": "Час",
+    "adminLiveTvSectionPaths": "Шляхі запісу",
+    "adminLiveTvSectionPostProcessing": "Постапрацоўка",
+    "adminGuideDaysDisplay": "Даныя праграмы: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "Абнавіць даныя праграмы",
+    "adminGuideRefreshStarted": "Абнаўленне даных праграмы пачалося",
+    "adminGuideRefreshUnavailable": "Задача абнаўлення праграмы недаступная на гэтым серверы.",
+    "adminMetadataIdentify": "Апазнаць",
+    "adminBrandingSplashUpload": "Загрузіць відарыс",
+    "adminBrandingSplashUploaded": "Застаўка абноўлена",
+    "adminBrandingSplashUploadFailed": "Не ўдалося загрузіць застаўку",
+    "adminBrandingSplashDeleted": "Застаўка выдалена",
+    "adminBrandingNoSplash": "Няма ўласнай застаўкі",
+    "adminPlaybackQsvDevice": "Прылада QSV",
+    "adminPlaybackEnhancedNvdec": "Уключыць пашыраны дэкодэр NVDEC",
+    "adminPlaybackPreferNativeDecoder": "Аддаваць перавагу сістэмнаму апаратнаму дэкодэру",
+    "adminPlaybackColorDepth": "Глыбіня колеру апаратнага дэкадавання",
+    "adminPlaybackColorDepth10Hevc": "10-бітнае дэкадаванне HEVC",
+    "adminPlaybackColorDepth10Vp9": "10-бітнае дэкадаванне VP9",
+    "adminPlaybackColorDepth10HevcRext": "8/10-бітнае дэкадаванне HEVC RExt",
+    "adminPlaybackColorDepth12HevcRext": "12-бітнае дэкадаванне HEVC RExt",
+    "adminPlaybackHwEncodingSection": "Апаратнае кадаванне",
+    "adminPlaybackAllowHevcEncoding": "Дазволіць кадаванне HEVC",
+    "adminPlaybackAllowAv1Encoding": "Дазволіць кадаванне AV1",
+    "adminPlaybackIntelLowPowerH264": "Уключыць нізкаспажывальны кадавальнік Intel H.264",
+    "adminPlaybackIntelLowPowerHevc": "Уключыць нізкаспажывальны кадавальнік Intel HEVC",
+    "adminPlaybackToneMapping": "Танальнае адлюстраванне",
+    "adminPlaybackEnableTonemapping": "Уключыць танальнае адлюстраванне",
+    "adminPlaybackEnableVppTonemapping": "Уключыць танальнае адлюстраванне VPP",
+    "adminPlaybackEnableVtTonemapping": "Уключыць танальнае адлюстраванне VideoToolbox",
+    "adminPlaybackTonemappingAlgorithm": "Алгарытм танальнага адлюстравання",
+    "adminPlaybackTonemappingMode": "Рэжым танальнага адлюстравання",
+    "adminPlaybackTonemappingRange": "Дыяпазон танальнага адлюстравання",
+    "adminPlaybackTonemappingDesat": "Дэсатурацыя танальнага адлюстравання",
+    "adminPlaybackTonemappingPeak": "Пік танальнага адлюстравання",
+    "adminPlaybackTonemappingParam": "Параметр танальнага адлюстравання",
+    "adminPlaybackVppTonemappingBrightness": "Яркасць танальнага адлюстравання VPP",
+    "adminPlaybackVppTonemappingContrast": "Кантраст танальнага адлюстравання VPP",
+    "adminPlaybackPresetsQuality": "Прэсеты і якасць",
+    "adminPlaybackEncoderPreset": "Прэсет кадавальніка",
+    "adminPlaybackH264Crf": "CRF кадавання H.264",
+    "adminPlaybackH265Crf": "CRF кадавання H.265 (HEVC)",
+    "adminPlaybackDeinterlaceMethod": "Метад дэінтэрлейсінгу",
+    "adminPlaybackDeinterlaceDoubleRate": "Падвойваць частату кадраў пры дэінтэрлейсінгу",
+    "adminPlaybackAudioSection": "Аўдыё",
+    "adminPlaybackEnableAudioVbr": "Уключыць кадаванне аўдыё VBR",
+    "adminPlaybackDownmixBoost": "Узмацненне пры звядзенні аўдыё",
+    "adminPlaybackDownmixAlgorithm": "Алгарытм звядзення ў стэрэа",
+    "adminPlaybackMaxMuxingQueue": "Максімальны памер чаргі мультыплексавання",
+    "adminPlaybackAutoOption": "Аўта",
+    "adminRunningTasks": "Задачы, што выконваюцца",
+    "adminNetworkingPublicHttpPort": "Публічны порт HTTP",
+    "adminNetworkingRequireHttps": "Патрабаваць HTTPS",
+    "adminNetworkingRequireHttpsHint": "Перанакіроўваць усе аддаленыя запыты на HTTPS. Не дзейнічае, калі ў сервера няма сапраўднага сертыфіката.",
+    "adminNetworkingCertPassword": "Пароль сертыфіката",
+    "adminNetworkingIpSettings": "Налады IP",
+    "adminNetworkingEnableIpv4": "Уключыць IPv4",
+    "adminNetworkingEnableIpv6": "Уключыць IPv6",
+    "adminNetworkingAutoDiscovery": "Уключыць аўтаматычнае супастаўленне портаў",
+    "adminNetworkingLocalSubnets": "Сеткі LAN",
+    "adminNetworkingLocalSubnetsHint": "Спіс IP-адрасоў або падсетак CIDR праз коску ці з новага радка, якія лічацца лакальнай сеткай.",
+    "adminNetworkingPublishedUris": "Апублікаваныя URI сервера",
+    "adminNetworkingPublishedUriHint": "Супаставіце падсетку або адрас з апублікаваным URL, напр. all=https://example.com",
+    "adminPlaybackThrottleDelay": "Затрымка абмежавання патоку (секунды)",
+    "adminPlaybackEnableSubtitleExtraction": "Дазволіць здабыванне субтытраў на ляту",
+    "adminGeneralEnableSlowResponse": "Уключыць папярэджанні пра павольны адказ",
+    "adminGeneralQuickConnect": "Уключыць Quick Connect",
+    "adminGeneralSectionServer": "Сервер",
+    "adminGeneralSectionMetadata": "Метаданыя",
+    "adminGeneralSectionPaths": "Шляхі",
+    "adminGeneralSectionPerformance": "Прадукцыйнасць",
+    "adminGeneralDisplayLanguage": "Пажаданая мова адлюстравання",
+    "offlineBannerTitle": "Вы па-за сеткай",
+    "offlineBannerSubtitle": "Паказваем вашы спампоўкі",
+    "offlineBannerAction": "Спампоўкі",
+    "serverUnreachableBannerTitle": "Не ўдаецца звязацца з серверам",
+    "serverUnreachableBannerSubtitle": "Прайграванне са спамповак, пакуль ён не вернецца",
+    "contextMenuHideFromContinueWatching": "Схаваць з «Працягнуць прагляд»",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Схаваць з «Далей»",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Дадаць у калекцыю",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "ЗЛУЧЭННЕ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Дазволіць самападпісаныя сертыфікаты",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "Давяраць серверам з самападпісанымі сертыфікатамі TLS або сертыфікатамі прыватнага ЦС. Уключайце толькі для сервераў, якімі вы кіруеце. Гэта адключае праверку сертыфікатаў для ўсіх злучэнняў.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "Экран звестак",
+    "settingsDetailsScreenSubtitle": "Стыль, размыццё фону і паводзіны ўкладак",
+    "settingsShowSeerrButtonInNavigation": "Паказваць кнопку Seerr на панэлі навігацыі",
+    "settingsAlwaysExpandNavbarLabels": "Заўсёды паказваць тэкставыя подпісы на верхняй панэлі навігацыі",
+    "settingsMediaSegmentCountdown": "Адлік медыясегмента",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Панэль прагрэсу",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Таймер",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "Няма",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "Нядаўна выйшлі: {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "Уключыць тунэляванне",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Для дасведчаных. Накіроўвае аўдыё і відэа праз звязаны апаратны шлях. Стандартна выключана, бо на некаторых прыладах выклікае перапынкі гуку і відэа.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Паказваць звесткі пра медыя",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Паказваць звесткі пра выбраны элемент угары старонак бібліятэкі.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "Хаваць фонавыя відарысы пры праглядзе?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "Крама тэм",
+    "themeStoreSubtitle": "Праглядайце і захоўвайце тэмы супольнасці",
+    "themeStoreDescription": "Захавайце тэму, каб карыстацца ёй, як іншымі захаванымі тэмамі.",
+    "themeStoreEmpty": "Зараз няма даступных тэм.",
+    "themeStoreLoadFailed": "Не ўдалося загрузіць Краму тэм. Праверце злучэнне і паспрабуйце зноў.",
+    "themeStoreSave": "Захаваць",
+    "themeStoreSaveAndApply": "Захаваць і ўжыць",
+    "themeStoreSaved": "Захавана",
+    "themeStoreInvalidMessage": "Не ўдалося загрузіць гэтую тэму.",
+    "themeStoreSavedMessage": "Захавана «{themeName}».",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Адлюстраванне радкоў галоўнай",
+    "homeRowSections": "Раздзелы радкоў галоўнай",
+    "homeRowToggles": "Пераключальнікі радкоў галоўнай",
+    "homeRowTogglesSubtitle": "Уключыце або адключыце катэгорыі радкоў галоўнай на аснове бібліятэк",
+    "homeRowTogglesDescription": "Уключыце наступныя пераключальнікі, каб паказваць радкі ў раздзелах галоўнай.",
+    "displayPlaylistsRows": "Паказваць радкі плэйлістоў",
+    "displayPlaylistsRowsSubtitle": "Паказваць радкі плэйлістоў у раздзелах галоўнай.",
+    "playlistsRowSorting": "Сартаванне радкоў плэйлістоў",
+    "playlistsRowSortingDescription": "Сартуйце радкі плэйлістоў па даце дадання, даце выхаду, алфавіце і іншым.",
+    "displayAudioRows": "Паказваць радкі аўдыё",
+    "displayAudioRowsSubtitle": "Паказваць радкі аўдыё ў раздзелах галоўнай.",
+    "audioRowsSorting": "Сартаванне радкоў аўдыё",
+    "audioRowsSortingDescription": "Сартуйце радкі аўдыё па даце дадання, даце выхаду, алфавіце і іншым.",
+    "audioPlaylists": "Аўдыяплэйлісты",
+    "layout": "Кампаноўка",
+    "theme": "Тэма",
+    "keyboard": "Клавіятура",
+    "navButtons": "Кнопкі",
+    "rendering": "Рэндэрынг",
+    "mpvConfiguration": "Канфігурацыя MPV",
+    "externalPlayerAppDescription": "Задайце знешні плэер, каб уключыць прайграванне праз доўгае націсканне",
+    "crewContributionsSeerr": "Удзел здымачнай групы (Seerr)",
+    "changeArtwork": "Змяніць ілюстрацыю",
+    "missing": "Адсутнічае",
+    "clearAllArtworkButton": "Ачысціць усе ілюстрацыі?",
+    "clearAllArtworkWarning": "Вы сапраўды хочаце ачысціць усе спампаваныя ілюстрацыі?",
+    "confirmClear": "Пацвердзіць ачыстку",
+    "confirmClearMessage": "Вы сапраўды хочаце ачысціць элемент «{itemType}»?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Загрузіць?",
+    "resolutionLabel": "Раздзяляльнасць: ",
+    "onlyShowInterfaceLanguage": "Паказваць ілюстрацыі толькі на мове інтэрфейсу",
+    "confirmClearAll": "Пацвердзіць ачыстку ўсяго",
+    "imageUploadSuccess": "Відарыс паспяхова загружаны!",
+    "imageUploadFailed": "Не ўдалося загрузіць відарыс: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Не ўдалося задаць відарыс: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Не ўдалося выдаліць відарыс: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Не ўдалося ачысціць усе ілюстрацыі: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Так",
+    "posterCategory": "Плакат",
+    "backdropsCategory": "Фонавыя відарысы",
+    "bannerCategory": "Банер",
+    "logoCategory": "Лагатып",
+    "thumbnailCategory": "Эскіз",
+    "artCategory": "Ілюстрацыя",
+    "discArtCategory": "Ілюстрацыя дыска",
+    "screenshotCategory": "Здымак экрана",
+    "boxCoverCategory": "Вокладка",
+    "boxRearCoverCategory": "Задняя вокладка",
+    "menuArtCategory": "Ілюстрацыя меню",
+    "confirmItemPoster": "плакат",
+    "confirmItemBackdrop": "фонавы відарыс",
+    "confirmItemBanner": "банер",
+    "confirmItemLogo": "лагатып",
+    "confirmItemThumbnail": "эскіз",
+    "confirmItemArt": "ілюстрацыя",
+    "confirmItemDiscArt": "ілюстрацыя дыска",
+    "confirmItemScreenshot": "здымак экрана",
+    "confirmItemBoxCover": "вокладка",
+    "confirmItemBoxRearCover": "задняя вокладка",
+    "confirmItemMenuArt": "ілюстрацыя меню",
+    "resolutionAll": "Усе",
+    "resolutionHigh": "Высокая (1080p+)",
+    "resolutionMedium": "Сярэдняя (720p)",
+    "resolutionLow": "Нізкая (<720p)",
+    "sources": "Крыніцы",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "Раздзелы",
+    "audiobookBookmarks": "Закладкі",
+    "audiobookNotes": "Нататкі",
+    "audiobookQueue": "Чарга",
+    "audiobookTimeline": "Шкала часу",
+    "audiobookTimelineEmpty": "Шкала часу пустая",
+    "audiobookWholeBook": "Уся кніга",
+    "audiobookFocusedTimeline": "Сфакусаваная шкала",
+    "audiobookExportBookmarks": "Экспартаваць закладкі",
+    "audiobookExportNotes": "Экспартаваць нататкі",
+    "audiobookExportAll": "Экспартаваць усё",
+    "audiobookExportSuccess": "Экспартавана ў {path}",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "Не ўдалося экспартаваць: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "Тэкст",
+    "audiobookAddBookmark": "Дадаць закладку",
+    "audiobookAddNote": "Дадаць нататку",
+    "audiobookEditNote": "Змяніць нататку",
+    "audiobookNoteHint": "Напішыце нататку для гэтага моманту",
+    "audiobookSleepTimer": "Таймер сну",
+    "audiobookSleepOff": "Выкл.",
+    "audiobookSleepEndOfChapter": "Канец раздзела",
+    "audiobookSleepCustom": "Свой",
+    "audiobookSleepRemaining": "Засталося {remaining}",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{1 хв} other{{count} хв}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Хуткасць прайгравання",
+    "audiobookRemainingTime": "Засталося",
+    "audiobookElapsedTime": "Прайшло",
+    "audiobookSkipBackSeconds": "Назад {seconds} с",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "Наперад {seconds} с",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Папярэдні раздзел",
+    "audiobookNextChapter": "Наступны раздзел",
+    "audiobookChapterIndicator": "Раздзел {current} з {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Няма раздзелаў",
+    "audiobookNoBookmarks": "Пакуль няма закладак",
+    "audiobookNoNotes": "Пакуль няма нататак",
+    "audiobookBookmarkAdded": "Закладка дададзена на {position}",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "Скінуць да 1.0x",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Захаваць",
+    "audiobookCancel": "Адмяніць",
+    "audiobookDelete": "Выдаліць",
+    "subtitlePreferences": "Налады субтытраў",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "Змяніце рэжымы субтытраў, стандартныя мовы, выгляд і параметры адлюстравання.",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "Адлюстраванне субтытраў",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "Параметры адлюстравання",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "Дата выхаду (па ўзрастанні)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "Дата выхаду (па спаданні)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "Групаваць удзел",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "Групаваць некалькі роляў",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "Папярэджанне пра доступ на запіс у бібліятэку",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "Як гэта выправіць:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "1. Дайце дазвол на запіс службоваму карыстальніку Jellyfin (напр., jellyfin або Docker PUID/PGID) для папак вашай медыябібліятэкі на серверы.\n\n2. Або перайдзіце ў Панэль кіравання Jellyfin -> Бібліятэкі, адрэдагуйце гэтую бібліятэку і адключыце «Захоўваць ілюстрацыі ў медыяпапках», каб захоўваць ілюстрацыі ва ўнутранай базе даных Jellyfin.",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "Закрыць",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "Ваша бібліятэка «{libraryName}» настроена захоўваць ілюстрацыі непасрэдна ў медыяпапках (уключана «Захоўваць ілюстрацыі ў медыяпапках»). Аднак Jellyfin праверыў доступ на запіс і не мае дазволу запісваць файлы ў гэты каталог:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "Здаецца, Jellyfin не змог абнавіць ілюстрацыю. Ваша бібліятэка настроена захоўваць ілюстрацыі непасрэдна ў медыяпапках (уключана «Захоўваць ілюстрацыі ў медыяпапках»). Гэтая памылка звычайна ўзнікае, калі працэс сервера Jellyfin не мае дазволу запісваць файлы ў вашы медыякаталогі.",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "Знешнія спісы",
+    "replay": "Прайграць зноў",
+    "fileInformation": "Звесткі пра файл",
+    "fileSizeFormat": "Памер: {size}  •  Фармат: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "Паказаць усе аўдыядарожкі ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "Паказаць усе дарожкі субтытраў ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Праверка магчымасці прамога прайгравання...",
+    "directPlayCapabilityLabel": "Магчымасць прамога прайгравання: ",
+    "forced": "Прымусовыя",
+    "transcodeContainerNotSupported": "Фармат кантэйнера не падтрымліваецца плэерам.",
+    "transcodeVideoCodecNotSupported": "Відэакодэк не падтрымліваецца.",
+    "transcodeAudioCodecNotSupported": "Аўдыякодэк не падтрымліваецца.",
+    "transcodeSubtitleCodecNotSupported": "Фармат субтытраў не падтрымліваецца (патрабуе ўпальвання).",
+    "transcodeAudioProfileNotSupported": "Аўдыяпрофіль не падтрымліваецца.",
+    "transcodeVideoProfileNotSupported": "Відэапрофіль не падтрымліваецца.",
+    "transcodeVideoLevelNotSupported": "Узровень відэа не падтрымліваецца.",
+    "transcodeVideoResolutionNotSupported": "Раздзяляльнасць відэа не падтрымліваецца гэтай прыладай.",
+    "transcodeVideoBitDepthNotSupported": "Глыбіня колеру відэа не падтрымліваецца.",
+    "transcodeVideoFramerateNotSupported": "Частата кадраў відэа не падтрымліваецца.",
+    "transcodeContainerBitrateExceedsLimit": "Бітрэйт файла перавышае ліміт патоку плэера.",
+    "transcodeVideoBitrateExceedsLimit": "Бітрэйт відэа перавышае ліміт патоку.",
+    "transcodeAudioBitrateExceedsLimit": "Бітрэйт аўдыё перавышае ліміт патоку.",
+    "transcodeAudioChannelsNotSupported": "Колькасць аўдыяканалаў не падтрымліваецца.",
+    "sortAlphabetical": "Па алфавіце",
+    "sortReleaseAscending": "Парадак выхаду (па ўзрастанні)",
+    "sortReleaseDescending": "Парадак выхаду (па спаданні)",
+    "sortCustomDragDrop": "Уласны (перацягванне)",
+    "playlistSortOptions": "Параметры сартавання плэйліста",
+    "resetSort": "Скінуць сартаванне",
+    "rewatchSeasonEpisode": "Перагледзець С{season}:Э{episode}",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Перагледзець плэйліст",
+    "noSubtitlesFound": "Субтытры не знойдзены.",
+    "adminControls": "Кіраванне адміністратара",
+    "impellerRendering": "Рухавік рэндэрынгу (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller — сучасны GPU-рэндэрар Flutter для плаўнейшых анімацый і меншых падтармажванняў. На некаторых ТБ-прыстаўках і старых GPU ён можа выклікаць артэфакты або чорнае відэа; выключыце яго, калі бачыце такое. «Аўтаматычна» выбірае найлепшы варыянт для вашай прылады. Перазапусціце Moonfin, каб ужыць.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "Аўтаматычна",
+    "impellerOn": "Укл.",
+    "impellerOff": "Выкл.",
+    "impellerRestartTitle": "Патрэбны перазапуск",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "Каб змяніць рухавік рэндэрынгу, Moonfin трэба перазапусціць. Закрыйце праграму, а потым адкрыйце яе зноў, каб ужыць змены.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "Закрыць праграму зараз",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "Абнавіць бібліятэку",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "Абнавіць усе бібліятэкі",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Дата дадання (спачатку старыя)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "Дата дадання (спачатку новыя)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Па алфавіце (ад А да Я)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "Па алфавіце (ад Я да А)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Загрузка аналітыкі сервера... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "Як у крыніцы",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb Топ-250 фільмаў",
+    "imdbTop250TvShows": "IMDb Топ-250 серыялаў",
+    "imdbMostPopularMovies": "Самыя папулярныя фільмы IMDb",
+    "imdbMostPopularTvShows": "Самыя папулярныя серыялы IMDb",
+    "imdbLowestRatedMovies": "Фільмы з найніжэйшым рэйтынгам IMDb",
+    "imdbTopEnglishMovies": "Найлепшыя англамоўныя фільмы IMDb"
 }

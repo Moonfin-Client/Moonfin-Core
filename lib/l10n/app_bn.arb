@@ -1,6 +1,6 @@
 {
     "@@locale": "bn",
-    "appTitle": "মুনফিন",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "দ্রুত সংযোগ",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "ব্যাক",
+    "back": "ফিরে যান",
     "@back": {
         "description": "Back button label"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "মুনফিন",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "বাড়ি",
+    "home": "হোম",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "আবেদন করুন",
+    "apply": "প্রয়োগ করুন",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "দেখেছে",
+    "watched": "দেখা হয়েছে",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "অদেখা",
+    "unwatched": "দেখা হয়নি",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{১টি অডিওবুক} other{{count}টি অডিওবুক}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "ঋতু",
+    "seasons": "সিজন",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{১টি সিজন} other{{count}টি সিজন}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "খেলা",
+    "play": "প্লে করুন",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "কাস্ট",
+    "cast": "কাস্ট করুন",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "trackCount": "{count, plural, =1{১টি ট্র্যাক} other{{count}টি ট্র্যাক}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "chapterCount": "{count, plural, =1{১টি অধ্যায়} other{{count}টি অধ্যায়}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "এলোমেলো",
+    "shuffle": "শাফেল",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1526,7 +1526,7 @@
             }
         }
     },
-    "mono": "মনো",
+    "mono": "মোনো",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "বিরতি",
+    "pause": "পজ করুন",
     "@pause": {
         "description": "Pause action label"
     },
@@ -2187,11 +2187,11 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "ঘড়ি",
+    "watch": "দেখুন",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "বন্ধ",
+    "close": "বন্ধ করুন",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2388,7 +2388,7 @@
             }
         }
     },
-    "season": "ঋতু",
+    "season": "সিজন",
     "@season": {
         "description": "Fallback name for a season"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "episodeCount": "{count, plural, =1{১টি পর্ব} other{{count}টি পর্ব}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "অক্ষম",
+    "disabled": "নিষ্ক্রিয়",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value}সে",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "মুনফিন",
+    "mediaBarModeMoonfin": "Moonfin",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3729,10 +3729,6 @@
     "@lastUser": {
         "description": "Option: last user"
     },
-    "specificUser": "নির্দিষ্ট ব্যবহারকারী",
-    "@specificUser": {
-        "description": "Option: specific user"
-    },
     "alwaysAuthenticate": "সর্বদা প্রমাণীকরণ",
     "@alwaysAuthenticate": {
         "description": "Setting for always authenticate"
@@ -3875,11 +3871,11 @@
     "@rottenTomatoesAudience": {
         "description": "Rating source: Rotten Tomatoes Audience"
     },
-    "imdb": "আইএমডিবি",
+    "imdb": "IMDb",
     "@imdb": {
         "description": "Rating source: IMDb"
     },
-    "tmdb": "টিএমডিবি",
+    "tmdb": "TMDB",
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
@@ -3891,7 +3887,7 @@
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "ট্র্যাক্ট",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
@@ -3955,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "প্লাগইন",
+    "pluginLabel": "Moonbase প্লাগইন",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4084,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "সারি আবিষ্কার করুন",
+    "discoverRows": "Seerr ডিসকভারি পেজ",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "পুনরায় সাজাতে টেনে আনুন। সারিগুলি সক্ষম বা অক্ষম করুন৷ সক্ষম সারি অর্ডার Moonfin প্লাগইনের সাথে সিঙ্ক করে।",
+    "discoverRowsDescriptionPlugin": "Seerr-এর মূল পেজে যে সারিগুলো দেখতে চান সেগুলো চালু করুন। ক্রম বদলাতে টেনে নিন। কাস্টম ক্রম Moonbase-এর সাথে সিঙ্ক হয়।",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "পুনরায় সাজাতে টেনে আনুন। সারিগুলি সক্ষম বা অক্ষম করুন৷",
+    "discoverRowsDescription": "Seerr-এর মূল পেজে যে সারিগুলো দেখতে চান সেগুলো চালু করুন। ক্রম বদলাতে টেনে নিন। কাস্টম ক্রম Moonbase-এর সাথে সিঙ্ক হয়।",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4252,7 +4248,7 @@
             }
         }
     },
-    "clear": "পরিষ্কার",
+    "clear": "সাফ করুন",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4511,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "ঋতু",
+    "seasonsLabel": "সিজন",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4548,28 +4544,28 @@
     "profile": "প্রোফাইল",
     "provider": "প্রদানকারী",
     "refresh": "রিফ্রেশ",
-    "remote": "দূরবর্তী",
+    "remote": "রিমোট",
     "rename": "নাম পরিবর্তন করুন",
     "revoke": "প্রত্যাহার করুন",
     "role": "ভূমিকা",
     "root": "রুট",
     "run": "চালান",
-    "search": "অনুসন্ধান করুন",
+    "search": "অনুসন্ধান",
     "select": "নির্বাচন করুন",
     "send": "পাঠান",
     "sessions": "সেশন",
     "set": "সেট",
     "status": "স্ট্যাটাস",
-    "stop": "থামো",
+    "stop": "থামান",
     "streaming": "স্ট্রিমিং",
     "time": "সময়",
-    "trickplay": "ট্রিকপ্লে",
+    "trickplay": "Trickplay",
     "uninstall": "আনইনস্টল করুন",
     "up": "উপরে",
     "update": "আপডেট",
     "upload": "আপলোড করুন",
     "unmute": "আনমিউট করুন",
-    "mute": "নিঃশব্দ",
+    "mute": "মিউট",
     "branding": "ব্র্যান্ডিং",
     "adminDrawerDashboard": "ড্যাশবোর্ড",
     "adminDrawerAnalytics": "বিশ্লেষণ",
@@ -4578,9 +4574,9 @@
     "adminDrawerUsers": "ব্যবহারকারীদের",
     "adminDrawerLibraries": "লাইব্রেরি",
     "adminDrawerTranscoding": "ট্রান্সকোডিং",
-    "adminDrawerResume": "পুনরায় শুরু করুন",
+    "adminDrawerResume": "পুনরায় শুরু",
     "adminDrawerStreaming": "স্ট্রিমিং",
-    "adminDrawerTrickplay": "ট্রিকপ্লে",
+    "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "ডিভাইস",
     "adminDrawerActivity": "কার্যকলাপ",
     "adminDrawerNetworking": "নেটওয়ার্কিং",
@@ -4680,11 +4676,11 @@
     "sessionVolumeUp": "ভলিউম +",
     "uhd4k": "4K",
     "nowPlaying": "এখন চলছে",
-    "volume": "আয়তন",
+    "volume": "ভলিউম",
     "actions": "কর্ম",
     "videoCodec": "ভিডিও কোডেক",
     "audioCodec": "অডিও কোডেক",
-    "hwAccel": "HW Accel",
+    "hwAccel": "হার্ডওয়্যার অ্যাক্সেল",
     "completion": "সমাপ্তি",
     "direct": "সরাসরি",
     "adminDisconnect": "সংযোগ বিচ্ছিন্ন করুন",
@@ -5370,8 +5366,8 @@
     "adminAllowSegmentDeletion": "সেগমেন্ট মুছে ফেলার অনুমতি দিন",
     "adminSegmentKeepSeconds": "সেগমেন্ট রাখা (সেকেন্ড)",
     "adminThrottleBuffering": "থ্রটল বাফারিং",
-    "adminTrickplaySaved": "ট্রিকপ্লে সেটিংস সংরক্ষিত",
-    "adminTrickplayLoadFailed": "ট্রিকপ্লে সেটিংস লোড করতে ব্যর্থ হয়েছে৷",
+    "adminTrickplaySaved": "Trickplay সেটিংস সংরক্ষণ করা হয়েছে",
+    "adminTrickplayLoadFailed": "Trickplay সেটিংস লোড করা যায়নি",
     "adminEnableHardwareAcceleration": "হার্ডওয়্যার ত্বরণ সক্ষম করুন",
     "adminEnableKeyFrameExtraction": "কী ফ্রেম শুধুমাত্র নিষ্কাশন সক্ষম করুন",
     "adminKeyFrameSubtitle": "দ্রুত কিন্তু কম নির্ভুলতা",
@@ -5405,7 +5401,7 @@
     "adminHttpsPort": "HTTPS পোর্ট",
     "adminPublicHttpsPort": "পাবলিক HTTPS পোর্ট",
     "adminBaseUrl": "বেস URL",
-    "adminBaseUrlHint": "যেমন /জেলিফিন",
+    "adminBaseUrlHint": "যেমন /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPS সক্ষম করুন",
     "adminLocalNetwork": "স্থানীয় নেটওয়ার্ক",
@@ -5447,7 +5443,6 @@
             }
         }
     },
-    "adminSearchRemotePerson": "দূরবর্তী ব্যক্তি অনুসন্ধান করুন",
     "adminNoRemoteMatches": "কোনো দূরবর্তী মিল খুঁজে পাওয়া যায়নি",
     "adminRemoteResults": "দূরবর্তী ফলাফল",
     "adminRemoteMetadataApplied": "দূরবর্তী মেটাডেটা প্রয়োগ করা হয়েছে",
@@ -5543,9 +5538,6 @@
     },
     "adminAddTuner": "টিউনার যোগ করুন",
     "adminTunerType": "টিউনার প্রকার",
-    "adminTunerTypeHint": "HDHomeRun, M3U, অন্যান্য",
-    "adminUrlPath": "URL/পথ",
-    "adminNameOptional": "নাম (ঐচ্ছিক)",
     "adminTunerAdded": "টিউনার যোগ করা হয়েছে",
     "adminTunerAddFailed": "টিউনার যোগ করতে ব্যর্থ হয়েছে: {error}",
     "@adminTunerAddFailed": {
@@ -5557,9 +5549,6 @@
     },
     "adminAddGuideProvider": "গাইড প্রদানকারী যোগ করুন",
     "adminProviderType": "প্রদানকারীর ধরন",
-    "adminProviderTypeHint": "শিডিউল ডাইরেক্ট বা এক্সএমএলটিভি",
-    "adminUsernameOptional": "ব্যবহারকারীর নাম (ঐচ্ছিক)",
-    "adminRefreshInterval": "রিফ্রেশ ব্যবধান (ঘন্টা)",
     "adminProviderAdded": "প্রদানকারী যোগ করা হয়েছে",
     "adminProviderAddFailed": "প্রদানকারী যোগ করতে ব্যর্থ হয়েছে: {error}",
     "@adminProviderAddFailed": {
@@ -5680,7 +5669,7 @@
     "adminUnnamedBackup": "নামহীন ব্যাকআপ",
     "adminLiveTvNotAvailable": "এই সার্ভার বিল্ডে লাইভ টিভি প্রশাসন উপলব্ধ নয়।",
     "adminLiveTvTitle": "লাইভ টিভি প্রশাসন",
-    "adminApply": "আবেদন করুন",
+    "adminApply": "প্রয়োগ করুন",
     "adminNotSet": "সেট করা হয়নি",
     "adminReset": "রিসেট করুন",
     "adminLogsTitle": "সার্ভার লগ",
@@ -5729,7 +5718,6 @@
     },
     "adminLogViewerNoMatches": "কোন মিল লাইন",
     "adminMetadataEditorTitle": "মেটাডেটা সম্পাদক",
-    "adminMetadataRemote": "দূরবর্তী",
     "adminMetadataType": "টাইপ",
     "adminMetadataDetails": "বিস্তারিত",
     "adminMetadataExternalIds": "বাহ্যিক আইডি",
@@ -5996,7 +5984,7 @@
     "adminTaskCancelling": "বাতিল হচ্ছে...",
     "adminTaskRunning": "চলছে...",
     "adminTaskNeverRun": "কখনো দৌড়াবেন না",
-    "adminTaskStop": "থামো",
+    "adminTaskStop": "থামান",
     "adminTaskRun": "চালান",
     "adminTaskDetailLastExecution": "শেষ মৃত্যুদন্ড",
     "adminTaskDetailStarted": "শুরু হয়েছে",
@@ -6040,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "প্রতি 12 ঘন্টা",
     "adminTaskTriggerEvery24Hours": "প্রতি 24 ঘন্টা",
     "adminTaskTriggerEvery2Days": "প্রতি 2 দিন পর পর",
-    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
+    "adminTaskTriggerHours": "{count, plural, one{১ ঘণ্টা} other{{count} ঘণ্টা}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6080,7 +6068,7 @@
         }
     },
     "adminActivityNow": "এখন",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes}মি",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6088,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours}ঘ",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6096,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days}দি",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6115,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "প্রিভিউ থাম্বনেল খোঁজার জন্য ট্রিকপ্লে ইমেজ জেনারেশন কনফিগার করুন।",
+    "adminTrickplayDescription": "সিক প্রিভিউ থাম্বনেইলের জন্য Trickplay ছবি তৈরি কনফিগার করুন।",
     "adminNetworkingPublicHttpsPort": "পাবলিক HTTPS পোর্ট",
     "adminNetworkingBaseUrl": "বেস URL",
-    "adminNetworkingBaseUrlHint": "যেমন /জেলিফিন",
+    "adminNetworkingBaseUrlHint": "যেমন /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "শংসাপত্রের পথ",
     "adminNetworkingRemoteIpFilter": "রিমোট আইপি ফিল্টার",
@@ -6182,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay একটি Jellyfin সার্ভার প্রয়োজন৷ বর্তমান সার্ভার এটি সমর্থন করে না।",
     "syncPlayGroupFallbackName": "SyncPlay গ্রুপ",
     "syncPlayGroupTooltip": "SyncPlay গ্রুপ",
-    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
+    "syncPlayParticipantCount": "{count, plural, one {# জন অংশগ্রহণকারী} other {# জন অংশগ্রহণকারী}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6263,7 +6251,7 @@
     "rememberMyChoice": "আমার পছন্দ মনে রাখবেন",
     "playHdr10Fallback": "HDR10 ফলব্যাক চালান",
     "requestTranscode": "ট্রান্সকোড অনুরোধ করুন",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# টি সারি পাওয়া গেছে} other {# টি সারি পাওয়া গেছে}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6338,16 +6326,16 @@
     "pinIncorrect": "ভুল পিন",
     "pinMismatch": "পিন মেলে না",
     "pinForgot": "পিন ভুলে গেছেন?",
-    "pinClear": "পরিষ্কার",
+    "pinClear": "সাফ করুন",
     "pinBackspace": "ব্যাকস্পেস",
-    "quickConnectAuthorized": "দ্রুত সংযোগের অনুরোধ অনুমোদিত।",
-    "quickConnectInvalidOrExpired": "দ্রুত সংযোগ কোড অবৈধ বা মেয়াদ উত্তীর্ণ.",
-    "quickConnectNotSupported": "এই সার্ভারে দ্রুত সংযোগ সমর্থিত নয়৷",
-    "quickConnectAuthorizeFailed": "দ্রুত সংযোগ কোড অনুমোদন করতে ব্যর্থ হয়েছে.",
-    "quickConnectDisabled": "এই সার্ভারে দ্রুত সংযোগ নিষ্ক্রিয় করা হয়েছে৷",
-    "quickConnectForbidden": "আপনার অ্যাকাউন্ট এই দ্রুত সংযোগের অনুরোধ অনুমোদন করতে পারে না৷",
-    "quickConnectNotFound": "দ্রুত সংযোগ কোড পাওয়া যায়নি. একটি নতুন কোড চেষ্টা করুন.",
-    "quickConnectFailedWithMessage": "দ্রুত সংযোগ ব্যর্থ হয়েছে: {message}",
+    "quickConnectAuthorized": "Quick Connect অনুরোধ অনুমোদিত হয়েছে।",
+    "quickConnectInvalidOrExpired": "Quick Connect কোডটি ভুল বা মেয়াদোত্তীর্ণ।",
+    "quickConnectNotSupported": "এই সার্ভারে Quick Connect সমর্থিত নয়।",
+    "quickConnectAuthorizeFailed": "Quick Connect কোড অনুমোদন করা যায়নি।",
+    "quickConnectDisabled": "এই সার্ভারে Quick Connect বন্ধ আছে।",
+    "quickConnectForbidden": "আপনার অ্যাকাউন্ট এই Quick Connect অনুরোধ অনুমোদন করতে পারবে না।",
+    "quickConnectNotFound": "Quick Connect কোড পাওয়া যায়নি। নতুন একটি কোড দিয়ে চেষ্টা করুন।",
+    "quickConnectFailedWithMessage": "Quick Connect ব্যর্থ হয়েছে: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6427,7 +6415,7 @@
     "upNext": "আপ নেক্সট",
     "playNext": "পরবর্তী খেলুন",
     "stillWatchingContent": "প্লেব্যাক বিরাম দেওয়া হয়েছে. আপনি কি এখনও দেখছেন?",
-    "stillWatchingStop": "থামো",
+    "stillWatchingStop": "থামান",
     "stillWatchingContinue": "চালিয়ে যান",
     "skipSegment": "এড়িয়ে যান {segment}",
     "@skipSegment": {
@@ -6491,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "আগের",
+    "playerTooltipPrevious": "পূর্ববর্তী",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -6579,7 +6567,7 @@
     "settingsCheckForUpdates": "আপডেটের জন্য চেক করুন",
     "settingsCheckForUpdatesSubtitle": "সর্বশেষ Moonfin রিলিজের জন্য চেক করুন",
     "settingsPoweredByFlutter": "ফ্লটার দ্বারা চালিত",
-    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# লাইসেন্স নোটিশ} other {# লাইসেন্স নোটিশ}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6775,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "রেকর্ড",
+    "record": "রেকর্ড করুন",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6806,18 +6794,6 @@
     "settingsAudioFallbackCodec": "অডিও ফলব্যাক কোডেক",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
-    },
-    "settingsAudioFallbackAacStereo": "এএসি স্টেরিও",
-    "@settingsAudioFallbackAacStereo": {
-        "description": "Fallback codec option for AAC stereo"
-    },
-    "settingsAudioFallbackAc35_1": "AC3 5.1",
-    "@settingsAudioFallbackAc35_1": {
-        "description": "Fallback codec option for AC3 5.1"
-    },
-    "settingsAudioFallbackEac35_1": "EAC3 5.1",
-    "@settingsAudioFallbackEac35_1": {
-        "description": "Fallback codec option for EAC3 5.1"
     },
     "settingsAudioPassthroughAdvanced": "পাসথ্রু (উন্নত)",
     "@settingsAudioPassthroughAdvanced": {
@@ -6859,7 +6835,7 @@
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "বিটস্ট্রিম ডলবি অ্যাটমোস ওভার EAC3 (JOC) থেকে এক্সটার্নাল ডিকোডার।",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "EAC3 (JOC)-এর মাধ্যমে বাহ্যিক ডিকোডারে Dolby Atmos বিটস্ট্রিম পাঠান।",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
@@ -7191,7 +7167,7 @@
     "recentlyReleasedEpisodes": "সম্প্রতি প্রকাশিত পর্বগুলি",
     "watchAgain": "আবার দেখুন",
     "guestAppearances": "অতিথি উপস্থিতি",
-    "appearancesSeerr": "উপস্থিতি (দ্রষ্টা)",
+    "appearancesSeerr": "উপস্থিতি (Seerr)",
     "watchWithGroup": "গ্রুপের সাথে দেখুন",
     "errors": "ত্রুটি",
     "warnings": "সতর্কতা",
@@ -7216,7 +7192,7 @@
     "analyticsTopArtists": "শীর্ষ শিল্পী",
     "analyticsTopAuthors": "শীর্ষ লেখক",
     "analyticsTopContributors": "শীর্ষ অবদানকারী",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+    "analyticsLibrariesCount": "{count, plural, =1{১টি লাইব্রেরি} other{{count}টি লাইব্রেরি}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7258,7 +7234,7 @@
     "mixedContent": "মিশ্র বিষয়বস্তু",
     "homeVideosAndPhotos": "হোম ভিডিও এবং ফটো",
     "mixedMoviesAndShows": "মিশ্র চলচ্চিত্র ও শো",
-    "intelQuickSync": "ইন্টেল কুইক সিঙ্ক",
+    "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "রকচিপ এমপিপি",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "কোন রেকর্ডিং পাওয়া যায়নি",
@@ -7326,12 +7302,1709 @@
     "cb7ExtractionPluginUnavailable": "এই প্ল্যাটফর্মে CB7 নিষ্কাশন প্লাগইন উপলব্ধ নয়।",
     "closeGenrePanel": "জেনার প্যানেল বন্ধ করুন",
     "loadingShuffle": "শাফেল লোড হচ্ছে...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "লাইব্রেরি শাফল",
+    "randomShuffleLabel": "এলোমেলো শাফল",
+    "genresShuffleLabel": "জনরা শাফল",
     "autoHdrSwitching": "অটো এইচডিআর সুইচিং",
     "autoHdrSwitchingDescription": "HDR ভিডিও প্লেব্যাকের জন্য স্বয়ংক্রিয়ভাবে HDR সক্ষম করুন এবং প্রস্থান করার সময় প্রদর্শন মোড পুনরুদ্ধার করুন।",
     "whenFullscreen": "যখন ফুলস্ক্রিন",
     "transcodingLimits": "ট্রান্সকোডিং সীমা",
-    "settingsSupportMoonfinSubtitle": "বিকাশকারীকে একটি কফি দান করুন"
+    "settingsSupportMoonfinSubtitle": "বিকাশকারীকে একটি কফি দান করুন",
+    "accountPreferences": "অ্যাকাউন্ট পছন্দসমূহ",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "ইন্টারফেসের ভাষা",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "সিস্টেম ডিফল্ট",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "খালি",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "detailScreenStyle": "বিস্তারিত স্ক্রিনের স্টাইল",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "ক্লাসিক হলো Moonfin-এর মূল কেন্দ্রীভূত লেআউট। মডার্ন হলো একটি রেসপনসিভ সিনেম্যাটিক লেআউট।",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "ক্লাসিক",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "মডার্ন",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "বিস্তৃত ট্যাব",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "ট্যাব ব্রাউজ করার সময় স্বয়ংক্রিয়ভাবে ট্যাবের বিষয়বস্তু দেখান। প্রতিটি ট্যাব নিজে খুলতে ও বন্ধ করতে চাইলে বন্ধ রাখুন।",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "showTechnicalDetails": "টেকনিক্যাল বিবরণ দেখাবেন?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "ব্যানার সারাংশে কোডেক, রেজোলিউশন এবং স্ট্রিমের তথ্য দেখান",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "সুপারিশ সিস্টেম",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemSubtitle": "Moonfin Recommends-এর লোকাল-লাইব্রেরি অ্যালগরিদম অথবা অনলাইন TMDb-এর সাদৃশ্য মেট্রিক ব্যবহার করুন। দ্রষ্টব্য: অনলাইন সুপারিশের জন্য Seerr ইন্টিগ্রেশন প্রয়োজন।",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemTmdb": "TMDb সাদৃশ্য",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "প্যারেন্টাল রেটিং সীমা প্রয়োগ করবেন?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "লক্ষ্য মিডিয়ার প্যারেন্টাল রেটিং অনুযায়ী Moonfin Recommends-এর সাজেশন সীমিত করুন",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "ইন্টারফেস স্টাইল",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleSubtitle": "স্বয়ংক্রিয় আপনার ডিভাইসের সাথে মিলিয়ে নেয়। নির্দিষ্ট চেহারা বেছে নিতে Apple বা Material নির্বাচন করুন।",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleAutomatic": "স্বয়ংক্রিয়",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "interfaceStyleApple": "Apple",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "interfaceStyleMaterial": "Material",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "glassQuality": "Glass কোয়ালিটি",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "glassQualitySubtitle": "অটো এই ডিভাইসের জন্য সেরা glass ইফেক্ট বেছে নেয়। ফুল আসল ব্লার ব্যবহার করে; রিডিউসড হালকা glass ব্যবহার করে যা GPU শক্তি বাঁচায়।",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "glassQualityAuto": "অটো",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "ফুল",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "রিডিউসড",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeTitle": "কাস্টম থিম",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "customThemeSubtitle": "কাস্টম থিম Moonfin জুড়ে ভিজ্যুয়াল উপাদান বদলে দেয়। আপনার পছন্দ অনুযায়ী একটি বেছে নিন।",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "ভাসমান গ্রেডিয়েন্ট ব্যাকড্রপ, ফ্রস্টেড সারফেস এবং Apple-নীল অ্যাকসেন্ট সহ liquid-glass স্টাইলিং",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "theme8BitHero": "৮-বিট হিরো",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "theme8BitHeroSubtitle": "মোটা প্যালেট, ব্লকি বর্ডার, কড়া ড্রপ-শ্যাডো এবং পিক্সেল ফন্ট সহ রেট্রো পিক্সেল-আর্ট স্টাইলিং",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameMenu": "মেনু",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "gamePaused": "পজ করা হয়েছে",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameSaveState": "স্টেট সংরক্ষণ করুন",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "games": "গেম",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "gameLoadState": "স্টেট লোড করুন",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "ফাস্ট-ফরওয়ার্ড",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "এমুলেটর সেটিংস",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "gameNoCoreOptions": "এই কোরে পরিবর্তনযোগ্য কোনো অপশন নেই।",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "মেনু খুলতে চেপে ধরে রাখুন",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "এই ডিভাইসে এখনও গেম খেলা সমর্থিত নয়।",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "latestBooks": "সর্বশেষ বই",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "সর্বশেষ অডিওবুক",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{১টি বই} other{{count}টি বই}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "বই",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "অডিওবুক",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% পড়া হয়েছে",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} বাকি",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "পড়ুন",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "শুনুন",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "items": "আইটেম",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "extras": "এক্সট্রা",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "behindTheScenes": "নেপথ্যের দৃশ্য",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "deletedScenes": "বাদ দেওয়া দৃশ্য",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "ফিচারেট",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "interviews": "সাক্ষাৎকার",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "scenes": "দৃশ্য",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "শর্টস",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "{time} বাকি",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "{time}-এ শেষ হবে",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "পরিচালক",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "লেখক",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "shuffleAllMusic": "সব মিউজিক শাফল করুন",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "আপনার ফোনে Moonfin-এ সাইন ইন করুন",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "আপনার সার্ভারে পৌঁছানো যাচ্ছে না",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "পরবর্তী: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideMinutesLeft": "{minutes}মি বাকি",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursLeft": "{hours}ঘ বাকি",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "{hours}ঘ {minutes}মি বাকি",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "themeMusicSettingsSubtitle": "বিস্তারিত পেজ, হোম সারি এবং ভলিউম",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "loopThemeMusic": "থিম মিউজিক লুপ করুন",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "একবার চালানোর বদলে ট্র্যাকটি বারবার চালান",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "settingsScrollWheelAction": "মাউস স্ক্রল হুইল",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "প্লেব্যাকের সময় ভিডিওর উপর মাউস হুইল স্ক্রল করলে কী হবে তা বেছে নিন।",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "বন্ধ",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "সিক (সামনে / পিছনে)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "ভলিউম",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "ভলিউম",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "fallbackAudioLanguage": "ফলব্যাক অডিও ভাষা",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "preferDefaultAudioTrack": "ডিফল্ট অডিও ট্র্যাককে অগ্রাধিকার দিন",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "স্থানীয় ডাবের বদলে মূল অডিও ট্র্যাককে অগ্রাধিকার দিন।",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "preferAudioDescription": "অডিও ডেসক্রিপশন ট্র্যাককে অগ্রাধিকার দিন",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "preferAudioDescriptionDescription": "সাধারণ ট্র্যাকের বদলে অডিও ডেসক্রিপশন ট্র্যাককে অগ্রাধিকার দিন।",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingAudio": "ট্রান্সকোডিং (অডিও)",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "directStreamRemux": "ডাইরেক্ট স্ট্রিম (রিমাক্স)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "ট্রান্সকোডিং (বিটরেট বা রেজোলিউশন)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "ট্রান্সকোডিং (ভিডিও ও অডিও)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "ট্রান্সকোডিং (ভিডিও)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "settingsAudioOutputModeDescription": "অডিও কীভাবে ডিকোড হবে তা বেছে নিন। AVR Passthrough আপনার রিসিভারে সরাসরি Dolby/DTS স্ট্রিম পাঠায়; অটো বা ডাউনমিক্স ডিভাইসেই ডিকোড করে।",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "সোর্স স্ট্রিম ডাইরেক্ট-প্লে বা পাসথ্রু করা না গেলে মাল্টি-চ্যানেল অডিও কোন ফরম্যাটে ট্রান্সকোড হবে তা নির্বাচন করুন।",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "অটো শনাক্ত\n(প্রস্তাবিত)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(ডিফল্ট)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(লসলেস)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(শুধু স্টেরিও)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(সাশ্রয়ী)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(লসলেস)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "সর্বোচ্চ অডিও চ্যানেল",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "আপনার অডিও সেটআপের সর্বোচ্চ চ্যানেল সংখ্যা নির্ধারণ করুন। এই সীমা ছাড়ানো মাল্টিচ্যানেল স্ট্রিম ডাউনমিক্স বা ট্রান্সকোড হবে।",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "অটো শনাক্ত\n(হার্ডওয়্যার ডিফল্ট)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 মনো",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 স্টেরিও",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 সারাউন্ড",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 কোয়াড্রাফোনিক",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 সারাউন্ড",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 সারাউন্ড",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 সারাউন্ড",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 সারাউন্ড",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "settingsAudioRouteHeadphones": "হেডফোন",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "সাবটাইটেল মোড",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "ফ্ল্যাগ করা",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeAlways": "সর্বদা",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeForeign": "বিদেশি",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "subtitleModeForced": "ফোর্সড",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeFlaggedDescription": "মিডিয়া ফাইলের মেটাডেটায় \"default\" বা \"forced\" হিসেবে ফ্ল্যাগ করা ট্র্যাক চালায়।",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeAlwaysDescription": "প্রতিবার ভিডিও শুরু হলে স্বয়ংক্রিয়ভাবে সাবটাইটেল লোড করে দেখায়।",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "subtitleModeForeignDescription": "ডিফল্ট অডিও ট্র্যাক বিদেশি ভাষায় হলে স্বয়ংক্রিয়ভাবে সাবটাইটেল চালু করে।",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "subtitleModeForcedDescription": "শুধু forced মেটাডেটা ফ্ল্যাগ দেওয়া সাবটাইটেল লোড করে।",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "subtitleModeNoneDescription": "স্বয়ংক্রিয় সাবটাইটেল লোডিং সম্পূর্ণ বন্ধ করে দেয়।",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "ফলব্যাক সাবটাইটেল ভাষা",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "সাবটাইটেল স্ট্রিম",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "reportDownloadsActivity": "সার্ভারে ডাউনলোড দেখান",
+    "reportDownloadsActivitySubtitle": "সার্ভার অ্যাডমিনকে ড্যাশবোর্ডে আপনার ট্রান্সকোড করা ডাউনলোড দেখতে দিন",
+    "navbarAlwaysExpanded": "নেভিগেশন বারের লেবেল সবসময় দেখান",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "showSeerrButton": "Seerr বোতাম দেখান",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "groupItemsIntoCollections": "আইটেমগুলো কালেকশনে গোষ্ঠীবদ্ধ করুন",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "hideCollectionAssociatedItems": "লাইব্রেরি ব্রাউজ করার সময় কালেকশনভুক্ত লাইব্রেরি আইটেম লুকান",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "লাইব্রেরি গ্রুপিং বিজ্ঞপ্তি",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "এই সেটিংটি ব্যবহার করতে, আপনার Jellyfin বা Emby সার্ভারে লাইব্রেরির Display সেটিংসে \"Group movies into collections\" এবং/অথবা \"Group shows into collections\" লাইব্রেরি সেটিং চালু আছে কিনা নিশ্চিত করুন।",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "trailerAudio": "ট্রেলার অডিও",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "মিডিয়া বারে ট্রেলারের অডিও চালু করুন",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "fullScreenRows": "বিস্তৃত হোম সারি",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "প্রতি স্ক্রিনে হোম সারি ১টিতে সীমাবদ্ধ করুন",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "বর্তমান ব্যবহারকারী",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "স্থির",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "বাউন্সিং",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr ডিসকভারি সারি",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "seerrNotificationsSection": "বিজ্ঞপ্তি",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "নতুন অনুরোধের বিজ্ঞপ্তি",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "কেউ অনুরোধ জমা দিলে আমাকে জানান",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "অনুরোধের আপডেট",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "অনুমোদিত, প্রত্যাখ্যাত এবং লাইব্রেরিতে যোগ হওয়া",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "seerrNotifyIssuesTitle": "ইস্যুর আপডেট",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "নতুন ইস্যু, উত্তর এবং সমাধান",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "mbValue": "{value} MB",
+    "@mbValue": {
+        "description": "Megabyte value display",
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "imageCacheLimit": "ইমেজ ক্যাশের সীমা",
+    "clearImageCache": "ইমেজ ক্যাশ পরিষ্কার করুন",
+    "imageCacheCleared": "ইমেজ ক্যাশ পরিষ্কার করা হয়েছে",
+    "seerrDownloadingPercent": "ডাউনলোড হচ্ছে · {percent}%",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "ইমপোর্ট হচ্ছে",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "ব্যর্থ",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "প্রক্রিয়াধীন",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "{name} পরিবর্তন করেছেন",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "সম্পন্ন",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "এই টাইটেলটি ইতিমধ্যে অনুরোধ করা হয়েছে",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "অনুরোধের সীমা শেষ",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "এই টাইটেলটি ব্লকলিস্টে আছে",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "অনুরোধ করার মতো আর কোনো সিজন নেই",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "এই অনুরোধ করার অনুমতি আপনার নেই",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "অনুরোধ",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "ইস্যু",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "নতুন",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "সর্বশেষ পরিবর্তিত",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "কোনো ইস্যু নেই",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "{limit}টির মধ্যে {remaining}টি মুভি অনুরোধ বাকি",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "{limit}টির মধ্যে {remaining}টি সিজন অনুরোধ বাকি",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "{name}-এর অংশ",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "কালেকশন দেখুন",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "কালেকশন অনুরোধ করুন",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total}টি মুভি · {available}টি উপলব্ধ",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "{count}টি মুভি অনুরোধ করুন",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "{total}টির মধ্যে {current}টি অনুরোধ করা হচ্ছে...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count}টি মুভি অনুরোধ করা হয়েছে",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "{total}টির মধ্যে {ok}টি মুভি অনুরোধ করা হয়েছে",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "সব মুভি ইতিমধ্যে উপলব্ধ বা অনুরোধ করা হয়েছে",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "ইস্যু রিপোর্ট করুন",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "ভিডিও",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "অডিও",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "সমস্যাটি কী?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "সব পর্ব",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "পর্ব",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "খোলা",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "সমাধান হয়েছে",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "সমাধান করুন",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "আবার খুলুন",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "{name} রিপোর্ট করেছেন",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count}টি মন্তব্য",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "একটি মন্তব্য যোগ করুন",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "এই ইস্যুটি মুছবেন?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "রিপোর্ট জমা দিন",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminDrawerDisplay": "ডিসপ্লে",
+    "adminDrawerMetadata": "মেটাডেটা",
+    "adminDrawerNfo": "NFO সেটিংস",
+    "adminActivitySeverityAll": "সব তীব্রতা",
+    "adminActivityDateRange": "তারিখের পরিসর",
+    "adminRemoveDeviceConfirm": "'{name}' ডিভাইসটি সরাবেন? ব্যবহারকারীকে এই ডিভাইসে আবার সাইন ইন করতে হবে।",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "সব ডিভাইস মুছুন",
+    "adminDeleteAllDevicesConfirm": "{count}টি ডিভাইস সরাবেন? প্রভাবিত ব্যবহারকারীদের আবার সাইন ইন করতে হবে। আপনার বর্তমান ডিভাইস প্রভাবিত হবে না।",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "ডিভাইস সরানো হয়েছে",
+    "adminDevicesDeletedPartial": "কিছু ডিভাইস সরানো হয়েছে; {count}টি সরানো যায়নি।",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibraryTabPaths": "পাথ",
+    "adminLibraryTabOptions": "অপশন",
+    "adminLibraryTabDownloaders": "ডাউনলোডার",
+    "adminLibMetadataSavers": "মেটাডেটা সেভার",
+    "adminLibSubtitleDownloaders": "সাবটাইটেল ডাউনলোডার",
+    "adminLibLyricDownloaders": "লিরিক ডাউনলোডার",
+    "adminLibMetadataDownloadersFor": "মেটাডেটা ডাউনলোডার: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "ছবি ফেচার: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibNoDownloaders": "এই সার্ভারে এই লাইব্রেরি ধরনের জন্য কোনও ডাউনলোডার নেই।",
+    "adminLibrarySectionGeneral": "সাধারণ",
+    "adminLibrarySectionMetadata": "মেটাডেটা",
+    "adminLibrarySectionEmbedded": "এমবেড করা তথ্য",
+    "adminLibrarySectionSubtitles": "সাবটাইটেল",
+    "adminLibrarySectionImages": "ছবি",
+    "adminLibrarySectionSeries": "সিরিজ",
+    "adminLibrarySectionMusic": "মিউজিক",
+    "adminLibrarySectionMovies": "সিনেমা",
+    "adminLibRealtimeMonitor": "রিয়েল-টাইম মনিটরিং চালু করুন",
+    "adminLibRealtimeMonitorHint": "ফাইলের পরিবর্তন শনাক্ত করে স্বয়ংক্রিয়ভাবে প্রক্রিয়া করুন।",
+    "adminLibArchiveMediaFiles": "আর্কাইভকে মিডিয়া ফাইল হিসেবে গণ্য করুন",
+    "adminLibEnablePhotos": "ছবি দেখান",
+    "adminLibSaveLocalMetadata": "মিডিয়া ফোল্ডারে আর্টওয়ার্ক সংরক্ষণ করুন",
+    "adminLibRefreshInterval": "স্বয়ংক্রিয় মেটাডেটা রিফ্রেশ",
+    "adminLibRefreshNever": "কখনও নয়",
+    "adminLibDefault": "ডিফল্ট",
+    "adminLibDisplayTitle": "প্রদর্শন",
+    "adminLibDisplaySection": "লাইব্রেরি প্রদর্শন",
+    "adminLibFolderView": "সাধারণ মিডিয়া ফোল্ডার দেখাতে একটি ফোল্ডার ভিউ দেখান",
+    "adminLibSpecialsInSeasons": "স্পেশালগুলি যে সিজনে প্রচারিত হয়েছিল সেই সিজনেই দেখান",
+    "adminLibGroupMovies": "সিনেমাগুলি কালেকশনে গ্রুপ করুন",
+    "adminLibGroupShows": "শোগুলি কালেকশনে গ্রুপ করুন",
+    "adminLibExternalSuggestions": "সাজেশনে বাইরের কনটেন্ট দেখান",
+    "adminLibDateAddedSection": "যোগ করার তারিখের আচরণ",
+    "adminLibDateAddedLabel": "যোগ করার তারিখ নিন",
+    "adminLibDateAddedImport": "লাইব্রেরিতে স্ক্যান করার তারিখ",
+    "adminLibDateAddedFile": "ফাইল তৈরির তারিখ",
+    "adminLibMetadataTitle": "মেটাডেটা ও ছবি",
+    "adminLibMetadataLangSection": "পছন্দের মেটাডেটা ভাষা",
+    "adminLibChaptersSection": "অধ্যায়",
+    "adminLibDummyChapterDuration": "ডামি অধ্যায়ের দৈর্ঘ্য (সেকেন্ড)",
+    "adminLibDummyChapterDurationHint": "যেসব মিডিয়ায় অধ্যায় নেই, তার জন্য তৈরি করা অধ্যায়ের দৈর্ঘ্য। বন্ধ করতে 0 দিন।",
+    "adminLibChapterImageResolution": "অধ্যায়ের ছবির রেজোলিউশন",
+    "adminLibNfoTitle": "NFO সেটিংস",
+    "adminLibNfoHelp": "NFO মেটাডেটা Kodi ও অনুরূপ ক্লায়েন্টের সঙ্গে সামঞ্জস্যপূর্ণ। যেসব লাইব্রেরি NFO মেটাডেটা সংরক্ষণ করে, এই সেটিংস সেগুলির সবগুলিতেই প্রযোজ্য।",
+    "adminLibKodiUser": "NFO ফাইলে যে ব্যবহারকারীর দেখার তথ্য রাখা হবে",
+    "adminLibSaveImagePaths": "NFO ফাইলে ছবির পাথ সংরক্ষণ করুন",
+    "adminLibPathSubstitution": "NFO ছবির পাথের জন্য পাথ প্রতিস্থাপন চালু করুন",
+    "adminLibExtraThumbs": "extrafanart ছবিগুলি extrathumbs ফোল্ডারে কপি করুন",
+    "adminLibNone": "কোনোটিই নয়",
+    "adminLibRefreshDays": "{days} দিন",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedTitles": "এমবেড করা টাইটেল ব্যবহার করুন",
+    "adminLibEmbeddedExtrasTitles": "এক্সট্রার জন্য এমবেড করা টাইটেল ব্যবহার করুন",
+    "adminLibEmbeddedEpisodeInfos": "এমবেড করা পর্বের তথ্য ব্যবহার করুন",
+    "adminLibAllowEmbeddedSubtitles": "এমবেড করা সাবটাইটেল অনুমোদন করুন",
+    "adminLibEmbeddedAllowAll": "সব অনুমোদন করুন",
+    "adminLibEmbeddedAllowText": "শুধু টেক্সট",
+    "adminLibEmbeddedAllowImage": "শুধু ছবি",
+    "adminLibEmbeddedAllowNone": "কোনোটিই নয়",
+    "adminLibSkipIfEmbeddedSubs": "এমবেড করা সাবটাইটেল থাকলে ডাউনলোড এড়িয়ে যান",
+    "adminLibSkipIfAudioMatches": "অডিও ট্র্যাক ডাউনলোডের ভাষার সঙ্গে মিললে ডাউনলোড এড়িয়ে যান",
+    "adminLibRequirePerfectMatch": "নিখুঁত সাবটাইটেল মিল আবশ্যক করুন",
+    "adminLibSaveSubtitlesWithMedia": "মিডিয়া ফোল্ডারে সাবটাইটেল সংরক্ষণ করুন",
+    "adminLibChapterImageExtraction": "অধ্যায়ের ছবি বের করুন",
+    "adminLibChapterImagesDuringScan": "লাইব্রেরি স্ক্যানের সময় অধ্যায়ের ছবি বের করুন",
+    "adminLibTrickplayExtraction": "Trickplay ছবি এক্সট্র্যাকশন চালু করুন",
+    "adminLibTrickplayDuringScan": "লাইব্রেরি স্ক্যানের সময় Trickplay ছবি বের করুন",
+    "adminLibSaveTrickplayWithMedia": "মিডিয়া ফোল্ডারে Trickplay ছবি সংরক্ষণ করুন",
+    "adminLibAutomaticSeriesGrouping": "একাধিক ফোল্ডারে ছড়িয়ে থাকা সিরিজ স্বয়ংক্রিয়ভাবে একত্র করুন",
+    "adminLibSeasonZeroName": "সিজন শূন্যের প্রদর্শন নাম",
+    "adminLibLufsScan": "অডিও নরমালাইজেশনের জন্য LUFS স্ক্যান চালু করুন",
+    "adminLibPreferNonstandardArtist": "নন-স্ট্যান্ডার্ড আর্টিস্ট ট্যাগ অগ্রাধিকার দিন",
+    "adminLibAutoAddToCollection": "সিনেমাগুলি স্বয়ংক্রিয়ভাবে কালেকশনে যোগ করুন",
+    "adminParentalControl": "অভিভাবকীয় নিয়ন্ত্রণ",
+    "adminMaxParentalRating": "সর্বোচ্চ অনুমোদিত অভিভাবকীয় রেটিং",
+    "adminMaxParentalRatingHint": "এর চেয়ে বেশি রেটিংয়ের কনটেন্ট এই ব্যবহারকারীর কাছে লুকানো থাকবে।",
+    "adminParentalRatingNone": "কোনোটিই নয়",
+    "adminBlockUnratedItems": "রেটিং তথ্য নেই বা অচেনা, এমন আইটেম ব্লক করুন",
+    "adminUnratedBook": "বই",
+    "adminUnratedChannelContent": "চ্যানেল",
+    "adminUnratedLiveTvChannel": "লাইভ টিভি",
+    "adminUnratedMovie": "সিনেমা",
+    "adminUnratedMusic": "মিউজিক",
+    "adminUnratedTrailer": "ট্রেলার",
+    "adminUnratedSeries": "শো",
+    "adminAccessSchedules": "অ্যাক্সেসের সময়সূচি",
+    "adminAccessSchedulesHint": "শুধু নিচের নির্ধারিত সময়ে অ্যাক্সেস অনুমোদন করুন। কোনও সময়সূচি না থাকলে সারাদিনই অ্যাক্সেস অনুমোদিত।",
+    "adminAddSchedule": "সময়সূচি যোগ করুন",
+    "adminScheduleDay": "দিন",
+    "adminScheduleStart": "শুরু",
+    "adminScheduleEnd": "শেষ",
+    "adminDayEveryday": "প্রতিদিন",
+    "adminDayWeekday": "কর্মদিবস",
+    "adminDayWeekend": "সপ্তাহান্ত",
+    "adminDaySunday": "রবিবার",
+    "adminDayMonday": "সোমবার",
+    "adminDayTuesday": "মঙ্গলবার",
+    "adminDayWednesday": "বুধবার",
+    "adminDayThursday": "বৃহস্পতিবার",
+    "adminDayFriday": "শুক্রবার",
+    "adminDaySaturday": "শনিবার",
+    "adminAllowedTags": "অনুমোদিত ট্যাগ",
+    "adminAllowedTagsHint": "শুধু এই ট্যাগযুক্ত কনটেন্ট দেখানো হবে। সব অনুমোদন করতে খালি রাখুন।",
+    "adminBlockedTags": "ব্লক করা ট্যাগ",
+    "adminBlockedTagsHint": "এই ট্যাগযুক্ত কনটেন্ট এই ব্যবহারকারীর কাছে লুকানো থাকবে।",
+    "adminAddTag": "ট্যাগ যোগ করুন",
+    "adminEnabledDevices": "চালু থাকা ডিভাইস",
+    "adminEnabledChannels": "চালু থাকা চ্যানেল",
+    "adminAuthProvider": "অথেনটিকেশন প্রোভাইডার",
+    "adminPasswordResetProvider": "পাসওয়ার্ড রিসেট প্রোভাইডার",
+    "adminLoginAttemptsBeforeLockout": "লকআউটের আগে সর্বোচ্চ ব্যর্থ লগইন চেষ্টা",
+    "adminLoginAttemptsHint": "ডিফল্টের জন্য 0 দিন, অথবা লকআউট বন্ধ করতে -1 দিন।",
+    "adminSyncPlayAccess": "SyncPlay অ্যাক্সেস",
+    "adminSyncPlayCreateAndJoin": "গ্রুপ তৈরি ও যোগদানের অনুমতি দিন",
+    "adminSyncPlayJoin": "গ্রুপে যোগদানের অনুমতি দিন",
+    "adminSyncPlayNone": "অ্যাক্সেস নেই",
+    "adminContentDeletionFolders": "কনটেন্ট মুছে ফেলার অনুমতি দিন",
+    "adminBackupOptionsTitle": "ব্যাকআপ তৈরি করুন",
+    "adminBackupInclude": "ব্যাকআপে কী কী রাখবেন তা বেছে নিন।",
+    "adminBackupDatabase": "ডেটাবেস",
+    "adminBackupDatabaseAlways": "সবসময় অন্তর্ভুক্ত",
+    "adminBackupMetadata": "মেটাডেটা",
+    "adminBackupSubtitles": "সাবটাইটেল",
+    "adminBackupTrickplay": "Trickplay ছবি",
+    "adminEditTuner": "টিউনার সম্পাদনা করুন",
+    "adminTunerTypeM3u": "M3U টিউনার",
+    "adminTunerTypeHdHomerun": "HDHomeRun",
+    "adminTunerFileOrUrl": "ফাইল বা URL",
+    "adminTunerIpAddress": "টিউনারের IP ঠিকানা",
+    "adminTunerFriendlyName": "সহজবোধ্য নাম",
+    "adminTunerUserAgent": "ইউজার এজেন্ট",
+    "adminTunerCount": "একযোগে সংযোগের সীমা",
+    "adminTunerCountHelp": "টিউনার একসঙ্গে সর্বাধিক যতগুলি স্ট্রিম অনুমোদন করে। সীমাহীন করতে 0 দিন।",
+    "adminTunerFallbackBitrate": "ফলব্যাক সর্বোচ্চ স্ট্রিমিং বিটরেট",
+    "adminTunerImportFavoritesOnly": "শুধু পছন্দের চ্যানেল ইমপোর্ট করুন",
+    "adminTunerAllowHwTranscoding": "হার্ডওয়্যার ট্রান্সকোডিং অনুমোদন করুন",
+    "adminTunerAllowFmp4": "fMP4 ট্রান্সকোডিং কনটেইনার অনুমোদন করুন",
+    "adminTunerAllowStreamSharing": "স্ট্রিম শেয়ারিং অনুমোদন করুন",
+    "adminTunerEnableStreamLooping": "স্ট্রিম লুপিং চালু করুন",
+    "adminTunerIgnoreDts": "DTS উপেক্ষা করুন",
+    "adminTunerReadAtNativeFramerate": "নেটিভ ফ্রেম রেটে ইনপুট পড়ুন",
+    "adminEditProvider": "প্রোভাইডার সম্পাদনা করুন",
+    "adminProviderXmltv": "XMLTV",
+    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminXmltvPath": "ফাইল বা URL",
+    "adminXmltvMoviePrefix": "সিনেমার প্রিফিক্স",
+    "adminXmltvMovieCategories": "সিনেমার বিভাগ",
+    "adminXmltvCategoriesHelp": "একাধিক বিভাগ ভার্টিক্যাল বার দিয়ে আলাদা করুন।",
+    "adminXmltvKidsCategories": "শিশুদের বিভাগ",
+    "adminXmltvNewsCategories": "সংবাদের বিভাগ",
+    "adminXmltvSportsCategories": "খেলাধুলার বিভাগ",
+    "adminSdUsername": "ব্যবহারকারীর নাম",
+    "adminSdPassword": "পাসওয়ার্ড",
+    "adminSdCountry": "দেশ",
+    "adminSdCountrySelect": "একটি দেশ বেছে নিন",
+    "adminSdPostalCode": "পোস্টাল কোড",
+    "adminSdGetListings": "লিস্টিং আনুন",
+    "adminSdListings": "লিস্টিং",
+    "adminEnableAllTuners": "সব টিউনার চালু করুন",
+    "adminTunerResetNotSupported": "এই ধরনের টিউনার রিসেট করা যায় না।",
+    "adminMovieRecordingPath": "সিনেমা রেকর্ডিংয়ের পাথ",
+    "adminGuideDays": "গাইড ডেটার দিন",
+    "adminGuideDaysAuto": "স্বয়ংক্রিয়",
+    "adminGuideDaysValue": "{days} দিন",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminRecordingPostProcessor": "পোস্ট-প্রসেসিং অ্যাপ্লিকেশনের পাথ",
+    "adminRecordingPostProcessorArgs": "পোস্ট-প্রসেসরের আর্গুমেন্ট",
+    "adminSaveRecordingNfo": "রেকর্ডিংয়ের NFO মেটাডেটা সংরক্ষণ করুন",
+    "adminSaveRecordingImages": "রেকর্ডিংয়ের ছবি সংরক্ষণ করুন",
+    "adminLiveTvSectionTiming": "সময়",
+    "adminLiveTvSectionPaths": "রেকর্ডিংয়ের পাথ",
+    "adminLiveTvSectionPostProcessing": "পোস্ট-প্রসেসিং",
+    "adminGuideDaysDisplay": "গাইড ডেটা: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminRefreshGuideData": "গাইড ডেটা রিফ্রেশ করুন",
+    "adminGuideRefreshStarted": "গাইড ডেটা রিফ্রেশ শুরু হয়েছে",
+    "adminGuideRefreshUnavailable": "এই সার্ভারে গাইড রিফ্রেশ টাস্কটি নেই।",
+    "adminMetadataIdentify": "শনাক্ত করুন",
+    "adminBrandingSplashUpload": "ছবি আপলোড করুন",
+    "adminBrandingSplashUploaded": "স্প্ল্যাশস্ক্রিন আপডেট হয়েছে",
+    "adminBrandingSplashUploadFailed": "স্প্ল্যাশস্ক্রিন আপলোড করা যায়নি",
+    "adminBrandingSplashDeleted": "স্প্ল্যাশস্ক্রিন সরানো হয়েছে",
+    "adminBrandingNoSplash": "কোনও কাস্টম স্প্ল্যাশস্ক্রিন নেই",
+    "adminPlaybackQsvDevice": "QSV ডিভাইস",
+    "adminPlaybackEnhancedNvdec": "উন্নত NVDEC ডিকোডার চালু করুন",
+    "adminPlaybackPreferNativeDecoder": "সিস্টেমের নেটিভ হার্ডওয়্যার ডিকোডার অগ্রাধিকার দিন",
+    "adminPlaybackColorDepth": "হার্ডওয়্যার ডিকোডিংয়ের কালার ডেপথ",
+    "adminPlaybackColorDepth10Hevc": "10-বিট HEVC ডিকোডিং",
+    "adminPlaybackColorDepth10Vp9": "10-বিট VP9 ডিকোডিং",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-বিট ডিকোডিং",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-বিট ডিকোডিং",
+    "adminPlaybackHwEncodingSection": "হার্ডওয়্যার এনকোডিং",
+    "adminPlaybackAllowHevcEncoding": "HEVC এনকোডিং অনুমোদন করুন",
+    "adminPlaybackAllowAv1Encoding": "AV1 এনকোডিং অনুমোদন করুন",
+    "adminPlaybackIntelLowPowerH264": "Intel লো-পাওয়ার H.264 এনকোডার চালু করুন",
+    "adminPlaybackIntelLowPowerHevc": "Intel লো-পাওয়ার HEVC এনকোডার চালু করুন",
+    "adminPlaybackToneMapping": "টোন ম্যাপিং",
+    "adminPlaybackEnableTonemapping": "টোন ম্যাপিং চালু করুন",
+    "adminPlaybackEnableVppTonemapping": "VPP টোন ম্যাপিং চালু করুন",
+    "adminPlaybackEnableVtTonemapping": "VideoToolbox টোন ম্যাপিং চালু করুন",
+    "adminPlaybackTonemappingAlgorithm": "টোন ম্যাপিং অ্যালগরিদম",
+    "adminPlaybackTonemappingMode": "টোন ম্যাপিং মোড",
+    "adminPlaybackTonemappingRange": "টোন ম্যাপিং রেঞ্জ",
+    "adminPlaybackTonemappingDesat": "টোন ম্যাপিং ডিস্যাচুরেশন",
+    "adminPlaybackTonemappingPeak": "টোন ম্যাপিং পিক",
+    "adminPlaybackTonemappingParam": "টোন ম্যাপিং প্যারামিটার",
+    "adminPlaybackVppTonemappingBrightness": "VPP টোন ম্যাপিং উজ্জ্বলতা",
+    "adminPlaybackVppTonemappingContrast": "VPP টোন ম্যাপিং কনট্রাস্ট",
+    "adminPlaybackPresetsQuality": "প্রিসেট ও মান",
+    "adminPlaybackEncoderPreset": "এনকোডার প্রিসেট",
+    "adminPlaybackH264Crf": "H.264 এনকোডিং CRF",
+    "adminPlaybackH265Crf": "H.265 (HEVC) এনকোডিং CRF",
+    "adminPlaybackDeinterlaceMethod": "ডিইন্টারলেস পদ্ধতি",
+    "adminPlaybackDeinterlaceDoubleRate": "ডিইন্টারলেস করার সময় ফ্রেম রেট দ্বিগুণ করুন",
+    "adminPlaybackAudioSection": "অডিও",
+    "adminPlaybackEnableAudioVbr": "অডিও VBR এনকোডিং চালু করুন",
+    "adminPlaybackDownmixBoost": "অডিও ডাউনমিক্স বুস্ট",
+    "adminPlaybackDownmixAlgorithm": "স্টেরিও ডাউনমিক্স অ্যালগরিদম",
+    "adminPlaybackMaxMuxingQueue": "সর্বোচ্চ মাক্সিং কিউ সাইজ",
+    "adminPlaybackAutoOption": "স্বয়ংক্রিয়",
+    "adminRunningTasks": "চলমান টাস্ক",
+    "adminNetworkingPublicHttpPort": "পাবলিক HTTP পোর্ট",
+    "adminNetworkingRequireHttps": "HTTPS আবশ্যক করুন",
+    "adminNetworkingRequireHttpsHint": "সব রিমোট রিকোয়েস্ট HTTPS-এ পাঠান। সার্ভারে বৈধ সার্টিফিকেট না থাকলে এটি কার্যকর হবে না।",
+    "adminNetworkingCertPassword": "সার্টিফিকেটের পাসওয়ার্ড",
+    "adminNetworkingIpSettings": "IP সেটিংস",
+    "adminNetworkingEnableIpv4": "IPv4 চালু করুন",
+    "adminNetworkingEnableIpv6": "IPv6 চালু করুন",
+    "adminNetworkingAutoDiscovery": "স্বয়ংক্রিয় পোর্ট ম্যাপিং চালু করুন",
+    "adminNetworkingLocalSubnets": "LAN নেটওয়ার্ক",
+    "adminNetworkingLocalSubnetsHint": "কমা বা লাইন দিয়ে আলাদা করা IP ঠিকানা বা CIDR সাবনেটের তালিকা, যেগুলিকে লোকাল নেটওয়ার্কের অংশ হিসেবে গণ্য করা হবে।",
+    "adminNetworkingPublishedUris": "প্রকাশিত সার্ভার URI",
+    "adminNetworkingPublishedUriHint": "একটি সাবনেট বা ঠিকানাকে প্রকাশিত URL-এ ম্যাপ করুন, যেমন all=https://example.com",
+    "adminPlaybackThrottleDelay": "থ্রটল বিলম্ব (সেকেন্ড)",
+    "adminPlaybackEnableSubtitleExtraction": "চলার সময় সাবটাইটেল এক্সট্র্যাকশন অনুমোদন করুন",
+    "adminGeneralEnableSlowResponse": "ধীর রেসপন্সের সতর্কতা চালু করুন",
+    "adminGeneralQuickConnect": "Quick Connect চালু করুন",
+    "adminGeneralSectionServer": "সার্ভার",
+    "adminGeneralSectionMetadata": "মেটাডেটা",
+    "adminGeneralSectionPaths": "পাথ",
+    "adminGeneralSectionPerformance": "পারফরম্যান্স",
+    "adminGeneralDisplayLanguage": "পছন্দের প্রদর্শন ভাষা",
+    "offlineBannerTitle": "আপনি অফলাইনে আছেন",
+    "offlineBannerSubtitle": "আপনার ডাউনলোড দেখানো হচ্ছে",
+    "offlineBannerAction": "ডাউনলোড",
+    "serverUnreachableBannerTitle": "আপনার সার্ভারে পৌঁছানো যাচ্ছে না",
+    "serverUnreachableBannerSubtitle": "সার্ভার ফিরে না আসা পর্যন্ত ডাউনলোড থেকে চালানো হচ্ছে",
+    "contextMenuHideFromContinueWatching": "Continue Watching থেকে লুকান",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Next Up থেকে লুকান",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "কালেকশনে যোগ করুন",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsConnectionSection": "সংযোগ",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "সেলফ-সাইনড সার্টিফিকেট অনুমোদন করুন",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAllowSelfSignedCertsSubtitle": "সেলফ-সাইনড বা প্রাইভেট-CA TLS সার্টিফিকেট ব্যবহার করা সার্ভারকে বিশ্বাস করুন। শুধু আপনার নিজের নিয়ন্ত্রণে থাকা সার্ভারের জন্য চালু করুন। এটি সব সংযোগের সার্টিফিকেট যাচাই বন্ধ করে দেয়।",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsDetailsScreen": "বিস্তারিত স্ক্রিন",
+    "settingsDetailsScreenSubtitle": "স্টাইল, ব্যাকগ্রাউন্ড ব্লার এবং ট্যাবের আচরণ",
+    "settingsShowSeerrButtonInNavigation": "নেভিগেশন বারে Seerr বোতাম দেখান",
+    "settingsAlwaysExpandNavbarLabels": "উপরের নেভিগেশন বারে সবসময় টেক্সট লেবেল দেখান",
+    "settingsMediaSegmentCountdown": "মিডিয়া সেগমেন্ট কাউন্টডাউন",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "প্রোগ্রেস বার",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "টাইমার",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "কোনোটিই নয়",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "recentlyReleasedLibraryName": "সম্প্রতি মুক্তিপ্রাপ্ত {libraryName}",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "টানেলিং চালু করুন",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "উন্নত। অডিও ও ভিডিওকে একটি যুক্ত হার্ডওয়্যার পথে পাঠায়। কিছু ডিভাইসে অডিও/ভিডিও কেটে যাওয়ার কারণে ডিফল্টভাবে বন্ধ রাখা হয়েছে।",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "মিডিয়ার বিস্তারিত দেখান",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "লাইব্রেরি পেজের উপরে নির্বাচিত আইটেমের বিস্তারিত দেখান।",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "ব্রাউজ করার সময় ব্যাকড্রপ লুকাবেন?",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStore": "থিম স্টোর",
+    "themeStoreSubtitle": "কমিউনিটি থিম দেখুন ও সংরক্ষণ করুন",
+    "themeStoreDescription": "থিমটি সংরক্ষণ করলে আপনার অন্যান্য সংরক্ষিত থিমের মতোই ব্যবহার করতে পারবেন।",
+    "themeStoreEmpty": "এই মুহূর্তে কোনো থিম নেই।",
+    "themeStoreLoadFailed": "থিম স্টোর লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+    "themeStoreSave": "সংরক্ষণ করুন",
+    "themeStoreSaveAndApply": "সংরক্ষণ ও প্রয়োগ করুন",
+    "themeStoreSaved": "সংরক্ষিত",
+    "themeStoreInvalidMessage": "এই থিমটি লোড করা যায়নি।",
+    "themeStoreSavedMessage": "\"{themeName}\" সংরক্ষিত হয়েছে।",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "হোম রো প্রদর্শন",
+    "homeRowSections": "হোম রো সেকশন",
+    "homeRowToggles": "হোম রো টগল",
+    "homeRowTogglesSubtitle": "লাইব্রেরি-ভিত্তিক হোম রো ক্যাটাগরি চালু বা বন্ধ করুন",
+    "homeRowTogglesDescription": "হোম সেকশনে রো দেখাতে নিচের টগলগুলো চালু করুন।",
+    "displayPlaylistsRows": "প্লেলিস্ট রো দেখান",
+    "displayPlaylistsRowsSubtitle": "হোম সেকশনে প্লেলিস্ট রো দেখান।",
+    "playlistsRowSorting": "প্লেলিস্ট রো সাজানো",
+    "playlistsRowSortingDescription": "প্লেলিস্ট রো যোগ করার তারিখ, মুক্তির তারিখ, বর্ণানুক্রম এবং আরও নানাভাবে সাজান।",
+    "displayAudioRows": "অডিও রো দেখান",
+    "displayAudioRowsSubtitle": "হোম সেকশনে অডিও রো দেখান।",
+    "audioRowsSorting": "অডিও রো সাজানো",
+    "audioRowsSortingDescription": "অডিও রো যোগ করার তারিখ, মুক্তির তারিখ, বর্ণানুক্রম এবং আরও নানাভাবে সাজান।",
+    "audioPlaylists": "অডিও প্লেলিস্ট",
+    "layout": "লেআউট",
+    "theme": "থিম",
+    "keyboard": "কীবোর্ড",
+    "navButtons": "বোতাম",
+    "rendering": "রেন্ডারিং",
+    "mpvConfiguration": "MPV কনফিগারেশন",
+    "externalPlayerAppDescription": "লং-প্রেস করে চালানোর অপশন পেতে এক্সটার্নাল প্লেয়ার সেট করুন",
+    "crewContributionsSeerr": "কলাকুশলীর অবদান (Seerr)",
+    "changeArtwork": "আর্টওয়ার্ক পরিবর্তন করুন",
+    "missing": "অনুপস্থিত",
+    "clearAllArtworkButton": "সব আর্টওয়ার্ক মুছবেন?",
+    "clearAllArtworkWarning": "আপনি কি ডাউনলোড করা সব আর্টওয়ার্ক মুছে ফেলতে চান?",
+    "confirmClear": "মোছার নিশ্চিতকরণ",
+    "confirmClearMessage": "আপনি কি এই {itemType} মুছে ফেলতে চান?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "আপলোড করবেন?",
+    "resolutionLabel": "রেজোলিউশন: ",
+    "onlyShowInterfaceLanguage": "শুধু ইন্টারফেসের ভাষার আর্টওয়ার্ক দেখান",
+    "confirmClearAll": "সব মোছার নিশ্চিতকরণ",
+    "imageUploadSuccess": "ছবি সফলভাবে আপলোড হয়েছে!",
+    "imageUploadFailed": "ছবি আপলোড করা যায়নি: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "ছবি সেট করা যায়নি: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "ছবি মুছে ফেলা যায়নি: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "সব আর্টওয়ার্ক মোছা যায়নি: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "হ্যাঁ",
+    "posterCategory": "পোস্টার",
+    "backdropsCategory": "ব্যাকড্রপ",
+    "bannerCategory": "ব্যানার",
+    "logoCategory": "লোগো",
+    "thumbnailCategory": "থাম্বনেইল",
+    "artCategory": "আর্ট",
+    "discArtCategory": "ডিস্ক আর্ট",
+    "screenshotCategory": "স্ক্রিনশট",
+    "boxCoverCategory": "বক্স কভার",
+    "boxRearCoverCategory": "বক্সের পেছনের কভার",
+    "menuArtCategory": "মেনু আর্ট",
+    "confirmItemPoster": "পোস্টার",
+    "confirmItemBackdrop": "ব্যাকড্রপ",
+    "confirmItemBanner": "ব্যানার",
+    "confirmItemLogo": "লোগো",
+    "confirmItemThumbnail": "থাম্বনেইল",
+    "confirmItemArt": "আর্ট",
+    "confirmItemDiscArt": "ডিস্ক আর্ট",
+    "confirmItemScreenshot": "স্ক্রিনশট",
+    "confirmItemBoxCover": "বক্স কভার",
+    "confirmItemBoxRearCover": "বক্সের পেছনের কভার",
+    "confirmItemMenuArt": "মেনু আর্ট",
+    "resolutionAll": "সব",
+    "resolutionHigh": "উচ্চ (1080p+)",
+    "resolutionMedium": "মাঝারি (720p)",
+    "resolutionLow": "নিম্ন (<720p)",
+    "sources": "উৎস",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookChapters": "অধ্যায়",
+    "audiobookBookmarks": "বুকমার্ক",
+    "audiobookNotes": "নোট",
+    "audiobookQueue": "কিউ",
+    "audiobookTimeline": "টাইমলাইন",
+    "audiobookTimelineEmpty": "টাইমলাইন খালি",
+    "audiobookWholeBook": "সম্পূর্ণ বই",
+    "audiobookFocusedTimeline": "নির্দিষ্ট টাইমলাইন",
+    "audiobookExportBookmarks": "বুকমার্ক এক্সপোর্ট করুন",
+    "audiobookExportNotes": "নোট এক্সপোর্ট করুন",
+    "audiobookExportAll": "সব এক্সপোর্ট করুন",
+    "audiobookExportSuccess": "{path}-এ এক্সপোর্ট হয়েছে",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookExportFailed": "এক্সপোর্ট ব্যর্থ হয়েছে: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookLyrics": "লিরিক্স",
+    "audiobookAddBookmark": "বুকমার্ক যোগ করুন",
+    "audiobookAddNote": "নোট যোগ করুন",
+    "audiobookEditNote": "নোট সম্পাদনা করুন",
+    "audiobookNoteHint": "এই মুহূর্তটির জন্য একটি নোট লিখুন",
+    "audiobookSleepTimer": "স্লিপ টাইমার",
+    "audiobookSleepOff": "বন্ধ",
+    "audiobookSleepEndOfChapter": "অধ্যায়ের শেষে",
+    "audiobookSleepCustom": "কাস্টম",
+    "audiobookSleepRemaining": "{remaining} বাকি",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "{count, plural, =1{১ মিনিট} other{{count} মিনিট}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "প্লেব্যাকের গতি",
+    "audiobookRemainingTime": "বাকি",
+    "audiobookElapsedTime": "অতিবাহিত",
+    "audiobookSkipBackSeconds": "{seconds} সেকেন্ড পেছনে",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSkipForwardSeconds": "{seconds} সেকেন্ড সামনে",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "পূর্ববর্তী অধ্যায়",
+    "audiobookNextChapter": "পরবর্তী অধ্যায়",
+    "audiobookChapterIndicator": "অধ্যায় {current} / {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "কোনো অধ্যায় নেই",
+    "audiobookNoBookmarks": "এখনও কোনো বুকমার্ক নেই",
+    "audiobookNoNotes": "এখনও কোনো নোট নেই",
+    "audiobookBookmarkAdded": "{position}-এ বুকমার্ক যোগ হয়েছে",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "1.0x-এ রিসেট করুন",
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "সংরক্ষণ করুন",
+    "audiobookCancel": "বাতিল করুন",
+    "audiobookDelete": "মুছুন",
+    "subtitlePreferences": "সাবটাইটেল পছন্দসমূহ",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "subtitlePreferencesDescription": "সাবটাইটেলের মোড, ডিফল্ট ভাষা, চেহারা এবং রেন্ডারিং অপশন পরিবর্তন করুন।",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "সাবটাইটেল রেন্ডারিং",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "প্রদর্শন অপশন",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "releaseDateAscending": "মুক্তির তারিখ (ঊর্ধ্বক্রম)",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "মুক্তির তারিখ (নিম্নক্রম)",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupContributions": "অবদান গ্রুপ করুন",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "groupMultipleRoles": "একাধিক ভূমিকা একসাথে গ্রুপ করুন",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "লাইব্রেরি রাইট অ্যাক্সেস সতর্কতা",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "যেভাবে সমাধান করবেন:",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "১. সার্ভারে আপনার মিডিয়া লাইব্রেরি ফোল্ডারগুলোর জন্য Jellyfin সার্ভিস ইউজারকে (যেমন jellyfin বা Docker PUID/PGID) রাইট পারমিশন দিন।\n\n২. অথবা, আপনার Jellyfin Dashboard -> Libraries-এ যান, এই লাইব্রেরিটি সম্পাদনা করুন এবং 'Save artwork into media folders' বন্ধ করে দিন, যাতে আর্টওয়ার্ক Jellyfin-এর নিজস্ব ডেটাবেসে সংরক্ষিত হয়।",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "dismiss": "বন্ধ করুন",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "libraryWriteAccessProactiveBody": "আপনার '{libraryName}' লাইব্রেরিটি আর্টওয়ার্ক সরাসরি মিডিয়া ফোল্ডারে সংরক্ষণ করার জন্য কনফিগার করা আছে ('Save artwork into media folders' চালু রয়েছে)। কিন্তু Jellyfin রাইট অ্যাক্সেস পরীক্ষা করে দেখেছে যে এই ডিরেক্টরিতে ফাইল লেখার অনুমতি নেই:\n\n{failedPath}",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "libraryWriteAccessReactiveBody": "মনে হচ্ছে Jellyfin আর্টওয়ার্ক আপডেট করতে পারেনি। আপনার লাইব্রেরিটি আর্টওয়ার্ক সরাসরি মিডিয়া ফোল্ডারে সংরক্ষণ করার জন্য কনফিগার করা আছে ('Save artwork into media folders' চালু রয়েছে)। সাধারণত Jellyfin সার্ভার প্রসেসের আপনার মিডিয়া ডিরেক্টরিতে ফাইল লেখার অনুমতি না থাকলে এই ত্রুটি হয়।",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "externalLists": "বাহ্যিক তালিকা",
+    "replay": "আবার চালান",
+    "fileInformation": "ফাইলের তথ্য",
+    "fileSizeFormat": "আকার: {size}  •  ফরম্যাট: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "সব ({count}) অডিও ট্র্যাক দেখান",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "showAllSubtitleTracks": "সব ({count}) সাবটাইটেল ট্র্যাক দেখান",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Direct Play সক্ষমতা পরীক্ষা করা হচ্ছে...",
+    "directPlayCapabilityLabel": "Direct Play সক্ষমতা: ",
+    "forced": "ফোর্সড",
+    "transcodeContainerNotSupported": "কন্টেইনার ফরম্যাটটি প্লেয়ারে সমর্থিত নয়।",
+    "transcodeVideoCodecNotSupported": "ভিডিও কোডেক সমর্থিত নয়।",
+    "transcodeAudioCodecNotSupported": "অডিও কোডেক সমর্থিত নয়।",
+    "transcodeSubtitleCodecNotSupported": "সাবটাইটেল ফরম্যাট সমর্থিত নয় (বার্ন করা প্রয়োজন)।",
+    "transcodeAudioProfileNotSupported": "অডিও প্রোফাইল সমর্থিত নয়।",
+    "transcodeVideoProfileNotSupported": "ভিডিও প্রোফাইল সমর্থিত নয়।",
+    "transcodeVideoLevelNotSupported": "ভিডিও লেভেল সমর্থিত নয়।",
+    "transcodeVideoResolutionNotSupported": "এই ডিভাইসে ভিডিও রেজোলিউশনটি সমর্থিত নয়।",
+    "transcodeVideoBitDepthNotSupported": "ভিডিও বিট ডেপথ সমর্থিত নয়।",
+    "transcodeVideoFramerateNotSupported": "ভিডিও ফ্রেমরেট সমর্থিত নয়।",
+    "transcodeContainerBitrateExceedsLimit": "ফাইলের বিটরেট প্লেয়ারের স্ট্রিমিং সীমা ছাড়িয়ে গেছে।",
+    "transcodeVideoBitrateExceedsLimit": "ভিডিও বিটরেট স্ট্রিমিং সীমা ছাড়িয়ে গেছে।",
+    "transcodeAudioBitrateExceedsLimit": "অডিও বিটরেট স্ট্রিমিং সীমা ছাড়িয়ে গেছে।",
+    "transcodeAudioChannelsNotSupported": "অডিও চ্যানেলের সংখ্যা সমর্থিত নয়।",
+    "sortAlphabetical": "বর্ণানুক্রমিক",
+    "sortReleaseAscending": "মুক্তির ক্রম (ঊর্ধ্বক্রম)",
+    "sortReleaseDescending": "মুক্তির ক্রম (নিম্নক্রম)",
+    "sortCustomDragDrop": "কাস্টম (ড্র্যাগ-অ্যান্ড-ড্রপ)",
+    "playlistSortOptions": "প্লেলিস্ট সাজানোর অপশন",
+    "resetSort": "সাজানো রিসেট করুন",
+    "rewatchSeasonEpisode": "S{season}:E{episode} আবার দেখুন",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "প্লেলিস্ট আবার দেখুন",
+    "noSubtitlesFound": "কোনো সাবটাইটেল পাওয়া যায়নি।",
+    "adminControls": "অ্যাডমিন নিয়ন্ত্রণ",
+    "impellerRendering": "রেন্ডারিং ইঞ্জিন (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerRenderingSubtitle": "Impeller হলো Flutter-এর আধুনিক GPU রেন্ডারার, যা আরও মসৃণ অ্যানিমেশন ও কম আটকানো নিশ্চিত করে। কিছু টিভি বক্স ও পুরোনো GPU-তে এটি গ্লিচ বা কালো ভিডিওর কারণ হতে পারে; এমন হলে এটি বন্ধ করে দিন। স্বয়ংক্রিয় আপনার ডিভাইসের জন্য সেরা ডিফল্টটি বেছে নেয়। প্রয়োগ করতে Moonfin রিস্টার্ট করুন।",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerAuto": "স্বয়ংক্রিয়",
+    "impellerOn": "চালু",
+    "impellerOff": "বন্ধ",
+    "impellerRestartTitle": "রিস্টার্ট প্রয়োজন",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "রেন্ডারিং ইঞ্জিন পরিবর্তন করতে Moonfin রিস্টার্ট করা প্রয়োজন। এখন অ্যাপটি বন্ধ করে আবার চালু করলে পরিবর্তনটি প্রয়োগ হবে।",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "impellerCloseNow": "এখনই অ্যাপ বন্ধ করুন",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "লাইব্রেরি রিফ্রেশ করুন",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "সব লাইব্রেরি রিফ্রেশ করুন",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "যোগ করার তারিখ (পুরোনো আগে)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "যোগ করার তারিখ (নতুন আগে)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "বর্ণানুক্রমিক (A থেকে Z)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "বর্ণানুক্রমিক (Z থেকে A)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "সার্ভার অ্যানালিটিক্স লোড হচ্ছে... {percentage}%",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "উৎসের সাথে মিলিয়ে",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "IMDb-র সেরা ২৫০ সিনেমা",
+    "imdbTop250TvShows": "IMDb-র সেরা ২৫০ টিভি শো",
+    "imdbMostPopularMovies": "IMDb-র সবচেয়ে জনপ্রিয় সিনেমা",
+    "imdbMostPopularTvShows": "IMDb-র সবচেয়ে জনপ্রিয় টিভি শো",
+    "imdbLowestRatedMovies": "IMDb-র সর্বনিম্ন রেটিং পাওয়া সিনেমা",
+    "imdbTopEnglishMovies": "IMDb-র সেরা রেটিং পাওয়া ইংরেজি সিনেমা"
 }

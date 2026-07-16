@@ -9,22 +9,22 @@ class AppLocalizationsTh extends AppLocalizations {
   AppLocalizationsTh([String locale = 'th']) : super(locale);
 
   @override
-  String get appTitle => 'มูนฟิน';
+  String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => 'การตั้งค่าบัญชี';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => 'ภาษาของอินเทอร์เฟซ';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => 'ค่าเริ่มต้นของระบบ';
 
   @override
   String get signIn => 'เข้าสู่ระบบ';
 
   @override
-  String get empty => 'Empty';
+  String get empty => 'ว่างเปล่า';
 
   @override
   String connectingToServer(String serverName) {
@@ -32,7 +32,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get quickConnect => 'เชื่อมต่อด่วน';
+  String get quickConnect => 'Quick Connect';
 
   @override
   String get password => 'รหัสผ่าน';
@@ -51,7 +51,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get waitingForAuthorization => 'กำลังรอการอนุญาต...';
 
   @override
-  String get back => 'กลับ';
+  String get back => 'ย้อนกลับ';
 
   @override
   String get serverUnavailable => 'เซิร์ฟเวอร์ไม่พร้อมใช้งาน';
@@ -61,12 +61,12 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'การเชื่อมต่อด่วนไม่พร้อมใช้งาน: $detail';
+    return 'QuickConnect ใช้งานไม่ได้: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'การเชื่อมต่อด่วนไม่พร้อมใช้งาน ($status): $detail';
+    return 'QuickConnect ใช้งานไม่ได้ ($status): $detail';
   }
 
   @override
@@ -113,7 +113,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get cancel => 'ยกเลิก';
 
   @override
-  String get remove => 'ลบ';
+  String get remove => 'นำออก';
 
   @override
   String get connectToServer => 'เชื่อมต่อกับเซิร์ฟเวอร์';
@@ -142,62 +142,62 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsAppearanceTheme => 'ธีมแอป';
 
   @override
-  String get detailScreenStyle => 'Detail screen style';
+  String get detailScreenStyle => 'สไตล์หน้ารายละเอียด';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
+      'คลาสสิกคือเลย์เอาต์ Moonfin ดั้งเดิมที่จัดกึ่งกลาง โมเดิร์นคือเลย์เอาต์แนวภาพยนตร์ที่ปรับตามขนาดหน้าจอ';
 
   @override
-  String get detailScreenStyleMoonfin => 'Classic';
+  String get detailScreenStyleMoonfin => 'คลาสสิก';
 
   @override
-  String get detailScreenStyleModern => 'Modern';
+  String get detailScreenStyleModern => 'โมเดิร์น';
 
   @override
-  String get expandedTabs => 'Expanded Tabs';
+  String get expandedTabs => 'แท็บแบบขยาย';
 
   @override
   String get expandedTabsSubtitle =>
-      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
+      'แสดงเนื้อหาของแท็บโดยอัตโนมัติขณะเลื่อนดูแท็บ ปิดเพื่อเปิดและปิดแต่ละแท็บด้วยตนเอง';
 
   @override
-  String get showTechnicalDetails => 'Show Technical Details?';
+  String get showTechnicalDetails => 'แสดงรายละเอียดทางเทคนิคหรือไม่?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Show codec, resolution, and stream information in banner summary';
+      'แสดงข้อมูลตัวแปลงสัญญาณ ความละเอียด และสตรีมในสรุปแบนเนอร์';
 
   @override
-  String get recommendationSystem => 'Recommendation System';
+  String get recommendationSystem => 'ระบบแนะนำ';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'ใช้อัลกอริทึม Moonfin แนะนำ ที่ทำงานกับคลังสื่อในเครื่อง หรือใช้ค่าความคล้ายคลึงออนไลน์ของ TMDb หมายเหตุ: การแนะนำแบบออนไลน์ต้องเชื่อมต่อกับ Seerr';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin Recommends';
+  String get recommendationSystemMoonfin => 'Moonfin แนะนำ';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb Similarity';
+  String get recommendationSystemTmdb => 'ความคล้ายคลึงจาก TMDb';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Apply Parental Rating Cap?';
+      'จำกัดตามเรตผู้ปกครองหรือไม่?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limit Moonfin Recommends suggestions by parental rating of target media';
+      'จำกัดคำแนะนำของ Moonfin แนะนำ ตามเรตผู้ปกครองของสื่อเป้าหมาย';
 
   @override
-  String get interfaceStyle => 'Interface Style';
+  String get interfaceStyle => 'สไตล์อินเทอร์เฟซ';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic matches your device. Choose Apple or Material to force a look.';
+      'อัตโนมัติจะปรับตามอุปกรณ์ของคุณ เลือก Apple หรือ Material เพื่อกำหนดรูปลักษณ์เอง';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => 'อัตโนมัติ';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -206,31 +206,31 @@ class AppLocalizationsTh extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Glass Quality';
+  String get glassQuality => 'คุณภาพกระจก';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+      'อัตโนมัติจะเลือกเอฟเฟกต์กระจกที่ดีที่สุดสำหรับอุปกรณ์นี้ เต็มรูปแบบจะบังคับใช้การเบลอจริง ส่วนลดทอนจะใช้กระจกแบบเบาที่ช่วยประหยัดพลังงาน GPU';
 
   @override
-  String get glassQualityAuto => 'Auto';
+  String get glassQualityAuto => 'อัตโนมัติ';
 
   @override
-  String get glassQualityFull => 'Full';
+  String get glassQualityFull => 'เต็มรูปแบบ';
 
   @override
-  String get glassQualityReduced => 'Reduced';
+  String get glassQualityReduced => 'ลดทอน';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'สลับระหว่าง Moonfin และ Neon Pulse โดยไม่ต้องรีสตาร์ทแอป';
 
   @override
-  String get customThemeTitle => 'Custom Theme';
+  String get customThemeTitle => 'ธีมกำหนดเอง';
 
   @override
   String get customThemeSubtitle =>
-      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+      'ธีมกำหนดเองจะเปลี่ยนองค์ประกอบภาพทั่วทั้ง Moonfin เลือกหนึ่งตัวเลือกให้เข้ากับสไตล์ของคุณ';
 
   @override
   String get keyboardPreferSystemIme => 'ต้องการแป้นพิมพ์ระบบ';
@@ -240,7 +240,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ใช้วิธีการป้อนข้อมูลจากอุปกรณ์ของคุณเป็นค่าเริ่มต้นสำหรับการป้อนข้อความ';
 
   @override
-  String get themeMoonfin => 'มูนฟิน';
+  String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle =>
@@ -254,18 +254,18 @@ class AppLocalizationsTh extends AppLocalizations {
       'สไตล์ซินธ์เวฟพร้อมเรืองแสงสีม่วงแดง ข้อความสีฟ้า และคอนทราสต์ของโครเมียมที่เข้มกว่า';
 
   @override
-  String get themeGlass => 'Glass';
+  String get themeGlass => 'กระจก';
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      'สไตล์กระจกเหลว พร้อมพื้นหลังไล่เฉดที่ค่อยๆ เคลื่อน พื้นผิวฝ้า และสีเน้นฟ้าแบบ Apple';
 
   @override
-  String get theme8BitHero => '8-bit Hero';
+  String get theme8BitHero => 'ฮีโร่ 8-bit';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
+      'สไตล์พิกเซลอาร์ตย้อนยุค พร้อมชุดสีหนา ขอบทึบเป็นบล็อก เงาตกกระทบคมชัด และฟอนต์พิกเซล';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -328,35 +328,34 @@ class AppLocalizationsTh extends AppLocalizations {
   String get exit => 'ออก';
 
   @override
-  String get gameMenu => 'Menu';
+  String get gameMenu => 'เมนู';
 
   @override
-  String get gamePaused => 'Paused';
+  String get gamePaused => 'หยุดชั่วคราว';
 
   @override
-  String get gameSaveState => 'Save state';
+  String get gameSaveState => 'บันทึกสถานะ';
 
   @override
-  String get games => 'Games';
+  String get games => 'เกม';
 
   @override
-  String get gameLoadState => 'Load state';
+  String get gameLoadState => 'โหลดสถานะ';
 
   @override
-  String get gameFastForward => 'Fast-forward';
+  String get gameFastForward => 'เดินหน้าเร็ว';
 
   @override
-  String get gameEmulatorSettings => 'Emulator settings';
+  String get gameEmulatorSettings => 'การตั้งค่าอีมูเลเตอร์';
 
   @override
-  String get gameNoCoreOptions => 'This core has no adjustable options.';
+  String get gameNoCoreOptions => 'คอร์นี้ไม่มีตัวเลือกที่ปรับได้';
 
   @override
-  String get gameHoldToOpenMenu => 'Hold to open menu';
+  String get gameHoldToOpenMenu => 'กดค้างเพื่อเปิดเมนู';
 
   @override
-  String get gamePlaybackUnsupported =>
-      'Game playback is not supported on this device yet.';
+  String get gamePlaybackUnsupported => 'อุปกรณ์นี้ยังไม่รองรับการเล่นเกม';
 
   @override
   String get noHomeRowsLoaded => 'ไม่สามารถโหลดแถวบ้านได้';
@@ -371,19 +370,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String get guide => 'แนะนำ';
 
   @override
-  String get recordings => 'การบันทึก';
+  String get recordings => 'รายการบันทึก';
 
   @override
   String get schedule => 'กำหนดการ';
 
   @override
-  String get series => 'ชุด';
+  String get series => 'ซีรีส์';
 
   @override
   String get noItemsFound => 'ไม่พบรายการ';
 
   @override
-  String get home => 'บ้าน';
+  String get home => 'หน้าแรก';
 
   @override
   String get browseAll => 'เรียกดูทั้งหมด';
@@ -414,7 +413,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get noLibrariesFound => 'ไม่พบห้องสมุด';
 
   @override
-  String get library => 'ห้องสมุด';
+  String get library => 'ไลบรารี';
 
   @override
   String get displaySettings => 'การตั้งค่าการแสดงผล';
@@ -551,7 +550,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get pickDiscoverySubjects => 'เลือกฟีดหัวเรื่องที่จะแสดงใน Discover';
 
   @override
-  String get apply => 'นำมาใช้';
+  String get apply => 'นำไปใช้';
 
   @override
   String get openLink => 'เปิดลิงก์';
@@ -599,7 +598,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get listen => 'ฟัง';
 
   @override
-  String get resume => 'ประวัติย่อ';
+  String get resume => 'อ่านต่อ';
 
   @override
   String get failedToLoadLibrary => 'โหลดไลบรารี่ไม่สำเร็จ';
@@ -664,7 +663,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count แนว';
   }
 
   @override
@@ -690,7 +689,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get titles => 'ชื่อเรื่อง';
+  String get titles => 'เรื่อง';
 
   @override
   String get allTitles => 'ชื่อเรื่องทั้งหมด';
@@ -748,7 +747,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get unread => 'ยังไม่ได้อ่าน';
 
   @override
-  String get unwatched => 'ไม่ได้ดู';
+  String get unwatched => 'ยังไม่ได้ดู';
 
   @override
   String get seriesStatus => 'สถานะซีรีส์';
@@ -760,43 +759,43 @@ class AppLocalizationsTh extends AppLocalizations {
   String get books => 'หนังสือ';
 
   @override
-  String get latestBooks => 'Latest Books';
+  String get latestBooks => 'หนังสือล่าสุด';
 
   @override
-  String get latestAudiobooks => 'Latest Audiobooks';
+  String get latestAudiobooks => 'หนังสือเสียงล่าสุด';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count books',
-      one: '1 book',
+      other: '$count เล่ม',
+      one: '1 เล่ม',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Book';
+  String get bookFormatBook => 'หนังสือ';
 
   @override
-  String get bookFormatAudiobook => 'Audiobook';
+  String get bookFormatAudiobook => 'หนังสือเสียง';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% read';
+    return 'อ่านแล้ว $percent%';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time left';
+    return 'เหลือ $time';
   }
 
   @override
-  String get bookHeroRead => 'Read';
+  String get bookHeroRead => 'อ่าน';
 
   @override
-  String get bookHeroListen => 'Listen';
+  String get bookHeroListen => 'ฟัง';
 
   @override
   String get author => 'ผู้เขียน';
@@ -873,8 +872,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: 'หนังสือเสียง $count เล่ม',
+      one: 'หนังสือเสียง 1 เล่ม',
     );
     return '$_temp0';
   }
@@ -910,7 +909,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get nextUp => 'ถัดไปขึ้นมา';
 
   @override
-  String get seasons => 'ฤดูกาล';
+  String get seasons => 'ซีซั่น';
 
   @override
   String get chapters => 'บท';
@@ -976,8 +975,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count ซีซัน',
+      one: '1 ซีซัน',
     );
     return '$_temp0';
   }
@@ -988,40 +987,40 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get items => 'Items';
+  String get items => 'รายการ';
 
   @override
-  String get extras => 'Extras';
+  String get extras => 'ส่วนเสริม';
 
   @override
-  String get behindTheScenes => 'Behind the Scenes';
+  String get behindTheScenes => 'เบื้องหลังการถ่ายทำ';
 
   @override
-  String get deletedScenes => 'Deleted Scenes';
+  String get deletedScenes => 'ฉากที่ถูกตัดออก';
 
   @override
-  String get featurettes => 'Featurettes';
+  String get featurettes => 'สารคดีสั้น';
 
   @override
-  String get interviews => 'Interviews';
+  String get interviews => 'บทสัมภาษณ์';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'ฉาก';
 
   @override
-  String get shorts => 'Shorts';
+  String get shorts => 'หนังสั้น';
 
   @override
-  String get trailers => 'รถพ่วง';
+  String get trailers => 'ตัวอย่าง';
 
   @override
   String timeRemaining(String time) {
-    return '$time remaining';
+    return 'เหลืออีก $time';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return 'จบใน $time';
   }
 
   @override
@@ -1063,7 +1062,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get version => 'เวอร์ชัน';
 
   @override
-  String get cast => 'หล่อ';
+  String get cast => 'แคสต์';
 
   @override
   String get trailer => 'ตัวอย่าง';
@@ -1256,13 +1255,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get director => 'ผู้อำนวยการ';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => 'ผู้กำกับ';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => 'ผู้เขียนบท';
 
   @override
-  String get writers => 'นักเขียน';
+  String get writers => 'ผู้เขียนบท';
 
   @override
   String get studio => 'สตูดิโอ';
@@ -1297,8 +1296,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count แทร็ก',
+      one: '1 แทร็ก',
     );
     return '$_temp0';
   }
@@ -1308,8 +1307,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count บท',
+      one: '1 บท',
     );
     return '$_temp0';
   }
@@ -1336,16 +1335,16 @@ class AppLocalizationsTh extends AppLocalizations {
   String get readMore => 'อ่านเพิ่มเติม';
 
   @override
-  String get shuffle => 'สับเปลี่ยน';
+  String get shuffle => 'สุ่มเล่น';
 
   @override
-  String get shuffleAllMusic => 'Shuffle all music';
+  String get shuffleAllMusic => 'สุ่มเล่นเพลงทั้งหมด';
 
   @override
-  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+  String get carSignInPrompt => 'ลงชื่อเข้าใช้ Moonfin บนโทรศัพท์ของคุณ';
 
   @override
-  String get carServerUnreachable => 'Can\'t reach your server';
+  String get carServerUnreachable => 'เชื่อมต่อเซิร์ฟเวอร์ของคุณไม่ได้';
 
   @override
   String downloadsCount(int count) {
@@ -1357,7 +1356,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '${count}ch';
+    return '$count ช่อง';
   }
 
   @override
@@ -1543,7 +1542,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get transcodeReasons => 'เหตุผลในการแปลงรหัส';
 
   @override
-  String get player => 'ผู้เล่น';
+  String get player => 'ตัวเล่น';
 
   @override
   String get container => 'คอนเทนเนอร์';
@@ -1567,7 +1566,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get videoBitrate => 'อัตราบิตของวิดีโอ';
 
   @override
-  String get track => 'ติดตาม';
+  String get track => 'แทร็ก';
 
   @override
   String get channels => 'ช่อง';
@@ -1781,22 +1780,22 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Next: $time  $title';
+    return 'ถัดไป: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m left';
+    return 'เหลือ $minutes นาที';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h left';
+    return 'เหลือ $hours ชม.';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m left';
+    return 'เหลือ $hours ชม. $minutes นาที';
   }
 
   @override
@@ -1818,7 +1817,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get favoriteChannel => 'ช่องโปรด';
 
   @override
-  String get record => 'บันทึก';
+  String get record => 'บันทึกรายการ';
 
   @override
   String get cancelRecordingAction => 'ยกเลิกการบันทึก';
@@ -1833,7 +1832,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get unableToCreateRecording => 'ไม่สามารถสร้างการบันทึกได้';
 
   @override
-  String get watch => 'ดู';
+  String get watch => 'รับชม';
 
   @override
   String get close => 'ปิด';
@@ -1870,7 +1869,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get no => 'เลขที่';
+  String get no => 'ไม่';
 
   @override
   String get yesCancel => 'ใช่ ยกเลิก';
@@ -1977,7 +1976,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get season => 'ฤดูกาล';
+  String get season => 'ซีซั่น';
 
   @override
   String get errorLoadingEpisodes => 'เกิดข้อผิดพลาดในการโหลดตอน';
@@ -2043,8 +2042,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count ตอน',
+      one: '1 ตอน',
     );
     return '$_temp0';
   }
@@ -2267,7 +2266,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'Detail pages, home rows, and volume';
+      'หน้ารายละเอียด แถวหน้าแรก และระดับเสียง';
 
   @override
   String percentValue(int value) {
@@ -2281,11 +2280,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'เล่นเมื่อเรียกดูหน้าจอหลัก';
 
   @override
-  String get loopThemeMusic => 'Loop Theme Music';
+  String get loopThemeMusic => 'เล่นเพลงประจำเรื่องวนซ้ำ';
 
   @override
-  String get loopThemeMusicSubtitle =>
-      'Repeat the track instead of playing it once';
+  String get loopThemeMusicSubtitle => 'เล่นแทร็กซ้ำแทนการเล่นเพียงครั้งเดียว';
 
   @override
   String get detailsBackgroundBlur => 'รายละเอียด พื้นหลังเบลอ';
@@ -2308,23 +2306,23 @@ class AppLocalizationsTh extends AppLocalizations {
   String get playerZoomMode => 'โหมดซูมผู้เล่น';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => 'ล้อเลื่อนเมาส์';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      'เลือกการทำงานเมื่อเลื่อนล้อเมาส์เหนือวิดีโอระหว่างการเล่น';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => 'ปิด';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => 'เลื่อนหา (ไปหน้า / ย้อนกลับ)';
 
   @override
-  String get scrollWheelActionVolume => 'Volume';
+  String get scrollWheelActionVolume => 'ระดับเสียง';
 
   @override
-  String get playerTooltipVolume => 'Volume';
+  String get playerTooltipVolume => 'ระดับเสียง';
 
   @override
   String get fit => 'พอดี';
@@ -2339,7 +2337,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get refreshRateSwitching => 'การสลับอัตราการรีเฟรช';
 
   @override
-  String get disabled => 'พิการ';
+  String get disabled => 'ปิดใช้งาน';
 
   @override
   String get scaleOnTv => 'สเกลบนทีวี';
@@ -2377,37 +2375,37 @@ class AppLocalizationsTh extends AppLocalizations {
   String get defaultAudioLanguage => 'ภาษาเสียงเริ่มต้น';
 
   @override
-  String get fallbackAudioLanguage => 'Fallback Audio Language';
+  String get fallbackAudioLanguage => 'ภาษาเสียงสำรอง';
 
   @override
-  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+  String get preferDefaultAudioTrack => 'ใช้แทร็กเสียงเริ่มต้นก่อน';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Prefer original audio track over localized dub.';
+      'ใช้แทร็กเสียงต้นฉบับแทนเสียงพากย์';
 
   @override
-  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+  String get preferAudioDescription => 'ใช้แทร็กเสียงบรรยายภาพก่อน';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Prefer audio description tracks over normal tracks.';
+      'ใช้แทร็กเสียงบรรยายภาพแทนแทร็กปกติ';
 
   @override
-  String get transcodingAudio => 'Transcoding (Audio)';
+  String get transcodingAudio => 'แปลงสัญญาณ (เสียง)';
 
   @override
-  String get directStreamRemux => 'Direct Stream (Remux)';
+  String get directStreamRemux => 'สตรีมโดยตรง (รีมักซ์)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Transcoding (Bitrate or Resolution)';
+      'แปลงสัญญาณ (บิตเรตหรือความละเอียด)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+  String get transcodingVideoAndAudio => 'แปลงสัญญาณ (วิดีโอและเสียง)';
 
   @override
-  String get transcodingVideo => 'Transcoding (Video)';
+  String get transcodingVideo => 'แปลงสัญญาณ (วิดีโอ)';
 
   @override
   String get autoServerDefault => 'อัตโนมัติ (ค่าเริ่มต้นของเซิร์ฟเวอร์)';
@@ -2473,7 +2471,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get dtsPassthrough => 'DTS พาสทรู';
 
   @override
-  String get trueHdSupport => 'รองรับ True HD';
+  String get trueHdSupport => 'รองรับ TrueHD';
 
   @override
   String get enableDtsPassthrough =>
@@ -2488,7 +2486,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      'เลือกวิธีถอดรหัสเสียง AVR Passthrough จะส่งสตรีม Dolby/DTS ดิบไปยังเครื่องรับของคุณ ส่วนอัตโนมัติหรือดาวน์มิกซ์จะถอดรหัสในเครื่อง';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR พาสทรู';
@@ -2498,13 +2496,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      'เลือกรูปแบบปลายทางสำหรับแปลงเสียงหลายช่องสัญญาณ เมื่อสตรีมต้นทางไม่สามารถเล่นโดยตรงหรือส่งผ่านได้';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto => 'ตรวจหาอัตโนมัติ\n(แนะนำ)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(ค่าเริ่มต้น)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2513,50 +2511,51 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(ไม่สูญเสียคุณภาพ)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(สเตอริโอเท่านั้น)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(ประหยัดพื้นที่)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(ไม่สูญเสียคุณภาพ)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => 'ช่องสัญญาณเสียงสูงสุด';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      'กำหนดจำนวนช่องสัญญาณสูงสุดของชุดเครื่องเสียงของคุณ สตรีมหลายช่องสัญญาณที่เกินขีดจำกัดนี้จะถูกดาวน์มิกซ์หรือแปลงสัญญาณ';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto =>
+      'ตรวจหาอัตโนมัติ\n(ค่าเริ่มต้นของฮาร์ดแวร์)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 Mono';
+  String get settingsMaxAudioChannelsMono => '1.0 โมโน';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
+  String get settingsMaxAudioChannelsStereo => '2.0 สเตอริโอ';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 เซอร์ราวด์';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 ควอดราโฟนิก';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 เซอร์ราวด์';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
+  String get settingsMaxAudioChannels5_1 => '5.1 เซอร์ราวด์';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
+  String get settingsMaxAudioChannels6_1 => '6.1 เซอร์ราวด์';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
+  String get settingsMaxAudioChannels7_1 => '7.1 เซอร์ราวด์';
 
   @override
   String get settingsAudioPassthroughAdvanced => 'ส่งผ่าน (ขั้นสูง)';
@@ -2638,11 +2637,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'วิทยากร';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Headphones';
+  String get settingsAudioRouteHeadphones => 'หูฟัง';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '${count}ch PCM';
+    return 'PCM $count ช่อง';
   }
 
   @override
@@ -2728,7 +2727,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '${value}s';
+    return '$value วิ';
   }
 
   @override
@@ -2817,45 +2816,45 @@ class AppLocalizationsTh extends AppLocalizations {
   String get subtitleCustomizationDescription => 'ปรับแต่งลักษณะคำบรรยาย';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => 'โหมดคำบรรยาย';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => 'ตามการกำกับ';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => 'เสมอ';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => 'ภาษาต่างประเทศ';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => 'บังคับ';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+      'เล่นแทร็กที่ถูกกำกับไว้ในข้อมูลเมตาของไฟล์สื่อว่าเป็น \"default\" หรือ \"forced\"';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+      'โหลดและแสดงคำบรรยายโดยอัตโนมัติทุกครั้งที่เริ่มเล่นวิดีโอ';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+      'เปิดคำบรรยายโดยอัตโนมัติหากแทร็กเสียงเริ่มต้นเป็นภาษาต่างประเทศ';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+      'โหลดเฉพาะคำบรรยายที่ถูกกำกับด้วยแฟล็ก forced เท่านั้น';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+      'ปิดการโหลดคำบรรยายอัตโนมัติทั้งหมด';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => 'ภาษาคำบรรยายสำรอง';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => 'สตรีมคำบรรยาย';
 
   @override
   String get subtitlePreviewText =>
@@ -2963,11 +2962,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get wifiOnlyDownloads => 'ดาวน์โหลดเฉพาะ WiFi เท่านั้น';
 
   @override
-  String get reportDownloadsActivity => 'Show downloads on the server';
+  String get reportDownloadsActivity => 'แสดงการดาวน์โหลดบนเซิร์ฟเวอร์';
 
   @override
   String get reportDownloadsActivitySubtitle =>
-      'Let the server admin see your transcoded downloads in the dashboard';
+      'อนุญาตให้ผู้ดูแลเซิร์ฟเวอร์เห็นการดาวน์โหลดที่แปลงสัญญาณของคุณในแดชบอร์ด';
 
   @override
   String get onlyDownloadOnWifi => 'ดาวน์โหลดเมื่อเชื่อมต่อกับ WiFi เท่านั้น';
@@ -3059,10 +3058,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get showLibrariesInToolbar => 'แสดงไลบรารีในแถบเครื่องมือ';
 
   @override
-  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
+  String get navbarAlwaysExpanded => 'แสดงชื่อเมนูบนแถบนำทางเสมอ';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'แสดงปุ่ม Seerr';
 
   @override
   String get navbarOpacity => 'ความทึบของแถบนำทาง';
@@ -3135,18 +3134,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String get showFolderBrowsingOption => 'แสดงตัวเลือกการเรียกดูโฟลเดอร์';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => 'จัดกลุ่มรายการเป็นคอลเลกชัน';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+      'ซ่อนรายการในคลังที่อยู่ในคอลเลกชันขณะเรียกดูคลังสื่อ';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle =>
+      'ประกาศเกี่ยวกับการจัดกลุ่มคลังสื่อ';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+      'หากต้องการใช้การตั้งค่านี้ โปรดตรวจสอบว่าได้เปิดการตั้งค่าคลังสื่อ \"Group movies into collections\" และ/หรือ \"Group shows into collections\" ในการตั้งค่าการแสดงผลของคลังสื่อบนเซิร์ฟเวอร์ Jellyfin หรือ Emby ของคุณแล้ว';
 
   @override
   String get libraryVisibility => 'การมองเห็นห้องสมุด';
@@ -3205,7 +3205,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'เลือกระหว่าง Moonfin, MakD หรือปิดแถบสื่อ';
 
   @override
-  String get mediaBarModeMoonfin => 'มูนฟิน';
+  String get mediaBarModeMoonfin => 'Moonfin';
 
   @override
   String get mediaBarModeMakd => 'หมากดี';
@@ -3258,10 +3258,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'เล่นตัวอย่างอัตโนมัติในแถบสื่อหลังจากผ่านไป 3 วินาที';
 
   @override
-  String get trailerAudio => 'Trailer Audio';
+  String get trailerAudio => 'เสียงตัวอย่าง';
 
   @override
-  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+  String get enableTrailerAudio => 'เปิดเสียงสำหรับตัวอย่างในแถบสื่อ';
 
   @override
   String get episodePreview => 'ดูตัวอย่างตอน';
@@ -3337,10 +3337,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get combineBothRows => 'รวมทั้งสองแถวเป็นส่วนบ้านเดียว';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => 'แถวหน้าแรกแบบขยาย';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription =>
+      'จำกัดแถวหน้าแรกให้เหลือ 1 แถวต่อหน้าจอ';
 
   @override
   String get perRowImageType => 'ประเภทรูปภาพต่อแถว';
@@ -3355,7 +3356,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get lastUser => 'ผู้ใช้คนสุดท้าย';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => 'ผู้ใช้ปัจจุบัน';
 
   @override
   String get alwaysAuthenticate => 'ตรวจสอบสิทธิ์เสมอ';
@@ -3459,10 +3460,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get displayClockDuringScreensaver => 'แสดงนาฬิการะหว่างสกรีนเซฟเวอร์';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => 'อยู่กับที่';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => 'เคลื่อนไปมา';
 
   @override
   String get rottenTomatoesCritics => 'มะเขือเทศเน่า (นักวิจารณ์)';
@@ -3471,10 +3472,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get rottenTomatoesAudience => 'มะเขือเทศเน่า (ผู้ชม)';
 
   @override
-  String get imdb => 'ไอเอ็มดีบี';
+  String get imdb => 'IMDb';
 
   @override
-  String get tmdb => 'ทีเอ็มดีบี';
+  String get tmdb => 'TMDB';
 
   @override
   String get metacritic => 'ริติค';
@@ -3483,7 +3484,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get metacriticUser => 'ริติค (ผู้ใช้)';
 
   @override
-  String get trakt => 'แทรคท์';
+  String get trakt => 'Trakt';
 
   @override
   String get letterboxd => 'ตู้จดหมายd';
@@ -3532,7 +3533,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'เปิดใช้งานและจัดลำดับแหล่งการให้คะแนนที่แสดงทั่วทั้งแอปใหม่';
 
   @override
-  String get pluginLabel => 'ปลั๊กอิน';
+  String get pluginLabel => 'ปลั๊กอิน Moonbase';
 
   @override
   String get pluginDetected => 'ตรวจพบปลั๊กอิน';
@@ -3603,7 +3604,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get networks => 'เครือข่าย';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'แถวสำรวจของ Seerr';
 
   @override
   String get resetRowsToDefaults => 'รีเซ็ตแถวเป็นค่าเริ่มต้น';
@@ -3626,28 +3627,26 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hideAdultContent => 'ซ่อนเนื้อหาสำหรับผู้ใหญ่ในผลลัพธ์';
 
   @override
-  String get seerrNotificationsSection => 'Notifications';
+  String get seerrNotificationsSection => 'การแจ้งเตือน';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'New request notifications';
+  String get seerrNotifyNewRequestsTitle => 'แจ้งเตือนคำขอใหม่';
 
   @override
-  String get seerrNotifyNewRequestsSubtitle =>
-      'Alert me when someone submits a request';
+  String get seerrNotifyNewRequestsSubtitle => 'แจ้งเตือนฉันเมื่อมีคนส่งคำขอ';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Request updates';
+  String get seerrNotifyLibraryAddedTitle => 'อัปเดตคำขอ';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Approved, declined, and added to your library';
+      'อนุมัติ ปฏิเสธ และเพิ่มลงคลังสื่อของคุณ';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Issue updates';
+  String get seerrNotifyIssuesTitle => 'อัปเดตปัญหา';
 
   @override
-  String get seerrNotifyIssuesSubtitle =>
-      'New issues, replies, and resolutions';
+  String get seerrNotifyIssuesSubtitle => 'ปัญหาใหม่ การตอบกลับ และการแก้ไข';
 
   @override
   String loggedInAs(String username) {
@@ -3655,18 +3654,18 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get discoverRows => 'ค้นพบแถว';
+  String get discoverRows => 'หน้าสำรวจของ Seerr';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'ลากเพื่อเรียงลำดับใหม่ เปิดหรือปิดการใช้งานแถว เปิดใช้งานการซิงค์ลำดับแถวกับปลั๊กอิน Moonfin';
+      'เปิดแถวที่ต้องการแสดงบนหน้าหลักของ Seerr ลากเพื่อจัดลำดับ ลำดับที่กำหนดเองจะซิงค์กับ Moonbase';
 
   @override
   String get discoverRowsDescription =>
-      'ลากเพื่อเรียงลำดับใหม่ เปิดหรือปิดการใช้งานแถว';
+      'เปิดแถวที่ต้องการแสดงบนหน้าหลักของ Seerr ลากเพื่อจัดลำดับ ลำดับที่กำหนดเองจะซิงค์กับ Moonbase';
 
   @override
-  String get enabled => 'เปิดใช้งานแล้ว';
+  String get enabled => 'เปิดใช้งาน';
 
   @override
   String get hidden => 'ที่ซ่อนอยู่';
@@ -3789,16 +3788,16 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get imageCacheLimit => 'Image cache limit';
+  String get imageCacheLimit => 'ขีดจำกัดแคชรูปภาพ';
 
   @override
-  String get clearImageCache => 'Clear image cache';
+  String get clearImageCache => 'ล้างแคชรูปภาพ';
 
   @override
-  String get imageCacheCleared => 'Image cache cleared';
+  String get imageCacheCleared => 'ล้างแคชรูปภาพแล้ว';
 
   @override
-  String get clear => 'ชัดเจน';
+  String get clear => 'ล้าง';
 
   @override
   String get browse => 'เรียกดู';
@@ -3814,11 +3813,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Downloading · $percent%';
+    return 'กำลังดาวน์โหลด · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Importing';
+  String get seerrImportingStatus => 'กำลังนำเข้า';
 
   @override
   String itemsCount(int count) {
@@ -3826,7 +3825,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get seerrSettings => 'การตั้งค่าเซียร์';
+  String get seerrSettings => 'การตั้งค่า Seerr';
 
   @override
   String get requestMore => 'ขอเพิ่มเติม';
@@ -3921,7 +3920,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get showMore => 'แสดงเพิ่มเติม';
 
   @override
-  String get appearances => 'การปรากฏตัว';
+  String get appearances => 'ผลงานการแสดง';
 
   @override
   String get crewSection => 'ลูกทีม';
@@ -3959,148 +3958,146 @@ class AppLocalizationsTh extends AppLocalizations {
   String get deletedStatus => 'ลบแล้ว';
 
   @override
-  String get failedStatus => 'Failed';
+  String get failedStatus => 'ล้มเหลว';
 
   @override
-  String get processingStatus => 'Processing';
+  String get processingStatus => 'กำลังดำเนินการ';
 
   @override
   String modifiedByName(String name) {
-    return 'Modified by $name';
+    return 'แก้ไขโดย $name';
   }
 
   @override
-  String get completedStatus => 'Completed';
+  String get completedStatus => 'เสร็จสิ้น';
 
   @override
-  String get requestErrorDuplicate => 'This title was already requested';
+  String get requestErrorDuplicate => 'มีการขอเรื่องนี้ไปแล้ว';
 
   @override
-  String get requestErrorQuota => 'Request limit reached';
+  String get requestErrorQuota => 'ใช้สิทธิ์การขอครบแล้ว';
 
   @override
-  String get requestErrorBlocklisted => 'This title is blocklisted';
+  String get requestErrorBlocklisted => 'เรื่องนี้อยู่ในรายการที่ถูกบล็อก';
 
   @override
-  String get requestErrorNoSeasons => 'No seasons left to request';
+  String get requestErrorNoSeasons => 'ไม่มีซีซันที่ขอได้เหลืออยู่';
 
   @override
-  String get requestErrorPermission =>
-      'You don\'t have permission to make this request';
+  String get requestErrorPermission => 'คุณไม่มีสิทธิ์ส่งคำขอนี้';
 
   @override
-  String get seerrRequestsTitle => 'Requests';
+  String get seerrRequestsTitle => 'คำขอ';
 
   @override
-  String get seerrIssuesTitle => 'Issues';
+  String get seerrIssuesTitle => 'ปัญหา';
 
   @override
-  String get sortNewest => 'Newest';
+  String get sortNewest => 'ใหม่ที่สุด';
 
   @override
-  String get sortLastModified => 'Last Modified';
+  String get sortLastModified => 'แก้ไขล่าสุด';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => 'ไม่มีปัญหา';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit movie requests remaining';
+    return 'เหลือสิทธิ์ขอภาพยนตร์ $remaining จาก $limit ครั้ง';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit season requests remaining';
+    return 'เหลือสิทธิ์ขอซีซัน $remaining จาก $limit ครั้ง';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Part of $name';
+    return 'อยู่ในชุด $name';
   }
 
   @override
-  String get viewCollection => 'View Collection';
+  String get viewCollection => 'ดูคอลเลกชัน';
 
   @override
-  String get requestCollection => 'Request Collection';
+  String get requestCollection => 'ขอทั้งคอลเลกชัน';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total movies · $available available';
+    return 'ภาพยนตร์ $total เรื่อง · พร้อมดู $available เรื่อง';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Request $count movies';
+    return 'ขอภาพยนตร์ $count เรื่อง';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Requesting $current of $total...';
+    return 'กำลังส่งคำขอ $current จาก $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Requested $count movies';
+    return 'ขอภาพยนตร์แล้ว $count เรื่อง';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Requested $ok of $total movies';
+    return 'ขอภาพยนตร์แล้ว $ok จาก $total เรื่อง';
   }
 
   @override
-  String get collectionAllRequested =>
-      'All movies are already available or requested';
+  String get collectionAllRequested => 'ภาพยนตร์ทั้งหมดพร้อมดูหรือถูกขอไปแล้ว';
 
   @override
-  String get reportIssue => 'Report Issue';
+  String get reportIssue => 'รายงานปัญหา';
 
   @override
-  String get issueTypeVideo => 'Video';
+  String get issueTypeVideo => 'วิดีโอ';
 
   @override
-  String get issueTypeAudio => 'Audio';
+  String get issueTypeAudio => 'เสียง';
 
   @override
-  String get whatsWrong => 'What\'s wrong?';
+  String get whatsWrong => 'เกิดปัญหาอะไรขึ้น?';
 
   @override
-  String get allEpisodes => 'All Episodes';
+  String get allEpisodes => 'ทุกตอน';
 
   @override
-  String get episode => 'Episode';
+  String get episode => 'ตอน';
 
   @override
-  String get openStatus => 'Open';
+  String get openStatus => 'เปิดอยู่';
 
   @override
-  String get resolvedStatus => 'Resolved';
+  String get resolvedStatus => 'แก้ไขแล้ว';
 
   @override
-  String get resolveAction => 'Resolve';
+  String get resolveAction => 'ปิดปัญหา';
 
   @override
-  String get reopenAction => 'Reopen';
+  String get reopenAction => 'เปิดปัญหาใหม่';
 
   @override
   String reportedByName(String name) {
-    return 'Reported by $name';
+    return 'รายงานโดย $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comments';
+    return '$count ความคิดเห็น';
   }
 
   @override
-  String get addComment => 'Add a comment';
+  String get addComment => 'เพิ่มความคิดเห็น';
 
   @override
-  String get deleteIssueConfirm => 'Delete this issue?';
+  String get deleteIssueConfirm => 'ลบปัญหานี้หรือไม่?';
 
   @override
-  String get submitReport => 'Submit Report';
+  String get submitReport => 'ส่งรายงาน';
 
   @override
   String get tmdbScore => 'คะแนน TMDB';
@@ -4124,7 +4121,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get originalLanguageLabel => 'ภาษาต้นฉบับ';
 
   @override
-  String get seasonsLabel => 'ฤดูกาล';
+  String get seasonsLabel => 'ซีซั่น';
 
   @override
   String get episodesLabel => 'ตอน';
@@ -4157,7 +4154,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get disable => 'ปิดการใช้งาน';
 
   @override
-  String get done => 'เสร็จแล้ว';
+  String get done => 'เสร็จสิ้น';
 
   @override
   String get edit => 'แก้ไข';
@@ -4169,7 +4166,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get error => 'ข้อผิดพลาด';
 
   @override
-  String get forward => 'ซึ่งไปข้างหน้า';
+  String get forward => 'กรอไปข้างหน้า';
 
   @override
   String get general => 'ทั่วไป';
@@ -4193,7 +4190,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get networking => 'เครือข่าย';
 
   @override
-  String get next => 'ต่อไป';
+  String get next => 'ถัดไป';
 
   @override
   String get path => 'เส้นทาง';
@@ -4217,7 +4214,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get refresh => 'รีเฟรช';
 
   @override
-  String get remote => 'ระยะไกล';
+  String get remote => 'รีโมต';
 
   @override
   String get rename => 'เปลี่ยนชื่อ';
@@ -4262,7 +4259,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get time => 'เวลา';
 
   @override
-  String get trickplay => 'เล่นกล';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => 'ถอนการติดตั้ง';
@@ -4301,28 +4298,28 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminDrawerUsers => 'ผู้ใช้';
 
   @override
-  String get adminDrawerLibraries => 'ห้องสมุด';
+  String get adminDrawerLibraries => 'ไลบรารี';
 
   @override
-  String get adminDrawerDisplay => 'Display';
+  String get adminDrawerDisplay => 'การแสดงผล';
 
   @override
-  String get adminDrawerMetadata => 'Metadata';
+  String get adminDrawerMetadata => 'ข้อมูลเมตา';
 
   @override
-  String get adminDrawerNfo => 'NFO Settings';
+  String get adminDrawerNfo => 'การตั้งค่า NFO';
 
   @override
   String get adminDrawerTranscoding => 'การแปลงรหัส';
 
   @override
-  String get adminDrawerResume => 'ประวัติย่อ';
+  String get adminDrawerResume => 'เล่นต่อ';
 
   @override
   String get adminDrawerStreaming => 'สตรีมมิ่ง';
 
   @override
-  String get adminDrawerTrickplay => 'เล่นกล';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'อุปกรณ์';
@@ -4492,10 +4489,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get sessionRewind => 'กรอกลับ';
 
   @override
-  String get sessionForward => 'ซึ่งไปข้างหน้า';
+  String get sessionForward => 'กรอไปข้างหน้า';
 
   @override
-  String get sessionNext => 'ต่อไป';
+  String get sessionNext => 'ถัดไป';
 
   @override
   String get sessionVolumeDown => 'เล่ม –';
@@ -4510,7 +4507,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get nowPlaying => 'กำลังเล่นอยู่';
 
   @override
-  String get volume => 'ปริมาณ';
+  String get volume => 'ระดับเสียง';
 
   @override
   String get actions => 'การดำเนินการ';
@@ -4537,10 +4534,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminClearDates => 'วันที่ที่ชัดเจน';
 
   @override
-  String get adminActivitySeverityAll => 'All severities';
+  String get adminActivitySeverityAll => 'ทุกระดับความรุนแรง';
 
   @override
-  String get adminActivityDateRange => 'Date range';
+  String get adminActivityDateRange => 'ช่วงวันที่';
 
   @override
   String adminActivityLoadFailed(String error) {
@@ -4577,23 +4574,23 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return 'นำอุปกรณ์ \'$name\' ออกหรือไม่? ผู้ใช้จะต้องลงชื่อเข้าใช้บนอุปกรณ์นี้อีกครั้ง';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Delete all devices';
+  String get adminDeleteAllDevices => 'ลบอุปกรณ์ทั้งหมด';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
+    return 'นำอุปกรณ์ $count เครื่องออกหรือไม่? ผู้ใช้ที่ได้รับผลกระทบจะต้องลงชื่อเข้าใช้อีกครั้ง อุปกรณ์ปัจจุบันของคุณจะไม่ได้รับผลกระทบ';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Devices removed';
+  String get adminDevicesDeletedAll => 'นำอุปกรณ์ออกแล้ว';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Removed some devices; $count could not be removed.';
+    return 'นำอุปกรณ์ออกบางส่วนแล้ว มี $count เครื่องที่นำออกไม่ได้';
   }
 
   @override
@@ -4708,244 +4705,243 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminMetadataCountryHint => 'เช่น สหรัฐอเมริกา เยอรมนี ฝรั่งเศส';
 
   @override
-  String get adminLibraryTabPaths => 'Paths';
+  String get adminLibraryTabPaths => 'เส้นทาง';
 
   @override
-  String get adminLibraryTabOptions => 'Options';
+  String get adminLibraryTabOptions => 'ตัวเลือก';
 
   @override
-  String get adminLibraryTabDownloaders => 'Downloaders';
+  String get adminLibraryTabDownloaders => 'ตัวดาวน์โหลด';
 
   @override
-  String get adminLibMetadataSavers => 'Metadata savers';
+  String get adminLibMetadataSavers => 'ตัวบันทึกข้อมูลเมตา';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+  String get adminLibSubtitleDownloaders => 'ตัวดาวน์โหลดคำบรรยาย';
 
   @override
-  String get adminLibLyricDownloaders => 'Lyric downloaders';
+  String get adminLibLyricDownloaders => 'ตัวดาวน์โหลดเนื้อเพลง';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Metadata downloaders: $type';
+    return 'ตัวดาวน์โหลดข้อมูลเมตา: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Image fetchers: $type';
+    return 'ตัวดึงรูปภาพ: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'This server exposes no downloaders for this library type.';
+      'เซิร์ฟเวอร์นี้ไม่มีตัวดาวน์โหลดสำหรับคลังสื่อประเภทนี้';
 
   @override
-  String get adminLibrarySectionGeneral => 'General';
+  String get adminLibrarySectionGeneral => 'ทั่วไป';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadata';
+  String get adminLibrarySectionMetadata => 'ข้อมูลเมตา';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Embedded Info';
+  String get adminLibrarySectionEmbedded => 'ข้อมูลที่ฝังในไฟล์';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitles';
+  String get adminLibrarySectionSubtitles => 'คำบรรยาย';
 
   @override
-  String get adminLibrarySectionImages => 'Images';
+  String get adminLibrarySectionImages => 'รูปภาพ';
 
   @override
-  String get adminLibrarySectionSeries => 'Series';
+  String get adminLibrarySectionSeries => 'ซีรีส์';
 
   @override
-  String get adminLibrarySectionMusic => 'Music';
+  String get adminLibrarySectionMusic => 'เพลง';
 
   @override
-  String get adminLibrarySectionMovies => 'Movies';
+  String get adminLibrarySectionMovies => 'ภาพยนตร์';
 
   @override
-  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+  String get adminLibRealtimeMonitor => 'เปิดการตรวจสอบแบบเรียลไทม์';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Detect file changes and process them automatically.';
+      'ตรวจจับการเปลี่ยนแปลงของไฟล์และประมวลผลโดยอัตโนมัติ';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+  String get adminLibArchiveMediaFiles => 'ถือว่าไฟล์บีบอัดเป็นไฟล์สื่อ';
 
   @override
-  String get adminLibEnablePhotos => 'Display photos';
+  String get adminLibEnablePhotos => 'แสดงรูปภาพ';
 
   @override
-  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+  String get adminLibSaveLocalMetadata => 'บันทึกภาพปกลงในโฟลเดอร์สื่อ';
 
   @override
-  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+  String get adminLibRefreshInterval => 'รีเฟรชข้อมูลเมตาอัตโนมัติ';
 
   @override
-  String get adminLibRefreshNever => 'Never';
+  String get adminLibRefreshNever => 'ไม่เลย';
 
   @override
-  String get adminLibDefault => 'Default';
+  String get adminLibDefault => 'ค่าเริ่มต้น';
 
   @override
-  String get adminLibDisplayTitle => 'Display';
+  String get adminLibDisplayTitle => 'การแสดงผล';
 
   @override
-  String get adminLibDisplaySection => 'Library display';
+  String get adminLibDisplaySection => 'การแสดงผลคลังสื่อ';
 
   @override
   String get adminLibFolderView =>
-      'Display a folder view to show plain media folders';
+      'แสดงมุมมองโฟลเดอร์เพื่อดูโฟลเดอร์สื่อแบบธรรมดา';
 
   @override
-  String get adminLibSpecialsInSeasons =>
-      'Display specials within seasons they aired in';
+  String get adminLibSpecialsInSeasons => 'แสดงตอนพิเศษในซีซันที่ออกอากาศ';
 
   @override
-  String get adminLibGroupMovies => 'Group movies into collections';
+  String get adminLibGroupMovies => 'จัดกลุ่มภาพยนตร์เป็นคอลเลกชัน';
 
   @override
-  String get adminLibGroupShows => 'Group shows into collections';
+  String get adminLibGroupShows => 'จัดกลุ่มรายการเป็นคอลเลกชัน';
 
   @override
-  String get adminLibExternalSuggestions =>
-      'Show external content in suggestions';
+  String get adminLibExternalSuggestions => 'แสดงเนื้อหาภายนอกในรายการแนะนำ';
 
   @override
-  String get adminLibDateAddedSection => 'Date added behavior';
+  String get adminLibDateAddedSection => 'การกำหนดวันที่เพิ่ม';
 
   @override
-  String get adminLibDateAddedLabel => 'Use date added from';
+  String get adminLibDateAddedLabel => 'ใช้วันที่เพิ่มจาก';
 
   @override
-  String get adminLibDateAddedImport => 'Date scanned into the library';
+  String get adminLibDateAddedImport => 'วันที่สแกนเข้าคลังสื่อ';
 
   @override
-  String get adminLibDateAddedFile => 'Date the file was created';
+  String get adminLibDateAddedFile => 'วันที่สร้างไฟล์';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata and Images';
+  String get adminLibMetadataTitle => 'ข้อมูลเมตาและรูปภาพ';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferred metadata language';
+  String get adminLibMetadataLangSection => 'ภาษาของข้อมูลเมตาที่ต้องการ';
 
   @override
-  String get adminLibChaptersSection => 'Chapters';
+  String get adminLibChaptersSection => 'บท';
 
   @override
-  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
+  String get adminLibDummyChapterDuration => 'ความยาวบทจำลอง (วินาที)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Length of chapters generated for media that has none. Set to 0 to disable.';
+      'ความยาวของบทที่สร้างขึ้นสำหรับสื่อที่ไม่มีบท ตั้งเป็น 0 เพื่อปิดใช้งาน';
 
   @override
-  String get adminLibChapterImageResolution => 'Chapter image resolution';
+  String get adminLibChapterImageResolution => 'ความละเอียดรูปภาพของบท';
 
   @override
-  String get adminLibNfoTitle => 'NFO Settings';
+  String get adminLibNfoTitle => 'การตั้งค่า NFO';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
+      'ข้อมูลเมตา NFO ใช้ได้กับ Kodi และไคลเอ็นต์ที่คล้ายกัน การตั้งค่านี้มีผลกับทุกคลังสื่อที่บันทึกข้อมูลเมตา NFO';
 
   @override
-  String get adminLibKodiUser => 'User to store watch data for in NFO files';
+  String get adminLibKodiUser => 'ผู้ใช้ที่จะบันทึกข้อมูลการรับชมลงในไฟล์ NFO';
 
   @override
-  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
+  String get adminLibSaveImagePaths => 'บันทึกเส้นทางรูปภาพในไฟล์ NFO';
 
   @override
   String get adminLibPathSubstitution =>
-      'Enable path substitution for NFO image paths';
+      'เปิดการแทนที่เส้นทางสำหรับเส้นทางรูปภาพใน NFO';
 
   @override
   String get adminLibExtraThumbs =>
-      'Copy extrafanart images into an extrathumbs folder';
+      'คัดลอกรูป extrafanart ไปยังโฟลเดอร์ extrathumbs';
 
   @override
-  String get adminLibNone => 'None';
+  String get adminLibNone => 'ไม่มี';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days days';
+    return '$days วัน';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Use embedded titles';
+  String get adminLibEmbeddedTitles => 'ใช้ชื่อเรื่องที่ฝังในไฟล์';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+  String get adminLibEmbeddedExtrasTitles =>
+      'ใช้ชื่อเรื่องที่ฝังในไฟล์สำหรับส่วนเสริม';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+  String get adminLibEmbeddedEpisodeInfos => 'ใช้ข้อมูลตอนที่ฝังในไฟล์';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+  String get adminLibAllowEmbeddedSubtitles => 'อนุญาตคำบรรยายที่ฝังในไฟล์';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Allow all';
+  String get adminLibEmbeddedAllowAll => 'อนุญาตทั้งหมด';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Text only';
+  String get adminLibEmbeddedAllowText => 'ข้อความเท่านั้น';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Image only';
+  String get adminLibEmbeddedAllowImage => 'รูปภาพเท่านั้น';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'None';
+  String get adminLibEmbeddedAllowNone => 'ไม่มี';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Skip download if embedded subtitles are present';
+      'ข้ามการดาวน์โหลดหากมีคำบรรยายฝังอยู่ในไฟล์แล้ว';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Skip download if the audio track matches the download language';
+      'ข้ามการดาวน์โหลดหากแทร็กเสียงตรงกับภาษาที่ดาวน์โหลด';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+  String get adminLibRequirePerfectMatch => 'ต้องการคำบรรยายที่ตรงกันทุกประการ';
 
   @override
-  String get adminLibSaveSubtitlesWithMedia =>
-      'Save subtitles into media folders';
+  String get adminLibSaveSubtitlesWithMedia => 'บันทึกคำบรรยายลงในโฟลเดอร์สื่อ';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extract chapter images';
+  String get adminLibChapterImageExtraction => 'ดึงรูปภาพของบท';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Extract chapter images during the library scan';
+      'ดึงรูปภาพของบทระหว่างการสแกนคลังสื่อ';
 
   @override
-  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+  String get adminLibTrickplayExtraction => 'เปิดการดึงรูปภาพ Trickplay';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Extract trickplay images during the library scan';
+      'ดึงรูปภาพ Trickplay ระหว่างการสแกนคลังสื่อ';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Save trickplay images into media folders';
+      'บันทึกรูปภาพ Trickplay ลงในโฟลเดอร์สื่อ';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Automatically merge series that are spread across multiple folders';
+      'รวมซีรีส์ที่กระจายอยู่หลายโฟลเดอร์โดยอัตโนมัติ';
 
   @override
-  String get adminLibSeasonZeroName => 'Season zero display name';
+  String get adminLibSeasonZeroName => 'ชื่อที่แสดงของซีซัน 0';
 
   @override
-  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+  String get adminLibLufsScan =>
+      'เปิดการสแกน LUFS เพื่อปรับระดับเสียงให้สม่ำเสมอ';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Prefer non-standard artists tag';
+      'ใช้แท็กศิลปินแบบไม่มาตรฐานก่อน';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'Automatically add movies to collections';
+      'เพิ่มภาพยนตร์ลงคอลเลกชันโดยอัตโนมัติ';
 
   @override
   String get adminLibraryNameRequired => 'ต้องระบุชื่อห้องสมุด';
@@ -5183,143 +5179,143 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminEnableAllChannels => 'เปิดให้เข้าถึงทุกช่องทาง';
 
   @override
-  String get adminParentalControl => 'Parental Control';
+  String get adminParentalControl => 'การควบคุมโดยผู้ปกครอง';
 
   @override
-  String get adminMaxParentalRating => 'Maximum allowed parental rating';
+  String get adminMaxParentalRating => 'เรตผู้ปกครองสูงสุดที่อนุญาต';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Content with a higher rating will be hidden from this user.';
+      'เนื้อหาที่มีเรตสูงกว่านี้จะถูกซ่อนจากผู้ใช้รายนี้';
 
   @override
-  String get adminParentalRatingNone => 'None';
+  String get adminParentalRatingNone => 'ไม่มี';
 
   @override
   String get adminBlockUnratedItems =>
-      'Block items with no or unrecognized rating information';
+      'บล็อกรายการที่ไม่มีข้อมูลเรตหรือมีเรตที่ไม่รู้จัก';
 
   @override
-  String get adminUnratedBook => 'Books';
+  String get adminUnratedBook => 'หนังสือ';
 
   @override
-  String get adminUnratedChannelContent => 'Channels';
+  String get adminUnratedChannelContent => 'ช่อง';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Live TV';
+  String get adminUnratedLiveTvChannel => 'ทีวีสด';
 
   @override
-  String get adminUnratedMovie => 'Movies';
+  String get adminUnratedMovie => 'ภาพยนตร์';
 
   @override
-  String get adminUnratedMusic => 'Music';
+  String get adminUnratedMusic => 'เพลง';
 
   @override
-  String get adminUnratedTrailer => 'Trailers';
+  String get adminUnratedTrailer => 'ตัวอย่าง';
 
   @override
-  String get adminUnratedSeries => 'Shows';
+  String get adminUnratedSeries => 'รายการ';
 
   @override
-  String get adminAccessSchedules => 'Access Schedules';
+  String get adminAccessSchedules => 'ตารางการเข้าถึง';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
+      'อนุญาตให้เข้าถึงเฉพาะช่วงเวลาที่กำหนดไว้ด้านล่าง หากไม่ได้ตั้งตารางไว้จะเข้าถึงได้ตลอดทั้งวัน';
 
   @override
-  String get adminAddSchedule => 'Add Schedule';
+  String get adminAddSchedule => 'เพิ่มตาราง';
 
   @override
-  String get adminScheduleDay => 'Day';
+  String get adminScheduleDay => 'วัน';
 
   @override
-  String get adminScheduleStart => 'Start';
+  String get adminScheduleStart => 'เริ่ม';
 
   @override
-  String get adminScheduleEnd => 'End';
+  String get adminScheduleEnd => 'สิ้นสุด';
 
   @override
-  String get adminDayEveryday => 'Every day';
+  String get adminDayEveryday => 'ทุกวัน';
 
   @override
-  String get adminDayWeekday => 'Weekday';
+  String get adminDayWeekday => 'วันธรรมดา';
 
   @override
-  String get adminDayWeekend => 'Weekend';
+  String get adminDayWeekend => 'วันหยุดสุดสัปดาห์';
 
   @override
-  String get adminDaySunday => 'Sunday';
+  String get adminDaySunday => 'วันอาทิตย์';
 
   @override
-  String get adminDayMonday => 'Monday';
+  String get adminDayMonday => 'วันจันทร์';
 
   @override
-  String get adminDayTuesday => 'Tuesday';
+  String get adminDayTuesday => 'วันอังคาร';
 
   @override
-  String get adminDayWednesday => 'Wednesday';
+  String get adminDayWednesday => 'วันพุธ';
 
   @override
-  String get adminDayThursday => 'Thursday';
+  String get adminDayThursday => 'วันพฤหัสบดี';
 
   @override
-  String get adminDayFriday => 'Friday';
+  String get adminDayFriday => 'วันศุกร์';
 
   @override
-  String get adminDaySaturday => 'Saturday';
+  String get adminDaySaturday => 'วันเสาร์';
 
   @override
-  String get adminAllowedTags => 'Allowed tags';
+  String get adminAllowedTags => 'แท็กที่อนุญาต';
 
   @override
   String get adminAllowedTagsHint =>
-      'Only content with these tags is shown. Leave empty to allow all.';
+      'แสดงเฉพาะเนื้อหาที่มีแท็กเหล่านี้ เว้นว่างไว้เพื่ออนุญาตทั้งหมด';
 
   @override
-  String get adminBlockedTags => 'Blocked tags';
+  String get adminBlockedTags => 'แท็กที่ถูกบล็อก';
 
   @override
   String get adminBlockedTagsHint =>
-      'Content with these tags is hidden from this user.';
+      'เนื้อหาที่มีแท็กเหล่านี้จะถูกซ่อนจากผู้ใช้รายนี้';
 
   @override
-  String get adminAddTag => 'Add tag';
+  String get adminAddTag => 'เพิ่มแท็ก';
 
   @override
-  String get adminEnabledDevices => 'Enabled devices';
+  String get adminEnabledDevices => 'อุปกรณ์ที่เปิดใช้งาน';
 
   @override
-  String get adminEnabledChannels => 'Enabled channels';
+  String get adminEnabledChannels => 'ช่องที่เปิดใช้งาน';
 
   @override
-  String get adminAuthProvider => 'Authentication provider';
+  String get adminAuthProvider => 'ผู้ให้บริการการยืนยันตัวตน';
 
   @override
-  String get adminPasswordResetProvider => 'Password reset provider';
+  String get adminPasswordResetProvider => 'ผู้ให้บริการรีเซ็ตรหัสผ่าน';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Maximum failed login attempts before lockout';
+      'จำนวนครั้งสูงสุดที่เข้าสู่ระบบล้มเหลวก่อนถูกล็อก';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Set to 0 for the default, or -1 to disable lockout.';
+      'ตั้งเป็น 0 เพื่อใช้ค่าเริ่มต้น หรือ -1 เพื่อปิดการล็อก';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay access';
+  String get adminSyncPlayAccess => 'การเข้าถึง SyncPlay';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
+  String get adminSyncPlayCreateAndJoin => 'อนุญาตให้สร้างและเข้าร่วมกลุ่ม';
 
   @override
-  String get adminSyncPlayJoin => 'Allow joining groups';
+  String get adminSyncPlayJoin => 'อนุญาตให้เข้าร่วมกลุ่ม';
 
   @override
-  String get adminSyncPlayNone => 'No access';
+  String get adminSyncPlayNone => 'ไม่มีสิทธิ์เข้าถึง';
 
   @override
-  String get adminContentDeletionFolders => 'Allow content deletion from';
+  String get adminContentDeletionFolders => 'อนุญาตให้ลบเนื้อหาจาก';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5407,25 +5403,25 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Create Backup';
+  String get adminBackupOptionsTitle => 'สร้างข้อมูลสำรอง';
 
   @override
-  String get adminBackupInclude => 'Choose what to include in the backup.';
+  String get adminBackupInclude => 'เลือกสิ่งที่ต้องการรวมไว้ในข้อมูลสำรอง';
 
   @override
-  String get adminBackupDatabase => 'Database';
+  String get adminBackupDatabase => 'ฐานข้อมูล';
 
   @override
-  String get adminBackupDatabaseAlways => 'Always included';
+  String get adminBackupDatabaseAlways => 'รวมไว้เสมอ';
 
   @override
-  String get adminBackupMetadata => 'Metadata';
+  String get adminBackupMetadata => 'ข้อมูลเมตา';
 
   @override
-  String get adminBackupSubtitles => 'Subtitles';
+  String get adminBackupSubtitles => 'คำบรรยาย';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay images';
+  String get adminBackupTrickplay => 'รูปภาพ Trickplay';
 
   @override
   String get adminCreatingBackup => 'กำลังสร้างข้อมูลสำรอง...';
@@ -5853,7 +5849,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminTrickplaySaved => 'บันทึกการตั้งค่า Trickplay แล้ว';
 
   @override
-  String get adminTrickplayLoadFailed => 'ไม่สามารถโหลดการตั้งค่าการเล่นกล';
+  String get adminTrickplayLoadFailed => 'โหลดการตั้งค่า Trickplay ไม่สำเร็จ';
 
   @override
   String get adminEnableHardwareAcceleration =>
@@ -5966,7 +5962,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminBaseUrl => 'URL ฐาน';
 
   @override
-  String get adminBaseUrlHint => 'เช่น /เจลลี่ฟิน';
+  String get adminBaseUrlHint => 'เช่น /jellyfin';
 
   @override
   String get https => 'HTTPS';
@@ -6109,7 +6105,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'ลบรูปภาพไม่สำเร็จ: $error';
   }
 
   @override
@@ -6127,60 +6123,60 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminAddTuner => 'เพิ่มจูนเนอร์';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => 'แก้ไขจูนเนอร์';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'จูนเนอร์ M3U';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => 'ไฟล์หรือ URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => 'ที่อยู่ IP ของจูนเนอร์';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => 'ชื่อที่จดจำง่าย';
 
   @override
   String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => 'ขีดจำกัดการเชื่อมต่อพร้อมกัน';
 
   @override
   String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+      'จำนวนสตรีมสูงสุดที่จูนเนอร์รองรับพร้อมกัน ตั้งเป็น 0 เพื่อไม่จำกัด';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate => 'บิตเรตสตรีมมิงสูงสุดสำรอง';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly => 'นำเข้าเฉพาะช่องรายการโปรด';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding => 'อนุญาตการแปลงสัญญาณด้วยฮาร์ดแวร์';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'อนุญาตคอนเทนเนอร์แปลงสัญญาณ fMP4';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing => 'อนุญาตการแชร์สตรีม';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping => 'เปิดการวนซ้ำสตรีม';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'ละเว้น DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+      'อ่านอินพุตตามอัตราเฟรมดั้งเดิม';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => 'แก้ไขผู้ให้บริการ';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6189,50 +6185,50 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => 'ไฟล์หรือ URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => 'คำนำหน้าภาพยนตร์';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => 'หมวดหมู่ภาพยนตร์';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+      'คั่นหลายหมวดหมู่ด้วยเครื่องหมายขีดตั้ง (|)';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => 'หมวดหมู่สำหรับเด็ก';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => 'หมวดหมู่ข่าว';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => 'หมวดหมู่กีฬา';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => 'ชื่อผู้ใช้';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => 'รหัสผ่าน';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => 'ประเทศ';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => 'เลือกประเทศ';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => 'รหัสไปรษณีย์';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => 'ดึงรายการช่อง';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => 'รายการช่อง';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => 'เปิดใช้งานจูนเนอร์ทั้งหมด';
 
   @override
   String get adminTunerType => 'ประเภทจูนเนอร์';
@@ -6274,7 +6270,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get adminTunerResetNotSupported =>
-      'This tuner type does not support resetting.';
+      'จูนเนอร์ประเภทนี้ไม่รองรับการรีเซ็ต';
 
   @override
   String adminProviderRemoveFailed(String error) {
@@ -6297,43 +6293,45 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminSeriesRecordingPath => 'เส้นทางการบันทึกซีรีส์';
 
   @override
-  String get adminMovieRecordingPath => 'Movie recording path';
+  String get adminMovieRecordingPath => 'เส้นทางบันทึกภาพยนตร์';
 
   @override
-  String get adminGuideDays => 'Guide data days';
+  String get adminGuideDays => 'จำนวนวันของข้อมูลผังรายการ';
 
   @override
-  String get adminGuideDaysAuto => 'Automatic';
+  String get adminGuideDaysAuto => 'อัตโนมัติ';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days days';
+    return '$days วัน';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'Post-processing application path';
+  String get adminRecordingPostProcessor =>
+      'เส้นทางแอปพลิเคชันประมวลผลหลังบันทึก';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
+  String get adminRecordingPostProcessorArgs =>
+      'อาร์กิวเมนต์ของตัวประมวลผลหลังบันทึก';
 
   @override
-  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
+  String get adminSaveRecordingNfo => 'บันทึกข้อมูลเมตา NFO ของรายการที่บันทึก';
 
   @override
-  String get adminSaveRecordingImages => 'Save recording images';
+  String get adminSaveRecordingImages => 'บันทึกรูปภาพของรายการที่บันทึก';
 
   @override
-  String get adminLiveTvSectionTiming => 'Timing';
+  String get adminLiveTvSectionTiming => 'การจับเวลา';
 
   @override
-  String get adminLiveTvSectionPaths => 'Recording paths';
+  String get adminLiveTvSectionPaths => 'เส้นทางการบันทึก';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-processing';
+  String get adminLiveTvSectionPostProcessing => 'การประมวลผลหลังบันทึก';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Guide data: $value';
+    return 'ข้อมูลผังรายการ: $value';
   }
 
   @override
@@ -6374,14 +6372,14 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminGuideProviders => 'ผู้ให้บริการคู่มือ';
 
   @override
-  String get adminRefreshGuideData => 'Refresh Guide Data';
+  String get adminRefreshGuideData => 'รีเฟรชข้อมูลผังรายการ';
 
   @override
-  String get adminGuideRefreshStarted => 'Guide data refresh started';
+  String get adminGuideRefreshStarted => 'เริ่มรีเฟรชข้อมูลผังรายการแล้ว';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Guide refresh task is not available on this server.';
+      'งานรีเฟรชผังรายการไม่พร้อมใช้งานบนเซิร์ฟเวอร์นี้';
 
   @override
   String get adminAddProvider => 'เพิ่มผู้ให้บริการ';
@@ -6463,7 +6461,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminLiveTvTitle => 'การบริหารรายการถ่ายทอดสดทางโทรทัศน์';
 
   @override
-  String get adminApply => 'นำมาใช้';
+  String get adminApply => 'นำไปใช้';
 
   @override
   String get adminNotSet => 'ไม่ได้ตั้งค่า';
@@ -6515,7 +6513,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminMetadataEditorTitle => 'ตัวแก้ไขข้อมูลเมตา';
 
   @override
-  String get adminMetadataIdentify => 'Identify';
+  String get adminMetadataIdentify => 'ระบุข้อมูล';
 
   @override
   String get adminMetadataType => 'พิมพ์';
@@ -6530,7 +6528,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminMetadataImages => 'รูปภาพ';
 
   @override
-  String get adminMetadataFieldTitle => 'ชื่อ';
+  String get adminMetadataFieldTitle => 'ชื่อเรื่อง';
 
   @override
   String get adminMetadataFieldSortTitle => 'เรียงลำดับชื่อเรื่อง';
@@ -6797,7 +6795,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get adminReposRemove => 'ลบ';
+  String get adminReposRemove => 'นำออก';
 
   @override
   String adminReposSaveFailed(String error) {
@@ -6929,19 +6927,20 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminBrandingEnableSplash => 'เปิดใช้งานหน้าจอเริ่มต้น';
 
   @override
-  String get adminBrandingSplashUpload => 'Upload image';
+  String get adminBrandingSplashUpload => 'อัปโหลดรูปภาพ';
 
   @override
-  String get adminBrandingSplashUploaded => 'Splashscreen updated';
+  String get adminBrandingSplashUploaded => 'อัปเดตหน้าจอเริ่มต้นแล้ว';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
+  String get adminBrandingSplashUploadFailed =>
+      'อัปโหลดหน้าจอเริ่มต้นไม่สำเร็จ';
 
   @override
-  String get adminBrandingSplashDeleted => 'Splashscreen removed';
+  String get adminBrandingSplashDeleted => 'นำหน้าจอเริ่มต้นออกแล้ว';
 
   @override
-  String get adminBrandingNoSplash => 'No custom splashscreen';
+  String get adminBrandingNoSplash => 'ไม่มีหน้าจอเริ่มต้นที่กำหนดเอง';
 
   @override
   String get adminPlaybackHwAccel => 'การเร่งความเร็วด้วยฮาร์ดแวร์';
@@ -6957,121 +6956,126 @@ class AppLocalizationsTh extends AppLocalizations {
       'เปิดใช้งานการถอดรหัสฮาร์ดแวร์สำหรับ:';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV device';
+  String get adminPlaybackQsvDevice => 'อุปกรณ์ QSV';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
+  String get adminPlaybackEnhancedNvdec =>
+      'เปิดใช้ตัวถอดรหัส NVDEC แบบปรับปรุง';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Prefer system native hardware decoder';
+      'ใช้ตัวถอดรหัสฮาร์ดแวร์ดั้งเดิมของระบบก่อน';
 
   @override
-  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
+  String get adminPlaybackColorDepth => 'ความลึกสีของการถอดรหัสด้วยฮาร์ดแวร์';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
+  String get adminPlaybackColorDepth10Hevc => 'การถอดรหัส HEVC 10 บิต';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
+  String get adminPlaybackColorDepth10Vp9 => 'การถอดรหัส VP9 10 บิต';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
+  String get adminPlaybackColorDepth10HevcRext =>
+      'การถอดรหัส HEVC RExt 8/10 บิต';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
+  String get adminPlaybackColorDepth12HevcRext => 'การถอดรหัส HEVC RExt 12 บิต';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
+  String get adminPlaybackHwEncodingSection => 'การเข้ารหัสด้วยฮาร์ดแวร์';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
+  String get adminPlaybackAllowHevcEncoding => 'อนุญาตการเข้ารหัส HEVC';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
+  String get adminPlaybackAllowAv1Encoding => 'อนุญาตการเข้ารหัส AV1';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Enable Intel low-power H.264 encoder';
+      'เปิดใช้ตัวเข้ารหัส H.264 แบบประหยัดพลังงานของ Intel';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Enable Intel low-power HEVC encoder';
+      'เปิดใช้ตัวเข้ารหัส HEVC แบบประหยัดพลังงานของ Intel';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone Mapping';
+  String get adminPlaybackToneMapping => 'การแมปโทนสี';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
+  String get adminPlaybackEnableTonemapping => 'เปิดการแมปโทนสี';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
+  String get adminPlaybackEnableVppTonemapping => 'เปิดการแมปโทนสีแบบ VPP';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Enable VideoToolbox tone mapping';
+      'เปิดการแมปโทนสีแบบ VideoToolbox';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
+  String get adminPlaybackTonemappingAlgorithm => 'อัลกอริทึมการแมปโทนสี';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
+  String get adminPlaybackTonemappingMode => 'โหมดการแมปโทนสี';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Tone mapping range';
+  String get adminPlaybackTonemappingRange => 'ช่วงการแมปโทนสี';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
+  String get adminPlaybackTonemappingDesat =>
+      'การลดความอิ่มตัวสีของการแมปโทนสี';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
+  String get adminPlaybackTonemappingPeak => 'ค่าสูงสุดของการแมปโทนสี';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
+  String get adminPlaybackTonemappingParam => 'พารามิเตอร์การแมปโทนสี';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+      'ความสว่างของการแมปโทนสีแบบ VPP';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast =>
+      'คอนทราสต์ของการแมปโทนสีแบบ VPP';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presets & Quality';
+  String get adminPlaybackPresetsQuality => 'ค่าที่ตั้งไว้และคุณภาพ';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Encoder preset';
+  String get adminPlaybackEncoderPreset => 'ค่าที่ตั้งไว้ของตัวเข้ารหัส';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
+  String get adminPlaybackH264Crf => 'ค่า CRF การเข้ารหัส H.264';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
+  String get adminPlaybackH265Crf => 'ค่า CRF การเข้ารหัส H.265 (HEVC)';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
+  String get adminPlaybackDeinterlaceMethod => 'วิธีการดีอินเทอร์เลซ';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+      'เพิ่มอัตราเฟรมเป็นสองเท่าเมื่อดีอินเทอร์เลซ';
 
   @override
-  String get adminPlaybackAudioSection => 'Audio';
+  String get adminPlaybackAudioSection => 'เสียง';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
+  String get adminPlaybackEnableAudioVbr => 'เปิดการเข้ารหัสเสียงแบบ VBR';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
+  String get adminPlaybackDownmixBoost => 'การเพิ่มระดับเสียงเมื่อดาวน์มิกซ์';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
+  String get adminPlaybackDownmixAlgorithm =>
+      'อัลกอริทึมดาวน์มิกซ์เป็นสเตอริโอ';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
+  String get adminPlaybackMaxMuxingQueue => 'ขนาดคิวมักซ์สูงสุด';
 
   @override
-  String get adminPlaybackAutoOption => 'Auto';
+  String get adminPlaybackAutoOption => 'อัตโนมัติ';
 
   @override
   String get adminPlaybackEncoding => 'การเข้ารหัส';
@@ -7191,7 +7195,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminTaskStop => 'หยุด';
 
   @override
-  String get adminRunningTasks => 'Running Tasks';
+  String get adminRunningTasks => 'งานที่กำลังทำงาน';
 
   @override
   String get adminTaskRun => 'วิ่ง';
@@ -7261,8 +7265,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count ชั่วโมง',
+      one: '1 ชั่วโมง',
     );
     return '$_temp0';
   }
@@ -7308,27 +7312,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes นาที';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours ชม.';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days วัน';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month/$day';
+    return '$day/$month';
   }
 
   @override
   String get adminTrickplayDescription =>
-      'กำหนดค่าการสร้างภาพเล่นกลเพื่อค้นหาภาพขนาดย่อตัวอย่าง';
+      'กำหนดค่าการสร้างรูปภาพ Trickplay สำหรับภาพตัวอย่างขณะเลื่อนหา';
 
   @override
   String get adminNetworkingPublicHttpsPort => 'พอร์ต HTTPS สาธารณะ';
@@ -7337,49 +7341,49 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'URL ฐาน';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'เช่น /เจลลี่ฟิน';
+  String get adminNetworkingBaseUrlHint => 'เช่น /jellyfin';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
+  String get adminNetworkingPublicHttpPort => 'พอร์ต HTTP สาธารณะ';
 
   @override
-  String get adminNetworkingRequireHttps => 'Require HTTPS';
+  String get adminNetworkingRequireHttps => 'บังคับใช้ HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
+      'เปลี่ยนเส้นทางคำขอจากระยะไกลทั้งหมดไปยัง HTTPS จะไม่มีผลหากเซิร์ฟเวอร์ไม่มีใบรับรองที่ถูกต้อง';
 
   @override
-  String get adminNetworkingCertPassword => 'Certificate password';
+  String get adminNetworkingCertPassword => 'รหัสผ่านใบรับรอง';
 
   @override
-  String get adminNetworkingIpSettings => 'IP Settings';
+  String get adminNetworkingIpSettings => 'การตั้งค่า IP';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
+  String get adminNetworkingEnableIpv4 => 'เปิดใช้งาน IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
+  String get adminNetworkingEnableIpv6 => 'เปิดใช้งาน IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
+  String get adminNetworkingAutoDiscovery => 'เปิดการแมปพอร์ตอัตโนมัติ';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN networks';
+  String get adminNetworkingLocalSubnets => 'เครือข่าย LAN';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
+      'รายการที่อยู่ IP หรือซับเน็ต CIDR ที่ถือว่าอยู่ในเครือข่ายท้องถิ่น คั่นด้วยเครื่องหมายจุลภาคหรือขึ้นบรรทัดใหม่';
 
   @override
-  String get adminNetworkingPublishedUris => 'Published server URIs';
+  String get adminNetworkingPublishedUris => 'URI ของเซิร์ฟเวอร์ที่เผยแพร่';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Map a subnet or address to a published URL, e.g. all=https://example.com';
+      'แมปซับเน็ตหรือที่อยู่ไปยัง URL ที่เผยแพร่ เช่น all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'เส้นทางใบรับรอง';
@@ -7409,11 +7413,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'การบัฟเฟอร์คันเร่ง';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay => 'ความหน่วงของการจำกัดอัตรา (วินาที)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+      'อนุญาตให้ดึงคำบรรยายแบบทันที';
 
   @override
   String get adminResumeMinPct => 'เปอร์เซ็นต์เรซูเม่ขั้นต่ำ';
@@ -7470,22 +7474,22 @@ class AppLocalizationsTh extends AppLocalizations {
       'เกณฑ์การตอบสนองช้า (มิลลิวินาที)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
+  String get adminGeneralEnableSlowResponse => 'เปิดคำเตือนเมื่อตอบสนองช้า';
 
   @override
-  String get adminGeneralQuickConnect => 'Enable Quick Connect';
+  String get adminGeneralQuickConnect => 'เปิดใช้งาน Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => 'Server';
+  String get adminGeneralSectionServer => 'เซิร์ฟเวอร์';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadata';
+  String get adminGeneralSectionMetadata => 'ข้อมูลเมตา';
 
   @override
-  String get adminGeneralSectionPaths => 'Paths';
+  String get adminGeneralSectionPaths => 'เส้นทาง';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performance';
+  String get adminGeneralSectionPerformance => 'ประสิทธิภาพ';
 
   @override
   String get adminGeneralCachePath => 'เส้นทางแคช';
@@ -7497,7 +7501,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminGeneralServerName => 'ชื่อเซิร์ฟเวอร์';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage => 'ภาษาที่ต้องการแสดงผล';
 
   @override
   String get adminSettingsLoadFailed => 'โหลดการตั้งค่าไม่สำเร็จ';
@@ -7519,7 +7523,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get folders => 'โฟลเดอร์';
 
   @override
-  String get libraries => 'ห้องสมุด';
+  String get libraries => 'ไลบรารี';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7549,8 +7553,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: 'ผู้เข้าร่วม # คน',
+      one: 'ผู้เข้าร่วม # คน',
     );
     return '$_temp0';
   }
@@ -7696,8 +7700,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: 'พบ # แถว',
+      one: 'พบ # แถว',
     );
     return '$_temp0';
   }
@@ -7738,20 +7742,20 @@ class AppLocalizationsTh extends AppLocalizations {
   String get offlineSavedMedia => 'สื่อที่บันทึกไว้';
 
   @override
-  String get offlineBannerTitle => 'You\'re offline';
+  String get offlineBannerTitle => 'คุณออฟไลน์อยู่';
 
   @override
-  String get offlineBannerSubtitle => 'Showing your downloads';
+  String get offlineBannerSubtitle => 'กำลังแสดงรายการที่ดาวน์โหลดไว้';
 
   @override
-  String get offlineBannerAction => 'Downloads';
+  String get offlineBannerAction => 'ดาวน์โหลด';
 
   @override
-  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+  String get serverUnreachableBannerTitle => 'เชื่อมต่อเซิร์ฟเวอร์ของคุณไม่ได้';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Playing from downloads until it\'s back';
+      'กำลังเล่นจากรายการที่ดาวน์โหลดไว้จนกว่าจะกลับมา';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7824,13 +7828,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get pinForgot => 'ลืมรหัส PIN?';
 
   @override
-  String get pinClear => 'ชัดเจน';
+  String get pinClear => 'ล้าง';
 
   @override
   String get pinBackspace => 'แบ็คสเปซ';
 
   @override
-  String get quickConnectAuthorized => 'อนุมัติคำขอเชื่อมต่อด่วนแล้ว';
+  String get quickConnectAuthorized => 'อนุมัติคำขอ Quick Connect แล้ว';
 
   @override
   String get quickConnectInvalidOrExpired =>
@@ -7838,7 +7842,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get quickConnectNotSupported =>
-      'ไม่รองรับการเชื่อมต่อด่วนบนเซิร์ฟเวอร์นี้';
+      'เซิร์ฟเวอร์นี้ไม่รองรับ Quick Connect';
 
   @override
   String get quickConnectAuthorizeFailed =>
@@ -7853,11 +7857,11 @@ class AppLocalizationsTh extends AppLocalizations {
       'บัญชีของคุณไม่สามารถอนุญาตคำขอ Quick Connect นี้';
 
   @override
-  String get quickConnectNotFound => 'ไม่พบรหัสการเชื่อมต่อด่วน ลองรหัสใหม่';
+  String get quickConnectNotFound => 'ไม่พบรหัส Quick Connect ลองใช้รหัสใหม่';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'การเชื่อมต่อด่วนล้มเหลว: $message';
+    return 'Quick Connect ล้มเหลว: $message';
   }
 
   @override
@@ -7961,7 +7965,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get shuffleSelectGenre => 'เลือกประเภท';
 
   @override
-  String get shuffleLibrary => 'ห้องสมุด';
+  String get shuffleLibrary => 'ไลบรารี';
 
   @override
   String get shuffleGenre => 'ประเภท';
@@ -8105,14 +8109,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get contextMenuGoToSeries => 'ไปที่ซีรีส์';
 
   @override
-  String get contextMenuHideFromContinueWatching =>
-      'Hide from Continue Watching';
+  String get contextMenuHideFromContinueWatching => 'ซ่อนจากรายการดูต่อ';
 
   @override
-  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+  String get contextMenuHideFromNextUp => 'ซ่อนจากรายการถัดไป';
 
   @override
-  String get contextMenuAddToCollection => 'Add to Collection';
+  String get contextMenuAddToCollection => 'เพิ่มลงคอลเลกชัน';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8165,14 +8168,14 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsAlphabetical => 'ตามตัวอักษร';
 
   @override
-  String get settingsConnectionSection => 'CONNECTION';
+  String get settingsConnectionSection => 'การเชื่อมต่อ';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+  String get settingsAllowSelfSignedCerts => 'อนุญาตใบรับรองที่ลงนามด้วยตนเอง';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+      'เชื่อถือเซิร์ฟเวอร์ที่ใช้ใบรับรอง TLS แบบลงนามด้วยตนเองหรือจาก CA ส่วนตัว เปิดใช้เฉพาะกับเซิร์ฟเวอร์ที่คุณควบคุมเท่านั้น การตั้งค่านี้จะปิดการตรวจสอบใบรับรองสำหรับทุกการเชื่อมต่อ';
 
   @override
   String get settingsPrivacyAndSafetySection => 'ความเป็นส่วนตัวและความปลอดภัย';
@@ -8188,11 +8191,11 @@ class AppLocalizationsTh extends AppLocalizations {
       'การเน้นเสียงของธีม ฉากหลัง สัญลักษณ์แสดงการดู และเพลงของธีม';
 
   @override
-  String get settingsDetailsScreen => 'Details Screen';
+  String get settingsDetailsScreen => 'หน้ารายละเอียด';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Style, background blur, and tab behavior';
+      'สไตล์ การเบลอพื้นหลัง และการทำงานของแท็บ';
 
   @override
   String get settingsHomePage => 'หน้าแรก';
@@ -8227,12 +8230,11 @@ class AppLocalizationsTh extends AppLocalizations {
       'แสดงปุ่มไลบรารีในแถบนำทาง';
 
   @override
-  String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+  String get settingsShowSeerrButtonInNavigation => 'แสดงปุ่ม Seerr ในแถบนำทาง';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Always show text labels in the top navigation bar';
+      'แสดงชื่อเมนูในแถบนำทางด้านบนเสมอ';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8299,8 +8301,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsSupportMoonfin => 'สนับสนุน Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => 'เลี้ยงกาแฟให้นักพัฒนา';
 
   @override
   String get settingsLegal => 'ถูกกฎหมาย';
@@ -8333,8 +8334,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: 'ประกาศลิขสิทธิ์ # รายการ',
+      one: 'ประกาศลิขสิทธิ์ # รายการ',
     );
     return '$_temp0';
   }
@@ -8381,16 +8382,16 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'ข้ามช่วงแนะนำและส่วนท้ายใช่ไหม';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown => 'การนับถอยหลังของช่วงสื่อ';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => 'แถบความคืบหน้า';
 
   @override
-  String get settingsTimer => 'Timer';
+  String get settingsTimer => 'ตัวจับเวลา';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => 'ไม่มี';
 
   @override
   String get settingsPromptUser => 'ผู้ใช้พร้อมท์';
@@ -8614,7 +8615,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return '$libraryName ที่เพิ่งออกฉาย';
   }
 
   @override
@@ -8646,11 +8647,11 @@ class AppLocalizationsTh extends AppLocalizations {
       'บังคับให้เล่นแบบไม่มีช่องสัญญาณ มีประโยชน์บนอุปกรณ์ที่มีความไม่ต่อเนื่องของเสียง/วิดีโอแบบทันเนล';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => 'เปิดใช้งาน Tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      'ขั้นสูง ส่งเสียงและวิดีโอผ่านเส้นทางฮาร์ดแวร์ที่เชื่อมต่อกัน ปิดไว้เป็นค่าเริ่มต้นเพราะทำให้เสียงหรือภาพขาดหายบนอุปกรณ์บางรุ่น';
 
   @override
   String get mapDolbyVisionP7Title => 'แมป Dolby Vision โปรไฟล์ 7 ไปยัง HEVC';
@@ -8675,14 +8676,14 @@ class AppLocalizationsTh extends AppLocalizations {
       'ใช้คำแนะนำขนาดตัวอักษรที่ฝังอยู่ในแทร็กคำบรรยาย ปิดการใช้งานเพื่อใช้ขนาดคำบรรยายจากการตั้งค่าสไตล์ของคุณ';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => 'แสดงรายละเอียดสื่อ';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      'แสดงรายละเอียดของรายการที่เลือกไว้ด้านบนของหน้าคลังสื่อ';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries => 'ซ่อนภาพพื้นหลังขณะเรียกดูหรือไม่?';
 
   @override
   String get useDetailedSubHeadings => 'ใช้หัวข้อย่อยโดยละเอียด';
@@ -8700,37 +8701,37 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => 'ร้านธีม';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle => 'เรียกดูและบันทึกธีมจากชุมชน';
 
   @override
   String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+      'บันทึกธีมเพื่อใช้งานเหมือนธีมอื่นที่คุณบันทึกไว้';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => 'ยังไม่มีธีมให้ใช้งานในขณะนี้';
 
   @override
   String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+      'โหลดร้านธีมไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => 'บันทึก';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => 'บันทึกและใช้งาน';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => 'บันทึกแล้ว';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'โหลดธีมนี้ไม่สำเร็จ';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return 'บันทึก \"$themeName\" แล้ว';
   }
 
   @override
@@ -8788,21 +8789,21 @@ class AppLocalizationsTh extends AppLocalizations {
   String get homeRowsSection => 'แถวบ้าน';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => 'การแสดงผลแถวหน้าแรก';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => 'ส่วนของแถวหน้าแรก';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => 'สวิตช์แถวหน้าแรก';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Enable or disable library-based home row categories';
+      'เปิดหรือปิดหมวดหมู่แถวหน้าแรกที่อิงตามคลังสื่อ';
 
   @override
   String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+      'เปิดสวิตช์ต่อไปนี้เพื่อแสดงแถวในส่วนของหน้าแรก';
 
   @override
   String get rowsType => 'ประเภทแถว';
@@ -8859,55 +8860,55 @@ class AppLocalizationsTh extends AppLocalizations {
       'แสดงภาพยนตร์ ซีรีส์ หรือทั้งสองอย่างในแถวประเภท';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => 'แสดงแถวเพลย์ลิสต์';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+      'แสดงแถวเพลย์ลิสต์ในส่วนของหน้าแรก';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => 'การเรียงลำดับแถวเพลย์ลิสต์';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+      'เรียงแถวเพลย์ลิสต์ตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => 'แสดงแถวเสียง';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle => 'แสดงแถวเสียงในส่วนของหน้าแรก';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => 'การเรียงลำดับแถวเสียง';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+      'เรียงแถวเสียงตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => 'เพลย์ลิสต์เสียง';
 
   @override
-  String get appearance => 'รูปร่าง';
+  String get appearance => 'รูปลักษณ์';
 
   @override
-  String get layout => 'Layout';
+  String get layout => 'เลย์เอาต์';
 
   @override
-  String get theme => 'Theme';
+  String get theme => 'ธีม';
 
   @override
-  String get keyboard => 'Keyboard';
+  String get keyboard => 'แป้นพิมพ์';
 
   @override
-  String get navButtons => 'Buttons';
+  String get navButtons => 'ปุ่ม';
 
   @override
-  String get rendering => 'Rendering';
+  String get rendering => 'การเรนเดอร์';
 
   @override
-  String get mpvConfiguration => 'MPV configuration';
+  String get mpvConfiguration => 'การกำหนดค่า MPV';
 
   @override
   String get cardSize => 'ขนาดการ์ด';
@@ -8917,7 +8918,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+      'ตั้งค่าโปรแกรมเล่นภายนอกเพื่อเปิดใช้ตัวเลือกเล่นแบบกดค้าง';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
@@ -9179,10 +9180,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get guestAppearances => 'การปรากฏตัวของแขก';
 
   @override
-  String get appearancesSeerr => 'การปรากฏตัว (เซียร์)';
+  String get appearancesSeerr => 'การปรากฏตัว (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => 'ผลงานทีมงาน (Seerr)';
 
   @override
   String get watchWithGroup => 'ดูกับกลุ่ม.';
@@ -9266,8 +9267,8 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '$count คลังสื่อ',
+      one: '1 คลังสื่อ',
     );
     return '$_temp0';
   }
@@ -9358,7 +9359,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get mixedMoviesAndShows => 'ภาพยนตร์และรายการผสม';
 
   @override
-  String get intelQuickSync => 'Intel ซิงค์ด่วน';
+  String get intelQuickSync => 'Intel Quick Sync';
 
   @override
   String get rockchipMpp => 'ร็อคชิป เอ็มพีพี';
@@ -9425,13 +9426,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get loadingShuffle => 'กำลังโหลดแบบสุ่ม...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'สุ่มจากคลังสื่อ';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'สุ่มทั้งหมด';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'สุ่มตามแนว';
 
   @override
   String get autoHdrSwitching => 'การสลับ HDR อัตโนมัติ';
@@ -9444,222 +9445,222 @@ class AppLocalizationsTh extends AppLocalizations {
   String get whenFullscreen => 'เมื่อเปิดเต็มจอ';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => 'เปลี่ยนภาพปก';
 
   @override
-  String get missing => 'Missing';
+  String get missing => 'ไม่มี';
 
   @override
   String get transcodingLimits => 'ขีดจำกัดการแปลงรหัส';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton => 'ล้างภาพปกทั้งหมดหรือไม่?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+      'คุณแน่ใจหรือไม่ว่าต้องการล้างภาพปกที่ดาวน์โหลดไว้ทั้งหมด?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => 'ยืนยันการล้าง';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return 'คุณแน่ใจหรือไม่ว่าต้องการล้าง$itemTypeนี้?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => 'อัปโหลดหรือไม่?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => 'ความละเอียด: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+      'แสดงเฉพาะภาพปกที่ตรงกับภาษาอินเทอร์เฟซ';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => 'ยืนยันการล้างทั้งหมด';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => 'อัปโหลดรูปภาพสำเร็จ!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'อัปโหลดรูปภาพไม่สำเร็จ: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return 'ตั้งค่ารูปภาพไม่สำเร็จ: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'ลบรูปภาพไม่สำเร็จ: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return 'ล้างภาพปกทั้งหมดไม่สำเร็จ: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'ใช่';
 
   @override
-  String get posterCategory => 'Poster';
+  String get posterCategory => 'โปสเตอร์';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => 'ภาพพื้นหลัง';
 
   @override
-  String get bannerCategory => 'Banner';
+  String get bannerCategory => 'แบนเนอร์';
 
   @override
-  String get logoCategory => 'Logo';
+  String get logoCategory => 'โลโก้';
 
   @override
-  String get thumbnailCategory => 'Thumbnail';
+  String get thumbnailCategory => 'ภาพขนาดย่อ';
 
   @override
-  String get artCategory => 'Art';
+  String get artCategory => 'ภาพประกอบ';
 
   @override
-  String get discArtCategory => 'Disc Art';
+  String get discArtCategory => 'ภาพหน้าแผ่น';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => 'ภาพหน้าจอ';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => 'ปกกล่อง';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => 'ปกหลังกล่อง';
 
   @override
-  String get menuArtCategory => 'Menu Art';
+  String get menuArtCategory => 'ภาพเมนู';
 
   @override
-  String get confirmItemPoster => 'poster';
+  String get confirmItemPoster => 'โปสเตอร์';
 
   @override
-  String get confirmItemBackdrop => 'backdrop';
+  String get confirmItemBackdrop => 'ภาพพื้นหลัง';
 
   @override
-  String get confirmItemBanner => 'banner';
+  String get confirmItemBanner => 'แบนเนอร์';
 
   @override
-  String get confirmItemLogo => 'logo';
+  String get confirmItemLogo => 'โลโก้';
 
   @override
-  String get confirmItemThumbnail => 'thumbnail';
+  String get confirmItemThumbnail => 'ภาพขนาดย่อ';
 
   @override
-  String get confirmItemArt => 'art';
+  String get confirmItemArt => 'ภาพประกอบ';
 
   @override
-  String get confirmItemDiscArt => 'disc art';
+  String get confirmItemDiscArt => 'ภาพหน้าแผ่น';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => 'ภาพหน้าจอ';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => 'ปกกล่อง';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => 'ปกหลังกล่อง';
 
   @override
-  String get confirmItemMenuArt => 'menu art';
+  String get confirmItemMenuArt => 'ภาพเมนู';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => 'ทั้งหมด';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => 'สูง (1080p+)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => 'ปานกลาง (720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => 'ต่ำ (<720p)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => 'แหล่งที่มา';
 
   @override
-  String get audiobookChapters => 'Chapters';
+  String get audiobookChapters => 'บท';
 
   @override
-  String get audiobookBookmarks => 'Bookmarks';
+  String get audiobookBookmarks => 'ที่คั่นหนังสือ';
 
   @override
-  String get audiobookNotes => 'Notes';
+  String get audiobookNotes => 'บันทึก';
 
   @override
-  String get audiobookQueue => 'Queue';
+  String get audiobookQueue => 'คิว';
 
   @override
-  String get audiobookTimeline => 'Timeline';
+  String get audiobookTimeline => 'ไทม์ไลน์';
 
   @override
-  String get audiobookTimelineEmpty => 'Timeline is empty';
+  String get audiobookTimelineEmpty => 'ไทม์ไลน์ว่างเปล่า';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
+  String get audiobookWholeBook => 'ทั้งเล่ม';
 
   @override
-  String get audiobookFocusedTimeline => 'Focused Timeline';
+  String get audiobookFocusedTimeline => 'ไทม์ไลน์เฉพาะจุด';
 
   @override
-  String get audiobookExportBookmarks => 'Export Bookmarks';
+  String get audiobookExportBookmarks => 'ส่งออกที่คั่นหนังสือ';
 
   @override
-  String get audiobookExportNotes => 'Export Notes';
+  String get audiobookExportNotes => 'ส่งออกบันทึก';
 
   @override
-  String get audiobookExportAll => 'Export All';
+  String get audiobookExportAll => 'ส่งออกทั้งหมด';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exported to $path';
+    return 'ส่งออกไปยัง $path แล้ว';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export failed: $error';
+    return 'ส่งออกไม่สำเร็จ: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Lyrics';
+  String get audiobookLyrics => 'เนื้อเพลง';
 
   @override
-  String get audiobookAddBookmark => 'Add bookmark';
+  String get audiobookAddBookmark => 'เพิ่มที่คั่นหนังสือ';
 
   @override
-  String get audiobookAddNote => 'Add note';
+  String get audiobookAddNote => 'เพิ่มบันทึก';
 
   @override
-  String get audiobookEditNote => 'Edit note';
+  String get audiobookEditNote => 'แก้ไขบันทึก';
 
   @override
-  String get audiobookNoteHint => 'Write a note for this moment';
+  String get audiobookNoteHint => 'เขียนบันทึกสำหรับช่วงนี้';
 
   @override
-  String get audiobookSleepTimer => 'Sleep timer';
+  String get audiobookSleepTimer => 'ตั้งเวลาปิด';
 
   @override
-  String get audiobookSleepOff => 'Off';
+  String get audiobookSleepOff => 'ปิด';
 
   @override
-  String get audiobookSleepEndOfChapter => 'End of chapter';
+  String get audiobookSleepEndOfChapter => 'จบบท';
 
   @override
-  String get audiobookSleepCustom => 'Custom';
+  String get audiobookSleepCustom => 'กำหนดเอง';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining left';
+    return 'เหลือ $remaining';
   }
 
   @override
@@ -9667,58 +9668,58 @@ class AppLocalizationsTh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count min',
-      one: '1 min',
+      other: '$count นาที',
+      one: '1 นาที',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Playback speed';
+  String get audiobookPlaybackSpeed => 'ความเร็วในการเล่น';
 
   @override
-  String get audiobookRemainingTime => 'Remaining';
+  String get audiobookRemainingTime => 'เวลาที่เหลือ';
 
   @override
-  String get audiobookElapsedTime => 'Elapsed';
+  String get audiobookElapsedTime => 'เวลาที่ผ่านไป';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Back ${seconds}s';
+    return 'ถอยหลัง $seconds วิ';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Forward ${seconds}s';
+    return 'เดินหน้า $seconds วิ';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Previous chapter';
+  String get audiobookPreviousChapter => 'บทก่อนหน้า';
 
   @override
-  String get audiobookNextChapter => 'Next chapter';
+  String get audiobookNextChapter => 'บทถัดไป';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Chapter $current of $total';
+    return 'บทที่ $current จาก $total';
   }
 
   @override
-  String get audiobookNoChapters => 'No chapters';
+  String get audiobookNoChapters => 'ไม่มีบท';
 
   @override
-  String get audiobookNoBookmarks => 'No bookmarks yet';
+  String get audiobookNoBookmarks => 'ยังไม่มีที่คั่นหนังสือ';
 
   @override
-  String get audiobookNoNotes => 'No notes yet';
+  String get audiobookNoNotes => 'ยังไม่มีบันทึก';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Bookmark added at $position';
+    return 'เพิ่มที่คั่นหนังสือที่ $position แล้ว';
   }
 
   @override
-  String get audiobookSpeedReset => 'Reset to 1.0x';
+  String get audiobookSpeedReset => 'รีเซ็ตเป็น 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9726,249 +9727,250 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Save';
+  String get audiobookSave => 'บันทึก';
 
   @override
-  String get audiobookCancel => 'Cancel';
+  String get audiobookCancel => 'ยกเลิก';
 
   @override
-  String get audiobookDelete => 'Delete';
+  String get audiobookDelete => 'ลบ';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => 'การตั้งค่าคำบรรยาย';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+      'เปลี่ยนโหมดคำบรรยาย ภาษาเริ่มต้น รูปลักษณ์ และตัวเลือกการเรนเดอร์';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => 'การเรนเดอร์คำบรรยาย';
 
   @override
-  String get displayOptions => 'Display Options';
+  String get displayOptions => 'ตัวเลือกการแสดงผล';
 
   @override
-  String get releaseDateAscending => 'Release Date (Ascending)';
+  String get releaseDateAscending => 'วันที่ออกฉาย (เก่าไปใหม่)';
 
   @override
-  String get releaseDateDescending => 'Release Date (Descending)';
+  String get releaseDateDescending => 'วันที่ออกฉาย (ใหม่ไปเก่า)';
 
   @override
-  String get groupContributions => 'Group Contributions';
+  String get groupContributions => 'จัดกลุ่มผลงาน';
 
   @override
-  String get groupMultipleRoles => 'Group multiple roles';
+  String get groupMultipleRoles => 'จัดกลุ่มบทบาทหลายบทบาท';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+  String get libraryWriteAccessWarningTitle =>
+      'คำเตือนสิทธิ์การเขียนในคลังสื่อ';
 
   @override
-  String get libraryWriteAccessHowToFix => 'How to fix this:';
+  String get libraryWriteAccessHowToFix => 'วิธีแก้ไข:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+      '1. ให้สิทธิ์การเขียนแก่ผู้ใช้ของบริการ Jellyfin (เช่น jellyfin หรือ PUID/PGID ของ Docker) สำหรับโฟลเดอร์คลังสื่อของคุณบนเซิร์ฟเวอร์\n\n2. หรือไปที่แดชบอร์ด Jellyfin -> คลังสื่อ แก้ไขคลังสื่อนี้ แล้วปิด \'Save artwork into media folders\' เพื่อจัดเก็บภาพปกไว้ในฐานข้อมูลภายในของ Jellyfin';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => 'ปิด';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return 'คลังสื่อ \'$libraryName\' ของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด \'Save artwork into media folders\' ไว้) แต่ Jellyfin ได้ทดสอบสิทธิ์การเขียนแล้วและไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีนี้:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+      'ดูเหมือนว่า Jellyfin จะอัปเดตภาพปกไม่สำเร็จ คลังสื่อของคุณถูกตั้งค่าให้บันทึกภาพปกลงในโฟลเดอร์สื่อโดยตรง (เปิด \'Save artwork into media folders\' ไว้) ข้อผิดพลาดนี้มักเกิดขึ้นเมื่อโปรเซสของเซิร์ฟเวอร์ Jellyfin ไม่มีสิทธิ์เขียนไฟล์ลงในไดเรกทอรีสื่อของคุณ';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'รายการภายนอก';
 
   @override
-  String get replay => 'Replay';
+  String get replay => 'เล่นอีกครั้ง';
 
   @override
-  String get fileInformation => 'File Information';
+  String get fileInformation => 'ข้อมูลไฟล์';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Size: $size  •  Format: $format';
+    return 'ขนาด: $size  •  รูปแบบ: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Show All ($count) Audio Tracks';
+    return 'แสดงแทร็กเสียงทั้งหมด ($count)';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Show All ($count) Subtitle Tracks';
+    return 'แสดงแทร็กคำบรรยายทั้งหมด ($count)';
   }
 
   @override
-  String get checkingDirectPlay => 'Checking Direct Play capability...';
+  String get checkingDirectPlay => 'กำลังตรวจสอบความสามารถในการเล่นโดยตรง...';
 
   @override
-  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+  String get directPlayCapabilityLabel => 'ความสามารถในการเล่นโดยตรง: ';
 
   @override
-  String get forced => 'Forced';
+  String get forced => 'บังคับ';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Container format is not supported by the player.';
+      'โปรแกรมเล่นไม่รองรับรูปแบบคอนเทนเนอร์นี้';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+  String get transcodeVideoCodecNotSupported =>
+      'ไม่รองรับตัวแปลงสัญญาณวิดีโอนี้';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+  String get transcodeAudioCodecNotSupported =>
+      'ไม่รองรับตัวแปลงสัญญาณเสียงนี้';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Subtitle format is not supported (requires burning).';
+      'ไม่รองรับรูปแบบคำบรรยายนี้ (ต้องฝังลงในภาพ)';
 
   @override
-  String get transcodeAudioProfileNotSupported =>
-      'Audio profile is not supported.';
+  String get transcodeAudioProfileNotSupported => 'ไม่รองรับโปรไฟล์เสียงนี้';
 
   @override
-  String get transcodeVideoProfileNotSupported =>
-      'Video profile is not supported.';
+  String get transcodeVideoProfileNotSupported => 'ไม่รองรับโปรไฟล์วิดีโอนี้';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+  String get transcodeVideoLevelNotSupported => 'ไม่รองรับระดับวิดีโอนี้';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Video resolution is not supported by this device.';
+      'อุปกรณ์นี้ไม่รองรับความละเอียดวิดีโอนี้';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Video bit depth is not supported.';
+      'ไม่รองรับความลึกบิตของวิดีโอนี้';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Video framerate is not supported.';
+      'ไม่รองรับอัตราเฟรมของวิดีโอนี้';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'File bitrate exceeds player streaming limit.';
+      'บิตเรตของไฟล์เกินขีดจำกัดการสตรีมของโปรแกรมเล่น';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Video bitrate exceeds streaming limit.';
+      'บิตเรตวิดีโอเกินขีดจำกัดการสตรีม';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Audio bitrate exceeds streaming limit.';
+      'บิตเรตเสียงเกินขีดจำกัดการสตรีม';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Number of audio channels is not supported.';
+      'ไม่รองรับจำนวนช่องสัญญาณเสียงนี้';
 
   @override
-  String get sortAlphabetical => 'Alphabetical';
+  String get sortAlphabetical => 'ตามตัวอักษร';
 
   @override
-  String get sortReleaseAscending => 'Release Order (Ascending)';
+  String get sortReleaseAscending => 'ลำดับการออกฉาย (เก่าไปใหม่)';
 
   @override
-  String get sortReleaseDescending => 'Release Order (Descending)';
+  String get sortReleaseDescending => 'ลำดับการออกฉาย (ใหม่ไปเก่า)';
 
   @override
-  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+  String get sortCustomDragDrop => 'กำหนดเอง (ลากและวาง)';
 
   @override
-  String get playlistSortOptions => 'Playlist Sort Options';
+  String get playlistSortOptions => 'ตัวเลือกการเรียงเพลย์ลิสต์';
 
   @override
-  String get resetSort => 'Reset Sort';
+  String get resetSort => 'รีเซ็ตการเรียงลำดับ';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Rewatch S$season:E$episode';
+    return 'ดูซ้ำ S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Rewatch Playlist';
+  String get rewatchPlaylist => 'เพลย์ลิสต์ดูซ้ำ';
 
   @override
-  String get noSubtitlesFound => 'No subtitles found.';
+  String get noSubtitlesFound => 'ไม่พบคำบรรยาย';
 
   @override
-  String get adminControls => 'Admin Controls';
+  String get adminControls => 'การควบคุมของผู้ดูแล';
 
   @override
-  String get impellerRendering => 'Rendering engine (Impeller)';
+  String get impellerRendering => 'เอนจินการเรนเดอร์ (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+      'Impeller คือตัวเรนเดอร์ GPU สมัยใหม่ของ Flutter ที่ให้ภาพเคลื่อนไหวลื่นไหลและกระตุกน้อยลง บนกล่องทีวีบางรุ่นและ GPU รุ่นเก่าอาจทำให้ภาพผิดเพี้ยนหรือวิดีโอเป็นสีดำ หากพบปัญหาให้ปิดไว้ อัตโนมัติจะเลือกค่าที่ดีที่สุดสำหรับอุปกรณ์ของคุณ รีสตาร์ท Moonfin เพื่อใช้งาน';
 
   @override
-  String get impellerAuto => 'Automatic';
+  String get impellerAuto => 'อัตโนมัติ';
 
   @override
-  String get impellerOn => 'On';
+  String get impellerOn => 'เปิด';
 
   @override
-  String get impellerOff => 'Off';
+  String get impellerOff => 'ปิด';
 
   @override
-  String get impellerRestartTitle => 'Restart required';
+  String get impellerRestartTitle => 'ต้องรีสตาร์ท';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+      'Moonfin ต้องรีสตาร์ทเพื่อเปลี่ยนเอนจินการเรนเดอร์ ปิดแอปตอนนี้ แล้วเปิดใหม่เพื่อใช้งาน';
 
   @override
-  String get impellerCloseNow => 'Close app now';
+  String get impellerCloseNow => 'ปิดแอปตอนนี้';
 
   @override
-  String get adminRefreshLibrary => 'Refresh Library';
+  String get adminRefreshLibrary => 'รีเฟรชคลังสื่อ';
 
   @override
-  String get adminRefreshAllLibraries => 'Refresh All Libraries';
+  String get adminRefreshAllLibraries => 'รีเฟรชคลังสื่อทั้งหมด';
 
   @override
-  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+  String get adminRepoSortDateOldest => 'วันที่เพิ่ม (เก่าสุดก่อน)';
 
   @override
-  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+  String get adminRepoSortDateNewest => 'วันที่เพิ่ม (ใหม่สุดก่อน)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+  String get adminRepoSortNameAsc => 'ตามตัวอักษร (A ถึง Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+  String get adminRepoSortNameDesc => 'ตามตัวอักษร (Z ถึง A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Loading Server Analytics... $percentage%';
+    return 'กำลังโหลดข้อมูลวิเคราะห์เซิร์ฟเวอร์... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Match source';
+  String get adminLibChapterImageResolutionMatchSource => 'ตามต้นฉบับ';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+  String get imdbTop250Movies => 'ภาพยนตร์ 250 อันดับแรกของ IMDb';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+  String get imdbTop250TvShows => 'รายการทีวี 250 อันดับแรกของ IMDb';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+  String get imdbMostPopularMovies => 'ภาพยนตร์ยอดนิยมที่สุดของ IMDb';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+  String get imdbMostPopularTvShows => 'รายการทีวียอดนิยมที่สุดของ IMDb';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+  String get imdbLowestRatedMovies => 'ภาพยนตร์คะแนนต่ำสุดของ IMDb';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
+  String get imdbTopEnglishMovies => 'ภาพยนตร์ภาษาอังกฤษคะแนนสูงสุดของ IMDb';
 }
