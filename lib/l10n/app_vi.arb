@@ -1,6 +1,6 @@
 {
     "@@locale": "vi",
-    "appTitle": "Moonfin",
+    "appTitle": "Vây trăng",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Kết nối nhanh",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "Quay lại",
+    "back": "Mặt sau",
     "@back": {
         "description": "Back button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Gỡ bỏ",
+    "remove": "Di dời",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Moonfin",
+    "themeMoonfin": "Vây trăng",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -277,7 +277,7 @@
     "@guide": {
         "description": "Live TV guide button label"
     },
-    "recordings": "Bản ghi",
+    "recordings": "Bản ghi âm",
     "@recordings": {
         "description": "Live TV recordings button label"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Phim bộ",
+    "series": "Loạt",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Nghệ sĩ",
+    "artists": "nghệ sĩ",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Tiếp tục",
+    "resume": "Bản tóm tắt",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -721,7 +721,7 @@
             }
         }
     },
-    "titles": "Tựa đề",
+    "titles": "Tiêu đề",
     "@titles": {
         "description": "Stat card label for total titles"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 sách nói} other{{count} sách nói}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,11 +935,11 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Xóa",
+    "delete": "Xóa bỏ",
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "Lưu",
+    "save": "Cứu",
     "@save": {
         "description": "Save action button label"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Mùa} other{{count} Mùa}}",
+    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Phát",
+    "play": "Chơi",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,11 +1107,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Truyền",
+    "cast": "Dàn diễn viên",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Trailer",
+    "trailer": "Đoạn phim giới thiệu",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "BIÊN KỊCH",
+    "writers": "nhà văn",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 bản nhạc} other{{count} bản nhạc}}",
+    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 chương} other{{count} chương}}",
+    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Phát ngẫu nhiên",
+    "shuffle": "Trộn bài",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count} kênh",
+    "channelsCount": "{count}ch",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1526,11 +1526,11 @@
             }
         }
     },
-    "mono": "Mono",
+    "mono": "Bệnh tăng bạch cầu đơn nhân",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
-    "stereo": "Stereo",
+    "stereo": "Âm thanh nổi",
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "Đặt lại",
+    "reset": "Cài lại",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Trình phát",
+    "player": "Người chơi",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Track",
+    "track": "Theo dõi",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Xem",
+    "watch": "Đồng hồ",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "Không",
+    "no": "KHÔNG",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 tập} other{{count} tập}}",
+    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Đã tắt",
+    "disabled": "Tàn tật",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value} giây",
+    "secondsValue": "{value}s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Moonfin",
+    "mediaBarModeMoonfin": "Vây trăng",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3797,7 +3797,7 @@
     "@enableBuiltInScreensaver": {
         "description": "Description for in-app screensaver"
     },
-    "mode": "Chế độ",
+    "mode": "Cách thức",
     "@mode": {
         "description": "Setting for mode"
     },
@@ -3951,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin Moonbase",
+    "pluginLabel": "Trình cắm",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4051,7 +4051,7 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "Bật Seerr",
+    "enableSeerr": "Kích hoạt Seer",
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
@@ -4080,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Trang khám phá Seerr",
+    "discoverRows": "Khám phá hàng",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Bật các hàng muốn hiển thị trên trang chính Seerr. Kéo để sắp xếp lại. Thứ tự tùy chỉnh sẽ đồng bộ với Moonbase.",
+    "discoverRowsDescriptionPlugin": "Kéo để sắp xếp lại. Bật hoặc tắt hàng. Thứ tự hàng đã bật sẽ đồng bộ hóa với plugin Moonfin.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Bật các hàng muốn hiển thị trên trang chính Seerr. Kéo để sắp xếp lại. Thứ tự tùy chỉnh sẽ đồng bộ với Moonbase.",
+    "discoverRowsDescription": "Kéo để sắp xếp lại. Bật hoặc tắt hàng.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4248,7 +4248,7 @@
             }
         }
     },
-    "clear": "Xóa",
+    "clear": "Thông thoáng",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4277,7 +4277,7 @@
             }
         }
     },
-    "seerrSettings": "Cài đặt Seerr",
+    "seerrSettings": "Cài đặt Seer",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
@@ -4426,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Tác phẩm tham gia",
+    "appearances": "Xuất hiện",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4516,7 +4516,7 @@
         "description": "Stat label for number of episodes"
     },
     "access": "Truy cập",
-    "add": "Thêm",
+    "add": "Thêm vào",
     "address": "Địa chỉ",
     "analytics": "Phân tích",
     "catalog": "Danh mục",
@@ -4525,18 +4525,18 @@
     "create": "Tạo nên",
     "disable": "Vô hiệu hóa",
     "done": "Xong",
-    "edit": "Chỉnh sửa",
+    "edit": "Biên tập",
     "encoding": "Mã hóa",
     "error": "Lỗi",
-    "forward": "Tua tới",
-    "general": "Chung",
+    "forward": "Phía trước",
+    "general": "Tổng quan",
     "go": "Đi",
     "install": "Cài đặt",
     "installed": "Đã cài đặt",
     "interval": "Khoảng thời gian",
     "name": "Tên",
     "networking": "Mạng",
-    "next": "Tiếp theo",
+    "next": "Kế tiếp",
     "path": "Con đường",
     "paused": "Đã tạm dừng",
     "permissions": "Quyền",
@@ -4544,7 +4544,7 @@
     "profile": "Hồ sơ",
     "provider": "nhà cung cấp",
     "refresh": "Làm cho khỏe lại",
-    "remote": "Điều khiển từ xa",
+    "remote": "Xa",
     "rename": "Đổi tên",
     "revoke": "Thu hồi",
     "role": "Vai trò",
@@ -4556,10 +4556,10 @@
     "sessions": "Phiên",
     "set": "Bộ",
     "status": "Trạng thái",
-    "stop": "Dừng",
+    "stop": "Dừng lại",
     "streaming": "Truyền phát",
     "time": "Thời gian",
-    "trickplay": "Trickplay",
+    "trickplay": "trò lừa",
     "uninstall": "Gỡ cài đặt",
     "up": "Hướng lên",
     "update": "Cập nhật",
@@ -4574,9 +4574,9 @@
     "adminDrawerUsers": "Người dùng",
     "adminDrawerLibraries": "Thư viện",
     "adminDrawerTranscoding": "Chuyển mã",
-    "adminDrawerResume": "Tiếp tục xem",
+    "adminDrawerResume": "Bản tóm tắt",
     "adminDrawerStreaming": "Truyền phát",
-    "adminDrawerTrickplay": "Trickplay",
+    "adminDrawerTrickplay": "trò lừa",
     "adminDrawerDevices": "Thiết bị",
     "adminDrawerActivity": "Hoạt động",
     "adminDrawerNetworking": "Mạng",
@@ -4670,8 +4670,8 @@
     "adminSetVolume": "Đặt âm lượng",
     "sessionPrev": "Trước đó",
     "sessionRewind": "Tua lại",
-    "sessionForward": "Tua tới",
-    "sessionNext": "Tiếp theo",
+    "sessionForward": "Phía trước",
+    "sessionNext": "Kế tiếp",
     "sessionVolumeDown": "Tập –",
     "sessionVolumeUp": "tập +",
     "uhd4k": "4K",
@@ -5366,8 +5366,8 @@
     "adminAllowSegmentDeletion": "Cho phép xóa phân đoạn",
     "adminSegmentKeepSeconds": "Giữ phân đoạn (giây)",
     "adminThrottleBuffering": "Bộ đệm ga",
-    "adminTrickplaySaved": "Đã lưu cài đặt Trickplay",
-    "adminTrickplayLoadFailed": "Không tải được cài đặt Trickplay",
+    "adminTrickplaySaved": "Đã lưu cài đặt trò chơi lừa",
+    "adminTrickplayLoadFailed": "Không tải được cài đặt trò chơi lừa",
     "adminEnableHardwareAcceleration": "Kích hoạt tính năng tăng tốc phần cứng",
     "adminEnableKeyFrameExtraction": "Chỉ bật trích xuất khung chính",
     "adminKeyFrameSubtitle": "Nhanh hơn nhưng độ chính xác thấp hơn",
@@ -5401,7 +5401,7 @@
     "adminHttpsPort": "Cổng HTTPS",
     "adminPublicHttpsPort": "Cổng HTTPS công cộng",
     "adminBaseUrl": "URL cơ sở",
-    "adminBaseUrlHint": "ví dụ: /jellyfin",
+    "adminBaseUrlHint": "ví dụ. /vây thạch",
     "https": "HTTPS",
     "adminEnableHttps": "Kích hoạt HTTPS",
     "adminLocalNetwork": "Mạng cục bộ",
@@ -5671,7 +5671,7 @@
     "adminLiveTvTitle": "Quản trị truyền hình trực tiếp",
     "adminApply": "Áp dụng",
     "adminNotSet": "Chưa đặt",
-    "adminReset": "Đặt lại",
+    "adminReset": "Cài lại",
     "adminLogsTitle": "Nhật ký máy chủ",
     "adminLogsNewestFirst": "Mới nhất đầu tiên",
     "adminLogsOldestFirst": "Cũ nhất đầu tiên",
@@ -5896,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Gỡ bỏ",
+    "adminReposRemove": "Di dời",
     "adminReposSaveFailed": "Không lưu được kho lưu trữ: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5984,7 +5984,7 @@
     "adminTaskCancelling": "Đang hủy...",
     "adminTaskRunning": "Đang chạy...",
     "adminTaskNeverRun": "Không bao giờ chạy",
-    "adminTaskStop": "Dừng",
+    "adminTaskStop": "Dừng lại",
     "adminTaskRun": "Chạy",
     "adminTaskDetailLastExecution": "Thực thi lần cuối",
     "adminTaskDetailStarted": "Đã bắt đầu",
@@ -6028,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Cứ sau 12 giờ",
     "adminTaskTriggerEvery24Hours": "Mỗi 24 giờ",
     "adminTaskTriggerEvery2Days": "Cứ 2 ngày một lần",
-    "adminTaskTriggerHours": "{count, plural, one{1 giờ} other{{count} giờ}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6068,7 +6068,7 @@
         }
     },
     "adminActivityNow": "Hiện nay",
-    "adminActivityMinutesShort": "{minutes} phút",
+    "adminActivityMinutesShort": "{minutes}m",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6076,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours} giờ",
+    "adminActivityHoursShort": "{hours}h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6084,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days} ngày",
+    "adminActivityDaysShort": "{days}d",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6092,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{day}/{month}",
+    "adminActivityDateShort": "{month}/{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6103,10 +6103,10 @@
             }
         }
     },
-    "adminTrickplayDescription": "Thiết lập việc tạo ảnh Trickplay cho hình thu nhỏ xem trước khi tua.",
+    "adminTrickplayDescription": "Định cấu hình tạo hình ảnh thủ thuật để tìm kiếm hình thu nhỏ xem trước.",
     "adminNetworkingPublicHttpsPort": "Cổng HTTPS công cộng",
     "adminNetworkingBaseUrl": "URL cơ sở",
-    "adminNetworkingBaseUrlHint": "ví dụ: /jellyfin",
+    "adminNetworkingBaseUrlHint": "ví dụ. /vây thạch",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Đường dẫn chứng chỉ",
     "adminNetworkingRemoteIpFilter": "Bộ lọc IP từ xa",
@@ -6170,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay yêu cầu máy chủ Jellyfin. Máy chủ hiện tại không hỗ trợ nó.",
     "syncPlayGroupFallbackName": "Nhóm SyncPlay",
     "syncPlayGroupTooltip": "Nhóm SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# người tham gia} other {# người tham gia}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6251,7 +6251,7 @@
     "rememberMyChoice": "Hãy nhớ sự lựa chọn của tôi",
     "playHdr10Fallback": "Phát dự phòng HDR10",
     "requestTranscode": "Yêu cầu chuyển mã",
-    "integrationRowsDiscoveredCount": "{count, plural, one {Đã tìm thấy # hàng} other {Đã tìm thấy # hàng}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6326,16 +6326,16 @@
     "pinIncorrect": "Mã PIN không chính xác",
     "pinMismatch": "Mã PIN không khớp",
     "pinForgot": "Quên mã PIN?",
-    "pinClear": "Xóa",
+    "pinClear": "Thông thoáng",
     "pinBackspace": "Phím lùi",
-    "quickConnectAuthorized": "Đã phê duyệt yêu cầu Quick Connect.",
-    "quickConnectInvalidOrExpired": "Mã Quick Connect không hợp lệ hoặc đã hết hạn.",
-    "quickConnectNotSupported": "Máy chủ này không hỗ trợ Quick Connect.",
-    "quickConnectAuthorizeFailed": "Không phê duyệt được mã Quick Connect.",
-    "quickConnectDisabled": "Quick Connect đã bị tắt trên máy chủ này.",
-    "quickConnectForbidden": "Tài khoản của bạn không thể phê duyệt yêu cầu Quick Connect này.",
-    "quickConnectNotFound": "Không tìm thấy mã Quick Connect. Hãy thử mã mới.",
-    "quickConnectFailedWithMessage": "Quick Connect thất bại: {message}",
+    "quickConnectAuthorized": "Yêu cầu kết nối nhanh được ủy quyền.",
+    "quickConnectInvalidOrExpired": "Mã Kết nối nhanh không hợp lệ hoặc đã hết hạn.",
+    "quickConnectNotSupported": "Kết nối nhanh không được hỗ trợ trên máy chủ này.",
+    "quickConnectAuthorizeFailed": "Không thể ủy quyền mã Kết nối nhanh.",
+    "quickConnectDisabled": "Kết nối nhanh bị tắt trên máy chủ này.",
+    "quickConnectForbidden": "Tài khoản của bạn không thể ủy quyền yêu cầu Kết nối nhanh này.",
+    "quickConnectNotFound": "Không tìm thấy mã Kết nối nhanh. Hãy thử một mã mới.",
+    "quickConnectFailedWithMessage": "Kết nối nhanh không thành công: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6415,7 +6415,7 @@
     "upNext": "Tiếp theo",
     "playNext": "Chơi tiếp",
     "stillWatchingContent": "Việc phát lại đã bị tạm dừng. Bạn vẫn đang xem chứ?",
-    "stillWatchingStop": "Dừng",
+    "stillWatchingStop": "Dừng lại",
     "stillWatchingContinue": "Tiếp tục",
     "skipSegment": "Bỏ qua {segment}",
     "@skipSegment": {
@@ -6567,7 +6567,7 @@
     "settingsCheckForUpdates": "Kiểm tra cập nhật",
     "settingsCheckForUpdatesSubtitle": "Kiểm tra bản phát hành Moonfin mới nhất",
     "settingsPoweredByFlutter": "Được cung cấp bởi Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# thông báo giấy phép} other {# thông báo giấy phép}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6763,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Ghi hình",
+    "record": "Ghi",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6827,7 +6827,7 @@
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "Truyền thẳng TrueHD Atmos",
+    "settingsAudioTrueHdAtmosPassthrough": "Dòng bit Dolby Digital Plus (EAC3) tới bộ giải mã bên ngoài.",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6891,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "PCM {count} kênh",
+    "settingsAudioPcmChannels": "{count}ch PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7071,7 +7071,7 @@
     "genresRowSortingDescription": "Sắp xếp các hàng Thể loại theo ngày thêm, ngày phát hành, theo thứ tự bảng chữ cái, v.v.",
     "genresRowItems": "Các mục hàng thể loại",
     "genresRowItemsDescription": "Hiển thị Phim, Bộ hoặc cả hai trong hàng Thể loại.",
-    "appearance": "Giao diện",
+    "appearance": "Vẻ bề ngoài",
     "cardSize": "Kích thước thẻ",
     "externalPlayerApp": "Ứng dụng trình phát bên ngoài",
     "externalPlayerAskEachTimeSubtitle": "Hiển thị trình chọn ứng dụng khi bắt đầu phát lại.",
@@ -7158,7 +7158,7 @@
     "openIosRoutePicker": "Mở bộ chọn tuyến đường iOS",
     "airPlayRoutePickerUnavailable": "Công cụ chọn tuyến AirPlay không khả dụng trên thiết bị này.",
     "videos": "Video",
-    "trailers": "Trailer",
+    "trailers": "Xe kéo",
     "programs": "Chương trình",
     "songs": "Bài hát",
     "photoAlbums": "Album ảnh",
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Nghệ sĩ hàng đầu",
     "analyticsTopAuthors": "tác giả hàng đầu",
     "analyticsTopContributors": "Những người đóng góp hàng đầu",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Thư viện} other{{count} Thư viện}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7234,7 +7234,7 @@
     "mixedContent": "Nội dung hỗn hợp",
     "homeVideosAndPhotos": "Trang chủ Video & Hình ảnh",
     "mixedMoviesAndShows": "Phim và chương trình tổng hợp",
-    "intelQuickSync": "Intel Quick Sync",
+    "intelQuickSync": "Đồng bộ hóa nhanh Intel",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Không tìm thấy bản ghi nào",
@@ -7302,199 +7302,199 @@
     "cb7ExtractionPluginUnavailable": "Plugin trích xuất CB7 không có sẵn trên nền tảng này.",
     "closeGenrePanel": "Đóng bảng thể loại",
     "loadingShuffle": "Đang tải ngẫu nhiên...",
-    "libraryShuffleLabel": "PHÁT NGẪU NHIÊN THƯ VIỆN",
-    "randomShuffleLabel": "PHÁT NGẪU NHIÊN TOÀN BỘ",
-    "genresShuffleLabel": "PHÁT NGẪU NHIÊN THEO THỂ LOẠI",
+    "libraryShuffleLabel": "LIBRARY SHUFFLE",
+    "randomShuffleLabel": "RANDOM SHUFFLE",
+    "genresShuffleLabel": "GENRES SHUFFLE",
     "autoHdrSwitching": "Tự động chuyển đổi HDR",
     "autoHdrSwitchingDescription": "Tự động bật HDR để phát lại video HDR và ​​khôi phục chế độ hiển thị khi thoát.",
     "whenFullscreen": "Khi toàn màn hình",
     "transcodingLimits": "Giới hạn chuyển mã",
-    "settingsSupportMoonfinSubtitle": "Mời nhà phát triển một ly cà phê",
-    "accountPreferences": "TÙY CHỌN TÀI KHOẢN",
+    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer",
+    "accountPreferences": "",
     "@accountPreferences": {
         "description": "Section header for account preferences settings"
     },
-    "interfaceLanguage": "Ngôn ngữ giao diện",
+    "interfaceLanguage": "",
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Mặc định của hệ thống",
+    "systemLanguageDefault": "",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
-    "empty": "Trống",
+    "empty": "",
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "detailScreenStyle": "Kiểu màn hình chi tiết",
+    "detailScreenStyle": "",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Cổ điển là bố cục Moonfin gốc căn giữa. Hiện đại là bố cục điện ảnh tự điều chỉnh.",
+    "detailScreenStyleSubtitle": "",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
-    "detailScreenStyleMoonfin": "Cổ điển",
+    "detailScreenStyleMoonfin": "",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
     },
-    "detailScreenStyleModern": "Hiện đại",
+    "detailScreenStyleModern": "",
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "expandedTabs": "Thẻ mở rộng",
+    "expandedTabs": "",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Tự động hiển thị nội dung thẻ khi bạn duyệt qua các thẻ. Tắt để tự mở và đóng từng thẻ.",
+    "expandedTabsSubtitle": "",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Hiển thị chi tiết kỹ thuật?",
+    "showTechnicalDetails": "",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Hiển thị thông tin codec, độ phân giải và luồng trong phần tóm tắt biểu ngữ",
+    "showTechnicalDetailsSubtitle": "",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystem": "Hệ thống gợi ý",
+    "recommendationSystem": "",
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Dùng thuật toán Moonfin Gợi ý dựa trên thư viện cục bộ hoặc Chỉ số tương đồng trực tuyến của TMDb. Lưu ý: Gợi ý trực tuyến cần tích hợp Seerr.",
+    "recommendationSystemSubtitle": "",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Gợi ý",
+    "recommendationSystemMoonfin": "",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "Độ tương đồng TMDb",
+    "recommendationSystemTmdb": "",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Giới hạn theo xếp hạng độ tuổi?",
+    "recommendationsApplyParentalRatingCap": "",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Giới hạn gợi ý của Moonfin Gợi ý theo xếp hạng độ tuổi của nội dung đích",
+    "recommendationsApplyParentalRatingCapSubtitle": "",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
-    "interfaceStyle": "Kiểu giao diện",
+    "interfaceStyle": "",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Tự động sẽ khớp với thiết bị của bạn. Chọn Apple hoặc Material để dùng một giao diện cố định.",
+    "interfaceStyleSubtitle": "",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "Tự động",
+    "interfaceStyleAutomatic": "",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "glassQuality": "Chất lượng hiệu ứng kính",
+    "glassQuality": "",
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Tự động sẽ chọn hiệu ứng kính phù hợp nhất cho thiết bị này. Đầy đủ buộc dùng làm mờ thật; Giảm bớt dùng hiệu ứng kính nhẹ giúp tiết kiệm GPU.",
+    "glassQualitySubtitle": "",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Tự động",
+    "glassQualityAuto": "",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
-    "glassQualityFull": "Đầy đủ",
+    "glassQualityFull": "",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
-    "glassQualityReduced": "Giảm bớt",
+    "glassQualityReduced": "",
     "@glassQualityReduced": {
         "description": "Glass quality option: lightweight zero-blur glass"
     },
-    "customThemeTitle": "Chủ đề tùy chỉnh",
+    "customThemeTitle": "",
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "customThemeSubtitle": "Chủ đề tùy chỉnh thay đổi các thành phần giao diện trên toàn Moonfin. Hãy chọn một tùy chọn hợp với phong cách của bạn.",
+    "customThemeSubtitle": "",
     "@customThemeSubtitle": {
         "description": "Description under custom themes section"
     },
-    "themeGlass": "Kính",
+    "themeGlass": "",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Phong cách kính lỏng với nền chuyển sắc chuyển động nhẹ, bề mặt mờ và điểm nhấn xanh Apple",
+    "themeGlassSubtitle": "",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
-    "theme8BitHero": "Người hùng 8-bit",
+    "theme8BitHero": "",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Phong cách pixel-art hoài cổ với bảng màu đậm, viền khối, đổ bóng sắc nét và phông chữ pixel",
+    "theme8BitHeroSubtitle": "",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
-    "gameMenu": "Menu",
+    "gameMenu": "",
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "gamePaused": "Đã tạm dừng",
+    "gamePaused": "",
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Lưu trạng thái",
+    "gameSaveState": "",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
-    "games": "Trò chơi",
+    "games": "",
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "gameLoadState": "Tải trạng thái",
+    "gameLoadState": "",
     "@gameLoadState": {
         "description": "In-game menu action to load the saved game state"
     },
-    "gameFastForward": "Tua nhanh",
+    "gameFastForward": "",
     "@gameFastForward": {
         "description": "In-game menu action to toggle fast-forward"
     },
-    "gameEmulatorSettings": "Cài đặt trình giả lập",
+    "gameEmulatorSettings": "",
     "@gameEmulatorSettings": {
         "description": "In-game menu action opening the emulator settings"
     },
-    "gameNoCoreOptions": "Nhân này không có tùy chọn nào để điều chỉnh.",
+    "gameNoCoreOptions": "",
     "@gameNoCoreOptions": {
         "description": "Shown when a game core exposes no settings"
     },
-    "gameHoldToOpenMenu": "Giữ để mở menu",
+    "gameHoldToOpenMenu": "",
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Thiết bị này chưa hỗ trợ chơi trò chơi.",
+    "gamePlaybackUnsupported": "",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "latestBooks": "Sách mới nhất",
+    "latestBooks": "",
     "@latestBooks": {
         "description": "Row title for recently added books in the book library"
     },
-    "latestAudiobooks": "Sách nói mới nhất",
+    "latestAudiobooks": "",
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 cuốn sách} other{{count} cuốn sách}}",
+    "bookSeriesItemCount": "",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -7503,15 +7503,15 @@
             }
         }
     },
-    "bookFormatBook": "Sách",
+    "bookFormatBook": "",
     "@bookFormatBook": {
         "description": "Semantic label for the book format badge on library cards"
     },
-    "bookFormatAudiobook": "Sách nói",
+    "bookFormatAudiobook": "",
     "@bookFormatAudiobook": {
         "description": "Semantic label for the audiobook format badge on library cards"
     },
-    "bookPercentRead": "Đã đọc {percent}%",
+    "bookPercentRead": "",
     "@bookPercentRead": {
         "description": "Reading progress label on book cards",
         "placeholders": {
@@ -7520,7 +7520,7 @@
             }
         }
     },
-    "bookTimeLeft": "Còn {time}",
+    "bookTimeLeft": "",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7529,47 +7529,47 @@
             }
         }
     },
-    "bookHeroRead": "Đọc",
+    "bookHeroRead": "",
     "@bookHeroRead": {
         "description": "Hero CTA label to start reading a book"
     },
-    "bookHeroListen": "Nghe",
+    "bookHeroListen": "",
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "items": "Mục",
+    "items": "",
     "@items": {
         "description": "Tab label for the items in a collection/box set"
     },
-    "extras": "Nội dung thêm",
+    "extras": "",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
-    "behindTheScenes": "Hậu trường",
+    "behindTheScenes": "",
     "@behindTheScenes": {
         "description": "Tab label for behind the scenes special features"
     },
-    "deletedScenes": "Cảnh bị cắt",
+    "deletedScenes": "",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Phim ngắn giới thiệu",
+    "featurettes": "",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
-    "interviews": "Phỏng vấn",
+    "interviews": "",
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "scenes": "Cảnh phim",
+    "scenes": "",
     "@scenes": {
         "description": "Tab label for scenes special features"
     },
-    "shorts": "Phim ngắn",
+    "shorts": "",
     "@shorts": {
         "description": "Tab label for shorts special features"
     },
-    "timeRemaining": "Còn {time}",
+    "timeRemaining": "",
     "@timeRemaining": {
         "description": "Label showing remaining playback time, e.g. '42m remaining'",
         "placeholders": {
@@ -7578,7 +7578,7 @@
             }
         }
     },
-    "endsIn": "Kết thúc sau {time}",
+    "endsIn": "",
     "@endsIn": {
         "description": "Label showing remaining time for segment or timeout",
         "placeholders": {
@@ -7587,27 +7587,27 @@
             }
         }
     },
-    "directors": "ĐẠO DIỄN",
+    "directors": "",
     "@directors": {
         "description": "Metadata label for directors"
     },
-    "writer": "BIÊN KỊCH",
+    "writer": "",
     "@writer": {
         "description": "Metadata label for writer"
     },
-    "shuffleAllMusic": "Phát ngẫu nhiên toàn bộ nhạc",
+    "shuffleAllMusic": "",
     "@shuffleAllMusic": {
         "description": "Car browse action that shuffles the whole music library"
     },
-    "carSignInPrompt": "Đăng nhập Moonfin trên điện thoại của bạn",
+    "carSignInPrompt": "",
     "@carSignInPrompt": {
         "description": "Shown in the car when no account is signed in"
     },
-    "carServerUnreachable": "Không kết nối được máy chủ của bạn",
+    "carServerUnreachable": "",
     "@carServerUnreachable": {
         "description": "Shown in the car when the media server can't be reached"
     },
-    "guideNextProgram": "Tiếp theo: {time}  {title}",
+    "guideNextProgram": "",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -7619,7 +7619,7 @@
             }
         }
     },
-    "guideMinutesLeft": "Còn {minutes} phút",
+    "guideMinutesLeft": "",
     "@guideMinutesLeft": {
         "description": "Remaining time of the current program, under an hour",
         "placeholders": {
@@ -7628,7 +7628,7 @@
             }
         }
     },
-    "guideHoursLeft": "Còn {hours} giờ",
+    "guideHoursLeft": "",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7637,7 +7637,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "Còn {hours} giờ {minutes} phút",
+    "guideHoursMinutesLeft": "",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -7649,301 +7649,301 @@
             }
         }
     },
-    "themeMusicSettingsSubtitle": "Trang chi tiết, hàng trang chủ và âm lượng",
+    "themeMusicSettingsSubtitle": "",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
-    "loopThemeMusic": "Lặp nhạc chủ đề",
+    "loopThemeMusic": "",
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "Lặp lại bản nhạc thay vì chỉ phát một lần",
+    "loopThemeMusicSubtitle": "",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "settingsScrollWheelAction": "Con lăn chuột",
+    "settingsScrollWheelAction": "",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
-    "settingsScrollWheelActionDescription": "Chọn hành động khi lăn chuột trên video trong lúc phát.",
+    "settingsScrollWheelActionDescription": "",
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
-    "scrollWheelActionOff": "Tắt",
+    "scrollWheelActionOff": "",
     "@scrollWheelActionOff": {
         "description": "Scroll wheel action option: do nothing"
     },
-    "scrollWheelActionSeek": "Tua (tiến / lùi)",
+    "scrollWheelActionSeek": "",
     "@scrollWheelActionSeek": {
         "description": "Scroll wheel action option: seek forward and back"
     },
-    "scrollWheelActionVolume": "Âm lượng",
+    "scrollWheelActionVolume": "",
     "@scrollWheelActionVolume": {
         "description": "Scroll wheel action option: adjust volume"
     },
-    "playerTooltipVolume": "Âm lượng",
+    "playerTooltipVolume": "",
     "@playerTooltipVolume": {
         "description": "Tooltip for the volume control button in the player OSD"
     },
-    "fallbackAudioLanguage": "Ngôn ngữ âm thanh dự phòng",
+    "fallbackAudioLanguage": "",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "Ưu tiên bản âm thanh mặc định",
+    "preferDefaultAudioTrack": "",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "Ưu tiên bản âm thanh gốc thay vì bản lồng tiếng.",
+    "preferDefaultAudioTrackDescription": "",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "Ưu tiên bản thuyết minh mô tả",
+    "preferAudioDescription": "",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "Ưu tiên bản thuyết minh mô tả thay vì bản âm thanh thường.",
+    "preferAudioDescriptionDescription": "",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "Chuyển mã (Âm thanh)",
+    "transcodingAudio": "",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "directStreamRemux": "Truyền trực tiếp (Remux)",
+    "directStreamRemux": "",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "Chuyển mã (Tốc độ bit hoặc Độ phân giải)",
+    "transcodingBitrateOrResolution": "",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "Chuyển mã (Video & Âm thanh)",
+    "transcodingVideoAndAudio": "",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "Chuyển mã (Video)",
+    "transcodingVideo": "",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
-    "settingsAudioOutputModeDescription": "Chọn cách giải mã âm thanh. AVR Passthrough gửi luồng Dolby/DTS thô đến bộ thu của bạn; Tự động hoặc Trộn xuống sẽ giải mã ngay trên thiết bị.",
+    "settingsAudioOutputModeDescription": "",
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
-    "settingsAudioFallbackCodecDescription": "Chọn định dạng đích để chuyển mã âm thanh đa kênh khi luồng gốc không thể phát trực tiếp hoặc truyền thẳng.",
+    "settingsAudioFallbackCodecDescription": "",
     "@settingsAudioFallbackCodecDescription": {
         "description": "Description for audio fallback codec setting"
     },
-    "settingsAudioFallbackCodecAuto": "Tự động nhận diện\n(Khuyên dùng)",
+    "settingsAudioFallbackCodecAuto": "",
     "@settingsAudioFallbackCodecAuto": {
         "description": "Fallback codec option: Auto"
     },
-    "settingsAudioFallbackCodecAac": "AAC\n(Mặc định)",
+    "settingsAudioFallbackCodecAac": "",
     "@settingsAudioFallbackCodecAac": {
         "description": "Fallback codec option: AAC"
     },
-    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "settingsAudioFallbackCodecAc3": "",
     "@settingsAudioFallbackCodecAc3": {
         "description": "Fallback codec option: AC3"
     },
-    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "settingsAudioFallbackCodecEac3": "",
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Không mất dữ liệu)",
+    "settingsAudioFallbackCodecTrueHd": "",
     "@settingsAudioFallbackCodecTrueHd": {
         "description": "Fallback codec option: TrueHD"
     },
-    "settingsAudioFallbackCodecMp3": "MP3\n(Chỉ Stereo)",
+    "settingsAudioFallbackCodecMp3": "",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
     },
-    "settingsAudioFallbackCodecOpus": "Opus\n(Hiệu quả)",
+    "settingsAudioFallbackCodecOpus": "",
     "@settingsAudioFallbackCodecOpus": {
         "description": "Fallback codec option: Opus"
     },
-    "settingsAudioFallbackCodecFlac": "FLAC\n(Không mất dữ liệu)",
+    "settingsAudioFallbackCodecFlac": "",
     "@settingsAudioFallbackCodecFlac": {
         "description": "Fallback codec option: FLAC"
     },
-    "settingsMaxAudioChannels": "Số kênh âm thanh tối đa",
+    "settingsMaxAudioChannels": "",
     "@settingsMaxAudioChannels": {
         "description": "Setting for maximum audio channels capability"
     },
-    "settingsMaxAudioChannelsDescription": "Thiết lập số kênh tối đa của hệ thống âm thanh của bạn. Các luồng đa kênh vượt quá giới hạn này sẽ được trộn xuống hoặc chuyển mã.",
+    "settingsMaxAudioChannelsDescription": "",
     "@settingsMaxAudioChannelsDescription": {
         "description": "Description for maximum audio channels setting"
     },
-    "settingsMaxAudioChannelsAuto": "Tự động nhận diện\n(Mặc định phần cứng)",
+    "settingsMaxAudioChannelsAuto": "",
     "@settingsMaxAudioChannelsAuto": {
         "description": "Option: Auto detect channels"
     },
-    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "settingsMaxAudioChannelsMono": "",
     "@settingsMaxAudioChannelsMono": {
         "description": "Option: Mono (1 channel)"
     },
-    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "settingsMaxAudioChannelsStereo": "",
     "@settingsMaxAudioChannelsStereo": {
         "description": "Option: Stereo (2 channels)"
     },
-    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Vòm",
+    "settingsMaxAudioChannels3_0": "",
     "@settingsMaxAudioChannels3_0": {
         "description": "Option: 3 channels"
     },
-    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadraphonic",
+    "settingsMaxAudioChannels4_0": "",
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Vòm",
+    "settingsMaxAudioChannels5_0": "",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 Vòm",
+    "settingsMaxAudioChannels5_1": "",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 Vòm",
+    "settingsMaxAudioChannels6_1": "",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 Vòm",
+    "settingsMaxAudioChannels7_1": "",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
-    "settingsAudioRouteHeadphones": "Tai nghe",
+    "settingsAudioRouteHeadphones": "",
     "@settingsAudioRouteHeadphones": {
         "description": "Audio route type wired or USB headphones"
     },
-    "subtitleMode": "Chế độ phụ đề",
+    "subtitleMode": "",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "Theo đánh dấu",
+    "subtitleModeFlagged": "",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "Luôn luôn",
+    "subtitleModeAlways": "",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "Tiếng nước ngoài",
+    "subtitleModeForeign": "",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "Bắt buộc",
+    "subtitleModeForced": "",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "Phát các bản được đánh dấu \"default\" hoặc \"forced\" trong siêu dữ liệu của tệp phương tiện.",
+    "subtitleModeFlaggedDescription": "",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Tự động tải và hiển thị phụ đề mỗi khi bắt đầu phát video.",
+    "subtitleModeAlwaysDescription": "",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "Tự động bật phụ đề nếu bản âm thanh mặc định là tiếng nước ngoài.",
+    "subtitleModeForeignDescription": "",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "Chỉ tải phụ đề được gắn cờ siêu dữ liệu forced.",
+    "subtitleModeForcedDescription": "",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "Tắt hoàn toàn việc tự động tải phụ đề.",
+    "subtitleModeNoneDescription": "",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Ngôn ngữ phụ đề dự phòng",
+    "fallbackSubtitleLanguage": "",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "Luồng phụ đề",
+    "subtitleStream": "",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
     "reportDownloadsActivity": "Hiển thị lượt tải xuống trên máy chủ",
     "reportDownloadsActivitySubtitle": "Cho phép quản trị viên máy chủ xem các lượt tải xuống đã chuyển mã của bạn trong bảng điều khiển",
-    "navbarAlwaysExpanded": "Luôn hiển thị nhãn thanh điều hướng",
+    "navbarAlwaysExpanded": "",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "showSeerrButton": "Hiển thị nút Seerr",
+    "showSeerrButton": "",
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Nhóm các mục thành bộ sưu tập",
+    "groupItemsIntoCollections": "",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Ẩn các mục thuộc bộ sưu tập khi duyệt thư viện",
+    "hideCollectionAssociatedItems": "",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "Lưu ý về nhóm thư viện",
+    "groupItemsIntoCollectionsDialogTitle": "",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Để dùng thiết lập này, hãy đảm bảo các tùy chọn thư viện \"Group movies into collections\" và/hoặc \"Group shows into collections\" đã được bật trong phần cài đặt Hiển thị của thư viện trên máy chủ Jellyfin hoặc Emby của bạn.",
+    "groupItemsIntoCollectionsDialogMessage": "",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "trailerAudio": "Âm thanh trailer",
+    "trailerAudio": "",
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "Bật âm thanh cho trailer trong thanh phương tiện",
+    "enableTrailerAudio": "",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Hàng trang chủ mở rộng",
+    "fullScreenRows": "",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
-    "fullScreenRowsDescription": "Giới hạn còn 1 hàng trang chủ mỗi màn hình",
+    "fullScreenRowsDescription": "",
     "@fullScreenRowsDescription": {
         "description": "Description for full screen home rows"
     },
-    "currentUser": "Người dùng hiện tại",
+    "currentUser": "",
     "@currentUser": {
         "description": "Option: current user"
     },
-    "clockModeStatic": "Cố định",
+    "clockModeStatic": "",
     "@clockModeStatic": {
         "description": "Screensaver clock mode: fixed in a corner"
     },
-    "clockModeBouncing": "Chuyển động",
+    "clockModeBouncing": "",
     "@clockModeBouncing": {
         "description": "Screensaver clock mode: bounces around the screen"
     },
-    "seerrDiscoveryRows": "Hàng khám phá Seerr",
+    "seerrDiscoveryRows": "",
     "@seerrDiscoveryRows": {
         "description": "Subtitle shown under Seerr discovery home rows"
     },
-    "seerrNotificationsSection": "Thông báo",
+    "seerrNotificationsSection": "",
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Thông báo yêu cầu mới",
+    "seerrNotifyNewRequestsTitle": "",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
-    "seerrNotifyNewRequestsSubtitle": "Báo cho tôi khi có người gửi yêu cầu",
+    "seerrNotifyNewRequestsSubtitle": "",
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Cập nhật yêu cầu",
+    "seerrNotifyLibraryAddedTitle": "",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
-    "seerrNotifyLibraryAddedSubtitle": "Đã duyệt, bị từ chối và đã thêm vào thư viện của bạn",
+    "seerrNotifyLibraryAddedSubtitle": "",
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Cập nhật sự cố",
+    "seerrNotifyIssuesTitle": "",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "Sự cố mới, phản hồi và cách xử lý",
+    "seerrNotifyIssuesSubtitle": "",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -7959,7 +7959,7 @@
     "imageCacheLimit": "Giới hạn bộ nhớ đệm hình ảnh",
     "clearImageCache": "Xóa bộ nhớ đệm hình ảnh",
     "imageCacheCleared": "Đã xóa bộ nhớ đệm hình ảnh",
-    "seerrDownloadingPercent": "Đang tải xuống · {percent}%",
+    "seerrDownloadingPercent": "",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -7968,19 +7968,19 @@
             }
         }
     },
-    "seerrImportingStatus": "Đang nhập",
+    "seerrImportingStatus": "",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "Thất bại",
+    "failedStatus": "",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
-    "processingStatus": "Đang xử lý",
+    "processingStatus": "",
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "Được sửa bởi {name}",
+    "modifiedByName": "",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -7989,51 +7989,51 @@
             }
         }
     },
-    "completedStatus": "Hoàn tất",
+    "completedStatus": "",
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "Tựa đề này đã được yêu cầu",
+    "requestErrorDuplicate": "",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "Đã đạt giới hạn yêu cầu",
+    "requestErrorQuota": "",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "Tựa đề này nằm trong danh sách chặn",
+    "requestErrorBlocklisted": "",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "Không còn mùa nào để yêu cầu",
+    "requestErrorNoSeasons": "",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "Bạn không có quyền gửi yêu cầu này",
+    "requestErrorPermission": "",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "Yêu cầu",
+    "seerrRequestsTitle": "",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "Sự cố",
+    "seerrIssuesTitle": "",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "Mới nhất",
+    "sortNewest": "",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "Sửa gần nhất",
+    "sortLastModified": "",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "Không có sự cố",
+    "noIssues": "",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "Còn {remaining} trên {limit} lượt yêu cầu phim",
+    "movieQuotaRemaining": "",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8045,7 +8045,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "Còn {remaining} trên {limit} lượt yêu cầu mùa",
+    "seasonQuotaRemaining": "",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8057,7 +8057,7 @@
             }
         }
     },
-    "partOfCollectionName": "Thuộc {name}",
+    "partOfCollectionName": "",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8066,15 +8066,15 @@
             }
         }
     },
-    "viewCollection": "Xem bộ sưu tập",
+    "viewCollection": "",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Yêu cầu cả bộ sưu tập",
+    "requestCollection": "",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} phim · {available} phim có sẵn",
+    "collectionMoviesSummary": "",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8086,7 +8086,7 @@
             }
         }
     },
-    "requestMoviesCount": "Yêu cầu {count} phim",
+    "requestMoviesCount": "",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8095,7 +8095,7 @@
             }
         }
     },
-    "requestingProgress": "Đang yêu cầu {current} trên {total}...",
+    "requestingProgress": "",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8107,7 +8107,7 @@
             }
         }
     },
-    "requestedMoviesCount": "Đã yêu cầu {count} phim",
+    "requestedMoviesCount": "",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8116,7 +8116,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "Đã yêu cầu {ok} trên {total} phim",
+    "requestedMoviesPartial": "",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8128,51 +8128,51 @@
             }
         }
     },
-    "collectionAllRequested": "Tất cả phim đều đã có sẵn hoặc đã được yêu cầu",
+    "collectionAllRequested": "",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Báo cáo sự cố",
+    "reportIssue": "",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "Video",
+    "issueTypeVideo": "",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "Âm thanh",
+    "issueTypeAudio": "",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "Có vấn đề gì?",
+    "whatsWrong": "",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Tất cả các tập",
+    "allEpisodes": "",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "Tập",
+    "episode": "",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "Đang mở",
+    "openStatus": "",
     "@openStatus": {
         "description": "Issue status label"
     },
-    "resolvedStatus": "Đã xử lý",
+    "resolvedStatus": "",
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "Đánh dấu đã xử lý",
+    "resolveAction": "",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "Mở lại",
+    "reopenAction": "",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "Được báo cáo bởi {name}",
+    "reportedByName": "",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8181,7 +8181,7 @@
             }
         }
     },
-    "commentsCount": "{count} bình luận",
+    "commentsCount": "",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8190,24 +8190,24 @@
             }
         }
     },
-    "addComment": "Thêm bình luận",
+    "addComment": "",
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "Xóa sự cố này?",
+    "deleteIssueConfirm": "",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "Gửi báo cáo",
+    "submitReport": "",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
-    "adminDrawerDisplay": "Hiển thị",
-    "adminDrawerMetadata": "Siêu dữ liệu",
-    "adminDrawerNfo": "Cài đặt NFO",
-    "adminActivitySeverityAll": "Mọi mức độ",
-    "adminActivityDateRange": "Khoảng thời gian",
-    "adminRemoveDeviceConfirm": "Gỡ thiết bị '{name}'? Người dùng sẽ phải đăng nhập lại trên thiết bị này.",
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminDrawerNfo": "",
+    "adminActivitySeverityAll": "",
+    "adminActivityDateRange": "",
+    "adminRemoveDeviceConfirm": "",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8215,8 +8215,8 @@
             }
         }
     },
-    "adminDeleteAllDevices": "Xóa tất cả thiết bị",
-    "adminDeleteAllDevicesConfirm": "Gỡ {count} thiết bị? Những người dùng bị ảnh hưởng sẽ phải đăng nhập lại. Thiết bị hiện tại của bạn không bị ảnh hưởng.",
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
     "@adminDeleteAllDevicesConfirm": {
         "placeholders": {
             "count": {
@@ -8224,8 +8224,8 @@
             }
         }
     },
-    "adminDevicesDeletedAll": "Đã gỡ thiết bị",
-    "adminDevicesDeletedPartial": "Đã gỡ một số thiết bị; không thể gỡ {count} thiết bị.",
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
     "@adminDevicesDeletedPartial": {
         "placeholders": {
             "count": {
@@ -8233,13 +8233,13 @@
             }
         }
     },
-    "adminLibraryTabPaths": "Đường dẫn",
-    "adminLibraryTabOptions": "Tùy chọn",
-    "adminLibraryTabDownloaders": "Trình tải xuống",
-    "adminLibMetadataSavers": "Trình lưu siêu dữ liệu",
-    "adminLibSubtitleDownloaders": "Trình tải phụ đề",
-    "adminLibLyricDownloaders": "Trình tải lời bài hát",
-    "adminLibMetadataDownloadersFor": "Trình tải siêu dữ liệu: {type}",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibMetadataDownloadersFor": "",
     "@adminLibMetadataDownloadersFor": {
         "placeholders": {
             "type": {
@@ -8247,7 +8247,7 @@
             }
         }
     },
-    "adminLibImageFetchersFor": "Trình lấy hình ảnh: {type}",
+    "adminLibImageFetchersFor": "",
     "@adminLibImageFetchersFor": {
         "placeholders": {
             "type": {
@@ -8255,48 +8255,48 @@
             }
         }
     },
-    "adminLibNoDownloaders": "Máy chủ này không cung cấp trình tải nào cho loại thư viện này.",
-    "adminLibrarySectionGeneral": "Chung",
-    "adminLibrarySectionMetadata": "Siêu dữ liệu",
-    "adminLibrarySectionEmbedded": "Thông tin nhúng",
-    "adminLibrarySectionSubtitles": "Phụ đề",
-    "adminLibrarySectionImages": "Hình ảnh",
-    "adminLibrarySectionSeries": "Phim bộ",
-    "adminLibrarySectionMusic": "Nhạc",
-    "adminLibrarySectionMovies": "Phim",
-    "adminLibRealtimeMonitor": "Bật giám sát theo thời gian thực",
-    "adminLibRealtimeMonitorHint": "Phát hiện thay đổi của tệp và tự động xử lý.",
-    "adminLibArchiveMediaFiles": "Xem tệp nén như tệp phương tiện",
-    "adminLibEnablePhotos": "Hiển thị ảnh",
-    "adminLibSaveLocalMetadata": "Lưu ảnh bìa vào thư mục phương tiện",
-    "adminLibRefreshInterval": "Tự động làm mới siêu dữ liệu",
-    "adminLibRefreshNever": "Không bao giờ",
-    "adminLibDefault": "Mặc định",
-    "adminLibDisplayTitle": "Hiển thị",
-    "adminLibDisplaySection": "Hiển thị thư viện",
-    "adminLibFolderView": "Hiển thị dạng thư mục để xem các thư mục phương tiện thuần túy",
-    "adminLibSpecialsInSeasons": "Hiển thị tập đặc biệt trong mùa mà chúng được phát sóng",
-    "adminLibGroupMovies": "Nhóm phim lẻ thành bộ sưu tập",
-    "adminLibGroupShows": "Nhóm phim bộ thành bộ sưu tập",
-    "adminLibExternalSuggestions": "Hiển thị nội dung bên ngoài trong phần gợi ý",
-    "adminLibDateAddedSection": "Cách xác định ngày thêm",
-    "adminLibDateAddedLabel": "Lấy ngày thêm từ",
-    "adminLibDateAddedImport": "Ngày quét vào thư viện",
-    "adminLibDateAddedFile": "Ngày tệp được tạo",
-    "adminLibMetadataTitle": "Siêu dữ liệu và hình ảnh",
-    "adminLibMetadataLangSection": "Ngôn ngữ siêu dữ liệu ưu tiên",
-    "adminLibChaptersSection": "Chương",
-    "adminLibDummyChapterDuration": "Thời lượng chương giả (giây)",
-    "adminLibDummyChapterDurationHint": "Độ dài của các chương được tạo cho nội dung không có chương. Đặt 0 để tắt.",
-    "adminLibChapterImageResolution": "Độ phân giải ảnh chương",
-    "adminLibNfoTitle": "Cài đặt NFO",
-    "adminLibNfoHelp": "Siêu dữ liệu NFO tương thích với Kodi và các ứng dụng tương tự. Các thiết lập này áp dụng cho mọi thư viện có lưu siêu dữ liệu NFO.",
-    "adminLibKodiUser": "Người dùng được lưu dữ liệu xem trong tệp NFO",
-    "adminLibSaveImagePaths": "Lưu đường dẫn hình ảnh trong tệp NFO",
-    "adminLibPathSubstitution": "Bật thay thế đường dẫn cho đường dẫn hình ảnh NFO",
-    "adminLibExtraThumbs": "Sao chép ảnh extrafanart vào thư mục extrathumbs",
-    "adminLibNone": "Không có",
-    "adminLibRefreshDays": "{days} ngày",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibrarySectionSubtitles": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshInterval": "",
+    "adminLibRefreshNever": "",
+    "adminLibDefault": "",
+    "adminLibDisplayTitle": "",
+    "adminLibDisplaySection": "",
+    "adminLibFolderView": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibExternalSuggestions": "",
+    "adminLibDateAddedSection": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibMetadataTitle": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminLibNfoTitle": "",
+    "adminLibNfoHelp": "",
+    "adminLibKodiUser": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibNone": "",
+    "adminLibRefreshDays": "",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8304,119 +8304,119 @@
             }
         }
     },
-    "adminLibEmbeddedTitles": "Dùng tựa đề nhúng trong tệp",
-    "adminLibEmbeddedExtrasTitles": "Dùng tựa đề nhúng cho nội dung thêm",
-    "adminLibEmbeddedEpisodeInfos": "Dùng thông tin tập nhúng trong tệp",
-    "adminLibAllowEmbeddedSubtitles": "Cho phép phụ đề nhúng",
-    "adminLibEmbeddedAllowAll": "Cho phép tất cả",
-    "adminLibEmbeddedAllowText": "Chỉ dạng văn bản",
-    "adminLibEmbeddedAllowImage": "Chỉ dạng hình ảnh",
-    "adminLibEmbeddedAllowNone": "Không có",
-    "adminLibSkipIfEmbeddedSubs": "Bỏ qua tải xuống nếu đã có phụ đề nhúng",
-    "adminLibSkipIfAudioMatches": "Bỏ qua tải xuống nếu bản âm thanh trùng với ngôn ngữ tải xuống",
-    "adminLibRequirePerfectMatch": "Yêu cầu phụ đề khớp hoàn toàn",
-    "adminLibSaveSubtitlesWithMedia": "Lưu phụ đề vào thư mục phương tiện",
-    "adminLibChapterImageExtraction": "Trích xuất ảnh chương",
-    "adminLibChapterImagesDuringScan": "Trích xuất ảnh chương trong lúc quét thư viện",
-    "adminLibTrickplayExtraction": "Bật trích xuất ảnh Trickplay",
-    "adminLibTrickplayDuringScan": "Trích xuất ảnh Trickplay trong lúc quét thư viện",
-    "adminLibSaveTrickplayWithMedia": "Lưu ảnh Trickplay vào thư mục phương tiện",
-    "adminLibAutomaticSeriesGrouping": "Tự động gộp các phim bộ nằm rải rác ở nhiều thư mục",
-    "adminLibSeasonZeroName": "Tên hiển thị của mùa 0",
-    "adminLibLufsScan": "Bật quét LUFS để chuẩn hóa âm lượng",
-    "adminLibPreferNonstandardArtist": "Ưu tiên thẻ nghệ sĩ không chuẩn",
-    "adminLibAutoAddToCollection": "Tự động thêm phim vào bộ sưu tập",
-    "adminParentalControl": "Kiểm soát của phụ huynh",
-    "adminMaxParentalRating": "Xếp hạng độ tuổi tối đa được phép",
-    "adminMaxParentalRatingHint": "Nội dung có xếp hạng cao hơn sẽ bị ẩn với người dùng này.",
-    "adminParentalRatingNone": "Không có",
-    "adminBlockUnratedItems": "Chặn các mục không có hoặc có thông tin xếp hạng không xác định",
-    "adminUnratedBook": "Sách",
-    "adminUnratedChannelContent": "Kênh",
-    "adminUnratedLiveTvChannel": "TV trực tiếp",
-    "adminUnratedMovie": "Phim",
-    "adminUnratedMusic": "Nhạc",
-    "adminUnratedTrailer": "Trailer",
-    "adminUnratedSeries": "Phim bộ",
-    "adminAccessSchedules": "Lịch truy cập",
-    "adminAccessSchedulesHint": "Chỉ cho phép truy cập trong các khung giờ bên dưới. Nếu không đặt lịch, người dùng được truy cập cả ngày.",
-    "adminAddSchedule": "Thêm lịch",
-    "adminScheduleDay": "Ngày",
-    "adminScheduleStart": "Bắt đầu",
-    "adminScheduleEnd": "Kết thúc",
-    "adminDayEveryday": "Mỗi ngày",
-    "adminDayWeekday": "Ngày trong tuần",
-    "adminDayWeekend": "Cuối tuần",
-    "adminDaySunday": "Chủ Nhật",
-    "adminDayMonday": "Thứ Hai",
-    "adminDayTuesday": "Thứ Ba",
-    "adminDayWednesday": "Thứ Tư",
-    "adminDayThursday": "Thứ Năm",
-    "adminDayFriday": "Thứ Sáu",
-    "adminDaySaturday": "Thứ Bảy",
-    "adminAllowedTags": "Thẻ được phép",
-    "adminAllowedTagsHint": "Chỉ hiển thị nội dung có các thẻ này. Để trống để cho phép tất cả.",
-    "adminBlockedTags": "Thẻ bị chặn",
-    "adminBlockedTagsHint": "Nội dung có các thẻ này sẽ bị ẩn với người dùng này.",
-    "adminAddTag": "Thêm thẻ",
-    "adminEnabledDevices": "Thiết bị được bật",
-    "adminEnabledChannels": "Kênh được bật",
-    "adminAuthProvider": "Nhà cung cấp xác thực",
-    "adminPasswordResetProvider": "Nhà cung cấp đặt lại mật khẩu",
-    "adminLoginAttemptsBeforeLockout": "Số lần đăng nhập thất bại tối đa trước khi khóa",
-    "adminLoginAttemptsHint": "Đặt 0 để dùng mặc định, hoặc -1 để tắt tính năng khóa.",
-    "adminSyncPlayAccess": "Quyền truy cập SyncPlay",
-    "adminSyncPlayCreateAndJoin": "Cho phép tạo và tham gia nhóm",
-    "adminSyncPlayJoin": "Cho phép tham gia nhóm",
-    "adminSyncPlayNone": "Không có quyền truy cập",
-    "adminContentDeletionFolders": "Cho phép xóa nội dung từ",
-    "adminBackupOptionsTitle": "Tạo bản sao lưu",
-    "adminBackupInclude": "Chọn những gì cần đưa vào bản sao lưu.",
-    "adminBackupDatabase": "Cơ sở dữ liệu",
-    "adminBackupDatabaseAlways": "Luôn được bao gồm",
-    "adminBackupMetadata": "Siêu dữ liệu",
-    "adminBackupSubtitles": "Phụ đề",
-    "adminBackupTrickplay": "Ảnh Trickplay",
-    "adminEditTuner": "Sửa bộ thu",
-    "adminTunerTypeM3u": "Bộ thu M3U",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "Tệp hoặc URL",
-    "adminTunerIpAddress": "Địa chỉ IP của bộ thu",
-    "adminTunerFriendlyName": "Tên thân thiện",
-    "adminTunerUserAgent": "User agent",
-    "adminTunerCount": "Giới hạn kết nối đồng thời",
-    "adminTunerCountHelp": "Số luồng tối đa mà bộ thu cho phép cùng lúc. Đặt 0 để không giới hạn.",
-    "adminTunerFallbackBitrate": "Tốc độ bit truyền tối đa dự phòng",
-    "adminTunerImportFavoritesOnly": "Chỉ nhập các kênh yêu thích",
-    "adminTunerAllowHwTranscoding": "Cho phép chuyển mã bằng phần cứng",
-    "adminTunerAllowFmp4": "Cho phép vùng chứa chuyển mã fMP4",
-    "adminTunerAllowStreamSharing": "Cho phép chia sẻ luồng",
-    "adminTunerEnableStreamLooping": "Bật lặp luồng",
-    "adminTunerIgnoreDts": "Bỏ qua DTS",
-    "adminTunerReadAtNativeFramerate": "Đọc đầu vào theo tốc độ khung hình gốc",
-    "adminEditProvider": "Sửa nhà cung cấp",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "Tệp hoặc URL",
-    "adminXmltvMoviePrefix": "Tiền tố phim",
-    "adminXmltvMovieCategories": "Danh mục phim",
-    "adminXmltvCategoriesHelp": "Phân tách nhiều danh mục bằng dấu gạch đứng (|).",
-    "adminXmltvKidsCategories": "Danh mục thiếu nhi",
-    "adminXmltvNewsCategories": "Danh mục tin tức",
-    "adminXmltvSportsCategories": "Danh mục thể thao",
-    "adminSdUsername": "Tên người dùng",
-    "adminSdPassword": "Mật khẩu",
-    "adminSdCountry": "Quốc gia",
-    "adminSdCountrySelect": "Chọn quốc gia",
-    "adminSdPostalCode": "Mã bưu chính",
-    "adminSdGetListings": "Lấy danh sách kênh",
-    "adminSdListings": "Danh sách kênh",
-    "adminEnableAllTuners": "Bật tất cả bộ thu",
-    "adminTunerResetNotSupported": "Loại bộ thu này không hỗ trợ đặt lại.",
-    "adminMovieRecordingPath": "Đường dẫn ghi phim",
-    "adminGuideDays": "Số ngày dữ liệu lịch phát sóng",
-    "adminGuideDaysAuto": "Tự động",
-    "adminGuideDaysValue": "{days} ngày",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibLufsScan": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminLibAutoAddToCollection": "",
+    "adminParentalControl": "",
+    "adminMaxParentalRating": "",
+    "adminMaxParentalRatingHint": "",
+    "adminParentalRatingNone": "",
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminUnratedMusic": "",
+    "adminUnratedTrailer": "",
+    "adminUnratedSeries": "",
+    "adminAccessSchedules": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "adminDayFriday": "",
+    "adminDaySaturday": "",
+    "adminAllowedTags": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminPasswordResetProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminSyncPlayNone": "",
+    "adminContentDeletionFolders": "",
+    "adminBackupOptionsTitle": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminBackupSubtitles": "",
+    "adminBackupTrickplay": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerFileOrUrl": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdPassword": "",
+    "adminSdCountry": "",
+    "adminSdCountrySelect": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminMovieRecordingPath": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminGuideDaysValue": "",
     "@adminGuideDaysValue": {
         "placeholders": {
             "days": {
@@ -8424,14 +8424,14 @@
             }
         }
     },
-    "adminRecordingPostProcessor": "Đường dẫn ứng dụng hậu xử lý",
-    "adminRecordingPostProcessorArgs": "Tham số của trình hậu xử lý",
-    "adminSaveRecordingNfo": "Lưu siêu dữ liệu NFO của bản ghi",
-    "adminSaveRecordingImages": "Lưu hình ảnh của bản ghi",
-    "adminLiveTvSectionTiming": "Thời gian",
-    "adminLiveTvSectionPaths": "Đường dẫn ghi hình",
-    "adminLiveTvSectionPostProcessing": "Hậu xử lý",
-    "adminGuideDaysDisplay": "Dữ liệu lịch phát sóng: {value}",
+    "adminRecordingPostProcessor": "",
+    "adminRecordingPostProcessorArgs": "",
+    "adminSaveRecordingNfo": "",
+    "adminSaveRecordingImages": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
     "@adminGuideDaysDisplay": {
         "placeholders": {
             "value": {
@@ -8439,124 +8439,124 @@
             }
         }
     },
-    "adminRefreshGuideData": "Làm mới dữ liệu lịch phát sóng",
-    "adminGuideRefreshStarted": "Đã bắt đầu làm mới dữ liệu lịch phát sóng",
-    "adminGuideRefreshUnavailable": "Tác vụ làm mới lịch phát sóng không khả dụng trên máy chủ này.",
-    "adminMetadataIdentify": "Nhận dạng",
-    "adminBrandingSplashUpload": "Tải hình ảnh lên",
-    "adminBrandingSplashUploaded": "Đã cập nhật màn hình chờ",
-    "adminBrandingSplashUploadFailed": "Không tải được màn hình chờ lên",
-    "adminBrandingSplashDeleted": "Đã gỡ màn hình chờ",
-    "adminBrandingNoSplash": "Không có màn hình chờ tùy chỉnh",
-    "adminPlaybackQsvDevice": "Thiết bị QSV",
-    "adminPlaybackEnhancedNvdec": "Bật bộ giải mã NVDEC nâng cao",
-    "adminPlaybackPreferNativeDecoder": "Ưu tiên bộ giải mã phần cứng gốc của hệ thống",
-    "adminPlaybackColorDepth": "Độ sâu màu khi giải mã bằng phần cứng",
-    "adminPlaybackColorDepth10Hevc": "Giải mã HEVC 10-bit",
-    "adminPlaybackColorDepth10Vp9": "Giải mã VP9 10-bit",
-    "adminPlaybackColorDepth10HevcRext": "Giải mã HEVC RExt 8/10-bit",
-    "adminPlaybackColorDepth12HevcRext": "Giải mã HEVC RExt 12-bit",
-    "adminPlaybackHwEncodingSection": "Mã hóa bằng phần cứng",
-    "adminPlaybackAllowHevcEncoding": "Cho phép mã hóa HEVC",
-    "adminPlaybackAllowAv1Encoding": "Cho phép mã hóa AV1",
-    "adminPlaybackIntelLowPowerH264": "Bật bộ mã hóa H.264 tiết kiệm điện của Intel",
-    "adminPlaybackIntelLowPowerHevc": "Bật bộ mã hóa HEVC tiết kiệm điện của Intel",
-    "adminPlaybackToneMapping": "Ánh xạ tông màu",
-    "adminPlaybackEnableTonemapping": "Bật ánh xạ tông màu",
-    "adminPlaybackEnableVppTonemapping": "Bật ánh xạ tông màu VPP",
-    "adminPlaybackEnableVtTonemapping": "Bật ánh xạ tông màu VideoToolbox",
-    "adminPlaybackTonemappingAlgorithm": "Thuật toán ánh xạ tông màu",
-    "adminPlaybackTonemappingMode": "Chế độ ánh xạ tông màu",
-    "adminPlaybackTonemappingRange": "Dải ánh xạ tông màu",
-    "adminPlaybackTonemappingDesat": "Độ giảm bão hòa của ánh xạ tông màu",
-    "adminPlaybackTonemappingPeak": "Đỉnh sáng của ánh xạ tông màu",
-    "adminPlaybackTonemappingParam": "Tham số ánh xạ tông màu",
-    "adminPlaybackVppTonemappingBrightness": "Độ sáng ánh xạ tông màu VPP",
-    "adminPlaybackVppTonemappingContrast": "Độ tương phản ánh xạ tông màu VPP",
-    "adminPlaybackPresetsQuality": "Cấu hình sẵn & Chất lượng",
-    "adminPlaybackEncoderPreset": "Cấu hình sẵn của bộ mã hóa",
-    "adminPlaybackH264Crf": "CRF mã hóa H.264",
-    "adminPlaybackH265Crf": "CRF mã hóa H.265 (HEVC)",
-    "adminPlaybackDeinterlaceMethod": "Phương pháp khử xen kẽ",
-    "adminPlaybackDeinterlaceDoubleRate": "Nhân đôi tốc độ khung hình khi khử xen kẽ",
-    "adminPlaybackAudioSection": "Âm thanh",
-    "adminPlaybackEnableAudioVbr": "Bật mã hóa âm thanh VBR",
-    "adminPlaybackDownmixBoost": "Tăng âm khi trộn xuống",
-    "adminPlaybackDownmixAlgorithm": "Thuật toán trộn xuống Stereo",
-    "adminPlaybackMaxMuxingQueue": "Kích thước hàng đợi ghép kênh tối đa",
-    "adminPlaybackAutoOption": "Tự động",
-    "adminRunningTasks": "Tác vụ đang chạy",
-    "adminNetworkingPublicHttpPort": "Cổng HTTP công khai",
-    "adminNetworkingRequireHttps": "Bắt buộc HTTPS",
-    "adminNetworkingRequireHttpsHint": "Chuyển hướng mọi yêu cầu từ xa sang HTTPS. Không có tác dụng nếu máy chủ không có chứng chỉ hợp lệ.",
-    "adminNetworkingCertPassword": "Mật khẩu chứng chỉ",
-    "adminNetworkingIpSettings": "Cài đặt IP",
-    "adminNetworkingEnableIpv4": "Bật IPv4",
-    "adminNetworkingEnableIpv6": "Bật IPv6",
-    "adminNetworkingAutoDiscovery": "Bật ánh xạ cổng tự động",
-    "adminNetworkingLocalSubnets": "Mạng LAN",
-    "adminNetworkingLocalSubnetsHint": "Danh sách địa chỉ IP hoặc dải mạng CIDR được xem là thuộc mạng nội bộ, phân tách bằng dấu phẩy hoặc xuống dòng.",
-    "adminNetworkingPublishedUris": "URI máy chủ được công bố",
-    "adminNetworkingPublishedUriHint": "Ánh xạ một dải mạng hoặc địa chỉ tới một URL được công bố, ví dụ: all=https://example.com",
-    "adminPlaybackThrottleDelay": "Độ trễ điều tiết (giây)",
-    "adminPlaybackEnableSubtitleExtraction": "Cho phép trích xuất phụ đề tức thời",
-    "adminGeneralEnableSlowResponse": "Bật cảnh báo phản hồi chậm",
-    "adminGeneralQuickConnect": "Bật Quick Connect",
-    "adminGeneralSectionServer": "Máy chủ",
-    "adminGeneralSectionMetadata": "Siêu dữ liệu",
-    "adminGeneralSectionPaths": "Đường dẫn",
-    "adminGeneralSectionPerformance": "Hiệu năng",
-    "adminGeneralDisplayLanguage": "Ngôn ngữ hiển thị ưu tiên",
-    "offlineBannerTitle": "Bạn đang ngoại tuyến",
-    "offlineBannerSubtitle": "Đang hiển thị các mục đã tải xuống",
-    "offlineBannerAction": "Tải xuống",
-    "serverUnreachableBannerTitle": "Không kết nối được máy chủ của bạn",
-    "serverUnreachableBannerSubtitle": "Đang phát từ các mục đã tải xuống cho đến khi máy chủ hoạt động lại",
-    "contextMenuHideFromContinueWatching": "Ẩn khỏi Tiếp tục xem",
+    "adminRefreshGuideData": "",
+    "adminGuideRefreshStarted": "",
+    "adminGuideRefreshUnavailable": "",
+    "adminMetadataIdentify": "",
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "adminPlaybackAutoOption": "",
+    "adminRunningTasks": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingIpSettings": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionServer": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralSectionPerformance": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "contextMenuHideFromContinueWatching": "",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Ẩn khỏi Tiếp theo",
+    "contextMenuHideFromNextUp": "",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Thêm vào bộ sưu tập",
+    "contextMenuAddToCollection": "",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsConnectionSection": "KẾT NỐI",
+    "settingsConnectionSection": "",
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Cho phép chứng chỉ tự ký",
+    "settingsAllowSelfSignedCerts": "",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Tin cậy các máy chủ dùng chứng chỉ TLS tự ký hoặc từ CA riêng. Chỉ bật với những máy chủ bạn kiểm soát. Tùy chọn này sẽ tắt việc xác thực chứng chỉ cho mọi kết nối.",
+    "settingsAllowSelfSignedCertsSubtitle": "",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
-    "settingsDetailsScreen": "Màn hình chi tiết",
-    "settingsDetailsScreenSubtitle": "Kiểu, làm mờ nền và cách hoạt động của thẻ",
-    "settingsShowSeerrButtonInNavigation": "Hiển thị nút Seerr trên thanh điều hướng",
-    "settingsAlwaysExpandNavbarLabels": "Luôn hiển thị nhãn chữ trên thanh điều hướng phía trên",
-    "settingsMediaSegmentCountdown": "Đếm ngược phân đoạn phương tiện",
+    "settingsDetailsScreen": "",
+    "settingsDetailsScreenSubtitle": "",
+    "settingsShowSeerrButtonInNavigation": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "settingsMediaSegmentCountdown": "",
     "@settingsMediaSegmentCountdown": {
         "description": "Setting label for media segment countdown customizations"
     },
-    "settingsProgressBar": "Thanh tiến trình",
+    "settingsProgressBar": "",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
     },
-    "settingsTimer": "Bộ đếm giờ",
+    "settingsTimer": "",
     "@settingsTimer": {
         "description": "Option label to show only countdown timer on media segment countdown overlay"
     },
-    "settingsNone": "Không có",
+    "settingsNone": "",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "recentlyReleasedLibraryName": "{libraryName} mới phát hành",
+    "recentlyReleasedLibraryName": "",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -8565,36 +8565,36 @@
             }
         }
     },
-    "enableTunnelingTitle": "Bật tunneling",
+    "enableTunnelingTitle": "",
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
-    "enableTunnelingSubtitle": "Nâng cao. Định tuyến âm thanh và video qua một đường phần cứng ghép đôi. Mặc định tắt vì gây mất tiếng hoặc mất hình trên một số thiết bị.",
+    "enableTunnelingSubtitle": "",
     "@enableTunnelingSubtitle": {
         "description": "Setting subtitle for enable tunneling"
     },
-    "showMediaDetailsOnLibraryPage": "Hiển thị chi tiết nội dung",
+    "showMediaDetailsOnLibraryPage": "",
     "@showMediaDetailsOnLibraryPage": {
         "description": "Setting title to show/hide focused media details at the top of the library page"
     },
-    "showMediaDetailsOnLibraryPageDescription": "Hiển thị chi tiết của mục đang chọn ở đầu trang Thư viện.",
+    "showMediaDetailsOnLibraryPageDescription": "",
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Ẩn ảnh nền khi duyệt?",
+    "hideBackdropsInLibraries": "",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "themeStore": "Kho chủ đề",
-    "themeStoreSubtitle": "Duyệt và lưu các chủ đề từ cộng đồng",
-    "themeStoreDescription": "Lưu một chủ đề để dùng như các chủ đề đã lưu khác của bạn.",
-    "themeStoreEmpty": "Hiện chưa có chủ đề nào.",
-    "themeStoreLoadFailed": "Không tải được Kho chủ đề. Hãy kiểm tra kết nối và thử lại.",
-    "themeStoreSave": "Lưu",
-    "themeStoreSaveAndApply": "Lưu & áp dụng",
-    "themeStoreSaved": "Đã lưu",
-    "themeStoreInvalidMessage": "Không tải được chủ đề này.",
-    "themeStoreSavedMessage": "Đã lưu \"{themeName}\".",
+    "themeStore": "",
+    "themeStoreSubtitle": "",
+    "themeStoreDescription": "",
+    "themeStoreEmpty": "",
+    "themeStoreLoadFailed": "",
+    "themeStoreSave": "",
+    "themeStoreSaveAndApply": "",
+    "themeStoreSaved": "",
+    "themeStoreInvalidMessage": "",
+    "themeStoreSavedMessage": "",
     "@themeStoreSavedMessage": {
         "description": "Status message shown after saving a Theme Store theme",
         "placeholders": {
@@ -8603,34 +8603,34 @@
             }
         }
     },
-    "homeRowDisplay": "Hiển thị hàng trang chủ",
-    "homeRowSections": "Các mục hàng trang chủ",
-    "homeRowToggles": "Bật/tắt hàng trang chủ",
-    "homeRowTogglesSubtitle": "Bật hoặc tắt các danh mục hàng trang chủ dựa trên thư viện",
-    "homeRowTogglesDescription": "Bật các mục sau để hiển thị các hàng trong phần Trang chủ.",
-    "displayPlaylistsRows": "Hiển thị hàng danh sách phát",
-    "displayPlaylistsRowsSubtitle": "Hiển thị các hàng danh sách phát trong phần Trang chủ.",
-    "playlistsRowSorting": "Sắp xếp hàng danh sách phát",
-    "playlistsRowSortingDescription": "Sắp xếp hàng danh sách phát theo ngày thêm, ngày phát hành, theo bảng chữ cái và nhiều tiêu chí khác.",
-    "displayAudioRows": "Hiển thị hàng âm thanh",
-    "displayAudioRowsSubtitle": "Hiển thị các hàng âm thanh trong phần Trang chủ.",
-    "audioRowsSorting": "Sắp xếp hàng âm thanh",
-    "audioRowsSortingDescription": "Sắp xếp hàng âm thanh theo ngày thêm, ngày phát hành, theo bảng chữ cái và nhiều tiêu chí khác.",
-    "audioPlaylists": "Danh sách phát âm thanh",
-    "layout": "Bố cục",
-    "theme": "Chủ đề",
-    "keyboard": "Bàn phím",
-    "navButtons": "Nút",
-    "rendering": "Kết xuất",
-    "mpvConfiguration": "Cấu hình MPV",
-    "externalPlayerAppDescription": "Thiết lập trình phát ngoài để bật tùy chọn phát khi nhấn giữ",
-    "crewContributionsSeerr": "Đóng góp của ê-kíp (Seerr)",
-    "changeArtwork": "Đổi ảnh bìa",
-    "missing": "Chưa có",
-    "clearAllArtworkButton": "Xóa toàn bộ ảnh bìa?",
-    "clearAllArtworkWarning": "Bạn có chắc muốn xóa toàn bộ ảnh bìa đã tải xuống không?",
-    "confirmClear": "Xác nhận xóa",
-    "confirmClearMessage": "Bạn có chắc muốn xóa {itemType} này không?",
+    "homeRowDisplay": "",
+    "homeRowSections": "",
+    "homeRowToggles": "",
+    "homeRowTogglesSubtitle": "",
+    "homeRowTogglesDescription": "",
+    "displayPlaylistsRows": "",
+    "displayPlaylistsRowsSubtitle": "",
+    "playlistsRowSorting": "",
+    "playlistsRowSortingDescription": "",
+    "displayAudioRows": "",
+    "displayAudioRowsSubtitle": "",
+    "audioRowsSorting": "",
+    "audioRowsSortingDescription": "",
+    "audioPlaylists": "",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "mpvConfiguration": "",
+    "externalPlayerAppDescription": "",
+    "crewContributionsSeerr": "",
+    "changeArtwork": "",
+    "missing": "",
+    "clearAllArtworkButton": "",
+    "clearAllArtworkWarning": "",
+    "confirmClear": "",
+    "confirmClearMessage": "",
     "@confirmClearMessage": {
         "description": "Confirmation message when clearing a specific artwork",
         "placeholders": {
@@ -8639,12 +8639,12 @@
             }
         }
     },
-    "uploadButton": "Tải lên?",
-    "resolutionLabel": "Độ phân giải: ",
-    "onlyShowInterfaceLanguage": "Chỉ hiển thị ảnh bìa theo ngôn ngữ giao diện",
-    "confirmClearAll": "Xác nhận xóa tất cả",
-    "imageUploadSuccess": "Đã tải hình ảnh lên thành công!",
-    "imageUploadFailed": "Không tải được hình ảnh lên: {error}",
+    "uploadButton": "",
+    "resolutionLabel": "",
+    "onlyShowInterfaceLanguage": "",
+    "confirmClearAll": "",
+    "imageUploadSuccess": "",
+    "imageUploadFailed": "",
     "@imageUploadFailed": {
         "placeholders": {
             "error": {
@@ -8652,7 +8652,7 @@
             }
         }
     },
-    "imageDownloadFailed": "Không đặt được hình ảnh: {error}",
+    "imageDownloadFailed": "",
     "@imageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -8660,7 +8660,7 @@
             }
         }
     },
-    "imageDeleteFailed": "Không xóa được hình ảnh: {error}",
+    "imageDeleteFailed": "",
     "@imageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -8668,7 +8668,7 @@
             }
         }
     },
-    "clearAllArtworkFailed": "Không xóa được toàn bộ ảnh bìa: {error}",
+    "clearAllArtworkFailed": "",
     "@clearAllArtworkFailed": {
         "placeholders": {
             "error": {
@@ -8676,49 +8676,49 @@
             }
         }
     },
-    "yes": "Có",
-    "posterCategory": "Áp phích",
-    "backdropsCategory": "Ảnh nền",
-    "bannerCategory": "Biểu ngữ",
-    "logoCategory": "Logo",
-    "thumbnailCategory": "Hình thu nhỏ",
-    "artCategory": "Ảnh minh họa",
-    "discArtCategory": "Ảnh mặt đĩa",
-    "screenshotCategory": "Ảnh chụp màn hình",
-    "boxCoverCategory": "Bìa hộp",
-    "boxRearCoverCategory": "Bìa sau hộp",
-    "menuArtCategory": "Ảnh menu",
-    "confirmItemPoster": "áp phích",
-    "confirmItemBackdrop": "ảnh nền",
-    "confirmItemBanner": "biểu ngữ",
-    "confirmItemLogo": "logo",
-    "confirmItemThumbnail": "hình thu nhỏ",
-    "confirmItemArt": "ảnh minh họa",
-    "confirmItemDiscArt": "ảnh mặt đĩa",
-    "confirmItemScreenshot": "ảnh chụp màn hình",
-    "confirmItemBoxCover": "bìa hộp",
-    "confirmItemBoxRearCover": "bìa sau hộp",
-    "confirmItemMenuArt": "ảnh menu",
-    "resolutionAll": "Tất cả",
-    "resolutionHigh": "Cao (1080p+)",
-    "resolutionMedium": "Trung bình (720p)",
-    "resolutionLow": "Thấp (<720p)",
-    "sources": "Nguồn",
+    "yes": "",
+    "posterCategory": "",
+    "backdropsCategory": "",
+    "bannerCategory": "",
+    "logoCategory": "",
+    "thumbnailCategory": "",
+    "artCategory": "",
+    "discArtCategory": "",
+    "screenshotCategory": "",
+    "boxCoverCategory": "",
+    "boxRearCoverCategory": "",
+    "menuArtCategory": "",
+    "confirmItemPoster": "",
+    "confirmItemBackdrop": "",
+    "confirmItemBanner": "",
+    "confirmItemLogo": "",
+    "confirmItemThumbnail": "",
+    "confirmItemArt": "",
+    "confirmItemDiscArt": "",
+    "confirmItemScreenshot": "",
+    "confirmItemBoxCover": "",
+    "confirmItemBoxRearCover": "",
+    "confirmItemMenuArt": "",
+    "resolutionAll": "",
+    "resolutionHigh": "",
+    "resolutionMedium": "",
+    "resolutionLow": "",
+    "sources": "",
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
     },
-    "audiobookChapters": "Chương",
-    "audiobookBookmarks": "Dấu trang",
-    "audiobookNotes": "Ghi chú",
-    "audiobookQueue": "Hàng đợi",
-    "audiobookTimeline": "Dòng thời gian",
-    "audiobookTimelineEmpty": "Dòng thời gian trống",
-    "audiobookWholeBook": "Toàn bộ sách",
-    "audiobookFocusedTimeline": "Dòng thời gian thu hẹp",
-    "audiobookExportBookmarks": "Xuất dấu trang",
-    "audiobookExportNotes": "Xuất ghi chú",
-    "audiobookExportAll": "Xuất tất cả",
-    "audiobookExportSuccess": "Đã xuất tới {path}",
+    "audiobookChapters": "",
+    "audiobookBookmarks": "",
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookWholeBook": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "audiobookExportNotes": "",
+    "audiobookExportAll": "",
+    "audiobookExportSuccess": "",
     "@audiobookExportSuccess": {
         "placeholders": {
             "path": {
@@ -8726,7 +8726,7 @@
             }
         }
     },
-    "audiobookExportFailed": "Xuất thất bại: {error}",
+    "audiobookExportFailed": "",
     "@audiobookExportFailed": {
         "placeholders": {
             "error": {
@@ -8734,16 +8734,16 @@
             }
         }
     },
-    "audiobookLyrics": "Lời bài hát",
-    "audiobookAddBookmark": "Thêm dấu trang",
-    "audiobookAddNote": "Thêm ghi chú",
-    "audiobookEditNote": "Sửa ghi chú",
-    "audiobookNoteHint": "Viết ghi chú cho khoảnh khắc này",
-    "audiobookSleepTimer": "Hẹn giờ tắt",
-    "audiobookSleepOff": "Tắt",
-    "audiobookSleepEndOfChapter": "Hết chương",
-    "audiobookSleepCustom": "Tùy chỉnh",
-    "audiobookSleepRemaining": "Còn {remaining}",
+    "audiobookLyrics": "",
+    "audiobookAddBookmark": "",
+    "audiobookAddNote": "",
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepTimer": "",
+    "audiobookSleepOff": "",
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookSleepRemaining": "",
     "@audiobookSleepRemaining": {
         "placeholders": {
             "remaining": {
@@ -8751,7 +8751,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 phút} other{{count} phút}}",
+    "audiobookSleepMinutes": "",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -8759,10 +8759,10 @@
             }
         }
     },
-    "audiobookPlaybackSpeed": "Tốc độ phát",
-    "audiobookRemainingTime": "Còn lại",
-    "audiobookElapsedTime": "Đã phát",
-    "audiobookSkipBackSeconds": "Lùi {seconds} giây",
+    "audiobookPlaybackSpeed": "",
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookSkipBackSeconds": "",
     "@audiobookSkipBackSeconds": {
         "placeholders": {
             "seconds": {
@@ -8770,7 +8770,7 @@
             }
         }
     },
-    "audiobookSkipForwardSeconds": "Tiến {seconds} giây",
+    "audiobookSkipForwardSeconds": "",
     "@audiobookSkipForwardSeconds": {
         "placeholders": {
             "seconds": {
@@ -8778,9 +8778,9 @@
             }
         }
     },
-    "audiobookPreviousChapter": "Chương trước",
-    "audiobookNextChapter": "Chương sau",
-    "audiobookChapterIndicator": "Chương {current} trên {total}",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
     "@audiobookChapterIndicator": {
         "placeholders": {
             "current": {
@@ -8791,10 +8791,10 @@
             }
         }
     },
-    "audiobookNoChapters": "Không có chương",
-    "audiobookNoBookmarks": "Chưa có dấu trang nào",
-    "audiobookNoNotes": "Chưa có ghi chú nào",
-    "audiobookBookmarkAdded": "Đã thêm dấu trang tại {position}",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookBookmarkAdded": "",
     "@audiobookBookmarkAdded": {
         "placeholders": {
             "position": {
@@ -8802,8 +8802,8 @@
             }
         }
     },
-    "audiobookSpeedReset": "Đặt lại về 1.0x",
-    "audiobookSpeedCustomLabel": "{value}x",
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
     "@audiobookSpeedCustomLabel": {
         "placeholders": {
             "value": {
@@ -8811,58 +8811,58 @@
             }
         }
     },
-    "audiobookSave": "Lưu",
-    "audiobookCancel": "Hủy",
-    "audiobookDelete": "Xóa",
-    "subtitlePreferences": "Tùy chọn phụ đề",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "Thay đổi chế độ phụ đề, ngôn ngữ mặc định, giao diện và các tùy chọn kết xuất.",
+    "subtitlePreferencesDescription": "",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "Kết xuất phụ đề",
+    "subtitleRendering": "",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "Tùy chọn hiển thị",
+    "displayOptions": "",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "Ngày phát hành (Tăng dần)",
+    "releaseDateAscending": "",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "Ngày phát hành (Giảm dần)",
+    "releaseDateDescending": "",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "Nhóm các đóng góp",
+    "groupContributions": "",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "Nhóm nhiều vai trò",
+    "groupMultipleRoles": "",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "libraryWriteAccessWarningTitle": "Cảnh báo quyền ghi vào thư viện",
+    "libraryWriteAccessWarningTitle": "",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "Cách khắc phục:",
+    "libraryWriteAccessHowToFix": "",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Cấp quyền ghi cho người dùng dịch vụ Jellyfin (ví dụ: jellyfin hoặc PUID/PGID của Docker) đối với các thư mục thư viện phương tiện của bạn trên máy chủ.\n\n2. Hoặc vào Bảng điều khiển Jellyfin -> Thư viện, sửa thư viện này và tắt 'Save artwork into media folders' để lưu ảnh bìa trong cơ sở dữ liệu nội bộ của Jellyfin.",
+    "libraryWriteAccessFixSteps": "",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "Bỏ qua",
+    "dismiss": "",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Thư viện '{libraryName}' của bạn được cấu hình để lưu ảnh bìa trực tiếp vào thư mục phương tiện (tùy chọn 'Save artwork into media folders' đang bật). Tuy nhiên, Jellyfin đã kiểm tra quyền ghi và không có quyền ghi tệp vào thư mục này:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8874,21 +8874,21 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Có vẻ Jellyfin không cập nhật được ảnh bìa. Thư viện của bạn được cấu hình để lưu ảnh bìa trực tiếp vào thư mục phương tiện (tùy chọn 'Save artwork into media folders' đang bật). Lỗi này thường xảy ra khi tiến trình máy chủ Jellyfin không có quyền ghi tệp vào các thư mục phương tiện của bạn.",
+    "libraryWriteAccessReactiveBody": "",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
-    "externalLists": "Danh sách bên ngoài",
-    "replay": "Phát lại",
-    "fileInformation": "Thông tin tệp",
-    "fileSizeFormat": "Kích thước: {size}  •  Định dạng: {format}",
+    "externalLists": "",
+    "replay": "",
+    "fileInformation": "",
+    "fileSizeFormat": "",
     "@fileSizeFormat": {
         "placeholders": {
             "size": {},
             "format": {}
         }
     },
-    "showAllAudioTracks": "Hiện tất cả ({count}) bản âm thanh",
+    "showAllAudioTracks": "",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8896,7 +8896,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Hiện tất cả ({count}) bản phụ đề",
+    "showAllSubtitleTracks": "",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8904,30 +8904,30 @@
             }
         }
     },
-    "checkingDirectPlay": "Đang kiểm tra khả năng Phát trực tiếp...",
-    "directPlayCapabilityLabel": "Khả năng Phát trực tiếp: ",
-    "forced": "Bắt buộc",
-    "transcodeContainerNotSupported": "Trình phát không hỗ trợ định dạng vùng chứa này.",
-    "transcodeVideoCodecNotSupported": "Không hỗ trợ codec video này.",
-    "transcodeAudioCodecNotSupported": "Không hỗ trợ codec âm thanh này.",
-    "transcodeSubtitleCodecNotSupported": "Không hỗ trợ định dạng phụ đề này (cần ghi đè vào hình).",
-    "transcodeAudioProfileNotSupported": "Không hỗ trợ hồ sơ âm thanh này.",
-    "transcodeVideoProfileNotSupported": "Không hỗ trợ hồ sơ video này.",
-    "transcodeVideoLevelNotSupported": "Không hỗ trợ cấp độ video này.",
-    "transcodeVideoResolutionNotSupported": "Thiết bị này không hỗ trợ độ phân giải video này.",
-    "transcodeVideoBitDepthNotSupported": "Không hỗ trợ độ sâu bit của video này.",
-    "transcodeVideoFramerateNotSupported": "Không hỗ trợ tốc độ khung hình của video này.",
-    "transcodeContainerBitrateExceedsLimit": "Tốc độ bit của tệp vượt quá giới hạn truyền của trình phát.",
-    "transcodeVideoBitrateExceedsLimit": "Tốc độ bit video vượt quá giới hạn truyền.",
-    "transcodeAudioBitrateExceedsLimit": "Tốc độ bit âm thanh vượt quá giới hạn truyền.",
-    "transcodeAudioChannelsNotSupported": "Không hỗ trợ số kênh âm thanh này.",
-    "sortAlphabetical": "Theo bảng chữ cái",
-    "sortReleaseAscending": "Thứ tự phát hành (Tăng dần)",
-    "sortReleaseDescending": "Thứ tự phát hành (Giảm dần)",
-    "sortCustomDragDrop": "Tùy chỉnh (Kéo và thả)",
-    "playlistSortOptions": "Tùy chọn sắp xếp danh sách phát",
-    "resetSort": "Đặt lại sắp xếp",
-    "rewatchSeasonEpisode": "Xem lại S{season}:E{episode}",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "transcodeVideoFramerateNotSupported": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortAlphabetical": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "playlistSortOptions": "",
+    "resetSort": "",
+    "rewatchSeasonEpisode": "",
     "@rewatchSeasonEpisode": {
         "placeholders": {
             "season": {
@@ -8938,57 +8938,57 @@
             }
         }
     },
-    "rewatchPlaylist": "Danh sách phát xem lại",
-    "noSubtitlesFound": "Không tìm thấy phụ đề.",
-    "adminControls": "Điều khiển quản trị",
-    "impellerRendering": "Công cụ kết xuất (Impeller)",
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller là bộ kết xuất GPU hiện đại của Flutter, cho hoạt ảnh mượt hơn và ít giật hơn. Trên một số hộp TV và GPU đời cũ, nó có thể gây lỗi hiển thị hoặc video đen; hãy Tắt nếu bạn gặp tình trạng đó. Tự động sẽ chọn mặc định phù hợp nhất cho thiết bị của bạn. Khởi động lại Moonfin để áp dụng.",
+    "impellerRenderingSubtitle": "",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
-    "impellerAuto": "Tự động",
-    "impellerOn": "Bật",
-    "impellerOff": "Tắt",
-    "impellerRestartTitle": "Cần khởi động lại",
+    "impellerAuto": "",
+    "impellerOn": "",
+    "impellerOff": "",
+    "impellerRestartTitle": "",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
     },
-    "impellerRestartMessage": "Moonfin cần khởi động lại để đổi công cụ kết xuất. Hãy đóng ứng dụng ngay bây giờ, sau đó mở lại để áp dụng.",
+    "impellerRestartMessage": "",
     "@impellerRestartMessage": {
         "description": "Body of the dialog shown after changing the rendering engine."
     },
-    "impellerCloseNow": "Đóng ứng dụng ngay",
+    "impellerCloseNow": "",
     "@impellerCloseNow": {
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
-    "adminRefreshLibrary": "Làm mới thư viện",
+    "adminRefreshLibrary": "",
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRefreshAllLibraries": "Làm mới tất cả thư viện",
+    "adminRefreshAllLibraries": "",
     "@adminRefreshAllLibraries": {
         "description": "Floating action button text to refresh all libraries"
     },
-    "adminRepoSortDateOldest": "Ngày thêm (Cũ nhất trước)",
+    "adminRepoSortDateOldest": "",
     "@adminRepoSortDateOldest": {
         "description": "Repository sort option, oldest added first"
     },
-    "adminRepoSortDateNewest": "Ngày thêm (Mới nhất trước)",
+    "adminRepoSortDateNewest": "",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
     },
-    "adminRepoSortNameAsc": "Theo bảng chữ cái (A đến Z)",
+    "adminRepoSortNameAsc": "",
     "@adminRepoSortNameAsc": {
         "description": "Repository sort option, alphabetical ascending"
     },
-    "adminRepoSortNameDesc": "Theo bảng chữ cái (Z đến A)",
+    "adminRepoSortNameDesc": "",
     "@adminRepoSortNameDesc": {
         "description": "Repository sort option, alphabetical descending"
     },
-    "adminAnalyticsLoadingProgress": "Đang tải phân tích máy chủ... {percentage}%",
+    "adminAnalyticsLoadingProgress": "",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8997,14 +8997,14 @@
             }
         }
     },
-    "adminLibChapterImageResolutionMatchSource": "Theo nguồn",
+    "adminLibChapterImageResolutionMatchSource": "",
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "250 phim hàng đầu trên IMDb",
-    "imdbTop250TvShows": "250 chương trình TV hàng đầu trên IMDb",
-    "imdbMostPopularMovies": "Phim phổ biến nhất trên IMDb",
-    "imdbMostPopularTvShows": "Chương trình TV phổ biến nhất trên IMDb",
-    "imdbLowestRatedMovies": "Phim bị đánh giá thấp nhất trên IMDb",
-    "imdbTopEnglishMovies": "Phim tiếng Anh được đánh giá cao nhất trên IMDb"
+    "imdbTop250Movies": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": ""
 }
