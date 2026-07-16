@@ -1108,7 +1108,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Transmitir",
+    "cast": "Retransmitir",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
