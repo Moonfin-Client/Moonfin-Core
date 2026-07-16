@@ -1,6 +1,8 @@
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
@@ -399,11 +401,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _saveRows();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _focusNodes[newIndex].requestFocus();
-      }
-    });
+    _focusRowAndEnsureVisible(newIndex);
   }
 
   String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
@@ -652,41 +650,54 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     bool seerrAvailable,
     bool showSeerrSettings,
   ) {
-    return ListView.builder(
-      itemCount: (showSeerrSettings ? _rows.length : 0) + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _buildRowsHeader(
+    return CustomScrollView(
+      scrollCacheExtent: const ScrollCacheExtent.pixels(3000.0),
+      slivers: [
+        SliverToBoxAdapter(
+          child: _buildRowsHeader(
             context,
             l10n,
             seerrAvailable,
             showSeerrSettings,
-          );
-        }
-        final rowIndex = index - 1;
-        final row = _rows[rowIndex];
-        return _SeerrReorderableTile(
-          key: ValueKey(row.type),
-          focusNode: _focusNodes[rowIndex],
-          label: _rowLabel(row.type, l10n),
-          enabled: row.enabled,
-          enabledLabel: l10n.enabled,
-          hiddenLabel: l10n.hidden,
-          isFirst: rowIndex == 0,
-          isLast: rowIndex == _rows.length - 1,
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (rowIndex != 0) const Icon(Icons.arrow_left, size: 18),
-              if (rowIndex != _rows.length - 1)
-                const Icon(Icons.arrow_right, size: 18),
-            ],
           ),
-          onToggle: (enabled) => _toggleSeerrRow(rowIndex, enabled),
-          onMoveUp: () => _moveSeerrRowTo(rowIndex, rowIndex - 1),
-          onMoveDown: () => _moveSeerrRowTo(rowIndex, rowIndex + 1),
-        );
-      },
+        ),
+        if (showSeerrSettings)
+          ReorderableAnimatedListImpl<SeerrRowConfig>(
+            items: _rows,
+            scrollDirection: Axis.vertical,
+            // Comparing the enabled state and turning off swap detection makes
+            // a toggled row read as a removal from its old slot and an insert
+            // at its sorted slot, so it animates instead of jumping.
+            isSameItem: (a, b) => a.type == b.type && a.enabled == b.enabled,
+            enableSwap: false,
+            enterTransition: [FadeIn(), SizeAnimation()],
+            exitTransition: [FadeIn(), SizeAnimation()],
+            itemBuilder: (context, rowIndex) {
+              final row = _rows[rowIndex];
+              return _SeerrReorderableTile(
+                key: ValueKey('${row.type}:${row.enabled}'),
+                focusNode: _focusNodes[rowIndex],
+                label: _rowLabel(row.type, l10n),
+                enabled: row.enabled,
+                enabledLabel: l10n.enabled,
+                hiddenLabel: l10n.hidden,
+                isFirst: rowIndex == 0,
+                isLast: rowIndex == _rows.length - 1,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (rowIndex != 0) const Icon(Icons.arrow_left, size: 18),
+                    if (rowIndex != _rows.length - 1)
+                      const Icon(Icons.arrow_right, size: 18),
+                  ],
+                ),
+                onToggle: (enabled) => _toggleSeerrRow(rowIndex, enabled),
+                onMoveUp: () => _moveSeerrRowTo(rowIndex, rowIndex - 1),
+                onMoveDown: () => _moveSeerrRowTo(rowIndex, rowIndex + 1),
+              );
+            },
+          ),
+      ],
     );
   }
 

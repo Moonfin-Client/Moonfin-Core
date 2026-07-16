@@ -1,4 +1,6 @@
+import 'package:animated_reorderable_list/animated_reorderable_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
@@ -228,34 +230,44 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   }
 
   Widget _buildTvList(AppLocalizations l10n) {
-    return ListView.builder(
-      itemCount: _items.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _buildHeader(l10n);
-        }
-        final itemIndex = index - 1;
-        final item = _items[itemIndex];
-        return _ReorderableTile(
-          key: ValueKey(item.key),
-          focusNode: _focusNodes[itemIndex],
-          label: _sourceLabel(item.key, l10n),
-          enabled: item.enabled,
-          isFirst: itemIndex == 0,
-          isLast: itemIndex == _items.length - 1,
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (itemIndex != 0) const Icon(Icons.arrow_left, size: 18),
-              if (itemIndex != _items.length - 1)
-                const Icon(Icons.arrow_right, size: 18),
-            ],
-          ),
-          onToggle: (enabled) => _toggleRatingItem(itemIndex, enabled),
-          onMoveUp: () => _moveItemTo(itemIndex, itemIndex - 1),
-          onMoveDown: () => _moveItemTo(itemIndex, itemIndex + 1),
-        );
-      },
+    return CustomScrollView(
+      scrollCacheExtent: const ScrollCacheExtent.pixels(3000.0),
+      slivers: [
+        SliverToBoxAdapter(child: _buildHeader(l10n)),
+        ReorderableAnimatedListImpl<_RatingItem>(
+          items: _items,
+          scrollDirection: Axis.vertical,
+          // Comparing the enabled state and turning off swap detection makes a
+          // toggled row read as a removal from its old slot and an insert at
+          // its sorted slot, so it animates instead of jumping.
+          isSameItem: (a, b) => a.key == b.key && a.enabled == b.enabled,
+          enableSwap: false,
+          enterTransition: [FadeIn(), SizeAnimation()],
+          exitTransition: [FadeIn(), SizeAnimation()],
+          itemBuilder: (context, itemIndex) {
+            final item = _items[itemIndex];
+            return _ReorderableTile(
+              key: ValueKey('${item.key}:${item.enabled}'),
+              focusNode: _focusNodes[itemIndex],
+              label: _sourceLabel(item.key, l10n),
+              enabled: item.enabled,
+              isFirst: itemIndex == 0,
+              isLast: itemIndex == _items.length - 1,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (itemIndex != 0) const Icon(Icons.arrow_left, size: 18),
+                  if (itemIndex != _items.length - 1)
+                    const Icon(Icons.arrow_right, size: 18),
+                ],
+              ),
+              onToggle: (enabled) => _toggleRatingItem(itemIndex, enabled),
+              onMoveUp: () => _moveItemTo(itemIndex, itemIndex - 1),
+              onMoveDown: () => _moveItemTo(itemIndex, itemIndex + 1),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -325,11 +337,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _save();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _focusNodes[newIndex].requestFocus();
-      }
-    });
+    _focusItemAndEnsureVisible(newIndex);
   }
 }
 
