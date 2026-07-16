@@ -41,10 +41,10 @@ void focusItemAndEnsureVisible({
   Curve curve = Curves.easeOut,
 }) {
   if (!isMounted() || index < 0 || index >= focusNodes.length) return;
+  final node = focusNodes[index];
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (!isMounted() || index < 0 || index >= focusNodes.length) return;
-    final node = focusNodes[index];
+    if (!isMounted()) return;
     if (!node.hasFocus) {
       node.requestFocus();
     }
