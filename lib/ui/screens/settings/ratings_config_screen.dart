@@ -14,6 +14,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../../util/focus/scroll_utils.dart';
 
 const _allSources = [
   'tomatoes',
@@ -306,26 +307,11 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   }
 
   void _focusItemAndEnsureVisible(int index) {
-    if (!mounted || index < 0 || index >= _focusNodes.length) return;
-
-    // Defer the focus request and scroll until the reorder rebuild commits,
-    // so the target row's context and widget are fully attached.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || index < 0 || index >= _focusNodes.length) return;
-      final node = _focusNodes[index];
-      if (!node.hasFocus) {
-        node.requestFocus();
-      }
-      final targetContext = node.context;
-      if (targetContext == null) return;
-      Scrollable.ensureVisible(
-        targetContext,
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOut,
-        alignment: 0.2,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      );
-    });
+    focusItemAndEnsureVisible(
+      isMounted: () => mounted,
+      focusNodes: _focusNodes,
+      index: index,
+    );
   }
 
   void _moveItemTo(int index, int newIndex) {

@@ -31,3 +31,31 @@ double computeAlignmentForBand({
   if (denom <= 0) return 0.0;
   return (desiredItemTop / denom).clamp(0.0, 1.0);
 }
+
+void focusItemAndEnsureVisible({
+  required bool Function() isMounted,
+  required List<FocusNode> focusNodes,
+  required int index,
+  double alignment = 0.2,
+  Duration duration = const Duration(milliseconds: 140),
+  Curve curve = Curves.easeOut,
+}) {
+  if (!isMounted() || index < 0 || index >= focusNodes.length) return;
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!isMounted() || index < 0 || index >= focusNodes.length) return;
+    final node = focusNodes[index];
+    if (!node.hasFocus) {
+      node.requestFocus();
+    }
+    final targetContext = node.context;
+    if (targetContext == null) return;
+    Scrollable.ensureVisible(
+      targetContext,
+      duration: duration,
+      curve: curve,
+      alignment: alignment,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+    );
+  });
+}

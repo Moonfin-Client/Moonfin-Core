@@ -18,6 +18,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
+import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -1349,26 +1350,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   void _focusSectionAndEnsureVisible(int index) {
-    if (!mounted || index < 0 || index >= _focusNodes.length) return;
-
-    // Defer the focus request and scroll until the reorder rebuild commits,
-    // so the target row's context and widget are fully attached.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || index < 0 || index >= _focusNodes.length) return;
-      final node = _focusNodes[index];
-      if (!node.hasFocus) {
-        node.requestFocus();
-      }
-      final targetContext = node.context;
-      if (targetContext == null) return;
-      Scrollable.ensureVisible(
-        targetContext,
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOut,
-        alignment: 0.2,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      );
-    });
+    focusItemAndEnsureVisible(
+      isMounted: () => mounted,
+      focusNodes: _focusNodes,
+      index: index,
+    );
   }
 
   void _sortSectionsEnabledAboveDisabled() {
