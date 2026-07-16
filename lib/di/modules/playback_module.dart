@@ -548,11 +548,30 @@ void registerPlaybackModule() {
     );
     final activeAudioLanguage = activeAudioStream.isNotEmpty ? activeAudioStream['Language'] as String? : null;
 
-    final subtitleMode = manager.lastExplicitSubtitleEnabled == false
+    final currentItem = manager.queueService.currentItem;
+    String? seriesId;
+    if (currentItem is AggregatedItem) {
+      seriesId = currentItem.seriesId;
+    }
+
+    var subtitleMode = manager.lastExplicitSubtitleEnabled == false
         ? SubtitleMode.none
         : prefs.get(UserPreferences.subtitleMode);
 
-    final preferredLanguage = manager.lastExplicitSubtitleLanguage ??
+    var preferredLanguage = manager.lastExplicitSubtitleLanguage;
+    if (preferredLanguage == null && seriesId != null && seriesId.isNotEmpty) {
+      final seriesLanguage = prefs.getSeriesSubtitleLanguage(seriesId);
+      if (seriesLanguage == 'none') {
+        return -1;
+      } else if (seriesLanguage.isNotEmpty) {
+        preferredLanguage = seriesLanguage;
+        if (subtitleMode == SubtitleMode.none) {
+          subtitleMode = SubtitleMode.always;
+        }
+      }
+    }
+
+    preferredLanguage ??=
         (prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? '');
 
     return computeEffectiveSubtitleIndex(
