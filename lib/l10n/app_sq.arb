@@ -7323,5 +7323,1688 @@
     },
     "imageCacheLimit": "Kufiri i memories së fshehtë të imazheve",
     "clearImageCache": "Pastro memorien e fshehtë të imazheve",
-    "imageCacheCleared": "Memoria e fshehtë e imazheve u pastrua"
+    "imageCacheCleared": "Memoria e fshehtë e imazheve u pastrua",
+    "scrollWheelActionVolume": "",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "transcodingAudio": "",
+    "@transcodingAudio": {
+        "description": "Label for audio-only transcode playback method"
+    },
+    "settingsAudioRouteHeadphones": "",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "subtitleMode": "",
+    "@subtitleMode": {
+        "description": "Setting for subtitle mode"
+    },
+    "subtitleModeFlagged": "",
+    "@subtitleModeFlagged": {
+        "description": "Subtitle mode: default/flagged"
+    },
+    "subtitleModeForced": "",
+    "@subtitleModeForced": {
+        "description": "Subtitle mode: only forced"
+    },
+    "subtitleModeAlwaysDescription": "",
+    "@subtitleModeAlwaysDescription": {
+        "description": "Description for always subtitle mode"
+    },
+    "trailerAudio": "",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "seerrNotificationsSection": "",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyLibraryAddedTitle": "",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyIssuesTitle": "",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "seerrDownloadingPercent": "",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "failedStatus": "",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "movieQuotaRemaining": "",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "deleteIssueConfirm": "",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "adminRemoveDeviceConfirm": "",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibMetadataDownloadersFor": "",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibrarySectionSubtitles": "",
+    "adminLibDefault": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibNone": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminMaxParentalRating": "",
+    "adminParentalRatingNone": "",
+    "adminUnratedMusic": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminAllowedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminPasswordResetProvider": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminContentDeletionFolders": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminSdPassword": "",
+    "adminSdCountrySelect": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminRecordingPostProcessor": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminRunningTasks": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "settingsTimer": "",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "enableTunnelingSubtitle": "",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "displayAudioRows": "",
+    "audioRowsSorting": "",
+    "audioRowsSortingDescription": "",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "crewContributionsSeerr": "",
+    "changeArtwork": "",
+    "missing": "",
+    "resolutionLabel": "",
+    "imageDownloadFailed": "",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "boxCoverCategory": "",
+    "confirmItemBackdrop": "",
+    "confirmItemBanner": "",
+    "confirmItemLogo": "",
+    "confirmItemMenuArt": "",
+    "resolutionAll": "",
+    "resolutionHigh": "",
+    "resolutionLow": "",
+    "sources": "",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookWholeBook": "",
+    "audiobookExportNotes": "",
+    "audiobookExportSuccess": "",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepTimer": "",
+    "audiobookPlaybackSpeed": "",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
+    "@subtitlePreferences": {
+        "description": "Title for the subtitle preferences settings section"
+    },
+    "releaseDateAscending": "",
+    "@releaseDateAscending": {
+        "description": "Sort option for crew/cast contributions in ascending release date order"
+    },
+    "releaseDateDescending": "",
+    "@releaseDateDescending": {
+        "description": "Sort option for crew/cast contributions in descending release date order"
+    },
+    "groupMultipleRoles": "",
+    "@groupMultipleRoles": {
+        "description": "Option to group multiple roles for a person"
+    },
+    "libraryWriteAccessWarningTitle": "",
+    "@libraryWriteAccessWarningTitle": {
+        "description": "Title for library write access warning dialog"
+    },
+    "libraryWriteAccessHowToFix": "",
+    "@libraryWriteAccessHowToFix": {
+        "description": "Section header for write access troubleshooting"
+    },
+    "libraryWriteAccessFixSteps": "",
+    "@libraryWriteAccessFixSteps": {
+        "description": "Troubleshooting steps for write access issues"
+    },
+    "libraryWriteAccessReactiveBody": "",
+    "@libraryWriteAccessReactiveBody": {
+        "description": "Reactive error warning message when artwork update fails"
+    },
+    "fileInformation": "",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "playlistSortOptions": "",
+    "rewatchSeasonEpisode": "",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerCloseNow": "",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "adminRefreshLibrary": "",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRefreshAllLibraries": "",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminRepoSortDateNewest": "",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "glassQualityFull": "",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "latestAudiobooks": "",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "recommendationSystemTmdb": "",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "recommendationsApplyParentalRatingCap": "",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "extras": "",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "scenes": "",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "adminNetworkingIpSettings": "",
+    "audiobookExportFailed": "",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsDetailsScreenSubtitle": "",
+    "customThemeTitle": "",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "glassQualityAuto": "",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "settingsScrollWheelAction": "",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "adminDaySaturday": "",
+    "preferAudioDescription": "",
+    "@preferAudioDescription": {
+        "description": "Setting for preferring audio description tracks"
+    },
+    "transcodingBitrateOrResolution": "",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "directStreamRemux": "",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "playlistsRowSortingDescription": "",
+    "settingsAudioOutputModeDescription": "",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "adminLibLufsScan": "",
+    "adminLibAutoAddToCollection": "",
+    "expandedTabs": "",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "gameMenu": "",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "showSeerrButton": "",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "bookPercentRead": "",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroListen": "",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "enableTrailerAudio": "",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "glassQualityReduced": "",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "bookFormatBook": "",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "partOfCollectionName": "",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "resolveAction": "",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRefreshDays": "",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminMaxParentalRatingHint": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayNone": "",
+    "adminActivitySeverityAll": "",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibDateAddedSection": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibRefreshInterval": "",
+    "adminUnratedTrailer": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackAutoOption": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminSaveRecordingNfo": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminGeneralSectionServer": "",
+    "settingsAllowSelfSignedCertsSubtitle": "",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "settingsShowSeerrButtonInNavigation": "",
+    "contextMenuAddToCollection": "",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "contextMenuHideFromNextUp": "",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "audioPlaylists": "",
+    "clearAllArtworkButton": "",
+    "clearAllArtworkWarning": "",
+    "confirmClear": "",
+    "onlyShowInterfaceLanguage": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": "",
+    "directors": "",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "interfaceStyleApple": "",
+    "@interfaceStyleApple": {
+        "description": "Interface style option: Apple native look"
+    },
+    "adminRecordingPostProcessorArgs": "",
+    "scrollWheelActionOff": "",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "adminGuideRefreshStarted": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "settingsNone": "",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "theme8BitHeroSubtitle": "",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "showTechnicalDetailsSubtitle": "",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    },
+    "recommendationSystem": "",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "scrollWheelActionSeek": "",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "showTechnicalDetails": "",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "recommendationSystemSubtitle": "",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "themeGlass": "",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "gameLoadState": "",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "gameFastForward": "",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "bookHeroRead": "",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "carSignInPrompt": "",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "adminBackupSubtitles": "",
+    "guideMinutesLeft": "",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "playerTooltipVolume": "",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "themeMusicSettingsSubtitle": "",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "preferAudioDescriptionDescription": "",
+    "@preferAudioDescriptionDescription": {
+        "description": "Description for preferring audio description tracks setting"
+    },
+    "transcodingVideo": "",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "detailScreenStyleModern": "",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "gameSaveState": "",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "settingsAudioFallbackCodecTrueHd": "",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "detailScreenStyleSubtitle": "",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "interfaceStyleSubtitle": "",
+    "@interfaceStyleSubtitle": {
+        "description": "Explanation under the interface style setting"
+    },
+    "interfaceStyleMaterial": "",
+    "@interfaceStyleMaterial": {
+        "description": "Interface style option: Material look"
+    },
+    "subtitleModeAlways": "",
+    "@subtitleModeAlways": {
+        "description": "Subtitle mode: always play"
+    },
+    "subtitleModeFlaggedDescription": "",
+    "@subtitleModeFlaggedDescription": {
+        "description": "Description for flagged subtitle mode"
+    },
+    "subtitleModeForcedDescription": "",
+    "@subtitleModeForcedDescription": {
+        "description": "Description for forced subtitle mode"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "interfaceStyle": "",
+    "@interfaceStyle": {
+        "description": "Label for the Automatic/Apple/Material interface style setting"
+    },
+    "interfaceStyleAutomatic": "",
+    "@interfaceStyleAutomatic": {
+        "description": "Interface style option: follow the platform"
+    },
+    "bookFormatAudiobook": "",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "accountPreferences": "",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "expandedTabsSubtitle": "",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "games": "",
+    "@games": {
+        "description": "Label for the games category tab in search results"
+    },
+    "navbarAlwaysExpanded": "",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "latestBooks": "",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "bookSeriesItemCount": "",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "behindTheScenes": "",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "interviews": "",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "shuffleAllMusic": "",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "currentUser": "",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "fallbackAudioLanguage": "",
+    "@fallbackAudioLanguage": {
+        "description": "Setting for fallback audio language"
+    },
+    "loopThemeMusicSubtitle": "",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "preferDefaultAudioTrack": "",
+    "@preferDefaultAudioTrack": {
+        "description": "Setting for preferring default audio track"
+    },
+    "preferDefaultAudioTrackDescription": "",
+    "@preferDefaultAudioTrackDescription": {
+        "description": "Description for preferring default audio track setting"
+    },
+    "settingsMaxAudioChannels": "",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "subtitleModeNoneDescription": "",
+    "@subtitleModeNoneDescription": {
+        "description": "Description for none subtitle mode"
+    },
+    "fallbackSubtitleLanguage": "",
+    "@fallbackSubtitleLanguage": {
+        "description": "Setting for fallback subtitle language"
+    },
+    "subtitleStream": "",
+    "@subtitleStream": {
+        "description": "Header for subtitle stream settings"
+    },
+    "hideCollectionAssociatedItems": "",
+    "@hideCollectionAssociatedItems": {
+        "description": "Description for grouping items into collections"
+    },
+    "groupItemsIntoCollectionsDialogTitle": "",
+    "@groupItemsIntoCollectionsDialogTitle": {
+        "description": "Title of the alert dialog explaining server settings requirement"
+    },
+    "groupItemsIntoCollectionsDialogMessage": "",
+    "@groupItemsIntoCollectionsDialogMessage": {
+        "description": "Message of the alert dialog explaining server settings requirement"
+    },
+    "fullScreenRows": "",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "seerrDiscoveryRows": "",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibDisplaySection": "",
+    "modifiedByName": "",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "adminLibExternalSuggestions": "",
+    "adminLibKodiUser": "",
+    "requestErrorDuplicate": "",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "adminParentalControl": "",
+    "seerrIssuesTitle": "",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminBackupOptionsTitle": "",
+    "adminActivityDateRange": "",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibMetadataTitle": "",
+    "adminUnratedSeries": "",
+    "adminTunerFileOrUrl": "",
+    "adminAccessSchedules": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdCountry": "",
+    "adminGuideDaysValue": "",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminBackupTrickplay": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "settingsConnectionSection": "",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsDetailsScreen": "",
+    "settingsMediaSegmentCountdown": "",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "contextMenuHideFromContinueWatching": "",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "recentlyReleasedLibraryName": "",
+    "@recentlyReleasedLibraryName": {
+        "description": "Row title for recently released media in a specific library",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            }
+        }
+    },
+    "enableTunnelingTitle": "",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "showMediaDetailsOnLibraryPage": "",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "hideBackdropsInLibraries": "",
+    "@hideBackdropsInLibraries": {
+        "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "themeStoreSubtitle": "",
+    "themeStoreEmpty": "",
+    "themeStoreSave": "",
+    "themeStoreSaved": "",
+    "homeRowToggles": "",
+    "homeRowTogglesSubtitle": "",
+    "homeRowTogglesDescription": "",
+    "imageUploadFailed": "",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "themeStoreSaveAndApply": "",
+    "displayPlaylistsRows": "",
+    "displayPlaylistsRowsSubtitle": "",
+    "confirmClearMessage": "",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "confirmClearAll": "",
+    "imageUploadSuccess": "",
+    "backdropsCategory": "",
+    "artCategory": "",
+    "discArtCategory": "",
+    "menuArtCategory": "",
+    "sortAlphabetical": "",
+    "confirmItemPoster": "",
+    "confirmItemArt": "",
+    "confirmItemDiscArt": "",
+    "confirmItemScreenshot": "",
+    "confirmItemBoxCover": "",
+    "resolutionMedium": "",
+    "audiobookBookmarks": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookSleepRemaining": "",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSleepMinutes": "",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookLyrics": "",
+    "audiobookAddNote": "",
+    "audiobookSkipBackSeconds": "",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepOff": "",
+    "audiobookSkipForwardSeconds": "",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "libraryWriteAccessProactiveBody": "",
+    "@libraryWriteAccessProactiveBody": {
+        "description": "Proactive warning message about server write access",
+        "placeholders": {
+            "libraryName": {
+                "type": "String"
+            },
+            "failedPath": {
+                "type": "String"
+            }
+        }
+    },
+    "fileSizeFormat": "",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "showAllAudioTracks": "",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeVideoFramerateNotSupported": "",
+    "resetSort": "",
+    "adminAnalyticsLoadingProgress": "",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibChapterImageResolutionMatchSource": "",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "imdbTop250Movies": "",
+    "adminRepoSortNameAsc": "",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminRepoSortNameDesc": "",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "seerrNotifyNewRequestsTitle": "",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "adminDayFriday": "",
+    "settingsMaxAudioChannelsStereo": "",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "confirmItemBoxRearCover": "",
+    "seerrImportingStatus": "",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "issueTypeAudio": "",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "adminLibNfoHelp": "",
+    "openStatus": "",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminMetadataIdentify": "",
+    "boxRearCoverCategory": "",
+    "settingsProgressBar": "",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "glassQuality": "",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "gamePlaybackUnsupported": "",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "themeStoreLoadFailed": "",
+    "homeRowDisplay": "",
+    "playlistsRowSorting": "",
+    "clearAllArtworkFailed": "",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dismiss": "",
+    "@dismiss": {
+        "description": "Dismiss button text"
+    },
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "gamePaused": "",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "gameNoCoreOptions": "",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "fullScreenRowsDescription": "",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "clockModeStatic": "",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "externalPlayerAppDescription": "",
+    "yes": "",
+    "uploadButton": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "impellerAuto": "",
+    "impellerOff": "",
+    "loopThemeMusic": "",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "settingsAudioFallbackCodecDescription": "",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecFlac": "",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsAudioFallbackCodecAac": "",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecMp3": "",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsMaxAudioChannels3_0": "",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "viewCollection": "",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshNever": "",
+    "adminLibDisplayTitle": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPerformance": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "themeStoreInvalidMessage": "",
+    "themeStoreSavedMessage": "",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowSections": "",
+    "imageDeleteFailed": "",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "posterCategory": "",
+    "bannerCategory": "",
+    "logoCategory": "",
+    "thumbnailCategory": "",
+    "screenshotCategory": "",
+    "audiobookBookmarkAdded": "",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitlePreferencesDescription": "",
+    "@subtitlePreferencesDescription": {
+        "description": "Description for the subtitle preferences settings section"
+    },
+    "subtitleRendering": "",
+    "@subtitleRendering": {
+        "description": "Header for subtitle rendering settings"
+    },
+    "displayOptions": "",
+    "@displayOptions": {
+        "description": "Title for details display options dialog"
+    },
+    "groupContributions": "",
+    "@groupContributions": {
+        "description": "Section header for grouping person contributions"
+    },
+    "externalLists": "",
+    "replay": "",
+    "showAllSubtitleTracks": "",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "impellerRenderingSubtitle": "",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "impellerOn": "",
+    "impellerRestartTitle": "",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerRestartMessage": "",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "themeGlassSubtitle": "",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "adminDrawerNfo": "",
+    "audiobookChapters": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "theme8BitHero": "",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "detailScreenStyle": "",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "empty": "",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "items": "",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "adminLibNfoTitle": "",
+    "themeStoreDescription": "",
+    "displayAudioRowsSubtitle": "",
+    "subtitleModeForeign": "",
+    "@subtitleModeForeign": {
+        "description": "Subtitle mode: foreign/smart"
+    },
+    "settingsAudioFallbackCodecOpus": "",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "groupItemsIntoCollections": "",
+    "@groupItemsIntoCollections": {
+        "description": "Setting for grouping items into collections"
+    },
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "mpvConfiguration": "",
+    "confirmItemThumbnail": "",
+    "recommendationSystemMoonfin": "",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "gameEmulatorSettings": "",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "glassQualitySubtitle": "",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "customThemeSubtitle": "",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "adminLibFolderView": "",
+    "settingsMaxAudioChannels7_1": "",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "subtitleModeForeignDescription": "",
+    "@subtitleModeForeignDescription": {
+        "description": "Description for foreign subtitle mode"
+    },
+    "clockModeBouncing": "",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminMovieRecordingPath": "",
+    "adminSaveRecordingImages": "",
+    "adminGuideRefreshUnavailable": "",
+    "interfaceLanguage": "",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "adminRefreshGuideData": "",
+    "themeStore": "",
+    "guideHoursLeft": "",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookExportAll": "",
+    "systemLanguageDefault": "",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "audiobookAddBookmark": "",
+    "deletedScenes": "",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "featurettes": "",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "shorts": "",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "timeRemaining": "",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "endsIn": "",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "writer": "",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "carServerUnreachable": "",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideNextProgram": "",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "guideHoursMinutesLeft": "",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    }
 }
