@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Kapcsolódás a {serverName} szerverhez",
+    "connectingToServer": "Csatlakozás {serverName}-hez",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Kezdőlap",
+    "home": "Kezdőképernyő",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Ki",
+    "mediaBarModeOff": "Kikapcsolva",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -7329,7 +7329,7 @@
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceLanguage": "Alkalmazás nyelvi beállításainak címkéje",
+    "interfaceLanguage": "Felület nyelve",
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
@@ -8963,44 +8963,44 @@
     "clearImageCache": "Képgyorsítótár törlése",
     "imageCacheCleared": "Képgyorsítótár törölve",
     "adminEditTuner": "Tuner szerkesztése",
-    "adminTunerTypeM3u": "M3U tuner",
+    "adminTunerTypeM3u": "M3U-tuner",
     "adminTunerTypeHdHomerun": "HDHomeRun",
     "adminTunerFileOrUrl": "Fájl vagy URL",
     "adminTunerIpAddress": "Tuner IP-címe",
-    "adminTunerFriendlyName": "Megjelenített név",
-    "adminTunerUserAgent": "Felhasználói ügynök",
+    "adminTunerFriendlyName": "Barátságos név",
+    "adminTunerUserAgent": "User agent",
     "adminTunerCount": "Egyidejű kapcsolatok korlátja",
-    "adminTunerCountHelp": "A tuner által egyszerre engedélyezett adatfolyamok maximális száma. A korlátlanhoz állítsd 0-ra.",
+    "adminTunerCountHelp": "A tuner által egyidejűleg engedélyezett streamek maximális száma. Állítsd 0-ra a korlátlanhoz.",
     "adminTunerFallbackBitrate": "Tartalék maximális streamelési bitráta",
     "adminTunerImportFavoritesOnly": "Csak a kedvenc csatornák importálása",
     "adminTunerAllowHwTranscoding": "Hardveres átkódolás engedélyezése",
     "adminTunerAllowFmp4": "fMP4 átkódolási konténer engedélyezése",
-    "adminTunerAllowStreamSharing": "Adatfolyam megosztásának engedélyezése",
-    "adminTunerEnableStreamLooping": "Adatfolyam ismétlésének engedélyezése",
+    "adminTunerAllowStreamSharing": "Streammegosztás engedélyezése",
+    "adminTunerEnableStreamLooping": "Streamismétlés engedélyezése",
     "adminTunerIgnoreDts": "DTS figyelmen kívül hagyása",
-    "adminTunerReadAtNativeFramerate": "Bemenet beolvasása natív képkockasebességgel",
+    "adminTunerReadAtNativeFramerate": "Bemenet olvasása natív képsebességgel",
     "adminEditProvider": "Szolgáltató szerkesztése",
     "adminProviderXmltv": "XMLTV",
     "adminProviderSchedulesDirect": "Schedules Direct",
     "adminXmltvPath": "Fájl vagy URL",
-    "adminXmltvMoviePrefix": "Filmek előtagja",
+    "adminXmltvMoviePrefix": "Filmelőtag",
     "adminXmltvMovieCategories": "Filmkategóriák",
-    "adminXmltvCategoriesHelp": "A kategóriákat függőleges vonallal válaszd el egymástól.",
+    "adminXmltvCategoriesHelp": "Több kategória elválasztásához használj függőleges vonalat.",
     "adminXmltvKidsCategories": "Gyerekkategóriák",
     "adminXmltvNewsCategories": "Hírkategóriák",
     "adminXmltvSportsCategories": "Sportkategóriák",
     "adminSdUsername": "Felhasználónév",
     "adminSdPassword": "Jelszó",
     "adminSdCountry": "Ország",
-    "adminSdCountrySelect": "Válassz egy országot",
+    "adminSdCountrySelect": "Válassz országot",
     "adminSdPostalCode": "Irányítószám",
-    "adminSdGetListings": "Műsorújság lekérése",
-    "adminSdListings": "Műsorújság",
-    "adminEnableAllTuners": "Az összes tuner engedélyezése",
-    "adminPlaybackVppTonemappingBrightness": "VPP tónusleképezési fényerő",
-    "adminPlaybackVppTonemappingContrast": "VPP tónusleképezési kontraszt",
-    "adminPlaybackDeinterlaceDoubleRate": "Képkockasebesség megduplázása váltottsoros bontáskor",
-    "adminPlaybackThrottleDelay": "Korlátozási késleltetés (másodperc)",
+    "adminSdGetListings": "Műsorlisták lekérése",
+    "adminSdListings": "Műsorlisták",
+    "adminEnableAllTuners": "Összes tuner engedélyezése",
+    "adminPlaybackVppTonemappingBrightness": "VPP-tónusleképezés fényereje",
+    "adminPlaybackVppTonemappingContrast": "VPP-tónusleképezés kontrasztja",
+    "adminPlaybackDeinterlaceDoubleRate": "Képsebesség duplázása váltottsorosság megszüntetésekor",
+    "adminPlaybackThrottleDelay": "Visszafogási késleltetés (másodperc)",
     "adminPlaybackEnableSubtitleExtraction": "Feliratok menet közbeni kinyerésének engedélyezése",
     "adminGeneralDisplayLanguage": "Előnyben részesített megjelenítési nyelv",
     "hideBackdropsInLibraries": "Elrejted a háttérképeket böngészés közben?",
