@@ -6746,8 +6746,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   int? _effectiveSubtitleStreamIndex(
     List<Map<String, dynamic>> subtitleStreams,
-    List<Map<String, dynamic>> audioStreams,
-  ) {
+    List<Map<String, dynamic>> audioStreams, {
+    AggregatedItem? item,
+  }) {
     final prefs = GetIt.instance<UserPreferences>();
     final audioStreamIndex = _effectiveAudioStreamIndex(audioStreams);
     String? activeAudioLanguage;
@@ -6759,18 +6760,21 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       activeAudioLanguage = activeAudioStream['Language'] as String?;
     }
 
-    final item = widget.viewModel.item;
+    final targetItem = item ?? widget.viewModel.item;
     var preferredLanguage = prefs.get(UserPreferences.defaultSubtitleLanguage);
     var subtitleMode = prefs.get(UserPreferences.subtitleMode);
 
-    if (item != null && item.type == 'Episode' && item.seriesId != null) {
-      final seriesLanguage = prefs.getSeriesSubtitleLanguage(item.seriesId!);
-      if (seriesLanguage == 'none') {
-        return -1;
-      } else if (seriesLanguage.isNotEmpty) {
-        preferredLanguage = seriesLanguage;
-        if (subtitleMode == SubtitleMode.none) {
-          subtitleMode = SubtitleMode.always;
+    if (targetItem != null) {
+      final seriesId = targetItem.seriesId;
+      if (seriesId != null && seriesId.isNotEmpty) {
+        final seriesLanguage = prefs.getSeriesSubtitleLanguage(seriesId);
+        if (seriesLanguage == 'none') {
+          return -1;
+        } else if (seriesLanguage.isNotEmpty) {
+          preferredLanguage = seriesLanguage;
+          if (subtitleMode == SubtitleMode.none) {
+            subtitleMode = SubtitleMode.always;
+          }
         }
       }
     }
@@ -7296,6 +7300,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final subtitleStreamIndex = _effectiveSubtitleStreamIndex(
       subtitleStreams,
       audioStreams,
+      item: item,
     );
 
     if (item.type == 'Photo') {
@@ -7442,6 +7447,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
               epSubtitleStreams,
               epAudioStreams,
+              item: selectedEpisode,
             );
 
             await manager.playItems(
@@ -7488,6 +7494,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
               epSubtitleStreams,
               epAudioStreams,
+              item: selectedEpisode,
             );
 
             await manager.playItems(
@@ -7641,6 +7648,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
               epSubtitleStreams,
               epAudioStreams,
+              item: targetItem,
             );
 
             await manager.playItems(
@@ -7914,6 +7922,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final subtitleStreamIndex = _effectiveSubtitleStreamIndex(
       subtitleStreams,
       audioStreams,
+      item: item,
     );
     final positionTicks = item.playbackPosition == null
         ? null

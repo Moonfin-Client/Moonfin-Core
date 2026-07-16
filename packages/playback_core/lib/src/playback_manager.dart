@@ -2086,12 +2086,15 @@ class PlaybackManager implements AudioOwnable {
       _transcodeSwitchRecoveryConsumed = false;
     }
 
-    _teardownForReResolve = false;
-    await _playCurrentItem(
-      startPosition: currentPos,
-      enableDirectPlay: !forceTranscode,
-      enableDirectStream: !forceTranscode,
-    );
+    try {
+      await _playCurrentItem(
+        startPosition: currentPos,
+        enableDirectPlay: !forceTranscode,
+        enableDirectStream: !forceTranscode,
+      );
+    } finally {
+      _teardownForReResolve = false;
+    }
   }
 
   Future<void> _applyStoredTrackSelections(
