@@ -1582,7 +1582,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     return MediaCard(
       title: gameDisplayTitle(game.title, game.fileName),
       subtitle: game.system,
-      imageUrl: libretroBoxartUrl(game.core, thumbName(game.fileName)),
+      imageUrl: gameThumbUrl(result.libraryId, game.id),
       width: width,
       aspectRatio: 2 / 3,
       itemType: 'Game',

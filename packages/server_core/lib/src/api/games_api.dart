@@ -18,6 +18,16 @@ abstract class GamesApi {
   /// GET /Moonfin/Games/{libraryId}/Games/{gameId}
   Future<GameDetail?> getGame(String libraryId, String gameId);
 
+  /// GET /Moonfin/Games/{libraryId}/Thumb/{gameId}: the game's art, fetched and cached
+  /// by the plugin. [kind] is `boxart` (the poster), `snap` (an in-game shot) or
+  /// `title`. Returns a URL even when the game has no art, so callers still need an
+  /// error fallback.
+  String thumbUrl({
+    required String libraryId,
+    required String gameId,
+    String kind = 'boxart',
+  });
+
   /// Builds the authenticated EmulatorJS player shell URL with all params set.
   String playerUrl({
     required String libraryId,

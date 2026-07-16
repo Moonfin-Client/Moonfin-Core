@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import '../../../util/game_library.dart';
 import '../focus/focusable_wrapper.dart';
 
-/// A box-art card for one game: libretro cover (keyed on the ROM filename) with a seeded
-/// color + controller-icon fallback, and a title caption. Always focusable (d-pad / gamepad
-/// navigation works on every platform, not just TV). Shared by the library rows and the
-/// detail screen's related rail.
+/// A box-art card for one game, with a seeded color + controller-icon fallback for the many
+/// games that have no art, and a title caption. Always focusable (d-pad / gamepad navigation
+/// works on every platform, not just TV). Shared by the library rows and the detail screen's
+/// related rail.
 class GamePosterCard extends StatelessWidget {
   const GamePosterCard({
     super.key,
-    required this.core,
+    required this.imageUrl,
     required this.title,
     required this.fileName,
     required this.seed,
@@ -20,7 +20,7 @@ class GamePosterCard extends StatelessWidget {
     this.autofocus = false,
   });
 
-  final String core;
+  final String? imageUrl;
   final String title;
   final String fileName;
   final String seed;
@@ -30,7 +30,7 @@ class GamePosterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final url = libretroBoxartUrl(core, thumbName(fileName));
+    final url = imageUrl;
     final label = gameDisplayTitle(title, fileName);
 
     final card = Column(

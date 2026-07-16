@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../util/game_library.dart';
 import 'game_poster_card.dart';
 
 /// A titled horizontal row of game box art (one system's games, or a "more like this" rail).
@@ -8,6 +9,7 @@ class GamePosterRail extends StatelessWidget {
   const GamePosterRail({
     super.key,
     required this.title,
+    required this.libraryId,
     required this.games,
     required this.onTapGame,
     this.trailingCount,
@@ -16,6 +18,9 @@ class GamePosterRail extends StatelessWidget {
   });
 
   final String title;
+
+  /// The library the games belong to, needed to ask the server for their art.
+  final String libraryId;
   final List<GameSummary> games;
   final void Function(GameSummary game) onTapGame;
 
@@ -59,7 +64,7 @@ class GamePosterRail extends StatelessWidget {
             itemCount: games.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, i) => GamePosterCard(
-              core: games[i].core,
+              imageUrl: gameThumbUrl(libraryId, games[i].id),
               title: games[i].title,
               fileName: games[i].fileName,
               seed: games[i].id,

@@ -63,59 +63,18 @@ String gameOrLibraryRoute(String id, String? collectionType, String name) {
 
 const IconData gameLibraryIcon = Icons.sports_esports;
 
-/// EmulatorJS core name -> libretro thumbnail platform folder. Used to build keyless box-art
-/// URLs from the libretro thumbnail server (no API key or account needed).
-const Map<String, String> _libretroPlatform = {
-  'nes': 'Nintendo - Nintendo Entertainment System',
-  'snes': 'Nintendo - Super Nintendo Entertainment System',
-  'gb': 'Nintendo - Game Boy',
-  'gba': 'Nintendo - Game Boy Advance',
-  'n64': 'Nintendo - Nintendo 64',
-  'nds': 'Nintendo - Nintendo DS',
-  'vb': 'Nintendo - Virtual Boy',
-  'segaMD': 'Sega - Mega Drive - Genesis',
-  'segaMS': 'Sega - Master System - Mark III',
-  'segaGG': 'Sega - Game Gear',
-  'atari2600': 'Atari - 2600',
-  'atari7800': 'Atari - 7800',
-  'lynx': 'Atari - Lynx',
-  'ws': 'Bandai - WonderSwan',
-  'ngp': 'SNK - Neo Geo Pocket',
-  'pce': 'NEC - PC Engine - TurboGrafx 16',
-  'psx': 'Sony - PlayStation',
-  'psp': 'Sony - PlayStation Portable',
-};
-
-/// Builds a libretro thumbnail URL for [folder] (Named_Boxarts / Named_Snaps /
-/// Named_Titles), or null if the core has no known platform. Thumbnails are keyed on the
-/// No-Intro game name, so they only resolve when the title matches; callers should fall
-/// back when the image 404s.
-String? _libretroThumbUrl(String? core, String? title, String folder) {
-  if (core == null || title == null || title.isEmpty) return null;
-  final platform = _libretroPlatform[core];
-  if (platform == null) return null;
-  // libretro replaces these characters with '_' in thumbnail filenames.
-  final sanitized = title.replaceAll(RegExp(r'[&*/:`<>?\\|"]'), '_');
-  return 'https://thumbnails.libretro.com/'
-      '${Uri.encodeComponent(platform)}/$folder/'
-      '${Uri.encodeComponent(sanitized)}.png';
+/// A game's art, served by the Moonbase plugin. Null on a server without the games API.
+///
+/// The plugin fetches the art from libretro and caches it rather than the client going there
+/// itself: libretro sends no CORS headers, which a browser will not accept, and one download
+/// on the server then serves every client. [kind] is `boxart`, `snap` or `title`. A URL comes
+/// back even when the game has no art, so callers still need their error fallback.
+String? gameThumbUrl(String libraryId, String gameId, {String kind = 'boxart'}) {
+  final api = GetIt.instance<MediaServerClient>().gamesApi;
+  return api?.thumbUrl(libraryId: libraryId, gameId: gameId, kind: kind);
 }
 
-/// Box art (cover) for a game, used as the poster.
-String? libretroBoxartUrl(String? core, String? title) =>
-    _libretroThumbUrl(core, title, 'Named_Boxarts');
-
-/// In-game screenshot, used as the cinematic backdrop.
-String? libretroSnapUrl(String? core, String? title) =>
-    _libretroThumbUrl(core, title, 'Named_Snaps');
-
-/// Title screen, used as a backdrop fallback when no snapshot exists.
-String? libretroTitleUrl(String? core, String? title) =>
-    _libretroThumbUrl(core, title, 'Named_Titles');
-
-/// The No-Intro name libretro thumbnails are keyed on is the ROM filename (with its
-/// region/revision tags), not the cleaned display title. Strip the extension only.
-String thumbName(String fileName) {
+String _fileStem(String fileName) {
   final dot = fileName.lastIndexOf('.');
   return dot > 0 ? fileName.substring(0, dot) : fileName;
 }
@@ -128,7 +87,7 @@ String gameDisplayTitle(String title, String fileName) {
       .replaceAll('�', '')
       .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '')
       .trim();
-  return cleaned.isEmpty ? thumbName(fileName) : cleaned;
+  return cleaned.isEmpty ? _fileStem(fileName) : cleaned;
 }
 
 /// A stable, pleasant fallback color for poster/backdrop placeholders when no thumbnail

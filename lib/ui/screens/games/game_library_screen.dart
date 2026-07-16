@@ -113,6 +113,7 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
           padding: const EdgeInsets.only(bottom: 24),
           child: GamePosterRail(
             title: system.name,
+            libraryId: widget.libraryId,
             games: games,
             trailingCount: games.length,
             cardWidth: cardWidth,

@@ -171,6 +171,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         final landscape = tv || constraints.maxWidth >= 720;
         return landscape
             ? _LandscapeBody(
+                libraryId: widget.libraryId,
                 game: game,
                 hasSave: _hasSave,
                 related: _related,
@@ -180,6 +181,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
                 onOpenGame: _openGame,
               )
             : _PortraitBody(
+                libraryId: widget.libraryId,
                 game: game,
                 hasSave: _hasSave,
                 related: _related,
@@ -194,6 +196,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
 
 class _PortraitBody extends StatelessWidget {
   const _PortraitBody({
+    required this.libraryId,
     required this.game,
     required this.hasSave,
     required this.related,
@@ -202,6 +205,7 @@ class _PortraitBody extends StatelessWidget {
     required this.onOpenGame,
   });
 
+  final String libraryId;
   final GameDetail game;
   final bool hasSave;
   final List<GameSummary> related;
@@ -220,13 +224,13 @@ class _PortraitBody extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                _Backdrop(game: game, landscape: false),
+                _Backdrop(libraryId: libraryId, game: game, landscape: false),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _Poster(game: game, width: 104),
+                      _Poster(libraryId: libraryId, game: game, width: 104),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Padding(
@@ -268,6 +272,7 @@ class _PortraitBody extends StatelessWidget {
               padding: const EdgeInsets.only(top: 22, bottom: 24),
               child: GamePosterRail(
                 title: 'More in ${game.system}',
+                libraryId: libraryId,
                 games: related,
                 onTapGame: onOpenGame,
               ),
@@ -282,6 +287,7 @@ class _PortraitBody extends StatelessWidget {
 
 class _LandscapeBody extends StatelessWidget {
   const _LandscapeBody({
+    required this.libraryId,
     required this.game,
     required this.hasSave,
     required this.related,
@@ -291,6 +297,7 @@ class _LandscapeBody extends StatelessWidget {
     required this.onOpenGame,
   });
 
+  final String libraryId;
   final GameDetail game;
   final bool hasSave;
   final List<GameSummary> related;
@@ -304,7 +311,7 @@ class _LandscapeBody extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        _Backdrop(game: game, landscape: true),
+        _Backdrop(libraryId: libraryId, game: game, landscape: true),
         SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(40, 24, 40, 32),
@@ -314,7 +321,7 @@ class _LandscapeBody extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Poster(game: game, width: tv ? 168 : 150),
+                    _Poster(libraryId: libraryId, game: game, width: tv ? 168 : 150),
                     const SizedBox(width: 26),
                     Expanded(
                       child: ConstrainedBox(
@@ -350,6 +357,7 @@ class _LandscapeBody extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 28),
                     child: GamePosterRail(
                       title: 'More in ${game.system}',
+                      libraryId: libraryId,
                       games: related,
                       onTapGame: onOpenGame,
                     ),
@@ -366,8 +374,13 @@ class _LandscapeBody extends StatelessWidget {
 /// Full-bleed hero image. Tries the in-game snapshot, then the title screen, then a blurred
 /// box art, and finally a seeded color gradient, with scrims for text legibility.
 class _Backdrop extends StatelessWidget {
-  const _Backdrop({required this.game, required this.landscape});
+  const _Backdrop({
+    required this.libraryId,
+    required this.game,
+    required this.landscape,
+  });
 
+  final String libraryId;
   final GameDetail game;
   final bool landscape;
 
@@ -375,14 +388,13 @@ class _Backdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final bg = Theme.of(context).scaffoldBackgroundColor;
     final base = gameFallbackColor(game.id);
-    final name = thumbName(game.fileName);
 
     final steps = <_BackdropStep>[
-      if (libretroSnapUrl(game.core, name) case final u?)
+      if (gameThumbUrl(libraryId, game.id, kind: 'snap') case final u?)
         _BackdropStep(u, blur: false),
-      if (libretroTitleUrl(game.core, name) case final u?)
+      if (gameThumbUrl(libraryId, game.id, kind: 'title') case final u?)
         _BackdropStep(u, blur: false),
-      if (libretroBoxartUrl(game.core, name) case final u?)
+      if (gameThumbUrl(libraryId, game.id) case final u?)
         _BackdropStep(u, blur: true),
     ];
 
@@ -469,14 +481,19 @@ class _BackdropImage extends StatelessWidget {
 }
 
 class _Poster extends StatelessWidget {
-  const _Poster({required this.game, required this.width});
+  const _Poster({
+    required this.libraryId,
+    required this.game,
+    required this.width,
+  });
 
+  final String libraryId;
   final GameDetail game;
   final double width;
 
   @override
   Widget build(BuildContext context) {
-    final url = libretroBoxartUrl(game.core, thumbName(game.fileName));
+    final url = gameThumbUrl(libraryId, game.id);
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: DecoratedBox(

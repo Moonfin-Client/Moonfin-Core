@@ -70,6 +70,21 @@ class MoonbaseGamesApi implements GamesApi {
     return null;
   }
 
+  @override
+  String thumbUrl({
+    required String libraryId,
+    required String gameId,
+    String kind = 'boxart',
+  }) {
+    final lib = Uri.encodeComponent(libraryId);
+    final id = Uri.encodeComponent(gameId);
+    // The image loader requests this without Dio, so the token rides in the query the
+    // same way it does for ROMs.
+    return _withApiKey(
+      '$_base/Moonfin/Games/$lib/Thumb/$id?type=${Uri.encodeQueryComponent(kind)}',
+    );
+  }
+
   String _romUrl(String libraryId, String gameId) {
     final lib = Uri.encodeComponent(libraryId);
     final id = Uri.encodeComponent(gameId);
