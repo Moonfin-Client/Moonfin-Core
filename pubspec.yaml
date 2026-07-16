@@ -1,11 +1,11 @@
 name: moonfin
 description: "Moonfin - Jellyfin & Emby media client for mobile, tablet, and desktop"
 publish_to: 'none'
-version: 2.2.0+30000139
+version: 2.3.0+30000142
 
 moonfin:
-  android_tv_version: 2.2.0
-  android_tv_build_number: 2000008
+  android_tv_version: 2.3.0
+  android_tv_build_number: 2000009
 
 environment:
   sdk: ^3.11.0
