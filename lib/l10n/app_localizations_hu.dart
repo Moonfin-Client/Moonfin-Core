@@ -385,7 +385,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsFound => 'Nem találhatók elemek';
 
   @override
-  String get home => 'Kezdőlap';
+  String get home => 'Kezdőképernyő';
 
   @override
   String get browseAll => 'Összes böngészése';
@@ -1135,6 +1135,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get failedToDeleteItem => 'Nem sikerült törölni az elemet';
 
   @override
+  String failedToDeleteItemWithError(String error) {
+    return 'Deletion operation failed with the following error: $error';
+  }
+
+  @override
   String get renamePlaylist => 'Lejátszási lista átnevezése';
 
   @override
@@ -1191,7 +1196,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subtitleTrack => 'Feliratsáv';
 
   @override
-  String get none => 'Nincs';
+  String get none => 'Egyik sem';
 
   @override
   String get downloadSubtitlesLabel => 'Feliratok letöltése...';
@@ -3255,7 +3260,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => 'Ki';
+  String get mediaBarModeOff => 'Kikapcsolva';
 
   @override
   String get enableMediaBar => 'Médiasáv engedélyezése';
@@ -3986,7 +3991,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get showMore => 'Továbbiak megjelenítése';
 
   @override
-  String get appearances => 'Szereplések';
+  String get appearances => 'Megjelenések';
 
   @override
   String get crewSection => 'Stáb';
@@ -4561,7 +4566,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sessionRewind => 'Visszatekerés';
 
   @override
-  String get sessionForward => 'Előretekerés';
+  String get sessionForward => 'Előre';
 
   @override
   String get sessionNext => 'Következő';
@@ -7445,7 +7450,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month. $day.';
+    return '$month/$day';
   }
 
   @override

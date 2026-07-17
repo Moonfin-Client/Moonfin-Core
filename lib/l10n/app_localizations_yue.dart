@@ -12,27 +12,27 @@ class AppLocalizationsYue extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => '帳戶偏好設定';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => '介面語言';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => '系統預設';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => '登入';
 
   @override
-  String get empty => '空';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
-    return '連接緊 $serverName';
+    return 'Connecting to $serverName';
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => '快速連接';
 
   @override
   String get password => '密碼';
@@ -50,7 +50,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get waitingForAuthorization => '等待授權...';
 
   @override
-  String get back => '返回';
+  String get back => '後退';
 
   @override
   String get serverUnavailable => '伺服器不可用';
@@ -60,12 +60,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect 用唔到：$detail';
+    return 'QuickConnect unavailable: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect 用唔到（$status）：$detail';
+    return 'QuickConnect unavailable ($status): $detail';
   }
 
   @override
@@ -79,7 +79,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin 版本 $version';
+    return 'Moonfin version $version';
   }
 
   @override
@@ -105,14 +105,14 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return '確定要喺你嘅伺服器清單度移除「$serverName」？';
+    return 'Remove \"$serverName\" from your servers?';
   }
 
   @override
   String get cancel => '取消';
 
   @override
-  String get remove => '移除';
+  String get remove => '消除';
 
   @override
   String get connectToServer => '連接到伺服器';
@@ -140,59 +140,62 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsAppearanceTheme => '應用主題';
 
   @override
-  String get detailScreenStyle => '詳細資料頁樣式';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      '「經典」係 Moonfin 原本嘅置中版面。「現代」係自適應嘅電影感版面。';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => '經典';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
-  String get detailScreenStyleModern => '現代';
+  String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => '展開分頁';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
-  String get expandedTabsSubtitle => '瀏覽分頁嗰陣自動顯示內容。閂咗就要自己逐個分頁開合。';
+  String get expandedTabsSubtitle =>
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => '顯示技術詳情？';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
-  String get showTechnicalDetailsSubtitle => '喺橫幅摘要度顯示編解碼器、解析度同串流資訊';
+  String get showTechnicalDetailsSubtitle =>
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => '推薦系統';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      '用 Moonfin Recommends 嘅本機媒體庫演算法，或者網上 TMDb 嘅相似度指標。注意：網上推薦需要整合 Seerr。';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb 相似度';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
-  String get recommendationsApplyParentalRatingCap => '套用家長分級上限？';
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      '根據目標媒體嘅家長分級嚟限制 Moonfin Recommends 嘅建議';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => '介面風格';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      '「自動」會配合你部裝置。揀「Apple」或者「Material」就可以指定外觀。';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => '自動';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -201,36 +204,38 @@ class AppLocalizationsYue extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => '玻璃效果品質';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      '「自動」會為呢部裝置揀最啱嘅玻璃效果。「完整」會強制用真實模糊；「精簡」用輕量玻璃，慳返 GPU 電力。';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
-  String get glassQualityAuto => '自動';
+  String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => '完整';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => '精簡';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       '在 Moonfin 和 Neon Pulse 之間切換，無需重新啟動應用程式';
 
   @override
-  String get customThemeTitle => '自訂主題';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
-  String get customThemeSubtitle => '自訂主題會改變成個 Moonfin 嘅視覺元素。揀一個啱你風格嘅選項啦。';
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
-  String get keyboardPreferSystemIme => '優先用系統鍵盤';
+  String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override
-  String get keyboardPreferSystemImeDescription => '預設用你部裝置嘅輸入法嚟打字';
+  String get keyboardPreferSystemImeDescription =>
+      'Use your device input method by default for text entry';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -239,22 +244,24 @@ class AppLocalizationsYue extends AppLocalizations {
   String get themeMoonfinSubtitle => '目前的 Moonfin 外觀你們都喜歡';
 
   @override
-  String get themeNeonPulse => '霓虹脈動';
+  String get themeNeonPulse => 'Neon Pulse';
 
   @override
   String get themeNeonPulseSubtitle => 'Synthwave 風格具有洋紅色發光、青色文字和更強的鍍鉻對比度';
 
   @override
-  String get themeGlass => '玻璃';
+  String get themeGlass => 'Glass';
 
   @override
-  String get themeGlassSubtitle => '液態玻璃風格，配流動漸層背景、霧面表面同 Apple 藍點綴';
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
-  String get theme8BitHero => '8-bit 英雄';
+  String get theme8BitHero => '8-bit Hero';
 
   @override
-  String get theme8BitHeroSubtitle => '復古像素風格，配粗獷色盤、方塊邊框、硬陰影同像素字體';
+  String get theme8BitHeroSubtitle =>
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle => '使用您的 Emby Connect 帳戶登入';
@@ -297,7 +304,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return '連接唔到 $target';
+    return 'Unable to connect to $target';
   }
 
   @override
@@ -310,34 +317,35 @@ class AppLocalizationsYue extends AppLocalizations {
   String get exit => '出口';
 
   @override
-  String get gameMenu => '選單';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => '已暫停';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => '即時存檔';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => '遊戲';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => '讀取存檔';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => '快進';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => '模擬器設定';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions => '呢個核心冇任何可以調整嘅選項。';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => '撳住開選單';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
-  String get gamePlaybackUnsupported => '呢部裝置暫時仲未支援玩遊戲。';
+  String get gamePlaybackUnsupported =>
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded => '無法載入主行';
@@ -352,19 +360,19 @@ class AppLocalizationsYue extends AppLocalizations {
   String get guide => '指導';
 
   @override
-  String get recordings => '錄影';
+  String get recordings => '錄音';
 
   @override
   String get schedule => '行程';
 
   @override
-  String get series => '劇集';
+  String get series => '系列';
 
   @override
   String get noItemsFound => '沒有找到物品';
 
   @override
-  String get home => '主頁';
+  String get home => '家';
 
   @override
   String get browseAll => '瀏覽全部';
@@ -394,7 +402,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get noLibrariesFound => '沒有找到庫';
 
   @override
-  String get library => '媒體庫';
+  String get library => '圖書館';
 
   @override
   String get displaySettings => '顯示設定';
@@ -407,7 +415,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return '載入唔到資料夾：$error';
+    return 'Failed to load folder: $error';
   }
 
   @override
@@ -415,7 +423,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count 個項目';
+    return '$count items';
   }
 
   @override
@@ -432,7 +440,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count 個項目';
+    return '$count Items';
   }
 
   @override
@@ -473,7 +481,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — 類型';
+    return '$name — Genres';
   }
 
   @override
@@ -486,7 +494,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get albumArtists => '專輯藝人';
 
   @override
-  String get artists => '歌手';
+  String get artists => '藝術家';
 
   @override
   String get bookmarks => '書籤';
@@ -511,17 +519,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '$count 分鐘前';
+    return '${count}m ago';
   }
 
   @override
   String hoursAgo(int count) {
-    return '$count 小時前';
+    return '${count}h ago';
   }
 
   @override
   String daysAgo(int count) {
-    return '$count 日前';
+    return '${count}d ago';
   }
 
   @override
@@ -531,7 +539,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get pickDiscoverySubjects => '選擇要在「發現」中顯示的主題來源。';
 
   @override
-  String get apply => '套用';
+  String get apply => '申請';
 
   @override
   String get openLink => '打開連結';
@@ -553,7 +561,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count 部作品';
+    return '$count titles';
   }
 
   @override
@@ -578,7 +586,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get listen => '聽';
 
   @override
-  String get resume => '繼續';
+  String get resume => '恢復';
 
   @override
   String get failedToLoadLibrary => '載入庫失敗';
@@ -633,17 +641,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count 位作者';
+    return '$count authors';
   }
 
   @override
   String genresCount(int count) {
-    return '$count 種類型';
+    return '$count genres';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '已完成 $percent%';
+    return '$percent% completed';
   }
 
   @override
@@ -660,11 +668,11 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count 部作品，以閱讀為先嘅方式排好。';
+    return '$count titles arranged for reading-first browsing.';
   }
 
   @override
-  String get titles => '作品';
+  String get titles => '標題';
 
   @override
   String get allTitles => '所有標題';
@@ -695,7 +703,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return '搵唔到$label';
+    return 'No $label found';
   }
 
   @override
@@ -714,13 +722,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get readStatus => '讀';
 
   @override
-  String get watched => '睇咗';
+  String get watched => '看過';
 
   @override
   String get unread => '未讀';
 
   @override
-  String get unwatched => '未睇';
+  String get unwatched => '無人看管';
 
   @override
   String get seriesStatus => '系列狀態';
@@ -732,43 +740,43 @@ class AppLocalizationsYue extends AppLocalizations {
   String get books => '圖書';
 
   @override
-  String get latestBooks => '最新書籍';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => '最新有聲書';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 本書',
-      one: '1 本書',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => '書籍';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => '有聲書';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '已讀 $percent%';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '仲有 $time';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => '閱讀';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => '收聽';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => '作者';
@@ -805,12 +813,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count 個章節';
+    return '$count sections';
   }
 
   @override
   String firstPublished(int year) {
-    return '首次出版於 $year';
+    return 'First published $year';
   }
 
   @override
@@ -824,7 +832,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count 本書';
+    return '$count books';
   }
 
   @override
@@ -835,7 +843,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count 位作者';
+    return '$count Authors';
   }
 
   @override
@@ -843,8 +851,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 本有聲書',
-      one: '1 本有聲書',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -862,7 +870,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get delete => '刪除';
 
   @override
-  String get save => '儲存';
+  String get save => '節省';
 
   @override
   String get moreLikeThis => '更多類似的';
@@ -880,7 +888,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get nextUp => '下一步';
 
   @override
-  String get seasons => '季';
+  String get seasons => '季節';
 
   @override
   String get chapters => '章節';
@@ -892,7 +900,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get movies => '電影';
 
   @override
-  String get musicVideos => '音樂影片';
+  String get musicVideos => 'Music Videos';
 
   @override
   String get other => '其他';
@@ -911,7 +919,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return '第 $number 碟';
+    return 'Disc $number';
   }
 
   @override
@@ -934,7 +942,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String published(int year) {
-    return '$year 年出版';
+    return 'Published $year';
   }
 
   @override
@@ -945,52 +953,52 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 季',
-      one: '1 季',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return '$time 結束';
+    return 'Ends at $time';
   }
 
   @override
-  String get items => '項目';
+  String get items => 'Items';
 
   @override
-  String get extras => '特別收錄';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => '幕後花絮';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => '刪剪片段';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => '特輯';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => '訪談';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => '片段';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => '短片';
+  String get shorts => 'Shorts';
 
   @override
-  String get trailers => '預告片';
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
-    return '仲有 $time';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return '$time 後結束';
+    return 'Ends in $time';
   }
 
   @override
@@ -1004,11 +1012,11 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return '由 $position 繼續播放';
+    return 'Resume from $position';
   }
 
   @override
-  String get play => '播放';
+  String get play => '玩';
 
   @override
   String get startOver => '重新開始';
@@ -1032,10 +1040,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get version => '版本';
 
   @override
-  String get cast => '投放';
+  String get cast => '投擲';
 
   @override
-  String get trailer => '預告片';
+  String get trailer => '拖車';
 
   @override
   String get finished => '完成的';
@@ -1092,6 +1100,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get failedToDeleteItem => '刪除項目失敗';
 
   @override
+  String failedToDeleteItemWithError(String error) {
+    return 'Deletion operation failed with the following error: $error';
+  }
+
+  @override
   String get renamePlaylist => '重新命名播放列表';
 
   @override
@@ -1102,7 +1115,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return '確定要刪除「$title」已下載嘅曲目？';
+    return 'Delete downloaded tracks for \"$title\"?';
   }
 
   @override
@@ -1116,17 +1129,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return '未載入到任何$itemLabel';
+    return 'No $itemLabel loaded';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return '下載緊 $title（$count 個項目）...';
+    return 'Downloading $title ($count items)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return '你確定要喺伺服器度刪除「$name」？呢個動作冇得復原。';
+    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
   }
 
   @override
@@ -1137,7 +1150,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return '唔支援嘅書籍格式：.$extension';
+    return 'Unsupported book format: .$extension';
   }
 
   @override
@@ -1147,7 +1160,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get subtitleTrack => '字幕軌道';
 
   @override
-  String get none => '冇';
+  String get none => '沒有任何';
 
   @override
   String get downloadSubtitlesLabel => '下載字幕...';
@@ -1163,7 +1176,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return '字幕已下載並選用：$name';
+    return 'Subtitle downloaded and selected: $name';
   }
 
   @override
@@ -1172,7 +1185,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return '搵唔到 $language 嘅遠端字幕。';
+    return 'No remote subtitles found for $language.';
   }
 
   @override
@@ -1180,7 +1193,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return '版本 $number';
+    return 'Version $number';
   }
 
   @override
@@ -1200,7 +1213,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return '下載緊 $name（$quality）...';
+    return 'Downloading $name ($quality)...';
   }
 
   @override
@@ -1208,7 +1221,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return '確定要刪除$typeLabel嘅本機檔案？\n\n咁樣可以騰返啲儲存空間。你之後可以再下載返。';
+    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
   }
 
   @override
@@ -1224,25 +1237,25 @@ class AppLocalizationsYue extends AppLocalizations {
   String get director => '導演';
 
   @override
-  String get directors => '導演';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => '編劇';
+  String get writer => 'WRITER';
 
   @override
-  String get writers => '編劇';
+  String get writers => '作家';
 
   @override
   String get studio => '工作室';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count 個';
+    return '+$count more';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count 集';
+    return '$count Episodes';
   }
 
   @override
@@ -1252,12 +1265,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return '第 $number 集';
+    return 'Episode $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return '第 $number 章';
+    return 'Chapter $number';
   }
 
   @override
@@ -1265,8 +1278,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 首曲目',
-      one: '1 首曲目',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1276,25 +1289,25 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 個章節',
-      one: '1 個章節',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return '$date 出世';
+    return 'Born $date';
   }
 
   @override
   String died(String date) {
-    return '$date 逝世';
+    return 'Died $date';
   }
 
   @override
   String age(int age) {
-    return '$age 歲';
+    return 'Age $age';
   }
 
   @override
@@ -1307,17 +1320,17 @@ class AppLocalizationsYue extends AppLocalizations {
   String get shuffle => '隨機播放';
 
   @override
-  String get shuffleAllMusic => '隨機播放所有音樂';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => '用你部電話登入 Moonfin';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => '連唔到你個伺服器';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
-    return '$count 次下載';
+    return '$count downloads';
   }
 
   @override
@@ -1325,43 +1338,43 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '$count 聲道';
+    return '${count}ch';
   }
 
   @override
-  String get mono => '單聲道';
+  String get mono => '單核白血球增多症';
 
   @override
   String get stereo => '立體聲';
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return '遠端字幕$action需要呢個使用者有 Jellyfin 嘅字幕管理權限。';
+    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return '喺伺服器度搵唔到呢個項目，冇辦法$action遠端字幕。';
+    return 'This item could not be found on the server for remote subtitle $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return '遠端字幕$action失敗：$detail';
+    return 'Remote subtitle $action failed: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return '遠端字幕$action失敗（HTTP $status）。';
+    return 'Remote subtitle $action failed (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return '冇辦法$action遠端字幕。';
+    return 'Failed to $action remote subtitles.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return '「$name」所有已下載嘅集數';
+    return 'all downloaded episodes for \"$name\"';
   }
 
   @override
@@ -1389,17 +1402,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label 動作失敗：$error';
+    return '$label action failed: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return '設定唔到投放音量：$error';
+    return 'Failed to set cast volume: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label 控制';
+    return '$label Controls';
   }
 
   @override
@@ -1416,7 +1429,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return '停止 $label';
+    return 'Stop $label';
   }
 
   @override
@@ -1424,7 +1437,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return '曲目 $number';
+    return 'Track $number';
   }
 
   @override
@@ -1441,14 +1454,14 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds 秒';
+    return '$seconds seconds';
   }
 
   @override
   String get longPressToUnlock => '長按解鎖';
 
   @override
-  String get off => '關';
+  String get off => '離開';
 
   @override
   String streamTypeFallback(String streamType, int number) {
@@ -1483,7 +1496,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get subtitleDelay => '字幕延遲';
 
   @override
-  String get reset => '重設';
+  String get reset => '重置';
 
   @override
   String get unknown => '未知';
@@ -1510,7 +1523,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get transcodeReasons => '轉碼原因';
 
   @override
-  String get player => '播放器';
+  String get player => '玩家';
 
   @override
   String get container => '容器';
@@ -1534,7 +1547,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get videoBitrate => '視訊比特率';
 
   @override
-  String get track => '音軌';
+  String get track => '追蹤';
 
   @override
   String get channels => '頻道';
@@ -1556,12 +1569,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol 工作階段錯誤';
+    return '$protocol session error';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return '載入唔到書籍詳情：$error';
+    return 'Failed to load book details: $error';
   }
 
   @override
@@ -1569,7 +1582,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return '呢個格式（.$extension）暫時仲未可以喺應用程式入面顯示。';
+    return 'This format (.$extension) cannot be rendered in-app yet.';
   }
 
   @override
@@ -1580,17 +1593,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return '開唔到應用程式內閱讀器：$error';
+    return 'Failed to open in-app reader: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return '$label 度已經有書籤喇。';
+    return 'Bookmark already saved at $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return '已加入書籤：$label';
+    return 'Bookmark added: $label';
   }
 
   @override
@@ -1601,7 +1614,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return '第 $number 頁';
+    return 'Page $number';
   }
 
   @override
@@ -1612,12 +1625,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return '格式：.$extension';
+    return 'Format: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '已讀 $percent%';
+    return '$percent% read';
   }
 
   @override
@@ -1640,7 +1653,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return '重設縮放（${zoom}x）';
+    return 'Reset Zoom (${zoom}x)';
   }
 
   @override
@@ -1663,7 +1676,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return '更新唔到閱讀狀態：$error';
+    return 'Failed to update read state: $error';
   }
 
   @override
@@ -1695,7 +1708,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return '呢個平台冇辦法載入 $extension 檔案嘅內嵌文件引擎。';
+    return 'This platform cannot host the embedded document engine for $extension files.';
   }
 
   @override
@@ -1734,7 +1747,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return '載入唔到節目表：$error';
+    return 'Failed to load guide: $error';
   }
 
   @override
@@ -1745,22 +1758,22 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return '下一個：$time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '仲有 $minutes 分鐘';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '仲有 $hours 小時';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '仲有 $hours 小時 $minutes 分鐘';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1782,29 +1795,29 @@ class AppLocalizationsYue extends AppLocalizations {
   String get favoriteChannel => '最喜歡的頻道';
 
   @override
-  String get record => '錄影';
+  String get record => 'Record';
 
   @override
-  String get cancelRecordingAction => '取消錄影';
+  String get cancelRecordingAction => 'Cancel Recording';
 
   @override
-  String get programSetToRecord => '已排定錄影';
+  String get programSetToRecord => 'Program set to record';
 
   @override
-  String get recordingCancelled => '已取消錄影';
+  String get recordingCancelled => 'Recording cancelled';
 
   @override
-  String get unableToCreateRecording => '冇辦法建立錄影';
+  String get unableToCreateRecording => 'Unable to create recording';
 
   @override
-  String get watch => '睇';
+  String get watch => '手錶';
 
   @override
   String get close => '關閉';
 
   @override
   String failedToPlayChannel(String name) {
-    return '播放唔到 $name';
+    return 'Failed to play $name';
   }
 
   @override
@@ -1830,11 +1843,11 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return '確定要取消「$name」嘅排定錄影？';
+    return 'Cancel scheduled recording of \"$name\"?';
   }
 
   @override
-  String get no => '唔係';
+  String get no => '不';
 
   @override
   String get yesCancel => '是，取消';
@@ -1856,7 +1869,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return '確定要停止錄影「$name」？';
+    return 'Stop recording \"$name\"?';
   }
 
   @override
@@ -1870,19 +1883,19 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return '搵唔到「$query」嘅結果';
+    return 'No results for \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return '搜尋失敗：$error';
+    return 'Search failed: $error';
   }
 
   @override
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'Seerr 帳戶類型';
+  String get seerrAccountType => '西爾帳戶類型';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -1916,12 +1929,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return '確定要移除「$name」同埋佢嘅檔案？';
+    return 'Remove \"$name\" and its files?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count 首曲目';
+    return '$count tracks';
   }
 
   @override
@@ -1932,16 +1945,16 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return '載入唔到專輯：$error';
+    return 'Failed to load album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return '搵唔到 $name 已下載嘅曲目。';
+    return 'No downloaded tracks found for $name.';
   }
 
   @override
-  String get season => '季';
+  String get season => '季節';
 
   @override
   String get errorLoadingEpisodes => '載入劇集時出錯';
@@ -1954,22 +1967,22 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return '確定要移除「$name」？';
+    return 'Remove \"$name\"?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes 分鐘';
+    return '$minutes min';
   }
 
   @override
   String seasonEpisodeLabel(int season, int episode) {
-    return '第$season季 第$episode集';
+    return 'S$season E$episode';
   }
 
   @override
   String episodeNumber(int number) {
-    return '第 $number 集';
+    return 'Episode $number';
   }
 
   @override
@@ -1983,12 +1996,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return '第 $number 季';
+    return 'Season $number';
   }
 
   @override
   String seasonChip(int number) {
-    return '第$number季';
+    return 'S$number';
   }
 
   @override
@@ -1999,7 +2012,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return '確定要刪除 $season 所有已下載嘅集數？';
+    return 'Delete all downloaded episodes in $season?';
   }
 
   @override
@@ -2007,8 +2020,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 集',
-      one: '1 集',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2042,7 +2055,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return '確定要刪除 $count 個已下載嘅項目？';
+    return 'Delete $count downloaded items?';
   }
 
   @override
@@ -2056,7 +2069,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return '上限 $limit';
+    return 'of $limit limit';
   }
 
   @override
@@ -2136,7 +2149,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count 個選項';
+    return '$count options';
   }
 
   @override
@@ -2224,7 +2237,8 @@ class AppLocalizationsYue extends AppLocalizations {
   String get themeMusicVolume => '主題音樂音量';
 
   @override
-  String get themeMusicSettingsSubtitle => '詳細資料頁、主畫面列表同音量';
+  String get themeMusicSettingsSubtitle =>
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
@@ -2238,10 +2252,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => '瀏覽主畫面時播放';
 
   @override
-  String get loopThemeMusic => '循環播放主題音樂';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
-  String get loopThemeMusicSubtitle => '重複播放呢首曲目，唔係淨係播一次';
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => '細節背景模糊';
@@ -2264,22 +2279,23 @@ class AppLocalizationsYue extends AppLocalizations {
   String get playerZoomMode => '播放器縮放模式';
 
   @override
-  String get settingsScrollWheelAction => '滑鼠滾輪';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
-  String get settingsScrollWheelActionDescription => '揀播放嗰陣喺畫面上面碌滑鼠滾輪會做啲乜。';
+  String get settingsScrollWheelActionDescription =>
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => '關';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => '跳轉（前 / 後）';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => '音量';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => '音量';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => '合身';
@@ -2294,7 +2310,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get refreshRateSwitching => '刷新率切換';
 
   @override
-  String get disabled => '已停用';
+  String get disabled => '殘障人士';
 
   @override
   String get scaleOnTv => '在電視上縮放';
@@ -2330,34 +2346,37 @@ class AppLocalizationsYue extends AppLocalizations {
   String get defaultAudioLanguage => '預設音訊語言';
 
   @override
-  String get fallbackAudioLanguage => '備用音訊語言';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack => '優先用預設音軌';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
-  String get preferDefaultAudioTrackDescription => '優先用原聲音軌，唔用本地配音。';
+  String get preferDefaultAudioTrackDescription =>
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription => '優先用口述影像音軌';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
-  String get preferAudioDescriptionDescription => '優先用口述影像音軌，唔用普通音軌。';
+  String get preferAudioDescriptionDescription =>
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => '轉碼（音訊）';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => '直接串流（重新封裝）';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
-  String get transcodingBitrateOrResolution => '轉碼（位元率或解析度）';
+  String get transcodingBitrateOrResolution =>
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => '轉碼（視訊同音訊）';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => '轉碼（視訊）';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => '自動（伺服器預設）';
@@ -2432,141 +2451,142 @@ class AppLocalizationsYue extends AppLocalizations {
   String get enableTrueHdAudio => '啟用 TrueHD 音訊（可能不適用於所有平台）';
 
   @override
-  String get settingsAudioOutputMode => '音訊輸出模式';
+  String get settingsAudioOutputMode => 'Audio Output Mode';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      '揀點樣解碼音訊。「AVR 直通」會將原始嘅 Dolby/DTS 串流送去你部擴音機；「自動」或者「縮混」就會喺本機解碼。';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR 直通';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => '備用音訊編解碼器';
+  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      '揀當來源串流冇辦法直接播放或者直通嗰陣，多聲道音訊要轉碼成咩格式。';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => '自動偵測\n（建議）';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n（預設）';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
-  String get settingsAudioFallbackCodecAc3 => 'AC3\n（Dolby Digital）';
+  String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
 
   @override
-  String get settingsAudioFallbackCodecEac3 => 'EAC3\n（Dolby Digital Plus）';
+  String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n（無損）';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n（淨係支援立體聲）';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n（高效率）';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n（無損）';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => '最大音訊聲道數';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      '設定你音響系統嘅最大聲道數。超過呢個上限嘅多聲道串流會縮混或者轉碼。';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto => '自動偵測\n（硬件預設）';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 單聲道';
+  String get settingsMaxAudioChannelsMono => '1.0 Mono';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 立體聲';
+  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 環繞聲';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 四聲道';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 環繞聲';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 環繞聲';
+  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 環繞聲';
+  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 環繞聲';
+  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => '直通（進階）';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
 
   @override
-  String get settingsAudioCodecPassthrough => '編解碼器直通';
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      '淨係啟用你部 AVR 或者 HDMI 接收裝置支援嘅格式。';
+      'Enable only formats your AVR or HDMI sink supports.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 直通';
+  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC（Atmos）直通';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core 直通';
+  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA 直通';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD 直通';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos 直通';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      '將 Dolby Digital Plus（EAC3）位元流送去外部解碼器。';
+      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      '將 EAC3（JOC）承載嘅 Dolby Atmos 位元流送去外部解碼器。';
+      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      '將 DTS-HD MA（包括 DTS core）位元流送去外部解碼器。';
+      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      '將帶 Atmos 中繼資料嘅 Dolby TrueHD 位元流送去外部解碼器。';
+      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
 
   @override
-  String get settingsDetectedAudioCapabilities => '偵測到嘅音訊能力';
+  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
 
   @override
-  String get settingsDetectedAudioCapabilitiesUnavailable => '暫時仲未有執行階段嘅能力快照。';
+  String get settingsDetectedAudioCapabilitiesUnavailable =>
+      'No runtime capability snapshot available yet.';
 
   @override
-  String get settingsAudioRouteLabel => '路由';
+  String get settingsAudioRouteLabel => 'Route';
 
   @override
-  String get settingsAudioDecodeLabel => '解碼';
+  String get settingsAudioDecodeLabel => 'Decode';
 
   @override
-  String get settingsAudioPassthroughLabel => '直通';
+  String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD 音訊路由';
+  String get settingsAudioHdRoute => 'HD audio route';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2581,46 +2601,50 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => '喇叭';
+  String get settingsAudioRouteSpeaker => 'Speaker';
 
   @override
-  String get settingsAudioRouteHeadphones => '耳機';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '$count 聲道 PCM';
+    return '${count}ch PCM';
   }
 
   @override
-  String get settingsAudioDiagnostics => '診斷';
+  String get settingsAudioDiagnostics => 'Diagnostics';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => '視訊等級';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => '視訊範圍';
+  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => '字幕編解碼器';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
 
   @override
-  String get settingsAudioDiagnosticsAllowedAudioCodecs => '允許嘅音訊編解碼器';
+  String get settingsAudioDiagnosticsAllowedAudioCodecs =>
+      'Allowed Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS 音訊編解碼器';
+      'HLS MPEG-TS Audio Codecs';
 
   @override
-  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs => 'HLS fMP4 音訊編解碼器';
+  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
+      'HLS fMP4 Audio Codecs';
 
   @override
-  String get settingsAudioDiagnosticsAudioSpdifPassthrough => 'audio-spdif 直通';
+  String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
+      'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => '使用中嘅音訊路由';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
 
   @override
-  String get settingsAudioDiagnosticsRouteHdAudioSupport => '路由 HD 音訊支援';
+  String get settingsAudioDiagnosticsRouteHdAudioSupport =>
+      'Route HD Audio Support';
 
   @override
   String get nightMode => '夜間模式';
@@ -2666,7 +2690,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '$value 秒';
+    return '${value}s';
   }
 
   @override
@@ -2680,7 +2704,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return '睇咗 $episodes 集 / $hours 小時之後';
+    return 'After $episodes episodes / ${hours}h';
   }
 
   @override
@@ -2754,41 +2778,45 @@ class AppLocalizationsYue extends AppLocalizations {
   String get subtitleCustomizationDescription => '自訂字幕外觀';
 
   @override
-  String get subtitleMode => '字幕模式';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => '已標記';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => '永遠';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => '外語';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => '強制';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      '播放喺媒體檔案中繼資料入面標示為「default」或者「forced」嘅字幕軌。';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
-  String get subtitleModeAlwaysDescription => '每次開始播片都自動載入同顯示字幕。';
+  String get subtitleModeAlwaysDescription =>
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
-  String get subtitleModeForeignDescription => '如果預設音軌係外語，就自動開字幕。';
+  String get subtitleModeForeignDescription =>
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
-  String get subtitleModeForcedDescription => '淨係載入明確標咗 forced 中繼資料旗標嘅字幕。';
+  String get subtitleModeForcedDescription =>
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
-  String get subtitleModeNoneDescription => '完全停用自動載入字幕。';
+  String get subtitleModeNoneDescription =>
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => '備用字幕語言';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => '字幕串流';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText => '敏捷的棕色狐狸跳過了懶狗';
@@ -2846,17 +2874,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return '已載入 $profile 設定檔嘅設定。';
+    return 'Loaded $profile profile settings.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return '載入唔到 $profile 設定檔嘅設定。';
+    return 'Failed to load $profile profile settings.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return '已將本機設定同步去 $profile 設定檔。';
+    return 'Synced local settings to $profile profile.';
   }
 
   @override
@@ -2986,10 +3014,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showLibrariesInToolbar => '在工具列中顯示庫';
 
   @override
-  String get navbarAlwaysExpanded => '永遠展開導覽列標籤';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => '顯示 Seerr 按鈕';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => '導覽列不透明度';
@@ -3061,17 +3089,18 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showFolderBrowsingOption => '顯示資料夾瀏覽選項';
 
   @override
-  String get groupItemsIntoCollections => '將項目歸入合輯';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
-  String get hideCollectionAssociatedItems => '瀏覽媒體庫嗰陣隱藏已歸入合輯嘅項目';
+  String get hideCollectionAssociatedItems =>
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => '媒體庫分組須知';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      '想用呢個設定，請確認喺你部 Jellyfin 或者 Emby 伺服器嘅媒體庫「顯示」設定入面，已經啟用咗「Group movies into collections」同／或者「Group shows into collections」。';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => '圖書館可見性';
@@ -3099,7 +3128,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '已揀 $count 個';
+    return '$count selected';
   }
 
   @override
@@ -3133,7 +3162,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get mediaBarModeMakd => '馬克D';
 
   @override
-  String get mediaBarModeOff => '關';
+  String get mediaBarModeOff => '離開';
 
   @override
   String get enableMediaBar => '啟用媒體欄';
@@ -3178,10 +3207,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get autoPlayTrailers => '3 秒後在媒體列中自動播放預告片';
 
   @override
-  String get trailerAudio => '預告片聲音';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio => '喺媒體列嘅預告片開聲';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => '劇集預覽';
@@ -3253,10 +3282,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get combineBothRows => '將兩行合併為一個主頁部分';
 
   @override
-  String get fullScreenRows => '展開主畫面列表';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription => '每個畫面淨係顯示一行主畫面列表';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => '每行圖像類型';
@@ -3271,7 +3300,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get lastUser => '最後一個用戶';
 
   @override
-  String get currentUser => '目前使用者';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => '始終進行身份驗證';
@@ -3341,7 +3370,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes 分鐘';
+    return '$minutes min';
   }
 
   @override
@@ -3371,10 +3400,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get displayClockDuringScreensaver => '螢幕保護期間顯示時鐘';
 
   @override
-  String get clockModeStatic => '固定';
+  String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => '彈跳';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => '爛番茄（評論家）';
@@ -3383,10 +3412,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get rottenTomatoesAudience => '爛番茄（觀眾）';
 
   @override
-  String get imdb => 'IMDb';
+  String get imdb => '網路醫學資料庫';
 
   @override
-  String get tmdb => 'TMDB';
+  String get tmdb => 'TM資料庫';
 
   @override
   String get metacritic => '元評論家';
@@ -3395,7 +3424,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get metacriticUser => '元評論家（使用者）';
 
   @override
-  String get trakt => 'Trakt';
+  String get trakt => '特拉克特';
 
   @override
   String get letterboxd => '信箱';
@@ -3443,7 +3472,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get ratingSourcesDescription => '啟用並重新排序整個應用程式中顯示的評級來源';
 
   @override
-  String get pluginLabel => 'Moonbase 外掛程式';
+  String get pluginLabel => '外掛';
 
   @override
   String get pluginDetected => '偵測到插件';
@@ -3459,7 +3488,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\n版本：$version';
+    return '$status\nVersion: $version';
   }
 
   @override
@@ -3512,13 +3541,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get networks => '網路';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr 探索列表';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => '將行重設為預設值';
 
   @override
-  String get enableSeerr => '啟用 Seerr';
+  String get enableSeerr => '啟用搜尋器';
 
   @override
   String get showSeerrInNavigation => '在導航中顯示 Seerr（需要伺服器插件）';
@@ -3533,44 +3562,46 @@ class AppLocalizationsYue extends AppLocalizations {
   String get hideAdultContent => '在結果中隱藏成人內容';
 
   @override
-  String get seerrNotificationsSection => '通知';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => '新請求通知';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
-  String get seerrNotifyNewRequestsSubtitle => '有人提交請求嗰陣通知我';
+  String get seerrNotifyNewRequestsSubtitle =>
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => '請求進度更新';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
-  String get seerrNotifyLibraryAddedSubtitle => '已批准、已拒絕，同埋已加入你嘅媒體庫';
+  String get seerrNotifyLibraryAddedSubtitle =>
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => '問題更新';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
-  String get seerrNotifyIssuesSubtitle => '新問題、回覆同解決結果';
+  String get seerrNotifyIssuesSubtitle =>
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
-    return '已登入身分：$username';
+    return 'Logged in as: $username';
   }
 
   @override
-  String get discoverRows => 'Seerr 探索頁';
+  String get discoverRows => '發現行';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      '揀要喺 Seerr 主頁顯示嘅列表。拖曳就可以重新排序。自訂順序會同 Moonbase 同步。';
+      '拖曳以重新排序。啟用或停用行。啟用與 Moonfin 插件的行順序同步。';
 
   @override
-  String get discoverRowsDescription =>
-      '揀要喺 Seerr 主頁顯示嘅列表。拖曳就可以重新排序。自訂順序會同 Moonbase 同步。';
+  String get discoverRowsDescription => '拖曳以重新排序。啟用或停用行。';
 
   @override
-  String get enabled => '已啟用';
+  String get enabled => '啟用';
 
   @override
   String get hidden => '隱';
@@ -3580,7 +3611,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return '版本 $version';
+    return 'Version $version';
   }
 
   @override
@@ -3624,7 +3655,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return '有更新：v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -3635,7 +3666,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version 已推出';
+    return 'v$version Available';
   }
 
   @override
@@ -3710,19 +3741,19 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return '下載緊 · $percent%';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => '匯入緊';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
-    return '$count 個項目';
+    return '$count Items';
   }
 
   @override
-  String get seerrSettings => 'Seerr 設定';
+  String get seerrSettings => '搜尋者設定';
 
   @override
   String get requestMore => '請求更多';
@@ -3738,7 +3769,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return '由 $name 請求';
+    return 'Requested by $name';
   }
 
   @override
@@ -3755,12 +3786,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return '確定要取消「$title」嘅請求？';
+    return 'Cancel request for \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return '確定要取消「$title」嘅 $count 個請求？';
+    return 'Cancel $count requests for \"$title\"?';
   }
 
   @override
@@ -3774,12 +3805,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return '預算：\$$amount';
+    return 'Budget: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return '票房：\$$amount';
+    return 'Revenue: \$$amount';
   }
 
   @override
@@ -3789,7 +3820,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return '請求$type';
+    return 'Request $type';
   }
 
   @override
@@ -3817,14 +3848,14 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showMore => '顯示更多';
 
   @override
-  String get appearances => '演出作品';
+  String get appearances => '出場次數';
 
   @override
   String get crewSection => '全體人員';
 
   @override
   String ageValue(int age) {
-    return '$age 歲';
+    return 'age $age';
   }
 
   @override
@@ -3855,146 +3886,148 @@ class AppLocalizationsYue extends AppLocalizations {
   String get deletedStatus => '已刪除';
 
   @override
-  String get failedStatus => '失敗';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => '處理緊';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return '由 $name 修改';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => '已完成';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => '呢個作品已經請求咗喇';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => '已經去到請求上限';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => '呢個作品喺封鎖名單入面';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons => '冇季數可以請求';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
-  String get requestErrorPermission => '你冇權限提出呢個請求';
+  String get requestErrorPermission =>
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => '請求';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => '問題';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => '最新';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => '最後修改';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => '冇問題';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '電影請求仲剩返 $remaining / $limit 個';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '季數請求仲剩返 $remaining / $limit 個';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return '屬於 $name';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => '睇合輯';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => '請求成個合輯';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total 部電影 · $available 部可以睇';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return '請求 $count 部電影';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return '請求緊第 $current / $total 個...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return '已請求 $count 部電影';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return '$total 部電影入面已請求咗 $ok 部';
+    return 'Requested $ok of $total movies';
   }
 
   @override
-  String get collectionAllRequested => '所有電影都已經可以睇，或者已經請求咗';
+  String get collectionAllRequested =>
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => '回報問題';
+  String get reportIssue => 'Report Issue';
 
   @override
-  String get issueTypeVideo => '畫面';
+  String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => '聲音';
+  String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => '有咩問題？';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => '所有集數';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => '集數';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => '未解決';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => '已解決';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => '標為已解決';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => '重開';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return '由 $name 回報';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count 則留言';
+    return '$count comments';
   }
 
   @override
-  String get addComment => '加個留言';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => '確定要刪除呢個問題？';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => '提交回報';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'TMDB分數';
@@ -4018,7 +4051,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get originalLanguageLabel => '原始語言';
 
   @override
-  String get seasonsLabel => '季數';
+  String get seasonsLabel => '季節';
 
   @override
   String get episodesLabel => '劇集數';
@@ -4027,7 +4060,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get access => '使用權';
 
   @override
-  String get add => '新增';
+  String get add => '添加';
 
   @override
   String get address => '地址';
@@ -4051,7 +4084,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get disable => '停用';
 
   @override
-  String get done => '完成';
+  String get done => '完畢';
 
   @override
   String get edit => '編輯';
@@ -4063,10 +4096,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get error => '錯誤';
 
   @override
-  String get forward => '快進';
+  String get forward => '向前';
 
   @override
-  String get general => '一般';
+  String get general => '一般的';
 
   @override
   String get go => '去';
@@ -4111,7 +4144,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get refresh => '重新整理';
 
   @override
-  String get remote => '遙控';
+  String get remote => '偏僻的';
 
   @override
   String get rename => '重新命名';
@@ -4156,7 +4189,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get time => '時間';
 
   @override
-  String get trickplay => 'Trickplay';
+  String get trickplay => '特技遊戲';
 
   @override
   String get uninstall => '解除安裝';
@@ -4174,7 +4207,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get unmute => '取消靜音';
 
   @override
-  String get mute => '靜音';
+  String get mute => '沉默的';
 
   @override
   String get branding => '品牌推廣';
@@ -4195,28 +4228,28 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminDrawerUsers => '使用者';
 
   @override
-  String get adminDrawerLibraries => '媒體庫';
+  String get adminDrawerLibraries => '圖書館';
 
   @override
-  String get adminDrawerDisplay => '顯示';
+  String get adminDrawerDisplay => 'Display';
 
   @override
-  String get adminDrawerMetadata => '中繼資料';
+  String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'NFO 設定';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => '轉碼';
 
   @override
-  String get adminDrawerResume => '繼續播放';
+  String get adminDrawerResume => '恢復';
 
   @override
   String get adminDrawerStreaming => '串流媒體';
 
   @override
-  String get adminDrawerTrickplay => 'Trickplay';
+  String get adminDrawerTrickplay => '特技遊戲';
 
   @override
   String get adminDrawerDevices => '裝置';
@@ -4265,22 +4298,22 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return '有外掛程式更新：$count 個';
+    return 'Plugin updates available: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return '需要重新啟動嘅外掛程式：$count 個';
+    return 'Plugins requiring restart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return '失敗咗嘅排程工作：$count 個';
+    return 'Failed scheduled tasks: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return '最近嘅警告／錯誤紀錄：$count 項';
+    return 'Recent warning/error entries: $count';
   }
 
   @override
@@ -4339,7 +4372,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return '錯誤：$error';
+    return 'Error: $error';
   }
 
   @override
@@ -4365,7 +4398,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return '指令失敗：$error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -4384,7 +4417,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get sessionRewind => '倒帶';
 
   @override
-  String get sessionForward => '快進';
+  String get sessionForward => '向前';
 
   @override
   String get sessionNext => '下一個';
@@ -4402,7 +4435,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get nowPlaying => '正在播放';
 
   @override
-  String get volume => '音量';
+  String get volume => '體積';
 
   @override
   String get actions => '行動';
@@ -4429,14 +4462,14 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminClearDates => '明確日期';
 
   @override
-  String get adminActivitySeverityAll => '所有嚴重程度';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => '日期範圍';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return '載入唔到活動紀錄：$error';
+    return 'Failed to load activity log: $error';
   }
 
   @override
@@ -4453,7 +4486,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return '更新唔到裝置：$error';
+    return 'Failed to update device: $error';
   }
 
   @override
@@ -4464,28 +4497,28 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return '刪除唔到裝置：$error';
+    return 'Failed to delete device: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return '確定要移除裝置「$name」？使用者要喺呢部裝置度重新登入。';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => '刪除所有裝置';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return '確定要移除 $count 部裝置？受影響嘅使用者要重新登入。你而家用緊嘅裝置唔會受影響。';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => '已移除裝置';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return '已移除部分裝置；有 $count 部移除唔到。';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4514,7 +4547,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return '開始唔到掃描：$error';
+    return 'Failed to start scan: $error';
   }
 
   @override
@@ -4525,12 +4558,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return '媒體庫已改名做「$name」';
+    return 'Library renamed to \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return '改唔到名：$error';
+    return 'Failed to rename: $error';
   }
 
   @override
@@ -4538,17 +4571,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return '已刪除媒體庫「$name」';
+    return 'Library \"$name\" deleted';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return '刪除唔到媒體庫：$error';
+    return 'Failed to delete library: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return '加入唔到路徑：$error';
+    return 'Failed to add path: $error';
   }
 
   @override
@@ -4556,12 +4589,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return '確定要喺呢個媒體庫度移除「$path」？';
+    return 'Remove \"$path\" from this library?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return '移除唔到路徑：$error';
+    return 'Failed to remove path: $error';
   }
 
   @override
@@ -4569,7 +4602,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return '儲存唔到選項：$error';
+    return 'Failed to save options: $error';
   }
 
   @override
@@ -4600,234 +4633,251 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminMetadataCountryHint => '例如美國、德國、法國';
 
   @override
-  String get adminLibraryTabPaths => '路徑';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => '選項';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => '下載器';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => '中繼資料儲存器';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders => '字幕下載器';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => '歌詞下載器';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return '中繼資料下載器：$type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return '圖片擷取器：$type';
+    return 'Image fetchers: $type';
   }
 
   @override
-  String get adminLibNoDownloaders => '呢部伺服器冇為呢種媒體庫提供任何下載器。';
+  String get adminLibNoDownloaders =>
+      'This server exposes no downloaders for this library type.';
 
   @override
-  String get adminLibrarySectionGeneral => '一般';
+  String get adminLibrarySectionGeneral => 'General';
 
   @override
-  String get adminLibrarySectionMetadata => '中繼資料';
+  String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => '內嵌資訊';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => '字幕';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => '圖片';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => '劇集';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => '音樂';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => '電影';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor => '啟用即時監控';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
-  String get adminLibRealtimeMonitorHint => '偵測檔案變動，然後自動處理。';
+  String get adminLibRealtimeMonitorHint =>
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles => '將壓縮檔當做媒體檔案';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => '顯示相片';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata => '將封面圖存入媒體資料夾';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => '自動重新整理中繼資料';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => '永不';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => '預設';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => '顯示';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => '媒體庫顯示';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
-  String get adminLibFolderView => '顯示資料夾檢視，展示原始嘅媒體資料夾';
+  String get adminLibFolderView =>
+      'Display a folder view to show plain media folders';
 
   @override
-  String get adminLibSpecialsInSeasons => '將特別篇顯示喺佢哋首播嗰季入面';
+  String get adminLibSpecialsInSeasons =>
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => '將電影歸入合輯';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => '將劇集歸入合輯';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
-  String get adminLibExternalSuggestions => '喺建議入面顯示外部內容';
+  String get adminLibExternalSuggestions =>
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => '加入日期行為';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => '加入日期嘅來源';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport => '掃描入媒體庫嗰日';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => '檔案建立嗰日';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => '中繼資料同圖片';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => '偏好嘅中繼資料語言';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => '章節';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration => '虛擬章節長度（秒）';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
-  String get adminLibDummyChapterDurationHint => '為冇章節嘅媒體產生嘅章節長度。設做 0 就停用。';
+  String get adminLibDummyChapterDurationHint =>
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution => '章節圖片解析度';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'NFO 設定';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO 中繼資料同 Kodi 之類嘅用戶端相容。呢啲設定會套用去所有會儲存 NFO 中繼資料嘅媒體庫。';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser => '喺 NFO 檔案入面儲存觀看紀錄嘅使用者';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths => '喺 NFO 檔案入面儲存圖片路徑';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
-  String get adminLibPathSubstitution => '為 NFO 圖片路徑啟用路徑替換';
+  String get adminLibPathSubstitution =>
+      'Enable path substitution for NFO image paths';
 
   @override
-  String get adminLibExtraThumbs => '將 extrafanart 圖片複製去 extrathumbs 資料夾';
+  String get adminLibExtraThumbs =>
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => '冇';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days 日';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => '用內嵌標題';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => '特別收錄用內嵌標題';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => '用內嵌嘅集數資訊';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => '允許內嵌字幕';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => '全部允許';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => '淨係文字';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => '淨係圖片';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => '冇';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
-  String get adminLibSkipIfEmbeddedSubs => '如果已經有內嵌字幕就唔使下載';
+  String get adminLibSkipIfEmbeddedSubs =>
+      'Skip download if embedded subtitles are present';
 
   @override
-  String get adminLibSkipIfAudioMatches => '如果音軌同下載語言一樣就唔使下載';
+  String get adminLibSkipIfAudioMatches =>
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch => '要求字幕完全吻合';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
-  String get adminLibSaveSubtitlesWithMedia => '將字幕存入媒體資料夾';
+  String get adminLibSaveSubtitlesWithMedia =>
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => '擷取章節圖片';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
-  String get adminLibChapterImagesDuringScan => '喺媒體庫掃描期間擷取章節圖片';
+  String get adminLibChapterImagesDuringScan =>
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction => '啟用 Trickplay 圖片擷取';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
-  String get adminLibTrickplayDuringScan => '喺媒體庫掃描期間擷取 Trickplay 圖片';
+  String get adminLibTrickplayDuringScan =>
+      'Extract trickplay images during the library scan';
 
   @override
-  String get adminLibSaveTrickplayWithMedia => '將 Trickplay 圖片存入媒體資料夾';
+  String get adminLibSaveTrickplayWithMedia =>
+      'Save trickplay images into media folders';
 
   @override
-  String get adminLibAutomaticSeriesGrouping => '自動合併分散喺多個資料夾嘅劇集';
+  String get adminLibAutomaticSeriesGrouping =>
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => '第零季顯示名稱';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan => '啟用 LUFS 掃描嚟做音量正規化';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
-  String get adminLibPreferNonstandardArtist => '優先用非標準嘅 artists 標籤';
+  String get adminLibPreferNonstandardArtist =>
+      'Prefer non-standard artists tag';
 
   @override
-  String get adminLibAutoAddToCollection => '自動將電影加入合輯';
+  String get adminLibAutoAddToCollection =>
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => '庫名稱為必填項';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return '建立唔到媒體庫：$error';
+    return 'Failed to create library: $error';
   }
 
   @override
@@ -4853,27 +4903,27 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return '確定要停用 $name？佢就登入唔到喇。';
+    return 'Disable $name? They will not be able to sign in.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return '確定要啟用 $name？佢就可以再次登入。';
+    return 'Enable $name? They will be able to sign in again.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return '已停用使用者「$name」';
+    return 'User \"$name\" disabled';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return '已啟用使用者「$name」';
+    return 'User \"$name\" enabled';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return '更新唔到使用者原則：$error';
+    return 'Failed to update user policy: $error';
   }
 
   @override
@@ -4890,7 +4940,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return '建立唔到使用者：$error';
+    return 'Failed to create user: $error';
   }
 
   @override
@@ -4910,7 +4960,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return '儲存唔到：$error';
+    return 'Failed to save: $error';
   }
 
   @override
@@ -4921,7 +4971,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return '失敗：$error';
+    return 'Failed: $error';
   }
 
   @override
@@ -5051,158 +5101,165 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminEnableAllChannels => '允許存取所有頻道';
 
   @override
-  String get adminParentalControl => '家長控制';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating => '允許嘅最高家長分級';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
-  String get adminMaxParentalRatingHint => '分級高過呢個嘅內容會對呢個使用者隱藏。';
+  String get adminMaxParentalRatingHint =>
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => '冇';
+  String get adminParentalRatingNone => 'None';
 
   @override
-  String get adminBlockUnratedItems => '封鎖冇分級或者分級認唔到嘅項目';
+  String get adminBlockUnratedItems =>
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => '書籍';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => '頻道';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => '直播電視';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => '電影';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => '音樂';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => '預告片';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => '劇集';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => '存取時間表';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
-  String get adminAccessSchedulesHint => '淨係喺下面排定嘅時間先允許存取。如果冇設定時間表，就全日都可以存取。';
+  String get adminAccessSchedulesHint =>
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => '加入時間表';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => '日子';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => '開始';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => '結束';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => '每日';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => '平日';
+  String get adminDayWeekday => 'Weekday';
 
   @override
-  String get adminDayWeekend => '週末';
+  String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => '星期日';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => '星期一';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => '星期二';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => '星期三';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => '星期四';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => '星期五';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => '星期六';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => '允許嘅標籤';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
-  String get adminAllowedTagsHint => '淨係顯示有呢啲標籤嘅內容。留空就全部允許。';
+  String get adminAllowedTagsHint =>
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => '封鎖嘅標籤';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
-  String get adminBlockedTagsHint => '有呢啲標籤嘅內容會對呢個使用者隱藏。';
+  String get adminBlockedTagsHint =>
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => '加入標籤';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => '已啟用嘅裝置';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => '已啟用嘅頻道';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => '驗證提供者';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider => '密碼重設提供者';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
-  String get adminLoginAttemptsBeforeLockout => '鎖定前允許嘅最多登入失敗次數';
+  String get adminLoginAttemptsBeforeLockout =>
+      'Maximum failed login attempts before lockout';
 
   @override
-  String get adminLoginAttemptsHint => '設做 0 就用預設值，設做 -1 就停用鎖定。';
+  String get adminLoginAttemptsHint =>
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay 存取權';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin => '允許建立同加入群組';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => '允許加入群組';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => '冇存取權';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders => '允許喺以下位置刪除內容';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning => '這將刪除密碼。用戶無需密碼即可登入。';
 
   @override
   String adminServerReturnedHttp(int status) {
-    return '伺服器回傳 HTTP $status';
+    return 'Server returned HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return '你確定要刪除 $name？';
+    return 'Are you sure you want to delete $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return '已刪除使用者「$name」';
+    return 'User \"$name\" deleted';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return '刪除唔到使用者：$error';
+    return 'Failed to delete user: $error';
   }
 
   @override
@@ -5222,7 +5279,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return '建立唔到金鑰：$error';
+    return 'Failed to create key: $error';
   }
 
   @override
@@ -5233,7 +5290,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return '確定要撤銷 $name 嘅金鑰？';
+    return 'Revoke key for $name?';
   }
 
   @override
@@ -5241,7 +5298,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return '撤銷唔到金鑰：$error';
+    return 'Failed to revoke key: $error';
   }
 
   @override
@@ -5261,29 +5318,29 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return '權杖：$token\\n建立時間：$created';
+    return 'Token: $token\\nCreated: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => '建立備份';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude => '揀吓要備份啲乜。';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => '資料庫';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => '一定會包括';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
-  String get adminBackupMetadata => '中繼資料';
+  String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => '字幕';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay 圖片';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => '正在建立備份...';
@@ -5293,7 +5350,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return '建立唔到備份：$error';
+    return 'Failed to create backup: $error';
   }
 
   @override
@@ -5301,12 +5358,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return '資訊清單：$name';
+    return 'Manifest: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return '載入唔到資訊清單：$error';
+    return 'Failed to load manifest: $error';
   }
 
   @override
@@ -5317,7 +5374,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return '還原唔到備份：$error';
+    return 'Failed to restore backup: $error';
   }
 
   @override
@@ -5349,17 +5406,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return '已儲存去 $path';
+    return 'Saved to $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return '儲存唔到檔案：$error';
+    return 'Failed to save file: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return '載入唔到 $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
@@ -5370,7 +5427,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return '載入唔到工作：$error';
+    return 'Failed to load tasks: $error';
   }
 
   @override
@@ -5381,17 +5438,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return '開始唔到工作：$error';
+    return 'Failed to start task: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return '停止唔到工作：$error';
+    return 'Failed to stop task: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return '載入唔到工作：$error';
+    return 'Failed to load task: $error';
   }
 
   @override
@@ -5399,12 +5456,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return '移除唔到觸發條件：$error';
+    return 'Failed to remove trigger: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return '加入唔到觸發條件：$error';
+    return 'Failed to add trigger: $error';
   }
 
   @override
@@ -5430,7 +5487,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours 小時';
+    return '$hours hour(s)';
   }
 
   @override
@@ -5441,7 +5498,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return '切換唔到外掛程式：$error';
+    return 'Failed to toggle plugin: $error';
   }
 
   @override
@@ -5449,27 +5506,27 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return '你確定要解除安裝「$name」？';
+    return 'Are you sure you want to uninstall \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return '解除安裝唔到外掛程式：$error';
+    return 'Failed to uninstall plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return '安裝唔到套件：$error';
+    return 'Failed to install package: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return '安裝唔到更新：$error';
+    return 'Failed to install update: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return '載入唔到外掛程式：$error';
+    return 'Failed to load plugins: $error';
   }
 
   @override
@@ -5480,12 +5537,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return '安裝更新（v$version）';
+    return 'Install update (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return '載入唔到目錄：$error';
+    return 'Failed to load catalog: $error';
   }
 
   @override
@@ -5505,17 +5562,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '伺服器重新啟動之後就會移除「$name」';
+    return '\"$name\" will be removed after server restart';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return '解除安裝唔到：$error';
+    return 'Failed to uninstall: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return '更新緊「$name」去 v$version...';
+    return 'Updating \"$name\" to v$version...';
   }
 
   @override
@@ -5523,7 +5580,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return '載入唔到外掛程式：$error';
+    return 'Failed to load plugin: $error';
   }
 
   @override
@@ -5531,7 +5588,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return '版本 $version';
+    return 'Version $version';
   }
 
   @override
@@ -5551,17 +5608,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return '你確定要移除「$name」？';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return '儲存唔到存放庫：$error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return '載入唔到存放庫：$error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -5578,12 +5635,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return '載入唔到外掛程式設定：$error';
+    return 'Unable to load plugin settings: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return '開唔到 $uri';
+    return 'Could not open $uri';
   }
 
   @override
@@ -5698,10 +5755,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminThrottleBuffering => '油門緩衝';
 
   @override
-  String get adminTrickplaySaved => '已儲存 Trickplay 設定';
+  String get adminTrickplaySaved => '已儲存特技播放設定';
 
   @override
-  String get adminTrickplayLoadFailed => '載入唔到 Trickplay 設定';
+  String get adminTrickplayLoadFailed => '無法載入特技播放設置';
 
   @override
   String get adminEnableHardwareAcceleration => '啟用硬體加速';
@@ -5803,7 +5860,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminBaseUrl => '基本網址';
 
   @override
-  String get adminBaseUrlHint => '例如 /jellyfin';
+  String get adminBaseUrlHint => '例如/果凍';
 
   @override
   String get https => 'HTTPS';
@@ -5843,12 +5900,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return '載入唔到中繼資料：$error';
+    return 'Failed to load metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return '儲存唔到中繼資料：$error';
+    return 'Failed to save metadata: $error';
   }
 
   @override
@@ -5868,7 +5925,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return '重新整理唔到中繼資料：$error';
+    return 'Failed to refresh metadata: $error';
   }
 
   @override
@@ -5882,7 +5939,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return '遠端搜尋失敗：$error';
+    return 'Remote search failed: $error';
   }
 
   @override
@@ -5896,7 +5953,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return '更新唔到內容類型：$error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -5910,12 +5967,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '已更新 $imageType 圖片';
+    return '$imageType image updated';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return '下載唔到圖片：$error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -5926,27 +5983,27 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '已上載 $imageType 圖片';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return '上載唔到圖片：$error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return '刪除 $imageType 圖片';
+    return 'Delete $imageType image';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '已刪除 $imageType 圖片';
+    return '$imageType image deleted';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return '刪除唔到圖片：$error';
+    return 'Failed to delete image: $error';
   }
 
   @override
@@ -5957,65 +6014,67 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return '搵唔到調諧器：$error';
+    return 'Tuner discovery failed: $error';
   }
 
   @override
   String get adminAddTuner => '新增調音器';
 
   @override
-  String get adminEditTuner => '編輯調諧器';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'M3U 調諧器';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => '檔案或者 URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => '調諧器 IP 位址';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => '易記名稱';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
-  String get adminTunerUserAgent => '使用者代理';
+  String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => '同時連線上限';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
-  String get adminTunerCountHelp => '調諧器同一時間最多容許幾多條串流。設做 0 就冇限制。';
+  String get adminTunerCountHelp =>
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate => '備用嘅最高串流位元率';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly => '淨係匯入我的最愛頻道';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding => '允許硬件轉碼';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 => '允許 fMP4 轉碼容器';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => '允許共用串流';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping => '啟用串流循環';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => '忽略 DTS';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
-  String get adminTunerReadAtNativeFramerate => '用原生影格率讀取輸入';
+  String get adminTunerReadAtNativeFramerate =>
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => '編輯提供者';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6024,49 +6083,50 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => '檔案或者 URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => '電影前置字串';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => '電影類別';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
-  String get adminXmltvCategoriesHelp => '多個類別之間用直線（|）分隔。';
+  String get adminXmltvCategoriesHelp =>
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => '兒童類別';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => '新聞類別';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => '體育類別';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => '使用者名稱';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => '密碼';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => '國家／地區';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => '揀一個國家／地區';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => '郵遞區號';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => '取得節目表';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => '節目表';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => '啟用所有調諧器';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => '調音器類型';
@@ -6076,7 +6136,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return '加入唔到調諧器：$error';
+    return 'Failed to add tuner: $error';
   }
 
   @override
@@ -6090,12 +6150,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return '加入唔到提供者：$error';
+    return 'Failed to add provider: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return '移除唔到調諧器：$error';
+    return 'Failed to remove tuner: $error';
   }
 
   @override
@@ -6103,15 +6163,16 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return '重設唔到調諧器：$error';
+    return 'Failed to reset tuner: $error';
   }
 
   @override
-  String get adminTunerResetNotSupported => '呢種調諧器唔支援重設。';
+  String get adminTunerResetNotSupported =>
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return '移除唔到提供者：$error';
+    return 'Failed to remove provider: $error';
   }
 
   @override
@@ -6130,43 +6191,43 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminSeriesRecordingPath => '系列錄音路徑';
 
   @override
-  String get adminMovieRecordingPath => '電影錄影路徑';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => '節目表資料日數';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => '自動';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days 日';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor => '後製處理程式路徑';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs => '後製處理器引數';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo => '儲存錄影嘅 NFO 中繼資料';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => '儲存錄影圖片';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => '時間設定';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => '錄影路徑';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => '後製處理';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return '節目表資料：$value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6174,7 +6235,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return '儲存唔到設定：$error';
+    return 'Failed to save settings: $error';
   }
 
   @override
@@ -6191,7 +6252,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return '更新唔到對應：$error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
@@ -6207,13 +6268,14 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminGuideProviders => '導遊提供者';
 
   @override
-  String get adminRefreshGuideData => '重新整理節目表資料';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted => '已開始重新整理節目表資料';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
-  String get adminGuideRefreshUnavailable => '呢部伺服器冇節目表重新整理工作。';
+  String get adminGuideRefreshUnavailable =>
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => '新增提供者';
@@ -6223,22 +6285,22 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return '錄影路徑：$path';
+    return 'Recording path: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return '劇集路徑：$path';
+    return 'Series path: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return '提早錄影：$minutes 分鐘';
+    return 'Pre-padding: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return '延後錄影：$minutes 分鐘';
+    return 'Post-padding: $minutes min';
   }
 
   @override
@@ -6267,7 +6329,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return '而家還原備份 $name？';
+    return 'Restore backup $name now?';
   }
 
   @override
@@ -6289,13 +6351,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminLiveTvTitle => '直播電視管理';
 
   @override
-  String get adminApply => '套用';
+  String get adminApply => '申請';
 
   @override
   String get adminNotSet => '未設定';
 
   @override
-  String get adminReset => '重設';
+  String get adminReset => '重置';
 
   @override
   String get adminLogsTitle => '伺服器日誌';
@@ -6311,27 +6373,27 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '$minutes 分鐘前';
+    return '${minutes}m ago';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '$hours 小時前';
+    return '${hours}h ago';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '$days 日前';
+    return '${days}d ago';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return '載入唔到 $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count 個相符';
+    return '$count matches';
   }
 
   @override
@@ -6341,7 +6403,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminMetadataEditorTitle => '元資料編輯器';
 
   @override
-  String get adminMetadataIdentify => '辨識';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => '類型';
@@ -6441,22 +6503,22 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '已更新 $imageType 圖片';
+    return '$imageType image updated';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '已上載 $imageType 圖片';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '已刪除 $imageType 圖片';
+    return '$imageType image deleted';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return '下載唔到圖片：$error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6464,12 +6526,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return '上載唔到圖片：$error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return '刪除 $imageType 圖片';
+    return 'Delete $imageType image';
   }
 
   @override
@@ -6477,12 +6539,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return '刪除唔到圖片：$error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return '揀 $imageType 圖片';
+    return 'Choose $imageType image';
   }
 
   @override
@@ -6514,7 +6576,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return '有更新：v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -6537,7 +6599,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return '安裝更新（v$version）';
+    return 'Install update (v$version)';
   }
 
   @override
@@ -6548,7 +6610,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '安裝緊「$name」...';
+    return '\"$name\" is being installed...';
   }
 
   @override
@@ -6566,7 +6628,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name 設定';
+    return '$name Settings';
   }
 
   @override
@@ -6601,7 +6663,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return '載入唔到存放庫：$error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -6609,15 +6671,15 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return '你確定要移除「$name」？';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
-  String get adminReposRemove => '移除';
+  String get adminReposRemove => '消除';
 
   @override
   String adminReposSaveFailed(String error) {
-    return '儲存唔到存放庫：$error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
@@ -6738,19 +6800,19 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminBrandingEnableSplash => '啟用啟動畫面';
 
   @override
-  String get adminBrandingSplashUpload => '上載圖片';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded => '已更新啟動畫面';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed => '上載唔到啟動畫面';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => '已移除啟動畫面';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => '冇自訂啟動畫面';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => '硬體加速';
@@ -6765,115 +6827,121 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminPlaybackEnableHwDecoding => '啟用硬體解碼：';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV 裝置';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec => '啟用增強型 NVDEC 解碼器';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
-  String get adminPlaybackPreferNativeDecoder => '優先用系統原生嘅硬件解碼器';
+  String get adminPlaybackPreferNativeDecoder =>
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth => '硬件解碼色彩深度';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC 解碼';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 解碼';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit 解碼';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit 解碼';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => '硬件編碼';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => '允許 HEVC 編碼';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => '允許 AV1 編碼';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
-  String get adminPlaybackIntelLowPowerH264 => '啟用 Intel 低功耗 H.264 編碼器';
+  String get adminPlaybackIntelLowPowerH264 =>
+      'Enable Intel low-power H.264 encoder';
 
   @override
-  String get adminPlaybackIntelLowPowerHevc => '啟用 Intel 低功耗 HEVC 編碼器';
+  String get adminPlaybackIntelLowPowerHevc =>
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => '色調對應';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping => '啟用色調對應';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => '啟用 VPP 色調對應';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
-  String get adminPlaybackEnableVtTonemapping => '啟用 VideoToolbox 色調對應';
+  String get adminPlaybackEnableVtTonemapping =>
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => '色調對應演算法';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => '色調對應模式';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => '色調對應範圍';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat => '色調對應去飽和度';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => '色調對應峰值';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => '色調對應參數';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
-  String get adminPlaybackVppTonemappingBrightness => 'VPP 色調對應亮度';
+  String get adminPlaybackVppTonemappingBrightness =>
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP 色調對應對比度';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality => '預設集同品質';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => '編碼器預設集';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 編碼 CRF';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265（HEVC）編碼 CRF';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => '去交錯方式';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
-  String get adminPlaybackDeinterlaceDoubleRate => '去交錯嗰陣將影格率加倍';
+  String get adminPlaybackDeinterlaceDoubleRate =>
+      'Double the frame rate when deinterlacing';
 
   @override
-  String get adminPlaybackAudioSection => '音訊';
+  String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr => '啟用音訊 VBR 編碼';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost => '音訊縮混增益';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => '立體聲縮混演算法';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => '最大混流佇列大小';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
-  String get adminPlaybackAutoOption => '自動';
+  String get adminPlaybackAutoOption => 'Auto';
 
   @override
   String get adminPlaybackEncoding => '編碼';
@@ -6987,7 +7055,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminTaskStop => '停止';
 
   @override
-  String get adminRunningTasks => '執行緊嘅工作';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => '跑步';
@@ -7009,17 +7077,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return '每日 $time';
+    return 'Daily at $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return '每個$day $time';
+    return 'Every $day at $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return '每 $duration';
+    return 'Every $duration';
   }
 
   @override
@@ -7057,8 +7125,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 小時',
-      one: '1 小時',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7086,17 +7154,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '$days 日前';
+    return '${days}d ago';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '$hours 小時前';
+    return '${hours}h ago';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '$minutes 分鐘前';
+    return '${minutes}m ago';
   }
 
   @override
@@ -7104,17 +7172,17 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '$minutes 分';
+    return '${minutes}m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '$hours 小時';
+    return '${hours}h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '$days 日';
+    return '${days}d';
   }
 
   @override
@@ -7123,7 +7191,7 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
-  String get adminTrickplayDescription => '設定 Trickplay 圖片產生，用嚟做跳轉預覽縮圖。';
+  String get adminTrickplayDescription => '配置搜尋預覽縮圖的特技播放影像生成。';
 
   @override
   String get adminNetworkingPublicHttpsPort => '公共 HTTPS 連接埠';
@@ -7132,49 +7200,49 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminNetworkingBaseUrl => '基本網址';
 
   @override
-  String get adminNetworkingBaseUrlHint => '例如 /jellyfin';
+  String get adminNetworkingBaseUrlHint => '例如/果凍';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => '公開 HTTP 連接埠';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => '強制使用 HTTPS';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      '將所有遠端要求重新導向去 HTTPS。如果伺服器冇有效憑證就唔會生效。';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => '憑證密碼';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'IP 設定';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => '啟用 IPv4';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => '啟用 IPv6';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery => '啟用自動連接埠對應';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => '區域網路';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      '用逗號或者換行分隔嘅 IP 位址或者 CIDR 子網路清單，會當做喺區域網路入面。';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => '公開嘅伺服器 URI';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      '將子網路或者位址對應去一個公開 URL，例如 all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => '證書路徑';
@@ -7204,10 +7272,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => '油門緩衝';
 
   @override
-  String get adminPlaybackThrottleDelay => '節流延遲（秒）';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
-  String get adminPlaybackEnableSubtitleExtraction => '允許即時擷取字幕';
+  String get adminPlaybackEnableSubtitleExtraction =>
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => '最低履歷百分比';
@@ -7253,29 +7322,29 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return '更新唔到內容類型：$error';
+    return 'Failed to update content type: $error';
   }
 
   @override
   String get adminGeneralSlowResponseThreshold => '慢響應閾值（毫秒）';
 
   @override
-  String get adminGeneralEnableSlowResponse => '啟用回應緩慢警告';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => '啟用 Quick Connect';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => '伺服器';
+  String get adminGeneralSectionServer => 'Server';
 
   @override
-  String get adminGeneralSectionMetadata => '中繼資料';
+  String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => '路徑';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => '效能';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => '快取路徑';
@@ -7287,7 +7356,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminGeneralServerName => '伺服器名稱';
 
   @override
-  String get adminGeneralDisplayLanguage => '偏好嘅顯示語言';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => '無法載入設定';
@@ -7297,19 +7366,19 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return '更新唔到對應：$error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return '時間限制：$duration';
+    return 'Time limit: $duration';
   }
 
   @override
   String get folders => '資料夾';
 
   @override
-  String get libraries => '媒體庫';
+  String get libraries => '圖書館';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7338,8 +7407,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# 位參與者',
-      one: '# 位參與者',
+      other: '# participants',
+      one: '# participant',
     );
     return '$_temp0';
   }
@@ -7379,7 +7448,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return '項目 $index';
+    return 'Item $index';
   }
 
   @override
@@ -7426,12 +7495,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName 加入咗 SyncPlay 群組';
+    return '$userName joined SyncPlay group';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName 離開咗 SyncPlay 群組';
+    return '$userName left SyncPlay group';
   }
 
   @override
@@ -7443,7 +7512,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return '同步緊播放去 $groupName';
+    return 'Syncing playback to $groupName';
   }
 
   @override
@@ -7480,8 +7549,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '搵到 # 個列表',
-      one: '搵到 # 個列表',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7520,19 +7589,20 @@ class AppLocalizationsYue extends AppLocalizations {
   String get offlineSavedMedia => '保存的媒體';
 
   @override
-  String get offlineBannerTitle => '你而家離線';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => '顯示緊你嘅下載';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => '下載';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => '連唔到你個伺服器';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
-  String get serverUnreachableBannerSubtitle => '喺伺服器返嚟之前，會先播下載咗嘅內容';
+  String get serverUnreachableBannerSubtitle =>
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7548,12 +7618,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return '投放控制失敗：$error';
+    return 'Cast control failed: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind 控制';
+    return '$kind Controls';
   }
 
   @override
@@ -7564,7 +7634,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return '停止 $kind';
+    return 'Stop $kind';
   }
 
   @override
@@ -7587,12 +7657,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return '輸入 $length 位數字 PIN';
+    return 'Enter a $length-digit PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return '輸入你嘅 $length 位數字 PIN';
+    return 'Enter your $length-digit PIN';
   }
 
   @override
@@ -7611,29 +7681,29 @@ class AppLocalizationsYue extends AppLocalizations {
   String get pinBackspace => '退格鍵';
 
   @override
-  String get quickConnectAuthorized => '已授權 Quick Connect 要求。';
+  String get quickConnectAuthorized => '快速連線請求已獲授權。';
 
   @override
-  String get quickConnectInvalidOrExpired => 'Quick Connect 代碼無效或者已經過期。';
+  String get quickConnectInvalidOrExpired => '快速連線代碼無效或已過期。';
 
   @override
-  String get quickConnectNotSupported => '呢部伺服器唔支援 Quick Connect。';
+  String get quickConnectNotSupported => '此伺服器不支援快速連線。';
 
   @override
-  String get quickConnectAuthorizeFailed => '授權唔到 Quick Connect 代碼。';
+  String get quickConnectAuthorizeFailed => '無法授權快速連線代碼。';
 
   @override
-  String get quickConnectDisabled => '呢部伺服器已經停用咗 Quick Connect。';
+  String get quickConnectDisabled => '此伺服器上禁用了快速連線。';
 
   @override
-  String get quickConnectForbidden => '你個帳戶冇權授權呢個 Quick Connect 要求。';
+  String get quickConnectForbidden => '您的帳戶無法授權此快速連線要求。';
 
   @override
-  String get quickConnectNotFound => '搵唔到呢個 Quick Connect 代碼。試吓攞個新代碼。';
+  String get quickConnectNotFound => '未找到快速連線代碼。嘗試新的程式碼。';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect 失敗：$message';
+    return 'Quick Connect failed: $message';
   }
 
   @override
@@ -7644,7 +7714,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return '指令失敗：$error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -7673,7 +7743,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return '開始唔到投放：$error';
+    return 'Failed to start casting: $error';
   }
 
   @override
@@ -7718,7 +7788,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return '下載緊 $name...';
+    return 'Downloading $name...';
   }
 
   @override
@@ -7737,7 +7807,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get shuffleSelectGenre => '選擇類型';
 
   @override
-  String get shuffleLibrary => '媒體庫';
+  String get shuffleLibrary => '圖書館';
 
   @override
   String get shuffleGenre => '類型';
@@ -7804,7 +7874,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return '跳過$segment';
+    return 'Skip $segment';
   }
 
   @override
@@ -7815,12 +7885,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return '下載緊 $current/$total — $fileName';
+    return 'Downloading $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return '下載緊 $fileName';
+    return 'Downloading $fileName';
   }
 
   @override
@@ -7857,7 +7927,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get playerTooltipUnlockOrientation => '允許旋轉';
 
   @override
-  String get playerTooltipPrevious => '上一個';
+  String get playerTooltipPrevious => '以前的';
 
   @override
   String get playerTooltipSeekBack => '回頭尋找';
@@ -7881,13 +7951,14 @@ class AppLocalizationsYue extends AppLocalizations {
   String get contextMenuGoToSeries => '前往系列';
 
   @override
-  String get contextMenuHideFromContinueWatching => '喺「繼續睇」度隱藏';
+  String get contextMenuHideFromContinueWatching =>
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => '喺「下一集」度隱藏';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => '加入合輯';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle => '存取伺服器管理面板';
@@ -7935,14 +8006,14 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsAlphabetical => '按字母順序';
 
   @override
-  String get settingsConnectionSection => '連線';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts => '允許自簽憑證';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      '信任使用自簽或者私人 CA TLS 憑證嘅伺服器。淨係喺你自己控制嘅伺服器先好開。呢個會停用所有連線嘅憑證驗證。';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection => '隱私與安全';
@@ -7957,10 +8028,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsGeneralStyleSubtitle => '主題口音、背景、觀看指示器和主題音樂';
 
   @override
-  String get settingsDetailsScreen => '詳細資料頁';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
-  String get settingsDetailsScreenSubtitle => '樣式、背景模糊同分頁行為';
+  String get settingsDetailsScreenSubtitle =>
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => '首頁';
@@ -7990,10 +8062,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsShowLibrariesButtonInNavigation => '在導覽列中顯示庫按鈕';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '喺導覽列顯示 Seerr 按鈕';
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
 
   @override
-  String get settingsAlwaysExpandNavbarLabels => '喺頂部導覽列永遠顯示文字標籤';
+  String get settingsAlwaysExpandNavbarLabels =>
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8058,7 +8132,8 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsSupportMoonfin => '支援Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle => '請開發者飲杯咖啡';
+  String get settingsSupportMoonfinSubtitle =>
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => '合法的';
@@ -8089,8 +8164,8 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# 則授權聲明',
-      one: '# 則授權聲明',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8133,16 +8208,16 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳過片頭和片尾？';
 
   @override
-  String get settingsMediaSegmentCountdown => '媒體片段倒數';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => '進度列';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => '計時器';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => '冇';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => '提示用戶';
@@ -8174,13 +8249,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3（建議）';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3（舊版）';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv（舊版）';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv（建議）';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision 後備';
@@ -8265,7 +8340,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String settingsMillisecondsValue(int value) {
-    return '$value 毫秒';
+    return '$value ms';
   }
 
   @override
@@ -8342,7 +8417,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String libraryNameWithServer(String libraryName, String serverName) {
-    return '$libraryName（$serverName）';
+    return '$libraryName ($serverName)';
   }
 
   @override
@@ -8352,705 +8427,749 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return '最近上架嘅$libraryName';
+    return 'Recently Released $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => '自動播放下一集';
+  String get autoplayNextEpisode => 'Autoplay Next Episode';
 
   @override
-  String get autoplayNextEpisodeSubtitle => '如果有下一集就自動播。';
+  String get autoplayNextEpisodeSubtitle =>
+      'Automatically play the next episode when available.';
 
   @override
-  String get skipSilenceTitle => '跳過靜音';
+  String get skipSilenceTitle => 'Skip silence';
 
   @override
-  String get skipSilenceSubtitle => '如果串流支援，就自動跳過靜音片段。';
+  String get skipSilenceSubtitle =>
+      'Automatically skip silent audio segments when supported by the stream.';
 
   @override
-  String get allowExternalAudioEffectsTitle => '允許外部音效';
+  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      '允許等化器同音效應用程式（例如 Wavelet）接駁 Media3 播放工作階段。';
+      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
 
   @override
-  String get disableTunnelingTitle => '停用穿隧';
+  String get disableTunnelingTitle => 'Disable tunneling';
 
   @override
-  String get disableTunnelingSubtitle => '強制唔用穿隧播放。喺啲穿隧會令音訊／視訊唔連貫嘅裝置度好有用。';
+  String get disableTunnelingSubtitle =>
+      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
 
   @override
-  String get enableTunnelingTitle => '啟用穿隧';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      '進階功能。將音訊同視訊經由耦合嘅硬件路徑傳送。預設係閂咗，因為喺部分裝置會令音訊／視訊斷斷續續。';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
-  String get mapDolbyVisionP7Title => '將 Dolby Vision profile 7 對應做 HEVC';
+  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      '喺唔支援 Dolby Vision 嘅裝置度，將 Dolby Vision profile 7 串流當做 HDR10 相容嘅 HEVC 嚟播。';
+      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => '用內嵌嘅字幕樣式';
+  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      '套用字幕軌入面內嵌嘅顏色、字體同位置。閂咗就會改用你嘅字幕樣式偏好設定。';
+      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
 
   @override
-  String get subtitlesUseEmbeddedFontSizes => '用內嵌嘅字幕字型大細';
+  String get subtitlesUseEmbeddedFontSizes =>
+      'Use embedded subtitle font sizes';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      '套用字幕軌入面內嵌嘅字型大細提示。閂咗就會用你樣式偏好設定入面嘅字幕大細。';
+      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => '顯示媒體詳情';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
-  String get showMediaDetailsOnLibraryPageDescription => '喺媒體庫頁面頂部顯示已揀項目嘅詳情。';
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries => '瀏覽嗰陣隱藏背景圖？';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
-  String get useDetailedSubHeadings => '用詳細副標題';
+  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
 
   @override
-  String get useDetailedSubHeadingsDescription => '喺媒體庫頁面顯示詳細定簡潔嘅副列。';
+  String get useDetailedSubHeadingsDescription =>
+      'Show detailed or minimal subrow on Library pages.';
 
   @override
-  String get savedThemesDeleteDialogTitle => '確定要刪除已儲存嘅主題？';
+  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return '確定要喺呢部裝置嘅快取度移除「$themeName」？';
+    return 'Remove \"$themeName\" from this device cache?';
   }
 
   @override
-  String get themeStore => '主題商店';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle => '瀏覽同儲存社群主題';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
-  String get themeStoreDescription => '儲存咗主題之後，就可以好似其他已儲存嘅主題咁用。';
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => '而家冇主題可以用。';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
-  String get themeStoreLoadFailed => '載入唔到主題商店。檢查吓你嘅連線再試過。';
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => '儲存';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => '儲存並套用';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => '已儲存';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => '載入唔到呢個主題。';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return '已儲存「$themeName」。';
+    return 'Saved \"$themeName\".';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return '已喺呢部裝置度刪除「$themeName」。';
+    return 'Deleted \"$themeName\" from this device.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return '刪除唔到「$themeName」。';
+    return 'Could not delete \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => '已儲存嘅主題';
+  String get savedThemesTitle => 'Saved themes';
 
   @override
   String get savedThemesDescription =>
-      '呢啲係為目前伺服器由 Moonfin 外掛程式下載返嚟嘅主題。刪除淨係會移除呢個本機副本。';
+      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
 
   @override
-  String get savedThemesEmpty => '搵唔到呢部伺服器嘅已儲存主題。';
+  String get savedThemesEmpty => 'No saved themes were found for this server.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • 使用緊';
+    return '$themeId • Currently active';
   }
 
   @override
-  String get savedThemesDeleteTooltip => '刪除已儲存嘅主題';
+  String get savedThemesDeleteTooltip => 'Delete saved theme';
 
   @override
-  String get savedThemesManageSubtitle => '管理呢部裝置度已下載嘅外掛程式主題';
+  String get savedThemesManageSubtitle =>
+      'Manage downloaded plugin themes on this device';
 
   @override
-  String get themeEditor => '主題編輯器';
+  String get themeEditor => 'Theme Editor';
 
   @override
-  String get themeEditorSubtitle => '喺你嘅瀏覽器度開 Moonfin 主題編輯器';
+  String get themeEditorSubtitle =>
+      'Open the Moonfin Theme Editor in your browser';
 
   @override
-  String get homeScreen => '主畫面';
+  String get homeScreen => 'Home Screen';
 
   @override
-  String get bottomBar => '底部列';
+  String get bottomBar => 'Bottom Bar';
 
   @override
-  String get homeRowsStyleClassic => '經典';
+  String get homeRowsStyleClassic => 'Classic';
 
   @override
-  String get homeRowsStyleModern => '現代';
+  String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => '主畫面列表';
+  String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => '主畫面列表顯示';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => '主畫面列表區段';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => '主畫面列表開關';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
-  String get homeRowTogglesSubtitle => '啟用或者停用以媒體庫為基礎嘅主畫面列表類別';
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable library-based home row categories';
 
   @override
-  String get homeRowTogglesDescription => '開以下嘅開關，就會喺主畫面區段度顯示對應嘅列表。';
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
-  String get rowsTypeDescription => '「經典」保留逐行嘅圖片類型同資訊覆蓋層。「現代」用直度轉背景圖嘅列表。';
+  String get rowsTypeDescription =>
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
 
   @override
-  String get displayFavoritesRows => '顯示我的最愛列表';
+  String get displayFavoritesRows => 'Display Favorites Rows';
 
   @override
-  String get displayFavoritesRowsSubtitle => '喺主畫面區段顯示最愛電影、劇集同其他最愛列表。';
+  String get displayFavoritesRowsSubtitle =>
+      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
 
   @override
-  String get favoritesRowSorting => '我的最愛列表排序';
+  String get favoritesRowSorting => 'Favorites Row Sorting';
 
   @override
-  String get favoritesRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序我的最愛列表。';
+  String get favoritesRowSortingDescription =>
+      'Sort Favorites rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayCollectionsRows => '顯示合輯列表';
+  String get displayCollectionsRows => 'Display Collections Rows';
 
   @override
-  String get displayCollectionsRowsSubtitle => '喺主畫面區段顯示合輯列表。';
+  String get displayCollectionsRowsSubtitle =>
+      'Show Collections rows in Home Sections.';
 
   @override
-  String get collectionsRowSorting => '合輯列表排序';
+  String get collectionsRowSorting => 'Collections Row Sorting';
 
   @override
-  String get collectionsRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序合輯列表。';
+  String get collectionsRowSortingDescription =>
+      'Sort Collections rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayGenresRows => '顯示類型列表';
+  String get displayGenresRows => 'Display Genres Rows';
 
   @override
-  String get displayGenresRowsSubtitle => '喺主畫面區段顯示類型列表。';
+  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
 
   @override
-  String get genresRowSorting => '類型列表排序';
+  String get genresRowSorting => 'Genres Row Sorting';
 
   @override
-  String get genresRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序類型列表。';
+  String get genresRowSortingDescription =>
+      'Sort Genres rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get genresRowItems => '類型列表項目';
+  String get genresRowItems => 'Genres Row Items';
 
   @override
-  String get genresRowItemsDescription => '喺類型列表度顯示電影、劇集，或者兩樣都顯示。';
+  String get genresRowItemsDescription =>
+      'Show Movies, Series, or both in Genres rows.';
 
   @override
-  String get displayPlaylistsRows => '顯示播放清單列表';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
-  String get displayPlaylistsRowsSubtitle => '喺主畫面區段顯示播放清單列表。';
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => '播放清單列表排序';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
-  String get playlistsRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序播放清單列表。';
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => '顯示音訊列表';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle => '喺主畫面區段顯示音訊列表。';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => '音訊列表排序';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
-  String get audioRowsSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序音訊列表。';
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => '音訊播放清單';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get appearance => '外觀';
+  String get appearance => 'Appearance';
 
   @override
-  String get layout => '版面配置';
+  String get layout => 'Layout';
 
   @override
-  String get theme => '主題';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => '鍵盤';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => '按鈕';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => '算圖';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'MPV 設定';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => '外部播放器應用程式';
+  String get externalPlayerApp => 'External player app';
 
   @override
-  String get externalPlayerAppDescription => '設定咗外部播放器就可以用長按播放選項';
+  String get externalPlayerAppDescription =>
+      'Set external player to enable long-press play option';
 
   @override
-  String get externalPlayerAskEachTimeSubtitle => '開始播放嗰陣顯示應用程式選擇器。';
+  String get externalPlayerAskEachTimeSubtitle =>
+      'Show app chooser when playback starts.';
 
   @override
-  String get loadingInstalledPlayers => '載入緊已安裝嘅播放器...';
+  String get loadingInstalledPlayers => 'Loading installed players...';
 
   @override
-  String get connection => '連線';
+  String get connection => 'Connection';
 
   @override
-  String get audioTranscodeTarget => '音訊轉碼目標';
+  String get audioTranscodeTarget => 'Audio Transcode Target';
 
   @override
-  String get passthrough => '直通';
+  String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => '呢部裝置支援';
+  String get supportedOnThisDevice => 'Supported on this device';
 
   @override
-  String get notSupportedOnThisDevice => '呢部裝置唔支援';
+  String get notSupportedOnThisDevice => 'Not Supported on this device';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X（DTS UHD）直通';
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      '將 DTS:X（DTS UHD）位元流送去外部解碼器。';
+      'Bitstream DTS:X (DTS UHD) to external decoder.';
 
   @override
-  String get settingsAudioTrueHdJocPassthrough => '帶 Atmos（JOC）嘅 TrueHD 直通';
+  String get settingsAudioTrueHdJocPassthrough =>
+      'TrueHD with Atmos (JOC) Passthrough';
 
   @override
-  String get mediaPlayerBehavior => '媒體播放器行為';
+  String get mediaPlayerBehavior => 'Media Player Behavior';
 
   @override
-  String get playbackEnhancements => '播放增強功能';
+  String get playbackEnhancements => 'Playback Enhancements';
 
   @override
-  String get alwaysOn => '永遠開啟。';
+  String get alwaysOn => 'Always on.';
 
   @override
-  String get replaceSkipOutroWithNextUpDisplay => '用「下一集」顯示取代「跳過片尾」';
+  String get replaceSkipOutroWithNextUpDisplay =>
+      'Replace Skip Outro with Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      '顯示「下一集」覆蓋層，唔顯示「跳過片尾」按鈕。';
+      'Show the Next Up overlay instead of the Skip Outro button.';
 
   @override
-  String get playerRouting => '播放器路由';
+  String get playerRouting => 'Player Routing';
 
   @override
-  String get preferSoftwareDecoders => '優先用軟件解碼器';
+  String get preferSoftwareDecoders => 'Prefer software decoders';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      '喺硬件解碼器之前先用 FFmpeg（音訊）同 libgav1（AV1）。如果 HDMI 音訊直通有問題就閂咗佢。';
+      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
-  String get useExternalPlayerSubtitle => '喺 Android TV 度用你揀咗嘅外部應用程式播片。';
+  String get useExternalPlayerSubtitle =>
+      'Open video playback in your selected external app on Android TV.';
 
   @override
-  String get automaticQueuing => '自動排隊';
+  String get automaticQueuing => 'Automatic Queuing';
 
   @override
-  String get preferSdhSubtitles => '優先用 SDH 字幕';
+  String get preferSdhSubtitles => 'Prefer SDH subtitles';
 
   @override
-  String get preferSdhSubtitlesSubtitle => '自動揀字幕嗰陣優先揀 SDH/CC 字幕軌。';
+  String get preferSdhSubtitlesSubtitle =>
+      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
 
   @override
-  String get webDiagnostics => '網頁診斷';
+  String get webDiagnostics => 'Web diagnostics';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin 網頁診斷';
+  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
 
   @override
-  String get webDiagnosticsIntro => '用呢版嚟診斷瀏覽器嘅連線問題（CORS、混合內容同探索設定）。';
+  String get webDiagnosticsIntro =>
+      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
 
   @override
-  String get webDiagnosticsDetectedMixedContentFailure => '偵測到混合內容失敗';
+  String get webDiagnosticsDetectedMixedContentFailure =>
+      'Detected Mixed-Content Failure';
 
   @override
-  String get webDiagnosticsDetectedCorsPreflightFailure => '偵測到 CORS／預檢失敗';
+  String get webDiagnosticsDetectedCorsPreflightFailure =>
+      'Detected CORS/Preflight Failure';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin 偵測到有 HTTPS 網頁想呼叫 HTTP 嘅伺服器 URL。瀏覽器會喺要求去到你部伺服器之前就封鎖咗佢。';
+      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin 偵測到瀏覽器層面嘅要求失敗，通常係因為媒體伺服器度缺少咗 CORS 或者預檢標頭。';
+      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return '目標 URL：$url';
+    return 'Target URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return '詳情：$detail';
+    return 'Detail: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => '目前嘅執行階段內容';
+  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
 
   @override
-  String get webDiagnosticsOrigin => '來源';
+  String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => '通訊協定';
+  String get webDiagnosticsScheme => 'Scheme';
 
   @override
-  String get webDiagnosticsPluginMode => '外掛程式模式';
+  String get webDiagnosticsPluginMode => 'Plugin Mode';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC 掃描';
+  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
 
   @override
-  String get webDiagnosticsForcedServerUrl => '強制指定嘅伺服器 URL';
+  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => '預設伺服器 URL';
+  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => '探索代理 URL';
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
 
   @override
-  String get notConfigured => '未設定';
+  String get notConfigured => 'not configured';
 
   @override
-  String get webDiagnosticsMixedContent => '混合內容';
+  String get webDiagnosticsMixedContent => 'Mixed Content';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      '呢版係經 HTTPS 載入，但係有一個或者多個設定咗嘅 URL 係 HTTP。瀏覽器會封鎖 HTTPS 網頁呼叫 HTTP API。';
+      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      '解決方法：用 HTTPS 提供你嘅媒體伺服器或者代理端點，又或者淨係喺可信嘅本地網路度用 HTTP 載入 Moonfin。';
+      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      '喺目前嘅執行階段設定度，冇偵測到明顯嘅混合內容問題。';
+      'No obvious mixed-content configuration detected from current runtime settings.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS 檢查清單';
+  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• 喺 Access-Control-Allow-Origin 度允許瀏覽器嘅來源。';
+      '• Allow the browser origin in Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• 喺 Access-Control-Allow-Headers 度包含 Authorization、X-Emby-Authorization 同 X-Emby-Token。';
+      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• 為串流同跳轉行為公開 Content-Range 同 Accept-Ranges。';
+      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
 
   @override
-  String get webDiagnosticsCorsChecklistItem4 => '• 對 OPTIONS 預檢要求回傳 204。';
+  String get webDiagnosticsCorsChecklistItem4 =>
+      '• Return 204 to OPTIONS preflight requests.';
 
   @override
-  String get webDiagnosticsHeaderSnippetTitle => '標頭範例片段（nginx 風格）';
+  String get webDiagnosticsHeaderSnippetTitle =>
+      'Example Header Snippet (nginx-style)';
 
   @override
-  String get note => '注意';
+  String get note => 'Note';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      '呢個診斷路由係為網頁版而設。如果你喺其他平台睇到呢版，呢啲檢查可能唔適用。';
+      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
 
   @override
-  String get backToServerSelect => '返去揀伺服器';
+  String get backToServerSelect => 'Back To Server Select';
 
   @override
-  String get signOutAllUsers => '登出所有使用者';
+  String get signOutAllUsers => 'Sign Out All Users';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      '麥克風權限已經永久拒絕咗。要喺系統設定度開返佢。';
+      'Microphone permission is permanently denied. Enable it in system settings.';
 
   @override
-  String get voiceSearchPermissionRequired => '語音搜尋需要麥克風權限。';
+  String get voiceSearchPermissionRequired =>
+      'Microphone permission is required for voice search.';
 
   @override
-  String get voiceSearchNoMatch => '聽唔清楚。再試過啦。';
+  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
 
   @override
-  String get voiceSearchNoSpeechDetected => '冇偵測到聲音。';
+  String get voiceSearchNoSpeechDetected => 'No speech detected.';
 
   @override
-  String get voiceSearchMicrophoneError => '麥克風錯誤。';
+  String get voiceSearchMicrophoneError => 'Microphone error.';
 
   @override
-  String get voiceSearchNeedsInternet => '語音搜尋需要連上網。';
+  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
 
   @override
-  String get voiceSearchServiceBusy => '語音服務忙緊。再試過啦。';
+  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
 
   @override
-  String get microphonePermissionPermanentlyDenied => '麥克風權限已經永久拒絕咗。';
+  String get microphonePermissionPermanentlyDenied =>
+      'Microphone permission is permanently denied.';
 
   @override
-  String get microphonePermissionDenied => '麥克風權限已經拒絕咗。';
+  String get microphonePermissionDenied => 'Microphone permission is denied.';
 
   @override
-  String get speechRecognitionUnavailable => '呢部裝置冇語音辨識功能。';
+  String get speechRecognitionUnavailable =>
+      'Speech recognition is unavailable on this device.';
 
   @override
-  String get openIosRoutePicker => '開 iOS 路由選擇器';
+  String get openIosRoutePicker => 'Open iOS route picker';
 
   @override
-  String get airPlayRoutePickerUnavailable => '呢部裝置冇 AirPlay 路由選擇器。';
+  String get airPlayRoutePickerUnavailable =>
+      'AirPlay route picker is unavailable on this device.';
 
   @override
-  String get videos => '影片';
+  String get videos => 'Videos';
 
   @override
-  String get programs => '節目';
+  String get programs => 'Programs';
 
   @override
-  String get songs => '歌曲';
+  String get songs => 'Songs';
 
   @override
-  String get photoAlbums => '相簿';
+  String get photoAlbums => 'Photo Albums';
 
   @override
-  String get photos => '相片';
+  String get photos => 'Photos';
 
   @override
-  String get people => '人物';
+  String get people => 'People';
 
   @override
-  String get recentlyReleasedEpisodes => '最近上架嘅集數';
+  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
 
   @override
-  String get watchAgain => '再睇一次';
+  String get watchAgain => 'Watch Again';
 
   @override
-  String get guestAppearances => '客串演出';
+  String get guestAppearances => 'Guest Appearances';
 
   @override
-  String get appearancesSeerr => '演出（Seerr）';
+  String get appearancesSeerr => 'Appearances (Seerr)';
 
   @override
-  String get crewContributionsSeerr => '幕後參與（Seerr）';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
-  String get watchWithGroup => '同群組一齊睇';
+  String get watchWithGroup => 'Watch with group';
 
   @override
-  String get errors => '錯誤';
+  String get errors => 'Errors';
 
   @override
-  String get warnings => '警告';
+  String get warnings => 'Warnings';
 
   @override
-  String get disk => '磁碟';
+  String get disk => 'Disk';
 
   @override
-  String get openInBrowser => '喺瀏覽器度開';
+  String get openInBrowser => 'Open in Browser';
 
   @override
-  String get embeddedBrowserNotAvailable => '呢個平台冇內嵌瀏覽器。';
+  String get embeddedBrowserNotAvailable =>
+      'Embedded browser is not available on this platform.';
 
   @override
-  String get adminRestartServerConfirmation => '你確定要重新啟動伺服器？';
+  String get adminRestartServerConfirmation =>
+      'Are you sure you want to restart the server?';
 
   @override
-  String get adminShutdownServerConfirmation => '你確定要關閉伺服器？之後你要自己手動開返佢。';
+  String get adminShutdownServerConfirmation =>
+      'Are you sure you want to shut down the server? You will need to restart it manually.';
 
   @override
-  String get internal => '內部';
+  String get internal => 'Internal';
 
   @override
-  String get idle => '閒置';
+  String get idle => 'Idle';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => '搵唔到使用者';
+  String get adminNoUsersFound => 'No users found';
 
   @override
-  String get adminNoUsersMatchSearch => '冇使用者符合你嘅搜尋';
+  String get adminNoUsersMatchSearch => 'No users match your search';
 
   @override
-  String get adminNoDevicesFound => '搵唔到裝置';
+  String get adminNoDevicesFound => 'No devices found';
 
   @override
-  String get adminNoDevicesMatchCurrentFilters => '冇裝置符合目前嘅篩選條件';
+  String get adminNoDevicesMatchCurrentFilters =>
+      'No devices match the current filters';
 
   @override
-  String get passwordSet => '已設定密碼';
+  String get passwordSet => 'Password set';
 
   @override
-  String get noPasswordConfigured => '未設定密碼';
+  String get noPasswordConfigured => 'No password configured';
 
   @override
-  String get remoteAccess => '遠端存取';
+  String get remoteAccess => 'Remote Access';
 
   @override
-  String get localOnly => '淨係限本機';
+  String get localOnly => 'Local Only';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => '載入唔到媒體分析';
+  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
 
   @override
-  String get analyticsCombinedAcrossLibraries => '綜合所有媒體庫嘅分析數據。';
+  String get analyticsCombinedAcrossLibraries =>
+      'Combined analytics across all media libraries.';
 
   @override
-  String get analyticsTopArtists => '熱門演出者';
+  String get analyticsTopArtists => 'Top Artists';
 
   @override
-  String get analyticsTopAuthors => '熱門作者';
+  String get analyticsTopAuthors => 'Top Authors';
 
   @override
-  String get analyticsTopContributors => '熱門貢獻者';
+  String get analyticsTopContributors => 'Top Contributors';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 個媒體庫',
-      one: '1 個媒體庫',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
 
   @override
-  String get analyticsNoIndexedMediaTotals => '呢個選擇暫時仲未有已建立索引嘅媒體總數。';
+  String get analyticsNoIndexedMediaTotals =>
+      'No indexed media totals are available for this selection yet.';
 
   @override
-  String get analyticsLibraryDetails => '媒體庫詳情';
+  String get analyticsLibraryDetails => 'Library Details';
 
   @override
-  String get analyticsLibraryBreakdown => '媒體庫細分';
+  String get analyticsLibraryBreakdown => 'Library Breakdown';
 
   @override
-  String get analyticsNoLibrariesAvailable => '冇媒體庫可以用。';
+  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
 
   @override
-  String get adminServerAdministrationTitle => '伺服器管理';
+  String get adminServerAdministrationTitle => 'Server Administration';
 
   @override
-  String get adminServerPathData => '資料';
+  String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => '圖片快取';
+  String get adminServerPathImageCache => 'Image Cache';
 
   @override
-  String get adminServerPathCache => '快取';
+  String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => '紀錄';
+  String get adminServerPathLogs => 'Logs';
 
   @override
-  String get adminServerPathMetadata => '中繼資料';
+  String get adminServerPathMetadata => 'Metadata';
 
   @override
-  String get adminServerPathTranscode => '轉碼';
+  String get adminServerPathTranscode => 'Transcode';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
-  String get adminNoServerPathsReturned => '呢部伺服器冇回傳任何伺服器路徑。';
+  String get adminNoServerPathsReturned =>
+      'No server paths returned by this server.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '已用 $percent%';
+    return '$percent% used';
   }
 
   @override
-  String get userActivity => '使用者活動';
+  String get userActivity => 'User Activity';
 
   @override
-  String get systemEvents => '系統事件';
+  String get systemEvents => 'System Events';
 
   @override
-  String get needsAttention => '需要處理';
+  String get needsAttention => 'Needs Attention';
 
   @override
-  String get adminDrawerSectionServer => '伺服器';
+  String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => '播放';
+  String get adminDrawerSectionPlayback => 'Playback';
 
   @override
-  String get adminDrawerSectionDevices => '裝置';
+  String get adminDrawerSectionDevices => 'Devices';
 
   @override
-  String get adminDrawerSectionAdvanced => '進階';
+  String get adminDrawerSectionAdvanced => 'Advanced';
 
   @override
-  String get adminDrawerSectionPlugins => '外掛程式';
+  String get adminDrawerSectionPlugins => 'Plugins';
 
   @override
-  String get adminDrawerSectionLiveTv => '直播電視';
+  String get adminDrawerSectionLiveTv => 'Live TV';
 
   @override
-  String get homeVideos => '家庭影片';
+  String get homeVideos => 'Home Videos';
 
   @override
-  String get mixedContent => '混合內容';
+  String get mixedContent => 'Mixed Content';
 
   @override
-  String get homeVideosAndPhotos => '家庭影片同相片';
+  String get homeVideosAndPhotos => 'Home Videos & Photos';
 
   @override
-  String get mixedMoviesAndShows => '電影同劇集混合';
+  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9062,292 +9181,299 @@ class AppLocalizationsYue extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => '搵唔到錄影';
+  String get noRecordingsFound => 'No recordings found';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return '喺 .$extension 壓縮檔入面搵唔到圖片頁。';
+    return 'No image pages found inside .$extension archive.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return '內嵌算圖器失敗（$code）：$description';
+    return 'Embedded renderer failed ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB 算圖器失敗（$code）：$description';
+    return 'EPUB renderer failed ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return '閱讀器搵唔到本機檔案：$uri';
+    return 'Missing local file for reader: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return '由 $uri 開啟書籍資料嗰陣出現 HTTP $status';
+    return 'HTTP $status while opening book data from $uri';
   }
 
   @override
-  String get noReadableBookEndpointAvailable => '冇可以讀取嘅書籍端點';
+  String get noReadableBookEndpointAvailable =>
+      'No readable book endpoint available';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return '唔支援嘅漫畫壓縮檔格式：.$extension';
+    return 'Unsupported comic archive format: .$extension';
   }
 
   @override
-  String get cbrExtractionPluginUnavailable => '呢個平台冇 CBR 解壓縮外掛程式。';
+  String get cbrExtractionPluginUnavailable =>
+      'CBR extraction plugin is not available on this platform.';
 
   @override
-  String get failedToExtractCbrArchive => '解壓縮唔到 .cbr 檔案。';
+  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
 
   @override
-  String get cb7ExtractionUnavailable => '呢個平台唔支援 CB7 解壓縮。';
+  String get cb7ExtractionUnavailable =>
+      'CB7 extraction is not available on this platform.';
 
   @override
-  String get cb7ExtractionPluginUnavailable => '呢個平台冇 CB7 解壓縮外掛程式。';
+  String get cb7ExtractionPluginUnavailable =>
+      'CB7 extraction plugin is not available on this platform.';
 
   @override
-  String get closeGenrePanel => '關閉類型面板';
+  String get closeGenrePanel => 'Close genre panel';
 
   @override
-  String get loadingShuffle => '載入緊隨機播放...';
+  String get loadingShuffle => 'Loading shuffle...';
 
   @override
-  String get libraryShuffleLabel => '媒體庫隨機播放';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => '隨機播放';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => '類型隨機播放';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => '自動切換 HDR';
+  String get autoHdrSwitching => 'Auto HDR Switching';
 
   @override
-  String get autoHdrSwitchingDescription => '播放 HDR 影片嗰陣自動開 HDR，退出嗰陣還原顯示模式。';
+  String get autoHdrSwitchingDescription =>
+      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
 
   @override
-  String get whenFullscreen => '全螢幕嗰陣';
+  String get whenFullscreen => 'When fullscreen';
 
   @override
-  String get changeArtwork => '更改封面圖';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => '缺少';
+  String get missing => 'Missing';
 
   @override
-  String get transcodingLimits => '轉碼限制';
+  String get transcodingLimits => 'Transcoding Limits';
 
   @override
-  String get clearAllArtworkButton => '確定要清除所有封面圖？';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
-  String get clearAllArtworkWarning => '你確定要清除所有已下載嘅封面圖？';
+  String get clearAllArtworkWarning =>
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => '確認清除';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return '你確定要清除呢個$itemType？';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => '要上載？';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => '解像度： ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
-  String get onlyShowInterfaceLanguage => '淨係顯示介面語言嘅封面圖';
+  String get onlyShowInterfaceLanguage =>
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => '確認全部清除';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => '圖片已成功上載！';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return '上載唔到圖片：$error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return '設定唔到圖片：$error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return '刪除唔到圖片：$error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return '清除唔到所有封面圖：$error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => '係';
+  String get yes => 'Yes';
 
   @override
-  String get posterCategory => '海報';
+  String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => '背景圖';
+  String get backdropsCategory => 'Backdrops';
 
   @override
-  String get bannerCategory => '橫幅';
+  String get bannerCategory => 'Banner';
 
   @override
-  String get logoCategory => '標誌';
+  String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => '縮圖';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => '美術圖';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => '碟面圖';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => '螢幕截圖';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => '盒面封面';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => '盒背封面';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => '選單美術圖';
+  String get menuArtCategory => 'Menu Art';
 
   @override
-  String get confirmItemPoster => '海報';
+  String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => '背景圖';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
-  String get confirmItemBanner => '橫幅';
+  String get confirmItemBanner => 'banner';
 
   @override
-  String get confirmItemLogo => '標誌';
+  String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => '縮圖';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => '美術圖';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => '碟面圖';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => '螢幕截圖';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => '盒面封面';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => '盒背封面';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => '選單美術圖';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => '全部';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => '高（1080p+）';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => '中（720p）';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => '低（<720p）';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => '來源';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => '章節';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => '書籤';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => '筆記';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => '佇列';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => '時間軸';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => '時間軸係空嘅';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => '成本書';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => '聚焦時間軸';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => '匯出書籤';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => '匯出筆記';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => '全部匯出';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return '已匯出去 $path';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return '匯出失敗：$error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => '歌詞';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => '加書籤';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => '加筆記';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => '編輯筆記';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => '為呢一刻寫個筆記';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => '睡眠計時器';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => '關';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => '章節結尾';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => '自訂';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '仲有 $remaining';
+    return '$remaining left';
   }
 
   @override
@@ -9355,58 +9481,58 @@ class AppLocalizationsYue extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 分鐘',
-      one: '1 分鐘',
+      other: '$count min',
+      one: '1 min',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => '播放速度';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => '剩餘';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => '已播';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return '倒返 $seconds 秒';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return '快進 $seconds 秒';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => '上一章';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => '下一章';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return '第 $current 章，共 $total 章';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => '冇章節';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => '仲未有書籤';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => '仲未有筆記';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return '已喺 $position 加咗書籤';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => '重設做 1.0x';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9414,239 +9540,251 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => '儲存';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => '取消';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => '刪除';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => '字幕偏好設定';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
-  String get subtitlePreferencesDescription => '更改字幕模式、預設語言、外觀同算圖選項。';
+  String get subtitlePreferencesDescription =>
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => '字幕算圖';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => '顯示選項';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => '上映日期（由舊到新）';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => '上映日期（由新到舊）';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => '參與作品分組';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => '將多個角色合併';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle => '媒體庫寫入權限警告';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => '點樣解決：';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. 喺伺服器度，為你嘅媒體庫資料夾俾寫入權限畀 Jellyfin 服務使用者（例如 jellyfin 或者 Docker PUID/PGID）。\n\n2. 又或者去你嘅 Jellyfin 儀表板 -> 媒體庫，編輯呢個媒體庫，然後閂咗「Save artwork into media folders」，咁封面圖就會存喺 Jellyfin 嘅內部資料庫入面。';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => '知道喇';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return '你嘅「$libraryName」媒體庫設定咗將封面圖直接存入媒體資料夾（「Save artwork into media folders」已經啟用）。不過 Jellyfin 測試過寫入權限，發現冇權限將檔案寫入呢個目錄：\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      '睇嚟 Jellyfin 更新唔到封面圖。你個媒體庫設定咗將封面圖直接存入媒體資料夾（「Save artwork into media folders」已經啟用）。呢個錯誤通常係因為 Jellyfin 伺服器程序冇權限將檔案寫入你嘅媒體目錄。';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => '外部清單';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => '重播';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => '檔案資訊';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return '大細：$size  •  格式：$format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return '顯示全部（$count）音軌';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return '顯示全部（$count）字幕軌';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay => '檢查緊直接播放能力...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel => '直接播放能力： ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => '強制';
+  String get forced => 'Forced';
 
   @override
-  String get transcodeContainerNotSupported => '播放器唔支援呢個容器格式。';
+  String get transcodeContainerNotSupported =>
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported => '唔支援呢個視訊編解碼器。';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported => '唔支援呢個音訊編解碼器。';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
-  String get transcodeSubtitleCodecNotSupported => '唔支援呢個字幕格式（需要燒錄）。';
+  String get transcodeSubtitleCodecNotSupported =>
+      'Subtitle format is not supported (requires burning).';
 
   @override
-  String get transcodeAudioProfileNotSupported => '唔支援呢個音訊設定檔。';
+  String get transcodeAudioProfileNotSupported =>
+      'Audio profile is not supported.';
 
   @override
-  String get transcodeVideoProfileNotSupported => '唔支援呢個視訊設定檔。';
+  String get transcodeVideoProfileNotSupported =>
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported => '唔支援呢個視訊等級。';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
-  String get transcodeVideoResolutionNotSupported => '呢部裝置唔支援呢個視訊解像度。';
+  String get transcodeVideoResolutionNotSupported =>
+      'Video resolution is not supported by this device.';
 
   @override
-  String get transcodeVideoBitDepthNotSupported => '唔支援呢個視訊位元深度。';
+  String get transcodeVideoBitDepthNotSupported =>
+      'Video bit depth is not supported.';
 
   @override
-  String get transcodeVideoFramerateNotSupported => '唔支援呢個視訊幀率。';
+  String get transcodeVideoFramerateNotSupported =>
+      'Video framerate is not supported.';
 
   @override
-  String get transcodeContainerBitrateExceedsLimit => '檔案位元率超出咗播放器嘅串流上限。';
+  String get transcodeContainerBitrateExceedsLimit =>
+      'File bitrate exceeds player streaming limit.';
 
   @override
-  String get transcodeVideoBitrateExceedsLimit => '視訊位元率超出咗串流上限。';
+  String get transcodeVideoBitrateExceedsLimit =>
+      'Video bitrate exceeds streaming limit.';
 
   @override
-  String get transcodeAudioBitrateExceedsLimit => '音訊位元率超出咗串流上限。';
+  String get transcodeAudioBitrateExceedsLimit =>
+      'Audio bitrate exceeds streaming limit.';
 
   @override
-  String get transcodeAudioChannelsNotSupported => '唔支援呢個音訊聲道數。';
+  String get transcodeAudioChannelsNotSupported =>
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => '按字母順序';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => '上映順序（由舊到新）';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => '上映順序（由新到舊）';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => '自訂（拖放）';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => '播放清單排序選項';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => '重設排序';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return '重睇第$season季第$episode集';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => '重睇播放清單';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => '搵唔到字幕。';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => '管理員控制';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => '算圖引擎（Impeller）';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller 係 Flutter 新一代嘅 GPU 算圖器，動畫會順啲、少啲窒。喺部分電視盒同舊 GPU 上面可能會有花屏或者黑畫面；如果你見到咁就閂咗佢。「自動」會為你部裝置揀最啱嘅預設值。要重新啟動 Moonfin 先生效。';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => '自動';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => '開';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => '關';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => '需要重新啟動';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin 要重新啟動先可以更改算圖引擎。而家閂咗個應用程式，再開返就會生效。';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => '而家閂咗應用程式';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => '重新整理媒體庫';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => '重新整理所有媒體庫';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest => '加入日期（由舊到新）';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => '加入日期（由新到舊）';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => '按字母順序（A 到 Z）';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => '按字母順序（Z 到 A）';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return '載入緊伺服器分析... $percentage%';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => '同來源一樣';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => 'IMDb 250 大電影';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => 'IMDb 250 大電視劇';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb 最受歡迎電影';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb 最受歡迎電視劇';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb 評分最低電影';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb 評分最高英語電影';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).
@@ -9663,6 +9801,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String connectingToServer(String serverName) {
     return '连接到$serverName';
   }
+
+  @override
+  String get quickConnect => '快速连接';
 
   @override
   String get password => '密码';
@@ -10259,6 +10400,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get librivoxPage => 'LibriVox 页';
+
+  @override
+  String get internetArchive => '互联网档案馆';
 
   @override
   String get rssFeed => 'RSS 源';
@@ -11274,6 +11418,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get seerr => 'Seerr';
+
+  @override
+  String get seerrAccountType => '西尔账户类型';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -12564,7 +12711,34 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get displayClockDuringScreensaver => '屏幕保护期间显示时钟';
 
   @override
+  String get rottenTomatoesCritics => '烂番茄（评论家）';
+
+  @override
+  String get rottenTomatoesAudience => '烂番茄（观众）';
+
+  @override
+  String get imdb => '互联网医学数据库';
+
+  @override
+  String get tmdb => 'TM数据库';
+
+  @override
+  String get metacritic => '元评论家';
+
+  @override
+  String get metacriticUser => '元评论家（用户）';
+
+  @override
+  String get trakt => '特拉克特';
+
+  @override
   String get letterboxd => '信箱';
+
+  @override
+  String get myAnimeList => '我的动漫列表';
+
+  @override
+  String get aniList => '动画列表';
 
   @override
   String get communityRating => '社区评级';
@@ -12601,6 +12775,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get ratingSourcesDescription => '启用并重新排序整个应用程序中显示的评级来源';
+
+  @override
+  String get pluginLabel => '插件';
 
   @override
   String get pluginDetected => '检测到插件';
@@ -12672,6 +12849,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get resetRowsToDefaults => '将行重置为默认值';
 
   @override
+  String get enableSeerr => '启用搜索器';
+
+  @override
   String get showSeerrInNavigation => '在导航中显示 Seerr（需要服务器插件）';
 
   @override
@@ -12687,6 +12867,16 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String loggedInAs(String username) {
     return 'Logged in as: $username';
   }
+
+  @override
+  String get discoverRows => '发现行';
+
+  @override
+  String get discoverRowsDescriptionPlugin =>
+      '拖动以重新排序。启用或禁用行。启用与 Moonfin 插件的行顺序同步。';
+
+  @override
+  String get discoverRowsDescription => '拖动以重新排序。启用或禁用行。';
 
   @override
   String get enabled => '启用';
@@ -12817,6 +13007,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String itemsCount(int count) {
     return '$count Items';
   }
+
+  @override
+  String get seerrSettings => '搜索者设置';
 
   @override
   String get requestMore => '请求更多';
@@ -13108,6 +13301,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get time => '时间';
 
   @override
+  String get trickplay => '特技游戏';
+
+  @override
   String get uninstall => '卸载';
 
   @override
@@ -13154,6 +13350,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get adminDrawerStreaming => '流媒体';
+
+  @override
+  String get adminDrawerTrickplay => '特技游戏';
 
   @override
   String get adminDrawerDevices => '设备';
@@ -14232,6 +14431,12 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get adminThrottleBuffering => '油门缓冲';
 
   @override
+  String get adminTrickplaySaved => '已保存特技播放设置';
+
+  @override
+  String get adminTrickplayLoadFailed => '无法加载特技播放设置';
+
+  @override
   String get adminEnableHardwareAcceleration => '启用硬件加速';
 
   @override
@@ -14329,6 +14534,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get adminBaseUrl => '基本网址';
+
+  @override
+  String get adminBaseUrlHint => '例如/果冻';
 
   @override
   String get https => 'HTTPS';
@@ -15359,10 +15567,16 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   }
 
   @override
+  String get adminTrickplayDescription => '配置搜索预览缩略图的特技播放图像生成。';
+
+  @override
   String get adminNetworkingPublicHttpsPort => '公共 HTTPS 端口';
 
   @override
   String get adminNetworkingBaseUrl => '基本网址';
+
+  @override
+  String get adminNetworkingBaseUrlHint => '例如/果冻';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
@@ -15758,6 +15972,27 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get pinBackspace => '退格键';
+
+  @override
+  String get quickConnectAuthorized => '快速连接请求已获授权。';
+
+  @override
+  String get quickConnectInvalidOrExpired => '快速连接代码无效或已过期。';
+
+  @override
+  String get quickConnectNotSupported => '此服务器不支持快速连接。';
+
+  @override
+  String get quickConnectAuthorizeFailed => '无法授权快速连接代码。';
+
+  @override
+  String get quickConnectDisabled => '此服务器上禁用了快速连接。';
+
+  @override
+  String get quickConnectForbidden => '您的帐户无法授权此快速连接请求。';
+
+  @override
+  String get quickConnectNotFound => '未找到快速连接代码。尝试新的代码。';
 
   @override
   String quickConnectFailedWithMessage(String message) {
@@ -17161,6 +17396,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   }
 
   @override
+  String get quickConnect => '快速連接';
+
+  @override
   String get password => '密碼';
 
   @override
@@ -17756,6 +17994,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get librivoxPage => 'LibriVox 頁';
+
+  @override
+  String get internetArchive => '互聯網檔案館';
 
   @override
   String get rssFeed => 'RSS 來源';
@@ -18771,6 +19012,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get seerr => 'Seerr';
+
+  @override
+  String get seerrAccountType => '西爾帳戶類型';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -20061,7 +20305,34 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get displayClockDuringScreensaver => '螢幕保護期間顯示時鐘';
 
   @override
+  String get rottenTomatoesCritics => '爛番茄（評論家）';
+
+  @override
+  String get rottenTomatoesAudience => '爛番茄（觀眾）';
+
+  @override
+  String get imdb => '網路醫學資料庫';
+
+  @override
+  String get tmdb => 'TM資料庫';
+
+  @override
+  String get metacritic => '元評論家';
+
+  @override
+  String get metacriticUser => '元評論家（使用者）';
+
+  @override
+  String get trakt => '特拉克特';
+
+  @override
   String get letterboxd => '信箱';
+
+  @override
+  String get myAnimeList => '我的動漫列表';
+
+  @override
+  String get aniList => '動畫列表';
 
   @override
   String get communityRating => '社區評級';
@@ -20098,6 +20369,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get ratingSourcesDescription => '啟用並重新排序整個應用程式中顯示的評級來源';
+
+  @override
+  String get pluginLabel => '外掛';
 
   @override
   String get pluginDetected => '偵測到插件';
@@ -20169,6 +20443,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get resetRowsToDefaults => '將行重設為預設值';
 
   @override
+  String get enableSeerr => '啟用搜尋器';
+
+  @override
   String get showSeerrInNavigation => '在導航中顯示 Seerr（需要伺服器插件）';
 
   @override
@@ -20184,6 +20461,16 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String loggedInAs(String username) {
     return 'Logged in as: $username';
   }
+
+  @override
+  String get discoverRows => '發現行';
+
+  @override
+  String get discoverRowsDescriptionPlugin =>
+      '拖曳以重新排序。啟用或停用行。啟用與 Moonfin 插件的行順序同步。';
+
+  @override
+  String get discoverRowsDescription => '拖曳以重新排序。啟用或停用行。';
 
   @override
   String get enabled => '啟用';
@@ -20314,6 +20601,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String itemsCount(int count) {
     return '$count Items';
   }
+
+  @override
+  String get seerrSettings => '搜尋者設定';
 
   @override
   String get requestMore => '請求更多';
@@ -20605,6 +20895,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get time => '時間';
 
   @override
+  String get trickplay => '特技遊戲';
+
+  @override
   String get uninstall => '解除安裝';
 
   @override
@@ -20651,6 +20944,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get adminDrawerStreaming => '串流媒體';
+
+  @override
+  String get adminDrawerTrickplay => '特技遊戲';
 
   @override
   String get adminDrawerDevices => '裝置';
@@ -21729,6 +22025,12 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get adminThrottleBuffering => '油門緩衝';
 
   @override
+  String get adminTrickplaySaved => '已儲存特技播放設定';
+
+  @override
+  String get adminTrickplayLoadFailed => '無法載入特技播放設置';
+
+  @override
   String get adminEnableHardwareAcceleration => '啟用硬體加速';
 
   @override
@@ -21826,6 +22128,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get adminBaseUrl => '基本網址';
+
+  @override
+  String get adminBaseUrlHint => '例如/果凍';
 
   @override
   String get https => 'HTTPS';
@@ -22856,10 +23161,16 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   }
 
   @override
+  String get adminTrickplayDescription => '配置搜尋預覽縮圖的特技播放影像生成。';
+
+  @override
   String get adminNetworkingPublicHttpsPort => '公共 HTTPS 連接埠';
 
   @override
   String get adminNetworkingBaseUrl => '基本網址';
+
+  @override
+  String get adminNetworkingBaseUrlHint => '例如/果凍';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
@@ -23255,6 +23566,27 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get pinBackspace => '退格鍵';
+
+  @override
+  String get quickConnectAuthorized => '快速連線請求已獲授權。';
+
+  @override
+  String get quickConnectInvalidOrExpired => '快速連線代碼無效或已過期。';
+
+  @override
+  String get quickConnectNotSupported => '此伺服器不支援快速連線。';
+
+  @override
+  String get quickConnectAuthorizeFailed => '無法授權快速連線代碼。';
+
+  @override
+  String get quickConnectDisabled => '此伺服器上禁用了快速連線。';
+
+  @override
+  String get quickConnectForbidden => '您的帳戶無法授權此快速連線要求。';
+
+  @override
+  String get quickConnectNotFound => '未找到快速連線代碼。嘗試新的程式碼。';
 
   @override
   String quickConnectFailedWithMessage(String message) {

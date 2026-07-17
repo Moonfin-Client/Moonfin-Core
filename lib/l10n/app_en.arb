@@ -1510,6 +1510,16 @@
   "@failedToDeleteItem": {
     "description": "Error message when item deletion fails"
   },
+  "failedToDeleteItemWithError": "Deletion operation failed with the following error: {error}",
+  "@failedToDeleteItemWithError": {
+    "description": "Error message when item deletion fails, including the specific error details",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Permission denied"
+      }
+    }
+  },
   "renamePlaylist": "Rename Playlist",
   "@renamePlaylist": {
     "description": "Dialog title for renaming a playlist"

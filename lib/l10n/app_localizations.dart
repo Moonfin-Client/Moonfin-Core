@@ -2200,6 +2200,12 @@ abstract class AppLocalizations {
   /// **'Failed to delete item'**
   String get failedToDeleteItem;
 
+  /// Error message when item deletion fails, including the specific error details
+  ///
+  /// In en, this message translates to:
+  /// **'Deletion operation failed with the following error: {error}'**
+  String failedToDeleteItemWithError(String error);
+
   /// Dialog title for renaming a playlist
   ///
   /// In en, this message translates to:

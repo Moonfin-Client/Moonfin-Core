@@ -1124,6 +1124,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToDeleteItem => 'Failed to delete item';
 
   @override
+  String failedToDeleteItemWithError(String error) {
+    return 'Deletion operation failed with the following error: $error';
+  }
+
+  @override
   String get renamePlaylist => 'Rename Playlist';
 
   @override
@@ -13262,6 +13267,17 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String loggedInAs(String username) {
     return 'Logged in as: $username';
   }
+
+  @override
+  String get discoverRows => 'Discover Rows';
+
+  @override
+  String get discoverRowsDescriptionPlugin =>
+      'Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.';
+
+  @override
+  String get discoverRowsDescription =>
+      'Drag to reorder. Enable or disable rows.';
 
   @override
   String get enabled => 'Enabled';

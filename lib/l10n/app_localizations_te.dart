@@ -9,30 +9,30 @@ class AppLocalizationsTe extends AppLocalizations {
   AppLocalizationsTe([String locale = 'te']) : super(locale);
 
   @override
-  String get appTitle => 'Moonfin';
+  String get appTitle => 'మూన్‌ఫిన్';
 
   @override
-  String get accountPreferences => 'ఖాతా ప్రాధాన్యతలు';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => 'ఇంటర్‌ఫేస్ భాష';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => 'సిస్టమ్ డిఫాల్ట్';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'సైన్ ఇన్ చేయండి';
 
   @override
-  String get empty => 'ఖాళీ';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
-    return '$serverNameకి కనెక్ట్ అవుతోంది';
+    return 'Connecting to $serverName';
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'త్వరిత కనెక్ట్';
 
   @override
   String get password => 'పాస్వర్డ్';
@@ -61,12 +61,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect అందుబాటులో లేదు: $detail';
+    return 'QuickConnect unavailable: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect అందుబాటులో లేదు ($status): $detail';
+    return 'QuickConnect unavailable ($status): $detail';
   }
 
   @override
@@ -80,7 +80,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin వెర్షన్ $version';
+    return 'Moonfin version $version';
   }
 
   @override
@@ -106,14 +106,14 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'మీ సర్వర్‌ల నుండి \"$serverName\"ని తీసివేయాలా?';
+    return 'Remove \"$serverName\" from your servers?';
   }
 
   @override
   String get cancel => 'రద్దు చేయి';
 
   @override
-  String get remove => 'తీసివేయండి';
+  String get remove => 'తొలగించు';
 
   @override
   String get connectToServer => 'సర్వర్‌కి కనెక్ట్ చేయండి';
@@ -141,62 +141,62 @@ class AppLocalizationsTe extends AppLocalizations {
   String get settingsAppearanceTheme => 'యాప్ థీమ్';
 
   @override
-  String get detailScreenStyle => 'వివరాల స్క్రీన్ శైలి';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'క్లాసిక్ అనేది Moonfin అసలైన మధ్యస్థ లేఅవుట్. మోడర్న్ అనేది స్క్రీన్‌కు అనుగుణంగా మారే సినిమాటిక్ లేఅవుట్.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'క్లాసిక్';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
-  String get detailScreenStyleModern => 'మోడర్న్';
+  String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'విస్తరించిన ట్యాబ్‌లు';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
   String get expandedTabsSubtitle =>
-      'ట్యాబ్‌లను బ్రౌజ్ చేస్తున్నప్పుడు వాటి కంటెంట్‌ను స్వయంచాలకంగా చూపుతుంది. ప్రతి ట్యాబ్‌ను మాన్యువల్‌గా తెరవడానికి, మూసివేయడానికి దీన్ని ఆఫ్ చేయండి.';
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => 'సాంకేతిక వివరాలను చూపించాలా?';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'బ్యానర్ సారాంశంలో కోడెక్, రిజల్యూషన్, స్ట్రీమ్ సమాచారాన్ని చూపుతుంది';
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => 'సిఫార్సు వ్యవస్థ';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Moonfin సిఫార్సులు అనే స్థానిక-లైబ్రరీ అల్గారిథమ్‌ను లేదా ఆన్‌లైన్ TMDb సారూప్య కొలమానాలను ఉపయోగించండి. గమనిక: ఆన్‌లైన్ సిఫార్సులకు Seerr ఇంటిగ్రేషన్ అవసరం.';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin సిఫార్సులు';
+  String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb సారూప్యత';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'పేరెంటల్ రేటింగ్ పరిమితిని వర్తింపజేయాలా?';
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'లక్ష్య మీడియా పేరెంటల్ రేటింగ్ ఆధారంగా Moonfin సిఫార్సులను పరిమితం చేస్తుంది';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => 'ఇంటర్‌ఫేస్ శైలి';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'ఆటోమేటిక్ మీ పరికరానికి సరిపోతుంది. ఒక రూపాన్ని బలవంతంగా అమలు చేయడానికి Apple లేదా Materialను ఎంచుకోండి.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => 'ఆటోమేటిక్';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -205,42 +205,41 @@ class AppLocalizationsTe extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'గ్లాస్ నాణ్యత';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      'ఆటో ఈ పరికరానికి ఉత్తమ గ్లాస్ ప్రభావాన్ని ఎంచుకుంటుంది. ఫుల్ నిజమైన బ్లర్‌ను బలవంతంగా అమలు చేస్తుంది; రిడ్యూస్డ్ GPU శక్తిని ఆదా చేసే తేలికపాటి గ్లాస్‌ను ఉపయోగిస్తుంది.';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
-  String get glassQualityAuto => 'ఆటో';
+  String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => 'ఫుల్';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'రిడ్యూస్డ్';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'యాప్‌ని పునఃప్రారంభించకుండానే Moonfin మరియు Neon Pulse మధ్య మారండి';
 
   @override
-  String get customThemeTitle => 'అనుకూల థీమ్';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
   String get customThemeSubtitle =>
-      'అనుకూల థీమ్‌లు Moonfin అంతటా దృశ్య అంశాలను మారుస్తాయి. మీ శైలికి సరిపోయేలా వీటిలో ఒకదాన్ని ఎంచుకోండి.';
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
-  String get keyboardPreferSystemIme =>
-      'సిస్టమ్ కీబోర్డ్‌కు ప్రాధాన్యం ఇవ్వండి';
+  String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'టెక్స్ట్ ఎంట్రీ కోసం డిఫాల్ట్‌గా మీ పరికర ఇన్‌పుట్ పద్ధతిని ఉపయోగించండి';
+      'Use your device input method by default for text entry';
 
   @override
-  String get themeMoonfin => 'Moonfin';
+  String get themeMoonfin => 'మూన్‌ఫిన్';
 
   @override
   String get themeMoonfinSubtitle =>
@@ -254,18 +253,18 @@ class AppLocalizationsTe extends AppLocalizations {
       'మెజెంటా గ్లో, సియాన్ టెక్స్ట్ మరియు బలమైన క్రోమ్ కాంట్రాస్ట్‌తో సింథ్‌వేవ్ స్టైలింగ్';
 
   @override
-  String get themeGlass => 'గ్లాస్';
+  String get themeGlass => 'Glass';
 
   @override
   String get themeGlassSubtitle =>
-      'కదిలే గ్రేడియంట్ నేపథ్యం, మంచు లాంటి ఉపరితలాలు, Apple-నీలం యాక్సెంట్‌తో లిక్విడ్-గ్లాస్ శైలి';
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
-  String get theme8BitHero => '8-బిట్ హీరో';
+  String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'దట్టమైన రంగుల ప్యాలెట్, చతురస్రాకార అంచులు, గట్టి నీడలు, పిక్సెల్ ఫాంట్‌తో రెట్రో పిక్సెల్-ఆర్ట్ శైలి';
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -314,7 +313,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return '$targetకి కనెక్ట్ చేయడం సాధ్యపడలేదు';
+    return 'Unable to connect to $target';
   }
 
   @override
@@ -328,35 +327,35 @@ class AppLocalizationsTe extends AppLocalizations {
   String get exit => 'నిష్క్రమించు';
 
   @override
-  String get gameMenu => 'మెను';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => 'పాజ్ చేయబడింది';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => 'స్థితిని సేవ్ చేయండి';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => 'గేమ్‌లు';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => 'స్థితిని లోడ్ చేయండి';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => 'ఫాస్ట్-ఫార్వర్డ్';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => 'ఎమ్యులేటర్ సెట్టింగ్‌లు';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions => 'ఈ కోర్‌కు సర్దుబాటు చేయగల ఎంపికలు లేవు.';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => 'మెనును తెరవడానికి నొక్కి పట్టుకోండి';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
   String get gamePlaybackUnsupported =>
-      'ఈ పరికరంలో గేమ్‌లను ఆడటం ఇంకా మద్దతు లేదు.';
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded => 'హోమ్ వరుసలు ఏవీ లోడ్ చేయబడలేదు';
@@ -428,7 +427,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'ఫోల్డర్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load folder: $error';
   }
 
   @override
@@ -436,7 +435,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count అంశాలు';
+    return '$count items';
   }
 
   @override
@@ -453,7 +452,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count అంశాలు';
+    return '$count Items';
   }
 
   @override
@@ -494,7 +493,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — శైలులు';
+    return '$name — Genres';
   }
 
   @override
@@ -533,17 +532,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '$countని క్రితం';
+    return '${count}m ago';
   }
 
   @override
   String hoursAgo(int count) {
-    return '$countగం క్రితం';
+    return '${count}h ago';
   }
 
   @override
   String daysAgo(int count) {
-    return '$countరో క్రితం';
+    return '${count}d ago';
   }
 
   @override
@@ -554,7 +553,7 @@ class AppLocalizationsTe extends AppLocalizations {
       'Discoverలో ఏ సబ్జెక్ట్ ఫీడ్‌లను చూపించాలో ఎంచుకోండి.';
 
   @override
-  String get apply => 'వర్తింపజేయండి';
+  String get apply => 'దరఖాస్తు చేసుకోండి';
 
   @override
   String get openLink => 'లింక్ తెరవండి';
@@ -578,7 +577,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count శీర్షికలు';
+    return '$count titles';
   }
 
   @override
@@ -603,7 +602,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get listen => 'వినండి';
 
   @override
-  String get resume => 'కొనసాగించండి';
+  String get resume => 'పునఃప్రారంభించండి';
 
   @override
   String get failedToLoadLibrary => 'లైబ్రరీని లోడ్ చేయడంలో విఫలమైంది';
@@ -666,17 +665,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count రచయితలు';
+    return '$count authors';
   }
 
   @override
   String genresCount(int count) {
-    return '$count శైలులు';
+    return '$count genres';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% పూర్తయింది';
+    return '$percent% completed';
   }
 
   @override
@@ -693,7 +692,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return 'చదవడానికి-ప్రాధాన్యత ఇచ్చే బ్రౌజింగ్ కోసం $count శీర్షికలు అమర్చబడ్డాయి.';
+    return '$count titles arranged for reading-first browsing.';
   }
 
   @override
@@ -730,7 +729,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return '$label ఏదీ కనుగొనబడలేదు';
+    return 'No $label found';
   }
 
   @override
@@ -749,13 +748,13 @@ class AppLocalizationsTe extends AppLocalizations {
   String get readStatus => 'చదవండి';
 
   @override
-  String get watched => 'వీక్షించినవి';
+  String get watched => 'వీక్షించారు';
 
   @override
   String get unread => 'చదవలేదు';
 
   @override
-  String get unwatched => 'వీక్షించనివి';
+  String get unwatched => 'చూడలేదు';
 
   @override
   String get seriesStatus => 'సిరీస్ స్థితి';
@@ -767,43 +766,43 @@ class AppLocalizationsTe extends AppLocalizations {
   String get books => 'పుస్తకాలు';
 
   @override
-  String get latestBooks => 'సరికొత్త పుస్తకాలు';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => 'సరికొత్త ఆడియోబుక్‌లు';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count పుస్తకాలు',
-      one: '1 పుస్తకం',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'పుస్తకం';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => 'ఆడియోబుక్';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% చదివారు';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time మిగిలి ఉంది';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => 'చదవండి';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => 'వినండి';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => 'రచయిత';
@@ -841,12 +840,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count విభాగాలు';
+    return '$count sections';
   }
 
   @override
   String firstPublished(int year) {
-    return 'మొదట ప్రచురించబడింది $year';
+    return 'First published $year';
   }
 
   @override
@@ -861,7 +860,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count పుస్తకాలు';
+    return '$count books';
   }
 
   @override
@@ -873,7 +872,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count రచయితలు';
+    return '$count Authors';
   }
 
   @override
@@ -881,8 +880,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ఆడియోబుక్‌లు',
-      one: '1 ఆడియోబుక్',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -897,7 +896,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get failedToLoad => 'లోడ్ చేయడంలో విఫలమైంది';
 
   @override
-  String get delete => 'తొలగించండి';
+  String get delete => 'తొలగించు';
 
   @override
   String get save => 'సేవ్ చేయండి';
@@ -918,7 +917,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get nextUp => 'తదుపరి';
 
   @override
-  String get seasons => 'సీజన్‌లు';
+  String get seasons => 'సీజన్లు';
 
   @override
   String get chapters => 'అధ్యాయాలు';
@@ -930,7 +929,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get movies => 'సినిమాలు';
 
   @override
-  String get musicVideos => 'మ్యూజిక్ వీడియోలు';
+  String get musicVideos => 'Music Videos';
 
   @override
   String get other => 'ఇతర';
@@ -949,7 +948,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'డిస్క్ $number';
+    return 'Disc $number';
   }
 
   @override
@@ -974,7 +973,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'ప్రచురించబడింది $year';
+    return 'Published $year';
   }
 
   @override
@@ -985,52 +984,52 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count సీజన్‌లు',
-      one: '1 సీజన్',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return '$timeకి ముగుస్తుంది';
+    return 'Ends at $time';
   }
 
   @override
-  String get items => 'అంశాలు';
+  String get items => 'Items';
 
   @override
-  String get extras => 'అదనపు అంశాలు';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => 'తెర వెనుక';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => 'తొలగించిన సన్నివేశాలు';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => 'ఫీచరెట్‌లు';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'ఇంటర్వ్యూలు';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => 'సన్నివేశాలు';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => 'షార్ట్స్';
+  String get shorts => 'Shorts';
 
   @override
-  String get trailers => 'ట్రైలర్‌లు';
+  String get trailers => 'ట్రైలర్స్';
 
   @override
   String timeRemaining(String time) {
-    return '$time మిగిలి ఉంది';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return '$timeలో ముగుస్తుంది';
+    return 'Ends in $time';
   }
 
   @override
@@ -1044,11 +1043,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return '$position నుండి కొనసాగించండి';
+    return 'Resume from $position';
   }
 
   @override
-  String get play => 'ప్లే చేయండి';
+  String get play => 'ఆడండి';
 
   @override
   String get startOver => 'ప్రారంభించండి';
@@ -1072,7 +1071,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get version => 'వెర్షన్';
 
   @override
-  String get cast => 'కాస్ట్ చేయండి';
+  String get cast => 'తారాగణం';
 
   @override
   String get trailer => 'ట్రైలర్';
@@ -1132,6 +1131,11 @@ class AppLocalizationsTe extends AppLocalizations {
   String get failedToDeleteItem => 'అంశాన్ని తొలగించడంలో విఫలమైంది';
 
   @override
+  String failedToDeleteItemWithError(String error) {
+    return 'Deletion operation failed with the following error: $error';
+  }
+
+  @override
   String get renamePlaylist => 'ప్లేజాబితా పేరు మార్చండి';
 
   @override
@@ -1142,7 +1146,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return '\"$title\" కోసం డౌన్‌లోడ్ చేసిన ట్రాక్‌లను తొలగించాలా?';
+    return 'Delete downloaded tracks for \"$title\"?';
   }
 
   @override
@@ -1158,17 +1162,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return '$itemLabel ఏదీ లోడ్ కాలేదు';
+    return 'No $itemLabel loaded';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return '$title డౌన్‌లోడ్ అవుతోంది ($count అంశాలు)...';
+    return 'Downloading $title ($count items)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'సర్వర్ నుండి \"$name\"ని ఖచ్చితంగా తొలగించాలా? ఈ చర్యను రద్దు చేయలేరు.';
+    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
   }
 
   @override
@@ -1179,7 +1183,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'మద్దతు లేని పుస్తక ఫార్మాట్: .$extension';
+    return 'Unsupported book format: .$extension';
   }
 
   @override
@@ -1206,7 +1210,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'సబ్‌టైటిల్ డౌన్‌లోడ్ చేయబడి ఎంపిక చేయబడింది: $name';
+    return 'Subtitle downloaded and selected: $name';
   }
 
   @override
@@ -1215,7 +1219,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return '$language కోసం రిమోట్ సబ్‌టైటిల్‌లు ఏవీ కనుగొనబడలేదు.';
+    return 'No remote subtitles found for $language.';
   }
 
   @override
@@ -1223,7 +1227,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'వెర్షన్ $number';
+    return 'Version $number';
   }
 
   @override
@@ -1243,7 +1247,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return '$name డౌన్‌లోడ్ అవుతోంది ($quality)...';
+    return 'Downloading $name ($quality)...';
   }
 
   @override
@@ -1251,7 +1255,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return '$typeLabel కోసం స్థానిక ఫైల్‌లను తొలగించాలా?\n\nఇది నిల్వ స్థలాన్ని ఖాళీ చేస్తుంది. మీరు తర్వాత మళ్లీ డౌన్‌లోడ్ చేసుకోవచ్చు.';
+    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
   }
 
   @override
@@ -1267,10 +1271,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get director => 'దర్శకుడు';
 
   @override
-  String get directors => 'దర్శకులు';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => 'రచయిత';
+  String get writer => 'WRITER';
 
   @override
   String get writers => 'రచయితలు';
@@ -1280,12 +1284,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count మరిన్ని';
+    return '+$count more';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count ఎపిసోడ్‌లు';
+    return '$count Episodes';
   }
 
   @override
@@ -1295,12 +1299,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'ఎపిసోడ్ $number';
+    return 'Episode $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'అధ్యాయం $number';
+    return 'Chapter $number';
   }
 
   @override
@@ -1308,8 +1312,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ట్రాక్‌లు',
-      one: '1 ట్రాక్',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1319,25 +1323,25 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count అధ్యాయాలు',
-      one: '1 అధ్యాయం',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'జననం $date';
+    return 'Born $date';
   }
 
   @override
   String died(String date) {
-    return 'మరణం $date';
+    return 'Died $date';
   }
 
   @override
   String age(int age) {
-    return 'వయస్సు $age';
+    return 'Age $age';
   }
 
   @override
@@ -1350,17 +1354,17 @@ class AppLocalizationsTe extends AppLocalizations {
   String get shuffle => 'షఫుల్ చేయండి';
 
   @override
-  String get shuffleAllMusic => 'మొత్తం సంగీతాన్ని షఫుల్ చేయండి';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => 'మీ ఫోన్‌లో Moonfinకి సైన్ ఇన్ చేయండి';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => 'మీ సర్వర్‌ను చేరుకోలేకపోతోంది';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
-    return '$count డౌన్‌లోడ్‌లు';
+    return '$count downloads';
   }
 
   @override
@@ -1379,32 +1383,32 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'రిమోట్ సబ్‌టైటిల్ $action కోసం ఈ వినియోగదారుకు Jellyfin సబ్‌టైటిల్ నిర్వహణ అనుమతి అవసరం.';
+    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'రిమోట్ సబ్‌టైటిల్ $action కోసం ఈ అంశం సర్వర్‌లో కనుగొనబడలేదు.';
+    return 'This item could not be found on the server for remote subtitle $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'రిమోట్ సబ్‌టైటిల్ $action విఫలమైంది: $detail';
+    return 'Remote subtitle $action failed: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'రిమోట్ సబ్‌టైటిల్ $action విఫలమైంది (HTTP $status).';
+    return 'Remote subtitle $action failed (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'రిమోట్ సబ్‌టైటిల్‌లను $action చేయడం విఫలమైంది.';
+    return 'Failed to $action remote subtitles.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return '\"$name\" కోసం డౌన్‌లోడ్ చేసిన అన్ని ఎపిసోడ్‌లు';
+    return 'all downloaded episodes for \"$name\"';
   }
 
   @override
@@ -1435,17 +1439,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label చర్య విఫలమైంది: $error';
+    return '$label action failed: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'కాస్ట్ వాల్యూమ్‌ను సెట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to set cast volume: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label నియంత్రణలు';
+    return '$label Controls';
   }
 
   @override
@@ -1462,7 +1466,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return '$labelని ఆపండి';
+    return 'Stop $label';
   }
 
   @override
@@ -1470,7 +1474,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'ట్రాక్ $number';
+    return 'Track $number';
   }
 
   @override
@@ -1487,7 +1491,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds సెకన్లు';
+    return '$seconds seconds';
   }
 
   @override
@@ -1556,7 +1560,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get transcodeReasons => 'ట్రాన్స్‌కోడ్ కారణాలు';
 
   @override
-  String get player => 'ప్లేయర్';
+  String get player => 'ఆటగాడు';
 
   @override
   String get container => 'కంటైనర్';
@@ -1580,7 +1584,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get videoBitrate => 'వీడియో బిట్రేట్';
 
   @override
-  String get track => 'ట్రాక్';
+  String get track => 'ట్రాక్ చేయండి';
 
   @override
   String get channels => 'ఛానెల్‌లు';
@@ -1602,12 +1606,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol సెషన్ లోపం';
+    return '$protocol session error';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'పుస్తక వివరాలను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load book details: $error';
   }
 
   @override
@@ -1616,7 +1620,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'ఈ ఫార్మాట్ (.$extension)ను యాప్‌లో ఇంకా రెండర్ చేయలేరు.';
+    return 'This format (.$extension) cannot be rendered in-app yet.';
   }
 
   @override
@@ -1629,17 +1633,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'యాప్ రీడర్‌ను తెరవడం విఫలమైంది: $error';
+    return 'Failed to open in-app reader: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return '$label వద్ద బుక్‌మార్క్ ఇప్పటికే సేవ్ చేయబడింది.';
+    return 'Bookmark already saved at $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'బుక్‌మార్క్ జోడించబడింది: $label';
+    return 'Bookmark added: $label';
   }
 
   @override
@@ -1651,7 +1655,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'పేజీ $number';
+    return 'Page $number';
   }
 
   @override
@@ -1662,12 +1666,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'ఫార్మాట్: .$extension';
+    return 'Format: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% చదివారు';
+    return '$percent% read';
   }
 
   @override
@@ -1691,7 +1695,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'జూమ్‌ను రీసెట్ చేయండి (${zoom}x)';
+    return 'Reset Zoom (${zoom}x)';
   }
 
   @override
@@ -1714,7 +1718,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'చదివిన స్థితిని అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update read state: $error';
   }
 
   @override
@@ -1747,7 +1751,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return '$extension ఫైల్‌ల కోసం ఎంబెడెడ్ డాక్యుమెంట్ ఇంజిన్‌ను ఈ ప్లాట్‌ఫారమ్ హోస్ట్ చేయలేదు.';
+    return 'This platform cannot host the embedded document engine for $extension files.';
   }
 
   @override
@@ -1786,7 +1790,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'గైడ్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load guide: $error';
   }
 
   @override
@@ -1797,22 +1801,22 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'తదుపరి: $time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '$minutesని మిగిలి ఉంది';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '$hoursగం మిగిలి ఉంది';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '$hoursగం $minutesని మిగిలి ఉంది';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1836,30 +1840,29 @@ class AppLocalizationsTe extends AppLocalizations {
   String get favoriteChannel => 'ఇష్టమైన ఛానెల్';
 
   @override
-  String get record => 'రికార్డ్ చేయండి';
+  String get record => 'Record';
 
   @override
-  String get cancelRecordingAction => 'రికార్డింగ్‌ను రద్దు చేయండి';
+  String get cancelRecordingAction => 'Cancel Recording';
 
   @override
-  String get programSetToRecord =>
-      'ప్రోగ్రామ్ రికార్డ్ చేయడానికి సెట్ చేయబడింది';
+  String get programSetToRecord => 'Program set to record';
 
   @override
-  String get recordingCancelled => 'రికార్డింగ్ రద్దు చేయబడింది';
+  String get recordingCancelled => 'Recording cancelled';
 
   @override
-  String get unableToCreateRecording => 'రికార్డింగ్‌ను సృష్టించడం సాధ్యపడలేదు';
+  String get unableToCreateRecording => 'Unable to create recording';
 
   @override
   String get watch => 'చూడండి';
 
   @override
-  String get close => 'మూసివేయండి';
+  String get close => 'మూసివేయి';
 
   @override
   String failedToPlayChannel(String name) {
-    return '$nameను ప్లే చేయడం విఫలమైంది';
+    return 'Failed to play $name';
   }
 
   @override
@@ -1885,11 +1888,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return '\"$name\" షెడ్యూల్ చేసిన రికార్డింగ్‌ను రద్దు చేయాలా?';
+    return 'Cancel scheduled recording of \"$name\"?';
   }
 
   @override
-  String get no => 'కాదు';
+  String get no => 'సంఖ్య';
 
   @override
   String get yesCancel => 'అవును, రద్దు చేయి';
@@ -1914,7 +1917,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return '\"$name\" రికార్డింగ్‌ను ఆపాలా?';
+    return 'Stop recording \"$name\"?';
   }
 
   @override
@@ -1929,19 +1932,19 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return '\"$query\" కోసం ఫలితాలు లేవు';
+    return 'No results for \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'శోధన విఫలమైంది: $error';
+    return 'Search failed: $error';
   }
 
   @override
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'Seerr ఖాతా రకం';
+  String get seerrAccountType => 'సీర్ ఖాతా రకం';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -1975,12 +1978,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return '\"$name\"ని, దాని ఫైల్‌లను తీసివేయాలా?';
+    return 'Remove \"$name\" and its files?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count ట్రాక్‌లు';
+    return '$count tracks';
   }
 
   @override
@@ -1991,12 +1994,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'ఆల్బమ్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return '$name కోసం డౌన్‌లోడ్ చేసిన ట్రాక్‌లు ఏవీ లేవు.';
+    return 'No downloaded tracks found for $name.';
   }
 
   @override
@@ -2013,12 +2016,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return '\"$name\"ని తీసివేయాలా?';
+    return 'Remove \"$name\"?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes ని';
+    return '$minutes min';
   }
 
   @override
@@ -2028,7 +2031,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'ఎపిసోడ్ $number';
+    return 'Episode $number';
   }
 
   @override
@@ -2042,7 +2045,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'సీజన్ $number';
+    return 'Season $number';
   }
 
   @override
@@ -2058,7 +2061,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return '$seasonలో డౌన్‌లోడ్ చేసిన అన్ని ఎపిసోడ్‌లను తొలగించాలా?';
+    return 'Delete all downloaded episodes in $season?';
   }
 
   @override
@@ -2066,8 +2069,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ఎపిసోడ్‌లు',
-      one: '1 ఎపిసోడ్',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2102,7 +2105,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'డౌన్‌లోడ్ చేసిన $count అంశాలను తొలగించాలా?';
+    return 'Delete $count downloaded items?';
   }
 
   @override
@@ -2116,7 +2119,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return '$limit పరిమితిలో';
+    return 'of $limit limit';
   }
 
   @override
@@ -2199,7 +2202,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count ఎంపికలు';
+    return '$count options';
   }
 
   @override
@@ -2294,7 +2297,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'వివరాల పేజీలు, హోమ్ వరుసలు, వాల్యూమ్';
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
@@ -2309,11 +2312,11 @@ class AppLocalizationsTe extends AppLocalizations {
       'హోమ్ స్క్రీన్‌ని బ్రౌజ్ చేస్తున్నప్పుడు ప్లే చేయండి';
 
   @override
-  String get loopThemeMusic => 'థీమ్ మ్యూజిక్‌ను లూప్ చేయండి';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'ట్రాక్‌ను ఒకసారి ప్లే చేయడానికి బదులుగా పునరావృతం చేయండి';
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => 'వివరాలు బ్యాక్‌గ్రౌండ్ బ్లర్';
@@ -2336,23 +2339,23 @@ class AppLocalizationsTe extends AppLocalizations {
   String get playerZoomMode => 'ప్లేయర్ జూమ్ మోడ్';
 
   @override
-  String get settingsScrollWheelAction => 'మౌస్ స్క్రోల్ వీల్';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'ప్లేబ్యాక్ సమయంలో వీడియోపై మౌస్ వీల్‌ను స్క్రోల్ చేస్తే ఏమి జరగాలో ఎంచుకోండి.';
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => 'ఆఫ్';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => 'సీక్ (ముందుకు / వెనుకకు)';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => 'వాల్యూమ్';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => 'వాల్యూమ్';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'ఫిట్';
@@ -2367,7 +2370,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get refreshRateSwitching => 'రిఫ్రెష్ రేట్ స్విచింగ్';
 
   @override
-  String get disabled => 'నిలిపివేయబడింది';
+  String get disabled => 'వికలాంగుడు';
 
   @override
   String get scaleOnTv => 'టీవీలో స్కేల్';
@@ -2406,39 +2409,37 @@ class AppLocalizationsTe extends AppLocalizations {
   String get defaultAudioLanguage => 'డిఫాల్ట్ ఆడియో భాష';
 
   @override
-  String get fallbackAudioLanguage => 'ప్రత్యామ్నాయ ఆడియో భాష';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack =>
-      'డిఫాల్ట్ ఆడియో ట్రాక్‌కు ప్రాధాన్యం ఇవ్వండి';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'స్థానికీకరించిన డబ్ కంటే అసలైన ఆడియో ట్రాక్‌కు ప్రాధాన్యం ఇవ్వండి.';
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription =>
-      'ఆడియో వివరణ ట్రాక్‌లకు ప్రాధాన్యం ఇవ్వండి';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'సాధారణ ట్రాక్‌ల కంటే ఆడియో వివరణ ట్రాక్‌లకు ప్రాధాన్యం ఇవ్వండి.';
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => 'ట్రాన్స్‌కోడింగ్ (ఆడియో)';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => 'డైరెక్ట్ స్ట్రీమ్ (రీమక్స్)';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'ట్రాన్స్‌కోడింగ్ (బిట్‌రేట్ లేదా రిజల్యూషన్)';
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => 'ట్రాన్స్‌కోడింగ్ (వీడియో & ఆడియో)';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => 'ట్రాన్స్‌కోడింగ్ (వీడియో)';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => 'ఆటో (సర్వర్ డిఫాల్ట్)';
@@ -2515,28 +2516,27 @@ class AppLocalizationsTe extends AppLocalizations {
       'TrueHD ఆడియోను ప్రారంభించండి (అన్ని ప్లాట్‌ఫారమ్‌లలో పని చేయకపోవచ్చు)';
 
   @override
-  String get settingsAudioOutputMode => 'ఆడియో అవుట్‌పుట్ మోడ్';
+  String get settingsAudioOutputMode => 'Audio Output Mode';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'ఆడియో ఎలా డీకోడ్ చేయబడాలో ఎంచుకోండి. AVR పాస్‌త్రూ ముడి Dolby/DTS స్ట్రీమ్‌లను మీ రిసీవర్‌కు పంపుతుంది; ఆటో లేదా డౌన్‌మిక్స్ స్థానికంగా డీకోడ్ చేస్తుంది.';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR పాస్‌త్రూ';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'ఆడియో ప్రత్యామ్నాయ కోడెక్';
+  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'మూల స్ట్రీమ్‌ను నేరుగా ప్లే చేయలేని లేదా పాస్‌త్రూ చేయలేని సందర్భంలో మల్టీ-ఛానల్ ఆడియోను ట్రాన్స్‌కోడ్ చేయడానికి లక్ష్య ఫార్మాట్‌ను ఎంచుకోండి.';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto =>
-      'ఆటో డిటెక్ట్\n(సిఫార్సు చేయబడింది)';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(డిఫాల్ట్)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2545,115 +2545,113 @@ class AppLocalizationsTe extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(నష్టం లేని)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(స్టీరియో మాత్రమే)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(సమర్థవంతమైన)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(నష్టం లేని)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'గరిష్ఠ ఆడియో ఛానెల్‌లు';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'మీ ఆడియో సెటప్ గరిష్ఠ ఛానెల్‌లను కాన్ఫిగర్ చేయండి. ఈ పరిమితిని మించిన మల్టీఛానల్ స్ట్రీమ్‌లు డౌన్‌మిక్స్ లేదా ట్రాన్స్‌కోడ్ అవుతాయి.';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto =>
-      'ఆటో డిటెక్ట్\n(హార్డ్‌వేర్ డిఫాల్ట్)';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 మోనో';
+  String get settingsMaxAudioChannelsMono => '1.0 Mono';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 స్టీరియో';
+  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 సరౌండ్';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 క్వాడ్రాఫోనిక్';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 సరౌండ్';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 సరౌండ్';
+  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 సరౌండ్';
+  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 సరౌండ్';
+  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'పాస్‌త్రూ (అధునాతన)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'కోడెక్ పాస్‌త్రూ';
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'మీ AVR లేదా HDMI సింక్ మద్దతిచ్చే ఫార్మాట్‌లను మాత్రమే ప్రారంభించండి.';
+      'Enable only formats your AVR or HDMI sink supports.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 పాస్‌త్రూ';
+  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) పాస్‌త్రూ';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core పాస్‌త్రూ';
+  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA పాస్‌త్రూ';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD పాస్‌త్రూ';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos పాస్‌త్రూ';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Dolby Digital Plus (EAC3)ను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.';
+      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'EAC3 (JOC) ద్వారా Dolby Atmosను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.';
+      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'DTS-HD MA (DTS core కలిపి)ను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.';
+      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Atmos మెటాడేటాతో Dolby TrueHDను బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ చేస్తుంది.';
+      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
 
   @override
-  String get settingsDetectedAudioCapabilities =>
-      'గుర్తించిన ఆడియో సామర్థ్యాలు';
+  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'రన్‌టైమ్ సామర్థ్య స్నాప్‌షాట్ ఇంకా అందుబాటులో లేదు.';
+      'No runtime capability snapshot available yet.';
 
   @override
-  String get settingsAudioRouteLabel => 'మార్గం';
+  String get settingsAudioRouteLabel => 'Route';
 
   @override
-  String get settingsAudioDecodeLabel => 'డీకోడ్';
+  String get settingsAudioDecodeLabel => 'Decode';
 
   @override
-  String get settingsAudioPassthroughLabel => 'పాస్‌త్రూ';
+  String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD ఆడియో మార్గం';
+  String get settingsAudioHdRoute => 'HD audio route';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2668,10 +2666,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'స్పీకర్';
+  String get settingsAudioRouteSpeaker => 'Speaker';
 
   @override
-  String get settingsAudioRouteHeadphones => 'హెడ్‌ఫోన్‌లు';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2679,39 +2677,39 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'డయాగ్నోస్టిక్స్';
+  String get settingsAudioDiagnostics => 'Diagnostics';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'వీడియో లెవల్';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'వీడియో పరిధి';
+  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'సబ్‌టైటిల్ కోడెక్';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'అనుమతించిన ఆడియో కోడెక్‌లు';
+      'Allowed Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS ఆడియో కోడెక్‌లు';
+      'HLS MPEG-TS Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 ఆడియో కోడెక్‌లు';
+      'HLS fMP4 Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif పాస్‌త్రూ';
+      'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'సక్రియ ఆడియో మార్గం';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'మార్గం HD ఆడియో మద్దతు';
+      'Route HD Audio Support';
 
   @override
   String get nightMode => 'రాత్రి మోడ్';
@@ -2774,7 +2772,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return '$episodes ఎపిసోడ్‌లు / $hoursగం తర్వాత';
+    return 'After $episodes episodes / ${hours}h';
   }
 
   @override
@@ -2850,45 +2848,45 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఉపశీర్షిక రూపాన్ని అనుకూలీకరించండి';
 
   @override
-  String get subtitleMode => 'సబ్‌టైటిల్ మోడ్';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => 'ఫ్లాగ్ చేయబడింది';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => 'ఎల్లప్పుడూ';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => 'విదేశీ';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => 'బలవంతం';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'మీడియా ఫైల్ మెటాడేటాలో అంతర్గతంగా \"default\" లేదా \"forced\"గా ఫ్లాగ్ చేయబడిన ట్రాక్‌లను ప్లే చేస్తుంది.';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'వీడియో ప్రారంభమయ్యే ప్రతిసారీ సబ్‌టైటిల్‌లను స్వయంచాలకంగా లోడ్ చేసి ప్రదర్శిస్తుంది.';
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'డిఫాల్ట్ ఆడియో ట్రాక్ విదేశీ భాషలో ఉంటే సబ్‌టైటిల్‌లను స్వయంచాలకంగా ఆన్ చేస్తుంది.';
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'forced మెటాడేటా ఫ్లాగ్‌తో స్పష్టంగా ట్యాగ్ చేయబడిన సబ్‌టైటిల్‌లను మాత్రమే లోడ్ చేస్తుంది.';
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'స్వయంచాలక సబ్‌టైటిల్ లోడింగ్‌ను పూర్తిగా నిలిపివేస్తుంది.';
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => 'ప్రత్యామ్నాయ సబ్‌టైటిల్ భాష';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => 'సబ్‌టైటిల్ స్ట్రీమ్';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText =>
@@ -2948,17 +2946,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return '$profile ప్రొఫైల్ సెట్టింగ్‌లు లోడ్ చేయబడ్డాయి.';
+    return 'Loaded $profile profile settings.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return '$profile ప్రొఫైల్ సెట్టింగ్‌లను లోడ్ చేయడం విఫలమైంది.';
+    return 'Failed to load $profile profile settings.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'స్థానిక సెట్టింగ్‌లు $profile ప్రొఫైల్‌కు సింక్ చేయబడ్డాయి.';
+    return 'Synced local settings to $profile profile.';
   }
 
   @override
@@ -3095,11 +3093,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get showLibrariesInToolbar => 'టూల్‌బార్‌లో లైబ్రరీలను చూపండి';
 
   @override
-  String get navbarAlwaysExpanded =>
-      'నావ్‌బార్ లేబుల్‌లను ఎల్లప్పుడూ విస్తరించండి';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => 'Seerr బటన్‌ను చూపించండి';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'నవబార్ అస్పష్టత';
@@ -3174,18 +3171,18 @@ class AppLocalizationsTe extends AppLocalizations {
   String get showFolderBrowsingOption => 'ఫోల్డర్ బ్రౌజింగ్ ఎంపికను చూపు';
 
   @override
-  String get groupItemsIntoCollections => 'అంశాలను సేకరణలుగా సమూహపరచండి';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'లైబ్రరీలను బ్రౌజ్ చేస్తున్నప్పుడు సేకరణతో అనుబంధించిన లైబ్రరీ అంశాలను దాచండి';
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'లైబ్రరీ సమూహపరిచే గమనిక';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'ఈ సెట్టింగ్‌ను ఉపయోగించడానికి, మీ Jellyfin లేదా Emby సర్వర్‌లో మీ లైబ్రరీ Display సెట్టింగ్‌ల కింద \"Group movies into collections\" మరియు/లేదా \"Group shows into collections\" లైబ్రరీ సెట్టింగ్‌లు ప్రారంభించబడ్డాయని నిర్ధారించుకోండి.';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => 'లైబ్రరీ దృశ్యమానత';
@@ -3214,7 +3211,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count ఎంపిక చేయబడ్డాయి';
+    return '$count selected';
   }
 
   @override
@@ -3244,7 +3241,7 @@ class AppLocalizationsTe extends AppLocalizations {
       'Moonfin, MakD మధ్య ఎంచుకోండి లేదా మీడియా బార్‌ను ఆఫ్ చేయండి';
 
   @override
-  String get mediaBarModeMoonfin => 'Moonfin';
+  String get mediaBarModeMoonfin => 'మూన్‌ఫిన్';
 
   @override
   String get mediaBarModeMakd => 'MakD';
@@ -3297,11 +3294,10 @@ class AppLocalizationsTe extends AppLocalizations {
       '3 సెకన్ల తర్వాత మీడియా బార్‌లో ట్రైలర్‌లను ఆటో-ప్లే చేయండి';
 
   @override
-  String get trailerAudio => 'ట్రైలర్ ఆడియో';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio =>
-      'మీడియా బార్‌లో ట్రైలర్‌ల కోసం ఆడియోను ప్రారంభించండి';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => 'ఎపిసోడ్ ప్రివ్యూ';
@@ -3378,11 +3374,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get combineBothRows => 'రెండు అడ్డు వరుసలను ఒకే హోమ్ విభాగంలో కలపండి';
 
   @override
-  String get fullScreenRows => 'విస్తరించిన హోమ్ వరుసలు';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription =>
-      'హోమ్ వరుసలను స్క్రీన్‌కు 1 వరుసకు పరిమితం చేయండి';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'ప్రతి వరుస చిత్రం రకం';
@@ -3397,7 +3392,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get lastUser => 'చివరి వినియోగదారు';
 
   @override
-  String get currentUser => 'ప్రస్తుత వినియోగదారు';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'ఎల్లప్పుడూ ప్రమాణీకరించండి';
@@ -3474,7 +3469,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes ని';
+    return '$minutes min';
   }
 
   @override
@@ -3505,10 +3500,10 @@ class AppLocalizationsTe extends AppLocalizations {
       'స్క్రీన్‌సేవర్ సమయంలో గడియారాన్ని ప్రదర్శించండి';
 
   @override
-  String get clockModeStatic => 'స్థిరం';
+  String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => 'బౌన్సింగ్';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => 'రాటెన్ టొమాటోస్ (విమర్శకులు)';
@@ -3529,7 +3524,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get metacriticUser => 'మెటాక్రిటిక్ (వినియోగదారు)';
 
   @override
-  String get trakt => 'Trakt';
+  String get trakt => 'ట్రాక్ట్';
 
   @override
   String get letterboxd => 'లెటర్‌బాక్స్డ్';
@@ -3581,7 +3576,7 @@ class AppLocalizationsTe extends AppLocalizations {
       'యాప్ అంతటా చూపబడిన రేటింగ్ మూలాలను ప్రారంభించండి మరియు క్రమాన్ని మార్చండి';
 
   @override
-  String get pluginLabel => 'Moonbase ప్లగిన్';
+  String get pluginLabel => 'ప్లగిన్';
 
   @override
   String get pluginDetected => 'ప్లగిన్ కనుగొనబడింది';
@@ -3599,7 +3594,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nవెర్షన్: $version';
+    return '$status\nVersion: $version';
   }
 
   @override
@@ -3653,7 +3648,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get networks => 'నెట్‌వర్క్‌లు';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr డిస్కవరీ వరుసలు';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'అడ్డు వరుసలను డిఫాల్ట్‌లకు రీసెట్ చేయండి';
@@ -3663,11 +3658,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get showSeerrInNavigation =>
-      'నావిగేషన్‌లో Seerrను చూపించండి (సర్వర్ ప్లగిన్ అవసరం)';
+      'నావిగేషన్‌లో సీర్‌ని చూపించు (సర్వర్ ప్లగ్ఇన్ అవసరం)';
 
   @override
   String get seerrUnavailable =>
-      'సర్వర్ ప్లగిన్ Seerr మద్దతు నిలిపివేయబడినందున అందుబాటులో లేదు.';
+      'సర్వర్ ప్లగ్ఇన్ సీర్ మద్దతు నిలిపివేయబడినందున అందుబాటులో లేదు.';
 
   @override
   String get nsfwFilter => 'NSFW ఫిల్టర్';
@@ -3676,44 +3671,44 @@ class AppLocalizationsTe extends AppLocalizations {
   String get hideAdultContent => 'ఫలితాల్లో పెద్దల కంటెంట్‌ను దాచండి';
 
   @override
-  String get seerrNotificationsSection => 'నోటిఫికేషన్‌లు';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'కొత్త అభ్యర్థన నోటిఫికేషన్‌లు';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'ఎవరైనా అభ్యర్థన సమర్పించినప్పుడు నాకు తెలియజేయండి';
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'అభ్యర్థన అప్‌డేట్‌లు';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'ఆమోదించబడింది, తిరస్కరించబడింది, మీ లైబ్రరీకి జోడించబడింది';
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => 'సమస్య అప్‌డేట్‌లు';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
   String get seerrNotifyIssuesSubtitle =>
-      'కొత్త సమస్యలు, ప్రత్యుత్తరాలు, పరిష్కారాలు';
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
-    return 'లాగిన్ అయినవారు: $username';
+    return 'Logged in as: $username';
   }
 
   @override
-  String get discoverRows => 'Seerr డిస్కవరీ పేజీ';
+  String get discoverRows => 'అడ్డు వరుసలను కనుగొనండి';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Seerr మెయిన్‌పేజీలో చూడటానికి వరుసలను ప్రారంభించండి. క్రమాన్ని మార్చడానికి లాగండి. అనుకూల క్రమం Moonbaseతో సింక్ అవుతుంది.';
+      'క్రమాన్ని మార్చడానికి లాగండి. అడ్డు వరుసలను ప్రారంభించండి లేదా నిలిపివేయండి. Moonfin ప్లగిన్‌తో ప్రారంభించబడిన అడ్డు వరుస ఆర్డర్ సమకాలీకరణ.';
 
   @override
   String get discoverRowsDescription =>
-      'Seerr మెయిన్‌పేజీలో చూడటానికి వరుసలను ప్రారంభించండి. క్రమాన్ని మార్చడానికి లాగండి. అనుకూల క్రమం Moonbaseతో సింక్ అవుతుంది.';
+      'క్రమాన్ని మార్చడానికి లాగండి. అడ్డు వరుసలను ప్రారంభించండి లేదా నిలిపివేయండి.';
 
   @override
   String get enabled => 'ప్రారంభించబడింది';
@@ -3726,7 +3721,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'వెర్షన్ $version';
+    return 'Version $version';
   }
 
   @override
@@ -3776,7 +3771,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'అప్‌డేట్ అందుబాటులో ఉంది: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -3788,7 +3783,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version అందుబాటులో ఉంది';
+    return 'v$version Available';
   }
 
   @override
@@ -3853,7 +3848,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get imageCacheCleared => 'ఇమేజ్ కాష్ క్లియర్ చేయబడింది';
 
   @override
-  String get clear => 'క్లియర్ చేయండి';
+  String get clear => 'క్లియర్';
 
   @override
   String get browse => 'బ్రౌజ్ చేయండి';
@@ -3869,19 +3864,19 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'డౌన్‌లోడ్ అవుతోంది · $percent%';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'దిగుమతి అవుతోంది';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
-    return '$count అంశాలు';
+    return '$count Items';
   }
 
   @override
-  String get seerrSettings => 'Seerr సెట్టింగ్‌లు';
+  String get seerrSettings => 'సీర్ సెట్టింగ్‌లు';
 
   @override
   String get requestMore => 'మరింత అభ్యర్థించండి';
@@ -3897,7 +3892,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return '$name అభ్యర్థించారు';
+    return 'Requested by $name';
   }
 
   @override
@@ -3914,12 +3909,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return '\"$title\" కోసం అభ్యర్థనను రద్దు చేయాలా?';
+    return 'Cancel request for \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return '\"$title\" కోసం $count అభ్యర్థనలను రద్దు చేయాలా?';
+    return 'Cancel $count requests for \"$title\"?';
   }
 
   @override
@@ -3933,12 +3928,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'బడ్జెట్: \$$amount';
+    return 'Budget: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'ఆదాయం: \$$amount';
+    return 'Revenue: \$$amount';
   }
 
   @override
@@ -3948,7 +3943,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return '$typeని అభ్యర్థించండి';
+    return 'Request $type';
   }
 
   @override
@@ -3977,14 +3972,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get showMore => 'మరిన్ని చూపించు';
 
   @override
-  String get appearances => 'నటించినవి';
+  String get appearances => 'ప్రదర్శనలు';
 
   @override
   String get crewSection => 'సిబ్బంది';
 
   @override
   String ageValue(int age) {
-    return 'వయస్సు $age';
+    return 'age $age';
   }
 
   @override
@@ -4015,147 +4010,148 @@ class AppLocalizationsTe extends AppLocalizations {
   String get deletedStatus => 'తొలగించబడింది';
 
   @override
-  String get failedStatus => 'విఫలమైంది';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => 'ప్రాసెస్ అవుతోంది';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return '$name మార్చారు';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => 'పూర్తయింది';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => 'ఈ శీర్షిక ఇప్పటికే అభ్యర్థించబడింది';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => 'అభ్యర్థన పరిమితి చేరుకుంది';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => 'ఈ శీర్షిక బ్లాక్‌లిస్ట్ చేయబడింది';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons => 'అభ్యర్థించడానికి సీజన్‌లు ఏవీ మిగలలేదు';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
-  String get requestErrorPermission => 'ఈ అభ్యర్థన చేయడానికి మీకు అనుమతి లేదు';
+  String get requestErrorPermission =>
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => 'అభ్యర్థనలు';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => 'సమస్యలు';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => 'సరికొత్తవి';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => 'చివరిగా మార్చినవి';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => 'సమస్యలు లేవు';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$limit సినిమా అభ్యర్థనలలో $remaining మిగిలి ఉన్నాయి';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$limit సీజన్ అభ్యర్థనలలో $remaining మిగిలి ఉన్నాయి';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return '$nameలో భాగం';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => 'సేకరణను చూడండి';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => 'సేకరణను అభ్యర్థించండి';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total సినిమాలు · $available అందుబాటులో ఉన్నాయి';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return '$count సినిమాలను అభ్యర్థించండి';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return '$totalలో $current అభ్యర్థిస్తోంది...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return '$count సినిమాలు అభ్యర్థించబడ్డాయి';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return '$total సినిమాలలో $ok అభ్యర్థించబడ్డాయి';
+    return 'Requested $ok of $total movies';
   }
 
   @override
   String get collectionAllRequested =>
-      'అన్ని సినిమాలు ఇప్పటికే అందుబాటులో ఉన్నాయి లేదా అభ్యర్థించబడ్డాయి';
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => 'సమస్యను నివేదించండి';
+  String get reportIssue => 'Report Issue';
 
   @override
-  String get issueTypeVideo => 'వీడియో';
+  String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'ఆడియో';
+  String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => 'ఏమి తప్పు?';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => 'అన్ని ఎపిసోడ్‌లు';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => 'ఎపిసోడ్';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => 'తెరిచి ఉంది';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => 'పరిష్కరించబడింది';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => 'పరిష్కరించండి';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => 'మళ్లీ తెరవండి';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return '$name నివేదించారు';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count వ్యాఖ్యలు';
+    return '$count comments';
   }
 
   @override
-  String get addComment => 'వ్యాఖ్యను జోడించండి';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => 'ఈ సమస్యను తొలగించాలా?';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => 'నివేదికను సమర్పించండి';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'TMDB స్కోరు';
@@ -4179,7 +4175,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get originalLanguageLabel => 'అసలు భాష';
 
   @override
-  String get seasonsLabel => 'సీజన్‌లు';
+  String get seasonsLabel => 'సీజన్లు';
 
   @override
   String get episodesLabel => 'ఎపిసోడ్‌లు';
@@ -4188,7 +4184,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get access => 'యాక్సెస్';
 
   @override
-  String get add => 'జోడించండి';
+  String get add => 'జోడించు';
 
   @override
   String get address => 'చిరునామా';
@@ -4215,7 +4211,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get done => 'పూర్తయింది';
 
   @override
-  String get edit => 'సవరించండి';
+  String get edit => 'సవరించు';
 
   @override
   String get encoding => 'ఎన్కోడింగ్';
@@ -4227,7 +4223,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get forward => 'ముందుకు';
 
   @override
-  String get general => 'సాధారణం';
+  String get general => 'జనరల్';
 
   @override
   String get go => 'వెళ్ళు';
@@ -4248,7 +4244,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get networking => 'నెట్వర్కింగ్';
 
   @override
-  String get next => 'తర్వాత';
+  String get next => 'తదుపరి';
 
   @override
   String get path => 'మార్గం';
@@ -4308,7 +4304,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get status => 'స్థితి';
 
   @override
-  String get stop => 'ఆపండి';
+  String get stop => 'ఆపు';
 
   @override
   String get streaming => 'స్ట్రీమింగ్';
@@ -4317,7 +4313,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get time => 'సమయం';
 
   @override
-  String get trickplay => 'Trickplay';
+  String get trickplay => 'ట్రిక్ ప్లే';
 
   @override
   String get uninstall => 'అన్‌ఇన్‌స్టాల్ చేయండి';
@@ -4356,28 +4352,28 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminDrawerUsers => 'వినియోగదారులు';
 
   @override
-  String get adminDrawerLibraries => 'లైబ్రరీలు';
+  String get adminDrawerLibraries => 'గ్రంథాలయాలు';
 
   @override
-  String get adminDrawerDisplay => 'డిస్‌ప్లే';
+  String get adminDrawerDisplay => 'Display';
 
   @override
-  String get adminDrawerMetadata => 'మెటాడేటా';
+  String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'NFO సెట్టింగ్‌లు';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => 'ట్రాన్స్‌కోడింగ్';
 
   @override
-  String get adminDrawerResume => 'కొనసాగింపు';
+  String get adminDrawerResume => 'పునఃప్రారంభించండి';
 
   @override
   String get adminDrawerStreaming => 'స్ట్రీమింగ్';
 
   @override
-  String get adminDrawerTrickplay => 'Trickplay';
+  String get adminDrawerTrickplay => 'ట్రిక్ ప్లే';
 
   @override
   String get adminDrawerDevices => 'పరికరాలు';
@@ -4429,22 +4425,22 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'ప్లగిన్ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి: $count';
+    return 'Plugin updates available: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'పునఃప్రారంభం అవసరమైన ప్లగిన్‌లు: $count';
+    return 'Plugins requiring restart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'విఫలమైన షెడ్యూల్డ్ టాస్క్‌లు: $count';
+    return 'Failed scheduled tasks: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'ఇటీవలి హెచ్చరిక/లోపం ఎంట్రీలు: $count';
+    return 'Recent warning/error entries: $count';
   }
 
   @override
@@ -4503,7 +4499,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'లోపం: $error';
+    return 'Error: $error';
   }
 
   @override
@@ -4530,7 +4526,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'కమాండ్ విఫలమైంది: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -4552,7 +4548,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get sessionForward => 'ముందుకు';
 
   @override
-  String get sessionNext => 'తర్వాత';
+  String get sessionNext => 'తదుపరి';
 
   @override
   String get sessionVolumeDown => 'వాల్యూమ్ -';
@@ -4579,7 +4575,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get audioCodec => 'ఆడియో కోడెక్';
 
   @override
-  String get hwAccel => 'HW యాక్సెల్';
+  String get hwAccel => 'HW Accel';
 
   @override
   String get completion => 'పూర్తి';
@@ -4594,14 +4590,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminClearDates => 'తేదీలను క్లియర్ చేయండి';
 
   @override
-  String get adminActivitySeverityAll => 'అన్ని తీవ్రతలు';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => 'తేదీ పరిధి';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'కార్యకలాప లాగ్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load activity log: $error';
   }
 
   @override
@@ -4618,7 +4614,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'పరికరాన్ని అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update device: $error';
   }
 
   @override
@@ -4629,28 +4625,28 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'పరికరాన్ని తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete device: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return '\'$name\' పరికరాన్ని తీసివేయాలా? ఈ పరికరంలో వినియోగదారు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది.';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'అన్ని పరికరాలను తొలగించండి';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return '$count పరికరాలను తీసివేయాలా? ప్రభావితమైన వినియోగదారులు మళ్లీ సైన్ ఇన్ చేయాల్సి ఉంటుంది. మీ ప్రస్తుత పరికరం ప్రభావితం కాదు.';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'పరికరాలు తీసివేయబడ్డాయి';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'కొన్ని పరికరాలు తీసివేయబడ్డాయి; $countని తీసివేయడం సాధ్యపడలేదు.';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4679,7 +4675,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'స్కాన్‌ను ప్రారంభించడం విఫలమైంది: $error';
+    return 'Failed to start scan: $error';
   }
 
   @override
@@ -4690,12 +4686,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'లైబ్రరీ పేరు \"$name\"గా మార్చబడింది';
+    return 'Library renamed to \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'పేరు మార్చడం విఫలమైంది: $error';
+    return 'Failed to rename: $error';
   }
 
   @override
@@ -4703,17 +4699,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return '\"$name\" లైబ్రరీ తొలగించబడింది';
+    return 'Library \"$name\" deleted';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'లైబ్రరీని తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete library: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'పాత్‌ను జోడించడం విఫలమైంది: $error';
+    return 'Failed to add path: $error';
   }
 
   @override
@@ -4721,12 +4717,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'ఈ లైబ్రరీ నుండి \"$path\"ని తీసివేయాలా?';
+    return 'Remove \"$path\" from this library?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'పాత్‌ను తీసివేయడం విఫలమైంది: $error';
+    return 'Failed to remove path: $error';
   }
 
   @override
@@ -4734,7 +4730,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'ఎంపికలను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save options: $error';
   }
 
   @override
@@ -4765,262 +4761,251 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminMetadataCountryHint => 'ఉదా US, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'పాత్‌లు';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => 'ఎంపికలు';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => 'డౌన్‌లోడర్‌లు';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => 'మెటాడేటా సేవర్‌లు';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders => 'సబ్‌టైటిల్ డౌన్‌లోడర్‌లు';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => 'సాహిత్య డౌన్‌లోడర్‌లు';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'మెటాడేటా డౌన్‌లోడర్‌లు: $type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'ఇమేజ్ ఫెచర్‌లు: $type';
+    return 'Image fetchers: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'ఈ లైబ్రరీ రకం కోసం ఈ సర్వర్ ఏ డౌన్‌లోడర్‌లను అందించదు.';
+      'This server exposes no downloaders for this library type.';
 
   @override
-  String get adminLibrarySectionGeneral => 'సాధారణం';
+  String get adminLibrarySectionGeneral => 'General';
 
   @override
-  String get adminLibrarySectionMetadata => 'మెటాడేటా';
+  String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'ఎంబెడెడ్ సమాచారం';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => 'సబ్‌టైటిల్‌లు';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => 'ఇమేజ్‌లు';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => 'సిరీస్';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => 'సంగీతం';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => 'సినిమాలు';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor =>
-      'రియల్-టైమ్ మానిటరింగ్‌ను ప్రారంభించండి';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'ఫైల్ మార్పులను గుర్తించి వాటిని స్వయంచాలకంగా ప్రాసెస్ చేస్తుంది.';
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles =>
-      'ఆర్కైవ్‌లను మీడియా ఫైల్‌లుగా పరిగణించండి';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => 'ఫోటోలను ప్రదర్శించండి';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata =>
-      'ఆర్ట్‌వర్క్‌ను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => 'స్వయంచాలక మెటాడేటా రిఫ్రెష్';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => 'ఎప్పటికీ కాదు';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => 'డిఫాల్ట్';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => 'డిస్‌ప్లే';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => 'లైబ్రరీ డిస్‌ప్లే';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
   String get adminLibFolderView =>
-      'సాధారణ మీడియా ఫోల్డర్‌లను చూపడానికి ఫోల్డర్ వీక్షణను ప్రదర్శించండి';
+      'Display a folder view to show plain media folders';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'ప్రసారమైన సీజన్‌లలోనే స్పెషల్‌లను ప్రదర్శించండి';
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => 'సినిమాలను సేకరణలుగా సమూహపరచండి';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => 'షోలను సేకరణలుగా సమూహపరచండి';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
   String get adminLibExternalSuggestions =>
-      'సూచనలలో బాహ్య కంటెంట్‌ను చూపించండి';
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => 'జోడించిన తేదీ ప్రవర్తన';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => 'జోడించిన తేదీని దీని నుండి ఉపయోగించండి';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport => 'లైబ్రరీలోకి స్కాన్ చేసిన తేదీ';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => 'ఫైల్ సృష్టించబడిన తేదీ';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => 'మెటాడేటా మరియు ఇమేజ్‌లు';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => 'ప్రాధాన్య మెటాడేటా భాష';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => 'అధ్యాయాలు';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration => 'డమ్మీ అధ్యాయ నిడివి (సెకన్లు)';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'అధ్యాయాలు లేని మీడియా కోసం రూపొందించే అధ్యాయాల నిడివి. నిలిపివేయడానికి 0కి సెట్ చేయండి.';
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution => 'అధ్యాయ ఇమేజ్ రిజల్యూషన్';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'NFO సెట్టింగ్‌లు';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO మెటాడేటా Kodi మరియు సారూప్య క్లయింట్‌లతో అనుకూలంగా ఉంటుంది. NFO మెటాడేటాను సేవ్ చేసే అన్ని లైబ్రరీలకు సెట్టింగ్‌లు వర్తిస్తాయి.';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser =>
-      'NFO ఫైల్‌లలో వీక్షణ డేటాను నిల్వ చేయవలసిన వినియోగదారు';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths =>
-      'NFO ఫైల్‌లలో ఇమేజ్ పాత్‌లను సేవ్ చేయండి';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
   String get adminLibPathSubstitution =>
-      'NFO ఇమేజ్ పాత్‌ల కోసం పాత్ ప్రత్యామ్నాయాన్ని ప్రారంభించండి';
+      'Enable path substitution for NFO image paths';
 
   @override
   String get adminLibExtraThumbs =>
-      'extrafanart ఇమేజ్‌లను extrathumbs ఫోల్డర్‌లోకి కాపీ చేయండి';
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => 'ఏదీ లేదు';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days రోజులు';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'ఎంబెడెడ్ శీర్షికలను ఉపయోగించండి';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles =>
-      'అదనపు అంశాల కోసం ఎంబెడెడ్ శీర్షికలను ఉపయోగించండి';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos =>
-      'ఎంబెడెడ్ ఎపిసోడ్ సమాచారాన్ని ఉపయోగించండి';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles =>
-      'ఎంబెడెడ్ సబ్‌టైటిల్‌లను అనుమతించండి';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'అన్నింటిని అనుమతించండి';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => 'టెక్స్ట్ మాత్రమే';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'ఇమేజ్ మాత్రమే';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'ఏదీ లేదు';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'ఎంబెడెడ్ సబ్‌టైటిల్‌లు ఉంటే డౌన్‌లోడ్‌ను దాటవేయండి';
+      'Skip download if embedded subtitles are present';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'ఆడియో ట్రాక్ డౌన్‌లోడ్ భాషతో సరిపోతే డౌన్‌లోడ్‌ను దాటవేయండి';
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch =>
-      'పరిపూర్ణ సబ్‌టైటిల్ సరిపోలిక అవసరం';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'సబ్‌టైటిల్‌లను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి';
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => 'అధ్యాయ ఇమేజ్‌లను వెలికితీయండి';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'లైబ్రరీ స్కాన్ సమయంలో అధ్యాయ ఇమేజ్‌లను వెలికితీయండి';
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction =>
-      'Trickplay ఇమేజ్ వెలికితీతను ప్రారంభించండి';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'లైబ్రరీ స్కాన్ సమయంలో Trickplay ఇమేజ్‌లను వెలికితీయండి';
+      'Extract trickplay images during the library scan';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Trickplay ఇమేజ్‌లను మీడియా ఫోల్డర్‌లలో సేవ్ చేయండి';
+      'Save trickplay images into media folders';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'బహుళ ఫోల్డర్‌లలో విస్తరించిన సిరీస్‌ను స్వయంచాలకంగా విలీనం చేయండి';
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => 'సీజన్ జీరో డిస్‌ప్లే పేరు';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan =>
-      'ఆడియో నార్మలైజేషన్ కోసం LUFS స్కాన్‌ను ప్రారంభించండి';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'నాన్-స్టాండర్డ్ ఆర్టిస్ట్‌ల ట్యాగ్‌కు ప్రాధాన్యం ఇవ్వండి';
+      'Prefer non-standard artists tag';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'సినిమాలను సేకరణలకు స్వయంచాలకంగా జోడించండి';
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => 'లైబ్రరీ పేరు అవసరం';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'లైబ్రరీని సృష్టించడం విఫలమైంది: $error';
+    return 'Failed to create library: $error';
   }
 
   @override
@@ -5047,27 +5032,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return '$nameని నిలిపివేయాలా? వారు సైన్ ఇన్ చేయలేరు.';
+    return 'Disable $name? They will not be able to sign in.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return '$nameని ప్రారంభించాలా? వారు మళ్లీ సైన్ ఇన్ చేయగలరు.';
+    return 'Enable $name? They will be able to sign in again.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return '\"$name\" వినియోగదారు నిలిపివేయబడ్డారు';
+    return 'User \"$name\" disabled';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return '\"$name\" వినియోగదారు ప్రారంభించబడ్డారు';
+    return 'User \"$name\" enabled';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'వినియోగదారు విధానాన్ని అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update user policy: $error';
   }
 
   @override
@@ -5084,7 +5069,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'వినియోగదారుని సృష్టించడం విఫలమైంది: $error';
+    return 'Failed to create user: $error';
   }
 
   @override
@@ -5104,7 +5089,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save: $error';
   }
 
   @override
@@ -5115,7 +5100,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'విఫలమైంది: $error';
+    return 'Failed: $error';
   }
 
   @override
@@ -5256,145 +5241,143 @@ class AppLocalizationsTe extends AppLocalizations {
       'అన్ని ఛానెల్‌లకు ప్రాప్యతను ప్రారంభించండి';
 
   @override
-  String get adminParentalControl => 'పేరెంటల్ కంట్రోల్';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating => 'అనుమతించిన గరిష్ఠ పేరెంటల్ రేటింగ్';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'అధిక రేటింగ్ ఉన్న కంటెంట్ ఈ వినియోగదారు నుండి దాచబడుతుంది.';
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => 'ఏదీ లేదు';
+  String get adminParentalRatingNone => 'None';
 
   @override
   String get adminBlockUnratedItems =>
-      'రేటింగ్ సమాచారం లేని లేదా గుర్తించని అంశాలను నిరోధించండి';
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => 'పుస్తకాలు';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => 'ఛానెల్‌లు';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => 'లైవ్ TV';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => 'సినిమాలు';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => 'సంగీతం';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => 'ట్రైలర్‌లు';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'షోలు';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => 'యాక్సెస్ షెడ్యూల్‌లు';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
   String get adminAccessSchedulesHint =>
-      'దిగువన ఉన్న షెడ్యూల్ చేసిన సమయాల్లో మాత్రమే యాక్సెస్‌ను అనుమతించండి. షెడ్యూల్ సెట్ చేయనప్పుడు రోజంతా యాక్సెస్ అనుమతించబడుతుంది.';
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => 'షెడ్యూల్‌ను జోడించండి';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => 'రోజు';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => 'ప్రారంభం';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'ముగింపు';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => 'ప్రతిరోజూ';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => 'వారంలో పనిదినం';
+  String get adminDayWeekday => 'Weekday';
 
   @override
-  String get adminDayWeekend => 'వారాంతం';
+  String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => 'ఆదివారం';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => 'సోమవారం';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => 'మంగళవారం';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => 'బుధవారం';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => 'గురువారం';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => 'శుక్రవారం';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => 'శనివారం';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => 'అనుమతించిన ట్యాగ్‌లు';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
   String get adminAllowedTagsHint =>
-      'ఈ ట్యాగ్‌లు ఉన్న కంటెంట్ మాత్రమే చూపబడుతుంది. అన్నింటిని అనుమతించడానికి ఖాళీగా ఉంచండి.';
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => 'నిరోధించిన ట్యాగ్‌లు';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
   String get adminBlockedTagsHint =>
-      'ఈ ట్యాగ్‌లు ఉన్న కంటెంట్ ఈ వినియోగదారు నుండి దాచబడుతుంది.';
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => 'ట్యాగ్‌ను జోడించండి';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => 'ప్రారంభించిన పరికరాలు';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => 'ప్రారంభించిన ఛానెల్‌లు';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => 'ప్రామాణీకరణ ప్రొవైడర్';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider => 'పాస్‌వర్డ్ రీసెట్ ప్రొవైడర్';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'లాక్‌అవుట్‌కు ముందు గరిష్ఠ విఫల లాగిన్ ప్రయత్నాలు';
+      'Maximum failed login attempts before lockout';
 
   @override
   String get adminLoginAttemptsHint =>
-      'డిఫాల్ట్ కోసం 0కి, లేదా లాక్‌అవుట్‌ను నిలిపివేయడానికి -1కి సెట్ చేయండి.';
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay యాక్సెస్';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin =>
-      'గ్రూప్‌లను సృష్టించడం, చేరడం అనుమతించండి';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => 'గ్రూప్‌లలో చేరడం అనుమతించండి';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => 'యాక్సెస్ లేదు';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders =>
-      'దీని నుండి కంటెంట్ తొలగింపును అనుమతించండి';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5402,22 +5385,22 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'సర్వర్ HTTP $statusను తిరిగి ఇచ్చింది';
+    return 'Server returned HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return '$nameని ఖచ్చితంగా తొలగించాలా?';
+    return 'Are you sure you want to delete $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return '\"$name\" వినియోగదారు తొలగించబడ్డారు';
+    return 'User \"$name\" deleted';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'వినియోగదారుని తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete user: $error';
   }
 
   @override
@@ -5438,7 +5421,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'కీని సృష్టించడం విఫలమైంది: $error';
+    return 'Failed to create key: $error';
   }
 
   @override
@@ -5449,7 +5432,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return '$name కోసం కీని ఉపసంహరించాలా?';
+    return 'Revoke key for $name?';
   }
 
   @override
@@ -5457,7 +5440,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'కీని ఉపసంహరించడం విఫలమైంది: $error';
+    return 'Failed to revoke key: $error';
   }
 
   @override
@@ -5477,29 +5460,29 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'టోకెన్: $token\\nసృష్టించబడింది: $created';
+    return 'Token: $token\\nCreated: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'బ్యాకప్ సృష్టించండి';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude => 'బ్యాకప్‌లో దేనిని చేర్చాలో ఎంచుకోండి.';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => 'డేటాబేస్';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => 'ఎల్లప్పుడూ చేర్చబడుతుంది';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
-  String get adminBackupMetadata => 'మెటాడేటా';
+  String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'సబ్‌టైటిల్‌లు';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay ఇమేజ్‌లు';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => 'బ్యాకప్ సృష్టిస్తోంది...';
@@ -5509,7 +5492,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'బ్యాకప్‌ను సృష్టించడం విఫలమైంది: $error';
+    return 'Failed to create backup: $error';
   }
 
   @override
@@ -5518,12 +5501,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'మేనిఫెస్ట్: $name';
+    return 'Manifest: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'మేనిఫెస్ట్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load manifest: $error';
   }
 
   @override
@@ -5534,7 +5517,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'బ్యాకప్‌ను పునరుద్ధరించడం విఫలమైంది: $error';
+    return 'Failed to restore backup: $error';
   }
 
   @override
@@ -5566,17 +5549,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return '$pathకి సేవ్ చేయబడింది';
+    return 'Saved to $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'ఫైల్‌ను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save file: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return '$fileNameను లోడ్ చేయడం విఫలమైంది';
+    return 'Failed to load $fileName';
   }
 
   @override
@@ -5587,7 +5570,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'టాస్క్‌లను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load tasks: $error';
   }
 
   @override
@@ -5600,17 +5583,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'టాస్క్‌ను ప్రారంభించడం విఫలమైంది: $error';
+    return 'Failed to start task: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'టాస్క్‌ను ఆపడం విఫలమైంది: $error';
+    return 'Failed to stop task: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'టాస్క్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load task: $error';
   }
 
   @override
@@ -5618,12 +5601,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'ట్రిగ్గర్‌ను తీసివేయడం విఫలమైంది: $error';
+    return 'Failed to remove trigger: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'ట్రిగ్గర్‌ను జోడించడం విఫలమైంది: $error';
+    return 'Failed to add trigger: $error';
   }
 
   @override
@@ -5649,7 +5632,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours గంట(లు)';
+    return '$hours hour(s)';
   }
 
   @override
@@ -5660,7 +5643,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'ప్లగిన్‌ను టోగుల్ చేయడం విఫలమైంది: $error';
+    return 'Failed to toggle plugin: $error';
   }
 
   @override
@@ -5668,27 +5651,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return '\"$name\"ని ఖచ్చితంగా అన్‌ఇన్‌స్టాల్ చేయాలా?';
+    return 'Are you sure you want to uninstall \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'ప్లగిన్‌ను అన్‌ఇన్‌స్టాల్ చేయడం విఫలమైంది: $error';
+    return 'Failed to uninstall plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'ప్యాకేజీని ఇన్‌స్టాల్ చేయడం విఫలమైంది: $error';
+    return 'Failed to install package: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయడం విఫలమైంది: $error';
+    return 'Failed to install update: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'ప్లగిన్‌లను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load plugins: $error';
   }
 
   @override
@@ -5699,12 +5682,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయండి (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'క్యాటలాగ్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load catalog: $error';
   }
 
   @override
@@ -5726,17 +5709,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return 'సర్వర్ పునఃప్రారంభం తర్వాత \"$name\" తీసివేయబడుతుంది';
+    return '\"$name\" will be removed after server restart';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'అన్‌ఇన్‌స్టాల్ చేయడం విఫలమైంది: $error';
+    return 'Failed to uninstall: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return '\"$name\"ని v$versionకి అప్‌డేట్ చేస్తోంది...';
+    return 'Updating \"$name\" to v$version...';
   }
 
   @override
@@ -5745,7 +5728,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'ప్లగిన్‌ను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load plugin: $error';
   }
 
   @override
@@ -5753,7 +5736,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'వెర్షన్ $version';
+    return 'Version $version';
   }
 
   @override
@@ -5773,17 +5756,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return '\"$name\"ని ఖచ్చితంగా తీసివేయాలా?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'రిపోజిటరీలను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'రిపోజిటరీలను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -5800,12 +5783,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'ప్లగిన్ సెట్టింగ్‌లను లోడ్ చేయడం సాధ్యపడలేదు: $error';
+    return 'Unable to load plugin settings: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return '$uriను తెరవడం సాధ్యపడలేదు';
+    return 'Could not open $uri';
   }
 
   @override
@@ -5931,11 +5914,11 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminThrottleBuffering => 'థొరెటల్ బఫరింగ్';
 
   @override
-  String get adminTrickplaySaved => 'Trickplay సెట్టింగ్‌లు సేవ్ చేయబడ్డాయి';
+  String get adminTrickplaySaved => 'ట్రిక్‌ప్లే సెట్టింగ్‌లు సేవ్ చేయబడ్డాయి';
 
   @override
   String get adminTrickplayLoadFailed =>
-      'Trickplay సెట్టింగ్‌లను లోడ్ చేయడం విఫలమైంది';
+      'ట్రిక్‌ప్లే సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది';
 
   @override
   String get adminEnableHardwareAcceleration =>
@@ -6048,7 +6031,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminBaseUrl => 'బేస్ URL';
 
   @override
-  String get adminBaseUrlHint => 'ఉదా. /jellyfin';
+  String get adminBaseUrlHint => 'ఉదా / జెల్లీఫిన్';
 
   @override
   String get https => 'HTTPS';
@@ -6088,12 +6071,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'మెటాడేటాను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'మెటాడేటాను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save metadata: $error';
   }
 
   @override
@@ -6114,7 +6097,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'మెటాడేటాను రిఫ్రెష్ చేయడం విఫలమైంది: $error';
+    return 'Failed to refresh metadata: $error';
   }
 
   @override
@@ -6128,7 +6111,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'రిమోట్ శోధన విఫలమైంది: $error';
+    return 'Remote search failed: $error';
   }
 
   @override
@@ -6142,7 +6125,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'కంటెంట్ రకాన్ని అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -6157,12 +6140,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType ఇమేజ్ అప్‌డేట్ చేయబడింది';
+    return '$imageType image updated';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'ఇమేజ్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6173,27 +6156,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType ఇమేజ్ అప్‌లోడ్ చేయబడింది';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return '$imageType ఇమేజ్‌ను తొలగించండి';
+    return 'Delete $imageType image';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType ఇమేజ్ తొలగించబడింది';
+    return '$imageType image deleted';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'ఇమేజ్‌ను తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
@@ -6204,72 +6187,67 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'ట్యూనర్ డిస్కవరీ విఫలమైంది: $error';
+    return 'Tuner discovery failed: $error';
   }
 
   @override
   String get adminAddTuner => 'ట్యూనర్‌ని జోడించండి';
 
   @override
-  String get adminEditTuner => 'ట్యూనర్‌ను సవరించండి';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'M3U ట్యూనర్';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'ఫైల్ లేదా URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => 'ట్యూనర్ IP చిరునామా';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => 'సులభ పేరు';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
-  String get adminTunerUserAgent => 'యూజర్ ఏజెంట్';
+  String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'ఏకకాల కనెక్షన్ పరిమితి';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
   String get adminTunerCountHelp =>
-      'ట్యూనర్ ఒకేసారి అనుమతించే గరిష్ఠ స్ట్రీమ్‌ల సంఖ్య. అపరిమితం కోసం 0కి సెట్ చేయండి.';
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate =>
-      'ప్రత్యామ్నాయ గరిష్ఠ స్ట్రీమింగ్ బిట్‌రేట్';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly =>
-      'ఇష్టమైన ఛానెల్‌లను మాత్రమే దిగుమతి చేయండి';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding =>
-      'హార్డ్‌వేర్ ట్రాన్స్‌కోడింగ్‌ను అనుమతించండి';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 =>
-      'fMP4 ట్రాన్స్‌కోడింగ్ కంటైనర్‌ను అనుమతించండి';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => 'స్ట్రీమ్ షేరింగ్‌ను అనుమతించండి';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping =>
-      'స్ట్రీమ్ లూపింగ్‌ను ప్రారంభించండి';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => 'DTSను విస్మరించండి';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'ఇన్‌పుట్‌ను నేటివ్ ఫ్రేమ్ రేట్‌లో చదవండి';
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => 'ప్రొవైడర్‌ను సవరించండి';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6278,50 +6256,50 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'ఫైల్ లేదా URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'సినిమా ప్రిఫిక్స్';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => 'సినిమా వర్గాలు';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'బహుళ వర్గాలను నిలువు గీతతో వేరు చేయండి.';
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => 'పిల్లల వర్గాలు';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => 'వార్తల వర్గాలు';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => 'క్రీడల వర్గాలు';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => 'వినియోగదారు పేరు';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => 'పాస్‌వర్డ్';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => 'దేశం';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => 'ఒక దేశాన్ని ఎంచుకోండి';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => 'పోస్టల్ కోడ్';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => 'జాబితాలను పొందండి';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => 'జాబితాలు';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => 'అన్ని ట్యూనర్‌లను ప్రారంభించండి';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => 'ట్యూనర్ రకం';
@@ -6331,7 +6309,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'ట్యూనర్‌ను జోడించడం విఫలమైంది: $error';
+    return 'Failed to add tuner: $error';
   }
 
   @override
@@ -6345,12 +6323,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'ప్రొవైడర్‌ను జోడించడం విఫలమైంది: $error';
+    return 'Failed to add provider: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'ట్యూనర్‌ను తీసివేయడం విఫలమైంది: $error';
+    return 'Failed to remove tuner: $error';
   }
 
   @override
@@ -6358,16 +6336,16 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'ట్యూనర్‌ను రీసెట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to reset tuner: $error';
   }
 
   @override
   String get adminTunerResetNotSupported =>
-      'ఈ ట్యూనర్ రకం రీసెట్ చేయడానికి మద్దతివ్వదు.';
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'ప్రొవైడర్‌ను తీసివేయడం విఫలమైంది: $error';
+    return 'Failed to remove provider: $error';
   }
 
   @override
@@ -6386,45 +6364,43 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminSeriesRecordingPath => 'సిరీస్ రికార్డింగ్ మార్గం';
 
   @override
-  String get adminMovieRecordingPath => 'సినిమా రికార్డింగ్ పాత్';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => 'గైడ్ డేటా రోజులు';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => 'ఆటోమేటిక్';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days రోజులు';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor =>
-      'పోస్ట్-ప్రాసెసింగ్ అప్లికేషన్ పాత్';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs =>
-      'పోస్ట్-ప్రాసెసర్ ఆర్గ్యుమెంట్‌లు';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo => 'రికార్డింగ్ NFO మెటాడేటాను సేవ్ చేయండి';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => 'రికార్డింగ్ ఇమేజ్‌లను సేవ్ చేయండి';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => 'సమయం';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => 'రికార్డింగ్ పాత్‌లు';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'పోస్ట్-ప్రాసెసింగ్';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'గైడ్ డేటా: $value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6433,7 +6409,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'సెట్టింగ్‌లను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save settings: $error';
   }
 
   @override
@@ -6451,7 +6427,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'మ్యాపింగ్‌లను అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
@@ -6468,14 +6444,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminGuideProviders => 'గైడ్ ప్రొవైడర్లు';
 
   @override
-  String get adminRefreshGuideData => 'గైడ్ డేటాను రిఫ్రెష్ చేయండి';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted => 'గైడ్ డేటా రిఫ్రెష్ ప్రారంభమైంది';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'ఈ సర్వర్‌లో గైడ్ రిఫ్రెష్ టాస్క్ అందుబాటులో లేదు.';
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => 'ప్రదాతని జోడించండి';
@@ -6486,22 +6462,22 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'రికార్డింగ్ పాత్: $path';
+    return 'Recording path: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'సిరీస్ పాత్: $path';
+    return 'Series path: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'ప్రీ-ప్యాడింగ్: $minutes ని';
+    return 'Pre-padding: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'పోస్ట్-ప్యాడింగ్: $minutes ని';
+    return 'Post-padding: $minutes min';
   }
 
   @override
@@ -6534,7 +6510,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return '$name బ్యాకప్‌ను ఇప్పుడు పునరుద్ధరించాలా?';
+    return 'Restore backup $name now?';
   }
 
   @override
@@ -6558,7 +6534,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminLiveTvTitle => 'లైవ్ టీవీ అడ్మినిస్ట్రేషన్';
 
   @override
-  String get adminApply => 'వర్తింపజేయండి';
+  String get adminApply => 'దరఖాస్తు చేసుకోండి';
 
   @override
   String get adminNotSet => 'సెట్ కాలేదు';
@@ -6580,27 +6556,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '$minutesని క్రితం';
+    return '${minutes}m ago';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '$hoursగం క్రితం';
+    return '${hours}h ago';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '$daysరో క్రితం';
+    return '${days}d ago';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return '$fileNameను లోడ్ చేయడం విఫలమైంది';
+    return 'Failed to load $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count సరిపోలికలు';
+    return '$count matches';
   }
 
   @override
@@ -6610,7 +6586,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminMetadataEditorTitle => 'మెటాడేటా ఎడిటర్';
 
   @override
-  String get adminMetadataIdentify => 'గుర్తించండి';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => 'టైప్ చేయండి';
@@ -6710,22 +6686,22 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType ఇమేజ్ అప్‌డేట్ చేయబడింది';
+    return '$imageType image updated';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType ఇమేజ్ అప్‌లోడ్ చేయబడింది';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType ఇమేజ్ తొలగించబడింది';
+    return '$imageType image deleted';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'ఇమేజ్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6734,12 +6710,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return '$imageType ఇమేజ్‌ను తొలగించండి';
+    return 'Delete $imageType image';
   }
 
   @override
@@ -6748,12 +6724,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'ఇమేజ్‌ను తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return '$imageType ఇమేజ్‌ను ఎంచుకోండి';
+    return 'Choose $imageType image';
   }
 
   @override
@@ -6785,7 +6761,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'అప్‌డేట్ అందుబాటులో ఉంది: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -6810,7 +6786,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయండి (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
@@ -6822,7 +6798,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" ఇన్‌స్టాల్ అవుతోంది...';
+    return '\"$name\" is being installed...';
   }
 
   @override
@@ -6842,7 +6818,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name సెట్టింగ్‌లు';
+    return '$name Settings';
   }
 
   @override
@@ -6882,7 +6858,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'రిపోజిటరీలను లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -6890,15 +6866,15 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return '\"$name\"ని ఖచ్చితంగా తీసివేయాలా?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
-  String get adminReposRemove => 'తీసివేయండి';
+  String get adminReposRemove => 'తొలగించు';
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'రిపోజిటరీలను సేవ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
@@ -7024,21 +7000,19 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminBrandingEnableSplash => 'స్ప్లాష్ స్క్రీన్‌ని ప్రారంభించండి';
 
   @override
-  String get adminBrandingSplashUpload => 'ఇమేజ్‌ను అప్‌లోడ్ చేయండి';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded =>
-      'స్ప్లాష్‌స్క్రీన్ అప్‌డేట్ చేయబడింది';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed =>
-      'స్ప్లాష్‌స్క్రీన్‌ను అప్‌లోడ్ చేయడం విఫలమైంది';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => 'స్ప్లాష్‌స్క్రీన్ తీసివేయబడింది';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => 'అనుకూల స్ప్లాష్‌స్క్రీన్ లేదు';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => 'హార్డ్‌వేర్ త్వరణం';
@@ -7055,128 +7029,121 @@ class AppLocalizationsTe extends AppLocalizations {
       'దీని కోసం హార్డ్‌వేర్ డీకోడింగ్‌ని ప్రారంభించండి:';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV పరికరం';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec =>
-      'మెరుగైన NVDEC డీకోడర్‌ను ప్రారంభించండి';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'సిస్టమ్ నేటివ్ హార్డ్‌వేర్ డీకోడర్‌కు ప్రాధాన్యం ఇవ్వండి';
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth => 'హార్డ్‌వేర్ డీకోడింగ్ కలర్ డెప్త్';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-బిట్ HEVC డీకోడింగ్';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-బిట్ VP9 డీకోడింగ్';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext =>
-      'HEVC RExt 8/10-బిట్ డీకోడింగ్';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-బిట్ డీకోడింగ్';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'హార్డ్‌వేర్ ఎన్‌కోడింగ్';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding =>
-      'HEVC ఎన్‌కోడింగ్‌ను అనుమతించండి';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'AV1 ఎన్‌కోడింగ్‌ను అనుమతించండి';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Intel లో-పవర్ H.264 ఎన్‌కోడర్‌ను ప్రారంభించండి';
+      'Enable Intel low-power H.264 encoder';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Intel లో-పవర్ HEVC ఎన్‌కోడర్‌ను ప్రారంభించండి';
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => 'టోన్ మ్యాపింగ్';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping =>
-      'టోన్ మ్యాపింగ్‌ను ప్రారంభించండి';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping =>
-      'VPP టోన్ మ్యాపింగ్‌ను ప్రారంభించండి';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'VideoToolbox టోన్ మ్యాపింగ్‌ను ప్రారంభించండి';
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'టోన్ మ్యాపింగ్ అల్గారిథమ్';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => 'టోన్ మ్యాపింగ్ మోడ్';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => 'టోన్ మ్యాపింగ్ పరిధి';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'టోన్ మ్యాపింగ్ డీశాచురేషన్';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'టోన్ మ్యాపింగ్ పీక్';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => 'టోన్ మ్యాపింగ్ పరామితి';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP టోన్ మ్యాపింగ్ ప్రకాశం';
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast =>
-      'VPP టోన్ మ్యాపింగ్ కాంట్రాస్ట్';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality => 'ప్రీసెట్‌లు & నాణ్యత';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => 'ఎన్‌కోడర్ ప్రీసెట్';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 ఎన్‌కోడింగ్ CRF';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) ఎన్‌కోడింగ్ CRF';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'డీఇంటర్‌లేస్ పద్ధతి';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'డీఇంటర్‌లేస్ చేసేటప్పుడు ఫ్రేమ్ రేట్‌ను రెట్టింపు చేయండి';
+      'Double the frame rate when deinterlacing';
 
   @override
-  String get adminPlaybackAudioSection => 'ఆడియో';
+  String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr =>
-      'ఆడియో VBR ఎన్‌కోడింగ్‌ను ప్రారంభించండి';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost => 'ఆడియో డౌన్‌మిక్స్ బూస్ట్';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'స్టీరియో డౌన్‌మిక్స్ అల్గారిథమ్';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'గరిష్ఠ మక్సింగ్ క్యూ పరిమాణం';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
-  String get adminPlaybackAutoOption => 'ఆటో';
+  String get adminPlaybackAutoOption => 'Auto';
 
   @override
   String get adminPlaybackEncoding => 'ఎన్కోడింగ్';
@@ -7296,10 +7263,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminTaskNeverRun => 'ఎప్పుడూ పరుగెత్తకండి';
 
   @override
-  String get adminTaskStop => 'ఆపండి';
+  String get adminTaskStop => 'ఆపు';
 
   @override
-  String get adminRunningTasks => 'నడుస్తున్న టాస్క్‌లు';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => 'పరుగు';
@@ -7321,17 +7288,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'ప్రతిరోజూ $timeకి';
+    return 'Daily at $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'ప్రతి $day $timeకి';
+    return 'Every $day at $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'ప్రతి $duration';
+    return 'Every $duration';
   }
 
   @override
@@ -7369,8 +7336,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count గంటలు',
-      one: '1 గంట',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7398,17 +7365,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '$daysరో క్రితం';
+    return '${days}d ago';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '$hoursగం క్రితం';
+    return '${hours}h ago';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '$minutesని క్రితం';
+    return '${minutes}m ago';
   }
 
   @override
@@ -7416,27 +7383,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '$minutesని';
+    return '${minutes}m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '$hoursగం';
+    return '${hours}h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '$daysరో';
+    return '${days}d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$day/$month';
+    return '$month/$day';
   }
 
   @override
   String get adminTrickplayDescription =>
-      'సీక్ ప్రివ్యూ థంబ్‌నెయిల్‌ల కోసం Trickplay ఇమేజ్ ఉత్పత్తిని కాన్ఫిగర్ చేయండి.';
+      'సీక్ ప్రివ్యూ థంబ్‌నెయిల్‌ల కోసం ట్రిక్‌ప్లే ఇమేజ్ జనరేషన్‌ను కాన్ఫిగర్ చేయండి.';
 
   @override
   String get adminNetworkingPublicHttpsPort => 'పబ్లిక్ HTTPS పోర్ట్';
@@ -7445,50 +7412,49 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'బేస్ URL';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'ఉదా. /jellyfin';
+  String get adminNetworkingBaseUrlHint => 'ఉదా / జెల్లీఫిన్';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'పబ్లిక్ HTTP పోర్ట్';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => 'HTTPS అవసరం';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'అన్ని రిమోట్ అభ్యర్థనలను HTTPSకి రీడైరెక్ట్ చేస్తుంది. సర్వర్‌కు చెల్లుబాటు అయ్యే సర్టిఫికేట్ లేకపోతే ప్రభావం ఉండదు.';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => 'సర్టిఫికేట్ పాస్‌వర్డ్';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'IP సెట్టింగ్‌లు';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'IPv4ను ప్రారంభించండి';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'IPv6ను ప్రారంభించండి';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery =>
-      'స్వయంచాలక పోర్ట్ మ్యాపింగ్‌ను ప్రారంభించండి';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN నెట్‌వర్క్‌లు';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'స్థానిక నెట్‌వర్క్‌లో ఉన్నట్లుగా పరిగణించే IP చిరునామాలు లేదా CIDR సబ్‌నెట్‌ల జాబితా, కామా లేదా లైన్ ద్వారా వేరు చేయబడింది.';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => 'ప్రచురించిన సర్వర్ URIలు';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'సబ్‌నెట్ లేదా చిరునామాను ప్రచురించిన URLకి మ్యాప్ చేయండి, ఉదా. all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'సర్టిఫికేట్ మార్గం';
@@ -7518,11 +7484,11 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'థొరెటల్ బఫరింగ్';
 
   @override
-  String get adminPlaybackThrottleDelay => 'థ్రొటిల్ ఆలస్యం (సెకన్లు)';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'వెంటనే సబ్‌టైటిల్ వెలికితీతను అనుమతించండి';
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => 'కనిష్ట రెజ్యూమ్ శాతం';
@@ -7571,7 +7537,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'కంటెంట్ రకాన్ని అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -7579,23 +7545,22 @@ class AppLocalizationsTe extends AppLocalizations {
       'స్లో రెస్పాన్స్ థ్రెషోల్డ్ (మిసె)';
 
   @override
-  String get adminGeneralEnableSlowResponse =>
-      'నెమ్మది ప్రతిస్పందన హెచ్చరికలను ప్రారంభించండి';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => 'Quick Connectను ప్రారంభించండి';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => 'సర్వర్';
+  String get adminGeneralSectionServer => 'Server';
 
   @override
-  String get adminGeneralSectionMetadata => 'మెటాడేటా';
+  String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'పాత్‌లు';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => 'పనితీరు';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => 'కాష్ మార్గం';
@@ -7607,7 +7572,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminGeneralServerName => 'సర్వర్ పేరు';
 
   @override
-  String get adminGeneralDisplayLanguage => 'ప్రాధాన్య డిస్‌ప్లే భాష';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => 'సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది';
@@ -7617,19 +7582,19 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'మ్యాపింగ్‌లను అప్‌డేట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'సమయ పరిమితి: $duration';
+    return 'Time limit: $duration';
   }
 
   @override
   String get folders => 'ఫోల్డర్లు';
 
   @override
-  String get libraries => 'లైబ్రరీలు';
+  String get libraries => 'గ్రంథాలయాలు';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7659,8 +7624,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# పాల్గొనేవారు',
-      one: '# పాల్గొనేవారు',
+      other: '# participants',
+      one: '# participant',
     );
     return '$_temp0';
   }
@@ -7704,7 +7669,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'అంశం $index';
+    return 'Item $index';
   }
 
   @override
@@ -7752,12 +7717,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName SyncPlay గ్రూప్‌లో చేరారు';
+    return '$userName joined SyncPlay group';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName SyncPlay గ్రూప్ నుండి నిష్క్రమించారు';
+    return '$userName left SyncPlay group';
   }
 
   @override
@@ -7769,7 +7734,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return '$groupNameకి ప్లేబ్యాక్‌ను సింక్ చేస్తోంది';
+    return 'Syncing playback to $groupName';
   }
 
   @override
@@ -7807,8 +7772,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# వరుసలు కనుగొనబడ్డాయి',
-      one: '# వరుస కనుగొనబడింది',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7849,20 +7814,20 @@ class AppLocalizationsTe extends AppLocalizations {
   String get offlineSavedMedia => 'సేవ్ చేయబడిన మీడియా';
 
   @override
-  String get offlineBannerTitle => 'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => 'మీ డౌన్‌లోడ్‌లను చూపుతోంది';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => 'డౌన్‌లోడ్‌లు';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => 'మీ సర్వర్‌ను చేరుకోలేకపోతోంది';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'అది తిరిగి వచ్చే వరకు డౌన్‌లోడ్‌ల నుండి ప్లే చేస్తోంది';
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7878,12 +7843,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'కాస్ట్ నియంత్రణ విఫలమైంది: $error';
+    return 'Cast control failed: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind నియంత్రణలు';
+    return '$kind Controls';
   }
 
   @override
@@ -7894,7 +7859,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return '$kindని ఆపండి';
+    return 'Stop $kind';
   }
 
   @override
@@ -7918,12 +7883,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return '$length-అంకెల PINను నమోదు చేయండి';
+    return 'Enter a $length-digit PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'మీ $length-అంకెల PINను నమోదు చేయండి';
+    return 'Enter your $length-digit PIN';
   }
 
   @override
@@ -7936,42 +7901,41 @@ class AppLocalizationsTe extends AppLocalizations {
   String get pinForgot => 'పిన్ మర్చిపోయారా?';
 
   @override
-  String get pinClear => 'క్లియర్ చేయండి';
+  String get pinClear => 'క్లియర్';
 
   @override
   String get pinBackspace => 'బ్యాక్‌స్పేస్';
 
   @override
-  String get quickConnectAuthorized =>
-      'Quick Connect అభ్యర్థన అధీకృతం చేయబడింది.';
+  String get quickConnectAuthorized => 'త్వరిత కనెక్ట్ అభ్యర్థన అధికారం.';
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'Quick Connect కోడ్ చెల్లదు లేదా గడువు ముగిసింది.';
+      'త్వరిత కనెక్ట్ కోడ్ చెల్లదు లేదా గడువు ముగిసింది.';
 
   @override
   String get quickConnectNotSupported =>
-      'ఈ సర్వర్‌లో Quick Connectకు మద్దతు లేదు.';
+      'ఈ సర్వర్‌లో త్వరిత అనుసంధానానికి మద్దతు లేదు.';
 
   @override
   String get quickConnectAuthorizeFailed =>
-      'Quick Connect కోడ్‌ను అధీకృతం చేయడం విఫలమైంది.';
+      'త్వరిత కనెక్ట్ కోడ్‌ని ప్రామాణీకరించడంలో విఫలమైంది.';
 
   @override
   String get quickConnectDisabled =>
-      'ఈ సర్వర్‌లో Quick Connect నిలిపివేయబడింది.';
+      'ఈ సర్వర్‌లో త్వరిత అనుసంధానం నిలిపివేయబడింది.';
 
   @override
   String get quickConnectForbidden =>
-      'మీ ఖాతా ఈ Quick Connect అభ్యర్థనను అధీకృతం చేయలేదు.';
+      'మీ ఖాతా ఈ త్వరిత అనుసంధాన అభ్యర్థనను ప్రామాణీకరించలేదు.';
 
   @override
   String get quickConnectNotFound =>
-      'Quick Connect కోడ్ కనుగొనబడలేదు. కొత్త కోడ్‌ను ప్రయత్నించండి.';
+      'త్వరిత కనెక్ట్ కోడ్ కనుగొనబడలేదు. కొత్త కోడ్‌ని ప్రయత్నించండి.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect విఫలమైంది: $message';
+    return 'Quick Connect failed: $message';
   }
 
   @override
@@ -7982,7 +7946,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'కమాండ్ విఫలమైంది: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -8011,7 +7975,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'కాస్టింగ్‌ను ప్రారంభించడం విఫలమైంది: $error';
+    return 'Failed to start casting: $error';
   }
 
   @override
@@ -8056,7 +8020,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return '$name డౌన్‌లోడ్ అవుతోంది...';
+    return 'Downloading $name...';
   }
 
   @override
@@ -8137,14 +8101,14 @@ class AppLocalizationsTe extends AppLocalizations {
       'ప్లేబ్యాక్ పాజ్ చేయబడింది. మీరు ఇంకా చూస్తున్నారా?';
 
   @override
-  String get stillWatchingStop => 'ఆపండి';
+  String get stillWatchingStop => 'ఆపు';
 
   @override
   String get stillWatchingContinue => 'కొనసాగించు';
 
   @override
   String skipSegment(String segment) {
-    return '$segmentను దాటవేయండి';
+    return 'Skip $segment';
   }
 
   @override
@@ -8155,12 +8119,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return '$current/$total డౌన్‌లోడ్ అవుతోంది — $fileName';
+    return 'Downloading $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return '$fileName డౌన్‌లోడ్ అవుతోంది';
+    return 'Downloading $fileName';
   }
 
   @override
@@ -8224,13 +8188,13 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'చూడటం కొనసాగించండి నుండి దాచండి';
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => 'తదుపరి నుండి దాచండి';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => 'సేకరణకు జోడించండి';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8266,7 +8230,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsIntegrationsSubtitle =>
-      'ప్లగిన్ సింక్, Seerr, రేటింగ్‌లు మరియు మరిన్ని';
+      'ప్లగిన్ సమకాలీకరణ, సీర్, రేటింగ్‌లు మరియు మరిన్ని';
 
   @override
   String get settingsAboutSubtitle =>
@@ -8285,15 +8249,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get settingsAlphabetical => 'అక్షరక్రమం';
 
   @override
-  String get settingsConnectionSection => 'కనెక్షన్';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts =>
-      'సెల్ఫ్-సైన్డ్ సర్టిఫికేట్‌లను అనుమతించండి';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'సెల్ఫ్-సైన్డ్ లేదా ప్రైవేట్-CA TLS సర్టిఫికేట్‌లను ఉపయోగించే సర్వర్‌లను విశ్వసించండి. మీరు నియంత్రించే సర్వర్‌లకు మాత్రమే ప్రారంభించండి. ఇది అన్ని కనెక్షన్‌లకు సర్టిఫికేట్ ధ్రువీకరణను నిలిపివేస్తుంది.';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'గోప్యత & భద్రత';
@@ -8309,11 +8272,11 @@ class AppLocalizationsTe extends AppLocalizations {
       'థీమ్ స్వరాలు, బ్యాక్‌డ్రాప్‌లు, వీక్షించిన సూచికలు మరియు థీమ్ సంగీతం';
 
   @override
-  String get settingsDetailsScreen => 'వివరాల స్క్రీన్';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'శైలి, నేపథ్య బ్లర్, ట్యాబ్ ప్రవర్తన';
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => 'హోమ్ పేజీ';
@@ -8351,11 +8314,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'నావిగేషన్ బార్‌లో Seerr బటన్‌ను చూపించండి';
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'టాప్ నావిగేషన్ బార్‌లో టెక్స్ట్ లేబుల్‌లను ఎల్లప్పుడూ చూపించండి';
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8376,7 +8339,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsPluginScreenDescription =>
-      'అదనపు రేటింగ్ మూలాలు, Seerr అభ్యర్థనలు, సింక్ చేసిన ప్రాధాన్యతలతో సహా సర్వర్-వైపు ఇంటిగ్రేషన్‌లను Moonbase శక్తివంతం చేస్తుంది.';
+      'Moonbase అదనపు రేటింగ్ మూలాధారాలు, సీర్ అభ్యర్థనలు మరియు సమకాలీకరించబడిన ప్రాధాన్యతలతో సహా సర్వర్-సైడ్ ఇంటిగ్రేషన్‌లకు శక్తినిస్తుంది.';
 
   @override
   String get settingsOfflineDownloads => 'ఆఫ్‌లైన్ డౌన్‌లోడ్‌లు';
@@ -8425,7 +8388,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'డెవలపర్‌కు ఒక కాఫీని దానం చేయండి';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'చట్టపరమైన';
@@ -8459,8 +8422,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# లైసెన్స్ నోటీసులు',
-      one: '# లైసెన్స్ నోటీసు',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8510,16 +8473,16 @@ class AppLocalizationsTe extends AppLocalizations {
       'పరిచయాలు మరియు అవుట్‌రోలను దాటవేయాలా?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'మీడియా సెగ్మెంట్ కౌంట్‌డౌన్';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => 'ప్రోగ్రెస్ బార్';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => 'టైమర్';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'ఏదీ లేదు';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'ప్రాంప్ట్ యూజర్';
@@ -8555,13 +8518,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'Media3 (సిఫార్సు చేయబడింది)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (లెగసీ)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (లెగసీ)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (సిఫార్సు చేయబడింది)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision ఫాల్‌బ్యాక్';
@@ -8751,7 +8714,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'ఇటీవల విడుదలైన $libraryName';
+    return 'Recently Released $libraryName';
   }
 
   @override
@@ -8784,11 +8747,11 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఫోర్స్ నాన్-టన్నల్ ప్లేబ్యాక్. టన్నెలింగ్ ఆడియో/వీడియో నిలిపివేతలు ఉన్న పరికరాలలో ఉపయోగకరంగా ఉంటుంది.';
 
   @override
-  String get enableTunnelingTitle => 'టన్నెలింగ్‌ను ప్రారంభించండి';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'అధునాతన. ఆడియో మరియు వీడియోను కపుల్డ్ హార్డ్‌వేర్ పాత్ ద్వారా పంపుతుంది. కొన్ని పరికరాల్లో ఆడియో/వీడియో డ్రాప్‌అవుట్‌లను కలిగిస్తుంది కాబట్టి డిఫాల్ట్‌గా ఆఫ్‌లో ఉంటుంది.';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title =>
@@ -8815,15 +8778,14 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన ఫాంట్-పరిమాణ సూచనలను వర్తింపజేయండి. మీ శైలి ప్రాధాన్యతల నుండి ఉపశీర్షిక పరిమాణాన్ని ఉపయోగించడాన్ని నిలిపివేయండి.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'మీడియా వివరాలను చూపించండి';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'లైబ్రరీ పేజీల ఎగువన ఎంచుకున్న అంశం వివరాలను చూపుతుంది.';
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries =>
-      'బ్రౌజ్ చేస్తున్నప్పుడు బ్యాక్‌డ్రాప్‌లను దాచాలా?';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
   String get useDetailedSubHeadings => 'వివరణాత్మక ఉపశీర్షికలను ఉపయోగించండి';
@@ -8841,37 +8803,37 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
-  String get themeStore => 'థీమ్ స్టోర్';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle => 'కమ్యూనిటీ థీమ్‌లను బ్రౌజ్ చేసి సేవ్ చేయండి';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
   String get themeStoreDescription =>
-      'మీ ఇతర సేవ్ చేసిన థీమ్‌ల వలె దాన్ని ఉపయోగించడానికి ఒక థీమ్‌ను సేవ్ చేయండి.';
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => 'ప్రస్తుతం థీమ్‌లు ఏవీ అందుబాటులో లేవు.';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
   String get themeStoreLoadFailed =>
-      'థీమ్ స్టోర్‌ను లోడ్ చేయడం సాధ్యపడలేదు. మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.';
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => 'సేవ్ చేయండి';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => 'సేవ్ చేసి వర్తింపజేయండి';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => 'సేవ్ చేయబడింది';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => 'ఈ థీమ్‌ను లోడ్ చేయడం సాధ్యపడలేదు.';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return '\"$themeName\" సేవ్ చేయబడింది.';
+    return 'Saved \"$themeName\".';
   }
 
   @override
@@ -8930,21 +8892,21 @@ class AppLocalizationsTe extends AppLocalizations {
   String get homeRowsSection => 'హోమ్ వరుసలు';
 
   @override
-  String get homeRowDisplay => 'హోమ్ వరుస డిస్‌ప్లే';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => 'హోమ్ వరుస విభాగాలు';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => 'హోమ్ వరుస టోగుల్‌లు';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'లైబ్రరీ-ఆధారిత హోమ్ వరుస వర్గాలను ప్రారంభించండి లేదా నిలిపివేయండి';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
-      'హోమ్ విభాగాలలో వరుసలను ప్రదర్శించడానికి కింది టోగుల్‌లను ప్రారంభించండి.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'అడ్డు వరుసల రకం';
@@ -9003,56 +8965,55 @@ class AppLocalizationsTe extends AppLocalizations {
       'చలన చిత్రాలను, సిరీస్‌లను లేదా రెండింటినీ జెనర్‌ల వరుసలలో చూపండి.';
 
   @override
-  String get displayPlaylistsRows => 'ప్లేజాబితా వరుసలను చూపించండి';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'హోమ్ విభాగాలలో ప్లేజాబితా వరుసలను చూపుతుంది.';
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => 'ప్లేజాబితా వరుస క్రమబద్ధీకరణ';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
   String get playlistsRowSortingDescription =>
-      'ప్లేజాబితా వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.';
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => 'ఆడియో వరుసలను చూపించండి';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle =>
-      'హోమ్ విభాగాలలో ఆడియో వరుసలను చూపుతుంది.';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => 'ఆడియో వరుసల క్రమబద్ధీకరణ';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
   String get audioRowsSortingDescription =>
-      'ఆడియో వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.';
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => 'ఆడియో ప్లేజాబితాలు';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get appearance => 'స్వరూపం';
 
   @override
-  String get layout => 'లేఅవుట్';
+  String get layout => 'Layout';
 
   @override
-  String get theme => 'థీమ్';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => 'కీబోర్డ్';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => 'బటన్‌లు';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => 'రెండరింగ్';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'MPV కాన్ఫిగరేషన్';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'కార్డ్ పరిమాణం';
@@ -9062,7 +9023,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get externalPlayerAppDescription =>
-      'లాంగ్-ప్రెస్ ప్లే ఎంపికను ప్రారంభించడానికి బాహ్య ప్లేయర్‌ను సెట్ చేయండి';
+      'Set external player to enable long-press play option';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
@@ -9326,10 +9287,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get guestAppearances => 'అతిథి ప్రదర్శనలు';
 
   @override
-  String get appearancesSeerr => 'కనిపించినవి (Seerr)';
+  String get appearancesSeerr => 'ప్రదర్శనలు (సీర్)';
 
   @override
-  String get crewContributionsSeerr => 'సిబ్బంది సహకారాలు (Seerr)';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
   String get watchWithGroup => 'సమూహంతో చూడండి';
@@ -9415,8 +9376,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count లైబ్రరీలు',
-      one: '1 లైబ్రరీ',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
@@ -9507,7 +9468,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get mixedMoviesAndShows => 'మిశ్రమ చలనచిత్రాలు & ప్రదర్శనలు';
 
   @override
-  String get intelQuickSync => 'Intel Quick Sync';
+  String get intelQuickSync => 'ఇంటెల్ త్వరిత సమకాలీకరణ';
 
   @override
   String get rockchipMpp => 'రాక్‌చిప్ MPP';
@@ -9575,13 +9536,13 @@ class AppLocalizationsTe extends AppLocalizations {
   String get loadingShuffle => 'షఫుల్ లోడ్ అవుతోంది...';
 
   @override
-  String get libraryShuffleLabel => 'లైబ్రరీ షఫుల్';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => 'యాదృచ్ఛిక షఫుల్';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => 'శైలుల షఫుల్';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
   String get autoHdrSwitching => 'ఆటో HDR స్విచింగ్';
@@ -9594,222 +9555,222 @@ class AppLocalizationsTe extends AppLocalizations {
   String get whenFullscreen => 'పూర్తి స్క్రీన్‌లో ఉన్నప్పుడు';
 
   @override
-  String get changeArtwork => 'ఆర్ట్‌వర్క్‌ను మార్చండి';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => 'తప్పిపోయింది';
+  String get missing => 'Missing';
 
   @override
   String get transcodingLimits => 'ట్రాన్స్‌కోడింగ్ పరిమితులు';
 
   @override
-  String get clearAllArtworkButton => 'మొత్తం ఆర్ట్‌వర్క్‌ను క్లియర్ చేయాలా?';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'డౌన్‌లోడ్ చేసిన మొత్తం ఆర్ట్‌వర్క్‌ను ఖచ్చితంగా క్లియర్ చేయాలా?';
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => 'క్లియర్‌ను నిర్ధారించండి';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'ఈ $itemTypeను ఖచ్చితంగా క్లియర్ చేయాలా?';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => 'అప్‌లోడ్ చేయాలా?';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => 'రిజల్యూషన్: ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'ఇంటర్‌ఫేస్ భాషలో మాత్రమే ఆర్ట్‌వర్క్‌ను చూపించండి';
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => 'అన్నింటిని క్లియర్ చేయడాన్ని నిర్ధారించండి';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => 'ఇమేజ్ విజయవంతంగా అప్‌లోడ్ చేయబడింది!';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'ఇమేజ్‌ను అప్‌లోడ్ చేయడం విఫలమైంది: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'ఇమేజ్‌ను సెట్ చేయడం విఫలమైంది: $error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'ఇమేజ్‌ను తొలగించడం విఫలమైంది: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'మొత్తం ఆర్ట్‌వర్క్‌ను క్లియర్ చేయడం విఫలమైంది: $error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => 'అవును';
+  String get yes => 'Yes';
 
   @override
-  String get posterCategory => 'పోస్టర్';
+  String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'బ్యాక్‌డ్రాప్‌లు';
+  String get backdropsCategory => 'Backdrops';
 
   @override
-  String get bannerCategory => 'బ్యానర్';
+  String get bannerCategory => 'Banner';
 
   @override
-  String get logoCategory => 'లోగో';
+  String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => 'థంబ్‌నెయిల్';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => 'ఆర్ట్';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => 'డిస్క్ ఆర్ట్';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'స్క్రీన్‌షాట్';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => 'బాక్స్ కవర్';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => 'బాక్స్ వెనుక కవర్';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => 'మెను ఆర్ట్';
+  String get menuArtCategory => 'Menu Art';
 
   @override
-  String get confirmItemPoster => 'పోస్టర్';
+  String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => 'బ్యాక్‌డ్రాప్';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
-  String get confirmItemBanner => 'బ్యానర్';
+  String get confirmItemBanner => 'banner';
 
   @override
-  String get confirmItemLogo => 'లోగో';
+  String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => 'థంబ్‌నెయిల్';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => 'ఆర్ట్';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => 'డిస్క్ ఆర్ట్';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'స్క్రీన్‌షాట్';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => 'బాక్స్ కవర్';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => 'బాక్స్ వెనుక కవర్';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => 'మెను ఆర్ట్';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'అన్నీ';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => 'అధిక (1080p+)';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => 'మధ్యస్థ (720p)';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => 'తక్కువ (<720p)';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => 'మూలాలు';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => 'అధ్యాయాలు';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => 'బుక్‌మార్క్‌లు';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => 'గమనికలు';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => 'క్యూ';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => 'టైమ్‌లైన్';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => 'టైమ్‌లైన్ ఖాళీగా ఉంది';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'మొత్తం పుస్తకం';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => 'కేంద్రీకృత టైమ్‌లైన్';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => 'బుక్‌మార్క్‌లను ఎగుమతి చేయండి';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => 'గమనికలను ఎగుమతి చేయండి';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => 'అన్నింటిని ఎగుమతి చేయండి';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return '$pathకి ఎగుమతి చేయబడింది';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'ఎగుమతి విఫలమైంది: $error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => 'సాహిత్యం';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => 'బుక్‌మార్క్‌ను జోడించండి';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => 'గమనికను జోడించండి';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => 'గమనికను సవరించండి';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => 'ఈ క్షణం కోసం ఒక గమనిక రాయండి';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => 'స్లీప్ టైమర్';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => 'ఆఫ్';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => 'అధ్యాయం ముగింపు';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => 'అనుకూలం';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining మిగిలి ఉంది';
+    return '$remaining left';
   }
 
   @override
@@ -9817,58 +9778,58 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ని',
-      one: '1 ని',
+      other: '$count min',
+      one: '1 min',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'ప్లేబ్యాక్ వేగం';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => 'మిగిలి ఉంది';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => 'గడిచింది';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'వెనుకకు ${seconds}s';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'ముందుకు ${seconds}s';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'మునుపటి అధ్యాయం';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => 'తదుపరి అధ్యాయం';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'అధ్యాయం $current / $total';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => 'అధ్యాయాలు లేవు';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => 'ఇంకా బుక్‌మార్క్‌లు లేవు';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => 'ఇంకా గమనికలు లేవు';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return '$position వద్ద బుక్‌మార్క్ జోడించబడింది';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => '1.0xకి రీసెట్ చేయండి';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9876,250 +9837,249 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'సేవ్ చేయండి';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => 'రద్దు చేయండి';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => 'తొలగించండి';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => 'సబ్‌టైటిల్ ప్రాధాన్యతలు';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
   String get subtitlePreferencesDescription =>
-      'సబ్‌టైటిల్ మోడ్‌లు, డిఫాల్ట్ భాషలు, రూపం, రెండరింగ్ ఎంపికలను మార్చండి.';
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => 'సబ్‌టైటిల్ రెండరింగ్';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => 'డిస్‌ప్లే ఎంపికలు';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => 'విడుదల తేదీ (ఆరోహణ)';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => 'విడుదల తేదీ (అవరోహణ)';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => 'సహకారాలను సమూహపరచండి';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => 'బహుళ పాత్రలను సమూహపరచండి';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'లైబ్రరీ రైట్ యాక్సెస్ హెచ్చరిక';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => 'దీన్ని ఎలా సరిచేయాలి:';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. సర్వర్‌లో మీ మీడియా లైబ్రరీ ఫోల్డర్‌ల కోసం Jellyfin సర్వీస్ వినియోగదారుకు (ఉదా. jellyfin లేదా Docker PUID/PGID) రైట్ అనుమతులను మంజూరు చేయండి.\n\n2. లేదా, మీ Jellyfin Dashboard -> Librariesకి వెళ్లి, ఈ లైబ్రరీని సవరించి, ఆర్ట్‌వర్క్‌ను Jellyfin అంతర్గత డేటాబేస్‌లో నిల్వ చేయడానికి \'Save artwork into media folders\'ను నిలిపివేయండి.';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => 'కొట్టివేయండి';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'మీ \'$libraryName\' లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది (\'Save artwork into media folders\' ప్రారంభించబడింది). అయితే, Jellyfin రైట్ యాక్సెస్‌ను పరీక్షించింది మరియు ఈ డైరెక్టరీలో ఫైల్‌లను రాయడానికి అనుమతి లేదు:\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'Jellyfin ఆర్ట్‌వర్క్‌ను అప్‌డేట్ చేయడంలో విఫలమైనట్లు కనిపిస్తోంది. మీ లైబ్రరీ ఆర్ట్‌వర్క్‌ను నేరుగా మీడియా ఫోల్డర్‌లలో సేవ్ చేయడానికి కాన్ఫిగర్ చేయబడింది (\'Save artwork into media folders\' ప్రారంభించబడింది). Jellyfin సర్వర్ ప్రాసెస్‌కు మీ మీడియా డైరెక్టరీలలో ఫైల్‌లను రాయడానికి అనుమతి లేనప్పుడు ఈ లోపం సాధారణంగా సంభవిస్తుంది.';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'బాహ్య జాబితాలు';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => 'మళ్లీ ప్లే చేయండి';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => 'ఫైల్ సమాచారం';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'పరిమాణం: $size  •  ఫార్మాట్: $format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'అన్ని ($count) ఆడియో ట్రాక్‌లను చూపించండి';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'అన్ని ($count) సబ్‌టైటిల్ ట్రాక్‌లను చూపించండి';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay =>
-      'డైరెక్ట్ ప్లే సామర్థ్యాన్ని తనిఖీ చేస్తోంది...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel => 'డైరెక్ట్ ప్లే సామర్థ్యం: ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => 'బలవంతం';
+  String get forced => 'Forced';
 
   @override
   String get transcodeContainerNotSupported =>
-      'కంటైనర్ ఫార్మాట్‌కు ప్లేయర్ మద్దతివ్వదు.';
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'వీడియో కోడెక్‌కు మద్దతు లేదు.';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'ఆడియో కోడెక్‌కు మద్దతు లేదు.';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'సబ్‌టైటిల్ ఫార్మాట్‌కు మద్దతు లేదు (బర్నింగ్ అవసరం).';
+      'Subtitle format is not supported (requires burning).';
 
   @override
   String get transcodeAudioProfileNotSupported =>
-      'ఆడియో ప్రొఫైల్‌కు మద్దతు లేదు.';
+      'Audio profile is not supported.';
 
   @override
   String get transcodeVideoProfileNotSupported =>
-      'వీడియో ప్రొఫైల్‌కు మద్దతు లేదు.';
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'వీడియో లెవల్‌కు మద్దతు లేదు.';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'ఈ పరికరం వీడియో రిజల్యూషన్‌కు మద్దతివ్వదు.';
+      'Video resolution is not supported by this device.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'వీడియో బిట్ డెప్త్‌కు మద్దతు లేదు.';
+      'Video bit depth is not supported.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'వీడియో ఫ్రేమ్‌రేట్‌కు మద్దతు లేదు.';
+      'Video framerate is not supported.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'ఫైల్ బిట్‌రేట్ ప్లేయర్ స్ట్రీమింగ్ పరిమితిని మించింది.';
+      'File bitrate exceeds player streaming limit.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'వీడియో బిట్‌రేట్ స్ట్రీమింగ్ పరిమితిని మించింది.';
+      'Video bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'ఆడియో బిట్‌రేట్ స్ట్రీమింగ్ పరిమితిని మించింది.';
+      'Audio bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'ఆడియో ఛానెల్‌ల సంఖ్యకు మద్దతు లేదు.';
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => 'అక్షర క్రమం';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => 'విడుదల క్రమం (ఆరోహణ)';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => 'విడుదల క్రమం (అవరోహణ)';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => 'అనుకూలం (డ్రాగ్-అండ్-డ్రాప్)';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => 'ప్లేజాబితా క్రమబద్ధీకరణ ఎంపికలు';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => 'క్రమబద్ధీకరణను రీసెట్ చేయండి';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'S$season:E$episodeను మళ్లీ చూడండి';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'ప్లేజాబితాను మళ్లీ చూడండి';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => 'సబ్‌టైటిల్‌లు ఏవీ కనుగొనబడలేదు.';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => 'అడ్మిన్ నియంత్రణలు';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => 'రెండరింగ్ ఇంజిన్ (Impeller)';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller అనేది సున్నితమైన యానిమేషన్‌లు మరియు తక్కువ స్టటర్ కోసం Flutter ఆధునిక GPU రెండరర్. కొన్ని TV బాక్స్‌లు మరియు పాత GPUలలో ఇది గ్లిచ్‌లు లేదా బ్లాక్ వీడియోను కలిగిస్తుంది; అవి కనిపిస్తే దీన్ని ఆఫ్ చేయండి. ఆటోమేటిక్ మీ పరికరానికి ఉత్తమ డిఫాల్ట్‌ను ఎంచుకుంటుంది. వర్తింపజేయడానికి Moonfinను పునఃప్రారంభించండి.';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => 'ఆటోమేటిక్';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => 'ఆన్';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => 'ఆఫ్';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => 'పునఃప్రారంభం అవసరం';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'రెండరింగ్ ఇంజిన్‌ను మార్చడానికి Moonfin పునఃప్రారంభం కావాలి. ఇప్పుడు యాప్‌ను మూసివేసి, వర్తింపజేయడానికి మళ్లీ తెరవండి.';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => 'ఇప్పుడు యాప్‌ను మూసివేయండి';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => 'లైబ్రరీని రిఫ్రెష్ చేయండి';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => 'అన్ని లైబ్రరీలను రిఫ్రెష్ చేయండి';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest => 'జోడించిన తేదీ (పాతవి ముందుగా)';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => 'జోడించిన తేదీ (కొత్తవి ముందుగా)';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => 'అక్షర క్రమం (A నుండి Z)';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'అక్షర క్రమం (Z నుండి A)';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'సర్వర్ అనలిటిక్స్ లోడ్ అవుతోంది... $percentage%';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'మూలంతో సరిపోల్చండి';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => 'IMDb టాప్ 250 సినిమాలు';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => 'IMDb టాప్ 250 TV షోలు';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb అత్యంత జనాదరణ పొందిన సినిమాలు';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb అత్యంత జనాదరణ పొందిన TV షోలు';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb అత్యల్ప రేటింగ్ సినిమాలు';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

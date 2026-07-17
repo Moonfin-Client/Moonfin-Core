@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:dio/dio.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
@@ -578,12 +579,15 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteItem() async {
+  Future<String?> deleteItem() async {
     try {
       await _client.itemsApi.deleteItem(itemId);
-      return true;
-    } catch (_) {
-      return false;
+      return null;
+    } catch (e) {
+      if (e is DioException) {
+        return e.response?.data?.toString() ?? e.message ?? e.toString();
+      }
+      return e.toString();
     }
   }
 

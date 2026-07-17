@@ -28,6 +28,8 @@ import '../../../data/services/theme_music_service.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../navigation/route_lifecycle_observer.dart';
+import '../../navigation/home_refresh_bus.dart';
+import '../../navigation/app_router.dart';
 import 'modern/modern_detail_content.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
@@ -115,19 +117,61 @@ Future<bool> _showDeleteConfirmationDialog(
       title: Text(title, style: const TextStyle(color: Colors.white)),
       content: Text(message, style: const TextStyle(color: Colors.white70)),
       actions: [
-        adaptiveDialogAction(
+        TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: Text(
-            AppLocalizations.of(ctx).cancel,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+          style: ButtonStyle(
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+              if (states.contains(WidgetState.focused)) {
+                return AppColorScheme.accent.withValues(alpha: 0.15);
+              }
+              return null;
+            }),
+            side: WidgetStateProperty.resolveWith<BorderSide?>((states) {
+              if (states.contains(WidgetState.focused)) {
+                return BorderSide(color: AppColorScheme.accent, width: 2.5);
+              }
+              return BorderSide.none;
+            }),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
           ),
+          child: Text(AppLocalizations.of(ctx).cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, true),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFD32F2F),
+          style: ButtonStyle(
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+              if (states.contains(WidgetState.focused)) {
+                return const Color(0xFFD32F2F);
+              }
+              return const Color(0xFFB71C1C);
+            }),
+            overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+              if (states.contains(WidgetState.focused)) {
+                return Colors.white.withValues(alpha: 0.15);
+              }
+              return null;
+            }),
+            side: WidgetStateProperty.resolveWith<BorderSide?>((states) {
+              if (states.contains(WidgetState.focused)) {
+                return const BorderSide(color: Colors.white, width: 2.5);
+              }
+              return BorderSide.none;
+            }),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
           ),
-          child: Text(AppLocalizations.of(ctx).delete),
+          child: Text(
+            AppLocalizations.of(ctx).delete,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     ),
@@ -3251,20 +3295,23 @@ class _DetailContentState extends State<_DetailContent> {
     );
     if (!confirmed) return;
 
-    final success = await viewModel.deleteItem();
-    if (!context.mounted) return;
-    if (success) {
-      context.pop(true);
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isPlaylist ? l10n.failedToDeletePlaylist : l10n.failedToDeleteItem,
-        ),
-      ),
-    );
+    appRouter.go(Destinations.home);
+    unawaited(viewModel.deleteItem().then((error) {
+      if (error == null) {
+        homeRefreshBus.requestNowOrAfterNavigation();
+      } else {
+        final activeContext = appRouter.routerDelegate.navigatorKey.currentContext;
+        if (activeContext != null && activeContext.mounted) {
+          final activeL10n = AppLocalizations.of(activeContext);
+          ScaffoldMessenger.of(activeContext).showSnackBar(
+            SnackBar(
+              content: Text(activeL10n.failedToDeleteItemWithError(error)),
+              backgroundColor: const Color(0xFFD32F2F),
+            ),
+          );
+        }
+      }
+    }));
   }
 
   Future<void> _showRenamePlaylistDialog(
@@ -6508,7 +6555,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogCtx) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E24),
           title: Text(
@@ -6524,7 +6571,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               Focus(
                 onKeyEvent: (_, event) {
                   if (isActivateKey(event)) {
-                    Navigator.of(context).pop();
+                    Navigator.of(dialogCtx).pop();
                     ChangeArtworkDialog.show(context, item: item).then((
                       changed,
                     ) {
@@ -6537,11 +6584,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                   return KeyEventResult.ignored;
                 },
                 child: Builder(
-                  builder: (context) {
-                    final hasFocus = Focus.of(context).hasFocus;
+                  builder: (buttonCtx) {
+                    final hasFocus = Focus.of(buttonCtx).hasFocus;
                     return InkWell(
                       onTap: () async {
-                        Navigator.of(context).pop();
+                        Navigator.of(dialogCtx).pop();
                         final changed = await ChangeArtworkDialog.show(
                           context,
                           item: item,
@@ -6578,18 +6625,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 Focus(
                   onKeyEvent: (_, event) {
                     if (isActivateKey(event)) {
-                      Navigator.of(context).pop();
+                      Navigator.of(dialogCtx).pop();
                       context.push(Destinations.adminMetadata(item.id));
                       return KeyEventResult.handled;
                     }
                     return KeyEventResult.ignored;
                   },
                   child: Builder(
-                    builder: (context) {
-                      final hasFocus = Focus.of(context).hasFocus;
+                    builder: (buttonCtx) {
+                      final hasFocus = Focus.of(buttonCtx).hasFocus;
                       return InkWell(
                         onTap: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogCtx).pop();
                           context.push(Destinations.adminMetadata(item.id));
                         },
                         child: Container(
@@ -6625,18 +6672,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 Focus(
                   onKeyEvent: (_, event) {
                     if (isActivateKey(event)) {
-                      Navigator.of(context).pop();
+                      Navigator.of(dialogCtx).pop();
                       _confirmDeleteItem(context, item);
                       return KeyEventResult.handled;
                     }
                     return KeyEventResult.ignored;
                   },
                   child: Builder(
-                    builder: (context) {
-                      final hasFocus = Focus.of(context).hasFocus;
+                    builder: (buttonCtx) {
+                      final hasFocus = Focus.of(buttonCtx).hasFocus;
                       return InkWell(
                         onTap: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(dialogCtx).pop();
                           _confirmDeleteItem(context, item);
                         },
                         child: Container(
@@ -6685,23 +6732,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
     if (!confirmed) return;
 
-    final success = await viewModel.deleteItem();
-    if (!mounted || !context.mounted) return;
-
-    if (success) {
-      if (Navigator.of(context).canPop()) {
-        context.pop(true);
+    appRouter.go(Destinations.home);
+    unawaited(viewModel.deleteItem().then((error) {
+      if (error == null) {
+        homeRefreshBus.requestNowOrAfterNavigation();
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.itemDeleted)));
+        final activeContext = appRouter.routerDelegate.navigatorKey.currentContext;
+        if (activeContext != null && activeContext.mounted) {
+          final activeL10n = AppLocalizations.of(activeContext);
+          ScaffoldMessenger.of(activeContext).showSnackBar(
+            SnackBar(
+              content: Text(activeL10n.failedToDeleteItemWithError(error)),
+              backgroundColor: const Color(0xFFD32F2F),
+            ),
+          );
+        }
       }
-      return;
-    }
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.failedToDeleteItem)));
+    }));
   }
 
   int? _activePlaybackAudioIndex() {
