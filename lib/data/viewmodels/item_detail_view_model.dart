@@ -33,8 +33,7 @@ class ParentCollection {
 }
 
 class ItemDetailViewModel extends ChangeNotifier {
-  static const _episodeOverviewFields =
-      'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
+  static const _episodeOverviewFields = 'Overview,RunTimeTicks,UserData';
 
   final MediaServerClient _client;
   final ItemMutationRepository _mutations;
