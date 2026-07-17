@@ -1,6 +1,6 @@
 {
     "@@locale": "nb",
-    "appTitle": "Månefinne",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -8,7 +8,7 @@
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Connecting to {serverName}",
+    "connectingToServer": "Kobler til  {serverName}",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Hurtigkobling",
+    "quickConnect": "Hurtigtilkobling",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+    "quickConnectUnavailable": "QuickConnect utilgjengelig: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect utilgjengelig ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Moonfin versjon {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -119,7 +119,7 @@
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+    "removeServerConfirmation": "Fjern \"{serverName}\" fra din server?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -128,11 +128,11 @@
             }
         }
     },
-    "cancel": "Kansellere",
+    "cancel": "Kanseller",
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Fjerne",
+    "remove": "Fjern",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -144,7 +144,7 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://din-server.example.com",
+    "serverAddressHint": "https://din-server.eksempel.no",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Månefinne",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -180,7 +180,7 @@
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
-    "themeNeonPulse": "Neonpuls",
+    "themeNeonPulse": "Neon Pulse",
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
@@ -240,7 +240,7 @@
     "@invalidServerExchangeResponse": {
         "description": "Error when server exchange returns invalid data"
     },
-    "unableToConnectTo": "Unable to connect to {target}",
+    "unableToConnectTo": "Tilkobling til  {target} feilet",
     "@unableToConnectTo": {
         "description": "Error when connection to a specific server or address fails",
         "placeholders": {
@@ -257,7 +257,7 @@
     "@exitAppConfirmation": {
         "description": "Body text of exit confirmation dialog"
     },
-    "exit": "Gå",
+    "exit": "Avslutt",
     "@exit": {
         "description": "Exit button label"
     },
@@ -269,11 +269,11 @@
     "@noHomeRowsHint": {
         "description": "Hint text below the no-home-rows heading"
     },
-    "retryHomeRows": "Prøv Hjem-rader på nytt",
+    "retryHomeRows": "Prøv Hjemrader på nytt",
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
-    "guide": "Guide",
+    "guide": "TV-Guide",
     "@guide": {
         "description": "Live TV guide button label"
     },
@@ -281,7 +281,7 @@
     "@recordings": {
         "description": "Live TV recordings button label"
     },
-    "schedule": "Rute",
+    "schedule": "Sendeskjema",
     "@schedule": {
         "description": "Live TV schedule button label"
     },
@@ -289,7 +289,7 @@
     "@series": {
         "description": "Section header for TV series"
     },
-    "noItemsFound": "Ingen varer funnet",
+    "noItemsFound": "Ingen elementer funnet",
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
@@ -6751,11 +6751,11 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Prefer system keyboard",
+    "keyboardPreferSystemIme": "Foretrekk system tastatur",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+    "keyboardPreferSystemImeDescription": "Bruk din enhets inntastings metode som standard for tekst",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
