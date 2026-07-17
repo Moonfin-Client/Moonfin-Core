@@ -105,7 +105,7 @@ class SeerrRepository {
 
     try {
       final status = await _httpClient!.getMoonfinStatus();
-      _isAvailable = status.authenticated;
+      _isAvailable = status.serviceReachable && status.authenticated;
     } catch (_) {
       _isAvailable = false;
     }
@@ -165,7 +165,8 @@ class SeerrRepository {
     ));
 
     final status = await _httpClient!.getMoonfinStatus();
-    final effectiveEnabled = status.enabled && status.authenticated;
+    final effectiveEnabled =
+        status.enabled && status.serviceReachable && status.authenticated;
 
     await _store.setBool(_moonfinModeKey, true);
     await _store.setBool(_enabledKey, effectiveEnabled);
@@ -209,8 +210,7 @@ class SeerrRepository {
     if (!status.enabled ||
         username == null ||
         username.isEmpty ||
-        password == null ||
-        password.isEmpty) {
+        password == null) {
       return;
     }
 

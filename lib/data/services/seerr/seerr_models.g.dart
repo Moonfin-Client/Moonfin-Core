@@ -11,6 +11,10 @@ MoonfinStatusResponse _$MoonfinStatusResponseFromJson(
 ) => MoonfinStatusResponse(
   enabled: json['enabled'] as bool? ?? false,
   authenticated: json['authenticated'] as bool? ?? false,
+  serviceReachable: json['serviceReachable'] as bool? ?? true,
+  accountLinked:
+      json['accountLinked'] as bool? ??
+      (json['authenticated'] as bool? ?? false),
   url: json['url'] as String?,
   seerrUserId: (json['seerrUserId'] as num?)?.toInt(),
   displayName: json['displayName'] as String?,
@@ -25,6 +29,8 @@ Map<String, dynamic> _$MoonfinStatusResponseToJson(
 ) => <String, dynamic>{
   'enabled': instance.enabled,
   'authenticated': instance.authenticated,
+  'serviceReachable': instance.serviceReachable,
+  'accountLinked': instance.accountLinked,
   'url': instance.url,
   'seerrUserId': instance.seerrUserId,
   'displayName': instance.displayName,

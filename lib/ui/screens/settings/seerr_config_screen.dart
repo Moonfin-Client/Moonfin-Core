@@ -157,7 +157,15 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       } catch (_) {
         canManageRequests = false;
       }
-    } catch (_) {}
+    } catch (_) {
+      status = const MoonfinStatusResponse(
+        enabled: true,
+        authenticated: false,
+        serviceReachable: false,
+        accountLinked: false,
+      );
+      canManageRequests = false;
+    }
 
     if (!mounted) return;
     setState(() {
@@ -1359,14 +1367,17 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
     );
   }
 
-  Widget _buildUnavailableCard(AppLocalizations l10n) {
+  Widget _buildUnavailableCard(
+    AppLocalizations l10n, {
+    required String message,
+  }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Card(
         child: ListTile(
           leading: const Icon(Icons.movie_filter_outlined),
           title: Text(l10n.seerr),
-          subtitle: Text(l10n.seerrUnavailable),
+          subtitle: Text(message),
         ),
       ),
     );
@@ -1535,6 +1546,16 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
+                  'Link request account',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Connect this Jellyfin profile to its own request history.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 14),
+                Text(
                   l10n.seerrAccountType,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -1668,9 +1689,19 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
       return _buildLoadingCard(l10n);
     }
     if (status != null && !status.enabled) {
-      return _buildUnavailableCard(l10n);
+      return _buildUnavailableCard(
+        l10n,
+        message: 'Requests unavailable for this profile',
+      );
     }
-    if (status?.authenticated ?? false) {
+    if (status != null && !status.serviceReachable) {
+      return _buildUnavailableCard(
+        l10n,
+        message: 'Request service temporarily unavailable',
+      );
+    }
+    if ((status?.accountLinked ?? false) &&
+        (status?.authenticated ?? false)) {
       return _buildAuthenticatedCard(l10n, status!);
     }
     return _buildSignInCard(l10n);

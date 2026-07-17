@@ -16,6 +16,8 @@ class MoonfinProxyConfig {
 class MoonfinStatusResponse {
   final bool enabled;
   final bool authenticated;
+  final bool serviceReachable;
+  final bool accountLinked;
   final String? url;
   final int? seerrUserId;
   final String? displayName;
@@ -27,6 +29,8 @@ class MoonfinStatusResponse {
   const MoonfinStatusResponse({
     this.enabled = false,
     this.authenticated = false,
+    this.serviceReachable = true,
+    this.accountLinked = false,
     this.url,
     this.seerrUserId,
     this.displayName,
