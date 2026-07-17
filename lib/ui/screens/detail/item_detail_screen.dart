@@ -7048,6 +7048,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return clientFactory.getClientIfExists(item.serverId) ?? defaultClient;
   }
 
+  Future<AggregatedItem> _ensureHydrated(AggregatedItem target) async {
+    if (target.mediaSources.isNotEmpty) {
+      return target;
+    }
+    try {
+      final client = _clientForItem(target);
+      final fullData = await client.itemsApi.getItem(target.id);
+      return AggregatedItem(
+        id: target.id,
+        serverId: target.serverId,
+        rawData: Map<String, dynamic>.from(fullData),
+      );
+    } catch (_) {
+      return target;
+    }
+  }
+
   Future<List<AggregatedItem>> _moviePrerollsForStart(
     AggregatedItem item,
     Duration startPosition,
@@ -7090,8 +7107,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   Future<List<AggregatedItem>> _shuffleQueueForItem(AggregatedItem item) async {
-    const shuffleQueueFields =
-        'MediaStreams,MediaSources,RunTimeTicks,Trickplay,Chapters';
+    const shuffleQueueFields = 'Overview,RunTimeTicks,UserData';
     switch (item.type) {
       case 'Series':
         if (viewModel.episodes.length > 1) {
@@ -7382,8 +7398,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       () async {
         switch (item.type) {
           case 'Series':
-            const episodeQueueFields =
-                'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
+            const episodeQueueFields = 'Overview,RunTimeTicks,UserData';
 
             final client = _clientForItem(item);
             final data = await client.itemsApi.getEpisodes(
@@ -7453,7 +7468,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               (e) => e.id == targetEpisode.id,
             );
             final idx = startIndex >= 0 ? startIndex : 0;
-            final selectedEpisode = queueEpisodes[idx];
+            var selectedEpisode = queueEpisodes[idx];
+            selectedEpisode = await _ensureHydrated(selectedEpisode);
+            queueEpisodes[idx] = selectedEpisode;
+
             final seriesQueue = _truncateQueueIfImmediateNextUnplayable(
               queueEpisodes,
               startIndex: idx,
@@ -7502,7 +7520,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                   )
                 : episodes.indexWhere((e) => !e.isPlayed);
             final idx = startIndex >= 0 ? startIndex : 0;
-            final selectedEpisode = episodes[idx];
+            var selectedEpisode = episodes[idx];
+            selectedEpisode = await _ensureHydrated(selectedEpisode);
+            episodes[idx] = selectedEpisode;
+            if (!context.mounted) return;
+
             final seasonQueue = _truncateQueueIfImmediateNextUnplayable(
               episodes,
               startIndex: idx,
@@ -7545,8 +7567,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               final seasonId = item.seasonId;
               if (seriesId != null && seriesId.isNotEmpty) {
                 try {
-                  const episodeQueueFields =
-                      'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
+                  const episodeQueueFields = 'Overview,RunTimeTicks,UserData';
                   final client = _clientForItem(item);
                   final data = await client.itemsApi.getEpisodes(
                     seriesId,
@@ -7572,7 +7593,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 (e) => e.id == item.id,
               );
               final idx = startIndex >= 0 ? startIndex : 0;
-              final selectedEpisode = playableEpisodes[idx];
+              var selectedEpisode = playableEpisodes[idx];
+              selectedEpisode = await _ensureHydrated(selectedEpisode);
+              playableEpisodes[idx] = selectedEpisode;
+              if (!context.mounted) return;
+
               final episodeQueue = _truncateQueueIfImmediateNextUnplayable(
                 playableEpisodes,
                 startIndex: idx,
@@ -7611,8 +7636,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           case 'BoxSet':
             final playableQueue = await _loadFolderPlayableItemsForShuffle(
               item,
-              fields:
-                  'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData',
+              fields: 'Overview,RunTimeTicks,UserData',
             );
             if (playableQueue.isEmpty) {
               if (context.mounted) {
@@ -7663,7 +7687,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
 
             if (!context.mounted) return;
-            final targetItem = playableQueue[startIndex];
+            var targetItem = playableQueue[startIndex];
+            targetItem = await _ensureHydrated(targetItem);
+            playableQueue[startIndex] = targetItem;
+            if (!context.mounted) return;
+
             final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
               [targetItem],
@@ -7909,6 +7937,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (!context.mounted) return;
 
     final shuffled = List<AggregatedItem>.from(playableQueue)..shuffle();
+    if (shuffled.isNotEmpty) {
+      shuffled[0] = await _ensureHydrated(shuffled.first);
+    }
+    if (!context.mounted) return;
     final isAudio = shuffled.every((queuedItem) {
       final mediaType = queuedItem.rawData['MediaType'] as String?;
       return queuedItem.type == 'Audio' || mediaType == 'Audio';
