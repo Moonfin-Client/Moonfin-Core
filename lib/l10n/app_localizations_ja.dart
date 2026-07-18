@@ -12,27 +12,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => 'アカウント設定';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => '表示言語';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => 'システムのデフォルト';
 
   @override
   String get signIn => 'サインイン';
 
   @override
-  String get empty => 'Empty';
+  String get empty => '空';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return '$serverName に接続しています';
   }
 
   @override
-  String get quickConnect => 'クイックコネクト';
+  String get quickConnect => 'Quick Connect';
 
   @override
   String get password => 'パスワード';
@@ -60,12 +60,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect を利用できません: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect を利用できません ($status): $detail';
   }
 
   @override
@@ -79,7 +79,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin バージョン $version';
   }
 
   @override
@@ -105,14 +105,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return '「$serverName」をサーバー一覧から削除しますか?';
   }
 
   @override
   String get cancel => 'キャンセル';
 
   @override
-  String get remove => '取り除く';
+  String get remove => '削除';
 
   @override
   String get connectToServer => 'サーバーに接続する';
@@ -140,62 +140,59 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAppearanceTheme => 'アプリのテーマ';
 
   @override
-  String get detailScreenStyle => 'Detail screen style';
+  String get detailScreenStyle => '詳細画面のスタイル';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
+      'クラシックは従来の Moonfin の中央寄せレイアウトです。モダンはレスポンシブなシネマティックレイアウトです。';
 
   @override
-  String get detailScreenStyleMoonfin => 'Classic';
+  String get detailScreenStyleMoonfin => 'クラシック';
 
   @override
-  String get detailScreenStyleModern => 'Modern';
+  String get detailScreenStyleModern => 'モダン';
 
   @override
-  String get expandedTabs => 'Expanded Tabs';
+  String get expandedTabs => 'タブの自動展開';
 
   @override
-  String get expandedTabsSubtitle =>
-      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
+  String get expandedTabsSubtitle => 'タブを移動すると内容を自動的に表示します。オフにすると各タブを手動で開閉します。';
 
   @override
-  String get showTechnicalDetails => 'Show Technical Details?';
+  String get showTechnicalDetails => '技術情報を表示しますか?';
 
   @override
-  String get showTechnicalDetailsSubtitle =>
-      'Show codec, resolution, and stream information in banner summary';
+  String get showTechnicalDetailsSubtitle => 'バナーの概要にコーデック、解像度、ストリーム情報を表示します';
 
   @override
-  String get recommendationSystem => 'Recommendation System';
+  String get recommendationSystem => 'おすすめシステム';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      'Moonfin Recommends のローカルライブラリ用アルゴリズム、またはオンラインの TMDb 類似度指標を使用します。注: オンラインのおすすめには Seerr 連携が必要です。';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb Similarity';
+  String get recommendationSystemTmdb => 'TMDb 類似度';
 
   @override
-  String get recommendationsApplyParentalRatingCap =>
-      'Apply Parental Rating Cap?';
+  String get recommendationsApplyParentalRatingCap => '視聴年齢制限の上限を適用しますか?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limit Moonfin Recommends suggestions by parental rating of target media';
+      'Moonfin Recommends のおすすめを対象作品の視聴年齢制限で絞り込みます';
 
   @override
-  String get interfaceStyle => 'Interface Style';
+  String get interfaceStyle => 'インターフェーススタイル';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic matches your device. Choose Apple or Material to force a look.';
+      '自動はお使いのデバイスに合わせます。Apple または Material を選ぶと外観を固定できます。';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => '自動';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -204,38 +201,37 @@ class AppLocalizationsJa extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Glass Quality';
+  String get glassQuality => 'グラスの品質';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+      '自動はこのデバイスに最適なグラス効果を選びます。フルは本物のぼかしを使用し、軽量は GPU 負荷を抑えた軽いグラスを使用します。';
 
   @override
-  String get glassQualityAuto => 'Auto';
+  String get glassQualityAuto => '自動';
 
   @override
-  String get glassQualityFull => 'Full';
+  String get glassQualityFull => 'フル';
 
   @override
-  String get glassQualityReduced => 'Reduced';
+  String get glassQualityReduced => '軽量';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'アプリを再起動せずに Moonfin と Neon Pulse を切り替える';
 
   @override
-  String get customThemeTitle => 'Custom Theme';
+  String get customThemeTitle => 'カスタムテーマ';
 
   @override
   String get customThemeSubtitle =>
-      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+      'カスタムテーマは Moonfin 全体の見た目を変更します。好みに合わせて選択してください。';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'システムのキーボードを優先';
 
   @override
-  String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+  String get keyboardPreferSystemImeDescription => '文字入力に標準でデバイスの入力方式を使用します';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -255,14 +251,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      '流れるグラデーション背景、すりガラスの表面、Apple ブルーのアクセントを備えたリキッドグラス風スタイル';
 
   @override
   String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
+      '太めのパレット、角張った枠線、くっきりしたドロップシャドウ、ピクセルフォントによるレトロなドット絵風スタイル';
 
   @override
   String get embyConnectSignInSubtitle => 'Emby Connect アカウントでサインインする';
@@ -307,7 +303,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return '$target に接続できません';
   }
 
   @override
@@ -320,35 +316,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get exit => '出口';
 
   @override
-  String get gameMenu => 'Menu';
+  String get gameMenu => 'メニュー';
 
   @override
-  String get gamePaused => 'Paused';
+  String get gamePaused => '一時停止中';
 
   @override
-  String get gameSaveState => 'Save state';
+  String get gameSaveState => 'ステートセーブ';
 
   @override
-  String get games => 'Games';
+  String get games => 'ゲーム';
 
   @override
-  String get gameLoadState => 'Load state';
+  String get gameLoadState => 'ステートロード';
 
   @override
-  String get gameFastForward => 'Fast-forward';
+  String get gameFastForward => '早送り';
 
   @override
-  String get gameEmulatorSettings => 'Emulator settings';
+  String get gameEmulatorSettings => 'エミュレーター設定';
 
   @override
-  String get gameNoCoreOptions => 'This core has no adjustable options.';
+  String get gameNoCoreOptions => 'このコアには調整できる設定がありません。';
 
   @override
-  String get gameHoldToOpenMenu => 'Hold to open menu';
+  String get gameHoldToOpenMenu => '長押しでメニューを開く';
 
   @override
-  String get gamePlaybackUnsupported =>
-      'Game playback is not supported on this device yet.';
+  String get gamePlaybackUnsupported => 'このデバイスではまだゲームを実行できません。';
 
   @override
   String get noHomeRowsLoaded => 'ホーム行をロードできませんでした';
@@ -363,7 +358,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get guide => 'ガイド';
 
   @override
-  String get recordings => '録音';
+  String get recordings => '録画';
 
   @override
   String get schedule => 'スケジュール';
@@ -375,7 +370,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noItemsFound => '項目が見つかりませんでした';
 
   @override
-  String get home => '家';
+  String get home => 'ホーム';
 
   @override
   String get browseAll => 'すべて参照';
@@ -405,7 +400,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noLibrariesFound => 'ライブラリが見つかりませんでした';
 
   @override
-  String get library => '図書館';
+  String get library => 'ライブラリ';
 
   @override
   String get displaySettings => '表示設定';
@@ -418,7 +413,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'フォルダーの読み込みに失敗しました: $error';
   }
 
   @override
@@ -426,7 +421,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count 件';
   }
 
   @override
@@ -443,7 +438,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count 件';
   }
 
   @override
@@ -484,7 +479,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — ジャンル';
   }
 
   @override
@@ -522,17 +517,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '$count 分前';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '$count 時間前';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '$count 日前';
   }
 
   @override
@@ -542,7 +537,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pickDiscoverySubjects => 'Discover に表示する件名フィードを選択します。';
 
   @override
-  String get apply => '適用する';
+  String get apply => '適用';
 
   @override
   String get openLink => 'リンクを開く';
@@ -564,7 +559,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count 作品';
   }
 
   @override
@@ -589,7 +584,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get listen => '聞く';
 
   @override
-  String get resume => '再開する';
+  String get resume => '再開';
 
   @override
   String get failedToLoadLibrary => 'ライブラリのロードに失敗しました';
@@ -644,17 +639,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count 人の著者';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count ジャンル';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% 完了';
   }
 
   @override
@@ -671,7 +666,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '読書優先で並べた $count 作品。';
   }
 
   @override
@@ -707,7 +702,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return '$labelが見つかりません';
   }
 
   @override
@@ -726,7 +721,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get readStatus => '読む';
 
   @override
-  String get watched => '見た';
+  String get watched => '視聴済み';
 
   @override
   String get unread => '未読';
@@ -744,43 +739,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get books => '本';
 
   @override
-  String get latestBooks => 'Latest Books';
+  String get latestBooks => '最新の書籍';
 
   @override
-  String get latestAudiobooks => 'Latest Audiobooks';
+  String get latestAudiobooks => '最新のオーディオブック';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count books',
-      one: '1 book',
+      other: '$count 冊',
+      one: '1 冊',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Book';
+  String get bookFormatBook => '書籍';
 
   @override
-  String get bookFormatAudiobook => 'Audiobook';
+  String get bookFormatAudiobook => 'オーディオブック';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% read';
+    return '$percent% 読了';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time left';
+    return '残り $time';
   }
 
   @override
-  String get bookHeroRead => 'Read';
+  String get bookHeroRead => '読む';
 
   @override
-  String get bookHeroListen => 'Listen';
+  String get bookHeroListen => '聴く';
 
   @override
   String get author => '著者';
@@ -817,12 +812,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count セクション';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return '初版 $year 年';
   }
 
   @override
@@ -836,7 +831,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count 冊';
   }
 
   @override
@@ -847,7 +842,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count 人の著者';
   }
 
   @override
@@ -855,8 +850,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: '$count 冊のオーディオブック',
+      one: '1 冊のオーディオブック',
     );
     return '$_temp0';
   }
@@ -871,7 +866,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get failedToLoad => 'ロードに失敗しました';
 
   @override
-  String get delete => '消去';
+  String get delete => '削除';
 
   @override
   String get save => '保存';
@@ -892,7 +887,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nextUp => '次は次へ';
 
   @override
-  String get seasons => '季節';
+  String get seasons => 'シーズン';
 
   @override
   String get chapters => '章';
@@ -904,7 +899,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get movies => '映画';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'ミュージックビデオ';
 
   @override
   String get other => '他の';
@@ -923,7 +918,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'ディスク $number';
   }
 
   @override
@@ -946,7 +941,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return '$year 年発行';
   }
 
   @override
@@ -957,52 +952,52 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count シーズン',
+      one: '1 シーズン',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return '$time に終了';
   }
 
   @override
-  String get items => 'Items';
+  String get items => 'アイテム';
 
   @override
-  String get extras => 'Extras';
+  String get extras => '特典';
 
   @override
-  String get behindTheScenes => 'Behind the Scenes';
+  String get behindTheScenes => 'メイキング';
 
   @override
-  String get deletedScenes => 'Deleted Scenes';
+  String get deletedScenes => '未公開シーン';
 
   @override
-  String get featurettes => 'Featurettes';
+  String get featurettes => 'フィーチャレット';
 
   @override
-  String get interviews => 'Interviews';
+  String get interviews => 'インタビュー';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'シーン';
 
   @override
-  String get shorts => 'Shorts';
+  String get shorts => '短編';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => '予告編';
 
   @override
   String timeRemaining(String time) {
-    return '$time remaining';
+    return '残り $time';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return '$time 後に終了';
   }
 
   @override
@@ -1016,11 +1011,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return '$position から再開';
   }
 
   @override
-  String get play => '遊ぶ';
+  String get play => '再生';
 
   @override
   String get startOver => '最初からやり直す';
@@ -1047,7 +1042,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cast => 'キャスト';
 
   @override
-  String get trailer => 'トレーラー';
+  String get trailer => '予告編';
 
   @override
   String get finished => '終了した';
@@ -1119,7 +1114,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return '「$title」のダウンロード済みトラックを削除しますか?';
   }
 
   @override
@@ -1133,17 +1128,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return '$itemLabelが読み込まれていません';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return '$title をダウンロードしています ($count 件)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return '「$name」をサーバーから削除してもよろしいですか? この操作は取り消せません。';
   }
 
   @override
@@ -1154,7 +1149,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return '対応していない書籍形式です: .$extension';
   }
 
   @override
@@ -1180,7 +1175,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return '字幕をダウンロードして選択しました: $name';
   }
 
   @override
@@ -1189,7 +1184,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return '$language のリモート字幕が見つかりませんでした。';
   }
 
   @override
@@ -1197,7 +1192,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'バージョン $number';
   }
 
   @override
@@ -1217,7 +1212,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return '$name ($quality) をダウンロードしています...';
   }
 
   @override
@@ -1225,7 +1220,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return '$typeLabelのローカルファイルを削除しますか?\n\nストレージの空き容量が増えます。あとで再ダウンロードできます。';
   }
 
   @override
@@ -1241,25 +1236,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get director => '監督';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => '監督';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => '脚本';
 
   @override
-  String get writers => 'ライター';
+  String get writers => '脚本家';
 
   @override
   String get studio => 'スタジオ';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '他 $count 件';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count エピソード';
   }
 
   @override
@@ -1269,12 +1264,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'エピソード $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'チャプター $number';
   }
 
   @override
@@ -1282,8 +1277,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count トラック',
+      one: '1 トラック',
     );
     return '$_temp0';
   }
@@ -1293,25 +1288,25 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count チャプター',
+      one: '1 チャプター',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return '生誕 $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return '没年 $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return '$age 歳';
   }
 
   @override
@@ -1324,17 +1319,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shuffle => 'シャッフル';
 
   @override
-  String get shuffleAllMusic => 'Shuffle all music';
+  String get shuffleAllMusic => 'すべての音楽をシャッフル';
 
   @override
-  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+  String get carSignInPrompt => 'スマートフォンで Moonfin にサインインしてください';
 
   @override
-  String get carServerUnreachable => 'Can\'t reach your server';
+  String get carServerUnreachable => 'サーバーに接続できません';
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count ダウンロード';
   }
 
   @override
@@ -1346,39 +1341,39 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get mono => '単核症';
+  String get mono => 'モノラル';
 
   @override
   String get stereo => 'ステレオ';
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'リモート字幕の$actionには、このユーザーに Jellyfin の字幕管理権限が必要です。';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'リモート字幕の$actionを行うアイテムがサーバー上で見つかりませんでした。';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'リモート字幕の$actionに失敗しました: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'リモート字幕の$actionに失敗しました (HTTP $status)。';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'リモート字幕の$actionに失敗しました。';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return '「$name」のダウンロード済みエピソードすべて';
   }
 
   @override
@@ -1406,17 +1401,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label の操作に失敗しました: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'キャストの音量を変更できませんでした: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label のコントロール';
   }
 
   @override
@@ -1433,7 +1428,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return '$label を停止';
   }
 
   @override
@@ -1441,7 +1436,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'トラック $number';
   }
 
   @override
@@ -1458,7 +1453,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds 秒';
   }
 
   @override
@@ -1551,7 +1546,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get videoBitrate => 'ビデオビットレート';
 
   @override
-  String get track => '追跡';
+  String get track => 'トラック';
 
   @override
   String get channels => 'チャンネル';
@@ -1573,12 +1568,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol セッションエラー';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return '書籍の詳細の読み込みに失敗しました: $error';
   }
 
   @override
@@ -1587,7 +1582,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'この形式 (.$extension) はまだアプリ内で表示できません。';
   }
 
   @override
@@ -1599,17 +1594,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'アプリ内リーダーを開けませんでした: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return '$label にはすでにブックマークがあります。';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'ブックマークを追加しました: $label';
   }
 
   @override
@@ -1621,7 +1616,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return '$number ページ';
   }
 
   @override
@@ -1632,12 +1627,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return '形式: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% 読了';
   }
 
   @override
@@ -1660,7 +1655,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'ズームをリセット (${zoom}x)';
   }
 
   @override
@@ -1683,7 +1678,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return '既読状態を更新できませんでした: $error';
   }
 
   @override
@@ -1715,7 +1710,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'このプラットフォームでは $extension ファイル用の組み込みドキュメントエンジンを利用できません。';
   }
 
   @override
@@ -1754,7 +1749,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return '番組表の読み込みに失敗しました: $error';
   }
 
   @override
@@ -1765,22 +1760,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Next: $time  $title';
+    return '次: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m left';
+    return '残り $minutes 分';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h left';
+    return '残り $hours 時間';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m left';
+    return '残り $hours 時間 $minutes 分';
   }
 
   @override
@@ -1802,29 +1797,29 @@ class AppLocalizationsJa extends AppLocalizations {
   String get favoriteChannel => 'お気に入りのチャンネル';
 
   @override
-  String get record => 'Record';
+  String get record => '録画予約';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => '録画をキャンセル';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => '番組の録画を予約しました';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => '録画をキャンセルしました';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => '録画を作成できません';
 
   @override
-  String get watch => '時計';
+  String get watch => '視聴';
 
   @override
-  String get close => '近い';
+  String get close => '閉じる';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return '$name を再生できませんでした';
   }
 
   @override
@@ -1850,7 +1845,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return '「$name」の録画予約をキャンセルしますか?';
   }
 
   @override
@@ -1876,7 +1871,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return '「$name」の録画を停止しますか?';
   }
 
   @override
@@ -1890,19 +1885,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return '「$query」に一致する結果はありません';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return '検索に失敗しました: $error';
   }
 
   @override
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'シーアアカウントの種類';
+  String get seerrAccountType => 'Seerr アカウントの種類';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -1936,12 +1931,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return '「$name」とそのファイルを削除しますか?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count トラック';
   }
 
   @override
@@ -1952,16 +1947,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'アルバムの読み込みに失敗しました: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return '$name のダウンロード済みトラックはありません。';
   }
 
   @override
-  String get season => '季節';
+  String get season => 'シーズン';
 
   @override
   String get errorLoadingEpisodes => 'エピソードの読み込みエラー';
@@ -1974,12 +1969,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return '「$name」を削除しますか?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes 分';
   }
 
   @override
@@ -1989,7 +1984,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'エピソード $number';
   }
 
   @override
@@ -2003,7 +1998,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'シーズン $number';
   }
 
   @override
@@ -2019,7 +2014,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return '$season のダウンロード済みエピソードをすべて削除しますか?';
   }
 
   @override
@@ -2027,8 +2022,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count エピソード',
+      one: '1 エピソード',
     );
     return '$_temp0';
   }
@@ -2063,7 +2058,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'ダウンロード済みの $count 件を削除しますか?';
   }
 
   @override
@@ -2077,7 +2072,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return '/ 上限 $limit';
   }
 
   @override
@@ -2158,7 +2153,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count 項目';
   }
 
   @override
@@ -2247,8 +2242,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get themeMusicVolume => 'テーマ曲の音量';
 
   @override
-  String get themeMusicSettingsSubtitle =>
-      'Detail pages, home rows, and volume';
+  String get themeMusicSettingsSubtitle => '詳細ページ、ホーム行、音量';
 
   @override
   String percentValue(int value) {
@@ -2262,11 +2256,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'ホーム画面閲覧時に再生';
 
   @override
-  String get loopThemeMusic => 'Loop Theme Music';
+  String get loopThemeMusic => 'テーマ音楽をループ再生';
 
   @override
-  String get loopThemeMusicSubtitle =>
-      'Repeat the track instead of playing it once';
+  String get loopThemeMusicSubtitle => '1 回だけ再生せずにトラックを繰り返します';
 
   @override
   String get detailsBackgroundBlur => '詳細背景ぼかし';
@@ -2289,23 +2282,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playerZoomMode => 'プレーヤーズームモード';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => 'マウスホイール';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      '再生中に映像の上でマウスホイールを回したときの動作を選択します。';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => 'オフ';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => 'シーク (前後移動)';
 
   @override
-  String get scrollWheelActionVolume => 'Volume';
+  String get scrollWheelActionVolume => '音量';
 
   @override
-  String get playerTooltipVolume => 'Volume';
+  String get playerTooltipVolume => '音量';
 
   @override
   String get fit => 'フィット';
@@ -2356,37 +2349,35 @@ class AppLocalizationsJa extends AppLocalizations {
   String get defaultAudioLanguage => 'デフォルトの音声言語';
 
   @override
-  String get fallbackAudioLanguage => 'Fallback Audio Language';
+  String get fallbackAudioLanguage => '代替オーディオ言語';
 
   @override
-  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+  String get preferDefaultAudioTrack => '既定のオーディオトラックを優先';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Prefer original audio track over localized dub.';
+      '吹き替えよりもオリジナルのオーディオトラックを優先します。';
 
   @override
-  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+  String get preferAudioDescription => '音声解説トラックを優先';
 
   @override
-  String get preferAudioDescriptionDescription =>
-      'Prefer audio description tracks over normal tracks.';
+  String get preferAudioDescriptionDescription => '通常のトラックよりも音声解説トラックを優先します。';
 
   @override
-  String get transcodingAudio => 'Transcoding (Audio)';
+  String get transcodingAudio => 'トランスコード (オーディオ)';
 
   @override
-  String get directStreamRemux => 'Direct Stream (Remux)';
+  String get directStreamRemux => 'ダイレクトストリーム (リマックス)';
 
   @override
-  String get transcodingBitrateOrResolution =>
-      'Transcoding (Bitrate or Resolution)';
+  String get transcodingBitrateOrResolution => 'トランスコード (ビットレートまたは解像度)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+  String get transcodingVideoAndAudio => 'トランスコード (映像とオーディオ)';
 
   @override
-  String get transcodingVideo => 'Transcoding (Video)';
+  String get transcodingVideo => 'トランスコード (映像)';
 
   @override
   String get autoServerDefault => '自動 (サーバーのデフォルト)';
@@ -2463,27 +2454,27 @@ class AppLocalizationsJa extends AppLocalizations {
       'TrueHD オーディオを有効にする (プラットフォームによっては機能しない場合があります)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'オーディオ出力モード';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      'オーディオのデコード方法を選択します。AVR パススルーは Dolby / DTS のストリームをそのままレシーバーに送信し、自動またはダウンミックスは本体でデコードします。';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR パススルー';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => '代替オーディオコーデック';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      '元のストリームをダイレクト再生もパススルーもできない場合に、マルチチャンネルオーディオを変換する形式を選択します。';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto => '自動検出\n(推奨)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(既定)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2492,113 +2483,113 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(ロスレス)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(ステレオのみ)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(高効率)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(ロスレス)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => '最大オーディオチャンネル数';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      'お使いのオーディオ環境の最大チャンネル数を設定します。この上限を超えるマルチチャンネルストリームはダウンミックスまたはトランスコードされます。';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto => '自動検出\n(ハードウェアの既定)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 Mono';
+  String get settingsMaxAudioChannelsMono => '1.0 モノラル';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
+  String get settingsMaxAudioChannelsStereo => '2.0 ステレオ';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 サラウンド';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 クアドラフォニック';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 サラウンド';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
+  String get settingsMaxAudioChannels5_1 => '5.1 サラウンド';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
+  String get settingsMaxAudioChannels6_1 => '6.1 サラウンド';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
+  String get settingsMaxAudioChannels7_1 => '7.1 サラウンド';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'パススルー (詳細設定)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'コーデックパススルー';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'お使いの AVR または HDMI 出力先が対応している形式のみを有効にしてください。';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'EAC3 パススルー';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) パススルー';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'DTS コアパススルー';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA パススルー';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD パススルー';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos パススルー';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Dolby Digital Plus (EAC3) を外部デコーダーにビットストリーム出力します。';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'EAC3 (JOC) の Dolby Atmos を外部デコーダーにビットストリーム出力します。';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'DTS-HD MA (DTS コアを含む) を外部デコーダーにビットストリーム出力します。';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Atmos メタデータ付きの Dolby TrueHD を外部デコーダーにビットストリーム出力します。';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => '検出されたオーディオ機能';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      '実行時の機能情報はまだ取得されていません。';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => '出力経路';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'デコード';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'パススルー';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD オーディオ対応の経路';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2613,10 +2604,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'スピーカー';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Headphones';
+  String get settingsAudioRouteHeadphones => 'ヘッドホン';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2624,39 +2615,37 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => '診断情報';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'ビデオレベル';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'ビデオレンジ';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => '字幕コーデック';
 
   @override
-  String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+  String get settingsAudioDiagnosticsAllowedAudioCodecs => '許可するオーディオコーデック';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'HLS MPEG-TS オーディオコーデック';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'HLS fMP4 オーディオコーデック';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'audio-spdif パススルー';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => '現在のオーディオ出力経路';
 
   @override
-  String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+  String get settingsAudioDiagnosticsRouteHdAudioSupport => '経路の HD オーディオ対応状況';
 
   @override
   String get nightMode => 'ナイトモード';
@@ -2704,7 +2693,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '${value}s';
+    return '$value秒';
   }
 
   @override
@@ -2718,7 +2707,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return '$episodes エピソード / $hours 時間ごと';
   }
 
   @override
@@ -2793,45 +2782,42 @@ class AppLocalizationsJa extends AppLocalizations {
   String get subtitleCustomizationDescription => '字幕の外観をカスタマイズする';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => '字幕モード';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => 'フラグ付き';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => '常に表示';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => '外国語';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => '強制';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+      'メディアファイルのメタデータで「デフォルト」または「強制」とフラグが付いたトラックを再生します。';
 
   @override
-  String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+  String get subtitleModeAlwaysDescription => '動画の再生開始時に、常に字幕を読み込んで表示します。';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+      '既定のオーディオトラックが外国語の場合に、自動的に字幕をオンにします。';
 
   @override
-  String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+  String get subtitleModeForcedDescription => '強制フラグが明示的に付いた字幕のみを読み込みます。';
 
   @override
-  String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+  String get subtitleModeNoneDescription => '字幕の自動読み込みを完全に無効にします。';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => '代替字幕言語';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => '字幕ストリーム';
 
   @override
   String get subtitlePreviewText => '素早い茶色のキツネが怠惰な犬を飛び越える';
@@ -2889,17 +2875,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return '$profile プロファイルの設定を読み込みました。';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return '$profile プロファイルの設定を読み込めませんでした。';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'ローカル設定を $profile プロファイルに同期しました。';
   }
 
   @override
@@ -3033,10 +3019,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showLibrariesInToolbar => 'ツールバーにライブラリを表示';
 
   @override
-  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
+  String get navbarAlwaysExpanded => 'ナビゲーションバーのラベルを常に表示';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'Seerr ボタンを表示';
 
   @override
   String get navbarOpacity => 'ナビゲーションバーの不透明度';
@@ -3108,18 +3094,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showFolderBrowsingOption => 'フォルダー参照オプションを表示する';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => 'アイテムをコレクションにまとめる';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+      'ライブラリの閲覧時にコレクションに含まれるアイテムを非表示にします';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle => 'ライブラリのグループ化について';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+      'この設定を使用するには、Jellyfin または Emby サーバーのライブラリの表示設定で「映画をコレクションにまとめる」または「番組をコレクションにまとめる」が有効になっていることを確認してください。';
 
   @override
   String get libraryVisibility => 'ライブラリの可視性';
@@ -3148,7 +3134,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count 件を選択中';
   }
 
   @override
@@ -3228,10 +3214,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get autoPlayTrailers => '3 秒後にメディア バーでトレーラーを自動再生します';
 
   @override
-  String get trailerAudio => 'Trailer Audio';
+  String get trailerAudio => '予告編のオーディオ';
 
   @override
-  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+  String get enableTrailerAudio => 'メディアバーの予告編でオーディオを有効にします';
 
   @override
   String get episodePreview => 'エピソードのプレビュー';
@@ -3305,10 +3291,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get combineBothRows => '両方の行を 1 つのホーム セクションに結合します';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => 'ホーム行を拡大表示';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription => '1 画面に表示するホーム行を 1 行に制限します';
 
   @override
   String get perRowImageType => '行ごとの画像タイプ';
@@ -3323,7 +3309,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lastUser => '最後のユーザー';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => '現在のユーザー';
 
   @override
   String get alwaysAuthenticate => '常に認証する';
@@ -3393,7 +3379,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes 分';
   }
 
   @override
@@ -3423,10 +3409,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get displayClockDuringScreensaver => 'スクリーンセーバー中に時計を表示する';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => '固定';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => 'バウンド';
 
   @override
   String get rottenTomatoesCritics => 'ロッテン・トマト (批評家)';
@@ -3447,7 +3433,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get metacriticUser => 'Metacritic (ユーザー)';
 
   @override
-  String get trakt => 'トラクト';
+  String get trakt => 'Trakt';
 
   @override
   String get letterboxd => 'レターボックスd';
@@ -3495,7 +3481,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ratingSourcesDescription => 'アプリ全体に表示される評価ソースを有効にして並べ替える';
 
   @override
-  String get pluginLabel => 'プラグイン';
+  String get pluginLabel => 'Moonbase プラグイン';
 
   @override
   String get pluginDetected => 'プラグインが検出されました';
@@ -3513,7 +3499,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nバージョン: $version';
   }
 
   @override
@@ -3566,13 +3552,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get networks => 'ネットワーク';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'Seerr のディスカバリー行';
 
   @override
   String get resetRowsToDefaults => '行をデフォルトにリセットする';
 
   @override
-  String get enableSeerr => 'Seer を有効にする';
+  String get enableSeerr => 'Seerr を有効にする';
 
   @override
   String get showSeerrInNavigation => 'ナビゲーションに Seerr を表示 (サーバープラグインが必要)';
@@ -3587,43 +3573,41 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hideAdultContent => '結果内のアダルト コンテンツを非表示にする';
 
   @override
-  String get seerrNotificationsSection => 'Notifications';
+  String get seerrNotificationsSection => '通知';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'New request notifications';
+  String get seerrNotifyNewRequestsTitle => '新規リクエストの通知';
 
   @override
-  String get seerrNotifyNewRequestsSubtitle =>
-      'Alert me when someone submits a request';
+  String get seerrNotifyNewRequestsSubtitle => '誰かがリクエストを送信したときに通知します';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Request updates';
+  String get seerrNotifyLibraryAddedTitle => 'リクエストの更新';
 
   @override
-  String get seerrNotifyLibraryAddedSubtitle =>
-      'Approved, declined, and added to your library';
+  String get seerrNotifyLibraryAddedSubtitle => '承認、却下、ライブラリへの追加';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Issue updates';
+  String get seerrNotifyIssuesTitle => '問題の更新';
 
   @override
-  String get seerrNotifyIssuesSubtitle =>
-      'New issues, replies, and resolutions';
+  String get seerrNotifyIssuesSubtitle => '新しい問題、返信、解決';
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'ログイン中: $username';
   }
 
   @override
-  String get discoverRows => '行の発見';
+  String get discoverRows => 'Seerr ディスカバリーページ';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'ドラッグして並べ替えます。行を有効または無効にします。 Moonfin プラグインとの行順序の同期が有効になりました。';
+      'Seerr のメインページに表示する行を有効にします。ドラッグして並べ替えられます。カスタムの並び順は Moonbase と同期されます。';
 
   @override
-  String get discoverRowsDescription => 'ドラッグして並べ替えます。行を有効または無効にします。';
+  String get discoverRowsDescription =>
+      'Seerr のメインページに表示する行を有効にします。ドラッグして並べ替えられます。カスタムの並び順は Moonbase と同期されます。';
 
   @override
   String get enabled => '有効';
@@ -3636,7 +3620,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'バージョン $version';
   }
 
   @override
@@ -3680,7 +3664,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'アップデートがあります: v$version';
   }
 
   @override
@@ -3691,7 +3675,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version が利用可能です';
   }
 
   @override
@@ -3766,19 +3750,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Downloading · $percent%';
+    return 'ダウンロード中 · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Importing';
+  String get seerrImportingStatus => '取り込み中';
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count 件';
   }
 
   @override
-  String get seerrSettings => 'シーラー設定';
+  String get seerrSettings => 'Seerr 設定';
 
   @override
   String get requestMore => 'さらにリクエスト';
@@ -3794,7 +3778,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return '$name がリクエスト';
   }
 
   @override
@@ -3811,12 +3795,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return '「$title」のリクエストをキャンセルしますか?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return '「$title」の $count 件のリクエストをキャンセルしますか?';
   }
 
   @override
@@ -3830,12 +3814,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return '製作費: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return '興行収入: \$$amount';
   }
 
   @override
@@ -3845,7 +3829,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return '$typeをリクエスト';
   }
 
   @override
@@ -3873,14 +3857,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showMore => 'もっと見る';
 
   @override
-  String get appearances => '出演';
+  String get appearances => '出演作品';
 
   @override
   String get crewSection => 'クルー';
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return '$age 歳';
   }
 
   @override
@@ -3911,148 +3895,146 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deletedStatus => '削除されました';
 
   @override
-  String get failedStatus => 'Failed';
+  String get failedStatus => '失敗';
 
   @override
-  String get processingStatus => 'Processing';
+  String get processingStatus => '処理中';
 
   @override
   String modifiedByName(String name) {
-    return 'Modified by $name';
+    return '$name が更新';
   }
 
   @override
-  String get completedStatus => 'Completed';
+  String get completedStatus => '完了';
 
   @override
-  String get requestErrorDuplicate => 'This title was already requested';
+  String get requestErrorDuplicate => 'このタイトルはすでにリクエスト済みです';
 
   @override
-  String get requestErrorQuota => 'Request limit reached';
+  String get requestErrorQuota => 'リクエストの上限に達しました';
 
   @override
-  String get requestErrorBlocklisted => 'This title is blocklisted';
+  String get requestErrorBlocklisted => 'このタイトルはブロックリストに登録されています';
 
   @override
-  String get requestErrorNoSeasons => 'No seasons left to request';
+  String get requestErrorNoSeasons => 'リクエストできるシーズンがありません';
 
   @override
-  String get requestErrorPermission =>
-      'You don\'t have permission to make this request';
+  String get requestErrorPermission => 'このリクエストを行う権限がありません';
 
   @override
-  String get seerrRequestsTitle => 'Requests';
+  String get seerrRequestsTitle => 'リクエスト';
 
   @override
-  String get seerrIssuesTitle => 'Issues';
+  String get seerrIssuesTitle => '問題';
 
   @override
-  String get sortNewest => 'Newest';
+  String get sortNewest => '新着順';
 
   @override
-  String get sortLastModified => 'Last Modified';
+  String get sortLastModified => '更新順';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => '問題はありません';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit movie requests remaining';
+    return '映画のリクエスト残り $remaining / $limit 件';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit season requests remaining';
+    return 'シーズンのリクエスト残り $remaining / $limit 件';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Part of $name';
+    return '$name の一部';
   }
 
   @override
-  String get viewCollection => 'View Collection';
+  String get viewCollection => 'コレクションを表示';
 
   @override
-  String get requestCollection => 'Request Collection';
+  String get requestCollection => 'コレクションをリクエスト';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total movies · $available available';
+    return '$total 本の映画 · $available 本が視聴可能';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Request $count movies';
+    return '$count 本の映画をリクエスト';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Requesting $current of $total...';
+    return 'リクエスト中 $current / $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Requested $count movies';
+    return '$count 本の映画をリクエストしました';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Requested $ok of $total movies';
+    return '$total 本中 $ok 本の映画をリクエストしました';
   }
 
   @override
-  String get collectionAllRequested =>
-      'All movies are already available or requested';
+  String get collectionAllRequested => 'すべての映画は視聴可能かリクエスト済みです';
 
   @override
-  String get reportIssue => 'Report Issue';
+  String get reportIssue => '問題を報告';
 
   @override
-  String get issueTypeVideo => 'Video';
+  String get issueTypeVideo => '映像';
 
   @override
-  String get issueTypeAudio => 'Audio';
+  String get issueTypeAudio => 'オーディオ';
 
   @override
-  String get whatsWrong => 'What\'s wrong?';
+  String get whatsWrong => 'どのような問題ですか?';
 
   @override
-  String get allEpisodes => 'All Episodes';
+  String get allEpisodes => '全エピソード';
 
   @override
-  String get episode => 'Episode';
+  String get episode => 'エピソード';
 
   @override
-  String get openStatus => 'Open';
+  String get openStatus => '未解決';
 
   @override
-  String get resolvedStatus => 'Resolved';
+  String get resolvedStatus => '解決済み';
 
   @override
-  String get resolveAction => 'Resolve';
+  String get resolveAction => '解決にする';
 
   @override
-  String get reopenAction => 'Reopen';
+  String get reopenAction => '再開する';
 
   @override
   String reportedByName(String name) {
-    return 'Reported by $name';
+    return '$name が報告';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comments';
+    return '$count 件のコメント';
   }
 
   @override
-  String get addComment => 'Add a comment';
+  String get addComment => 'コメントを追加';
 
   @override
-  String get deleteIssueConfirm => 'Delete this issue?';
+  String get deleteIssueConfirm => 'この問題を削除しますか?';
 
   @override
-  String get submitReport => 'Submit Report';
+  String get submitReport => '報告を送信';
 
   @override
   String get tmdbScore => 'TMDBスコア';
@@ -4076,7 +4058,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get originalLanguageLabel => '元の言語';
 
   @override
-  String get seasonsLabel => '季節';
+  String get seasonsLabel => 'シーズン';
 
   @override
   String get episodesLabel => 'エピソード';
@@ -4109,7 +4091,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get disable => '無効にする';
 
   @override
-  String get done => '終わり';
+  String get done => '完了';
 
   @override
   String get edit => '編集';
@@ -4121,10 +4103,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get error => 'エラー';
 
   @override
-  String get forward => 'フォワード';
+  String get forward => '進む';
 
   @override
-  String get general => '一般的な';
+  String get general => '一般';
 
   @override
   String get go => '行く';
@@ -4145,7 +4127,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get networking => 'ネットワーキング';
 
   @override
-  String get next => '次';
+  String get next => '次へ';
 
   @override
   String get path => 'パス';
@@ -4214,7 +4196,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get time => '時間';
 
   @override
-  String get trickplay => 'トリックプレイ';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => 'アンインストール';
@@ -4253,28 +4235,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminDrawerUsers => 'ユーザー';
 
   @override
-  String get adminDrawerLibraries => '図書館';
+  String get adminDrawerLibraries => 'ライブラリ';
 
   @override
-  String get adminDrawerDisplay => 'Display';
+  String get adminDrawerDisplay => '表示';
 
   @override
-  String get adminDrawerMetadata => 'Metadata';
+  String get adminDrawerMetadata => 'メタデータ';
 
   @override
-  String get adminDrawerNfo => 'NFO Settings';
+  String get adminDrawerNfo => 'NFO 設定';
 
   @override
   String get adminDrawerTranscoding => 'トランスコーディング';
 
   @override
-  String get adminDrawerResume => '再開する';
+  String get adminDrawerResume => '再開';
 
   @override
   String get adminDrawerStreaming => 'ストリーミング';
 
   @override
-  String get adminDrawerTrickplay => 'トリックプレイ';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'デバイス';
@@ -4324,22 +4306,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return '更新可能なプラグイン: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return '再起動が必要なプラグイン: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return '失敗したスケジュールタスク: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return '最近の警告/エラー件数: $count';
   }
 
   @override
@@ -4398,7 +4380,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'エラー: $error';
   }
 
   @override
@@ -4424,7 +4406,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'コマンドに失敗しました: $error';
   }
 
   @override
@@ -4443,13 +4425,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionRewind => '巻き戻し';
 
   @override
-  String get sessionForward => 'フォワード';
+  String get sessionForward => '早送り';
 
   @override
-  String get sessionNext => '次';
+  String get sessionNext => '次へ';
 
   @override
-  String get sessionVolumeDown => 'Vol –';
+  String get sessionVolumeDown => '音量 –';
 
   @override
   String get sessionVolumeUp => '巻+';
@@ -4488,14 +4470,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminClearDates => '日付を明確にする';
 
   @override
-  String get adminActivitySeverityAll => 'All severities';
+  String get adminActivitySeverityAll => 'すべての重要度';
 
   @override
-  String get adminActivityDateRange => 'Date range';
+  String get adminActivityDateRange => '期間';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'アクティビティログの読み込みに失敗しました: $error';
   }
 
   @override
@@ -4512,7 +4494,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'デバイスを更新できませんでした: $error';
   }
 
   @override
@@ -4523,28 +4505,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'デバイスを削除できませんでした: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return 'デバイス「$name」を削除しますか? このデバイスでは再度サインインが必要になります。';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Delete all devices';
+  String get adminDeleteAllDevices => 'すべてのデバイスを削除';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
+    return '$count 台のデバイスを削除しますか? 対象のユーザーは再度サインインが必要になります。現在お使いのデバイスは影響を受けません。';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Devices removed';
+  String get adminDevicesDeletedAll => 'デバイスを削除しました';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Removed some devices; $count could not be removed.';
+    return '一部のデバイスを削除しました。$count 台は削除できませんでした。';
   }
 
   @override
@@ -4573,7 +4555,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'スキャンを開始できませんでした: $error';
   }
 
   @override
@@ -4584,12 +4566,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'ライブラリの名前を「$name」に変更しました';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return '名前を変更できませんでした: $error';
   }
 
   @override
@@ -4597,17 +4579,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'ライブラリ「$name」を削除しました';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'ライブラリを削除できませんでした: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'パスを追加できませんでした: $error';
   }
 
   @override
@@ -4615,12 +4597,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'このライブラリから「$path」を削除しますか?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'パスを削除できませんでした: $error';
   }
 
   @override
@@ -4628,7 +4610,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return '設定を保存できませんでした: $error';
   }
 
   @override
@@ -4659,251 +4641,236 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataCountryHint => '例えば米国、ドイツ、フランス';
 
   @override
-  String get adminLibraryTabPaths => 'Paths';
+  String get adminLibraryTabPaths => 'パス';
 
   @override
-  String get adminLibraryTabOptions => 'Options';
+  String get adminLibraryTabOptions => 'オプション';
 
   @override
-  String get adminLibraryTabDownloaders => 'Downloaders';
+  String get adminLibraryTabDownloaders => 'ダウンローダー';
 
   @override
-  String get adminLibMetadataSavers => 'Metadata savers';
+  String get adminLibMetadataSavers => 'メタデータの保存先';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+  String get adminLibSubtitleDownloaders => '字幕ダウンローダー';
 
   @override
-  String get adminLibLyricDownloaders => 'Lyric downloaders';
+  String get adminLibLyricDownloaders => '歌詞ダウンローダー';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Metadata downloaders: $type';
+    return 'メタデータダウンローダー: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Image fetchers: $type';
+    return '画像取得元: $type';
   }
 
   @override
-  String get adminLibNoDownloaders =>
-      'This server exposes no downloaders for this library type.';
+  String get adminLibNoDownloaders => 'このサーバーには、このライブラリ種別で利用できるダウンローダーがありません。';
 
   @override
-  String get adminLibrarySectionGeneral => 'General';
+  String get adminLibrarySectionGeneral => '一般';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadata';
+  String get adminLibrarySectionMetadata => 'メタデータ';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Embedded Info';
+  String get adminLibrarySectionEmbedded => '埋め込み情報';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitles';
+  String get adminLibrarySectionSubtitles => '字幕';
 
   @override
-  String get adminLibrarySectionImages => 'Images';
+  String get adminLibrarySectionImages => '画像';
 
   @override
-  String get adminLibrarySectionSeries => 'Series';
+  String get adminLibrarySectionSeries => 'シリーズ';
 
   @override
-  String get adminLibrarySectionMusic => 'Music';
+  String get adminLibrarySectionMusic => '音楽';
 
   @override
-  String get adminLibrarySectionMovies => 'Movies';
+  String get adminLibrarySectionMovies => '映画';
 
   @override
-  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+  String get adminLibRealtimeMonitor => 'リアルタイム監視を有効にする';
 
   @override
-  String get adminLibRealtimeMonitorHint =>
-      'Detect file changes and process them automatically.';
+  String get adminLibRealtimeMonitorHint => 'ファイルの変更を検出して自動的に処理します。';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+  String get adminLibArchiveMediaFiles => 'アーカイブをメディアファイルとして扱う';
 
   @override
-  String get adminLibEnablePhotos => 'Display photos';
+  String get adminLibEnablePhotos => '写真を表示する';
 
   @override
-  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+  String get adminLibSaveLocalMetadata => 'アートワークをメディアフォルダーに保存する';
 
   @override
-  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+  String get adminLibRefreshInterval => 'メタデータの自動更新';
 
   @override
-  String get adminLibRefreshNever => 'Never';
+  String get adminLibRefreshNever => 'しない';
 
   @override
-  String get adminLibDefault => 'Default';
+  String get adminLibDefault => 'デフォルト';
 
   @override
-  String get adminLibDisplayTitle => 'Display';
+  String get adminLibDisplayTitle => '表示';
 
   @override
-  String get adminLibDisplaySection => 'Library display';
+  String get adminLibDisplaySection => 'ライブラリの表示';
 
   @override
-  String get adminLibFolderView =>
-      'Display a folder view to show plain media folders';
+  String get adminLibFolderView => '通常のメディアフォルダーを表示するフォルダービューを表示する';
 
   @override
-  String get adminLibSpecialsInSeasons =>
-      'Display specials within seasons they aired in';
+  String get adminLibSpecialsInSeasons => '特別編を放送されたシーズン内に表示する';
 
   @override
-  String get adminLibGroupMovies => 'Group movies into collections';
+  String get adminLibGroupMovies => '映画をコレクションにまとめる';
 
   @override
-  String get adminLibGroupShows => 'Group shows into collections';
+  String get adminLibGroupShows => '番組をコレクションにまとめる';
 
   @override
-  String get adminLibExternalSuggestions =>
-      'Show external content in suggestions';
+  String get adminLibExternalSuggestions => 'おすすめに外部コンテンツを表示する';
 
   @override
-  String get adminLibDateAddedSection => 'Date added behavior';
+  String get adminLibDateAddedSection => '追加日の扱い';
 
   @override
-  String get adminLibDateAddedLabel => 'Use date added from';
+  String get adminLibDateAddedLabel => '追加日として使用する日付';
 
   @override
-  String get adminLibDateAddedImport => 'Date scanned into the library';
+  String get adminLibDateAddedImport => 'ライブラリにスキャンされた日付';
 
   @override
-  String get adminLibDateAddedFile => 'Date the file was created';
+  String get adminLibDateAddedFile => 'ファイルが作成された日付';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata and Images';
+  String get adminLibMetadataTitle => 'メタデータと画像';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferred metadata language';
+  String get adminLibMetadataLangSection => '優先するメタデータの言語';
 
   @override
-  String get adminLibChaptersSection => 'Chapters';
+  String get adminLibChaptersSection => 'チャプター';
 
   @override
-  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
+  String get adminLibDummyChapterDuration => 'ダミーチャプターの長さ (秒)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Length of chapters generated for media that has none. Set to 0 to disable.';
+      'チャプターがないメディア用に生成するチャプターの長さ。0 にすると無効になります。';
 
   @override
-  String get adminLibChapterImageResolution => 'Chapter image resolution';
+  String get adminLibChapterImageResolution => 'チャプター画像の解像度';
 
   @override
-  String get adminLibNfoTitle => 'NFO Settings';
+  String get adminLibNfoTitle => 'NFO 設定';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
+      'NFO メタデータは Kodi などのクライアントと互換性があります。設定は NFO メタデータを保存するすべてのライブラリに適用されます。';
 
   @override
-  String get adminLibKodiUser => 'User to store watch data for in NFO files';
+  String get adminLibKodiUser => 'NFO ファイルに視聴データを保存するユーザー';
 
   @override
-  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
+  String get adminLibSaveImagePaths => 'NFO ファイルに画像のパスを保存する';
 
   @override
-  String get adminLibPathSubstitution =>
-      'Enable path substitution for NFO image paths';
+  String get adminLibPathSubstitution => 'NFO の画像パスでパス置換を有効にする';
 
   @override
-  String get adminLibExtraThumbs =>
-      'Copy extrafanart images into an extrathumbs folder';
+  String get adminLibExtraThumbs => 'extrafanart の画像を extrathumbs フォルダーにコピーする';
 
   @override
-  String get adminLibNone => 'None';
+  String get adminLibNone => 'なし';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days days';
+    return '$days 日';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Use embedded titles';
+  String get adminLibEmbeddedTitles => '埋め込みタイトルを使用する';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+  String get adminLibEmbeddedExtrasTitles => '特典に埋め込みタイトルを使用する';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+  String get adminLibEmbeddedEpisodeInfos => '埋め込みのエピソード情報を使用する';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+  String get adminLibAllowEmbeddedSubtitles => '埋め込み字幕を許可する';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Allow all';
+  String get adminLibEmbeddedAllowAll => 'すべて許可';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Text only';
+  String get adminLibEmbeddedAllowText => 'テキストのみ';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Image only';
+  String get adminLibEmbeddedAllowImage => '画像のみ';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'None';
+  String get adminLibEmbeddedAllowNone => 'なし';
 
   @override
-  String get adminLibSkipIfEmbeddedSubs =>
-      'Skip download if embedded subtitles are present';
+  String get adminLibSkipIfEmbeddedSubs => '埋め込み字幕がある場合はダウンロードをスキップする';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Skip download if the audio track matches the download language';
+      'オーディオトラックがダウンロード言語と一致する場合はダウンロードをスキップする';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+  String get adminLibRequirePerfectMatch => '字幕の完全一致を必須にする';
 
   @override
-  String get adminLibSaveSubtitlesWithMedia =>
-      'Save subtitles into media folders';
+  String get adminLibSaveSubtitlesWithMedia => '字幕をメディアフォルダーに保存する';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extract chapter images';
+  String get adminLibChapterImageExtraction => 'チャプター画像を抽出する';
 
   @override
-  String get adminLibChapterImagesDuringScan =>
-      'Extract chapter images during the library scan';
+  String get adminLibChapterImagesDuringScan => 'ライブラリのスキャン中にチャプター画像を抽出する';
 
   @override
-  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+  String get adminLibTrickplayExtraction => 'Trickplay画像の抽出を有効にする';
 
   @override
-  String get adminLibTrickplayDuringScan =>
-      'Extract trickplay images during the library scan';
+  String get adminLibTrickplayDuringScan => 'ライブラリのスキャン中にTrickplay画像を抽出する';
 
   @override
-  String get adminLibSaveTrickplayWithMedia =>
-      'Save trickplay images into media folders';
+  String get adminLibSaveTrickplayWithMedia => 'Trickplay画像をメディアフォルダーに保存する';
 
   @override
-  String get adminLibAutomaticSeriesGrouping =>
-      'Automatically merge series that are spread across multiple folders';
+  String get adminLibAutomaticSeriesGrouping => '複数のフォルダーに分かれたシリーズを自動的に統合する';
 
   @override
-  String get adminLibSeasonZeroName => 'Season zero display name';
+  String get adminLibSeasonZeroName => 'シーズン 0 の表示名';
 
   @override
-  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+  String get adminLibLufsScan => '音量正規化のための LUFS スキャンを有効にする';
 
   @override
-  String get adminLibPreferNonstandardArtist =>
-      'Prefer non-standard artists tag';
+  String get adminLibPreferNonstandardArtist => '非標準のアーティストタグを優先する';
 
   @override
-  String get adminLibAutoAddToCollection =>
-      'Automatically add movies to collections';
+  String get adminLibAutoAddToCollection => '映画を自動的にコレクションに追加する';
 
   @override
   String get adminLibraryNameRequired => 'ライブラリ名は必須です';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'ライブラリを作成できませんでした: $error';
   }
 
   @override
@@ -4929,27 +4896,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return '$name を無効にしますか? サインインできなくなります。';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return '$name を有効にしますか? 再びサインインできるようになります。';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'ユーザー「$name」を無効にしました';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'ユーザー「$name」を有効にしました';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'ユーザーポリシーを更新できませんでした: $error';
   }
 
   @override
@@ -4966,7 +4933,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'ユーザーを作成できませんでした: $error';
   }
 
   @override
@@ -4986,7 +4953,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return '保存できませんでした: $error';
   }
 
   @override
@@ -4997,7 +4964,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return '失敗しました: $error';
   }
 
   @override
@@ -5127,143 +5094,138 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminEnableAllChannels => 'すべてのチャンネルへのアクセスを有効にする';
 
   @override
-  String get adminParentalControl => 'Parental Control';
+  String get adminParentalControl => 'ペアレンタルコントロール';
 
   @override
-  String get adminMaxParentalRating => 'Maximum allowed parental rating';
+  String get adminMaxParentalRating => '許可する視聴年齢制限の上限';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Content with a higher rating will be hidden from this user.';
+      'これより高いレーティングのコンテンツは、このユーザーには表示されません。';
 
   @override
-  String get adminParentalRatingNone => 'None';
+  String get adminParentalRatingNone => 'なし';
 
   @override
-  String get adminBlockUnratedItems =>
-      'Block items with no or unrecognized rating information';
+  String get adminBlockUnratedItems => 'レーティング情報がない、または認識できないアイテムをブロックする';
 
   @override
-  String get adminUnratedBook => 'Books';
+  String get adminUnratedBook => '書籍';
 
   @override
-  String get adminUnratedChannelContent => 'Channels';
+  String get adminUnratedChannelContent => 'チャンネル';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Live TV';
+  String get adminUnratedLiveTvChannel => 'ライブ TV';
 
   @override
-  String get adminUnratedMovie => 'Movies';
+  String get adminUnratedMovie => '映画';
 
   @override
-  String get adminUnratedMusic => 'Music';
+  String get adminUnratedMusic => '音楽';
 
   @override
-  String get adminUnratedTrailer => 'Trailers';
+  String get adminUnratedTrailer => '予告編';
 
   @override
-  String get adminUnratedSeries => 'Shows';
+  String get adminUnratedSeries => '番組';
 
   @override
-  String get adminAccessSchedules => 'Access Schedules';
+  String get adminAccessSchedules => 'アクセススケジュール';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
+      '以下のスケジュールの時間帯のみアクセスを許可します。スケジュールを設定しない場合は終日アクセスできます。';
 
   @override
-  String get adminAddSchedule => 'Add Schedule';
+  String get adminAddSchedule => 'スケジュールを追加';
 
   @override
-  String get adminScheduleDay => 'Day';
+  String get adminScheduleDay => '曜日';
 
   @override
-  String get adminScheduleStart => 'Start';
+  String get adminScheduleStart => '開始';
 
   @override
-  String get adminScheduleEnd => 'End';
+  String get adminScheduleEnd => '終了';
 
   @override
-  String get adminDayEveryday => 'Every day';
+  String get adminDayEveryday => '毎日';
 
   @override
-  String get adminDayWeekday => 'Weekday';
+  String get adminDayWeekday => '平日';
 
   @override
-  String get adminDayWeekend => 'Weekend';
+  String get adminDayWeekend => '週末';
 
   @override
-  String get adminDaySunday => 'Sunday';
+  String get adminDaySunday => '日曜日';
 
   @override
-  String get adminDayMonday => 'Monday';
+  String get adminDayMonday => '月曜日';
 
   @override
-  String get adminDayTuesday => 'Tuesday';
+  String get adminDayTuesday => '火曜日';
 
   @override
-  String get adminDayWednesday => 'Wednesday';
+  String get adminDayWednesday => '水曜日';
 
   @override
-  String get adminDayThursday => 'Thursday';
+  String get adminDayThursday => '木曜日';
 
   @override
-  String get adminDayFriday => 'Friday';
+  String get adminDayFriday => '金曜日';
 
   @override
-  String get adminDaySaturday => 'Saturday';
+  String get adminDaySaturday => '土曜日';
 
   @override
-  String get adminAllowedTags => 'Allowed tags';
+  String get adminAllowedTags => '許可するタグ';
 
   @override
-  String get adminAllowedTagsHint =>
-      'Only content with these tags is shown. Leave empty to allow all.';
+  String get adminAllowedTagsHint => 'これらのタグが付いたコンテンツのみを表示します。空欄にするとすべて許可されます。';
 
   @override
-  String get adminBlockedTags => 'Blocked tags';
+  String get adminBlockedTags => 'ブロックするタグ';
 
   @override
-  String get adminBlockedTagsHint =>
-      'Content with these tags is hidden from this user.';
+  String get adminBlockedTagsHint => 'これらのタグが付いたコンテンツは、このユーザーには表示されません。';
 
   @override
-  String get adminAddTag => 'Add tag';
+  String get adminAddTag => 'タグを追加';
 
   @override
-  String get adminEnabledDevices => 'Enabled devices';
+  String get adminEnabledDevices => '有効なデバイス';
 
   @override
-  String get adminEnabledChannels => 'Enabled channels';
+  String get adminEnabledChannels => '有効なチャンネル';
 
   @override
-  String get adminAuthProvider => 'Authentication provider';
+  String get adminAuthProvider => '認証プロバイダー';
 
   @override
-  String get adminPasswordResetProvider => 'Password reset provider';
+  String get adminPasswordResetProvider => 'パスワードリセットプロバイダー';
 
   @override
-  String get adminLoginAttemptsBeforeLockout =>
-      'Maximum failed login attempts before lockout';
+  String get adminLoginAttemptsBeforeLockout => 'ロックアウトまでのログイン失敗回数の上限';
 
   @override
-  String get adminLoginAttemptsHint =>
-      'Set to 0 for the default, or -1 to disable lockout.';
+  String get adminLoginAttemptsHint => '0 で既定値、-1 でロックアウトを無効にします。';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay access';
+  String get adminSyncPlayAccess => 'SyncPlay のアクセス権';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
+  String get adminSyncPlayCreateAndJoin => 'グループの作成と参加を許可する';
 
   @override
-  String get adminSyncPlayJoin => 'Allow joining groups';
+  String get adminSyncPlayJoin => 'グループへの参加を許可する';
 
   @override
-  String get adminSyncPlayNone => 'No access';
+  String get adminSyncPlayNone => 'アクセスなし';
 
   @override
-  String get adminContentDeletionFolders => 'Allow content deletion from';
+  String get adminContentDeletionFolders => 'コンテンツの削除を許可する場所';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5271,22 +5233,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'サーバーが HTTP $status を返しました';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return '$name を削除してもよろしいですか?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'ユーザー「$name」を削除しました';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'ユーザーを削除できませんでした: $error';
   }
 
   @override
@@ -5307,7 +5269,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'キーを作成できませんでした: $error';
   }
 
   @override
@@ -5318,7 +5280,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return '$name のキーを無効化しますか?';
   }
 
   @override
@@ -5326,7 +5288,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'キーを無効化できませんでした: $error';
   }
 
   @override
@@ -5346,29 +5308,29 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'トークン: $token\\n作成日時: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Create Backup';
+  String get adminBackupOptionsTitle => 'バックアップを作成';
 
   @override
-  String get adminBackupInclude => 'Choose what to include in the backup.';
+  String get adminBackupInclude => 'バックアップに含める項目を選択してください。';
 
   @override
-  String get adminBackupDatabase => 'Database';
+  String get adminBackupDatabase => 'データベース';
 
   @override
-  String get adminBackupDatabaseAlways => 'Always included';
+  String get adminBackupDatabaseAlways => '常に含まれます';
 
   @override
-  String get adminBackupMetadata => 'Metadata';
+  String get adminBackupMetadata => 'メタデータ';
 
   @override
-  String get adminBackupSubtitles => 'Subtitles';
+  String get adminBackupSubtitles => '字幕';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay images';
+  String get adminBackupTrickplay => 'Trickplay画像';
 
   @override
   String get adminCreatingBackup => 'バックアップを作成しています...';
@@ -5378,7 +5340,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'バックアップを作成できませんでした: $error';
   }
 
   @override
@@ -5386,12 +5348,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'マニフェスト: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'マニフェストを読み込めませんでした: $error';
   }
 
   @override
@@ -5402,7 +5364,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'バックアップを復元できませんでした: $error';
   }
 
   @override
@@ -5434,17 +5396,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return '$path に保存しました';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'ファイルを保存できませんでした: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName を読み込めませんでした';
   }
 
   @override
@@ -5455,7 +5417,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'タスクの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5466,17 +5428,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'タスクを開始できませんでした: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'タスクを停止できませんでした: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'タスクの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5484,12 +5446,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'トリガーを削除できませんでした: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'トリガーを追加できませんでした: $error';
   }
 
   @override
@@ -5515,7 +5477,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours 時間';
   }
 
   @override
@@ -5526,7 +5488,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'プラグインを切り替えられませんでした: $error';
   }
 
   @override
@@ -5534,27 +5496,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return '「$name」をアンインストールしてもよろしいですか?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'プラグインをアンインストールできませんでした: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'パッケージをインストールできませんでした: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'アップデートをインストールできませんでした: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'プラグインの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5565,12 +5527,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'アップデートをインストール (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'カタログの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5591,17 +5553,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '「$name」はサーバーの再起動後に削除されます';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'アンインストールできませんでした: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return '「$name」を v$version に更新しています...';
   }
 
   @override
@@ -5609,7 +5571,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'プラグインの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5617,7 +5579,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'バージョン $version';
   }
 
   @override
@@ -5637,17 +5599,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return '「$name」を削除してもよろしいですか?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'リポジトリを保存できませんでした: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'リポジトリの読み込みに失敗しました: $error';
   }
 
   @override
@@ -5664,12 +5626,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'プラグイン設定を読み込めません: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return '$uri を開けませんでした';
   }
 
   @override
@@ -5785,10 +5747,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminThrottleBuffering => 'スロットルバッファリング';
 
   @override
-  String get adminTrickplaySaved => 'トリックプレイ設定が保存されました';
+  String get adminTrickplaySaved => 'Trickplay 設定が保存されました';
 
   @override
-  String get adminTrickplayLoadFailed => 'トリックプレイ設定のロードに失敗しました';
+  String get adminTrickplayLoadFailed => 'Trickplay 設定の読み込みに失敗しました';
 
   @override
   String get adminEnableHardwareAcceleration => 'ハードウェアアクセラレーションを有効にする';
@@ -5890,7 +5852,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminBaseUrl => 'ベース URL';
 
   @override
-  String get adminBaseUrlHint => '例えば/ジェリーフィン';
+  String get adminBaseUrlHint => '例: /jellyfin';
 
   @override
   String get https => 'HTTPS';
@@ -5930,12 +5892,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'メタデータの読み込みに失敗しました: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'メタデータを保存できませんでした: $error';
   }
 
   @override
@@ -5955,7 +5917,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'メタデータを更新できませんでした: $error';
   }
 
   @override
@@ -5969,7 +5931,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'リモート検索に失敗しました: $error';
   }
 
   @override
@@ -5983,7 +5945,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'コンテンツ種別を更新できませんでした: $error';
   }
 
   @override
@@ -5997,12 +5959,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType 画像を更新しました';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return '画像をダウンロードできませんでした: $error';
   }
 
   @override
@@ -6013,27 +5975,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType 画像をアップロードしました';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '画像をアップロードできませんでした: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return '$imageType 画像を削除';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType 画像を削除しました';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '画像を削除できませんでした: $error';
   }
 
   @override
@@ -6044,67 +6006,65 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'チューナーの検出に失敗しました: $error';
   }
 
   @override
   String get adminAddTuner => 'チューナーの追加';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => 'チューナーを編集';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'M3U チューナー';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => 'ファイルまたは URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => 'チューナーの IP アドレス';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => '表示名';
 
   @override
-  String get adminTunerUserAgent => 'User agent';
+  String get adminTunerUserAgent => 'ユーザーエージェント';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => '同時接続数の上限';
 
   @override
-  String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+  String get adminTunerCountHelp => 'チューナーが同時に許可するストリームの最大数です。0 にすると無制限になります。';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate => '代替の最大ストリーミングビットレート';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly => 'お気に入りチャンネルのみを取り込む';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding => 'ハードウェアトランスコードを許可する';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'fMP4 トランスコードコンテナーを許可する';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing => 'ストリームの共有を許可する';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping => 'ストリームのループを有効にする';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'DTS を無視する';
 
   @override
-  String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+  String get adminTunerReadAtNativeFramerate => '入力をネイティブのフレームレートで読み込む';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => 'プロバイダーを編集';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6113,50 +6073,49 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => 'ファイルまたは URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => '映画の接頭辞';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => '映画のカテゴリー';
 
   @override
-  String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+  String get adminXmltvCategoriesHelp => '複数のカテゴリーは縦棒 (|) で区切ってください。';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => 'キッズのカテゴリー';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => 'ニュースのカテゴリー';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => 'スポーツのカテゴリー';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => 'ユーザー名';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => 'パスワード';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => '国';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => '国を選択';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => '郵便番号';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => '番組リストを取得';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => '番組リスト';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => 'すべてのチューナーを有効にする';
 
   @override
   String get adminTunerType => 'チューナーの種類';
@@ -6166,7 +6125,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'チューナーを追加できませんでした: $error';
   }
 
   @override
@@ -6180,12 +6139,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'プロバイダーを追加できませんでした: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'チューナーを削除できませんでした: $error';
   }
 
   @override
@@ -6193,16 +6152,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'チューナーをリセットできませんでした: $error';
   }
 
   @override
-  String get adminTunerResetNotSupported =>
-      'This tuner type does not support resetting.';
+  String get adminTunerResetNotSupported => 'この種類のチューナーはリセットに対応していません。';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'プロバイダーを削除できませんでした: $error';
   }
 
   @override
@@ -6221,43 +6179,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminSeriesRecordingPath => 'シリーズ録画パス';
 
   @override
-  String get adminMovieRecordingPath => 'Movie recording path';
+  String get adminMovieRecordingPath => '映画の録画先パス';
 
   @override
-  String get adminGuideDays => 'Guide data days';
+  String get adminGuideDays => '番組表データの日数';
 
   @override
-  String get adminGuideDaysAuto => 'Automatic';
+  String get adminGuideDaysAuto => '自動';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days days';
+    return '$days 日';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'Post-processing application path';
+  String get adminRecordingPostProcessor => '後処理アプリケーションのパス';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
+  String get adminRecordingPostProcessorArgs => '後処理の引数';
 
   @override
-  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
+  String get adminSaveRecordingNfo => '録画の NFO メタデータを保存する';
 
   @override
-  String get adminSaveRecordingImages => 'Save recording images';
+  String get adminSaveRecordingImages => '録画の画像を保存する';
 
   @override
-  String get adminLiveTvSectionTiming => 'Timing';
+  String get adminLiveTvSectionTiming => 'タイミング';
 
   @override
-  String get adminLiveTvSectionPaths => 'Recording paths';
+  String get adminLiveTvSectionPaths => '録画先パス';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-processing';
+  String get adminLiveTvSectionPostProcessing => '後処理';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Guide data: $value';
+    return '番組表データ: $value';
   }
 
   @override
@@ -6265,7 +6223,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return '設定を保存できませんでした: $error';
   }
 
   @override
@@ -6282,7 +6240,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'マッピングを更新できませんでした: $error';
   }
 
   @override
@@ -6298,14 +6256,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminGuideProviders => 'ガイドプロバイダー';
 
   @override
-  String get adminRefreshGuideData => 'Refresh Guide Data';
+  String get adminRefreshGuideData => '番組表データを更新';
 
   @override
-  String get adminGuideRefreshStarted => 'Guide data refresh started';
+  String get adminGuideRefreshStarted => '番組表データの更新を開始しました';
 
   @override
-  String get adminGuideRefreshUnavailable =>
-      'Guide refresh task is not available on this server.';
+  String get adminGuideRefreshUnavailable => 'このサーバーでは番組表の更新タスクを利用できません。';
 
   @override
   String get adminAddProvider => 'プロバイダーの追加';
@@ -6315,22 +6272,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return '録画先パス: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'シリーズのパス: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return '前の余裕時間: $minutes 分';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return '後の余裕時間: $minutes 分';
   }
 
   @override
@@ -6360,7 +6317,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'バックアップ $name を今すぐ復元しますか?';
   }
 
   @override
@@ -6383,7 +6340,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminLiveTvTitle => 'ライブ TV 管理';
 
   @override
-  String get adminApply => '適用する';
+  String get adminApply => '適用';
 
   @override
   String get adminNotSet => '未設定';
@@ -6405,27 +6362,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes 分前';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours 時間前';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days 日前';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName を読み込めませんでした';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count 件一致';
   }
 
   @override
@@ -6435,7 +6392,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminMetadataEditorTitle => 'メタデータエディター';
 
   @override
-  String get adminMetadataIdentify => 'Identify';
+  String get adminMetadataIdentify => '識別';
 
   @override
   String get adminMetadataType => 'タイプ';
@@ -6535,22 +6492,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType 画像を更新しました';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType 画像をアップロードしました';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType 画像を削除しました';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return '画像をダウンロードできませんでした: $error';
   }
 
   @override
@@ -6558,12 +6515,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '画像をアップロードできませんでした: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return '$imageType 画像を削除';
   }
 
   @override
@@ -6571,12 +6528,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '画像を削除できませんでした: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return '$imageType 画像を選択';
   }
 
   @override
@@ -6608,7 +6565,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'アップデートがあります: v$version';
   }
 
   @override
@@ -6631,7 +6588,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'アップデートをインストール (v$version)';
   }
 
   @override
@@ -6642,7 +6599,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '「$name」をインストールしています...';
   }
 
   @override
@@ -6662,7 +6619,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name の設定';
   }
 
   @override
@@ -6700,7 +6657,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'リポジトリの読み込みに失敗しました: $error';
   }
 
   @override
@@ -6708,15 +6665,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return '「$name」を削除してもよろしいですか?';
   }
 
   @override
-  String get adminReposRemove => '取り除く';
+  String get adminReposRemove => '削除';
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'リポジトリを保存できませんでした: $error';
   }
 
   @override
@@ -6838,19 +6795,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminBrandingEnableSplash => 'スプラッシュスクリーンを有効にする';
 
   @override
-  String get adminBrandingSplashUpload => 'Upload image';
+  String get adminBrandingSplashUpload => '画像をアップロード';
 
   @override
-  String get adminBrandingSplashUploaded => 'Splashscreen updated';
+  String get adminBrandingSplashUploaded => 'スプラッシュ画面を更新しました';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
+  String get adminBrandingSplashUploadFailed => 'スプラッシュ画面をアップロードできませんでした';
 
   @override
-  String get adminBrandingSplashDeleted => 'Splashscreen removed';
+  String get adminBrandingSplashDeleted => 'スプラッシュ画面を削除しました';
 
   @override
-  String get adminBrandingNoSplash => 'No custom splashscreen';
+  String get adminBrandingNoSplash => 'カスタムスプラッシュ画面はありません';
 
   @override
   String get adminPlaybackHwAccel => 'ハードウェアアクセラレーション';
@@ -6865,121 +6822,115 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminPlaybackEnableHwDecoding => '以下のハードウェア デコードを有効にします。';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV device';
+  String get adminPlaybackQsvDevice => 'QSV デバイス';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
+  String get adminPlaybackEnhancedNvdec => '拡張 NVDEC デコーダーを有効にする';
 
   @override
-  String get adminPlaybackPreferNativeDecoder =>
-      'Prefer system native hardware decoder';
+  String get adminPlaybackPreferNativeDecoder => 'システム標準のハードウェアデコーダーを優先する';
 
   @override
-  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
+  String get adminPlaybackColorDepth => 'ハードウェアデコードの色深度';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
+  String get adminPlaybackColorDepth10Hevc => '10 ビット HEVC デコード';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
+  String get adminPlaybackColorDepth10Vp9 => '10 ビット VP9 デコード';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10 ビットデコード';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12 ビットデコード';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
+  String get adminPlaybackHwEncodingSection => 'ハードウェアエンコード';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
+  String get adminPlaybackAllowHevcEncoding => 'HEVC エンコードを許可する';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
+  String get adminPlaybackAllowAv1Encoding => 'AV1 エンコードを許可する';
 
   @override
-  String get adminPlaybackIntelLowPowerH264 =>
-      'Enable Intel low-power H.264 encoder';
+  String get adminPlaybackIntelLowPowerH264 => 'Intel 低消費電力 H.264 エンコーダーを有効にする';
 
   @override
-  String get adminPlaybackIntelLowPowerHevc =>
-      'Enable Intel low-power HEVC encoder';
+  String get adminPlaybackIntelLowPowerHevc => 'Intel 低消費電力 HEVC エンコーダーを有効にする';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone Mapping';
+  String get adminPlaybackToneMapping => 'トーンマッピング';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
+  String get adminPlaybackEnableTonemapping => 'トーンマッピングを有効にする';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
+  String get adminPlaybackEnableVppTonemapping => 'VPP トーンマッピングを有効にする';
 
   @override
-  String get adminPlaybackEnableVtTonemapping =>
-      'Enable VideoToolbox tone mapping';
+  String get adminPlaybackEnableVtTonemapping => 'VideoToolbox トーンマッピングを有効にする';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
+  String get adminPlaybackTonemappingAlgorithm => 'トーンマッピングのアルゴリズム';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
+  String get adminPlaybackTonemappingMode => 'トーンマッピングのモード';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Tone mapping range';
+  String get adminPlaybackTonemappingRange => 'トーンマッピングのレンジ';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
+  String get adminPlaybackTonemappingDesat => 'トーンマッピングの彩度低下';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
+  String get adminPlaybackTonemappingPeak => 'トーンマッピングのピーク';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
+  String get adminPlaybackTonemappingParam => 'トーンマッピングのパラメーター';
 
   @override
-  String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+  String get adminPlaybackVppTonemappingBrightness => 'VPP トーンマッピングの明るさ';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast => 'VPP トーンマッピングのコントラスト';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presets & Quality';
+  String get adminPlaybackPresetsQuality => 'プリセットと画質';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Encoder preset';
+  String get adminPlaybackEncoderPreset => 'エンコーダープリセット';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
+  String get adminPlaybackH264Crf => 'H.264 エンコードの CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) エンコードの CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
+  String get adminPlaybackDeinterlaceMethod => 'インターレース解除の方式';
 
   @override
-  String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+  String get adminPlaybackDeinterlaceDoubleRate => 'インターレース解除時にフレームレートを 2 倍にする';
 
   @override
-  String get adminPlaybackAudioSection => 'Audio';
+  String get adminPlaybackAudioSection => 'オーディオ';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
+  String get adminPlaybackEnableAudioVbr => 'オーディオの VBR エンコードを有効にする';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
+  String get adminPlaybackDownmixBoost => 'オーディオダウンミックスのブースト';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
+  String get adminPlaybackDownmixAlgorithm => 'ステレオダウンミックスのアルゴリズム';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
+  String get adminPlaybackMaxMuxingQueue => '多重化キューの最大サイズ';
 
   @override
-  String get adminPlaybackAutoOption => 'Auto';
+  String get adminPlaybackAutoOption => '自動';
 
   @override
   String get adminPlaybackEncoding => 'エンコーディング';
@@ -7093,7 +7044,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminTaskStop => '停止';
 
   @override
-  String get adminRunningTasks => 'Running Tasks';
+  String get adminRunningTasks => '実行中のタスク';
 
   @override
   String get adminTaskRun => '走る';
@@ -7115,17 +7066,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return '毎日 $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return '毎週$day $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return '$durationごと';
   }
 
   @override
@@ -7163,8 +7114,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count 時間',
+      one: '1 時間',
     );
     return '$_temp0';
   }
@@ -7192,17 +7143,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days 日前';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours 時間前';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes 分前';
   }
 
   @override
@@ -7210,17 +7161,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes 分';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours 時間';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days 日';
   }
 
   @override
@@ -7229,7 +7180,8 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get adminTrickplayDescription => 'シークプレビューサムネイル用のトリックプレイ画像生成を設定します。';
+  String get adminTrickplayDescription =>
+      'シークプレビューのサムネイル用に Trickplay 画像の生成を設定します。';
 
   @override
   String get adminNetworkingPublicHttpsPort => 'パブリックHTTPSポート';
@@ -7238,49 +7190,49 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'ベース URL';
 
   @override
-  String get adminNetworkingBaseUrlHint => '例えば/ジェリーフィン';
+  String get adminNetworkingBaseUrlHint => '例: /jellyfin';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
+  String get adminNetworkingPublicHttpPort => '公開 HTTP ポート';
 
   @override
-  String get adminNetworkingRequireHttps => 'Require HTTPS';
+  String get adminNetworkingRequireHttps => 'HTTPS を必須にする';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
+      'リモートからのリクエストをすべて HTTPS にリダイレクトします。サーバーに有効な証明書がない場合は効果がありません。';
 
   @override
-  String get adminNetworkingCertPassword => 'Certificate password';
+  String get adminNetworkingCertPassword => '証明書のパスワード';
 
   @override
-  String get adminNetworkingIpSettings => 'IP Settings';
+  String get adminNetworkingIpSettings => 'IP 設定';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
+  String get adminNetworkingEnableIpv4 => 'IPv4 を有効にする';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
+  String get adminNetworkingEnableIpv6 => 'IPv6 を有効にする';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
+  String get adminNetworkingAutoDiscovery => 'ポートの自動マッピングを有効にする';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN networks';
+  String get adminNetworkingLocalSubnets => 'LAN ネットワーク';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
+      'ローカルネットワークとして扱う IP アドレスまたは CIDR サブネットを、カンマまたは改行で区切って入力します。';
 
   @override
-  String get adminNetworkingPublishedUris => 'Published server URIs';
+  String get adminNetworkingPublishedUris => '公開サーバー URI';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Map a subnet or address to a published URL, e.g. all=https://example.com';
+      'サブネットまたはアドレスを公開 URL に対応付けます (例: all=https://example.com)';
 
   @override
   String get adminNetworkingCertPath => '証明書のパス';
@@ -7310,11 +7262,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'スロットルバッファリング';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay => 'スロットリングの遅延 (秒)';
 
   @override
-  String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+  String get adminPlaybackEnableSubtitleExtraction => '字幕のオンザフライ抽出を許可する';
 
   @override
   String get adminResumeMinPct => '最低履歴書の割合';
@@ -7361,29 +7312,29 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'コンテンツ種別を更新できませんでした: $error';
   }
 
   @override
   String get adminGeneralSlowResponseThreshold => '低速応答しきい値 (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
+  String get adminGeneralEnableSlowResponse => '応答遅延の警告を有効にする';
 
   @override
-  String get adminGeneralQuickConnect => 'Enable Quick Connect';
+  String get adminGeneralQuickConnect => 'Quick Connect を有効にする';
 
   @override
-  String get adminGeneralSectionServer => 'Server';
+  String get adminGeneralSectionServer => 'サーバー';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadata';
+  String get adminGeneralSectionMetadata => 'メタデータ';
 
   @override
-  String get adminGeneralSectionPaths => 'Paths';
+  String get adminGeneralSectionPaths => 'パス';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performance';
+  String get adminGeneralSectionPerformance => 'パフォーマンス';
 
   @override
   String get adminGeneralCachePath => 'キャッシュパス';
@@ -7395,7 +7346,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminGeneralServerName => 'サーバー名';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage => '優先する表示言語';
 
   @override
   String get adminSettingsLoadFailed => '設定の読み込みに失敗しました';
@@ -7405,19 +7356,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'マッピングを更新できませんでした: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return '制限時間: $duration';
   }
 
   @override
   String get folders => 'フォルダー';
 
   @override
-  String get libraries => '図書館';
+  String get libraries => 'ライブラリ';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7446,8 +7397,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: '# 人が参加中',
+      one: '# 人が参加中',
     );
     return '$_temp0';
   }
@@ -7487,7 +7438,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'アイテム $index';
   }
 
   @override
@@ -7535,12 +7486,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName が SyncPlay グループに参加しました';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName が SyncPlay グループから退出しました';
   }
 
   @override
@@ -7552,7 +7503,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return '$groupName と再生を同期しています';
   }
 
   @override
@@ -7589,8 +7540,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: '# 行を検出',
+      one: '# 行を検出',
     );
     return '$_temp0';
   }
@@ -7629,20 +7580,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get offlineSavedMedia => '保存されたメディア';
 
   @override
-  String get offlineBannerTitle => 'You\'re offline';
+  String get offlineBannerTitle => 'オフラインです';
 
   @override
-  String get offlineBannerSubtitle => 'Showing your downloads';
+  String get offlineBannerSubtitle => 'ダウンロード済みの項目を表示しています';
 
   @override
-  String get offlineBannerAction => 'Downloads';
+  String get offlineBannerAction => 'ダウンロード';
 
   @override
-  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+  String get serverUnreachableBannerTitle => 'サーバーに接続できません';
 
   @override
-  String get serverUnreachableBannerSubtitle =>
-      'Playing from downloads until it\'s back';
+  String get serverUnreachableBannerSubtitle => '復旧するまでダウンロード済みの項目を再生します';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7658,12 +7608,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'キャストの操作に失敗しました: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind のコントロール';
   }
 
   @override
@@ -7674,7 +7624,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return '$kind を停止';
   }
 
   @override
@@ -7697,12 +7647,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return '$length 桁の PIN を入力してください';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return '$length 桁の PIN を入力してください';
   }
 
   @override
@@ -7721,29 +7671,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pinBackspace => 'バックスペース';
 
   @override
-  String get quickConnectAuthorized => 'クイック接続リクエストが承認されました。';
+  String get quickConnectAuthorized => 'Quick Connect のリクエストが承認されました。';
 
   @override
-  String get quickConnectInvalidOrExpired => 'クイック接続コードが無効か期限切れです。';
+  String get quickConnectInvalidOrExpired => 'Quick Connect のコードが無効か期限切れです。';
 
   @override
-  String get quickConnectNotSupported => 'このサーバーではクイック接続がサポートされていません。';
+  String get quickConnectNotSupported => 'このサーバーでは Quick Connect がサポートされていません。';
 
   @override
-  String get quickConnectAuthorizeFailed => 'クイック接続コードを認証できませんでした。';
+  String get quickConnectAuthorizeFailed => 'Quick Connect のコードを承認できませんでした。';
 
   @override
-  String get quickConnectDisabled => 'このサーバーではクイック接続が無効になっています。';
+  String get quickConnectDisabled => 'このサーバーでは Quick Connect が無効になっています。';
 
   @override
-  String get quickConnectForbidden => 'お使いのアカウントはこのクイック接続リクエストを承認できません。';
+  String get quickConnectForbidden =>
+      'お使いのアカウントではこの Quick Connect リクエストを承認できません。';
 
   @override
-  String get quickConnectNotFound => 'クイック接続コードが見つかりませんでした。新しいコードを試してください。';
+  String get quickConnectNotFound =>
+      'Quick Connect のコードが見つかりませんでした。新しいコードをお試しください。';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Quick Connect に失敗しました: $message';
   }
 
   @override
@@ -7754,7 +7706,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'コマンドに失敗しました: $error';
   }
 
   @override
@@ -7783,7 +7735,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'キャストを開始できませんでした: $error';
   }
 
   @override
@@ -7828,7 +7780,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return '$name をダウンロードしています...';
   }
 
   @override
@@ -7847,7 +7799,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shuffleSelectGenre => 'ジャンルを選択';
 
   @override
-  String get shuffleLibrary => '図書館';
+  String get shuffleLibrary => 'ライブラリ';
 
   @override
   String get shuffleGenre => 'ジャンル';
@@ -7914,7 +7866,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return '$segmentをスキップ';
   }
 
   @override
@@ -7925,12 +7877,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'ダウンロード中 $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return '$fileName をダウンロードしています';
   }
 
   @override
@@ -7967,7 +7919,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playerTooltipUnlockOrientation => '回転を許可する';
 
   @override
-  String get playerTooltipPrevious => '前の';
+  String get playerTooltipPrevious => '前へ';
 
   @override
   String get playerTooltipSeekBack => 'シークバック';
@@ -7991,14 +7943,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get contextMenuGoToSeries => 'シリーズへ';
 
   @override
-  String get contextMenuHideFromContinueWatching =>
-      'Hide from Continue Watching';
+  String get contextMenuHideFromContinueWatching => '「視聴を続ける」から削除';
 
   @override
-  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+  String get contextMenuHideFromNextUp => '「次のエピソード」から削除';
 
   @override
-  String get contextMenuAddToCollection => 'Add to Collection';
+  String get contextMenuAddToCollection => 'コレクションに追加';
 
   @override
   String get settingsAdministrationSubtitle => 'サーバー管理パネルにアクセスします';
@@ -8047,14 +7998,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAlphabetical => 'アルファベット順';
 
   @override
-  String get settingsConnectionSection => 'CONNECTION';
+  String get settingsConnectionSection => '接続';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+  String get settingsAllowSelfSignedCerts => '自己署名証明書を許可する';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+      '自己署名またはプライベート CA の TLS 証明書を使うサーバーを信頼します。ご自身が管理するサーバーでのみ有効にしてください。この設定はすべての接続で証明書の検証を無効にします。';
 
   @override
   String get settingsPrivacyAndSafetySection => 'プライバシーと安全性';
@@ -8069,11 +8020,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsGeneralStyleSubtitle => 'テーマのアクセント、背景、注目のインジケーター、テーマ音楽';
 
   @override
-  String get settingsDetailsScreen => 'Details Screen';
+  String get settingsDetailsScreen => '詳細画面';
 
   @override
-  String get settingsDetailsScreenSubtitle =>
-      'Style, background blur, and tab behavior';
+  String get settingsDetailsScreenSubtitle => 'スタイル、背景のぼかし、タブの動作';
 
   @override
   String get settingsHomePage => 'ホームページ';
@@ -8107,11 +8057,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+      'ナビゲーションバーに Seerr ボタンを表示します';
 
   @override
-  String get settingsAlwaysExpandNavbarLabels =>
-      'Always show text labels in the top navigation bar';
+  String get settingsAlwaysExpandNavbarLabels => '上部ナビゲーションバーに文字ラベルを常に表示します';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8176,8 +8125,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSupportMoonfin => 'Moonfin をサポート';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => '開発者にコーヒーを 1 杯おごる';
 
   @override
   String get settingsLegal => '法律上の';
@@ -8208,8 +8156,8 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: '# 件のライセンス表記',
+      one: '# 件のライセンス表記',
     );
     return '$_temp0';
   }
@@ -8253,16 +8201,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'イントロとアウトロをスキップしますか?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown => 'メディアセグメントのカウントダウン';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => '進行状況バー';
 
   @override
-  String get settingsTimer => 'Timer';
+  String get settingsTimer => 'タイマー';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => 'なし';
 
   @override
   String get settingsPromptUser => 'ユーザーにプロンプ​​トを表示';
@@ -8295,13 +8243,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (推奨)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (旧方式)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (レガシー)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (推奨)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision フォールバック';
@@ -8476,749 +8424,719 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return '最近公開された$libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => '次のエピソードを自動再生';
 
   @override
-  String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+  String get autoplayNextEpisodeSubtitle => '次のエピソードがある場合は自動的に再生します。';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => '無音部分をスキップ';
 
   @override
-  String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+  String get skipSilenceSubtitle => 'ストリームが対応している場合、無音部分を自動的にスキップします。';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => '外部の音響エフェクトを許可';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'イコライザーやエフェクトのアプリ (Wavelet など) が Media3 の再生セッションに接続できるようにします。';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'トンネリングを無効にする';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'トンネリングを使わない再生を強制します。トンネリング時に音声と映像が途切れるデバイスで有効です。';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => 'トンネリングを有効にする';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      '上級者向け。音声と映像を連携したハードウェア経路で処理します。一部のデバイスで音声や映像が途切れるため、既定ではオフです。';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Dolby Vision プロファイル 7 を HEVC にマッピング';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Dolby Vision 非対応のデバイスで、プロファイル 7 のストリームを HDR10 互換の HEVC として再生します。';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => '字幕に埋め込まれたスタイルを使用';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      '字幕トラックに埋め込まれた色、フォント、表示位置を適用します。オフにすると、ご自身の字幕スタイル設定が使用されます。';
 
   @override
-  String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+  String get subtitlesUseEmbeddedFontSizes => '字幕に埋め込まれた文字サイズを使用';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      '字幕トラックに埋め込まれた文字サイズの指定を適用します。オフにすると、スタイル設定の字幕サイズが使用されます。';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => 'メディアの詳細を表示';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      'ライブラリページの上部に、選択中のアイテムの詳細を表示します。';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries => '閲覧中は背景画像を非表示にしますか?';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => '詳細な小見出しを使用';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'ライブラリページで詳細な小見出しを表示するか、簡易表示にするかを選びます。';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => '保存したテーマを削除しますか?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return '「$themeName」をこのデバイスのキャッシュから削除しますか?';
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => 'テーマストア';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle => 'コミュニティのテーマを探して保存できます';
 
   @override
-  String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+  String get themeStoreDescription => 'テーマを保存すると、他の保存済みテーマと同じように使用できます。';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => '現在利用できるテーマはありません。';
 
   @override
-  String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+  String get themeStoreLoadFailed => 'テーマストアを読み込めませんでした。接続を確認してもう一度お試しください。';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => '保存';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => '保存して適用';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => '保存済み';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'このテーマを読み込めませんでした。';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return '「$themeName」を保存しました。';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return '「$themeName」をこのデバイスから削除しました。';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return '「$themeName」を削除できませんでした。';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => '保存したテーマ';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      '現在のサーバーの Moonfin プラグインからダウンロードしたテーマです。削除してもこのデバイス上のコピーが消えるだけです。';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty => 'このサーバーの保存済みテーマは見つかりませんでした。';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • 現在使用中';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => '保存したテーマを削除';
 
   @override
-  String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+  String get savedThemesManageSubtitle => 'このデバイスにダウンロードしたプラグインのテーマを管理します';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'テーマエディター';
 
   @override
-  String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+  String get themeEditorSubtitle => 'ブラウザーで Moonfin テーマエディターを開きます';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'ホーム画面';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => '下部バー';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'クラシック';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'モダン';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'ホーム行';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => 'ホーム行の表示';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => 'ホーム行のセクション';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => 'ホーム行の切り替え';
 
   @override
-  String get homeRowTogglesSubtitle =>
-      'Enable or disable library-based home row categories';
+  String get homeRowTogglesSubtitle => 'ライブラリごとのホーム行カテゴリーを有効または無効にします';
 
   @override
-  String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+  String get homeRowTogglesDescription => '以下をオンにすると、ホームセクションに対応する行が表示されます。';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'クラシックは行ごとの画像タイプと情報オーバーレイを維持します。モダンは縦長から横長へ変化する行を使用します。';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'お気に入りの行を表示';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'お気に入りの映画やシリーズなどの行をホームセクションに表示します。';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'お気に入りの行の並び順';
 
   @override
-  String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+  String get favoritesRowSortingDescription => 'お気に入りの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'コレクションの行を表示';
 
   @override
-  String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+  String get displayCollectionsRowsSubtitle => 'コレクションの行をホームセクションに表示します。';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'コレクションの行の並び順';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'コレクションの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'ジャンルの行を表示';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle => 'ジャンルの行をホームセクションに表示します。';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'ジャンルの行の並び順';
 
   @override
-  String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+  String get genresRowSortingDescription => 'ジャンルの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'ジャンルの行のアイテム';
 
   @override
-  String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+  String get genresRowItemsDescription => 'ジャンルの行に映画、シリーズ、またはその両方を表示します。';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => 'プレイリストの行を表示';
 
   @override
-  String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+  String get displayPlaylistsRowsSubtitle => 'プレイリストの行をホームセクションに表示します。';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => 'プレイリストの行の並び順';
 
   @override
-  String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+  String get playlistsRowSortingDescription => 'プレイリストの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => 'オーディオの行を表示';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle => 'オーディオの行をホームセクションに表示します。';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => 'オーディオの行の並び順';
 
   @override
-  String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+  String get audioRowsSortingDescription => 'オーディオの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => 'オーディオのプレイリスト';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => '外観';
 
   @override
-  String get layout => 'Layout';
+  String get layout => 'レイアウト';
 
   @override
-  String get theme => 'Theme';
+  String get theme => 'テーマ';
 
   @override
-  String get keyboard => 'Keyboard';
+  String get keyboard => 'キーボード';
 
   @override
-  String get navButtons => 'Buttons';
+  String get navButtons => 'ボタン';
 
   @override
-  String get rendering => 'Rendering';
+  String get rendering => 'レンダリング';
 
   @override
-  String get mpvConfiguration => 'MPV configuration';
+  String get mpvConfiguration => 'MPV の設定';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => '外部プレイヤーアプリ';
 
   @override
-  String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+  String get externalPlayerAppDescription => '外部プレイヤーを設定すると、長押しで再生する項目が有効になります';
 
   @override
-  String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+  String get externalPlayerAskEachTimeSubtitle => '再生開始時にアプリの選択画面を表示します。';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'インストール済みのプレイヤーを読み込んでいます...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => '接続';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'オーディオの変換先形式';
 
   @override
-  String get passthrough => 'Passthrough';
+  String get passthrough => 'パススルー';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'このデバイスで対応しています';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'このデバイスでは対応していません';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) パススルー';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'DTS:X (DTS UHD) を外部デコーダーにビットストリーム出力します。';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'TrueHD with Atmos (JOC) パススルー';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'メディアプレイヤーの動作';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => '再生の拡張機能';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => '常にオンです。';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      '「エンディングをスキップ」を「次のエピソード」表示に置き換える';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      '「エンディングをスキップ」ボタンの代わりに「次のエピソード」のオーバーレイを表示します。';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'プレイヤーの振り分け';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => 'ソフトウェアデコーダーを優先';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'ハードウェアデコーダーより先に FFmpeg (オーディオ) と libgav1 (AV1) を使用します。HDMI のオーディオパススルーが機能しない場合はオフにしてください。';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
-  String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+  String get useExternalPlayerSubtitle => 'Android TV で、選択した外部アプリを使って動画を再生します。';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => '自動キュー追加';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'SDH 字幕を優先';
 
   @override
-  String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+  String get preferSdhSubtitlesSubtitle => '自動選択時に SDH / CC の字幕トラックを優先します。';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Web 診断';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin Web 診断';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'このページでは、ブラウザーの接続に関する問題 (CORS、混在コンテンツ、検出設定) を診断できます。';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      '混在コンテンツによるエラーを検出しました';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'CORS / プリフライトのエラーを検出しました';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin は、HTTPS のページから HTTP のサーバー URL を呼び出そうとしているのを検出しました。ブラウザーはこのリクエストをサーバーに届く前にブロックします。';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin はブラウザーレベルのリクエスト失敗を検出しました。多くの場合、メディアサーバー側で CORS やプリフライトのヘッダーが不足していることが原因です。';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return '対象 URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return '詳細: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext => '現在の実行環境';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'オリジン';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'スキーム';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'プラグインモード';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'WebRTC スキャン';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => '強制サーバー URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => '既定のサーバー URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => '検出プロキシの URL';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => '未設定';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => '混在コンテンツ';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'このページは HTTPS で読み込まれていますが、設定された URL に HTTP のものが含まれています。ブラウザーは HTTPS のページから HTTP の API を呼び出すことをブロックします。';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      '対処法: メディアサーバーまたはプロキシのエンドポイントを HTTPS で公開するか、信頼できるローカルネットワークでのみ Moonfin を HTTP で読み込んでください。';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      '現在の実行時設定からは、明らかな混在コンテンツの構成は検出されませんでした。';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'CORS チェックリスト';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Access-Control-Allow-Origin でブラウザーのオリジンを許可する。';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Access-Control-Allow-Headers に Authorization、X-Emby-Authorization、X-Emby-Token を含める。';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• ストリーミングとシークのために Content-Range と Accept-Ranges を公開する。';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• OPTIONS のプリフライトリクエストに 204 を返す。';
 
   @override
-  String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+  String get webDiagnosticsHeaderSnippetTitle => 'ヘッダーの記述例 (nginx 形式)';
 
   @override
-  String get note => 'Note';
+  String get note => '注意';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'この診断ページは Web 版向けです。他のプラットフォームで表示されている場合、これらのチェックは当てはまらないことがあります。';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'サーバー選択に戻る';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'すべてのユーザーをサインアウト';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'マイクの使用が完全に拒否されています。システム設定で許可してください。';
 
   @override
-  String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+  String get voiceSearchPermissionRequired => '音声検索にはマイクの使用許可が必要です。';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => '聞き取れませんでした。もう一度お試しください。';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => '音声を検出できませんでした。';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'マイクのエラーです。';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => '音声検索にはインターネット接続が必要です。';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => '音声サービスが混雑しています。もう一度お試しください。';
 
   @override
-  String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+  String get microphonePermissionPermanentlyDenied => 'マイクの使用が完全に拒否されています。';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => 'マイクの使用が拒否されています。';
 
   @override
-  String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+  String get speechRecognitionUnavailable => 'このデバイスでは音声認識を利用できません。';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'iOS の出力先選択を開く';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'このデバイスでは AirPlay の出力先選択を利用できません。';
 
   @override
-  String get videos => 'Videos';
+  String get videos => '動画';
 
   @override
-  String get programs => 'Programs';
+  String get programs => '番組';
 
   @override
-  String get songs => 'Songs';
+  String get songs => '曲';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'フォトアルバム';
 
   @override
-  String get photos => 'Photos';
+  String get photos => '写真';
 
   @override
-  String get people => 'People';
+  String get people => '人物';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => '最近公開されたエピソード';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'もう一度見る';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'ゲスト出演';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => '出演 (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => 'スタッフとしての参加 (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'グループで視聴';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'エラー';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => '警告';
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'ディスク';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'ブラウザーで開く';
 
   @override
-  String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+  String get embeddedBrowserNotAvailable => 'このプラットフォームでは組み込みブラウザーを利用できません。';
 
   @override
-  String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+  String get adminRestartServerConfirmation => 'サーバーを再起動してもよろしいですか?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'サーバーをシャットダウンしてもよろしいですか? 再起動は手動で行う必要があります。';
 
   @override
-  String get internal => 'Internal';
+  String get internal => '内部';
 
   @override
-  String get idle => 'Idle';
+  String get idle => '待機中';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'ユーザーが見つかりません';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch => '検索条件に一致するユーザーはありません';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'デバイスが見つかりません';
 
   @override
-  String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+  String get adminNoDevicesMatchCurrentFilters => '現在のフィルターに一致するデバイスはありません';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'パスワード設定済み';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'パスワードが設定されていません';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'リモートアクセス';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'ローカルのみ';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed => 'メディア統計の読み込みに失敗しました';
 
   @override
-  String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+  String get analyticsCombinedAcrossLibraries => 'すべてのメディアライブラリを合計した統計です。';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => '人気のアーティスト';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => '人気の著者';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => '主な貢献者';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '$count ライブラリ',
+      one: '1 ライブラリ',
     );
     return '$_temp0';
   }
 
   @override
-  String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+  String get analyticsNoIndexedMediaTotals => 'この選択に対する索引済みメディアの集計はまだありません。';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'ライブラリの詳細';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'ライブラリの内訳';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => '利用できるライブラリがありません。';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'サーバー管理';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'データ';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => '画像キャッシュ';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'キャッシュ';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'ログ';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'メタデータ';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'トランスコード';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
-  String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+  String get adminNoServerPathsReturned => 'このサーバーからサーバーパスが返されませんでした。';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% 使用中';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'ユーザーのアクティビティ';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'システムイベント';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => '要確認';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'サーバー';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => '再生';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'デバイス';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => '詳細設定';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'プラグイン';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'ライブ TV';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'ホームビデオ';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => '混合コンテンツ';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'ホームビデオと写真';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => '映画と番組の混合';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9230,299 +9148,295 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => '録画が見つかりません';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return '.$extension アーカイブ内に画像ページが見つかりませんでした。';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return '組み込みレンダラーでエラーが発生しました ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'EPUB レンダラーでエラーが発生しました ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'リーダー用のローカルファイルが見つかりません: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return '$uri から書籍データを開く際に HTTP $status が返されました';
   }
 
   @override
-  String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+  String get noReadableBookEndpointAvailable => '読み込み可能な書籍のエンドポイントがありません';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return '対応していないコミックアーカイブ形式です: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'このプラットフォームでは CBR 展開プラグインを利用できません。';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => '.cbr アーカイブを展開できませんでした。';
 
   @override
-  String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+  String get cb7ExtractionUnavailable => 'このプラットフォームでは CB7 の展開を利用できません。';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'このプラットフォームでは CB7 展開プラグインを利用できません。';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'ジャンルパネルを閉じる';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'シャッフルを準備しています...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'ライブラリシャッフル';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'ランダムシャッフル';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'ジャンルシャッフル';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'HDR の自動切り替え';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'HDR 動画の再生時に自動的に HDR を有効にし、終了時に表示モードを元に戻します。';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => '全画面表示のとき';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => 'アートワークを変更';
 
   @override
-  String get missing => 'Missing';
+  String get missing => 'なし';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'トランスコードの制限';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton => 'すべてのアートワークを消去しますか?';
 
   @override
-  String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+  String get clearAllArtworkWarning => 'ダウンロード済みのアートワークをすべて消去してもよろしいですか?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => '消去の確認';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return 'この$itemTypeを消去してもよろしいですか?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => 'アップロードしますか?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => '解像度: ';
 
   @override
-  String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+  String get onlyShowInterfaceLanguage => '表示言語のアートワークのみを表示';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => 'すべて消去の確認';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => '画像をアップロードしました!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '画像をアップロードできませんでした: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return '画像を設定できませんでした: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '画像を削除できませんでした: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return 'すべてのアートワークを消去できませんでした: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'はい';
 
   @override
-  String get posterCategory => 'Poster';
+  String get posterCategory => 'ポスター';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => '背景画像';
 
   @override
-  String get bannerCategory => 'Banner';
+  String get bannerCategory => 'バナー';
 
   @override
-  String get logoCategory => 'Logo';
+  String get logoCategory => 'ロゴ';
 
   @override
-  String get thumbnailCategory => 'Thumbnail';
+  String get thumbnailCategory => 'サムネイル';
 
   @override
-  String get artCategory => 'Art';
+  String get artCategory => 'アート';
 
   @override
-  String get discArtCategory => 'Disc Art';
+  String get discArtCategory => 'ディスクアート';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => 'スクリーンショット';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => 'ボックスカバー';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => 'ボックス裏面カバー';
 
   @override
-  String get menuArtCategory => 'Menu Art';
+  String get menuArtCategory => 'メニューアート';
 
   @override
-  String get confirmItemPoster => 'poster';
+  String get confirmItemPoster => 'ポスター';
 
   @override
-  String get confirmItemBackdrop => 'backdrop';
+  String get confirmItemBackdrop => '背景画像';
 
   @override
-  String get confirmItemBanner => 'banner';
+  String get confirmItemBanner => 'バナー';
 
   @override
-  String get confirmItemLogo => 'logo';
+  String get confirmItemLogo => 'ロゴ';
 
   @override
-  String get confirmItemThumbnail => 'thumbnail';
+  String get confirmItemThumbnail => 'サムネイル';
 
   @override
-  String get confirmItemArt => 'art';
+  String get confirmItemArt => 'アート';
 
   @override
-  String get confirmItemDiscArt => 'disc art';
+  String get confirmItemDiscArt => 'ディスクアート';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => 'スクリーンショット';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => 'ボックスカバー';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => 'ボックス裏面カバー';
 
   @override
-  String get confirmItemMenuArt => 'menu art';
+  String get confirmItemMenuArt => 'メニューアート';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => 'すべて';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => '高 (1080p 以上)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => '中 (720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => '低 (720p 未満)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => '提供元';
 
   @override
-  String get audiobookChapters => 'Chapters';
+  String get audiobookChapters => 'チャプター';
 
   @override
-  String get audiobookBookmarks => 'Bookmarks';
+  String get audiobookBookmarks => 'ブックマーク';
 
   @override
-  String get audiobookNotes => 'Notes';
+  String get audiobookNotes => 'メモ';
 
   @override
-  String get audiobookQueue => 'Queue';
+  String get audiobookQueue => 'キュー';
 
   @override
-  String get audiobookTimeline => 'Timeline';
+  String get audiobookTimeline => 'タイムライン';
 
   @override
-  String get audiobookTimelineEmpty => 'Timeline is empty';
+  String get audiobookTimelineEmpty => 'タイムラインは空です';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
+  String get audiobookWholeBook => '本全体';
 
   @override
-  String get audiobookFocusedTimeline => 'Focused Timeline';
+  String get audiobookFocusedTimeline => '注目のタイムライン';
 
   @override
-  String get audiobookExportBookmarks => 'Export Bookmarks';
+  String get audiobookExportBookmarks => 'ブックマークを書き出す';
 
   @override
-  String get audiobookExportNotes => 'Export Notes';
+  String get audiobookExportNotes => 'メモを書き出す';
 
   @override
-  String get audiobookExportAll => 'Export All';
+  String get audiobookExportAll => 'すべて書き出す';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exported to $path';
+    return '$path に書き出しました';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export failed: $error';
+    return '書き出しに失敗しました: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Lyrics';
+  String get audiobookLyrics => '歌詞';
 
   @override
-  String get audiobookAddBookmark => 'Add bookmark';
+  String get audiobookAddBookmark => 'ブックマークを追加';
 
   @override
-  String get audiobookAddNote => 'Add note';
+  String get audiobookAddNote => 'メモを追加';
 
   @override
-  String get audiobookEditNote => 'Edit note';
+  String get audiobookEditNote => 'メモを編集';
 
   @override
-  String get audiobookNoteHint => 'Write a note for this moment';
+  String get audiobookNoteHint => 'この場面のメモを書く';
 
   @override
-  String get audiobookSleepTimer => 'Sleep timer';
+  String get audiobookSleepTimer => 'スリープタイマー';
 
   @override
-  String get audiobookSleepOff => 'Off';
+  String get audiobookSleepOff => 'オフ';
 
   @override
-  String get audiobookSleepEndOfChapter => 'End of chapter';
+  String get audiobookSleepEndOfChapter => 'チャプターの終わり';
 
   @override
-  String get audiobookSleepCustom => 'Custom';
+  String get audiobookSleepCustom => 'カスタム';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining left';
+    return '残り $remaining';
   }
 
   @override
@@ -9530,58 +9444,58 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count min',
-      one: '1 min',
+      other: '$count 分',
+      one: '1 分',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Playback speed';
+  String get audiobookPlaybackSpeed => '再生速度';
 
   @override
-  String get audiobookRemainingTime => 'Remaining';
+  String get audiobookRemainingTime => '残り';
 
   @override
-  String get audiobookElapsedTime => 'Elapsed';
+  String get audiobookElapsedTime => '経過';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Back ${seconds}s';
+    return '$seconds 秒戻る';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Forward ${seconds}s';
+    return '$seconds 秒進む';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Previous chapter';
+  String get audiobookPreviousChapter => '前のチャプター';
 
   @override
-  String get audiobookNextChapter => 'Next chapter';
+  String get audiobookNextChapter => '次のチャプター';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Chapter $current of $total';
+    return 'チャプター $current / $total';
   }
 
   @override
-  String get audiobookNoChapters => 'No chapters';
+  String get audiobookNoChapters => 'チャプターはありません';
 
   @override
-  String get audiobookNoBookmarks => 'No bookmarks yet';
+  String get audiobookNoBookmarks => 'まだブックマークはありません';
 
   @override
-  String get audiobookNoNotes => 'No notes yet';
+  String get audiobookNoNotes => 'まだメモはありません';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Bookmark added at $position';
+    return '$position にブックマークを追加しました';
   }
 
   @override
-  String get audiobookSpeedReset => 'Reset to 1.0x';
+  String get audiobookSpeedReset => '1.0x に戻す';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9589,249 +9503,241 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Save';
+  String get audiobookSave => '保存';
 
   @override
-  String get audiobookCancel => 'Cancel';
+  String get audiobookCancel => 'キャンセル';
 
   @override
-  String get audiobookDelete => 'Delete';
+  String get audiobookDelete => '削除';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => '字幕の設定';
 
   @override
-  String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+  String get subtitlePreferencesDescription => '字幕モード、既定の言語、外観、描画方法を変更します。';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => '字幕の描画';
 
   @override
-  String get displayOptions => 'Display Options';
+  String get displayOptions => '表示オプション';
 
   @override
-  String get releaseDateAscending => 'Release Date (Ascending)';
+  String get releaseDateAscending => '公開日 (古い順)';
 
   @override
-  String get releaseDateDescending => 'Release Date (Descending)';
+  String get releaseDateDescending => '公開日 (新しい順)';
 
   @override
-  String get groupContributions => 'Group Contributions';
+  String get groupContributions => '参加作品のグループ化';
 
   @override
-  String get groupMultipleRoles => 'Group multiple roles';
+  String get groupMultipleRoles => '複数の役割をまとめる';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+  String get libraryWriteAccessWarningTitle => 'ライブラリの書き込み権限に関する警告';
 
   @override
-  String get libraryWriteAccessHowToFix => 'How to fix this:';
+  String get libraryWriteAccessHowToFix => '対処方法:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+      '1. サーバー上のメディアライブラリフォルダーに対して、Jellyfin のサービスユーザー (jellyfin や Docker の PUID/PGID など) に書き込み権限を付与してください。\n\n2. または、Jellyfin のダッシュボード -> ライブラリ でこのライブラリを編集し、「アートワークをメディアフォルダーに保存する」を無効にして、アートワークを Jellyfin の内部データベースに保存してください。';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => '閉じる';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return '「$libraryName」ライブラリは、アートワークをメディアフォルダーに直接保存する設定になっています (「アートワークをメディアフォルダーに保存する」が有効です)。しかし Jellyfin が書き込みを確認したところ、次のディレクトリにファイルを書き込む権限がありませんでした:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+      'Jellyfin がアートワークを更新できなかったようです。このライブラリは、アートワークをメディアフォルダーに直接保存する設定になっています (「アートワークをメディアフォルダーに保存する」が有効です)。このエラーは通常、Jellyfin サーバーのプロセスにメディアディレクトリへの書き込み権限がない場合に発生します。';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => '外部リスト';
 
   @override
-  String get replay => 'Replay';
+  String get replay => 'もう一度再生';
 
   @override
-  String get fileInformation => 'File Information';
+  String get fileInformation => 'ファイル情報';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Size: $size  •  Format: $format';
+    return 'サイズ: $size  •  形式: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Show All ($count) Audio Tracks';
+    return 'すべてのオーディオトラック ($count) を表示';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Show All ($count) Subtitle Tracks';
+    return 'すべての字幕トラック ($count) を表示';
   }
 
   @override
-  String get checkingDirectPlay => 'Checking Direct Play capability...';
+  String get checkingDirectPlay => 'ダイレクト再生に対応しているか確認しています...';
 
   @override
-  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+  String get directPlayCapabilityLabel => 'ダイレクト再生の可否: ';
 
   @override
-  String get forced => 'Forced';
+  String get forced => '強制';
 
   @override
-  String get transcodeContainerNotSupported =>
-      'Container format is not supported by the player.';
+  String get transcodeContainerNotSupported => 'コンテナー形式にプレイヤーが対応していません。';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+  String get transcodeVideoCodecNotSupported => '映像コーデックに対応していません。';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+  String get transcodeAudioCodecNotSupported => 'オーディオコーデックに対応していません。';
 
   @override
-  String get transcodeSubtitleCodecNotSupported =>
-      'Subtitle format is not supported (requires burning).';
+  String get transcodeSubtitleCodecNotSupported => '字幕形式に対応していません (焼き付けが必要です)。';
 
   @override
-  String get transcodeAudioProfileNotSupported =>
-      'Audio profile is not supported.';
+  String get transcodeAudioProfileNotSupported => 'オーディオのプロファイルに対応していません。';
 
   @override
-  String get transcodeVideoProfileNotSupported =>
-      'Video profile is not supported.';
+  String get transcodeVideoProfileNotSupported => '映像のプロファイルに対応していません。';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+  String get transcodeVideoLevelNotSupported => '映像のレベルに対応していません。';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Video resolution is not supported by this device.';
+      'このデバイスは、この映像の解像度に対応していません。';
 
   @override
-  String get transcodeVideoBitDepthNotSupported =>
-      'Video bit depth is not supported.';
+  String get transcodeVideoBitDepthNotSupported => '映像のビット深度に対応していません。';
 
   @override
-  String get transcodeVideoFramerateNotSupported =>
-      'Video framerate is not supported.';
+  String get transcodeVideoFramerateNotSupported => '映像のフレームレートに対応していません。';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'File bitrate exceeds player streaming limit.';
+      'ファイルのビットレートがプレイヤーのストリーミング上限を超えています。';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Video bitrate exceeds streaming limit.';
+      '映像のビットレートがストリーミングの上限を超えています。';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Audio bitrate exceeds streaming limit.';
+      'オーディオのビットレートがストリーミングの上限を超えています。';
 
   @override
-  String get transcodeAudioChannelsNotSupported =>
-      'Number of audio channels is not supported.';
+  String get transcodeAudioChannelsNotSupported => 'このオーディオのチャンネル数に対応していません。';
 
   @override
-  String get sortAlphabetical => 'Alphabetical';
+  String get sortAlphabetical => '名前順';
 
   @override
-  String get sortReleaseAscending => 'Release Order (Ascending)';
+  String get sortReleaseAscending => '公開順 (古い順)';
 
   @override
-  String get sortReleaseDescending => 'Release Order (Descending)';
+  String get sortReleaseDescending => '公開順 (新しい順)';
 
   @override
-  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+  String get sortCustomDragDrop => 'カスタム (ドラッグ＆ドロップ)';
 
   @override
-  String get playlistSortOptions => 'Playlist Sort Options';
+  String get playlistSortOptions => 'プレイリストの並べ替え';
 
   @override
-  String get resetSort => 'Reset Sort';
+  String get resetSort => '並び順をリセット';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Rewatch S$season:E$episode';
+    return 'S$season:E$episode をもう一度見る';
   }
 
   @override
-  String get rewatchPlaylist => 'Rewatch Playlist';
+  String get rewatchPlaylist => 'プレイリストをもう一度見る';
 
   @override
-  String get noSubtitlesFound => 'No subtitles found.';
+  String get noSubtitlesFound => '字幕が見つかりません。';
 
   @override
-  String get adminControls => 'Admin Controls';
+  String get adminControls => '管理者向け操作';
 
   @override
-  String get impellerRendering => 'Rendering engine (Impeller)';
+  String get impellerRendering => 'レンダリングエンジン (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+      'Impeller は Flutter の新しい GPU レンダラーで、アニメーションが滑らかになり、カクつきが減ります。一部の TV ボックスや古い GPU では表示の乱れや映像が黒くなることがあり、その場合はオフにしてください。自動はお使いのデバイスに最適な設定を選びます。適用するには Moonfin を再起動してください。';
 
   @override
-  String get impellerAuto => 'Automatic';
+  String get impellerAuto => '自動';
 
   @override
-  String get impellerOn => 'On';
+  String get impellerOn => 'オン';
 
   @override
-  String get impellerOff => 'Off';
+  String get impellerOff => 'オフ';
 
   @override
-  String get impellerRestartTitle => 'Restart required';
+  String get impellerRestartTitle => '再起動が必要です';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+      'レンダリングエンジンを変更するには Moonfin の再起動が必要です。アプリをいったん終了し、開き直すと適用されます。';
 
   @override
-  String get impellerCloseNow => 'Close app now';
+  String get impellerCloseNow => '今すぐアプリを終了';
 
   @override
-  String get adminRefreshLibrary => 'Refresh Library';
+  String get adminRefreshLibrary => 'ライブラリを更新';
 
   @override
-  String get adminRefreshAllLibraries => 'Refresh All Libraries';
+  String get adminRefreshAllLibraries => 'すべてのライブラリを更新';
 
   @override
-  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+  String get adminRepoSortDateOldest => '追加日 (古い順)';
 
   @override
-  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+  String get adminRepoSortDateNewest => '追加日 (新しい順)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+  String get adminRepoSortNameAsc => '名前順 (A → Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+  String get adminRepoSortNameDesc => '名前順 (Z → A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Loading Server Analytics... $percentage%';
+    return 'サーバー統計を読み込んでいます... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Match source';
+  String get adminLibChapterImageResolutionMatchSource => 'ソースに合わせる';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+  String get imdbTop250Movies => 'IMDb 映画トップ 250';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+  String get imdbTop250TvShows => 'IMDb TV 番組トップ 250';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+  String get imdbMostPopularMovies => 'IMDb 人気の映画';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+  String get imdbMostPopularTvShows => 'IMDb 人気の TV 番組';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+  String get imdbLowestRatedMovies => 'IMDb 低評価の映画';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
+  String get imdbTopEnglishMovies => 'IMDb 高評価の英語映画';
 }

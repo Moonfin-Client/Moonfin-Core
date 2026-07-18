@@ -9,30 +9,30 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => '달지느러미';
+  String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => '계정 환경설정';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => '인터페이스 언어';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => '시스템 기본값';
 
   @override
   String get signIn => '로그인';
 
   @override
-  String get empty => 'Empty';
+  String get empty => '비어 있음';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return '$serverName에 연결하는 중';
   }
 
   @override
-  String get quickConnect => '빠른 연결';
+  String get quickConnect => 'Quick Connect';
 
   @override
   String get password => '비밀번호';
@@ -50,7 +50,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get waitingForAuthorization => '승인을 기다리는 중...';
 
   @override
-  String get back => '뒤쪽에';
+  String get back => '뒤로';
 
   @override
   String get serverUnavailable => '서버를 사용할 수 없습니다';
@@ -60,12 +60,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'Quick Connect를 사용할 수 없습니다: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'Quick Connect를 사용할 수 없습니다($status): $detail';
   }
 
   @override
@@ -79,7 +79,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin 버전 $version';
   }
 
   @override
@@ -105,14 +105,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return '서버 목록에서 \"$serverName\"을(를) 제거할까요?';
   }
 
   @override
   String get cancel => '취소';
 
   @override
-  String get remove => '제거하다';
+  String get remove => '제거';
 
   @override
   String get connectToServer => '서버에 연결';
@@ -140,62 +140,60 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAppearanceTheme => '앱 테마';
 
   @override
-  String get detailScreenStyle => 'Detail screen style';
+  String get detailScreenStyle => '상세 화면 스타일';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
+      '클래식은 기존의 가운데 정렬 Moonfin 레이아웃입니다. 모던은 반응형 시네마틱 레이아웃입니다.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Classic';
+  String get detailScreenStyleMoonfin => '클래식';
 
   @override
-  String get detailScreenStyleModern => 'Modern';
+  String get detailScreenStyleModern => '모던';
 
   @override
-  String get expandedTabs => 'Expanded Tabs';
+  String get expandedTabs => '탭 자동 펼치기';
 
   @override
   String get expandedTabsSubtitle =>
-      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
+      '탭을 넘길 때 탭 내용을 자동으로 표시합니다. 끄면 각 탭을 직접 열고 닫습니다.';
 
   @override
-  String get showTechnicalDetails => 'Show Technical Details?';
+  String get showTechnicalDetails => '기술 정보를 표시할까요?';
 
   @override
-  String get showTechnicalDetailsSubtitle =>
-      'Show codec, resolution, and stream information in banner summary';
+  String get showTechnicalDetailsSubtitle => '배너 요약에 코덱, 해상도, 스트림 정보를 표시합니다';
 
   @override
-  String get recommendationSystem => 'Recommendation System';
+  String get recommendationSystem => '추천 시스템';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+      '로컬 라이브러리 기반 Moonfin 추천 알고리즘 또는 온라인 TMDb 유사도 지표를 사용합니다. 참고: 온라인 추천에는 Seerr 연동이 필요합니다.';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin Recommends';
+  String get recommendationSystemMoonfin => 'Moonfin 추천';
 
   @override
-  String get recommendationSystemTmdb => 'TMDb Similarity';
+  String get recommendationSystemTmdb => 'TMDb 유사도';
 
   @override
-  String get recommendationsApplyParentalRatingCap =>
-      'Apply Parental Rating Cap?';
+  String get recommendationsApplyParentalRatingCap => '시청 등급 제한을 적용할까요?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limit Moonfin Recommends suggestions by parental rating of target media';
+      '대상 미디어의 시청 등급에 따라 Moonfin 추천 항목을 제한합니다';
 
   @override
-  String get interfaceStyle => 'Interface Style';
+  String get interfaceStyle => '인터페이스 스타일';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic matches your device. Choose Apple or Material to force a look.';
+      '자동은 기기에 맞춰집니다. Apple 또는 Material을 선택하면 해당 스타일로 고정됩니다.';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => '자동';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -204,41 +202,41 @@ class AppLocalizationsKo extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Glass Quality';
+  String get glassQuality => '글래스 품질';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+      '자동은 이 기기에 가장 알맞은 글래스 효과를 선택합니다. 최고는 실제 블러를 적용하고, 낮음은 GPU 사용을 줄이는 가벼운 글래스를 사용합니다.';
 
   @override
-  String get glassQualityAuto => 'Auto';
+  String get glassQualityAuto => '자동';
 
   @override
-  String get glassQualityFull => 'Full';
+  String get glassQualityFull => '최고';
 
   @override
-  String get glassQualityReduced => 'Reduced';
+  String get glassQualityReduced => '낮음';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       '앱을 다시 시작하지 않고도 Moonfin과 Neon Pulse 간에 전환할 수 있습니다.';
 
   @override
-  String get customThemeTitle => 'Custom Theme';
+  String get customThemeTitle => '사용자 지정 테마';
 
   @override
   String get customThemeSubtitle =>
-      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+      '사용자 지정 테마는 Moonfin 전반의 시각 요소를 바꿉니다. 취향에 맞는 테마를 선택하세요.';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => '시스템 키보드 우선 사용';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      '텍스트 입력 시 기기의 입력기를 기본으로 사용합니다';
 
   @override
-  String get themeMoonfin => '달지느러미';
+  String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle => '현재 Moonfin 룩은 여러분 모두가 좋아하게 되었습니다.';
@@ -251,18 +249,18 @@ class AppLocalizationsKo extends AppLocalizations {
       '마젠타 빛, 청록색 텍스트 및 더 강한 크롬 대비를 사용한 신스웨이브 스타일';
 
   @override
-  String get themeGlass => 'Glass';
+  String get themeGlass => '글래스';
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      '흐르는 그라데이션 배경, 서리 낀 표면, Apple 블루 강조색을 사용한 리퀴드 글래스 스타일';
 
   @override
-  String get theme8BitHero => '8-bit Hero';
+  String get theme8BitHero => '8비트 히어로';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
+      '투박한 색상, 각진 테두리, 진한 그림자, 픽셀 글꼴을 사용한 레트로 픽셀아트 스타일';
 
   @override
   String get embyConnectSignInSubtitle => 'Emby Connect 계정으로 로그인하세요';
@@ -307,7 +305,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return '$target에 연결할 수 없습니다';
   }
 
   @override
@@ -320,35 +318,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exit => '출구';
 
   @override
-  String get gameMenu => 'Menu';
+  String get gameMenu => '메뉴';
 
   @override
-  String get gamePaused => 'Paused';
+  String get gamePaused => '일시정지됨';
 
   @override
-  String get gameSaveState => 'Save state';
+  String get gameSaveState => '상태 저장';
 
   @override
-  String get games => 'Games';
+  String get games => '게임';
 
   @override
-  String get gameLoadState => 'Load state';
+  String get gameLoadState => '상태 불러오기';
 
   @override
-  String get gameFastForward => 'Fast-forward';
+  String get gameFastForward => '빨리 감기';
 
   @override
-  String get gameEmulatorSettings => 'Emulator settings';
+  String get gameEmulatorSettings => '에뮬레이터 설정';
 
   @override
-  String get gameNoCoreOptions => 'This core has no adjustable options.';
+  String get gameNoCoreOptions => '이 코어에는 조정할 수 있는 옵션이 없습니다.';
 
   @override
-  String get gameHoldToOpenMenu => 'Hold to open menu';
+  String get gameHoldToOpenMenu => '길게 눌러 메뉴 열기';
 
   @override
-  String get gamePlaybackUnsupported =>
-      'Game playback is not supported on this device yet.';
+  String get gamePlaybackUnsupported => '이 기기에서는 아직 게임 플레이를 지원하지 않습니다.';
 
   @override
   String get noHomeRowsLoaded => '홈 행을 로드할 수 없습니다.';
@@ -363,7 +360,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get guide => '가이드';
 
   @override
-  String get recordings => '녹음';
+  String get recordings => '녹화';
 
   @override
   String get schedule => '일정';
@@ -375,7 +372,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noItemsFound => '항목을 찾을 수 없습니다';
 
   @override
-  String get home => '집';
+  String get home => '홈';
 
   @override
   String get browseAll => '모두 찾아보기';
@@ -405,7 +402,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noLibrariesFound => '라이브러리를 찾을 수 없습니다.';
 
   @override
-  String get library => '도서관';
+  String get library => '라이브러리';
 
   @override
   String get displaySettings => '디스플레이 설정';
@@ -418,7 +415,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return '폴더를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -426,7 +423,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count개 항목';
   }
 
   @override
@@ -443,7 +440,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count개 항목';
   }
 
   @override
@@ -484,7 +481,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — 장르';
   }
 
   @override
@@ -522,17 +519,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '$count분 전';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '$count시간 전';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '$count일 전';
   }
 
   @override
@@ -542,7 +539,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pickDiscoverySubjects => 'Discover에 표시할 주제 피드를 선택하세요.';
 
   @override
-  String get apply => '적용하다';
+  String get apply => '적용';
 
   @override
   String get openLink => '링크 열기';
@@ -564,7 +561,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count개 작품';
   }
 
   @override
@@ -589,7 +586,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get listen => '듣다';
 
   @override
-  String get resume => '재개하다';
+  String get resume => '이어하기';
 
   @override
   String get failedToLoadLibrary => '라이브러리를 로드하지 못했습니다.';
@@ -644,17 +641,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '저자 $count명';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '장르 $count개';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% 완료';
   }
 
   @override
@@ -671,11 +668,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '읽기 중심으로 정리된 $count개 작품입니다.';
   }
 
   @override
-  String get titles => '제목';
+  String get titles => '타이틀';
 
   @override
   String get allTitles => '모든 타이틀';
@@ -707,7 +704,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return '$label을(를) 찾을 수 없습니다';
   }
 
   @override
@@ -732,7 +729,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unread => '읽히지 않는';
 
   @override
-  String get unwatched => '시청하지 않음';
+  String get unwatched => '미시청';
 
   @override
   String get seriesStatus => '시리즈 현황';
@@ -744,43 +741,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get books => '서적';
 
   @override
-  String get latestBooks => 'Latest Books';
+  String get latestBooks => '최신 도서';
 
   @override
-  String get latestAudiobooks => 'Latest Audiobooks';
+  String get latestAudiobooks => '최신 오디오북';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count books',
-      one: '1 book',
+      other: '도서 $count권',
+      one: '도서 1권',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Book';
+  String get bookFormatBook => '도서';
 
   @override
-  String get bookFormatAudiobook => 'Audiobook';
+  String get bookFormatAudiobook => '오디오북';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% read';
+    return '$percent% 읽음';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time left';
+    return '$time 남음';
   }
 
   @override
-  String get bookHeroRead => 'Read';
+  String get bookHeroRead => '읽기';
 
   @override
-  String get bookHeroListen => 'Listen';
+  String get bookHeroListen => '듣기';
 
   @override
   String get author => '작가';
@@ -817,12 +814,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count개 섹션';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return '$year년 초판';
   }
 
   @override
@@ -836,7 +833,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count권';
   }
 
   @override
@@ -847,7 +844,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '저자 $count명';
   }
 
   @override
@@ -855,8 +852,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: '오디오북 $count개',
+      one: '오디오북 1개',
     );
     return '$_temp0';
   }
@@ -874,7 +871,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get delete => '삭제';
 
   @override
-  String get save => '구하다';
+  String get save => '저장';
 
   @override
   String get moreLikeThis => '비슷한 제품 더 보기';
@@ -892,7 +889,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nextUp => '다음';
 
   @override
-  String get seasons => '계절';
+  String get seasons => '시즌';
 
   @override
   String get chapters => '장';
@@ -904,7 +901,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get movies => '영화 산업';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => '뮤직비디오';
 
   @override
   String get other => '다른';
@@ -923,7 +920,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return '디스크 $number';
   }
 
   @override
@@ -946,7 +943,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return '$year년 출간';
   }
 
   @override
@@ -957,52 +954,52 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '시즌 $count개',
+      one: '시즌 1개',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return '$time에 종료';
   }
 
   @override
-  String get items => 'Items';
+  String get items => '항목';
 
   @override
-  String get extras => 'Extras';
+  String get extras => '부가 영상';
 
   @override
-  String get behindTheScenes => 'Behind the Scenes';
+  String get behindTheScenes => '비하인드';
 
   @override
-  String get deletedScenes => 'Deleted Scenes';
+  String get deletedScenes => '삭제 장면';
 
   @override
-  String get featurettes => 'Featurettes';
+  String get featurettes => '제작 영상';
 
   @override
-  String get interviews => 'Interviews';
+  String get interviews => '인터뷰';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => '장면';
 
   @override
-  String get shorts => 'Shorts';
+  String get shorts => '단편';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => '예고편';
 
   @override
   String timeRemaining(String time) {
-    return '$time remaining';
+    return '$time 남음';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return '$time 후 종료';
   }
 
   @override
@@ -1016,11 +1013,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return '$position부터 이어보기';
   }
 
   @override
-  String get play => '놀다';
+  String get play => '재생';
 
   @override
   String get startOver => '다시 시작';
@@ -1044,10 +1041,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get version => '버전';
 
   @override
-  String get cast => '깁스';
+  String get cast => '전송';
 
   @override
-  String get trailer => '트레일러';
+  String get trailer => '예고편';
 
   @override
   String get finished => '완성된';
@@ -1119,7 +1116,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return '\"$title\"의 다운로드한 트랙을 삭제할까요?';
   }
 
   @override
@@ -1133,17 +1130,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return '불러온 $itemLabel이(가) 없습니다';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return '$title 다운로드 중($count개 항목)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return '서버에서 \"$name\"을(를) 삭제할까요? 이 작업은 되돌릴 수 없습니다.';
   }
 
   @override
@@ -1154,7 +1151,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return '지원하지 않는 도서 형식: .$extension';
   }
 
   @override
@@ -1180,7 +1177,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return '자막을 다운로드하고 선택했습니다: $name';
   }
 
   @override
@@ -1189,7 +1186,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return '$language 원격 자막을 찾을 수 없습니다.';
   }
 
   @override
@@ -1197,7 +1194,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return '버전 $number';
   }
 
   @override
@@ -1217,7 +1214,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return '$name 다운로드 중($quality)...';
   }
 
   @override
@@ -1225,7 +1222,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return '$typeLabel의 로컬 파일을 삭제할까요?\n\n저장 공간이 확보되며, 나중에 다시 다운로드할 수 있습니다.';
   }
 
   @override
@@ -1241,25 +1238,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get director => '감독';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => '감독';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => '각본';
 
   @override
-  String get writers => '작가';
+  String get writers => '각본가';
 
   @override
   String get studio => '사진관';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count개 더';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count개 에피소드';
   }
 
   @override
@@ -1269,12 +1266,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return '$number화';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return '챕터 $number';
   }
 
   @override
@@ -1282,8 +1279,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '트랙 $count개',
+      one: '트랙 1개',
     );
     return '$_temp0';
   }
@@ -1293,25 +1290,25 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '챕터 $count개',
+      one: '챕터 1개',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return '$date 출생';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return '$date 사망';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return '$age세';
   }
 
   @override
@@ -1321,20 +1318,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get readMore => '자세히 알아보기';
 
   @override
-  String get shuffle => '혼합';
+  String get shuffle => '셔플';
 
   @override
-  String get shuffleAllMusic => 'Shuffle all music';
+  String get shuffleAllMusic => '전체 음악 셔플 재생';
 
   @override
-  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+  String get carSignInPrompt => '휴대폰에서 Moonfin에 로그인하세요';
 
   @override
-  String get carServerUnreachable => 'Can\'t reach your server';
+  String get carServerUnreachable => '서버에 연결할 수 없습니다';
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '다운로드 $count회';
   }
 
   @override
@@ -1346,39 +1343,39 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get mono => '단핵증';
+  String get mono => '모노';
 
   @override
-  String get stereo => '스테레오 재생';
+  String get stereo => '스테레오';
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return '원격 자막 $action 작업에는 이 사용자의 Jellyfin 자막 관리 권한이 필요합니다.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return '원격 자막 $action 작업을 위한 항목을 서버에서 찾을 수 없습니다.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return '원격 자막 $action 작업에 실패했습니다: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return '원격 자막 $action 작업에 실패했습니다(HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return '원격 자막을 $action하지 못했습니다.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return '\"$name\"의 다운로드한 모든 에피소드';
   }
 
   @override
@@ -1406,17 +1403,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label 작업에 실패했습니다: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return '캐스트 음량을 조절하지 못했습니다: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label 제어';
   }
 
   @override
@@ -1426,14 +1423,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unavailable => '없는';
 
   @override
-  String get pause => '정지시키다';
+  String get pause => '일시정지';
 
   @override
   String get syncPosition => '동기화 위치';
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return '$label 중지';
   }
 
   @override
@@ -1441,7 +1438,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return '트랙 $number';
   }
 
   @override
@@ -1458,14 +1455,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds초';
   }
 
   @override
   String get longPressToUnlock => '잠금을 해제하려면 길게 누르세요.';
 
   @override
-  String get off => '끄다';
+  String get off => '끔';
 
   @override
   String streamTypeFallback(String streamType, int number) {
@@ -1500,7 +1497,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get subtitleDelay => '자막 지연';
 
   @override
-  String get reset => '다시 놓기';
+  String get reset => '초기화';
 
   @override
   String get unknown => '알려지지 않은';
@@ -1551,7 +1548,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get videoBitrate => '비디오 비트레이트';
 
   @override
-  String get track => '길';
+  String get track => '트랙';
 
   @override
   String get channels => '채널';
@@ -1573,12 +1570,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol 세션 오류';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return '도서 정보를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -1587,7 +1584,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return '이 형식(.$extension)은 아직 앱에서 표시할 수 없습니다.';
   }
 
   @override
@@ -1598,17 +1595,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return '앱 내 리더를 열지 못했습니다: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return '$label에 이미 북마크가 있습니다.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return '북마크 추가됨: $label';
   }
 
   @override
@@ -1619,7 +1616,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return '$number페이지';
   }
 
   @override
@@ -1630,12 +1627,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return '형식: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% 읽음';
   }
 
   @override
@@ -1658,7 +1655,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return '확대/축소 초기화(${zoom}x)';
   }
 
   @override
@@ -1681,7 +1678,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return '읽음 상태를 변경하지 못했습니다: $error';
   }
 
   @override
@@ -1713,7 +1710,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return '이 플랫폼에서는 $extension 파일용 내장 문서 엔진을 사용할 수 없습니다.';
   }
 
   @override
@@ -1752,7 +1749,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return '편성표를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -1763,22 +1760,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Next: $time  $title';
+    return '다음: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m left';
+    return '$minutes분 남음';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h left';
+    return '$hours시간 남음';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m left';
+    return '$hours시간 $minutes분 남음';
   }
 
   @override
@@ -1800,29 +1797,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get favoriteChannel => '즐겨찾는 채널';
 
   @override
-  String get record => 'Record';
+  String get record => '녹화 예약';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => '녹화 취소';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => '녹화가 예약되었습니다';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => '녹화가 취소되었습니다';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => '녹화를 예약할 수 없습니다';
 
   @override
-  String get watch => '보다';
+  String get watch => '시청';
 
   @override
-  String get close => '닫다';
+  String get close => '닫기';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return '$name을(를) 재생하지 못했습니다';
   }
 
   @override
@@ -1848,7 +1845,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return '\"$name\"의 예약 녹화를 취소할까요?';
   }
 
   @override
@@ -1874,7 +1871,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return '\"$name\" 녹화를 중지할까요?';
   }
 
   @override
@@ -1888,12 +1885,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return '\"$query\"에 대한 검색 결과가 없습니다';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return '검색에 실패했습니다: $error';
   }
 
   @override
@@ -1934,12 +1931,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return '\"$name\"과(와) 해당 파일을 삭제할까요?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '트랙 $count개';
   }
 
   @override
@@ -1950,16 +1947,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return '앨범을 불러오지 못했습니다: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return '$name에 다운로드한 트랙이 없습니다.';
   }
 
   @override
-  String get season => '계절';
+  String get season => '시즌';
 
   @override
   String get errorLoadingEpisodes => '에피소드를 로드하는 중에 오류가 발생했습니다.';
@@ -1972,12 +1969,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return '\"$name\"을(를) 삭제할까요?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes분';
   }
 
   @override
@@ -1987,7 +1984,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return '$number화';
   }
 
   @override
@@ -2001,7 +1998,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return '시즌 $number';
   }
 
   @override
@@ -2017,7 +2014,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return '$season의 다운로드한 에피소드를 모두 삭제할까요?';
   }
 
   @override
@@ -2025,8 +2022,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '에피소드 $count개',
+      one: '에피소드 1개',
     );
     return '$_temp0';
   }
@@ -2060,7 +2057,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return '다운로드한 항목 $count개를 삭제할까요?';
   }
 
   @override
@@ -2074,7 +2071,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return '/ 제한 $limit';
   }
 
   @override
@@ -2154,7 +2151,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '옵션 $count개';
   }
 
   @override
@@ -2243,8 +2240,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get themeMusicVolume => '테마 음악 볼륨';
 
   @override
-  String get themeMusicSettingsSubtitle =>
-      'Detail pages, home rows, and volume';
+  String get themeMusicSettingsSubtitle => '상세 페이지, 홈 행, 음량';
 
   @override
   String percentValue(int value) {
@@ -2258,11 +2254,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => '홈 화면 탐색 시 재생';
 
   @override
-  String get loopThemeMusic => 'Loop Theme Music';
+  String get loopThemeMusic => '테마 음악 반복 재생';
 
   @override
-  String get loopThemeMusicSubtitle =>
-      'Repeat the track instead of playing it once';
+  String get loopThemeMusicSubtitle => '한 번만 재생하지 않고 트랙을 반복합니다';
 
   @override
   String get detailsBackgroundBlur => '세부 배경 흐림';
@@ -2285,23 +2280,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playerZoomMode => '플레이어 줌 모드';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => '마우스 휠 스크롤';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      '재생 중 영상 위에서 마우스 휠을 굴렸을 때의 동작을 선택하세요.';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => '끔';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => '탐색(앞/뒤로)';
 
   @override
-  String get scrollWheelActionVolume => 'Volume';
+  String get scrollWheelActionVolume => '음량';
 
   @override
-  String get playerTooltipVolume => 'Volume';
+  String get playerTooltipVolume => '음량';
 
   @override
   String get fit => '맞다';
@@ -2316,7 +2311,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get refreshRateSwitching => '새로 고침 빈도 전환';
 
   @override
-  String get disabled => '장애가 있는';
+  String get disabled => '사용 안 함';
 
   @override
   String get scaleOnTv => 'TV의 규모';
@@ -2352,37 +2347,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultAudioLanguage => '기본 오디오 언어';
 
   @override
-  String get fallbackAudioLanguage => 'Fallback Audio Language';
+  String get fallbackAudioLanguage => '대체 오디오 언어';
 
   @override
-  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+  String get preferDefaultAudioTrack => '기본 오디오 트랙 우선';
 
   @override
-  String get preferDefaultAudioTrackDescription =>
-      'Prefer original audio track over localized dub.';
+  String get preferDefaultAudioTrackDescription => '더빙 트랙보다 원어 오디오 트랙을 우선합니다.';
 
   @override
-  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+  String get preferAudioDescription => '화면 해설 트랙 우선';
 
   @override
-  String get preferAudioDescriptionDescription =>
-      'Prefer audio description tracks over normal tracks.';
+  String get preferAudioDescriptionDescription => '일반 트랙보다 화면 해설 트랙을 우선합니다.';
 
   @override
-  String get transcodingAudio => 'Transcoding (Audio)';
+  String get transcodingAudio => '트랜스코딩(오디오)';
 
   @override
-  String get directStreamRemux => 'Direct Stream (Remux)';
+  String get directStreamRemux => '다이렉트 스트림(리먹스)';
 
   @override
-  String get transcodingBitrateOrResolution =>
-      'Transcoding (Bitrate or Resolution)';
+  String get transcodingBitrateOrResolution => '트랜스코딩(비트레이트 또는 해상도)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+  String get transcodingVideoAndAudio => '트랜스코딩(비디오 및 오디오)';
 
   @override
-  String get transcodingVideo => 'Transcoding (Video)';
+  String get transcodingVideo => '트랜스코딩(비디오)';
 
   @override
   String get autoServerDefault => '자동(서버 기본값)';
@@ -2458,27 +2450,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get enableTrueHdAudio => 'TrueHD 오디오 활성화(일부 플랫폼에서는 작동하지 않을 수 있음)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => '오디오 출력 모드';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      '오디오 디코딩 방식을 선택하세요. AVR 패스스루는 원본 Dolby/DTS 스트림을 리시버로 그대로 보내고, 자동 또는 다운믹스는 기기에서 디코딩합니다.';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR 패스스루';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => '대체 오디오 코덱';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      '원본 스트림을 다이렉트 재생하거나 패스스루할 수 없을 때 멀티채널 오디오를 트랜스코딩할 대상 형식을 선택하세요.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto => '자동 감지\n(권장)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(기본값)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2487,113 +2479,113 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(무손실)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(스테레오 전용)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(고효율)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(무손실)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => '최대 오디오 채널';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      '사용 중인 오디오 환경의 최대 채널 수를 설정하세요. 이 제한을 넘는 멀티채널 스트림은 다운믹스되거나 트랜스코딩됩니다.';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto => '자동 감지\n(하드웨어 기본값)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 Mono';
+  String get settingsMaxAudioChannelsMono => '1.0 모노';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
+  String get settingsMaxAudioChannelsStereo => '2.0 스테레오';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 서라운드';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 쿼드러포닉';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 서라운드';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
+  String get settingsMaxAudioChannels5_1 => '5.1 서라운드';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
+  String get settingsMaxAudioChannels6_1 => '6.1 서라운드';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
+  String get settingsMaxAudioChannels7_1 => '7.1 서라운드';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => '패스스루(고급)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => '코덱 패스스루';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      '사용 중인 AVR 또는 HDMI 기기가 지원하는 형식만 켜세요.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'EAC3 패스스루';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC(Atmos) 패스스루';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'DTS 코어 패스스루';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA 패스스루';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD 패스스루';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos 패스스루';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Dolby Digital Plus(EAC3)를 외부 디코더로 비트스트림 전송합니다.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'EAC3(JOC) 기반 Dolby Atmos를 외부 디코더로 비트스트림 전송합니다.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'DTS-HD MA(DTS 코어 포함)를 외부 디코더로 비트스트림 전송합니다.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Atmos 메타데이터가 포함된 Dolby TrueHD를 외부 디코더로 비트스트림 전송합니다.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => '감지된 오디오 지원 정보';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      '아직 사용할 수 있는 런타임 지원 정보가 없습니다.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => '출력 경로';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => '디코딩';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => '패스스루';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD 오디오 경로';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2608,10 +2600,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => '스피커';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Headphones';
+  String get settingsAudioRouteHeadphones => '헤드폰';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2619,39 +2611,36 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => '진단 정보';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => '비디오 레벨';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => '비디오 범위';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => '자막 코덱';
 
   @override
-  String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+  String get settingsAudioDiagnosticsAllowedAudioCodecs => '허용된 오디오 코덱';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'HLS MPEG-TS 오디오 코덱';
 
   @override
-  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs => 'HLS fMP4 오디오 코덱';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'audio-spdif 패스스루';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => '현재 오디오 경로';
 
   @override
-  String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+  String get settingsAudioDiagnosticsRouteHdAudioSupport => '경로의 HD 오디오 지원';
 
   @override
   String get nightMode => '야간 모드';
@@ -2699,7 +2688,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '${value}s';
+    return '$value초';
   }
 
   @override
@@ -2713,7 +2702,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return '$episodes편 재생 또는 $hours시간 후';
   }
 
   @override
@@ -2788,45 +2777,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get subtitleCustomizationDescription => '자막 모양 맞춤설정';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => '자막 모드';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => '플래그 기준';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => '항상';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => '외국어';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => '강제 자막';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+      '미디어 파일의 메타데이터에 \"기본\" 또는 \"강제\"로 표시된 트랙을 재생합니다.';
 
   @override
-  String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+  String get subtitleModeAlwaysDescription => '영상을 재생할 때마다 자막을 자동으로 불러와 표시합니다.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+      '기본 오디오 트랙이 외국어일 때 자막을 자동으로 켭니다.';
 
   @override
-  String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+  String get subtitleModeForcedDescription => '강제 자막 플래그가 지정된 자막만 불러옵니다.';
 
   @override
-  String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+  String get subtitleModeNoneDescription => '자막 자동 불러오기를 완전히 끕니다.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => '대체 자막 언어';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => '자막 스트림';
 
   @override
   String get subtitlePreviewText => '날렵한 갈색여우는 게으른 개를 뛰어넘는다';
@@ -2884,17 +2870,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return '$profile 프로필 설정을 불러왔습니다.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return '$profile 프로필 설정을 불러오지 못했습니다.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return '로컬 설정을 $profile 프로필에 동기화했습니다.';
   }
 
   @override
@@ -3027,10 +3013,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showLibrariesInToolbar => '툴바에 라이브러리 표시';
 
   @override
-  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
+  String get navbarAlwaysExpanded => '탐색 바 라벨 항상 표시';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'Seerr 버튼 표시';
 
   @override
   String get navbarOpacity => '탐색바 불투명도';
@@ -3102,18 +3088,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showFolderBrowsingOption => '폴더 탐색 옵션 표시';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => '항목을 컬렉션으로 묶기';
 
   @override
-  String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+  String get hideCollectionAssociatedItems => '라이브러리를 탐색할 때 컬렉션에 속한 항목을 숨깁니다';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle => '라이브러리 그룹화 안내';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+      '이 설정을 사용하려면 Jellyfin 또는 Emby 서버의 라이브러리 표시 설정에서 \"영화를 컬렉션으로 묶기\" 및/또는 \"TV 프로그램을 컬렉션으로 묶기\"가 켜져 있는지 확인하세요.';
 
   @override
   String get libraryVisibility => '도서관 가시성';
@@ -3142,7 +3127,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count개 선택됨';
   }
 
   @override
@@ -3170,13 +3155,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mediaBarModeDescription => '다양한 미디어 바 스타일 중 하나를 선택하거나 미디어 바를 끄십시오';
 
   @override
-  String get mediaBarModeMoonfin => '달지느러미';
+  String get mediaBarModeMoonfin => 'Moonfin';
 
   @override
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => '끄다';
+  String get mediaBarModeOff => '끔';
 
   @override
   String get enableMediaBar => '미디어 바 활성화';
@@ -3221,10 +3206,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get autoPlayTrailers => '3초 후에 미디어 바에서 예고편 자동 재생';
 
   @override
-  String get trailerAudio => 'Trailer Audio';
+  String get trailerAudio => '예고편 오디오';
 
   @override
-  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+  String get enableTrailerAudio => '미디어 바의 예고편에서 소리를 재생합니다';
 
   @override
   String get episodePreview => '에피소드 미리보기';
@@ -3298,10 +3283,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get combineBothRows => '두 행을 단일 홈 섹션으로 결합';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => '홈 행 크게 보기';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription => '화면당 홈 행을 1개로 제한합니다';
 
   @override
   String get perRowImageType => '행별 이미지 유형';
@@ -3316,7 +3301,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lastUser => '마지막 사용자';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => '현재 사용자';
 
   @override
   String get alwaysAuthenticate => '항상 인증';
@@ -3370,7 +3355,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get enableBuiltInScreensaver => '내장 화면 보호기 활성화';
 
   @override
-  String get mode => '방법';
+  String get mode => '모드';
 
   @override
   String get libraryArt => '도서관 예술';
@@ -3386,7 +3371,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes분';
   }
 
   @override
@@ -3416,10 +3401,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get displayClockDuringScreensaver => '화면 보호기 동안 시계 표시';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => '고정';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => '움직임';
 
   @override
   String get rottenTomatoesCritics => '로튼 토마토(비평가)';
@@ -3440,7 +3425,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get metacriticUser => '메타크리틱(사용자)';
 
   @override
-  String get trakt => '트랙트';
+  String get trakt => 'Trakt';
 
   @override
   String get letterboxd => '레터박스d';
@@ -3488,7 +3473,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ratingSourcesDescription => '앱 전체에 표시되는 평가 소스를 활성화하고 재정렬합니다.';
 
   @override
-  String get pluginLabel => '플러그인';
+  String get pluginLabel => 'Moonbase 플러그인';
 
   @override
   String get pluginDetected => '플러그인이 감지되었습니다';
@@ -3506,7 +3491,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\n버전: $version';
   }
 
   @override
@@ -3559,7 +3544,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get networks => '네트워크';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'Seerr 둘러보기 행';
 
   @override
   String get resetRowsToDefaults => '행을 기본값으로 재설정';
@@ -3580,46 +3565,44 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hideAdultContent => '검색결과에서 성인용 콘텐츠 숨기기';
 
   @override
-  String get seerrNotificationsSection => 'Notifications';
+  String get seerrNotificationsSection => '알림';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'New request notifications';
+  String get seerrNotifyNewRequestsTitle => '새 요청 알림';
 
   @override
-  String get seerrNotifyNewRequestsSubtitle =>
-      'Alert me when someone submits a request';
+  String get seerrNotifyNewRequestsSubtitle => '누군가 요청을 등록하면 알려줍니다';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Request updates';
+  String get seerrNotifyLibraryAddedTitle => '요청 상태 알림';
 
   @override
-  String get seerrNotifyLibraryAddedSubtitle =>
-      'Approved, declined, and added to your library';
+  String get seerrNotifyLibraryAddedSubtitle => '승인, 거절, 라이브러리 추가 알림';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Issue updates';
+  String get seerrNotifyIssuesTitle => '문제 알림';
 
   @override
-  String get seerrNotifyIssuesSubtitle =>
-      'New issues, replies, and resolutions';
+  String get seerrNotifyIssuesSubtitle => '새 문제, 댓글, 해결 알림';
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return '로그인 계정: $username';
   }
 
   @override
-  String get discoverRows => '행 검색';
+  String get discoverRows => 'Seerr 디스커버리 페이지';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      '재정렬하려면 드래그하세요. 행을 활성화하거나 비활성화합니다. 활성화된 행 순서는 Moonfin 플러그인과 동기화됩니다.';
+      'Seerr 메인 페이지에 표시할 행을 활성화하세요. 드래그하여 순서를 변경할 수 있습니다. 사용자 지정 순서는 Moonbase와 동기화됩니다.';
 
   @override
-  String get discoverRowsDescription => '재정렬하려면 드래그하세요. 행을 활성화하거나 비활성화합니다.';
+  String get discoverRowsDescription =>
+      'Seerr 메인 페이지에 표시할 행을 활성화하세요. 드래그하여 순서를 변경할 수 있습니다. 사용자 지정 순서는 Moonbase와 동기화됩니다.';
 
   @override
-  String get enabled => '활성화됨';
+  String get enabled => '사용함';
 
   @override
   String get hidden => '숨겨진';
@@ -3629,7 +3612,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return '버전 $version';
   }
 
   @override
@@ -3673,7 +3656,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return '업데이트 있음: v$version';
   }
 
   @override
@@ -3684,7 +3667,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version 사용 가능';
   }
 
   @override
@@ -3743,7 +3726,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get imageCacheCleared => '이미지 캐시를 지웠습니다';
 
   @override
-  String get clear => '분명한';
+  String get clear => '지우기';
 
   @override
   String get browse => '먹다';
@@ -3759,19 +3742,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Downloading · $percent%';
+    return '다운로드 중 · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Importing';
+  String get seerrImportingStatus => '가져오는 중';
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count개 항목';
   }
 
   @override
-  String get seerrSettings => '시르 설정';
+  String get seerrSettings => 'Seerr 설정';
 
   @override
   String get requestMore => '더 요청하기';
@@ -3787,7 +3770,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return '$name 요청';
   }
 
   @override
@@ -3804,12 +3787,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return '\"$title\" 요청을 취소할까요?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return '\"$title\"의 요청 $count건을 취소할까요?';
   }
 
   @override
@@ -3823,12 +3806,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return '제작비: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return '수익: \$$amount';
   }
 
   @override
@@ -3838,7 +3821,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return '$type 요청';
   }
 
   @override
@@ -3866,14 +3849,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showMore => '더보기';
 
   @override
-  String get appearances => '형세';
+  String get appearances => '출연작';
 
   @override
   String get crewSection => '승무원';
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return '$age세';
   }
 
   @override
@@ -3904,148 +3887,146 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deletedStatus => '삭제됨';
 
   @override
-  String get failedStatus => 'Failed';
+  String get failedStatus => '실패';
 
   @override
-  String get processingStatus => 'Processing';
+  String get processingStatus => '처리 중';
 
   @override
   String modifiedByName(String name) {
-    return 'Modified by $name';
+    return '$name이(가) 변경';
   }
 
   @override
-  String get completedStatus => 'Completed';
+  String get completedStatus => '완료됨';
 
   @override
-  String get requestErrorDuplicate => 'This title was already requested';
+  String get requestErrorDuplicate => '이미 요청한 작품입니다';
 
   @override
-  String get requestErrorQuota => 'Request limit reached';
+  String get requestErrorQuota => '요청 한도에 도달했습니다';
 
   @override
-  String get requestErrorBlocklisted => 'This title is blocklisted';
+  String get requestErrorBlocklisted => '차단 목록에 있는 작품입니다';
 
   @override
-  String get requestErrorNoSeasons => 'No seasons left to request';
+  String get requestErrorNoSeasons => '요청할 수 있는 시즌이 없습니다';
 
   @override
-  String get requestErrorPermission =>
-      'You don\'t have permission to make this request';
+  String get requestErrorPermission => '이 요청을 할 권한이 없습니다';
 
   @override
-  String get seerrRequestsTitle => 'Requests';
+  String get seerrRequestsTitle => '요청';
 
   @override
-  String get seerrIssuesTitle => 'Issues';
+  String get seerrIssuesTitle => '문제';
 
   @override
-  String get sortNewest => 'Newest';
+  String get sortNewest => '최신순';
 
   @override
-  String get sortLastModified => 'Last Modified';
+  String get sortLastModified => '최근 변경순';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => '문제 없음';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit movie requests remaining';
+    return '영화 요청 $limit건 중 $remaining건 남음';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining of $limit season requests remaining';
+    return '시즌 요청 $limit건 중 $remaining건 남음';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Part of $name';
+    return '$name 컬렉션의 일부';
   }
 
   @override
-  String get viewCollection => 'View Collection';
+  String get viewCollection => '컬렉션 보기';
 
   @override
-  String get requestCollection => 'Request Collection';
+  String get requestCollection => '컬렉션 요청';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total movies · $available available';
+    return '영화 $total편 · $available편 이용 가능';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Request $count movies';
+    return '영화 $count편 요청';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Requesting $current of $total...';
+    return '$total건 중 $current건 요청 중...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Requested $count movies';
+    return '영화 $count편을 요청했습니다';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Requested $ok of $total movies';
+    return '영화 $total편 중 $ok편을 요청했습니다';
   }
 
   @override
-  String get collectionAllRequested =>
-      'All movies are already available or requested';
+  String get collectionAllRequested => '모든 영화가 이미 이용 가능하거나 요청되었습니다';
 
   @override
-  String get reportIssue => 'Report Issue';
+  String get reportIssue => '문제 신고';
 
   @override
-  String get issueTypeVideo => 'Video';
+  String get issueTypeVideo => '영상';
 
   @override
-  String get issueTypeAudio => 'Audio';
+  String get issueTypeAudio => '오디오';
 
   @override
-  String get whatsWrong => 'What\'s wrong?';
+  String get whatsWrong => '어떤 문제인가요?';
 
   @override
-  String get allEpisodes => 'All Episodes';
+  String get allEpisodes => '모든 에피소드';
 
   @override
-  String get episode => 'Episode';
+  String get episode => '에피소드';
 
   @override
-  String get openStatus => 'Open';
+  String get openStatus => '미해결';
 
   @override
-  String get resolvedStatus => 'Resolved';
+  String get resolvedStatus => '해결됨';
 
   @override
-  String get resolveAction => 'Resolve';
+  String get resolveAction => '해결 처리';
 
   @override
-  String get reopenAction => 'Reopen';
+  String get reopenAction => '다시 열기';
 
   @override
   String reportedByName(String name) {
-    return 'Reported by $name';
+    return '$name 신고';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comments';
+    return '댓글 $count개';
   }
 
   @override
-  String get addComment => 'Add a comment';
+  String get addComment => '댓글 추가';
 
   @override
-  String get deleteIssueConfirm => 'Delete this issue?';
+  String get deleteIssueConfirm => '이 문제를 삭제할까요?';
 
   @override
-  String get submitReport => 'Submit Report';
+  String get submitReport => '신고 제출';
 
   @override
   String get tmdbScore => 'TMDB 점수';
@@ -4069,7 +4050,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get originalLanguageLabel => '원어';
 
   @override
-  String get seasonsLabel => '계절';
+  String get seasonsLabel => '시즌';
 
   @override
   String get episodesLabel => '에피소드';
@@ -4078,7 +4059,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get access => '입장';
 
   @override
-  String get add => '추가하다';
+  String get add => '추가';
 
   @override
   String get address => '주소';
@@ -4105,7 +4086,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get done => '완료';
 
   @override
-  String get edit => '편집하다';
+  String get edit => '편집';
 
   @override
   String get encoding => '부호화';
@@ -4117,7 +4098,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get forward => '앞으로';
 
   @override
-  String get general => '일반적인';
+  String get general => '일반';
 
   @override
   String get go => '가다';
@@ -4180,7 +4161,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get run => '달리다';
 
   @override
-  String get search => '찾다';
+  String get search => '검색';
 
   @override
   String get select => '선택하다';
@@ -4198,7 +4179,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get status => '상태';
 
   @override
-  String get stop => '멈추다';
+  String get stop => '정지';
 
   @override
   String get streaming => '스트리밍';
@@ -4207,7 +4188,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get time => '시간';
 
   @override
-  String get trickplay => '트릭플레이';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => '제거';
@@ -4225,7 +4206,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unmute => '음소거 해제';
 
   @override
-  String get mute => '무음';
+  String get mute => '음소거';
 
   @override
   String get branding => '브랜딩';
@@ -4246,28 +4227,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminDrawerUsers => '사용자';
 
   @override
-  String get adminDrawerLibraries => '도서관';
+  String get adminDrawerLibraries => '라이브러리';
 
   @override
-  String get adminDrawerDisplay => 'Display';
+  String get adminDrawerDisplay => '표시';
 
   @override
-  String get adminDrawerMetadata => 'Metadata';
+  String get adminDrawerMetadata => '메타데이터';
 
   @override
-  String get adminDrawerNfo => 'NFO Settings';
+  String get adminDrawerNfo => 'NFO 설정';
 
   @override
   String get adminDrawerTranscoding => '트랜스코딩';
 
   @override
-  String get adminDrawerResume => '재개하다';
+  String get adminDrawerResume => '이어보기';
 
   @override
   String get adminDrawerStreaming => '스트리밍';
 
   @override
-  String get adminDrawerTrickplay => '트릭플레이';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => '장치';
@@ -4316,22 +4297,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return '업데이트 가능한 플러그인: $count개';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return '재시작이 필요한 플러그인: $count개';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return '실패한 예약 작업: $count개';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return '최근 경고/오류 항목: $count개';
   }
 
   @override
@@ -4390,7 +4371,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return '오류: $error';
   }
 
   @override
@@ -4416,7 +4397,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return '명령을 실행하지 못했습니다: $error';
   }
 
   @override
@@ -4435,7 +4416,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionRewind => '되감기';
 
   @override
-  String get sessionForward => '앞으로';
+  String get sessionForward => '빨리 감기';
 
   @override
   String get sessionNext => '다음';
@@ -4453,7 +4434,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nowPlaying => '지금 재생 중';
 
   @override
-  String get volume => '용량';
+  String get volume => '음량';
 
   @override
   String get actions => '행위';
@@ -4480,14 +4461,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminClearDates => '날짜 지우기';
 
   @override
-  String get adminActivitySeverityAll => 'All severities';
+  String get adminActivitySeverityAll => '모든 심각도';
 
   @override
-  String get adminActivityDateRange => 'Date range';
+  String get adminActivityDateRange => '기간';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return '활동 로그를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -4504,7 +4485,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return '기기를 업데이트하지 못했습니다: $error';
   }
 
   @override
@@ -4515,28 +4496,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return '기기를 삭제하지 못했습니다: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return '\'$name\' 기기를 삭제할까요? 이 기기에서 사용자가 다시 로그인해야 합니다.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Delete all devices';
+  String get adminDeleteAllDevices => '모든 기기 삭제';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
+    return '기기 $count대를 삭제할까요? 해당 사용자는 다시 로그인해야 합니다. 현재 기기는 영향을 받지 않습니다.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Devices removed';
+  String get adminDevicesDeletedAll => '기기를 삭제했습니다';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Removed some devices; $count could not be removed.';
+    return '일부 기기를 삭제했습니다. $count대는 삭제하지 못했습니다.';
   }
 
   @override
@@ -4565,7 +4546,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return '검색을 시작하지 못했습니다: $error';
   }
 
   @override
@@ -4576,12 +4557,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return '라이브러리 이름을 \"$name\"(으)로 변경했습니다';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return '이름을 변경하지 못했습니다: $error';
   }
 
   @override
@@ -4589,17 +4570,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return '\"$name\" 라이브러리를 삭제했습니다';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return '라이브러리를 삭제하지 못했습니다: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return '경로를 추가하지 못했습니다: $error';
   }
 
   @override
@@ -4607,12 +4588,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return '이 라이브러리에서 \"$path\"을(를) 제거할까요?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return '경로를 제거하지 못했습니다: $error';
   }
 
   @override
@@ -4620,7 +4601,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return '옵션을 저장하지 못했습니다: $error';
   }
 
   @override
@@ -4651,251 +4632,236 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminMetadataCountryHint => '예를 들어 미국, 독일, 프랑스';
 
   @override
-  String get adminLibraryTabPaths => 'Paths';
+  String get adminLibraryTabPaths => '경로';
 
   @override
-  String get adminLibraryTabOptions => 'Options';
+  String get adminLibraryTabOptions => '옵션';
 
   @override
-  String get adminLibraryTabDownloaders => 'Downloaders';
+  String get adminLibraryTabDownloaders => '다운로더';
 
   @override
-  String get adminLibMetadataSavers => 'Metadata savers';
+  String get adminLibMetadataSavers => '메타데이터 저장 도구';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+  String get adminLibSubtitleDownloaders => '자막 다운로더';
 
   @override
-  String get adminLibLyricDownloaders => 'Lyric downloaders';
+  String get adminLibLyricDownloaders => '가사 다운로더';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Metadata downloaders: $type';
+    return '메타데이터 다운로더: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Image fetchers: $type';
+    return '이미지 수집기: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'This server exposes no downloaders for this library type.';
+      '이 서버에는 해당 라이브러리 유형에 사용할 수 있는 다운로더가 없습니다.';
 
   @override
-  String get adminLibrarySectionGeneral => 'General';
+  String get adminLibrarySectionGeneral => '일반';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadata';
+  String get adminLibrarySectionMetadata => '메타데이터';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Embedded Info';
+  String get adminLibrarySectionEmbedded => '내장 정보';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitles';
+  String get adminLibrarySectionSubtitles => '자막';
 
   @override
-  String get adminLibrarySectionImages => 'Images';
+  String get adminLibrarySectionImages => '이미지';
 
   @override
-  String get adminLibrarySectionSeries => 'Series';
+  String get adminLibrarySectionSeries => '시리즈';
 
   @override
-  String get adminLibrarySectionMusic => 'Music';
+  String get adminLibrarySectionMusic => '음악';
 
   @override
-  String get adminLibrarySectionMovies => 'Movies';
+  String get adminLibrarySectionMovies => '영화';
 
   @override
-  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+  String get adminLibRealtimeMonitor => '실시간 모니터링 사용';
 
   @override
-  String get adminLibRealtimeMonitorHint =>
-      'Detect file changes and process them automatically.';
+  String get adminLibRealtimeMonitorHint => '파일 변경을 감지해 자동으로 처리합니다.';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+  String get adminLibArchiveMediaFiles => '압축 파일을 미디어 파일로 취급';
 
   @override
-  String get adminLibEnablePhotos => 'Display photos';
+  String get adminLibEnablePhotos => '사진 표시';
 
   @override
-  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+  String get adminLibSaveLocalMetadata => '아트워크를 미디어 폴더에 저장';
 
   @override
-  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+  String get adminLibRefreshInterval => '메타데이터 자동 새로고침';
 
   @override
-  String get adminLibRefreshNever => 'Never';
+  String get adminLibRefreshNever => '안 함';
 
   @override
-  String get adminLibDefault => 'Default';
+  String get adminLibDefault => '기본값';
 
   @override
-  String get adminLibDisplayTitle => 'Display';
+  String get adminLibDisplayTitle => '표시';
 
   @override
-  String get adminLibDisplaySection => 'Library display';
+  String get adminLibDisplaySection => '라이브러리 표시';
 
   @override
-  String get adminLibFolderView =>
-      'Display a folder view to show plain media folders';
+  String get adminLibFolderView => '일반 미디어 폴더를 보여주는 폴더 보기 표시';
 
   @override
-  String get adminLibSpecialsInSeasons =>
-      'Display specials within seasons they aired in';
+  String get adminLibSpecialsInSeasons => '스페셜 에피소드를 방영된 시즌 안에 표시';
 
   @override
-  String get adminLibGroupMovies => 'Group movies into collections';
+  String get adminLibGroupMovies => '영화를 컬렉션으로 묶기';
 
   @override
-  String get adminLibGroupShows => 'Group shows into collections';
+  String get adminLibGroupShows => 'TV 프로그램을 컬렉션으로 묶기';
 
   @override
-  String get adminLibExternalSuggestions =>
-      'Show external content in suggestions';
+  String get adminLibExternalSuggestions => '추천에 외부 콘텐츠 표시';
 
   @override
-  String get adminLibDateAddedSection => 'Date added behavior';
+  String get adminLibDateAddedSection => '추가 날짜 처리 방식';
 
   @override
-  String get adminLibDateAddedLabel => 'Use date added from';
+  String get adminLibDateAddedLabel => '추가 날짜 기준';
 
   @override
-  String get adminLibDateAddedImport => 'Date scanned into the library';
+  String get adminLibDateAddedImport => '라이브러리에 검색된 날짜';
 
   @override
-  String get adminLibDateAddedFile => 'Date the file was created';
+  String get adminLibDateAddedFile => '파일이 생성된 날짜';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata and Images';
+  String get adminLibMetadataTitle => '메타데이터 및 이미지';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferred metadata language';
+  String get adminLibMetadataLangSection => '선호 메타데이터 언어';
 
   @override
-  String get adminLibChaptersSection => 'Chapters';
+  String get adminLibChaptersSection => '챕터';
 
   @override
-  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
+  String get adminLibDummyChapterDuration => '임시 챕터 길이(초)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Length of chapters generated for media that has none. Set to 0 to disable.';
+      '챕터가 없는 미디어에 생성할 챕터의 길이입니다. 0으로 설정하면 사용하지 않습니다.';
 
   @override
-  String get adminLibChapterImageResolution => 'Chapter image resolution';
+  String get adminLibChapterImageResolution => '챕터 이미지 해상도';
 
   @override
-  String get adminLibNfoTitle => 'NFO Settings';
+  String get adminLibNfoTitle => 'NFO 설정';
 
   @override
   String get adminLibNfoHelp =>
-      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
+      'NFO 메타데이터는 Kodi 및 유사한 클라이언트와 호환됩니다. 이 설정은 NFO 메타데이터를 저장하는 모든 라이브러리에 적용됩니다.';
 
   @override
-  String get adminLibKodiUser => 'User to store watch data for in NFO files';
+  String get adminLibKodiUser => 'NFO 파일에 시청 기록을 저장할 사용자';
 
   @override
-  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
+  String get adminLibSaveImagePaths => 'NFO 파일에 이미지 경로 저장';
 
   @override
-  String get adminLibPathSubstitution =>
-      'Enable path substitution for NFO image paths';
+  String get adminLibPathSubstitution => 'NFO 이미지 경로에 경로 치환 사용';
 
   @override
-  String get adminLibExtraThumbs =>
-      'Copy extrafanart images into an extrathumbs folder';
+  String get adminLibExtraThumbs => 'extrafanart 이미지를 extrathumbs 폴더로 복사';
 
   @override
-  String get adminLibNone => 'None';
+  String get adminLibNone => '없음';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days days';
+    return '$days일';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Use embedded titles';
+  String get adminLibEmbeddedTitles => '내장 제목 사용';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+  String get adminLibEmbeddedExtrasTitles => '부가 영상에 내장 제목 사용';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+  String get adminLibEmbeddedEpisodeInfos => '내장 에피소드 정보 사용';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+  String get adminLibAllowEmbeddedSubtitles => '내장 자막 허용';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Allow all';
+  String get adminLibEmbeddedAllowAll => '모두 허용';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Text only';
+  String get adminLibEmbeddedAllowText => '텍스트만';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Image only';
+  String get adminLibEmbeddedAllowImage => '이미지만';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'None';
+  String get adminLibEmbeddedAllowNone => '없음';
 
   @override
-  String get adminLibSkipIfEmbeddedSubs =>
-      'Skip download if embedded subtitles are present';
+  String get adminLibSkipIfEmbeddedSubs => '내장 자막이 있으면 다운로드 건너뛰기';
 
   @override
-  String get adminLibSkipIfAudioMatches =>
-      'Skip download if the audio track matches the download language';
+  String get adminLibSkipIfAudioMatches => '오디오 트랙이 다운로드 언어와 일치하면 건너뛰기';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+  String get adminLibRequirePerfectMatch => '완전히 일치하는 자막만 사용';
 
   @override
-  String get adminLibSaveSubtitlesWithMedia =>
-      'Save subtitles into media folders';
+  String get adminLibSaveSubtitlesWithMedia => '자막을 미디어 폴더에 저장';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extract chapter images';
+  String get adminLibChapterImageExtraction => '챕터 이미지 추출';
 
   @override
-  String get adminLibChapterImagesDuringScan =>
-      'Extract chapter images during the library scan';
+  String get adminLibChapterImagesDuringScan => '라이브러리 검색 중 챕터 이미지 추출';
 
   @override
-  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+  String get adminLibTrickplayExtraction => 'Trickplay 이미지 추출 사용';
 
   @override
-  String get adminLibTrickplayDuringScan =>
-      'Extract trickplay images during the library scan';
+  String get adminLibTrickplayDuringScan => '라이브러리 검색 중 Trickplay 이미지 추출';
 
   @override
-  String get adminLibSaveTrickplayWithMedia =>
-      'Save trickplay images into media folders';
+  String get adminLibSaveTrickplayWithMedia => 'Trickplay 이미지를 미디어 폴더에 저장';
 
   @override
-  String get adminLibAutomaticSeriesGrouping =>
-      'Automatically merge series that are spread across multiple folders';
+  String get adminLibAutomaticSeriesGrouping => '여러 폴더에 나뉜 시리즈 자동 병합';
 
   @override
-  String get adminLibSeasonZeroName => 'Season zero display name';
+  String get adminLibSeasonZeroName => '시즌 0 표시 이름';
 
   @override
-  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+  String get adminLibLufsScan => '오디오 음량 정규화를 위한 LUFS 분석 사용';
 
   @override
-  String get adminLibPreferNonstandardArtist =>
-      'Prefer non-standard artists tag';
+  String get adminLibPreferNonstandardArtist => '비표준 아티스트 태그 우선';
 
   @override
-  String get adminLibAutoAddToCollection =>
-      'Automatically add movies to collections';
+  String get adminLibAutoAddToCollection => '영화를 컬렉션에 자동 추가';
 
   @override
   String get adminLibraryNameRequired => '라이브러리 이름은 필수 항목입니다.';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return '라이브러리를 만들지 못했습니다: $error';
   }
 
   @override
@@ -4921,27 +4887,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return '$name을(를) 비활성화할까요? 로그인할 수 없게 됩니다.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return '$name을(를) 활성화할까요? 다시 로그인할 수 있게 됩니다.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return '\"$name\" 사용자를 비활성화했습니다';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return '\"$name\" 사용자를 활성화했습니다';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return '사용자 정책을 업데이트하지 못했습니다: $error';
   }
 
   @override
@@ -4958,7 +4924,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return '사용자를 만들지 못했습니다: $error';
   }
 
   @override
@@ -4978,7 +4944,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return '저장하지 못했습니다: $error';
   }
 
   @override
@@ -4989,7 +4955,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return '실패: $error';
   }
 
   @override
@@ -5120,143 +5086,137 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminEnableAllChannels => '모든 채널에 대한 액세스 활성화';
 
   @override
-  String get adminParentalControl => 'Parental Control';
+  String get adminParentalControl => '자녀 보호';
 
   @override
-  String get adminMaxParentalRating => 'Maximum allowed parental rating';
+  String get adminMaxParentalRating => '허용할 최대 시청 등급';
 
   @override
-  String get adminMaxParentalRatingHint =>
-      'Content with a higher rating will be hidden from this user.';
+  String get adminMaxParentalRatingHint => '등급이 더 높은 콘텐츠는 이 사용자에게 표시되지 않습니다.';
 
   @override
-  String get adminParentalRatingNone => 'None';
+  String get adminParentalRatingNone => '없음';
 
   @override
-  String get adminBlockUnratedItems =>
-      'Block items with no or unrecognized rating information';
+  String get adminBlockUnratedItems => '등급 정보가 없거나 인식되지 않는 항목 차단';
 
   @override
-  String get adminUnratedBook => 'Books';
+  String get adminUnratedBook => '도서';
 
   @override
-  String get adminUnratedChannelContent => 'Channels';
+  String get adminUnratedChannelContent => '채널';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Live TV';
+  String get adminUnratedLiveTvChannel => '실시간 TV';
 
   @override
-  String get adminUnratedMovie => 'Movies';
+  String get adminUnratedMovie => '영화';
 
   @override
-  String get adminUnratedMusic => 'Music';
+  String get adminUnratedMusic => '음악';
 
   @override
-  String get adminUnratedTrailer => 'Trailers';
+  String get adminUnratedTrailer => '예고편';
 
   @override
-  String get adminUnratedSeries => 'Shows';
+  String get adminUnratedSeries => 'TV 프로그램';
 
   @override
-  String get adminAccessSchedules => 'Access Schedules';
+  String get adminAccessSchedules => '접속 시간 설정';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
+      '아래 지정한 시간에만 접속을 허용합니다. 설정이 없으면 하루 종일 접속할 수 있습니다.';
 
   @override
-  String get adminAddSchedule => 'Add Schedule';
+  String get adminAddSchedule => '일정 추가';
 
   @override
-  String get adminScheduleDay => 'Day';
+  String get adminScheduleDay => '요일';
 
   @override
-  String get adminScheduleStart => 'Start';
+  String get adminScheduleStart => '시작';
 
   @override
-  String get adminScheduleEnd => 'End';
+  String get adminScheduleEnd => '종료';
 
   @override
-  String get adminDayEveryday => 'Every day';
+  String get adminDayEveryday => '매일';
 
   @override
-  String get adminDayWeekday => 'Weekday';
+  String get adminDayWeekday => '평일';
 
   @override
-  String get adminDayWeekend => 'Weekend';
+  String get adminDayWeekend => '주말';
 
   @override
-  String get adminDaySunday => 'Sunday';
+  String get adminDaySunday => '일요일';
 
   @override
-  String get adminDayMonday => 'Monday';
+  String get adminDayMonday => '월요일';
 
   @override
-  String get adminDayTuesday => 'Tuesday';
+  String get adminDayTuesday => '화요일';
 
   @override
-  String get adminDayWednesday => 'Wednesday';
+  String get adminDayWednesday => '수요일';
 
   @override
-  String get adminDayThursday => 'Thursday';
+  String get adminDayThursday => '목요일';
 
   @override
-  String get adminDayFriday => 'Friday';
+  String get adminDayFriday => '금요일';
 
   @override
-  String get adminDaySaturday => 'Saturday';
+  String get adminDaySaturday => '토요일';
 
   @override
-  String get adminAllowedTags => 'Allowed tags';
+  String get adminAllowedTags => '허용 태그';
 
   @override
-  String get adminAllowedTagsHint =>
-      'Only content with these tags is shown. Leave empty to allow all.';
+  String get adminAllowedTagsHint => '이 태그가 있는 콘텐츠만 표시됩니다. 비워 두면 모두 허용합니다.';
 
   @override
-  String get adminBlockedTags => 'Blocked tags';
+  String get adminBlockedTags => '차단 태그';
 
   @override
-  String get adminBlockedTagsHint =>
-      'Content with these tags is hidden from this user.';
+  String get adminBlockedTagsHint => '이 태그가 있는 콘텐츠는 이 사용자에게 표시되지 않습니다.';
 
   @override
-  String get adminAddTag => 'Add tag';
+  String get adminAddTag => '태그 추가';
 
   @override
-  String get adminEnabledDevices => 'Enabled devices';
+  String get adminEnabledDevices => '허용된 기기';
 
   @override
-  String get adminEnabledChannels => 'Enabled channels';
+  String get adminEnabledChannels => '허용된 채널';
 
   @override
-  String get adminAuthProvider => 'Authentication provider';
+  String get adminAuthProvider => '인증 공급자';
 
   @override
-  String get adminPasswordResetProvider => 'Password reset provider';
+  String get adminPasswordResetProvider => '비밀번호 재설정 공급자';
 
   @override
-  String get adminLoginAttemptsBeforeLockout =>
-      'Maximum failed login attempts before lockout';
+  String get adminLoginAttemptsBeforeLockout => '계정 잠금 전 최대 로그인 실패 횟수';
 
   @override
-  String get adminLoginAttemptsHint =>
-      'Set to 0 for the default, or -1 to disable lockout.';
+  String get adminLoginAttemptsHint => '기본값은 0, 잠금을 사용하지 않으려면 -1로 설정하세요.';
 
   @override
-  String get adminSyncPlayAccess => 'SyncPlay access';
+  String get adminSyncPlayAccess => 'SyncPlay 권한';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
+  String get adminSyncPlayCreateAndJoin => '그룹 생성 및 참여 허용';
 
   @override
-  String get adminSyncPlayJoin => 'Allow joining groups';
+  String get adminSyncPlayJoin => '그룹 참여 허용';
 
   @override
-  String get adminSyncPlayNone => 'No access';
+  String get adminSyncPlayNone => '권한 없음';
 
   @override
-  String get adminContentDeletionFolders => 'Allow content deletion from';
+  String get adminContentDeletionFolders => '콘텐츠 삭제를 허용할 폴더';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5264,22 +5224,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return '서버가 HTTP $status을(를) 반환했습니다';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return '$name을(를) 삭제할까요?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return '\"$name\" 사용자를 삭제했습니다';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return '사용자를 삭제하지 못했습니다: $error';
   }
 
   @override
@@ -5300,7 +5260,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return '키를 만들지 못했습니다: $error';
   }
 
   @override
@@ -5311,7 +5271,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return '$name의 키를 취소할까요?';
   }
 
   @override
@@ -5319,7 +5279,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return '키를 취소하지 못했습니다: $error';
   }
 
   @override
@@ -5339,29 +5299,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return '토큰: $token\\n생성: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Create Backup';
+  String get adminBackupOptionsTitle => '백업 만들기';
 
   @override
-  String get adminBackupInclude => 'Choose what to include in the backup.';
+  String get adminBackupInclude => '백업에 포함할 항목을 선택하세요.';
 
   @override
-  String get adminBackupDatabase => 'Database';
+  String get adminBackupDatabase => '데이터베이스';
 
   @override
-  String get adminBackupDatabaseAlways => 'Always included';
+  String get adminBackupDatabaseAlways => '항상 포함됨';
 
   @override
-  String get adminBackupMetadata => 'Metadata';
+  String get adminBackupMetadata => '메타데이터';
 
   @override
-  String get adminBackupSubtitles => 'Subtitles';
+  String get adminBackupSubtitles => '자막';
 
   @override
-  String get adminBackupTrickplay => 'Trickplay images';
+  String get adminBackupTrickplay => 'Trickplay 이미지';
 
   @override
   String get adminCreatingBackup => '백업 생성 중...';
@@ -5371,7 +5331,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return '백업을 만들지 못했습니다: $error';
   }
 
   @override
@@ -5379,12 +5339,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return '매니페스트: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return '매니페스트를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5395,7 +5355,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return '백업을 복원하지 못했습니다: $error';
   }
 
   @override
@@ -5427,17 +5387,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return '$path에 저장했습니다';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return '파일을 저장하지 못했습니다: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName을(를) 불러오지 못했습니다';
   }
 
   @override
@@ -5448,7 +5408,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return '작업을 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5459,17 +5419,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return '작업을 시작하지 못했습니다: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return '작업을 중지하지 못했습니다: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return '작업을 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5477,12 +5437,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return '트리거를 제거하지 못했습니다: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return '트리거를 추가하지 못했습니다: $error';
   }
 
   @override
@@ -5508,7 +5468,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours시간';
   }
 
   @override
@@ -5519,7 +5479,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return '플러그인을 켜거나 끄지 못했습니다: $error';
   }
 
   @override
@@ -5527,27 +5487,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return '\"$name\"을(를) 제거할까요?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return '플러그인을 제거하지 못했습니다: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return '패키지를 설치하지 못했습니다: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return '업데이트를 설치하지 못했습니다: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return '플러그인을 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5558,12 +5518,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return '업데이트 설치(v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return '카탈로그를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5584,17 +5544,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '서버를 재시작하면 \"$name\"이(가) 제거됩니다';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return '제거하지 못했습니다: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return '\"$name\"을(를) v$version(으)로 업데이트하는 중...';
   }
 
   @override
@@ -5602,7 +5562,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return '플러그인을 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5610,7 +5570,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return '버전 $version';
   }
 
   @override
@@ -5630,17 +5590,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return '\"$name\"을(를) 제거할까요?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return '저장소를 저장하지 못했습니다: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return '저장소를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -5657,12 +5617,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return '플러그인 설정을 불러올 수 없습니다: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return '$uri을(를) 열 수 없습니다';
   }
 
   @override
@@ -5777,10 +5737,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminThrottleBuffering => '스로틀 버퍼링';
 
   @override
-  String get adminTrickplaySaved => '트릭플레이 설정이 저장되었습니다';
+  String get adminTrickplaySaved => 'Trickplay 설정이 저장되었습니다';
 
   @override
-  String get adminTrickplayLoadFailed => '트릭플레이 설정을 로드하지 못했습니다.';
+  String get adminTrickplayLoadFailed => 'Trickplay 설정을 로드하지 못했습니다';
 
   @override
   String get adminEnableHardwareAcceleration => '하드웨어 가속 활성화';
@@ -5923,12 +5883,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return '메타데이터를 불러오지 못했습니다: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return '메타데이터를 저장하지 못했습니다: $error';
   }
 
   @override
@@ -5948,7 +5908,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return '메타데이터를 새로 고치지 못했습니다: $error';
   }
 
   @override
@@ -5962,7 +5922,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return '원격 검색에 실패했습니다: $error';
   }
 
   @override
@@ -5976,7 +5936,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return '콘텐츠 유형을 변경하지 못했습니다: $error';
   }
 
   @override
@@ -5990,12 +5950,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType 이미지를 업데이트했습니다';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return '이미지를 다운로드하지 못했습니다: $error';
   }
 
   @override
@@ -6006,27 +5966,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType 이미지를 업로드했습니다';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '이미지를 업로드하지 못했습니다: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return '$imageType 이미지 삭제';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType 이미지를 삭제했습니다';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '이미지를 삭제하지 못했습니다: $error';
   }
 
   @override
@@ -6037,67 +5997,66 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return '튜너를 검색하지 못했습니다: $error';
   }
 
   @override
   String get adminAddTuner => '튜너 추가';
 
   @override
-  String get adminEditTuner => 'Edit Tuner';
+  String get adminEditTuner => '튜너 편집';
 
   @override
-  String get adminTunerTypeM3u => 'M3U Tuner';
+  String get adminTunerTypeM3u => 'M3U 튜너';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'File or URL';
+  String get adminTunerFileOrUrl => '파일 또는 URL';
 
   @override
-  String get adminTunerIpAddress => 'Tuner IP address';
+  String get adminTunerIpAddress => '튜너 IP 주소';
 
   @override
-  String get adminTunerFriendlyName => 'Friendly name';
+  String get adminTunerFriendlyName => '표시 이름';
 
   @override
-  String get adminTunerUserAgent => 'User agent';
+  String get adminTunerUserAgent => '사용자 에이전트';
 
   @override
-  String get adminTunerCount => 'Simultaneous connection limit';
+  String get adminTunerCount => '동시 연결 제한';
 
   @override
   String get adminTunerCountHelp =>
-      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
+      '튜너가 동시에 허용하는 최대 스트림 수입니다. 0으로 설정하면 무제한입니다.';
 
   @override
-  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
+  String get adminTunerFallbackBitrate => '대체 최대 스트리밍 비트레이트';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
+  String get adminTunerImportFavoritesOnly => '즐겨찾기 채널만 가져오기';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
+  String get adminTunerAllowHwTranscoding => '하드웨어 트랜스코딩 허용';
 
   @override
-  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
+  String get adminTunerAllowFmp4 => 'fMP4 트랜스코딩 컨테이너 허용';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
+  String get adminTunerAllowStreamSharing => '스트림 공유 허용';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Enable stream looping';
+  String get adminTunerEnableStreamLooping => '스트림 반복 사용';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignore DTS';
+  String get adminTunerIgnoreDts => 'DTS 무시';
 
   @override
-  String get adminTunerReadAtNativeFramerate =>
-      'Read input at native frame rate';
+  String get adminTunerReadAtNativeFramerate => '원본 프레임레이트로 입력 읽기';
 
   @override
-  String get adminEditProvider => 'Edit Provider';
+  String get adminEditProvider => '공급자 편집';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6106,50 +6065,49 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'File or URL';
+  String get adminXmltvPath => '파일 또는 URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Movie prefix';
+  String get adminXmltvMoviePrefix => '영화 접두사';
 
   @override
-  String get adminXmltvMovieCategories => 'Movie categories';
+  String get adminXmltvMovieCategories => '영화 카테고리';
 
   @override
-  String get adminXmltvCategoriesHelp =>
-      'Separate multiple categories with a vertical bar.';
+  String get adminXmltvCategoriesHelp => '여러 카테고리는 세로줄(|)로 구분하세요.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kids categories';
+  String get adminXmltvKidsCategories => '어린이 카테고리';
 
   @override
-  String get adminXmltvNewsCategories => 'News categories';
+  String get adminXmltvNewsCategories => '뉴스 카테고리';
 
   @override
-  String get adminXmltvSportsCategories => 'Sports categories';
+  String get adminXmltvSportsCategories => '스포츠 카테고리';
 
   @override
-  String get adminSdUsername => 'Username';
+  String get adminSdUsername => '사용자 이름';
 
   @override
-  String get adminSdPassword => 'Password';
+  String get adminSdPassword => '비밀번호';
 
   @override
-  String get adminSdCountry => 'Country';
+  String get adminSdCountry => '국가';
 
   @override
-  String get adminSdCountrySelect => 'Select a country';
+  String get adminSdCountrySelect => '국가를 선택하세요';
 
   @override
-  String get adminSdPostalCode => 'Postal code';
+  String get adminSdPostalCode => '우편번호';
 
   @override
-  String get adminSdGetListings => 'Get listings';
+  String get adminSdGetListings => '편성 정보 가져오기';
 
   @override
-  String get adminSdListings => 'Listings';
+  String get adminSdListings => '편성 정보';
 
   @override
-  String get adminEnableAllTuners => 'Enable all tuners';
+  String get adminEnableAllTuners => '모든 튜너 사용';
 
   @override
   String get adminTunerType => '튜너 유형';
@@ -6159,7 +6117,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return '튜너를 추가하지 못했습니다: $error';
   }
 
   @override
@@ -6173,12 +6131,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return '공급자를 추가하지 못했습니다: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return '튜너를 제거하지 못했습니다: $error';
   }
 
   @override
@@ -6186,16 +6144,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return '튜너를 초기화하지 못했습니다: $error';
   }
 
   @override
-  String get adminTunerResetNotSupported =>
-      'This tuner type does not support resetting.';
+  String get adminTunerResetNotSupported => '이 튜너 유형은 초기화를 지원하지 않습니다.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return '공급자를 제거하지 못했습니다: $error';
   }
 
   @override
@@ -6214,43 +6171,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminSeriesRecordingPath => '시리즈 녹화 경로';
 
   @override
-  String get adminMovieRecordingPath => 'Movie recording path';
+  String get adminMovieRecordingPath => '영화 녹화 경로';
 
   @override
-  String get adminGuideDays => 'Guide data days';
+  String get adminGuideDays => '편성표 데이터 기간';
 
   @override
-  String get adminGuideDaysAuto => 'Automatic';
+  String get adminGuideDaysAuto => '자동';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days days';
+    return '$days일';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'Post-processing application path';
+  String get adminRecordingPostProcessor => '후처리 프로그램 경로';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
+  String get adminRecordingPostProcessorArgs => '후처리 인수';
 
   @override
-  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
+  String get adminSaveRecordingNfo => '녹화 NFO 메타데이터 저장';
 
   @override
-  String get adminSaveRecordingImages => 'Save recording images';
+  String get adminSaveRecordingImages => '녹화 이미지 저장';
 
   @override
-  String get adminLiveTvSectionTiming => 'Timing';
+  String get adminLiveTvSectionTiming => '시간 설정';
 
   @override
-  String get adminLiveTvSectionPaths => 'Recording paths';
+  String get adminLiveTvSectionPaths => '녹화 경로';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-processing';
+  String get adminLiveTvSectionPostProcessing => '후처리';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Guide data: $value';
+    return '편성표 데이터: $value';
   }
 
   @override
@@ -6258,7 +6215,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return '설정을 저장하지 못했습니다: $error';
   }
 
   @override
@@ -6275,7 +6232,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return '매핑을 업데이트하지 못했습니다: $error';
   }
 
   @override
@@ -6291,14 +6248,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminGuideProviders => '가이드 제공업체';
 
   @override
-  String get adminRefreshGuideData => 'Refresh Guide Data';
+  String get adminRefreshGuideData => '편성표 데이터 새로고침';
 
   @override
-  String get adminGuideRefreshStarted => 'Guide data refresh started';
+  String get adminGuideRefreshStarted => '편성표 데이터 새로고침을 시작했습니다';
 
   @override
-  String get adminGuideRefreshUnavailable =>
-      'Guide refresh task is not available on this server.';
+  String get adminGuideRefreshUnavailable => '이 서버에서는 편성표 새로고침 작업을 사용할 수 없습니다.';
 
   @override
   String get adminAddProvider => '공급자 추가';
@@ -6308,22 +6264,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return '녹화 경로: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return '시리즈 경로: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return '시작 여유 시간: $minutes분';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return '종료 여유 시간: $minutes분';
   }
 
   @override
@@ -6352,7 +6308,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return '$name 백업을 지금 복원할까요?';
   }
 
   @override
@@ -6375,13 +6331,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminLiveTvTitle => '라이브 TV 관리';
 
   @override
-  String get adminApply => '적용하다';
+  String get adminApply => '적용';
 
   @override
   String get adminNotSet => '설정되지 않음';
 
   @override
-  String get adminReset => '다시 놓기';
+  String get adminReset => '초기화';
 
   @override
   String get adminLogsTitle => '서버 로그';
@@ -6397,27 +6353,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes분 전';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours시간 전';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days일 전';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName을(를) 불러오지 못했습니다';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count개 일치';
   }
 
   @override
@@ -6427,7 +6383,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminMetadataEditorTitle => '메타데이터 편집기';
 
   @override
-  String get adminMetadataIdentify => 'Identify';
+  String get adminMetadataIdentify => '식별';
 
   @override
   String get adminMetadataType => '유형';
@@ -6527,22 +6483,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType 이미지를 업데이트했습니다';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType 이미지를 업로드했습니다';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType 이미지를 삭제했습니다';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return '이미지를 다운로드하지 못했습니다: $error';
   }
 
   @override
@@ -6550,12 +6506,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '이미지를 업로드하지 못했습니다: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return '$imageType 이미지 삭제';
   }
 
   @override
@@ -6563,12 +6519,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '이미지를 삭제하지 못했습니다: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return '$imageType 이미지 선택';
   }
 
   @override
@@ -6600,7 +6556,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return '업데이트 있음: v$version';
   }
 
   @override
@@ -6623,7 +6579,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return '업데이트 설치(v$version)';
   }
 
   @override
@@ -6634,7 +6590,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\"을(를) 설치하는 중...';
   }
 
   @override
@@ -6654,7 +6610,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name 설정';
   }
 
   @override
@@ -6691,7 +6647,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return '저장소를 불러오지 못했습니다: $error';
   }
 
   @override
@@ -6699,15 +6655,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return '\"$name\"을(를) 제거할까요?';
   }
 
   @override
-  String get adminReposRemove => '제거하다';
+  String get adminReposRemove => '제거';
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return '저장소를 저장하지 못했습니다: $error';
   }
 
   @override
@@ -6829,19 +6785,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminBrandingEnableSplash => '스플래시 화면 활성화';
 
   @override
-  String get adminBrandingSplashUpload => 'Upload image';
+  String get adminBrandingSplashUpload => '이미지 업로드';
 
   @override
-  String get adminBrandingSplashUploaded => 'Splashscreen updated';
+  String get adminBrandingSplashUploaded => '시작 화면을 업데이트했습니다';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
+  String get adminBrandingSplashUploadFailed => '시작 화면을 업로드하지 못했습니다';
 
   @override
-  String get adminBrandingSplashDeleted => 'Splashscreen removed';
+  String get adminBrandingSplashDeleted => '시작 화면을 삭제했습니다';
 
   @override
-  String get adminBrandingNoSplash => 'No custom splashscreen';
+  String get adminBrandingNoSplash => '사용자 지정 시작 화면 없음';
 
   @override
   String get adminPlaybackHwAccel => '하드웨어 가속';
@@ -6856,121 +6812,115 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminPlaybackEnableHwDecoding => '다음에 대해 하드웨어 디코딩을 활성화합니다.';
 
   @override
-  String get adminPlaybackQsvDevice => 'QSV device';
+  String get adminPlaybackQsvDevice => 'QSV 장치';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
+  String get adminPlaybackEnhancedNvdec => '향상된 NVDEC 디코더 사용';
 
   @override
-  String get adminPlaybackPreferNativeDecoder =>
-      'Prefer system native hardware decoder';
+  String get adminPlaybackPreferNativeDecoder => '시스템 기본 하드웨어 디코더 우선';
 
   @override
-  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
+  String get adminPlaybackColorDepth => '하드웨어 디코딩 색심도';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
+  String get adminPlaybackColorDepth10Hevc => '10비트 HEVC 디코딩';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
+  String get adminPlaybackColorDepth10Vp9 => '10비트 VP9 디코딩';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10비트 디코딩';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12비트 디코딩';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
+  String get adminPlaybackHwEncodingSection => '하드웨어 인코딩';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
+  String get adminPlaybackAllowHevcEncoding => 'HEVC 인코딩 허용';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
+  String get adminPlaybackAllowAv1Encoding => 'AV1 인코딩 허용';
 
   @override
-  String get adminPlaybackIntelLowPowerH264 =>
-      'Enable Intel low-power H.264 encoder';
+  String get adminPlaybackIntelLowPowerH264 => 'Intel 저전력 H.264 인코더 사용';
 
   @override
-  String get adminPlaybackIntelLowPowerHevc =>
-      'Enable Intel low-power HEVC encoder';
+  String get adminPlaybackIntelLowPowerHevc => 'Intel 저전력 HEVC 인코더 사용';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone Mapping';
+  String get adminPlaybackToneMapping => '톤 매핑';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
+  String get adminPlaybackEnableTonemapping => '톤 매핑 사용';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
+  String get adminPlaybackEnableVppTonemapping => 'VPP 톤 매핑 사용';
 
   @override
-  String get adminPlaybackEnableVtTonemapping =>
-      'Enable VideoToolbox tone mapping';
+  String get adminPlaybackEnableVtTonemapping => 'VideoToolbox 톤 매핑 사용';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
+  String get adminPlaybackTonemappingAlgorithm => '톤 매핑 알고리즘';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
+  String get adminPlaybackTonemappingMode => '톤 매핑 모드';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Tone mapping range';
+  String get adminPlaybackTonemappingRange => '톤 매핑 범위';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
+  String get adminPlaybackTonemappingDesat => '톤 매핑 채도 감소';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
+  String get adminPlaybackTonemappingPeak => '톤 매핑 피크';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
+  String get adminPlaybackTonemappingParam => '톤 매핑 매개변수';
 
   @override
-  String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tone mapping brightness';
+  String get adminPlaybackVppTonemappingBrightness => 'VPP 톤 매핑 밝기';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
+  String get adminPlaybackVppTonemappingContrast => 'VPP 톤 매핑 대비';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presets & Quality';
+  String get adminPlaybackPresetsQuality => '프리셋 및 품질';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Encoder preset';
+  String get adminPlaybackEncoderPreset => '인코더 프리셋';
 
   @override
-  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
+  String get adminPlaybackH264Crf => 'H.264 인코딩 CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
+  String get adminPlaybackH265Crf => 'H.265(HEVC) 인코딩 CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
+  String get adminPlaybackDeinterlaceMethod => '디인터레이스 방식';
 
   @override
-  String get adminPlaybackDeinterlaceDoubleRate =>
-      'Double the frame rate when deinterlacing';
+  String get adminPlaybackDeinterlaceDoubleRate => '디인터레이스 시 프레임레이트 두 배로 설정';
 
   @override
-  String get adminPlaybackAudioSection => 'Audio';
+  String get adminPlaybackAudioSection => '오디오';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
+  String get adminPlaybackEnableAudioVbr => '오디오 VBR 인코딩 사용';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
+  String get adminPlaybackDownmixBoost => '오디오 다운믹스 증폭';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
+  String get adminPlaybackDownmixAlgorithm => '스테레오 다운믹스 알고리즘';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
+  String get adminPlaybackMaxMuxingQueue => '최대 먹싱 큐 크기';
 
   @override
-  String get adminPlaybackAutoOption => 'Auto';
+  String get adminPlaybackAutoOption => '자동';
 
   @override
   String get adminPlaybackEncoding => '부호화';
@@ -7081,10 +7031,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminTaskNeverRun => '절대 뛰지 마세요';
 
   @override
-  String get adminTaskStop => '멈추다';
+  String get adminTaskStop => '정지';
 
   @override
-  String get adminRunningTasks => 'Running Tasks';
+  String get adminRunningTasks => '실행 중인 작업';
 
   @override
   String get adminTaskRun => '달리다';
@@ -7106,17 +7056,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return '매일 $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return '매주 $day $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return '$duration마다';
   }
 
   @override
@@ -7154,8 +7104,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count시간',
+      one: '1시간',
     );
     return '$_temp0';
   }
@@ -7183,17 +7133,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days일 전';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours시간 전';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes분 전';
   }
 
   @override
@@ -7201,17 +7151,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes분';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours시간';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days일';
   }
 
   @override
@@ -7221,7 +7171,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get adminTrickplayDescription =>
-      '미리보기 썸네일 탐색을 위한 트릭플레이 이미지 생성을 구성합니다.';
+      '탐색 미리보기 썸네일을 위한 Trickplay 이미지 생성을 구성합니다.';
 
   @override
   String get adminNetworkingPublicHttpsPort => '공용 HTTPS 포트';
@@ -7236,43 +7186,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
+  String get adminNetworkingPublicHttpPort => '공개 HTTP 포트';
 
   @override
-  String get adminNetworkingRequireHttps => 'Require HTTPS';
+  String get adminNetworkingRequireHttps => 'HTTPS 필수';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
+      '모든 원격 요청을 HTTPS로 리디렉션합니다. 서버에 유효한 인증서가 없으면 적용되지 않습니다.';
 
   @override
-  String get adminNetworkingCertPassword => 'Certificate password';
+  String get adminNetworkingCertPassword => '인증서 비밀번호';
 
   @override
-  String get adminNetworkingIpSettings => 'IP Settings';
+  String get adminNetworkingIpSettings => 'IP 설정';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
+  String get adminNetworkingEnableIpv4 => 'IPv4 사용';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
+  String get adminNetworkingEnableIpv6 => 'IPv6 사용';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
+  String get adminNetworkingAutoDiscovery => '자동 포트 매핑 사용';
 
   @override
-  String get adminNetworkingLocalSubnets => 'LAN networks';
+  String get adminNetworkingLocalSubnets => 'LAN 네트워크';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
+      '로컬 네트워크로 취급할 IP 주소 또는 CIDR 서브넷 목록입니다. 쉼표나 줄바꿈으로 구분하세요.';
 
   @override
-  String get adminNetworkingPublishedUris => 'Published server URIs';
+  String get adminNetworkingPublishedUris => '공개 서버 URI';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Map a subnet or address to a published URL, e.g. all=https://example.com';
+      '서브넷이나 주소를 공개 URL에 매핑합니다. 예: all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => '인증서 경로';
@@ -7302,11 +7252,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => '스로틀 버퍼링';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
+  String get adminPlaybackThrottleDelay => '제한 지연 시간(초)';
 
   @override
-  String get adminPlaybackEnableSubtitleExtraction =>
-      'Allow subtitle extraction on the fly';
+  String get adminPlaybackEnableSubtitleExtraction => '실시간 자막 추출 허용';
 
   @override
   String get adminResumeMinPct => '최소 이력서 비율';
@@ -7353,29 +7302,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return '콘텐츠 유형을 변경하지 못했습니다: $error';
   }
 
   @override
   String get adminGeneralSlowResponseThreshold => '느린 응답 임계값(ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
+  String get adminGeneralEnableSlowResponse => '느린 응답 경고 사용';
 
   @override
-  String get adminGeneralQuickConnect => 'Enable Quick Connect';
+  String get adminGeneralQuickConnect => 'Quick Connect 사용';
 
   @override
-  String get adminGeneralSectionServer => 'Server';
+  String get adminGeneralSectionServer => '서버';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadata';
+  String get adminGeneralSectionMetadata => '메타데이터';
 
   @override
-  String get adminGeneralSectionPaths => 'Paths';
+  String get adminGeneralSectionPaths => '경로';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performance';
+  String get adminGeneralSectionPerformance => '성능';
 
   @override
   String get adminGeneralCachePath => '캐시 경로';
@@ -7387,7 +7336,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get adminGeneralServerName => '서버 이름';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferred display language';
+  String get adminGeneralDisplayLanguage => '선호 표시 언어';
 
   @override
   String get adminSettingsLoadFailed => '설정을 로드하지 못했습니다.';
@@ -7397,19 +7346,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return '매핑을 업데이트하지 못했습니다: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return '시간 제한: $duration';
   }
 
   @override
   String get folders => '폴더';
 
   @override
-  String get libraries => '도서관';
+  String get libraries => '라이브러리';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7438,8 +7387,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: '참가자 #명',
+      one: '참가자 #명',
     );
     return '$_temp0';
   }
@@ -7479,7 +7428,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return '항목 $index';
   }
 
   @override
@@ -7527,12 +7476,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName이(가) SyncPlay 그룹에 참여했습니다';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName이(가) SyncPlay 그룹에서 나갔습니다';
   }
 
   @override
@@ -7544,7 +7493,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return '$groupName에 재생을 동기화하는 중';
   }
 
   @override
@@ -7581,8 +7530,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: '행 #개 발견',
+      one: '행 #개 발견',
     );
     return '$_temp0';
   }
@@ -7621,20 +7570,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get offlineSavedMedia => '저장된 미디어';
 
   @override
-  String get offlineBannerTitle => 'You\'re offline';
+  String get offlineBannerTitle => '오프라인 상태입니다';
 
   @override
-  String get offlineBannerSubtitle => 'Showing your downloads';
+  String get offlineBannerSubtitle => '다운로드한 항목을 표시합니다';
 
   @override
-  String get offlineBannerAction => 'Downloads';
+  String get offlineBannerAction => '다운로드';
 
   @override
-  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+  String get serverUnreachableBannerTitle => '서버에 연결할 수 없습니다';
 
   @override
-  String get serverUnreachableBannerSubtitle =>
-      'Playing from downloads until it\'s back';
+  String get serverUnreachableBannerSubtitle => '복구될 때까지 다운로드한 항목을 재생합니다';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7650,12 +7598,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return '캐스트 제어에 실패했습니다: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind 제어';
   }
 
   @override
@@ -7666,7 +7614,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return '$kind 중지';
   }
 
   @override
@@ -7689,12 +7637,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return '$length자리 PIN을 입력하세요';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return '$length자리 PIN을 입력하세요';
   }
 
   @override
@@ -7707,13 +7655,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pinForgot => 'PIN을 잊으셨나요?';
 
   @override
-  String get pinClear => '분명한';
+  String get pinClear => '지우기';
 
   @override
   String get pinBackspace => '역행 키이';
 
   @override
-  String get quickConnectAuthorized => '빠른 연결 요청이 승인되었습니다.';
+  String get quickConnectAuthorized => 'Quick Connect 요청이 승인되었습니다.';
 
   @override
   String get quickConnectInvalidOrExpired =>
@@ -7726,17 +7674,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get quickConnectAuthorizeFailed => 'Quick Connect 코드를 승인하지 못했습니다.';
 
   @override
-  String get quickConnectDisabled => '이 서버에서는 빠른 연결이 비활성화되어 있습니다.';
+  String get quickConnectDisabled => '이 서버에서는 Quick Connect가 비활성화되어 있습니다.';
 
   @override
   String get quickConnectForbidden => '귀하의 계정은 이 Quick Connect 요청을 승인할 수 없습니다.';
 
   @override
-  String get quickConnectNotFound => '빠른 연결 코드를 찾을 수 없습니다. 새 코드를 사용해 보세요.';
+  String get quickConnectNotFound =>
+      'Quick Connect 코드를 찾을 수 없습니다. 새 코드를 사용해 보세요.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Quick Connect에 실패했습니다: $message';
   }
 
   @override
@@ -7747,7 +7696,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return '명령을 실행하지 못했습니다: $error';
   }
 
   @override
@@ -7776,7 +7725,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return '캐스트를 시작하지 못했습니다: $error';
   }
 
   @override
@@ -7821,7 +7770,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return '$name 다운로드 중...';
   }
 
   @override
@@ -7840,7 +7789,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shuffleSelectGenre => '장르 선택';
 
   @override
-  String get shuffleLibrary => '도서관';
+  String get shuffleLibrary => '라이브러리';
 
   @override
   String get shuffleGenre => '장르';
@@ -7900,14 +7849,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get stillWatchingContent => '재생이 일시중지되었습니다. 아직도 보고 있나요?';
 
   @override
-  String get stillWatchingStop => '멈추다';
+  String get stillWatchingStop => '정지';
 
   @override
   String get stillWatchingContinue => '계속하다';
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return '$segment 건너뛰기';
   }
 
   @override
@@ -7918,12 +7867,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return '$total개 중 $current개 다운로드 중 — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return '$fileName 다운로드 중';
   }
 
   @override
@@ -7960,7 +7909,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playerTooltipUnlockOrientation => '순환 허용';
 
   @override
-  String get playerTooltipPrevious => '이전의';
+  String get playerTooltipPrevious => '이전';
 
   @override
   String get playerTooltipSeekBack => '뒤로 탐색';
@@ -7984,14 +7933,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get contextMenuGoToSeries => '시리즈로 이동';
 
   @override
-  String get contextMenuHideFromContinueWatching =>
-      'Hide from Continue Watching';
+  String get contextMenuHideFromContinueWatching => '이어서 보기에서 숨기기';
 
   @override
-  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+  String get contextMenuHideFromNextUp => '다음 볼 항목에서 숨기기';
 
   @override
-  String get contextMenuAddToCollection => 'Add to Collection';
+  String get contextMenuAddToCollection => '컬렉션에 추가';
 
   @override
   String get settingsAdministrationSubtitle => '서버 관리 패널에 액세스';
@@ -8040,14 +7988,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsAlphabetical => '알파벳순';
 
   @override
-  String get settingsConnectionSection => 'CONNECTION';
+  String get settingsConnectionSection => '연결';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+  String get settingsAllowSelfSignedCerts => '자체 서명 인증서 허용';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+      '자체 서명 또는 사설 CA TLS 인증서를 사용하는 서버를 신뢰합니다. 직접 관리하는 서버에만 사용하세요. 이 설정을 켜면 모든 연결에서 인증서 검증이 해제됩니다.';
 
   @override
   String get settingsPrivacyAndSafetySection => '개인정보 보호 및 안전';
@@ -8062,11 +8010,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsGeneralStyleSubtitle => '테마 악센트, 배경, 시청 표시기 및 테마 음악';
 
   @override
-  String get settingsDetailsScreen => 'Details Screen';
+  String get settingsDetailsScreen => '상세 화면';
 
   @override
-  String get settingsDetailsScreenSubtitle =>
-      'Style, background blur, and tab behavior';
+  String get settingsDetailsScreenSubtitle => '스타일, 배경 흐림, 탭 동작';
 
   @override
   String get settingsHomePage => '홈 페이지';
@@ -8097,12 +8044,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsShowLibrariesButtonInNavigation => '탐색 모음에 라이브러리 버튼 표시';
 
   @override
-  String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+  String get settingsShowSeerrButtonInNavigation => '탐색 바에 Seerr 버튼을 표시합니다';
 
   @override
-  String get settingsAlwaysExpandNavbarLabels =>
-      'Always show text labels in the top navigation bar';
+  String get settingsAlwaysExpandNavbarLabels => '상단 탐색 바에 텍스트 라벨을 항상 표시합니다';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8168,8 +8113,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsSupportMoonfin => 'Moonfin 지원';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => '개발자에게 커피 한 잔 후원하기';
 
   @override
   String get settingsLegal => '합법적인';
@@ -8200,8 +8144,8 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: '라이선스 고지 #건',
+      one: '라이선스 고지 #건',
     );
     return '$_temp0';
   }
@@ -8245,16 +8189,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '인트로와 아웃트로를 건너뛰시겠습니까?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown => '미디어 구간 카운트다운';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => '진행 바';
 
   @override
-  String get settingsTimer => 'Timer';
+  String get settingsTimer => '타이머';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => '없음';
 
   @override
   String get settingsPromptUser => '사용자에게 프롬프트';
@@ -8287,13 +8231,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3(권장)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3(레거시)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv(레거시)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv(권장)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision 폴백';
@@ -8471,749 +8415,721 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return '최근 공개된 $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => '다음 에피소드 자동 재생';
 
   @override
-  String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+  String get autoplayNextEpisodeSubtitle => '다음 에피소드가 있으면 자동으로 재생합니다.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => '무음 구간 건너뛰기';
 
   @override
-  String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+  String get skipSilenceSubtitle => '스트림이 지원하는 경우 무음 구간을 자동으로 건너뜁니다.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => '외부 오디오 효과 허용';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      '이퀄라이저 및 음향 효과 앱(예: Wavelet)이 Media3 재생 세션에 연결하도록 허용합니다.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => '터널링 끄기';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      '터널링을 사용하지 않고 재생합니다. 터널링 시 오디오/영상이 끊기는 기기에서 유용합니다.';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => '터널링 켜기';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      '고급 설정입니다. 오디오와 영상을 결합된 하드웨어 경로로 처리합니다. 일부 기기에서 오디오/영상 끊김이 발생하므로 기본적으로 꺼져 있습니다.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Dolby Vision 프로필 7을 HEVC로 매핑';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Dolby Vision을 지원하지 않는 기기에서 Dolby Vision 프로필 7 스트림을 HDR10 호환 HEVC로 재생합니다.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => '내장 자막 스타일 사용';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      '자막 트랙에 내장된 색상, 글꼴, 위치를 적용합니다. 끄면 사용자가 지정한 자막 스타일이 적용됩니다.';
 
   @override
-  String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+  String get subtitlesUseEmbeddedFontSizes => '내장 자막 글자 크기 사용';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      '자막 트랙에 내장된 글자 크기 정보를 적용합니다. 끄면 사용자가 지정한 자막 크기가 적용됩니다.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => '미디어 정보 표시';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      '라이브러리 페이지 상단에 선택한 항목의 정보를 표시합니다.';
 
   @override
-  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
+  String get hideBackdropsInLibraries => '탐색 중 배경 이미지를 숨길까요?';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => '상세 소제목 사용';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      '라이브러리 페이지에 상세 또는 간단한 하위 행을 표시합니다.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => '저장된 테마를 삭제할까요?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return '이 기기의 캐시에서 \"$themeName\"을(를) 삭제할까요?';
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => '테마 스토어';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle => '커뮤니티 테마를 둘러보고 저장하세요';
 
   @override
-  String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+  String get themeStoreDescription => '테마를 저장하면 다른 저장된 테마처럼 사용할 수 있습니다.';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => '지금은 사용할 수 있는 테마가 없습니다.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+      '테마 스토어를 불러올 수 없습니다. 연결 상태를 확인한 후 다시 시도하세요.';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => '저장';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => '저장 후 적용';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => '저장됨';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => '이 테마를 불러올 수 없습니다.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return '\"$themeName\"을(를) 저장했습니다.';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return '이 기기에서 \"$themeName\"을(를) 삭제했습니다.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return '\"$themeName\"을(를) 삭제할 수 없습니다.';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => '저장된 테마';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      '현재 서버의 Moonfin 플러그인에서 다운로드한 테마입니다. 삭제해도 이 기기의 사본만 지워집니다.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty => '이 서버에 저장된 테마가 없습니다.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • 현재 사용 중';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => '저장된 테마 삭제';
 
   @override
-  String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+  String get savedThemesManageSubtitle => '이 기기에 다운로드한 플러그인 테마를 관리합니다';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => '테마 편집기';
 
   @override
-  String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+  String get themeEditorSubtitle => '브라우저에서 Moonfin 테마 편집기를 엽니다';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => '홈 화면';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => '하단 바';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => '클래식';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => '모던';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => '홈 행';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => '홈 행 표시';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => '홈 행 섹션';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => '홈 행 켜기/끄기';
 
   @override
-  String get homeRowTogglesSubtitle =>
-      'Enable or disable library-based home row categories';
+  String get homeRowTogglesSubtitle => '라이브러리 기반 홈 행 카테고리를 켜거나 끕니다';
 
   @override
-  String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+  String get homeRowTogglesDescription => '아래 항목을 켜면 홈 섹션에 해당 행이 표시됩니다.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      '클래식은 행별 이미지 유형과 정보 오버레이를 유지합니다. 모던은 세로형에서 가로형으로 이어지는 행을 사용합니다.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => '즐겨찾기 행 표시';
 
   @override
-  String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+  String get displayFavoritesRowsSubtitle => '홈 섹션에 즐겨찾는 영화, 시리즈 등의 행을 표시합니다.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => '즐겨찾기 행 정렬';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      '즐겨찾기 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => '컬렉션 행 표시';
 
   @override
-  String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+  String get displayCollectionsRowsSubtitle => '홈 섹션에 컬렉션 행을 표시합니다.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => '컬렉션 행 정렬';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      '컬렉션 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => '장르 행 표시';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle => '홈 섹션에 장르 행을 표시합니다.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => '장르 행 정렬';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      '장르 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => '장르 행 항목';
 
   @override
-  String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+  String get genresRowItemsDescription => '장르 행에 영화, 시리즈 또는 둘 다를 표시합니다.';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => '재생목록 행 표시';
 
   @override
-  String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+  String get displayPlaylistsRowsSubtitle => '홈 섹션에 재생목록 행을 표시합니다.';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => '재생목록 행 정렬';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+      '재생목록 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => '오디오 행 표시';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle => '홈 섹션에 오디오 행을 표시합니다.';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => '오디오 행 정렬';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+      '오디오 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => '오디오 재생목록';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => '모양';
 
   @override
-  String get layout => 'Layout';
+  String get layout => '레이아웃';
 
   @override
-  String get theme => 'Theme';
+  String get theme => '테마';
 
   @override
-  String get keyboard => 'Keyboard';
+  String get keyboard => '키보드';
 
   @override
-  String get navButtons => 'Buttons';
+  String get navButtons => '버튼';
 
   @override
-  String get rendering => 'Rendering';
+  String get rendering => '렌더링';
 
   @override
-  String get mpvConfiguration => 'MPV configuration';
+  String get mpvConfiguration => 'MPV 설정';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => '외부 플레이어 앱';
 
   @override
   String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+      '외부 플레이어를 지정하면 길게 눌러 재생하는 옵션을 사용할 수 있습니다';
 
   @override
-  String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+  String get externalPlayerAskEachTimeSubtitle => '재생을 시작할 때 앱 선택 창을 표시합니다.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => '설치된 플레이어를 불러오는 중...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => '연결';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => '오디오 트랜스코딩 대상';
 
   @override
-  String get passthrough => 'Passthrough';
+  String get passthrough => '패스스루';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => '이 기기에서 지원됨';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => '이 기기에서 지원되지 않음';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'DTS:X(DTS UHD) 패스스루';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'DTS:X(DTS UHD)를 외부 디코더로 비트스트림 전송합니다.';
 
   @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+  String get settingsAudioTrueHdJocPassthrough => 'TrueHD Atmos(JOC) 패스스루';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => '미디어 플레이어 동작';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => '재생 향상 기능';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => '항상 켜짐.';
 
   @override
-  String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+  String get replaceSkipOutroWithNextUpDisplay => '엔딩 건너뛰기 대신 다음 볼 항목 표시';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      '엔딩 건너뛰기 버튼 대신 다음 볼 항목 오버레이를 표시합니다.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => '플레이어 라우팅';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => '소프트웨어 디코더 우선';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      '하드웨어 디코더보다 FFmpeg(오디오)와 libgav1(AV1)을 먼저 사용합니다. HDMI 오디오 패스스루에 문제가 생기면 끄세요.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
-  String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+  String get useExternalPlayerSubtitle => 'Android TV에서 선택한 외부 앱으로 영상을 재생합니다.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => '자동 대기열 추가';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'SDH 자막 우선';
 
   @override
-  String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+  String get preferSdhSubtitlesSubtitle => '자막을 자동으로 선택할 때 SDH/CC 트랙을 우선합니다.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => '웹 진단';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin 웹 진단';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      '이 페이지에서 브라우저 연결 문제(CORS, 혼합 콘텐츠, 검색 설정)를 진단할 수 있습니다.';
 
   @override
-  String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+  String get webDiagnosticsDetectedMixedContentFailure => '혼합 콘텐츠 오류 감지됨';
 
   @override
-  String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+  String get webDiagnosticsDetectedCorsPreflightFailure => 'CORS/프리플라이트 오류 감지됨';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin이 HTTPS 페이지에서 HTTP 서버 URL을 호출하려는 시도를 감지했습니다. 브라우저는 이 요청이 서버에 도달하기 전에 차단합니다.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin이 브라우저 수준의 요청 실패를 감지했습니다. 보통 미디어 서버에 CORS 또는 프리플라이트 헤더가 없을 때 발생합니다.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return '대상 URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return '상세 정보: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext => '현재 실행 환경';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => '출처';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => '스킴';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => '플러그인 모드';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'WebRTC 검색';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => '강제 지정 서버 URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => '기본 서버 URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => '검색 프록시 URL';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => '설정되지 않음';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => '혼합 콘텐츠';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      '이 페이지는 HTTPS로 로드되었지만 설정된 URL 중 하나 이상이 HTTP입니다. 브라우저는 HTTPS 페이지에서 HTTP API를 호출하지 못하게 차단합니다.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      '해결 방법: 미디어 서버나 프록시 엔드포인트를 HTTPS로 제공하거나, 신뢰할 수 있는 로컬 네트워크에서만 Moonfin을 HTTP로 사용하세요.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      '현재 실행 설정에서 뚜렷한 혼합 콘텐츠 문제가 감지되지 않았습니다.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'CORS 점검 목록';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Access-Control-Allow-Origin에 브라우저 출처를 허용하세요.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Access-Control-Allow-Headers에 Authorization, X-Emby-Authorization, X-Emby-Token을 포함하세요.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• 스트리밍과 탐색을 위해 Content-Range와 Accept-Ranges를 노출하세요.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• OPTIONS 프리플라이트 요청에 204를 반환하세요.';
 
   @override
-  String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+  String get webDiagnosticsHeaderSnippetTitle => '헤더 예시(nginx 형식)';
 
   @override
-  String get note => 'Note';
+  String get note => '참고';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      '이 진단 페이지는 웹 빌드용입니다. 다른 플랫폼에서 보고 있다면 여기의 점검 항목이 적용되지 않을 수 있습니다.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => '서버 선택으로 돌아가기';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => '모든 사용자 로그아웃';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      '마이크 권한이 영구적으로 거부되었습니다. 시스템 설정에서 허용하세요.';
 
   @override
-  String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+  String get voiceSearchPermissionRequired => '음성 검색을 사용하려면 마이크 권한이 필요합니다.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => '잘 알아듣지 못했습니다. 다시 시도하세요.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => '음성이 감지되지 않았습니다.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => '마이크 오류입니다.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => '음성 검색에는 인터넷 연결이 필요합니다.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => '음성 서비스가 사용 중입니다. 다시 시도하세요.';
 
   @override
-  String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+  String get microphonePermissionPermanentlyDenied => '마이크 권한이 영구적으로 거부되었습니다.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => '마이크 권한이 거부되었습니다.';
 
   @override
-  String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+  String get speechRecognitionUnavailable => '이 기기에서는 음성 인식을 사용할 수 없습니다.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'iOS 출력 선택기 열기';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      '이 기기에서는 AirPlay 출력 선택기를 사용할 수 없습니다.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => '동영상';
 
   @override
-  String get programs => 'Programs';
+  String get programs => '프로그램';
 
   @override
-  String get songs => 'Songs';
+  String get songs => '노래';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => '사진 앨범';
 
   @override
-  String get photos => 'Photos';
+  String get photos => '사진';
 
   @override
-  String get people => 'People';
+  String get people => '인물';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => '최근 공개된 에피소드';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => '다시 보기';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => '특별 출연';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => '출연작(Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => '제작 참여작(Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => '그룹과 함께 보기';
 
   @override
-  String get errors => 'Errors';
+  String get errors => '오류';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => '경고';
 
   @override
-  String get disk => 'Disk';
+  String get disk => '디스크';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => '브라우저에서 열기';
 
   @override
-  String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+  String get embeddedBrowserNotAvailable => '이 플랫폼에서는 내장 브라우저를 사용할 수 없습니다.';
 
   @override
-  String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+  String get adminRestartServerConfirmation => '서버를 재시작할까요?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      '서버를 종료할까요? 다시 시작하려면 직접 실행해야 합니다.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => '내부';
 
   @override
-  String get idle => 'Idle';
+  String get idle => '대기 중';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => '사용자를 찾을 수 없습니다';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch => '검색 조건과 일치하는 사용자가 없습니다';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => '기기를 찾을 수 없습니다';
 
   @override
-  String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+  String get adminNoDevicesMatchCurrentFilters => '현재 필터와 일치하는 기기가 없습니다';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => '비밀번호 설정됨';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => '설정된 비밀번호 없음';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => '원격 접속';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => '로컬 전용';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed => '미디어 분석 정보를 불러오지 못했습니다';
 
   @override
-  String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+  String get analyticsCombinedAcrossLibraries => '모든 미디어 라이브러리를 합산한 분석입니다.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => '인기 아티스트';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => '인기 저자';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => '주요 참여자';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '라이브러리 $count개',
+      one: '라이브러리 1개',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      '아직 이 선택 항목에 대한 색인된 미디어 집계가 없습니다.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => '라이브러리 상세 정보';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => '라이브러리별 분석';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => '사용할 수 있는 라이브러리가 없습니다.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => '서버 관리';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => '데이터';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => '이미지 캐시';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => '캐시';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => '로그';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => '메타데이터';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => '트랜스코딩';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
-  String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+  String get adminNoServerPathsReturned => '이 서버에서 반환한 서버 경로가 없습니다.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% 사용 중';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => '사용자 활동';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => '시스템 이벤트';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => '확인 필요';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => '서버';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => '재생';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => '기기';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => '고급';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => '플러그인';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => '실시간 TV';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => '홈 비디오';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => '혼합 콘텐츠';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => '홈 비디오 및 사진';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => '영화 및 TV 프로그램 혼합';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9225,299 +9141,295 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => '녹화된 항목이 없습니다';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return '.$extension 압축 파일에서 이미지 페이지를 찾을 수 없습니다.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return '내장 렌더러 오류($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'EPUB 렌더러 오류($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return '리더에서 사용할 로컬 파일이 없습니다: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return '$uri에서 도서 데이터를 여는 중 HTTP $status 오류가 발생했습니다';
   }
 
   @override
-  String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+  String get noReadableBookEndpointAvailable => '읽을 수 있는 도서 엔드포인트가 없습니다';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return '지원하지 않는 만화 압축 형식: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      '이 플랫폼에서는 CBR 압축 해제 플러그인을 사용할 수 없습니다.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => '.cbr 압축 파일을 풀지 못했습니다.';
 
   @override
-  String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+  String get cb7ExtractionUnavailable => '이 플랫폼에서는 CB7 압축 해제를 사용할 수 없습니다.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      '이 플랫폼에서는 CB7 압축 해제 플러그인을 사용할 수 없습니다.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => '장르 패널 닫기';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => '셔플을 불러오는 중...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => '라이브러리 셔플';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => '랜덤 셔플';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => '장르 셔플';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'HDR 자동 전환';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'HDR 영상을 재생할 때 HDR을 자동으로 켜고, 종료하면 원래 디스플레이 모드로 되돌립니다.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => '전체 화면일 때';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => '아트워크 변경';
 
   @override
-  String get missing => 'Missing';
+  String get missing => '없음';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => '트랜스코딩 제한';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton => '모든 아트워크를 지울까요?';
 
   @override
-  String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+  String get clearAllArtworkWarning => '다운로드한 아트워크를 모두 지울까요?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => '지우기 확인';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return '이 $itemType을(를) 지울까요?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => '업로드할까요?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => '해상도: ';
 
   @override
-  String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+  String get onlyShowInterfaceLanguage => '인터페이스 언어의 아트워크만 표시';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => '모두 지우기 확인';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => '이미지를 업로드했습니다!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return '이미지를 업로드하지 못했습니다: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return '이미지를 설정하지 못했습니다: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return '이미지를 삭제하지 못했습니다: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return '모든 아트워크를 지우지 못했습니다: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => '예';
 
   @override
-  String get posterCategory => 'Poster';
+  String get posterCategory => '포스터';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => '배경 이미지';
 
   @override
-  String get bannerCategory => 'Banner';
+  String get bannerCategory => '배너';
 
   @override
-  String get logoCategory => 'Logo';
+  String get logoCategory => '로고';
 
   @override
-  String get thumbnailCategory => 'Thumbnail';
+  String get thumbnailCategory => '썸네일';
 
   @override
-  String get artCategory => 'Art';
+  String get artCategory => '아트';
 
   @override
-  String get discArtCategory => 'Disc Art';
+  String get discArtCategory => '디스크 아트';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => '스크린샷';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => '패키지 앞면';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => '패키지 뒷면';
 
   @override
-  String get menuArtCategory => 'Menu Art';
+  String get menuArtCategory => '메뉴 아트';
 
   @override
-  String get confirmItemPoster => 'poster';
+  String get confirmItemPoster => '포스터';
 
   @override
-  String get confirmItemBackdrop => 'backdrop';
+  String get confirmItemBackdrop => '배경 이미지';
 
   @override
-  String get confirmItemBanner => 'banner';
+  String get confirmItemBanner => '배너';
 
   @override
-  String get confirmItemLogo => 'logo';
+  String get confirmItemLogo => '로고';
 
   @override
-  String get confirmItemThumbnail => 'thumbnail';
+  String get confirmItemThumbnail => '썸네일';
 
   @override
-  String get confirmItemArt => 'art';
+  String get confirmItemArt => '아트';
 
   @override
-  String get confirmItemDiscArt => 'disc art';
+  String get confirmItemDiscArt => '디스크 아트';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => '스크린샷';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => '패키지 앞면';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => '패키지 뒷면';
 
   @override
-  String get confirmItemMenuArt => 'menu art';
+  String get confirmItemMenuArt => '메뉴 아트';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => '전체';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => '높음(1080p 이상)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => '보통(720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => '낮음(720p 미만)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => '제공처';
 
   @override
-  String get audiobookChapters => 'Chapters';
+  String get audiobookChapters => '챕터';
 
   @override
-  String get audiobookBookmarks => 'Bookmarks';
+  String get audiobookBookmarks => '북마크';
 
   @override
-  String get audiobookNotes => 'Notes';
+  String get audiobookNotes => '메모';
 
   @override
-  String get audiobookQueue => 'Queue';
+  String get audiobookQueue => '재생 대기열';
 
   @override
-  String get audiobookTimeline => 'Timeline';
+  String get audiobookTimeline => '타임라인';
 
   @override
-  String get audiobookTimelineEmpty => 'Timeline is empty';
+  String get audiobookTimelineEmpty => '타임라인이 비어 있습니다';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
+  String get audiobookWholeBook => '전체 책';
 
   @override
-  String get audiobookFocusedTimeline => 'Focused Timeline';
+  String get audiobookFocusedTimeline => '집중 타임라인';
 
   @override
-  String get audiobookExportBookmarks => 'Export Bookmarks';
+  String get audiobookExportBookmarks => '북마크 내보내기';
 
   @override
-  String get audiobookExportNotes => 'Export Notes';
+  String get audiobookExportNotes => '메모 내보내기';
 
   @override
-  String get audiobookExportAll => 'Export All';
+  String get audiobookExportAll => '전체 내보내기';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exported to $path';
+    return '$path에 내보냈습니다';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export failed: $error';
+    return '내보내기에 실패했습니다: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Lyrics';
+  String get audiobookLyrics => '가사';
 
   @override
-  String get audiobookAddBookmark => 'Add bookmark';
+  String get audiobookAddBookmark => '북마크 추가';
 
   @override
-  String get audiobookAddNote => 'Add note';
+  String get audiobookAddNote => '메모 추가';
 
   @override
-  String get audiobookEditNote => 'Edit note';
+  String get audiobookEditNote => '메모 편집';
 
   @override
-  String get audiobookNoteHint => 'Write a note for this moment';
+  String get audiobookNoteHint => '이 지점에 대한 메모를 작성하세요';
 
   @override
-  String get audiobookSleepTimer => 'Sleep timer';
+  String get audiobookSleepTimer => '취침 타이머';
 
   @override
-  String get audiobookSleepOff => 'Off';
+  String get audiobookSleepOff => '끔';
 
   @override
-  String get audiobookSleepEndOfChapter => 'End of chapter';
+  String get audiobookSleepEndOfChapter => '챕터 끝까지';
 
   @override
-  String get audiobookSleepCustom => 'Custom';
+  String get audiobookSleepCustom => '직접 설정';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining left';
+    return '$remaining 남음';
   }
 
   @override
@@ -9525,58 +9437,58 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count min',
-      one: '1 min',
+      other: '$count분',
+      one: '1분',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Playback speed';
+  String get audiobookPlaybackSpeed => '재생 속도';
 
   @override
-  String get audiobookRemainingTime => 'Remaining';
+  String get audiobookRemainingTime => '남은 시간';
 
   @override
-  String get audiobookElapsedTime => 'Elapsed';
+  String get audiobookElapsedTime => '재생 시간';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Back ${seconds}s';
+    return '$seconds초 뒤로';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Forward ${seconds}s';
+    return '$seconds초 앞으로';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Previous chapter';
+  String get audiobookPreviousChapter => '이전 챕터';
 
   @override
-  String get audiobookNextChapter => 'Next chapter';
+  String get audiobookNextChapter => '다음 챕터';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Chapter $current of $total';
+    return '챕터 $current/$total';
   }
 
   @override
-  String get audiobookNoChapters => 'No chapters';
+  String get audiobookNoChapters => '챕터 없음';
 
   @override
-  String get audiobookNoBookmarks => 'No bookmarks yet';
+  String get audiobookNoBookmarks => '북마크가 없습니다';
 
   @override
-  String get audiobookNoNotes => 'No notes yet';
+  String get audiobookNoNotes => '메모가 없습니다';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Bookmark added at $position';
+    return '$position에 북마크를 추가했습니다';
   }
 
   @override
-  String get audiobookSpeedReset => 'Reset to 1.0x';
+  String get audiobookSpeedReset => '1.0x로 초기화';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9584,249 +9496,241 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Save';
+  String get audiobookSave => '저장';
 
   @override
-  String get audiobookCancel => 'Cancel';
+  String get audiobookCancel => '취소';
 
   @override
-  String get audiobookDelete => 'Delete';
+  String get audiobookDelete => '삭제';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => '자막 환경설정';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+      '자막 모드, 기본 언어, 모양, 렌더링 옵션을 변경합니다.';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => '자막 렌더링';
 
   @override
-  String get displayOptions => 'Display Options';
+  String get displayOptions => '표시 옵션';
 
   @override
-  String get releaseDateAscending => 'Release Date (Ascending)';
+  String get releaseDateAscending => '공개일순(오름차순)';
 
   @override
-  String get releaseDateDescending => 'Release Date (Descending)';
+  String get releaseDateDescending => '공개일순(내림차순)';
 
   @override
-  String get groupContributions => 'Group Contributions';
+  String get groupContributions => '참여작 묶기';
 
   @override
-  String get groupMultipleRoles => 'Group multiple roles';
+  String get groupMultipleRoles => '여러 역할 묶기';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+  String get libraryWriteAccessWarningTitle => '라이브러리 쓰기 권한 경고';
 
   @override
-  String get libraryWriteAccessHowToFix => 'How to fix this:';
+  String get libraryWriteAccessHowToFix => '해결 방법:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+      '1. 서버의 미디어 라이브러리 폴더에 대해 Jellyfin 서비스 사용자(예: jellyfin 또는 Docker PUID/PGID)에게 쓰기 권한을 부여하세요.\n\n2. 또는 Jellyfin 대시보드 -> 라이브러리에서 이 라이브러리를 편집해 \'아트워크를 미디어 폴더에 저장\'을 끄면 아트워크가 Jellyfin 내부 데이터베이스에 저장됩니다.';
 
   @override
-  String get dismiss => 'Dismiss';
+  String get dismiss => '닫기';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return '\'$libraryName\' 라이브러리가 아트워크를 미디어 폴더에 직접 저장하도록 설정되어 있습니다(\'아트워크를 미디어 폴더에 저장\'이 켜져 있음). 하지만 Jellyfin이 쓰기 권한을 확인한 결과 다음 디렉터리에 파일을 쓸 권한이 없습니다:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+      'Jellyfin이 아트워크를 업데이트하지 못한 것으로 보입니다. 이 라이브러리는 아트워크를 미디어 폴더에 직접 저장하도록 설정되어 있습니다(\'아트워크를 미디어 폴더에 저장\'이 켜져 있음). 이 오류는 보통 Jellyfin 서버 프로세스가 미디어 디렉터리에 파일을 쓸 권한이 없을 때 발생합니다.';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => '외부 목록';
 
   @override
-  String get replay => 'Replay';
+  String get replay => '다시 재생';
 
   @override
-  String get fileInformation => 'File Information';
+  String get fileInformation => '파일 정보';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Size: $size  •  Format: $format';
+    return '크기: $size  •  형식: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Show All ($count) Audio Tracks';
+    return '오디오 트랙 모두 보기($count개)';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Show All ($count) Subtitle Tracks';
+    return '자막 트랙 모두 보기($count개)';
   }
 
   @override
-  String get checkingDirectPlay => 'Checking Direct Play capability...';
+  String get checkingDirectPlay => '다이렉트 재생 가능 여부 확인 중...';
 
   @override
-  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+  String get directPlayCapabilityLabel => '다이렉트 재생 가능 여부: ';
 
   @override
-  String get forced => 'Forced';
+  String get forced => '강제 자막';
 
   @override
-  String get transcodeContainerNotSupported =>
-      'Container format is not supported by the player.';
+  String get transcodeContainerNotSupported => '플레이어가 지원하지 않는 컨테이너 형식입니다.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+  String get transcodeVideoCodecNotSupported => '지원하지 않는 비디오 코덱입니다.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+  String get transcodeAudioCodecNotSupported => '지원하지 않는 오디오 코덱입니다.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Subtitle format is not supported (requires burning).';
+      '지원하지 않는 자막 형식입니다(영상에 입혀야 합니다).';
 
   @override
-  String get transcodeAudioProfileNotSupported =>
-      'Audio profile is not supported.';
+  String get transcodeAudioProfileNotSupported => '지원하지 않는 오디오 프로필입니다.';
 
   @override
-  String get transcodeVideoProfileNotSupported =>
-      'Video profile is not supported.';
+  String get transcodeVideoProfileNotSupported => '지원하지 않는 비디오 프로필입니다.';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+  String get transcodeVideoLevelNotSupported => '지원하지 않는 비디오 레벨입니다.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Video resolution is not supported by this device.';
+      '이 기기에서 지원하지 않는 영상 해상도입니다.';
 
   @override
-  String get transcodeVideoBitDepthNotSupported =>
-      'Video bit depth is not supported.';
+  String get transcodeVideoBitDepthNotSupported => '지원하지 않는 비디오 비트 심도입니다.';
 
   @override
-  String get transcodeVideoFramerateNotSupported =>
-      'Video framerate is not supported.';
+  String get transcodeVideoFramerateNotSupported => '지원하지 않는 영상 프레임레이트입니다.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'File bitrate exceeds player streaming limit.';
+      '파일 비트레이트가 플레이어의 스트리밍 한도를 초과합니다.';
 
   @override
-  String get transcodeVideoBitrateExceedsLimit =>
-      'Video bitrate exceeds streaming limit.';
+  String get transcodeVideoBitrateExceedsLimit => '비디오 비트레이트가 스트리밍 한도를 초과합니다.';
 
   @override
-  String get transcodeAudioBitrateExceedsLimit =>
-      'Audio bitrate exceeds streaming limit.';
+  String get transcodeAudioBitrateExceedsLimit => '오디오 비트레이트가 스트리밍 한도를 초과합니다.';
 
   @override
-  String get transcodeAudioChannelsNotSupported =>
-      'Number of audio channels is not supported.';
+  String get transcodeAudioChannelsNotSupported => '지원하지 않는 오디오 채널 수입니다.';
 
   @override
-  String get sortAlphabetical => 'Alphabetical';
+  String get sortAlphabetical => '가나다순';
 
   @override
-  String get sortReleaseAscending => 'Release Order (Ascending)';
+  String get sortReleaseAscending => '공개순(오름차순)';
 
   @override
-  String get sortReleaseDescending => 'Release Order (Descending)';
+  String get sortReleaseDescending => '공개순(내림차순)';
 
   @override
-  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+  String get sortCustomDragDrop => '사용자 지정(끌어서 놓기)';
 
   @override
-  String get playlistSortOptions => 'Playlist Sort Options';
+  String get playlistSortOptions => '재생목록 정렬 옵션';
 
   @override
-  String get resetSort => 'Reset Sort';
+  String get resetSort => '정렬 초기화';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Rewatch S$season:E$episode';
+    return 'S$season:E$episode 다시 보기';
   }
 
   @override
-  String get rewatchPlaylist => 'Rewatch Playlist';
+  String get rewatchPlaylist => '재생목록 다시 보기';
 
   @override
-  String get noSubtitlesFound => 'No subtitles found.';
+  String get noSubtitlesFound => '자막을 찾을 수 없습니다.';
 
   @override
-  String get adminControls => 'Admin Controls';
+  String get adminControls => '관리자 제어';
 
   @override
-  String get impellerRendering => 'Rendering engine (Impeller)';
+  String get impellerRendering => '렌더링 엔진(Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+      'Impeller는 더 부드러운 애니메이션과 적은 끊김을 제공하는 Flutter의 최신 GPU 렌더러입니다. 일부 TV 박스나 오래된 GPU에서는 화면 깨짐이나 검은 영상이 나타날 수 있으며, 이 경우 끄세요. 자동은 기기에 가장 알맞은 기본값을 선택합니다. 적용하려면 Moonfin을 다시 시작하세요.';
 
   @override
-  String get impellerAuto => 'Automatic';
+  String get impellerAuto => '자동';
 
   @override
-  String get impellerOn => 'On';
+  String get impellerOn => '켬';
 
   @override
-  String get impellerOff => 'Off';
+  String get impellerOff => '끔';
 
   @override
-  String get impellerRestartTitle => 'Restart required';
+  String get impellerRestartTitle => '재시작 필요';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+      '렌더링 엔진을 변경하려면 Moonfin을 다시 시작해야 합니다. 지금 앱을 종료한 후 다시 실행하면 적용됩니다.';
 
   @override
-  String get impellerCloseNow => 'Close app now';
+  String get impellerCloseNow => '지금 앱 종료';
 
   @override
-  String get adminRefreshLibrary => 'Refresh Library';
+  String get adminRefreshLibrary => '라이브러리 새로고침';
 
   @override
-  String get adminRefreshAllLibraries => 'Refresh All Libraries';
+  String get adminRefreshAllLibraries => '모든 라이브러리 새로고침';
 
   @override
-  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+  String get adminRepoSortDateOldest => '추가된 날짜(오래된순)';
 
   @override
-  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+  String get adminRepoSortDateNewest => '추가된 날짜(최신순)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+  String get adminRepoSortNameAsc => '가나다순(A~Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+  String get adminRepoSortNameDesc => '가나다 역순(Z~A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Loading Server Analytics... $percentage%';
+    return '서버 분석 정보를 불러오는 중... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Match source';
+  String get adminLibChapterImageResolutionMatchSource => '원본과 동일';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+  String get imdbTop250Movies => 'IMDb 상위 250개 영화';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+  String get imdbTop250TvShows => 'IMDb 상위 250개 TV 프로그램';
 
   @override
-  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+  String get imdbMostPopularMovies => 'IMDb 인기 영화';
 
   @override
-  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+  String get imdbMostPopularTvShows => 'IMDb 인기 TV 프로그램';
 
   @override
-  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+  String get imdbLowestRatedMovies => 'IMDb 최저 평점 영화';
 
   @override
-  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
+  String get imdbTopEnglishMovies => 'IMDb 영어 영화 평점 순위';
 }
