@@ -9693,7 +9693,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       // so the pill always has enough room for labels like "Resume S12:E24".
       // Flexible in the parent Row lets the pill grow beyond the minimum.
       final Widget pill;
-      if (isExpanded || fullWidth) {
+      final shouldExpand = isExpanded || fullWidth || isMobile;
+      if (shouldExpand) {
         final pillInner = Container(
           height: height,
           width: fullWidth ? double.infinity : null,
@@ -9705,7 +9706,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           decoration: BoxDecoration(
             color: showHighlight
                 ? AppColorScheme.buttonFocused
-                : Colors.white.withValues(alpha: 0.06),
+                : AppColorScheme.accent,
             borderRadius: AppRadius.circular(height / 2),
             border: Border.all(
               color: showHighlight ? focusColor : Colors.transparent,
@@ -9782,7 +9783,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               height: height,
               width: height,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
+                color: AppColorScheme.accent,
                 borderRadius: AppRadius.circular(height / 2),
                 border: Border.all(color: Colors.transparent, width: 3),
               ),
