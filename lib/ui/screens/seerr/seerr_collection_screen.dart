@@ -377,7 +377,7 @@ class _CollectionRequestSheetState extends State<_CollectionRequestSheet> {
   @override
   void initState() {
     super.initState();
-    _advanced = SeerrAdvancedRequestController(isTv: false);
+    _advanced = SeerrAdvancedRequestController(isTv: false, is4k: _is4k);
     _applySavedPreferences(resetSelection: false);
     if (widget.vm.canRequestAdvanced) {
       _advanced.load();
@@ -409,6 +409,7 @@ class _CollectionRequestSheetState extends State<_CollectionRequestSheet> {
           ? _seerrPrefs.fourKMovieRootFolderId
           : _seerrPrefs.hdMovieRootFolderId,
       resetSelection: resetSelection,
+      is4k: _is4k,
     );
   }
 

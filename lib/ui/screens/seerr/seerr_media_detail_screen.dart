@@ -1962,6 +1962,7 @@ class _RequestDialogState extends State<_RequestDialog> {
     _advanced = SeerrAdvancedRequestController(
       isTv: widget.isTv,
       isAnime: widget.vm.state.isAnime,
+      is4k: _is4k,
     );
     _applySavedPreferences(resetSelection: false);
     if (widget.vm.canRequestAdvanced) {
@@ -1989,6 +1990,7 @@ class _RequestDialogState extends State<_RequestDialog> {
       profileId: _is4k ? vm.saved4kProfileId : vm.savedProfileId,
       rootFolderId: _is4k ? vm.saved4kRootFolderId : vm.savedRootFolderId,
       resetSelection: resetSelection,
+      is4k: _is4k,
     );
   }
 

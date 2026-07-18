@@ -14,6 +14,7 @@ import 'seerr_tv_controls.dart';
 class SeerrAdvancedRequestController extends ChangeNotifier {
   final bool isTv;
   final bool isAnime;
+  bool is4k;
 
   List<SeerrServiceServerDetails>? servers;
   bool loading = false;
@@ -26,7 +27,11 @@ class SeerrAdvancedRequestController extends ChangeNotifier {
   String? _savedProfileId;
   String? _savedRootFolderId;
 
-  SeerrAdvancedRequestController({required this.isTv, this.isAnime = false});
+  SeerrAdvancedRequestController({
+    required this.isTv,
+    this.isAnime = false,
+    this.is4k = false,
+  });
 
   Future<void> load() async {
     loading = true;
@@ -59,11 +64,16 @@ class SeerrAdvancedRequestController extends ChangeNotifier {
     String? profileId,
     String? rootFolderId,
     bool resetSelection = false,
+    bool? is4k,
   }) {
+    if (is4k != null) {
+      this.is4k = is4k;
+    }
     _savedServerId = serverId;
     _savedProfileId = profileId;
     _savedRootFolderId = rootFolderId;
     if (resetSelection) {
+      selectedServerId = null;
       selectedProfileId = null;
       selectedRootFolderId = null;
     }
@@ -111,17 +121,36 @@ class SeerrAdvancedRequestController extends ChangeNotifier {
     }
   }
 
+  SeerrServiceServerDetails? _findDefaultServer() {
+    if (servers == null || servers!.isEmpty) return null;
+
+    // 1. Try to find a server that matches both is4k and isDefault
+    final primaryMatch = servers!
+        .where((s) => s.server.is4k == is4k && s.server.isDefault)
+        .firstOrNull;
+    if (primaryMatch != null) return primaryMatch;
+
+    // 2. Try to find any server that matches is4k
+    final secondaryMatch = servers!
+        .where((s) => s.server.is4k == is4k)
+        .firstOrNull;
+    if (secondaryMatch != null) return secondaryMatch;
+
+    // 3. Fall back to the first server in the list
+    return servers!.first;
+  }
+
   SeerrServiceServerDetails? get activeServer {
     if (servers == null || servers!.isEmpty) return null;
-    if (selectedServerId == null) return servers!.first;
+    if (selectedServerId == null) return _findDefaultServer();
     return servers!
             .where((s) => s.server.id == selectedServerId)
             .firstOrNull ??
-        servers!.first;
+        _findDefaultServer();
   }
 
   int? get effectiveServerId =>
-      selectedServerId ?? servers?.firstOrNull?.server.id;
+      selectedServerId ?? activeServer?.server.id;
 
   int? get effectiveProfileId {
     if (selectedProfileId != null) return selectedProfileId;
