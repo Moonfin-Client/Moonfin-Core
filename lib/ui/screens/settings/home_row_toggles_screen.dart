@@ -377,65 +377,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ],
               ),
 
-              _SectionHeader('SINCE YOU WATCHED'),
-              adaptiveListSection(
-                children: [
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.displaySinceYouWatchedRows,
-                    title: 'Display Since You Watched Rows',
-                    subtitle: 'Show and customize Since You Watched rows in Home Sections.',
-                    icon: Icons.recommend,
-                    onChanged: _onSinceYouWatchedRowsToggleChanged,
-                  ),
-                  if (showSinceYouWatchedRows) ...[
-                    EnumPreferenceTile<SinceYouWatchedSource>(
-                      preference: UserPreferences.sinceYouWatchedSource,
-                      title: 'Source',
-                      description: "Choose recommendation source (the local-content-only Moonfin special or TMDB's similarity metric. Note: Online recommendations require Seerr integration).",
-                      icon: Icons.source,
-                      values: SinceYouWatchedSource.values,
-                      labelOf: (v) => v.displayName,
-                      onChanged: _onSinceYouWatchedConfigChanged,
-                    ),
-                    EnumPreferenceTile<SinceYouWatchedSourceType>(
-                      preference: UserPreferences.sinceYouWatchedSourceType,
-                      title: 'Source Type',
-                      description: 'Choose type of items to recommend',
-                      icon: Icons.merge_type,
-                      values: SinceYouWatchedSourceType.values,
-                      labelOf: (v) => v.displayName,
-                      onChanged: _onSinceYouWatchedConfigChanged,
-                    ),
-                    EnumPreferenceTile<SinceYouWatchedSourceItem>(
-                      preference: UserPreferences.sinceYouWatchedSourceItem,
-                      title: 'Source Item',
-                      description: 'Choose which source item to base recommendations on',
-                      icon: Icons.play_circle_filled,
-                      values: SinceYouWatchedSourceItem.values,
-                      labelOf: (v) => v.displayName,
-                      onChanged: _onSinceYouWatchedConfigChanged,
-                    ),
-                    EnumPreferenceTile<SinceYouWatchedNumRows>(
-                      preference: UserPreferences.sinceYouWatchedNumRows,
-                      title: 'Number of Rows to Add',
-                      description: 'Choose how many Since You Watched rows to display (1-5)',
-                      icon: Icons.format_list_numbered,
-                      values: SinceYouWatchedNumRows.values,
-                      labelOf: (v) => v.displayName,
-                      onChanged: _onSinceYouWatchedConfigChanged,
-                    ),
-                    if (sinceYouWatchedSource != SinceYouWatchedSource.online)
-                      SwitchPreferenceTile(
-                        preference: UserPreferences.sinceYouWatchedIncludeWatched,
-                        title: 'Include Previously Watched',
-                        subtitle: 'Include watched items in recommendations',
-                        icon: Icons.history,
-                        onChanged: _onSinceYouWatchedConfigChanged,
-                      ),
-                  ],
-                ],
-              ),
-
               _SectionHeader(l10n.collections),
               adaptiveListSection(
                 children: [
@@ -532,6 +473,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     ),
                 ],
               ),
+
               _SectionHeader('REWATCH'),
               adaptiveListSection(
                 children: [
@@ -573,6 +515,65 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       icon: Icons.collections,
                       onChanged: _onRewatchConfigChanged,
                     ),
+                  ],
+                ],
+              ),
+
+              _SectionHeader('SINCE YOU WATCHED'),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displaySinceYouWatchedRows,
+                    title: 'Display Since You Watched Rows',
+                    subtitle: 'Show and customize Since You Watched rows in Home Sections.',
+                    icon: Icons.recommend,
+                    onChanged: _onSinceYouWatchedRowsToggleChanged,
+                  ),
+                  if (showSinceYouWatchedRows) ...[
+                    EnumPreferenceTile<SinceYouWatchedSource>(
+                      preference: UserPreferences.sinceYouWatchedSource,
+                      title: 'Source',
+                      description: "Choose recommendation source (the local-content-only Moonfin special or TMDB's similarity metric. Note: Online recommendations require Seerr integration).",
+                      icon: Icons.source,
+                      values: SinceYouWatchedSource.values,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onSinceYouWatchedConfigChanged,
+                    ),
+                    EnumPreferenceTile<SinceYouWatchedSourceType>(
+                      preference: UserPreferences.sinceYouWatchedSourceType,
+                      title: 'Source Type',
+                      description: 'Choose type of items to recommend',
+                      icon: Icons.merge_type,
+                      values: SinceYouWatchedSourceType.values,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onSinceYouWatchedConfigChanged,
+                    ),
+                    EnumPreferenceTile<SinceYouWatchedSourceItem>(
+                      preference: UserPreferences.sinceYouWatchedSourceItem,
+                      title: 'Source Item',
+                      description: 'Choose which source item to base recommendations on',
+                      icon: Icons.play_circle_filled,
+                      values: SinceYouWatchedSourceItem.values,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onSinceYouWatchedConfigChanged,
+                    ),
+                    EnumPreferenceTile<SinceYouWatchedNumRows>(
+                      preference: UserPreferences.sinceYouWatchedNumRows,
+                      title: 'Number of Rows to Add',
+                      description: 'Choose how many Since You Watched rows to display (1-5)',
+                      icon: Icons.format_list_numbered,
+                      values: SinceYouWatchedNumRows.values,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onSinceYouWatchedConfigChanged,
+                    ),
+                    if (sinceYouWatchedSource != SinceYouWatchedSource.online)
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.sinceYouWatchedIncludeWatched,
+                        title: 'Include Previously Watched',
+                        subtitle: 'Include watched items in recommendations',
+                        icon: Icons.history,
+                        onChanged: _onSinceYouWatchedConfigChanged,
+                      ),
                   ],
                 ],
               ),
