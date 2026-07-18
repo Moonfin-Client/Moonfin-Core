@@ -5742,8 +5742,9 @@ class _TopTenRankCard extends StatelessWidget {
       clipBehavior: Clip.none,
       alignment: Alignment.bottomLeft,
       children: [
+        Padding(padding: const EdgeInsets.only(left: 34), child: child),
         Positioned(
-          left: -2,
+          left: 6,
           bottom: 12,
           child: IgnorePointer(
             child: Text(
@@ -5753,15 +5754,14 @@ class _TopTenRankCard extends StatelessWidget {
                 height: 0.78,
                 fontWeight: FontWeight.w900,
                 fontFeatures: const [FontFeature.tabularFigures()],
-                foreground: Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = 3
-                  ..color = Colors.white.withValues(alpha: 0.92),
+                color: Colors.white.withValues(alpha: 0.94),
+                shadows: const [
+                  Shadow(color: Colors.black87, blurRadius: 6, offset: Offset(2, 2)),
+                ],
               ),
             ),
           ),
         ),
-        Padding(padding: const EdgeInsets.only(left: 34), child: child),
       ],
     );
   }
