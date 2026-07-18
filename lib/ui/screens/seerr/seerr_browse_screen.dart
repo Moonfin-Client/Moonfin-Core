@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -228,7 +229,8 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
         final hasSubtitles = s.items.any(
           (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
         );
-        final textHeight = hasSubtitles ? 38.0 : 22.0;
+        final textScaler = MediaQuery.textScalerOf(context);
+        final textHeight = (hasSubtitles ? 42.0 : 24.0) * textScaler.scale(1.0);
         final childAspectRatio = cellWidth / (cellWidth / (2 / 3) + textHeight);
 
         return CustomScrollView(
@@ -580,35 +582,102 @@ class _SeerrFilterChips extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _chip(l10n.all, SeerrBrowseFilter.all),
+        _SeerrFilterChip(
+          label: l10n.all,
+          selected: filter == SeerrBrowseFilter.all,
+          onTap: () => onChanged(SeerrBrowseFilter.all),
+        ),
         const SizedBox(width: 6),
-        _chip(l10n.seerrAvailableStatus, SeerrBrowseFilter.available),
+        _SeerrFilterChip(
+          label: l10n.seerrAvailableStatus,
+          selected: filter == SeerrBrowseFilter.available,
+          onTap: () => onChanged(SeerrBrowseFilter.available),
+        ),
         const SizedBox(width: 6),
-        _chip(l10n.seerrRequestedStatus, SeerrBrowseFilter.requested),
+        _SeerrFilterChip(
+          label: l10n.seerrRequestedStatus,
+          selected: filter == SeerrBrowseFilter.requested,
+          onTap: () => onChanged(SeerrBrowseFilter.requested),
+        ),
       ],
     );
   }
+}
 
-  Widget _chip(String label, SeerrBrowseFilter value) {
-    final selected = filter == value;
-    return GestureDetector(
-      onTap: () => onChanged(value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: selected
-              ? _seerrAccent
-              : AppColorScheme.onSurface.withAlpha(20),
-          borderRadius: AppRadius.circular(14),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-            color: selected
-                ? AppColorScheme.onSurface
-                : AppColorScheme.onSurface.withAlpha(179),
+class _SeerrFilterChip extends StatefulWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SeerrFilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  State<_SeerrFilterChip> createState() => _SeerrFilterChipState();
+}
+
+class _SeerrFilterChipState extends State<_SeerrFilterChip>
+    with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final focusColor = Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setHovered(true),
+      onExit: (_) => setHovered(false),
+      child: Focus(
+        onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (node, event) {
+          if (event.logicalKey == LogicalKeyboardKey.select ||
+              event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
+            if (event is KeyDownEvent) {
+              widget.onTap();
+            }
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: widget.selected
+                  ? _seerrAccent
+                  : (focused
+                      ? AppColorScheme.buttonFocused
+                      : AppColorScheme.onSurface.withAlpha(20)),
+              borderRadius: AppRadius.circular(14),
+              border: showFocusBorder
+                  ? Border.fromBorderSide(
+                      ThemeRegistry.active.borders.focusBorder.copyWith(
+                        color: focusColor,
+                        width: 1.5,
+                      ),
+                    )
+                  : null,
+            ),
+            child: Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: widget.selected ? FontWeight.w600 : FontWeight.normal,
+                color: widget.selected
+                    ? AppColorScheme.onSurface
+                    : (focused
+                        ? AppColorScheme.onButtonFocused
+                        : AppColorScheme.onSurface.withAlpha(179)),
+              ),
+            ),
           ),
         ),
       ),
@@ -711,6 +780,17 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
       child: Focus(
         focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (node, event) {
+          if (event.logicalKey == LogicalKeyboardKey.select ||
+              event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
+            if (event is KeyDownEvent) {
+              widget.onTap();
+            }
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedContainer(
@@ -774,6 +854,17 @@ class _ToolbarButtonState extends State<_ToolbarButton> with FocusStateMixin {
       onExit: (_) => setHovered(false),
       child: Focus(
         onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (node, event) {
+          if (event.logicalKey == LogicalKeyboardKey.select ||
+              event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
+            if (event is KeyDownEvent) {
+              widget.onTap();
+            }
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedContainer(
@@ -858,6 +949,8 @@ class _SeerrSortDialog extends StatefulWidget {
 }
 
 class _SeerrSortDialogState extends State<_SeerrSortDialog> {
+  bool _popped = false;
+
   @override
   void initState() {
     super.initState();
@@ -907,15 +1000,33 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
               ),
             ),
             Divider(color: AppColorScheme.onSurface.withAlpha(20)),
-            for (final option in seerrSortOptions)
-              _radioTile(
+            ...vm.sortOptions.map((option) {
+              final isSelected = s.sortBy.value.startsWith(option.value.split('.').first);
+              final isAsc = s.sortBy.value.endsWith('.asc');
+              return _radioTile(
                 label: option.label,
-                selected: s.sortBy.value == option.value,
+                selected: isSelected,
+                trailing: isSelected
+                    ? Icon(
+                        isAsc ? Icons.arrow_upward : Icons.arrow_downward,
+                        size: 16,
+                        color: AppColorScheme.accent,
+                      )
+                    : null,
                 onTap: () {
-                  vm.setSortBy(option);
+                  if (_popped) return;
+                  _popped = true;
+                  if (isSelected) {
+                    final base = option.value.split('.').first;
+                    final newDir = isAsc ? 'desc' : 'asc';
+                    vm.setSortBy(SeerrSortOption(option.label, '$base.$newDir'));
+                  } else {
+                    vm.setSortBy(option);
+                  }
                   Navigator.of(context).pop();
                 },
-              ),
+              );
+            }),
           ],
         ),
       ),
@@ -925,6 +1036,7 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
   Widget _radioTile({
     required String label,
     required bool selected,
+    Widget? trailing,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -941,12 +1053,12 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: selected
-                        ? _seerrAccent
+                        ? AppColorScheme.accent
                         : AppColorScheme.onSurface.withAlpha(128),
                     width: 2,
                   ),
                 ),
-                color: selected ? _seerrAccent : Colors.transparent,
+                color: selected ? AppColorScheme.accent : Colors.transparent,
               ),
               child:
                   selected
@@ -974,6 +1086,10 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                 ),
               ),
             ),
+            if (trailing != null) ...[
+              const SizedBox(width: 12),
+              trailing,
+            ],
           ],
         ),
       ),
@@ -981,15 +1097,22 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
   }
 }
 
-class _SeerrSettingsDialog extends StatelessWidget {
+class _SeerrSettingsDialog extends StatefulWidget {
   final UserPreferences prefs;
 
   const _SeerrSettingsDialog({required this.prefs});
 
   @override
+  State<_SeerrSettingsDialog> createState() => _SeerrSettingsDialogState();
+}
+
+class _SeerrSettingsDialogState extends State<_SeerrSettingsDialog> {
+  bool _popped = false;
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final current = prefs.resolveLibraryPosterSize();
+    final current = widget.prefs.resolveLibraryPosterSize();
     final dialogWidth = (MediaQuery.sizeOf(context).width - 32).clamp(
       280.0,
       380.0,
@@ -1034,7 +1157,9 @@ class _SeerrSettingsDialog extends StatelessWidget {
                 label: _posterSizeLabel(option, l10n),
                 selected: current == option,
                 onTap: () async {
-                  await prefs.set(UserPreferences.libraryPosterSize, option);
+                  if (_popped) return;
+                  _popped = true;
+                  await widget.prefs.set(UserPreferences.libraryPosterSize, option);
                   if (context.mounted) {
                     Navigator.of(context).pop();
                   }
@@ -1072,12 +1197,12 @@ class _SeerrSettingsDialog extends StatelessWidget {
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: selected
-                        ? _seerrAccent
+                        ? AppColorScheme.accent
                         : AppColorScheme.onSurface.withAlpha(128),
                     width: 2,
                   ),
                 ),
-                color: selected ? _seerrAccent : Colors.transparent,
+                color: selected ? AppColorScheme.accent : Colors.transparent,
               ),
               child:
                   selected
