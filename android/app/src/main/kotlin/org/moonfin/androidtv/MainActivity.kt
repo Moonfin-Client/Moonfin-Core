@@ -52,7 +52,26 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
 
-class MainActivity : AudioServiceActivity() {
+import android.hardware.input.InputManager
+import org.flame_engine.gamepads_android.GamepadsCompatibleActivity
+
+class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
+
+    private var keyHandler: ((KeyEvent) -> Boolean)? = null
+    private var motionHandler: ((MotionEvent) -> Boolean)? = null
+
+    override fun registerInputDeviceListener(listener: InputManager.InputDeviceListener, handler: Handler?) {
+        val inputManager = getSystemService(Context.INPUT_SERVICE) as InputManager
+        inputManager.registerInputDeviceListener(listener, handler)
+    }
+
+    override fun registerKeyEventHandler(handler: (KeyEvent) -> Boolean) {
+        keyHandler = handler
+    }
+
+    override fun registerMotionEventHandler(handler: (MotionEvent) -> Boolean) {
+        motionHandler = handler
+    }
 
     private var methodChannel: MethodChannel? = null
     private var castChannel: MethodChannel? = null
@@ -602,6 +621,9 @@ class MainActivity : AudioServiceActivity() {
                 return true
             }
         }
+        if (keyHandler?.invoke(event) == true) {
+            return true
+        }
         return super.dispatchKeyEvent(event)
     }
 
@@ -647,6 +669,9 @@ class MainActivity : AudioServiceActivity() {
                 sendGamepadNavigate("v", if (y == -1) "up" else if (y == 1) "down" else "none")
             }
             // Not consumed, since other views may still want the motion event.
+        }
+        if (motionHandler?.invoke(event) == true) {
+            return true
         }
         return super.dispatchGenericMotionEvent(event)
     }
