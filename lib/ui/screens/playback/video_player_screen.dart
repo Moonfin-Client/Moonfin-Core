@@ -5938,10 +5938,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final streams = allStreams.where((s) => s['Type'] == streamType).toList();
     final displaySubtitleStreams = audio
         ? const <Map<String, dynamic>>[]
-        : [
-            ...streams.where((s) => !_isExternalSubtitleStream(s)),
-            ...streams.where(_isExternalSubtitleStream),
-          ];
+        : sortedSubtitleStreams(streams);
     final optionStreams = audio ? streams : displaySubtitleStreams;
     final audioStreams = allStreams.where((s) => s['Type'] == 'Audio').toList();
     final canDownloadRemote =
@@ -6087,15 +6084,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showControls();
   }
 
-  bool _isExternalSubtitleStream(Map<String, dynamic> stream) {
-    if (stream['IsExternal'] == true) {
-      return true;
-    }
-    final deliveryMethod = (stream['DeliveryMethod'] as String?)
-        ?.trim()
-        .toLowerCase();
-    return deliveryMethod == 'external';
-  }
+
 
   Widget _buildZoomButton({
     double size = 24,

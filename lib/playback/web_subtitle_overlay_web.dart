@@ -68,10 +68,7 @@ class WebSubtitleOverlay {
 
   static bool _isAssCodec(String? codec) {
     final c = codec?.toLowerCase() ?? '';
-    return c.contains('ass') ||
-        c.contains('ssa') ||
-        c.contains('subrip') ||
-        c == 'srt';
+    return c.contains('ass') || c.contains('ssa');
   }
 
   static bool _isPgsCodec(String? codec) {

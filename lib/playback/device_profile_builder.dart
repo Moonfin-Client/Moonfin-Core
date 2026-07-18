@@ -119,6 +119,8 @@ class DeviceProfileBuilder {
     MaxVideoResolution maxResolution = MaxVideoResolution.auto,
     bool pgsDirectPlay = true,
     bool assDirectPlay = true,
+    bool supportsEmbeddedTextSubtitles = true,
+    bool supportsExternalTextSubtitles = true,
     bool supportsAvc = false,
     bool supportsAvcHigh10 = false,
     int avcMainLevel = 0,
@@ -397,6 +399,8 @@ class DeviceProfileBuilder {
       'SubtitleProfiles': _subtitleProfiles(
         pgsDirectPlay: pgsDirectPlay,
         assDirectPlay: assDirectPlay,
+        supportsEmbeddedTextSubtitles: supportsEmbeddedTextSubtitles,
+        supportsExternalTextSubtitles: supportsExternalTextSubtitles,
       ),
     };
   }
@@ -1574,6 +1578,8 @@ class DeviceProfileBuilder {
   static List<Map<String, dynamic>> _subtitleProfiles({
     required bool pgsDirectPlay,
     required bool assDirectPlay,
+    bool supportsEmbeddedTextSubtitles = true,
+    bool supportsExternalTextSubtitles = true,
   }) {
     final profiles = <Map<String, dynamic>>[];
 
@@ -1588,25 +1594,33 @@ class DeviceProfileBuilder {
     }
 
     for (final format in const <String>['srt', 'subrip', 'ttml']) {
-      add(format, 'Embed');
-      add(format, 'External');
+      if (supportsEmbeddedTextSubtitles) {
+        add(format, 'Embed');
+      }
+      if (supportsExternalTextSubtitles) {
+        add(format, 'External');
+      }
     }
 
     for (final format in const <String>['dvbsub', 'dvdsub', 'idx']) {
-      add(format, 'Embed');
+      if (supportsEmbeddedTextSubtitles) {
+        add(format, 'Embed');
+      }
       add(format, 'Encode');
     }
 
     for (final format in const <String>['pgs', 'pgssub']) {
-      if (pgsDirectPlay) {
+      if (pgsDirectPlay && supportsEmbeddedTextSubtitles) {
         add(format, 'Embed');
       }
       add(format, 'Encode');
     }
 
     for (final format in const <String>['ass', 'ssa']) {
-      if (assDirectPlay) {
+      if (assDirectPlay && supportsEmbeddedTextSubtitles) {
         add(format, 'Embed');
+        add(format, 'External');
+      } else if (assDirectPlay) {
         add(format, 'External');
       }
       add(format, 'Encode');

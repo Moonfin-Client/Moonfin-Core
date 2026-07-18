@@ -75,6 +75,7 @@ class HtmlVideoBackend extends PlayerBackend {
       ..autoplay = false
       ..controls = false
       ..preload = 'auto'
+      ..crossOrigin = 'anonymous'
       ..style.border = '0'
       ..style.width = '100%'
       ..style.height = '100%'
@@ -463,9 +464,21 @@ class HtmlVideoBackend extends PlayerBackend {
     try {
       final dynamic tracks = (_videoElement as dynamic).textTracks;
       final length = (tracks.length as num?)?.toInt() ?? 0;
+
+      dynamic targetTrackObj;
+      if (index >= 0 && index < _externalTracks.length) {
+        targetTrackObj = (_externalTracks[index] as dynamic).track;
+      } else {
+        targetTrackObj = index >= 0 && index < length ? tracks[index] : null;
+      }
+
       for (var i = 0; i < length; i++) {
         final dynamic track = tracks[i];
-        track.mode = i == index ? 'showing' : 'disabled';
+        track.mode = 'disabled';
+      }
+
+      if (targetTrackObj != null) {
+        targetTrackObj.mode = 'showing';
       }
     } catch (_) {}
   }
@@ -533,6 +546,7 @@ class HtmlVideoBackend extends PlayerBackend {
       ..src = url
       ..label = title ?? language ?? 'External Subtitle'
       ..srclang = language ?? 'en';
+    track.setAttribute('default', '');
 
     if (codec != null && codec.isNotEmpty) {
       track.setAttribute('data-codec', codec);
@@ -540,6 +554,10 @@ class HtmlVideoBackend extends PlayerBackend {
 
     _videoElement.appendChild(track);
     _externalTracks.add(track);
+
+    try {
+      (track as dynamic).track.mode = 'showing';
+    } catch (_) {}
 
     await setSubtitleTrack(_externalTracks.length - 1);
   }
