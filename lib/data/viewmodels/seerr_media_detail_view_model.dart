@@ -133,6 +133,14 @@ class SeerrMediaDetailState {
         .toList();
   }
 
+  List<SeerrRequest> get cancelableRequests {
+    final user = currentUser;
+    if (user == null) return [];
+    final active = activeRequests;
+    if (user.hasPermission(SeerrPermission.manageRequests)) return active;
+    return [];
+  }
+
   bool get hasExistingRequest {
     final requests = mediaInfo?.requests;
     if (requests == null || requests.isEmpty) return false;

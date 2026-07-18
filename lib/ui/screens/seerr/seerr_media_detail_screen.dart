@@ -9,6 +9,7 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_error.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
@@ -672,7 +673,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
     final canManage = vm.canManageRequests;
     final trailer = s.bestTrailer;
     final showTrailer = trailer != null;
-    final showCancel = s.activeRequests.isNotEmpty && !s.isFullyAvailable;
+    final showCancel = s.cancelableRequests.isNotEmpty && !s.isFullyAvailable;
 
     final tiles = <Widget>[];
     FocusNode? nextFirstNode = _firstActionFocusNode;
@@ -690,6 +691,16 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
           onTap: s.isRequesting ? null : () => _showCancelDialog(s),
           primary: !(s.isFullyAvailable || s.isPartiallyAvailable),
           focusNode: takeFirst(),
+        ),
+      );
+    } else if (s.activeRequests.isNotEmpty && !s.isFullyAvailable) {
+      tiles.add(
+        _ActionTile(
+          icon: Icons.check,
+          label: l10n.seerrRequestedStatus,
+          onTap: null,
+          primary: false,
+          focusNode: null,
         ),
       );
     } else if (canShowRequest) {
@@ -1318,7 +1329,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
                     foregroundColor: Colors.white,
                   ),
                 ),
-              if (s.activeRequests.isNotEmpty && !s.isFullyAvailable)
+              if (s.cancelableRequests.isNotEmpty && !s.isFullyAvailable)
                 OutlinedButton.icon(
                   onPressed: s.isRequesting ? null : () => _showCancelDialog(s),
                   icon: const Icon(Icons.close, size: 18),
@@ -1327,6 +1338,18 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
                     foregroundColor: Colors.red[300],
                     side: ThemeRegistry.active.borders.chipBorder.copyWith(
                       color: Colors.red[300]!,
+                    ),
+                  ),
+                )
+              else if (s.activeRequests.isNotEmpty && !s.isFullyAvailable)
+                OutlinedButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.check, size: 18),
+                  label: Text(l10n.seerrRequestedStatus),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white54,
+                    side: ThemeRegistry.active.borders.chipBorder.copyWith(
+                      color: Colors.white24,
                     ),
                   ),
                 ),
@@ -1465,7 +1488,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
 
   void _showCancelDialog(SeerrMediaDetailState s) {
     final l10n = AppLocalizations.of(context);
-    final active = s.activeRequests;
+    final active = s.cancelableRequests;
     if (active.isEmpty) return;
 
     final title = s.displayTitle;
@@ -1505,6 +1528,12 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
     final vm = _vm;
     if (vm == null) return;
     await vm.cancelRequests(requests.map((r) => r.id).toList());
+    if (mounted && vm.state.requestError == null) {
+      try {
+        GetIt.instance<SeerrDiscoverViewModel>().refresh();
+      } catch (_) {}
+      context.go(Destinations.seerrDiscover);
+    }
   }
 
   Future<void> _playInMoonfin(SeerrMediaDetailState s) async {
@@ -1864,6 +1893,7 @@ class _ActionTileState extends State<_ActionTile> with FocusStateMixin {
     return Focus(
       focusNode: widget.focusNode,
       onFocusChange: setFocused,
+      canRequestFocus: !disabled,
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
           return KeyEventResult.ignored;
@@ -1885,9 +1915,11 @@ class _ActionTileState extends State<_ActionTile> with FocusStateMixin {
               : SystemMouseCursors.click,
           onEnter: (_) => setHovered(true),
           onExit: (_) => setHovered(false),
-          child: AnimatedScale(
-            scale: showFocusBorder ? 1.05 : 1.0,
-            duration: const Duration(milliseconds: 150),
+          child: Opacity(
+            opacity: disabled ? 0.5 : 1.0,
+            child: AnimatedScale(
+              scale: showFocusBorder ? 1.05 : 1.0,
+              duration: const Duration(milliseconds: 150),
             child: SizedBox(
               width: 96,
               child: Column(
@@ -1925,6 +1957,7 @@ class _ActionTileState extends State<_ActionTile> with FocusStateMixin {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),
