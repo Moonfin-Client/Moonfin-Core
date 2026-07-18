@@ -34,17 +34,35 @@ class UserViewsRepository extends ChangeNotifier {
 
   Future<List<AggregatedLibrary>> getAllViewsIncludingHidden() async {
     try {
-      final folders = await _client.adminLibraryApi.getMediaFolders();
-      return folders
-          .map(
-            (folder) => AggregatedLibrary(
-              id: folder.itemId,
-              name: folder.name,
-              collectionType: folder.collectionType ?? '',
-              serverId: '',
-            ),
-          )
-          .toList();
+      final foldersFuture = _client.adminLibraryApi.getMediaFolders();
+      final userViewsFuture = getAllViews();
+
+      final folders = await foldersFuture;
+      final userViews = await userViewsFuture;
+
+      final result = folders.map((folder) {
+        final matchingView = userViews.where((v) {
+          if (folder.collectionType != null && folder.collectionType!.isNotEmpty) {
+            return v.collectionType == folder.collectionType;
+          }
+          return v.name == folder.name;
+        }).firstOrNull;
+
+        return AggregatedLibrary(
+          id: matchingView?.id ?? folder.itemId,
+          name: folder.name,
+          collectionType: folder.collectionType ?? '',
+          serverId: '',
+        );
+      }).toList();
+
+      final existingIds = result.map((l) => l.id).toSet();
+      for (final view in userViews) {
+        if (!existingIds.contains(view.id)) {
+          result.add(view);
+        }
+      }
+      return result;
     } catch (_) {
       return getAllViews();
     }

@@ -155,9 +155,23 @@ class MultiServerRepository {
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
-          final response = await session.client.userViewsApi.getUserViews();
+          final viewsFuture = session.client.userViewsApi.getUserViews();
+          final configFuture = session.client.usersApi
+              .getUserConfiguration()
+              .then<Set<String>>((config) => config.myMediaExcludes.toSet())
+              .catchError((_) => const <String>{});
+
+          final response = await viewsFuture;
+          final Set<String> excludes = await configFuture;
           final items = response['Items'] as List? ?? [];
-          return items.map((item) {
+
+          final filteredItems = items.where((item) {
+            final data = item as Map<String, dynamic>;
+            final id = data['Id']?.toString() ?? '';
+            return !excludes.contains(id);
+          });
+
+          return filteredItems.map((item) {
             final data = item as Map<String, dynamic>;
             final name = data['Name'] as String? ?? '';
             return AggregatedLibrary(
@@ -898,6 +912,55 @@ class MultiServerRepository {
     );
   }
 
+  Future<List<Map<String, dynamic>>> _getAllViewsIncludingHidden(MediaServerClient client) async {
+    try {
+      final foldersFuture = client.adminLibraryApi.getMediaFolders();
+      final userViewsFuture = client.userViewsApi.getUserViews();
+
+      final folders = await foldersFuture;
+      final userViewsResponse = await userViewsFuture;
+      final userViews = userViewsResponse['Items'] as List? ?? [];
+
+      final List<Map<String, dynamic>> result = folders.map<Map<String, dynamic>>((folder) {
+        final matchingView = userViews.where((v) {
+          final data = v as Map<String, dynamic>;
+          final cType = data['CollectionType'] as String?;
+          final name = data['Name'] as String?;
+          if (folder.collectionType != null && folder.collectionType!.isNotEmpty) {
+            return cType == folder.collectionType;
+          }
+          return name == folder.name;
+        }).firstOrNull;
+
+        final matchingData = matchingView as Map<String, dynamic>?;
+
+        return {
+          'Id': matchingData?['Id']?.toString() ?? folder.itemId,
+          'Name': folder.name,
+          'CollectionType': folder.collectionType ?? '',
+        };
+      }).toList();
+
+      final existingIds = result.map((l) => l['Id']?.toString() ?? '').toSet();
+      for (final view in userViews) {
+        final data = view as Map<String, dynamic>;
+        final id = data['Id']?.toString() ?? '';
+        if (!existingIds.contains(id)) {
+          result.add(data);
+        }
+      }
+      return result;
+    } catch (_) {
+      try {
+        final response = await client.userViewsApi.getUserViews();
+        final items = response['Items'] as List? ?? [];
+        return items.cast<Map<String, dynamic>>();
+      } catch (_) {
+        return const [];
+      }
+    }
+  }
+
   Future<List<HomeRow>> getAggregatedLatestMediaRows() async {
     final sessions = await getLoggedInServers();
     final hasMultiple = sessions.length > 1;
@@ -905,11 +968,10 @@ class MultiServerRepository {
 
     for (final session in sessions) {
       try {
-        final viewsResponse = await _withTimeout(
-          () => session.client.userViewsApi.getUserViews(),
+        final views = await _withTimeout(
+          () => _getAllViewsIncludingHidden(session.client),
           label: 'views from ${session.server.name}',
         );
-        final views = viewsResponse['Items'] as List? ?? [];
 
         Set<String> latestExcludes = const {};
         try {

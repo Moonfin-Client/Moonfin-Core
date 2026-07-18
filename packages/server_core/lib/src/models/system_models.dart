@@ -150,22 +150,22 @@ class UserConfiguration {
 
   factory UserConfiguration.fromJson(Map<String, dynamic> json) =>
       UserConfiguration(
-        orderedViews: _stringList(json['OrderedViews']),
-        latestItemsExcludes: _stringList(json['LatestItemsExcludes']),
-        myMediaExcludes: _stringList(json['MyMediaExcludes']),
-        groupedFolders: _stringList(json['GroupedFolders']),
-        hidePlayedInLatest: json['HidePlayedInLatest'] as bool? ?? true,
+        orderedViews: _stringList(json['OrderedViews'] ?? json['orderedViews']),
+        latestItemsExcludes: _stringList(json['LatestItemsExcludes'] ?? json['latestItemsExcludes']),
+        myMediaExcludes: _stringList(json['MyMediaExcludes'] ?? json['myMediaExcludes']),
+        groupedFolders: _stringList(json['GroupedFolders'] ?? json['groupedFolders']),
+        hidePlayedInLatest: (json['HidePlayedInLatest'] ?? json['hidePlayedInLatest']) as bool? ?? true,
         enableNextEpisodeAutoPlay:
-            json['EnableNextEpisodeAutoPlay'] as bool? ?? true,
+            (json['EnableNextEpisodeAutoPlay'] ?? json['enableNextEpisodeAutoPlay']) as bool? ?? true,
         playDefaultAudioTrack:
-            json['PlayDefaultAudioTrack'] as bool? ?? true,
+            (json['PlayDefaultAudioTrack'] ?? json['playDefaultAudioTrack']) as bool? ?? true,
         rememberAudioSelections:
-            json['RememberAudioSelections'] as bool? ?? true,
+            (json['RememberAudioSelections'] ?? json['rememberAudioSelections']) as bool? ?? true,
         rememberSubtitleSelections:
-            json['RememberSubtitleSelections'] as bool? ?? true,
-        audioLanguagePreference: _nonEmptyString(json['AudioLanguagePreference']),
-        subtitleLanguagePreference: _nonEmptyString(json['SubtitleLanguagePreference']),
-        subtitleMode: _subtitleModeString(json['SubtitleMode']),
+            (json['RememberSubtitleSelections'] ?? json['rememberSubtitleSelections']) as bool? ?? true,
+        audioLanguagePreference: _nonEmptyString(json['AudioLanguagePreference'] ?? json['audioLanguagePreference']),
+        subtitleLanguagePreference: _nonEmptyString(json['SubtitleLanguagePreference'] ?? json['subtitleLanguagePreference']),
+        subtitleMode: _subtitleModeString(json['SubtitleMode'] ?? json['subtitleMode']),
         raw: json,
       );
 
@@ -204,6 +204,7 @@ class UserConfiguration {
   UserConfiguration copyWith({
     List<String>? myMediaExcludes,
     List<String>? latestItemsExcludes,
+    String? subtitleMode,
   }) {
     return UserConfiguration(
       orderedViews: orderedViews,
@@ -217,6 +218,7 @@ class UserConfiguration {
       rememberSubtitleSelections: rememberSubtitleSelections,
       audioLanguagePreference: audioLanguagePreference,
       subtitleLanguagePreference: subtitleLanguagePreference,
+      subtitleMode: subtitleMode ?? this.subtitleMode,
       raw: _raw,
     );
   }
@@ -224,21 +226,36 @@ class UserConfiguration {
   Map<String, dynamic> toJson() {
     final json = Map<String, dynamic>.from(_raw);
     json['OrderedViews'] = orderedViews;
+    json['orderedViews'] = orderedViews;
     json['LatestItemsExcludes'] = latestItemsExcludes;
+    json['latestItemsExcludes'] = latestItemsExcludes;
     json['MyMediaExcludes'] = myMediaExcludes;
+    json['myMediaExcludes'] = myMediaExcludes;
     json['GroupedFolders'] = groupedFolders;
+    json['groupedFolders'] = groupedFolders;
     json['HidePlayedInLatest'] = hidePlayedInLatest;
+    json['hidePlayedInLatest'] = hidePlayedInLatest;
     json['EnableNextEpisodeAutoPlay'] = enableNextEpisodeAutoPlay;
+    json['enableNextEpisodeAutoPlay'] = enableNextEpisodeAutoPlay;
     json['PlayDefaultAudioTrack'] = playDefaultAudioTrack;
+    json['playDefaultAudioTrack'] = playDefaultAudioTrack;
     json['RememberAudioSelections'] = rememberAudioSelections;
+    json['rememberAudioSelections'] = rememberAudioSelections;
     json['RememberSubtitleSelections'] = rememberSubtitleSelections;
+    json['rememberSubtitleSelections'] = rememberSubtitleSelections;
 
     // key absence is used as a check, so only set if not null
     if (audioLanguagePreference != null) {
       json['AudioLanguagePreference'] = audioLanguagePreference;
+      json['audioLanguagePreference'] = audioLanguagePreference;
     }
     if (subtitleLanguagePreference != null) {
       json['SubtitleLanguagePreference'] = subtitleLanguagePreference;
+      json['subtitleLanguagePreference'] = subtitleLanguagePreference;
+    }
+    if (subtitleMode != null) {
+      json['SubtitleMode'] = subtitleMode;
+      json['subtitleMode'] = subtitleMode;
     }
     return json;
   }

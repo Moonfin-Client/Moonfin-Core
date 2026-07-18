@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/repositories/user_views_repository.dart';
 import '../../../data/services/connectivity_service.dart';
 import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
@@ -1315,37 +1316,32 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadLatestMediaRows() async {
-    final viewsFuture = _client.userViewsApi.getUserViews();
+    final viewsFuture = GetIt.instance<UserViewsRepository>().getAllViewsIncludingHidden();
     final configFuture = _client.usersApi
         .getUserConfiguration()
         .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
         .catchError((_) => const <String>{});
 
-    final viewsResponse = await viewsFuture;
-    final views = viewsResponse['Items'] as List? ?? [];
+    final views = await viewsFuture;
     final Set<String> latestExcludes = await configFuture;
 
-    final filteredViews = views.cast<Map<String, dynamic>>().where((data) {
-      final id = data['Id']?.toString() ?? '';
-      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    final filteredViews = views.where((lib) {
+      final collectionType = lib.collectionType.toLowerCase();
       if (collectionType == 'playlists' ||
           collectionType == 'boxsets' ||
           collectionType == 'livetv') {
         return false;
       }
-      return !latestExcludes.contains(id);
+      return !latestExcludes.contains(lib.id);
     }).toList();
 
-    final tasks = filteredViews.map((data) async {
-      final id = data['Id']?.toString() ?? '';
-      final name = data['Name'] as String? ?? '';
-      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    final tasks = filteredViews.map((lib) async {
       try {
         final row = await _dataSource.loadLatestMedia(
-          id,
-          name,
+          lib.id,
+          lib.name,
           _serverId,
-          collectionType,
+          lib.collectionType,
         );
         return row.items.isNotEmpty ? row : null;
       } catch (_) {
@@ -1359,37 +1355,32 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadRecentlyReleasedRow() async {
-    final viewsFuture = _client.userViewsApi.getUserViews();
+    final viewsFuture = GetIt.instance<UserViewsRepository>().getAllViewsIncludingHidden();
     final configFuture = _client.usersApi
         .getUserConfiguration()
         .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
         .catchError((_) => const <String>{});
 
-    final viewsResponse = await viewsFuture;
-    final views = viewsResponse['Items'] as List? ?? [];
+    final views = await viewsFuture;
     final Set<String> latestExcludes = await configFuture;
 
-    final filteredViews = views.cast<Map<String, dynamic>>().where((data) {
-      final id = data['Id']?.toString() ?? '';
-      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    final filteredViews = views.where((lib) {
+      final collectionType = lib.collectionType.toLowerCase();
       if (collectionType == 'playlists' ||
           collectionType == 'boxsets' ||
           collectionType == 'livetv') {
         return false;
       }
-      return !latestExcludes.contains(id);
+      return !latestExcludes.contains(lib.id);
     }).toList();
 
-    final tasks = filteredViews.map((data) async {
-      final id = data['Id']?.toString() ?? '';
-      final name = data['Name'] as String? ?? '';
-      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    final tasks = filteredViews.map((lib) async {
       try {
         final row = await _dataSource.loadRecentlyReleased(
-          id,
-          name,
+          lib.id,
+          lib.name,
           _serverId,
-          collectionType,
+          lib.collectionType,
         );
         return row.items.isNotEmpty ? row : null;
       } catch (_) {
