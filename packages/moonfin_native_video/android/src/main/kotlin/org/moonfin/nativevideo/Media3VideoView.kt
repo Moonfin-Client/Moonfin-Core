@@ -2441,7 +2441,7 @@ class Media3VideoView(
         val language = args["language"]?.toString()
         val title = args["title"]?.toString()
 
-        val subtitleBuilder = MediaItem.SubtitleConfiguration.Builder(Uri.parse(url))
+        val subtitleBuilder = MediaItem.SubtitleConfiguration.Builder(parseUri(url))
             .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
             // ass-media matches selected Media3 text tracks back to libass tracks by ID.
             .setId((EXTERNAL_SUBTITLE_ID_BASE + externalSubtitleConfigurations.size).toString())
@@ -2526,7 +2526,7 @@ class Media3VideoView(
 
         val subtitleConfigurations = externalSubtitleConfigurations.toList()
         val mediaItemBuilder = MediaItem.Builder()
-            .setUri(url)
+            .setUri(parseUri(url))
             .setSubtitleConfigurations(subtitleConfigurations)
             .setMediaMetadata(buildNowPlayingMetadata())
         val inferredMimeType = inferStreamMimeType(url, currentContainer, currentMediaType)
@@ -2575,7 +2575,7 @@ class Media3VideoView(
             }
             if (artworkUrl.isNotEmpty()) {
                 runCatching {
-                    setArtworkUri(Uri.parse(artworkUrl))
+                    setArtworkUri(parseUri(artworkUrl))
                 }
             }
         }.build()
@@ -2968,7 +2968,7 @@ class Media3VideoView(
         // the request the same way. Comparing a parsed uri to the raw string
         // misses whenever Android normalizes it, dropping us to positional
         // selection which is off for externals.
-        val target = Uri.parse(url)
+        val target = parseUri(url)
         val configIndex = externalSubtitleConfigurations.indexOfFirst {
             it.uri == target
         }
@@ -3113,6 +3113,14 @@ class Media3VideoView(
     private fun emitState() {
         if (suppressStateEmissionsForRekick) return
         Media3Bridge.emitEvent(stateMap() + ("event" to "state"))
+    }
+
+    private fun parseUri(url: String): Uri {
+        return if (url.startsWith("/") || !url.contains("://")) {
+            Uri.fromFile(java.io.File(url))
+        } else {
+            Uri.parse(url)
+        }
     }
 
     private fun startTicker() {
