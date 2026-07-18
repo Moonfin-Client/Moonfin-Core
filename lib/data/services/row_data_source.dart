@@ -965,6 +965,10 @@ class RowDataSource {
     final currentOffset = offset ?? row.items.length;
 
     switch (row.rowType) {
+      // Top 10 is deliberately capped and never paged.
+      case HomeRowType.topTenMovies:
+      case HomeRowType.topTenTvShows:
+        return (row.items, row.totalCount);
       case HomeRowType.playlists:
         final parsed = _parseStableId(row.id);
         if (parsed != null &&
