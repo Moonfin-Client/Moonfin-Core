@@ -4647,6 +4647,17 @@ class _ContentRowsState extends State<_ContentRows>
                           focusColor: focusColor,
                         );
 
+                  // Top 10 is intentionally kept as a compact carousel even
+                  // when Rows V2 is enabled.  Rows V2 returns early below,
+                  // which previously bypassed the rank presentation entirely.
+                  if (row.rowType == HomeRowType.topTenMovies ||
+                      row.rowType == HomeRowType.topTenTvShows) {
+                    return _TopTenRankCard(
+                      rank: idx + 1,
+                      child: previewWrappedCard,
+                    );
+                  }
+
                   if (isRowsV2) {
                     final showExtendedSection = effectiveV2Focused;
                     final extendedSection = showExtendedSection
@@ -4680,13 +4691,6 @@ class _ContentRowsState extends State<_ContentRows>
                     );
                   }
 
-                  if (row.rowType == HomeRowType.topTenMovies ||
-                      row.rowType == HomeRowType.topTenTvShows) {
-                    return _TopTenRankCard(
-                      rank: idx + 1,
-                      child: previewWrappedCard,
-                    );
-                  }
                   return previewWrappedCard;
                 },
               );
