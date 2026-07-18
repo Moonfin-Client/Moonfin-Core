@@ -9,22 +9,22 @@ class AppLocalizationsFa extends AppLocalizations {
   AppLocalizationsFa([String locale = 'fa']) : super(locale);
 
   @override
-  String get appTitle => 'Moonfin';
+  String get appTitle => 'باله ماه';
 
   @override
-  String get accountPreferences => 'ترجیحات حساب';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => 'زبان رابط کاربری';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => 'پیش‌فرض سیستم';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'وارد شوید';
 
   @override
-  String get empty => 'خالی';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
@@ -32,7 +32,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'اتصال سریع';
 
   @override
   String get password => 'رمز عبور';
@@ -51,7 +51,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get waitingForAuthorization => 'در انتظار مجوز...';
 
   @override
-  String get back => 'بازگشت';
+  String get back => 'برگشت';
 
   @override
   String get serverUnavailable => 'سرور در دسترس نیست';
@@ -113,7 +113,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cancel => 'لغو کنید';
 
   @override
-  String get remove => 'حذف';
+  String get remove => 'حذف کنید';
 
   @override
   String get connectToServer => 'به سرور متصل شوید';
@@ -141,61 +141,62 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsAppearanceTheme => 'تم برنامه';
 
   @override
-  String get detailScreenStyle => 'سبک صفحه جزئیات';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'کلاسیک همان چیدمان وسط‌چین اصلی Moonfin است. مدرن یک چیدمان سینمایی واکنش‌گراست.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'کلاسیک';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
-  String get detailScreenStyleModern => 'مدرن';
+  String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'برگه‌های گسترده';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
   String get expandedTabsSubtitle =>
-      'محتوای هر برگه هنگام مرور برگه‌ها به‌طور خودکار نمایش داده می‌شود. برای باز و بستن دستی هر برگه، این گزینه را خاموش کنید.';
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => 'نمایش جزئیات فنی؟';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'نمایش کدک، وضوح و اطلاعات جریان در خلاصه بنر';
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => 'سیستم پیشنهاد';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      'از الگوریتم کتابخانه محلی Moonfin Recommends یا سنجه‌های شباهت آنلاین TMDb استفاده کنید. توجه: پیشنهادهای آنلاین به یکپارچه‌سازی Seerr نیاز دارند.';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'شباهت TMDb';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
-  String get recommendationsApplyParentalRatingCap => 'اعمال سقف رده‌بندی سنی؟';
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'محدود کردن پیشنهادهای Moonfin Recommends بر اساس رده‌بندی سنی رسانه هدف';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => 'سبک رابط کاربری';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'خودکار با دستگاه شما هماهنگ می‌شود. برای اعمال اجباری یک ظاهر، Apple یا Material را انتخاب کنید.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => 'خودکار';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -204,31 +205,31 @@ class AppLocalizationsFa extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'کیفیت شیشه';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      'خودکار بهترین جلوه شیشه‌ای را برای این دستگاه انتخاب می‌کند. کامل محوشدگی واقعی را اعمال می‌کند؛ کاهش‌یافته از شیشه‌ای سبک استفاده می‌کند که در مصرف GPU صرفه‌جویی می‌کند.';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
-  String get glassQualityAuto => 'خودکار';
+  String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => 'کامل';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'کاهش‌یافته';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'جابه‌جایی بین Moonfin و Neon Pulse بدون راه‌اندازی مجدد برنامه';
 
   @override
-  String get customThemeTitle => 'تم سفارشی';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
   String get customThemeSubtitle =>
-      'تم‌های سفارشی عناصر بصری را در سراسر Moonfin تغییر می‌دهند. یکی از این گزینه‌ها را متناسب با سلیقه خود انتخاب کنید.';
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
   String get keyboardPreferSystemIme => 'صفحه کلید سیستم را ترجیح دهید';
@@ -238,7 +239,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'از روش ورودی دستگاه خود به طور پیش فرض برای وارد کردن متن استفاده کنید';
 
   @override
-  String get themeMoonfin => 'Moonfin';
+  String get themeMoonfin => 'باله ماه';
 
   @override
   String get themeMoonfinSubtitle =>
@@ -252,18 +253,18 @@ class AppLocalizationsFa extends AppLocalizations {
       'استایل سینت ویو با درخشش سرخابی، متن فیروزه‌ای و کنتراست کروم قوی‌تر';
 
   @override
-  String get themeGlass => 'شیشه';
+  String get themeGlass => 'Glass';
 
   @override
   String get themeGlassSubtitle =>
-      'استایل شیشه مایع با پس‌زمینه گرادیانی متحرک، سطوح مات و رنگ تأکیدی آبی Apple';
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
-  String get theme8BitHero => 'قهرمان 8-بیتی';
+  String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'استایل پیکسل‌آرت رترو با پالت درشت، حاشیه‌های بلوکی، سایه‌های تیز و فونت پیکسلی';
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle => 'با اکانت Connect Emby خود وارد شوید';
@@ -324,35 +325,35 @@ class AppLocalizationsFa extends AppLocalizations {
   String get exit => 'خارج شوید';
 
   @override
-  String get gameMenu => 'منو';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => 'متوقف شده';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => 'ذخیره وضعیت';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => 'بازی‌ها';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => 'بارگذاری وضعیت';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => 'جلو بردن سریع';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => 'تنظیمات شبیه‌ساز';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions => 'این هسته گزینه قابل تنظیمی ندارد.';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => 'برای باز کردن منو نگه دارید';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
   String get gamePlaybackUnsupported =>
-      'اجرای بازی هنوز روی این دستگاه پشتیبانی نمی‌شود.';
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded => 'هیچ ردیف خانه بارگیری نشد';
@@ -368,13 +369,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get guide => 'راهنما';
 
   @override
-  String get recordings => 'ضبط‌ها';
+  String get recordings => 'ضبط ها';
 
   @override
   String get schedule => 'برنامه ریزی کنید';
 
   @override
-  String get series => 'سریال‌ها';
+  String get series => 'سری';
 
   @override
   String get noItemsFound => 'هیچ موردی یافت نشد';
@@ -550,7 +551,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'انتخاب کنید که کدام موضوع فیدها در Discover نمایش داده شود.';
 
   @override
-  String get apply => 'اعمال';
+  String get apply => 'درخواست کنید';
 
   @override
   String get openLink => 'پیوند را باز کنید';
@@ -598,7 +599,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get listen => 'گوش کن';
 
   @override
-  String get resume => 'ادامه';
+  String get resume => 'رزومه';
 
   @override
   String get failedToLoadLibrary => 'کتابخانه بارگیری نشد';
@@ -741,13 +742,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get readStatus => 'بخوانید';
 
   @override
-  String get watched => 'تماشا شده';
+  String get watched => 'تماشا کرد';
 
   @override
   String get unread => 'خوانده نشده';
 
   @override
-  String get unwatched => 'تماشا نشده';
+  String get unwatched => 'دیده نشده';
 
   @override
   String get seriesStatus => 'وضعیت سریال';
@@ -759,43 +760,43 @@ class AppLocalizationsFa extends AppLocalizations {
   String get books => 'کتاب ها';
 
   @override
-  String get latestBooks => 'جدیدترین کتاب‌ها';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => 'جدیدترین کتاب‌های صوتی';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count کتاب',
-      one: '1 کتاب',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'کتاب';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => 'کتاب صوتی';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% خوانده شده';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time باقی‌مانده';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => 'خواندن';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => 'شنیدن';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => 'نویسنده';
@@ -873,8 +874,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count کتاب صوتی',
-      one: '1 کتاب صوتی',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -889,10 +890,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get failedToLoad => 'بارگیری نشد';
 
   @override
-  String get delete => 'حذف';
+  String get delete => 'حذف کنید';
 
   @override
-  String get save => 'ذخیره';
+  String get save => 'ذخیره کنید';
 
   @override
   String get moreLikeThis => 'بیشتر شبیه این';
@@ -910,7 +911,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get nextUp => 'بعدی بالا';
 
   @override
-  String get seasons => 'فصل‌ها';
+  String get seasons => 'فصل ها';
 
   @override
   String get chapters => 'فصل ها';
@@ -977,8 +978,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فصل',
-      one: '1 فصل',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
@@ -989,47 +990,47 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get items => 'موارد';
+  String get items => 'Items';
 
   @override
-  String get extras => 'موارد اضافی';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => 'پشت صحنه';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => 'صحنه‌های حذف‌شده';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => 'ویژه‌برنامه‌ها';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'مصاحبه‌ها';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => 'صحنه‌ها';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => 'فیلم‌های کوتاه';
+  String get shorts => 'Shorts';
 
   @override
   String get trailers => 'تریلرها';
 
   @override
   String timeRemaining(String time) {
-    return '$time باقی‌مانده';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return '$time تا پایان';
+    return 'Ends in $time';
   }
 
   @override
   String get view => 'مشاهده کنید';
 
   @override
-  String get resumeReading => 'ادامه خواندن';
+  String get resumeReading => 'Resume Reading';
 
   @override
   String get read => 'بخوانید';
@@ -1040,7 +1041,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get play => 'پخش';
+  String get play => 'بازی کنید';
 
   @override
   String get startOver => 'شروع دوباره';
@@ -1064,7 +1065,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get version => 'نسخه';
 
   @override
-  String get cast => 'ارسال به دستگاه';
+  String get cast => 'بازیگران';
 
   @override
   String get trailer => 'تریلر';
@@ -1180,7 +1181,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get subtitleTrack => 'آهنگ زیرنویس';
 
   @override
-  String get none => 'هیچ‌کدام';
+  String get none => 'هیچ کدام';
 
   @override
   String get downloadSubtitlesLabel => 'دانلود زیرنویس ...';
@@ -1258,10 +1259,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get director => 'کارگردان';
 
   @override
-  String get directors => 'کارگردانان';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => 'نویسنده';
+  String get writer => 'WRITER';
 
   @override
   String get writers => 'نویسندگان';
@@ -1299,8 +1300,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count قطعه',
-      one: '1 قطعه',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1310,8 +1311,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فصل',
-      one: '1 فصل',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
@@ -1338,16 +1339,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get readMore => 'ادامه مطلب';
 
   @override
-  String get shuffle => 'پخش تصادفی';
+  String get shuffle => 'مخلوط کردن';
 
   @override
-  String get shuffleAllMusic => 'پخش تصادفی همه موسیقی‌ها';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => 'در گوشی خود وارد Moonfin شوید';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => 'دسترسی به سرور شما ممکن نیست';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
@@ -1359,11 +1360,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '$count کانال';
+    return '${count}ch';
   }
 
   @override
-  String get mono => 'مونو';
+  String get mono => 'مونونوکلئوز';
 
   @override
   String get stereo => 'استریو';
@@ -1444,7 +1445,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get unavailable => 'در دسترس نیست';
 
   @override
-  String get pause => 'مکث';
+  String get pause => 'مکث کنید';
 
   @override
   String get syncPosition => 'موقعیت همگام سازی';
@@ -1518,7 +1519,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get subtitleDelay => 'تاخیر در زیرنویس';
 
   @override
-  String get reset => 'بازنشانی';
+  String get reset => 'بازنشانی کنید';
 
   @override
   String get unknown => 'ناشناس';
@@ -1545,7 +1546,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get transcodeReasons => 'دلایل Transcode';
 
   @override
-  String get player => 'پخش‌کننده';
+  String get player => 'بازیکن';
 
   @override
   String get container => 'ظرف';
@@ -1569,7 +1570,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get videoBitrate => 'میزان بیت ویدیو';
 
   @override
-  String get track => 'قطعه';
+  String get track => 'آهنگ';
 
   @override
   String get channels => 'کانال ها';
@@ -1668,7 +1669,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get markAsRead => 'علامت گذاری به عنوان خوانده شده';
 
   @override
-  String get reloadReader => 'بارگذاری مجدد کتاب‌خوان';
+  String get reloadReader => 'Reload Reader';
 
   @override
   String get noPagesFound => 'هیچ صفحه ای یافت نشد';
@@ -1783,22 +1784,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'بعدی: $time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '$minutes دقیقه باقی‌مانده';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '$hours ساعت باقی‌مانده';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '$hours ساعت و $minutes دقیقه باقی‌مانده';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1820,7 +1821,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get favoriteChannel => 'کانال مورد علاقه';
 
   @override
-  String get record => 'ضبط';
+  String get record => 'ضبط کنید';
 
   @override
   String get cancelRecordingAction => 'لغو ضبط';
@@ -1835,7 +1836,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get unableToCreateRecording => 'امکان ایجاد ضبط وجود ندارد';
 
   @override
-  String get watch => 'تماشا';
+  String get watch => 'تماشا کنید';
 
   @override
   String get close => 'بستن';
@@ -1920,7 +1921,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'نوع حساب Seerr';
+  String get seerrAccountType => 'نوع حساب Serr';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -2002,7 +2003,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String seasonEpisodeLabel(int season, int episode) {
-    return 'فصل $season قسمت $episode';
+    return 'S$season E$episode';
   }
 
   @override
@@ -2026,7 +2027,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String seasonChip(int number) {
-    return 'فصل $number';
+    return 'S$number';
   }
 
   @override
@@ -2045,8 +2046,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count قسمت',
-      one: '1 قسمت',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2270,7 +2271,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'صفحات جزئیات، ردیف‌های صفحه اصلی و صدا';
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
@@ -2284,10 +2285,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'هنگام مرور صفحه اصلی بازی کنید';
 
   @override
-  String get loopThemeMusic => 'تکرار موسیقی تم';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
-  String get loopThemeMusicSubtitle => 'تکرار قطعه به‌جای پخش یک‌باره آن';
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => 'جزئیات تاری پس زمینه';
@@ -2310,23 +2312,23 @@ class AppLocalizationsFa extends AppLocalizations {
   String get playerZoomMode => 'حالت زوم بازیکن';
 
   @override
-  String get settingsScrollWheelAction => 'چرخ اسکرول ماوس';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'انتخاب کنید چرخاندن چرخ ماوس روی ویدیو هنگام پخش چه کاری انجام دهد.';
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => 'خاموش';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => 'پرش (جلو / عقب)';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => 'میزان صدا';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => 'میزان صدا';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'مناسب';
@@ -2341,7 +2343,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get refreshRateSwitching => 'تغییر نرخ تازه سازی';
 
   @override
-  String get disabled => 'غیرفعال';
+  String get disabled => 'از کار افتاده است';
 
   @override
   String get scaleOnTv => 'مقیاس در تلویزیون';
@@ -2380,36 +2382,37 @@ class AppLocalizationsFa extends AppLocalizations {
   String get defaultAudioLanguage => 'زبان صوتی پیش فرض';
 
   @override
-  String get fallbackAudioLanguage => 'زبان صوتی جایگزین';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack => 'ترجیح ترک صوتی پیش‌فرض';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'ترک صوتی اصلی به دوبله بومی‌سازی‌شده ترجیح داده شود.';
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription => 'ترجیح ترک‌های توضیح صوتی';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'ترک‌های توضیح صوتی به ترک‌های عادی ترجیح داده شوند.';
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => 'ترنسکد (صدا)';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => 'پخش مستقیم (Remux)';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
-  String get transcodingBitrateOrResolution => 'ترنسکد (نرخ بیت یا وضوح)';
+  String get transcodingBitrateOrResolution =>
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => 'ترنسکد (ویدیو و صدا)';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => 'ترنسکد (ویدیو)';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => 'خودکار (پیش‌فرض سرور)';
@@ -2469,10 +2472,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get polish => 'لهستانی';
 
   @override
-  String get ac3Passthrough => 'عبور مستقیم AC3';
+  String get ac3Passthrough => 'AC3 Passthrough';
 
   @override
-  String get dtsPassthrough => 'عبور مستقیم DTS';
+  String get dtsPassthrough => 'DTS Passthrough';
 
   @override
   String get trueHdSupport => 'پشتیبانی TrueHD';
@@ -2490,23 +2493,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'انتخاب کنید صدا چگونه رمزگشایی شود. عبور مستقیم AVR جریان‌های خام Dolby/DTS را به گیرنده شما می‌فرستد؛ خودکار یا داون‌میکس به‌صورت محلی رمزگشایی می‌کند.';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'عبور مستقیم AVR';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
   String get settingsAudioFallbackCodec => 'کدک بازگشتی صوتی';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'قالب مقصد را برای ترنسکد صدای چندکاناله انتخاب کنید؛ زمانی که جریان منبع قابل پخش مستقیم یا عبور مستقیم نیست.';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'تشخیص خودکار\n(توصیه‌شده)';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(پیش‌فرض)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2515,51 +2518,50 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(بدون افت کیفیت)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(فقط استریو)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(کارآمد)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(بدون افت کیفیت)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'حداکثر کانال‌های صوتی';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'حداکثر کانال‌های سیستم صوتی خود را تنظیم کنید. جریان‌های چندکاناله فراتر از این حد داون‌میکس یا ترنسکد می‌شوند.';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto =>
-      'تشخیص خودکار\n(پیش‌فرض سخت‌افزار)';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
-  String get settingsMaxAudioChannelsMono => '1.0 مونو';
+  String get settingsMaxAudioChannelsMono => '1.0 Mono';
 
   @override
-  String get settingsMaxAudioChannelsStereo => '2.0 استریو';
+  String get settingsMaxAudioChannelsStereo => '2.0 Stereo';
 
   @override
-  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 فراگیر';
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 چهارکاناله';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
 
   @override
-  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 فراگیر';
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels5_1 => '5.1 فراگیر';
+  String get settingsMaxAudioChannels5_1 => '5.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels6_1 => '6.1 فراگیر';
+  String get settingsMaxAudioChannels6_1 => '6.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels7_1 => '7.1 فراگیر';
+  String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
   String get settingsAudioPassthroughAdvanced => 'عبور (پیشرفته)';
@@ -2572,22 +2574,22 @@ class AppLocalizationsFa extends AppLocalizations {
       'فقط فرمت هایی را که سینک AVR یا HDMI شما پشتیبانی می کند، فعال کنید.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'عبور مستقیم EAC3';
+  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'عبور مستقیم EAC3 JOC (Atmos)';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'عبور مستقیم DTS Core';
+  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'عبور مستقیم DTS-HD MA';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'عبور مستقیم TrueHD';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'عبور مستقیم TrueHD Atmos';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
@@ -2640,11 +2642,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'بلندگو';
 
   @override
-  String get settingsAudioRouteHeadphones => 'هدفون';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '$count کانال PCM';
+    return '${count}ch PCM';
   }
 
   @override
@@ -2678,7 +2680,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'پشتیبانی از صدای HD در مسیر خروجی';
+      'Route HD Audio Support';
 
   @override
   String get nightMode => 'حالت شب';
@@ -2727,7 +2729,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '$value ثانیه';
+    return '${value}s';
   }
 
   @override
@@ -2817,45 +2819,45 @@ class AppLocalizationsFa extends AppLocalizations {
   String get subtitleCustomizationDescription => 'ظاهر زیرنویس را سفارشی کنید';
 
   @override
-  String get subtitleMode => 'حالت زیرنویس';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => 'نشان‌دار';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => 'همیشه';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => 'زبان خارجی';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => 'اجباری';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'ترک‌هایی را پخش می‌کند که در فراداده فایل رسانه به‌عنوان «پیش‌فرض» یا «اجباری» نشان‌گذاری شده‌اند.';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'هر بار که ویدیویی شروع می‌شود، زیرنویس‌ها را به‌طور خودکار بارگذاری و نمایش می‌دهد.';
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'اگر ترک صوتی پیش‌فرض به زبان خارجی باشد، زیرنویس‌ها را به‌طور خودکار روشن می‌کند.';
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'فقط زیرنویس‌هایی را بارگذاری می‌کند که صراحتاً با نشان فراداده «اجباری» برچسب خورده‌اند.';
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'بارگذاری خودکار زیرنویس را کاملاً غیرفعال می‌کند.';
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => 'زبان زیرنویس جایگزین';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => 'جریان زیرنویس';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText => 'روباه قهوه ای سریع از روی سگ تنبل می پرد';
@@ -2864,7 +2866,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get verticalOffset => 'افست عمودی';
 
   @override
-  String get pgsDirectPlay => 'پخش مستقیم PGS';
+  String get pgsDirectPlay => 'PGS Direct Play';
 
   @override
   String get directPlayPgsSubtitles => 'پخش مستقیم زیرنویس PGS';
@@ -3058,10 +3060,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showLibrariesInToolbar => 'نمایش کتابخانه ها در نوار ابزار';
 
   @override
-  String get navbarAlwaysExpanded => 'همیشه نمایش برچسب‌های نوار ناوبری';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => 'نمایش دکمه Seerr';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'کدورت نوار ناوبری';
@@ -3135,19 +3137,18 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showFolderBrowsingOption => 'نمایش گزینه مرور پوشه';
 
   @override
-  String get groupItemsIntoCollections => 'گروه‌بندی موارد در مجموعه‌ها';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'پنهان کردن موارد کتابخانه مرتبط با مجموعه هنگام مرور کتابخانه‌ها';
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle =>
-      'اطلاعیه گروه‌بندی کتابخانه';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'برای استفاده از این تنظیم، لطفاً مطمئن شوید تنظیمات کتابخانه‌ای «گروه‌بندی فیلم‌ها در مجموعه‌ها» و/یا «گروه‌بندی سریال‌ها در مجموعه‌ها» در بخش تنظیمات نمایش کتابخانه، روی سرور Jellyfin یا Emby شما فعال باشند.';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => 'قابلیت مشاهده کتابخانه';
@@ -3206,7 +3207,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'از بین سبک‌های مختلف نوار رسانه انتخاب کنید، یا نوار رسانه را خاموش کنید';
 
   @override
-  String get mediaBarModeMoonfin => 'Moonfin';
+  String get mediaBarModeMoonfin => 'باله ماه';
 
   @override
   String get mediaBarModeMakd => 'MakD';
@@ -3258,10 +3259,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'پخش خودکار تریلرها در نوار رسانه بعد از 3 ثانیه';
 
   @override
-  String get trailerAudio => 'صدای تریلر';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio => 'فعال کردن صدا برای تریلرها در نوار رسانه';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => 'پیش نمایش قسمت';
@@ -3338,11 +3339,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get combineBothRows => 'هر دو ردیف را در یک بخش خانه ترکیب کنید';
 
   @override
-  String get fullScreenRows => 'ردیف‌های گسترده صفحه اصلی';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription =>
-      'محدود کردن ردیف‌های صفحه اصلی به 1 ردیف در هر صفحه';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'نوع تصویر در هر ردیف';
@@ -3357,7 +3357,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get lastUser => 'آخرین کاربر';
 
   @override
-  String get currentUser => 'کاربر فعلی';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'همیشه احراز هویت';
@@ -3464,10 +3464,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'نمایش ساعت در حین محافظ صفحه نمایش';
 
   @override
-  String get clockModeStatic => 'ثابت';
+  String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => 'متحرک';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => 'گوجه فرنگی گندیده (منتقدان)';
@@ -3488,7 +3488,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get metacriticUser => 'متاکریتیک (کاربر)';
 
   @override
-  String get trakt => 'Trakt';
+  String get trakt => 'تراکت';
 
   @override
   String get letterboxd => 'جعبه نامه';
@@ -3509,7 +3509,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get additionalRatings => 'رتبه بندی های اضافی';
 
   @override
-  String get showMdbListAndTmdbRatings => 'نمایش امتیازهای MDBList و TMDB';
+  String get showMdbListAndTmdbRatings => 'نمایش رتبه بندی MDBLlist و TMDB';
 
   @override
   String get ratingLabels => 'برچسب های رتبه بندی';
@@ -3539,7 +3539,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'منابع رتبه بندی نشان داده شده در سراسر برنامه را فعال کرده و مرتب کنید';
 
   @override
-  String get pluginLabel => 'افزونه Moonbase';
+  String get pluginLabel => 'پلاگین';
 
   @override
   String get pluginDetected => 'پلاگین شناسایی شد';
@@ -3610,7 +3610,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get networks => 'شبکه ها';
 
   @override
-  String get seerrDiscoveryRows => 'ردیف‌های کشف Seerr';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'سطرها را به حالت پیش فرض بازنشانی کنید';
@@ -3633,27 +3633,28 @@ class AppLocalizationsFa extends AppLocalizations {
   String get hideAdultContent => 'محتوای بزرگسالان را در نتایج پنهان کنید';
 
   @override
-  String get seerrNotificationsSection => 'اعلان‌ها';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'اعلان درخواست‌های جدید';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'وقتی کسی درخواستی ثبت می‌کند به من اطلاع بده';
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'به‌روزرسانی درخواست‌ها';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'تأییدشده، ردشده و افزوده‌شده به کتابخانه شما';
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => 'به‌روزرسانی مشکلات';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
-  String get seerrNotifyIssuesSubtitle => 'مشکلات جدید، پاسخ‌ها و راه‌حل‌ها';
+  String get seerrNotifyIssuesSubtitle =>
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
@@ -3661,18 +3662,18 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get discoverRows => 'صفحه کشف Seerr';
+  String get discoverRows => 'ردیف ها را کشف کنید';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'ردیف‌هایی را که می‌خواهید در صفحه اصلی Seerr ببینید فعال کنید. برای تغییر ترتیب بکشید. ترتیب سفارشی با Moonbase همگام می‌شود.';
+      'برای سفارش مجدد بکشید. فعال یا غیرفعال کردن ردیف ها سفارش ردیف فعال با افزونه Moonfin همگام‌سازی می‌شود.';
 
   @override
   String get discoverRowsDescription =>
-      'ردیف‌هایی را که می‌خواهید در صفحه اصلی Seerr ببینید فعال کنید. برای تغییر ترتیب بکشید. ترتیب سفارشی با Moonbase همگام می‌شود.';
+      'برای سفارش مجدد بکشید. فعال یا غیرفعال کردن ردیف ها';
 
   @override
-  String get enabled => 'فعال';
+  String get enabled => 'فعال شد';
 
   @override
   String get hidden => 'پنهان شده است';
@@ -3790,7 +3791,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String gbValue(String value) {
-    return '$value گیگابایت';
+    return '$value GB';
   }
 
   @override
@@ -3824,11 +3825,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'در حال دانلود · $percent%';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'در حال وارد کردن';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
@@ -3836,7 +3837,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get seerrSettings => 'تنظیمات Seerr';
+  String get seerrSettings => 'تنظیمات Seer';
 
   @override
   String get requestMore => 'درخواست بیشتر';
@@ -3931,7 +3932,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showMore => 'نمایش بیشتر';
 
   @override
-  String get appearances => 'نقش‌آفرینی‌ها';
+  String get appearances => 'ظواهر';
 
   @override
   String get crewSection => 'خدمه';
@@ -3969,147 +3970,148 @@ class AppLocalizationsFa extends AppLocalizations {
   String get deletedStatus => 'حذف شد';
 
   @override
-  String get failedStatus => 'ناموفق';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => 'در حال پردازش';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return 'تغییر داده شده توسط $name';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => 'تکمیل شد';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => 'این عنوان قبلاً درخواست شده است';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => 'به سقف درخواست رسیدید';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => 'این عنوان در فهرست مسدود است';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons => 'فصلی برای درخواست باقی نمانده است';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
-  String get requestErrorPermission => 'شما اجازه ثبت این درخواست را ندارید';
+  String get requestErrorPermission =>
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => 'درخواست‌ها';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => 'مشکلات';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => 'جدیدترین';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => 'آخرین تغییر';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => 'هیچ مشکلی وجود ندارد';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining از $limit درخواست فیلم باقی مانده است';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining از $limit درخواست فصل باقی مانده است';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'بخشی از $name';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => 'مشاهده مجموعه';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => 'درخواست مجموعه';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total فیلم · $available در دسترس';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'درخواست $count فیلم';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'در حال درخواست $current از $total...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return '$count فیلم درخواست شد';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return '$ok فیلم از $total فیلم درخواست شد';
+    return 'Requested $ok of $total movies';
   }
 
   @override
   String get collectionAllRequested =>
-      'همه فیلم‌ها از قبل در دسترس یا درخواست شده‌اند';
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => 'گزارش مشکل';
+  String get reportIssue => 'Report Issue';
 
   @override
-  String get issueTypeVideo => 'ویدیو';
+  String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'صدا';
+  String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => 'مشکل چیست؟';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => 'همه قسمت‌ها';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => 'قسمت';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => 'باز';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => 'حل‌شده';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => 'حل کردن';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => 'بازگشایی';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return 'گزارش‌شده توسط $name';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count نظر';
+    return '$count comments';
   }
 
   @override
-  String get addComment => 'افزودن نظر';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => 'این مشکل حذف شود؟';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => 'ثبت گزارش';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'امتیاز TMDB';
@@ -4133,7 +4135,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get originalLanguageLabel => 'زبان اصلی';
 
   @override
-  String get seasonsLabel => 'فصل‌ها';
+  String get seasonsLabel => 'فصل ها';
 
   @override
   String get episodesLabel => 'اپیزودها';
@@ -4142,7 +4144,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get access => 'دسترسی داشته باشید';
 
   @override
-  String get add => 'افزودن';
+  String get add => 'اضافه کنید';
 
   @override
   String get address => 'آدرس';
@@ -4169,7 +4171,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get done => 'انجام شد';
 
   @override
-  String get edit => 'ویرایش';
+  String get edit => 'ویرایش کنید';
 
   @override
   String get encoding => 'رمزگذاری';
@@ -4178,10 +4180,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get error => 'خطا';
 
   @override
-  String get forward => 'جلو';
+  String get forward => 'به جلو';
 
   @override
-  String get general => 'عمومی';
+  String get general => 'ژنرال';
 
   @override
   String get go => 'برو';
@@ -4226,7 +4228,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get refresh => 'تازه کردن';
 
   @override
-  String get remote => 'کنترل از راه دور';
+  String get remote => 'از راه دور';
 
   @override
   String get rename => 'تغییر نام دهید';
@@ -4244,7 +4246,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get run => 'اجرا کنید';
 
   @override
-  String get search => 'جستجو';
+  String get search => 'جستجو کنید';
 
   @override
   String get select => 'انتخاب کنید';
@@ -4262,7 +4264,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get status => 'وضعیت';
 
   @override
-  String get stop => 'توقف';
+  String get stop => 'توقف کنید';
 
   @override
   String get streaming => 'پخش جریانی';
@@ -4271,7 +4273,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get time => 'زمان';
 
   @override
-  String get trickplay => 'Trickplay';
+  String get trickplay => 'ترفند بازی';
 
   @override
   String get uninstall => 'حذف نصب کنید';
@@ -4289,7 +4291,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get unmute => 'باصدا کردن';
 
   @override
-  String get mute => 'بی‌صدا';
+  String get mute => 'بی صدا';
 
   @override
   String get branding => 'برندسازی';
@@ -4310,28 +4312,28 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminDrawerUsers => 'کاربران';
 
   @override
-  String get adminDrawerLibraries => 'کتابخانه‌ها';
+  String get adminDrawerLibraries => 'کتابخانه ها';
 
   @override
-  String get adminDrawerDisplay => 'نمایش';
+  String get adminDrawerDisplay => 'Display';
 
   @override
-  String get adminDrawerMetadata => 'فراداده';
+  String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'تنظیمات NFO';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => 'رمزگذاری';
 
   @override
-  String get adminDrawerResume => 'ادامه';
+  String get adminDrawerResume => 'رزومه';
 
   @override
   String get adminDrawerStreaming => 'پخش جریانی';
 
   @override
-  String get adminDrawerTrickplay => 'Trickplay';
+  String get adminDrawerTrickplay => 'ترفند بازی';
 
   @override
   String get adminDrawerDevices => 'دستگاه ها';
@@ -4502,7 +4504,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionRewind => 'عقب';
 
   @override
-  String get sessionForward => 'جلو';
+  String get sessionForward => 'به جلو';
 
   @override
   String get sessionNext => 'بعدی';
@@ -4520,7 +4522,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get nowPlaying => 'در حال پخش';
 
   @override
-  String get volume => 'میزان صدا';
+  String get volume => 'حجم';
 
   @override
   String get actions => 'اقدامات';
@@ -4532,7 +4534,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get audioCodec => 'کدک صوتی';
 
   @override
-  String get hwAccel => 'شتاب سخت‌افزاری';
+  String get hwAccel => 'HW Accel';
 
   @override
   String get completion => 'تکمیل';
@@ -4547,10 +4549,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminClearDates => 'تاریخ ها را پاک کنید';
 
   @override
-  String get adminActivitySeverityAll => 'همه سطوح اهمیت';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => 'بازه زمانی';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
@@ -4587,23 +4589,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'دستگاه «$name» حذف شود؟ کاربر باید دوباره در این دستگاه وارد شود.';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'حذف همه دستگاه‌ها';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return '$count دستگاه حذف شود؟ کاربران متأثر باید دوباره وارد شوند. دستگاه فعلی شما تحت تأثیر قرار نمی‌گیرد.';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'دستگاه‌ها حذف شدند';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'برخی دستگاه‌ها حذف شدند؛ $count دستگاه حذف نشد.';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4718,247 +4720,244 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminMetadataCountryHint => 'به عنوان مثال ایالات متحده، DE، FR';
 
   @override
-  String get adminLibraryTabPaths => 'مسیرها';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => 'گزینه‌ها';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => 'دانلودکننده‌ها';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => 'ذخیره‌کننده‌های فراداده';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders => 'دانلودکننده‌های زیرنویس';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => 'دانلودکننده‌های متن ترانه';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'دانلودکننده‌های فراداده: $type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'دریافت‌کننده‌های تصویر: $type';
+    return 'Image fetchers: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'این سرور هیچ دانلودکننده‌ای برای این نوع کتابخانه ارائه نمی‌دهد.';
+      'This server exposes no downloaders for this library type.';
 
   @override
-  String get adminLibrarySectionGeneral => 'عمومی';
+  String get adminLibrarySectionGeneral => 'General';
 
   @override
-  String get adminLibrarySectionMetadata => 'فراداده';
+  String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'اطلاعات توکار';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => 'زیرنویس‌ها';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => 'تصاویر';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => 'سریال‌ها';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => 'موسیقی';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => 'فیلم‌ها';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor => 'فعال کردن پایش بی‌درنگ';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'تغییرات فایل‌ها شناسایی و به‌طور خودکار پردازش می‌شوند.';
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles =>
-      'در نظر گرفتن آرشیوها به‌عنوان فایل رسانه';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => 'نمایش عکس‌ها';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata => 'ذخیره آثار هنری در پوشه‌های رسانه';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => 'به‌روزرسانی خودکار فراداده';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => 'هرگز';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => 'پیش‌فرض';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => 'نمایش';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => 'نمایش کتابخانه';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
   String get adminLibFolderView =>
-      'نمایش نمای پوشه برای نشان دادن پوشه‌های رسانه ساده';
+      'Display a folder view to show plain media folders';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'نمایش قسمت‌های ویژه در فصلی که پخش شده‌اند';
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => 'گروه‌بندی فیلم‌ها در مجموعه‌ها';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => 'گروه‌بندی سریال‌ها در مجموعه‌ها';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
-  String get adminLibExternalSuggestions => 'نمایش محتوای خارجی در پیشنهادها';
+  String get adminLibExternalSuggestions =>
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => 'رفتار تاریخ افزودن';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => 'استفاده از تاریخ افزودن بر اساس';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport => 'تاریخ پویش در کتابخانه';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => 'تاریخ ایجاد فایل';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => 'فراداده و تصاویر';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => 'زبان ترجیحی فراداده';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => 'فصل‌ها';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration => 'مدت فصل ساختگی (ثانیه)';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'طول فصل‌هایی که برای رسانه‌های بدون فصل ساخته می‌شوند. برای غیرفعال کردن روی 0 تنظیم کنید.';
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution => 'وضوح تصویر فصل';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'تنظیمات NFO';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'فراداده NFO با Kodi و کلاینت‌های مشابه سازگار است. این تنظیمات برای همه کتابخانه‌هایی که فراداده NFO ذخیره می‌کنند اعمال می‌شود.';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser =>
-      'کاربری که داده‌های تماشای او در فایل‌های NFO ذخیره می‌شود';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths => 'ذخیره مسیر تصاویر در فایل‌های NFO';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
   String get adminLibPathSubstitution =>
-      'فعال کردن جایگزینی مسیر برای مسیرهای تصویر NFO';
+      'Enable path substitution for NFO image paths';
 
   @override
   String get adminLibExtraThumbs =>
-      'کپی تصاویر extrafanart در پوشه extrathumbs';
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => 'هیچ‌کدام';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days روز';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'استفاده از عنوان‌های توکار';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles =>
-      'استفاده از عنوان‌های توکار برای موارد اضافی';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos => 'استفاده از اطلاعات توکار قسمت';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'اجازه زیرنویس‌های توکار';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'اجازه همه';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => 'فقط متنی';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'فقط تصویری';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'هیچ‌کدام';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'رد کردن دانلود در صورت وجود زیرنویس توکار';
+      'Skip download if embedded subtitles are present';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'رد کردن دانلود اگر ترک صوتی با زبان دانلود مطابقت داشته باشد';
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch => 'الزام تطابق کامل زیرنویس';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'ذخیره زیرنویس‌ها در پوشه‌های رسانه';
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => 'استخراج تصاویر فصل';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'استخراج تصاویر فصل هنگام پویش کتابخانه';
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction =>
-      'فعال کردن استخراج تصاویر Trickplay';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'استخراج تصاویر Trickplay هنگام پویش کتابخانه';
+      'Extract trickplay images during the library scan';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'ذخیره تصاویر Trickplay در پوشه‌های رسانه';
+      'Save trickplay images into media folders';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'ادغام خودکار سریال‌هایی که در چند پوشه پراکنده‌اند';
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => 'نام نمایشی فصل صفر';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan => 'فعال کردن پویش LUFS برای یکسان‌سازی صدا';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'ترجیح برچسب هنرمندان غیراستاندارد';
+      'Prefer non-standard artists tag';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'افزودن خودکار فیلم‌ها به مجموعه‌ها';
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => 'نام کتابخانه الزامی است';
@@ -5194,143 +5193,143 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminEnableAllChannels => 'دسترسی به همه کانال ها را فعال کنید';
 
   @override
-  String get adminParentalControl => 'کنترل والدین';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating => 'حداکثر رده‌بندی سنی مجاز';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'محتوای با رده‌بندی بالاتر از این کاربر پنهان می‌شود.';
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => 'هیچ‌کدام';
+  String get adminParentalRatingNone => 'None';
 
   @override
   String get adminBlockUnratedItems =>
-      'مسدود کردن مواردی که اطلاعات رده‌بندی ندارند یا رده‌بندی‌شان ناشناخته است';
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => 'کتاب‌ها';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => 'کانال‌ها';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => 'تلویزیون زنده';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => 'فیلم‌ها';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => 'موسیقی';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => 'تریلرها';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'سریال‌ها';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => 'زمان‌بندی‌های دسترسی';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
   String get adminAccessSchedulesHint =>
-      'دسترسی فقط در زمان‌های زمان‌بندی‌شده زیر مجاز است. وقتی زمان‌بندی‌ای تنظیم نشده باشد، دسترسی در تمام طول روز مجاز است.';
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => 'افزودن زمان‌بندی';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => 'روز';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => 'شروع';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'پایان';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => 'هر روز';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => 'روزهای هفته';
+  String get adminDayWeekday => 'Weekday';
 
   @override
-  String get adminDayWeekend => 'آخر هفته';
+  String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => 'یکشنبه';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => 'دوشنبه';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => 'سه‌شنبه';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => 'چهارشنبه';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => 'پنجشنبه';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => 'جمعه';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => 'شنبه';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => 'برچسب‌های مجاز';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
   String get adminAllowedTagsHint =>
-      'فقط محتوای دارای این برچسب‌ها نمایش داده می‌شود. برای اجازه به همه، خالی بگذارید.';
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => 'برچسب‌های مسدود';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
   String get adminBlockedTagsHint =>
-      'محتوای دارای این برچسب‌ها از این کاربر پنهان می‌شود.';
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => 'افزودن برچسب';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => 'دستگاه‌های فعال';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => 'کانال‌های فعال';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => 'ارائه‌دهنده احراز هویت';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider => 'ارائه‌دهنده بازنشانی رمز عبور';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'حداکثر تلاش‌های ناموفق ورود پیش از قفل شدن';
+      'Maximum failed login attempts before lockout';
 
   @override
   String get adminLoginAttemptsHint =>
-      'برای مقدار پیش‌فرض روی 0 و برای غیرفعال کردن قفل شدن روی -1 تنظیم کنید.';
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'دسترسی SyncPlay';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin => 'اجازه ساخت و پیوستن به گروه‌ها';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => 'اجازه پیوستن به گروه‌ها';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => 'بدون دسترسی';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders => 'اجازه حذف محتوا از';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5417,26 +5416,25 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get adminBackupOptionsTitle => 'ایجاد پشتیبان';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude =>
-      'انتخاب کنید چه چیزی در پشتیبان گنجانده شود.';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => 'پایگاه داده';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => 'همیشه گنجانده می‌شود';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
-  String get adminBackupMetadata => 'فراداده';
+  String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'زیرنویس‌ها';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'تصاویر Trickplay';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => 'در حال ایجاد پشتیبان...';
@@ -5972,7 +5970,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminBaseUrl => 'URL پایه';
 
   @override
-  String get adminBaseUrlHint => 'مثلاً /jellyfin';
+  String get adminBaseUrlHint => 'به عنوان مثال /ژله فین';
 
   @override
   String get https => 'HTTPS';
@@ -6021,7 +6019,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get adminRefreshMetadata => 'به‌روزرسانی فراداده';
+  String get adminRefreshMetadata => 'Refresh Metadata';
 
   @override
   String get recursive => 'بازگشتی';
@@ -6133,59 +6131,60 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminAddTuner => 'تیونر را اضافه کنید';
 
   @override
-  String get adminEditTuner => 'ویرایش تیونر';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'تیونر M3U';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'فایل یا URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => 'آدرس IP تیونر';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => 'نام نمایشی';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
-  String get adminTunerUserAgent => 'عامل کاربر';
+  String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'محدودیت اتصال هم‌زمان';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
   String get adminTunerCountHelp =>
-      'حداکثر تعداد جریان‌هایی که تیونر به‌طور هم‌زمان اجازه می‌دهد. برای نامحدود روی 0 تنظیم کنید.';
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate => 'حداکثر نرخ بیت پخش جریانی جایگزین';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'وارد کردن فقط کانال‌های دلخواه';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'اجازه ترنسکد سخت‌افزاری';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 => 'اجازه کانتینر ترنسکد fMP4';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => 'اجازه اشتراک‌گذاری جریان';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping => 'فعال کردن تکرار جریان';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => 'نادیده گرفتن DTS';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
-  String get adminTunerReadAtNativeFramerate => 'خواندن ورودی با نرخ فریم اصلی';
+  String get adminTunerReadAtNativeFramerate =>
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => 'ویرایش ارائه‌دهنده';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6194,50 +6193,50 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'فایل یا URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'پیشوند فیلم';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => 'دسته‌بندی‌های فیلم';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'چند دسته‌بندی را با خط عمودی از هم جدا کنید.';
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => 'دسته‌بندی‌های کودکان';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => 'دسته‌بندی‌های اخبار';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => 'دسته‌بندی‌های ورزشی';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => 'نام کاربری';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => 'رمز عبور';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => 'کشور';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => 'یک کشور انتخاب کنید';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => 'کد پستی';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => 'دریافت فهرست برنامه‌ها';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => 'فهرست برنامه‌ها';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => 'فعال کردن همه تیونرها';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => 'نوع تیونر';
@@ -6279,7 +6278,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get adminTunerResetNotSupported =>
-      'این نوع تیونر از بازنشانی پشتیبانی نمی‌کند.';
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
@@ -6302,43 +6301,43 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminSeriesRecordingPath => 'مسیر ضبط سریال';
 
   @override
-  String get adminMovieRecordingPath => 'مسیر ضبط فیلم';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => 'روزهای داده راهنما';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => 'خودکار';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days روز';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor => 'مسیر برنامه پس‌پردازش';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'آرگومان‌های پس‌پردازنده';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo => 'ذخیره فراداده NFO ضبط';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => 'ذخیره تصاویر ضبط';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => 'زمان‌بندی';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => 'مسیرهای ضبط';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'پس‌پردازش';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'داده راهنما: $value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6379,14 +6378,14 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminGuideProviders => 'ارائه دهندگان راهنما';
 
   @override
-  String get adminRefreshGuideData => 'به‌روزرسانی داده راهنما';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted => 'به‌روزرسانی داده راهنما آغاز شد';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'وظیفه به‌روزرسانی راهنما در این سرور در دسترس نیست.';
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => 'ارائه دهنده را اضافه کنید';
@@ -6469,13 +6468,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminLiveTvTitle => 'مدیریت تلویزیون زنده';
 
   @override
-  String get adminApply => 'اعمال';
+  String get adminApply => 'درخواست کنید';
 
   @override
   String get adminNotSet => 'تنظیم نشده است';
 
   @override
-  String get adminReset => 'بازنشانی';
+  String get adminReset => 'بازنشانی کنید';
 
   @override
   String get adminLogsTitle => 'گزارش های سرور';
@@ -6521,7 +6520,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminMetadataEditorTitle => 'ویرایشگر فراداده';
 
   @override
-  String get adminMetadataIdentify => 'شناسایی';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => 'تایپ کنید';
@@ -6804,7 +6803,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get adminReposRemove => 'حذف';
+  String get adminReposRemove => 'حذف کنید';
 
   @override
   String adminReposSaveFailed(String error) {
@@ -6934,19 +6933,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminBrandingEnableSplash => 'روشن کردن صفحه نمایش را فعال کنید';
 
   @override
-  String get adminBrandingSplashUpload => 'بارگذاری تصویر';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded => 'صفحه شروع به‌روزرسانی شد';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed => 'بارگذاری صفحه شروع ناموفق بود';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => 'صفحه شروع حذف شد';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => 'بدون صفحه شروع سفارشی';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => 'شتاب سخت افزاری';
@@ -6963,121 +6962,121 @@ class AppLocalizationsFa extends AppLocalizations {
       'فعال کردن رمزگشایی سخت افزاری برای:';
 
   @override
-  String get adminPlaybackQsvDevice => 'دستگاه QSV';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'فعال کردن رمزگشای پیشرفته NVDEC';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'ترجیح رمزگشای سخت‌افزاری بومی سیستم';
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth => 'عمق رنگ رمزگشایی سخت‌افزاری';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => 'رمزگشایی 10-بیتی HEVC';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => 'رمزگشایی 10-بیتی VP9';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext =>
-      'رمزگشایی 8/10-بیتی HEVC RExt';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext => 'رمزگشایی 12-بیتی HEVC RExt';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'کدگذاری سخت‌افزاری';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'اجازه کدگذاری HEVC';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'اجازه کدگذاری AV1';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'فعال کردن کدگذار کم‌مصرف H.264 اینتل';
+      'Enable Intel low-power H.264 encoder';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'فعال کردن کدگذار کم‌مصرف HEVC اینتل';
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => 'نگاشت تُن';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'فعال کردن نگاشت تُن';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'فعال کردن نگاشت تُن VPP';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'فعال کردن نگاشت تُن VideoToolbox';
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'الگوریتم نگاشت تُن';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => 'حالت نگاشت تُن';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => 'محدوده نگاشت تُن';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'کاهش اشباع نگاشت تُن';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'اوج نگاشت تُن';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => 'پارامتر نگاشت تُن';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
-  String get adminPlaybackVppTonemappingBrightness => 'روشنایی نگاشت تُن VPP';
+  String get adminPlaybackVppTonemappingBrightness =>
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'کنتراست نگاشت تُن VPP';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality => 'پیش‌تنظیم‌ها و کیفیت';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => 'پیش‌تنظیم کدگذار';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'CRF کدگذاری H.264';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'CRF کدگذاری H.265 (HEVC)';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'روش حذف درهم‌بافتگی';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'دو برابر کردن نرخ فریم هنگام حذف درهم‌بافتگی';
+      'Double the frame rate when deinterlacing';
 
   @override
-  String get adminPlaybackAudioSection => 'صدا';
+  String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'فعال کردن کدگذاری VBR صدا';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost => 'تقویت داون‌میکس صدا';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'الگوریتم داون‌میکس استریو';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'حداکثر اندازه صف مالتی‌پلکس';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
-  String get adminPlaybackAutoOption => 'خودکار';
+  String get adminPlaybackAutoOption => 'Auto';
 
   @override
   String get adminPlaybackEncoding => 'رمزگذاری';
@@ -7192,10 +7191,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminTaskNeverRun => 'هرگز اجرا نکنید';
 
   @override
-  String get adminTaskStop => 'توقف';
+  String get adminTaskStop => 'توقف کنید';
 
   @override
-  String get adminRunningTasks => 'وظایف در حال اجرا';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => 'اجرا کنید';
@@ -7265,8 +7264,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count ساعت',
-      one: '1 ساعت',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7312,17 +7311,17 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '$minutes دقیقه';
+    return '${minutes}m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '$hours ساعت';
+    return '${hours}h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '$days روز';
+    return '${days}d';
   }
 
   @override
@@ -7341,49 +7340,49 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'URL پایه';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'مثلاً /jellyfin';
+  String get adminNetworkingBaseUrlHint => 'به عنوان مثال /ژله فین';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'پورت عمومی HTTP';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => 'الزام HTTPS';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'همه درخواست‌های راه دور به HTTPS هدایت می‌شوند. اگر سرور گواهی معتبر نداشته باشد، تأثیری ندارد.';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => 'رمز عبور گواهی';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'تنظیمات IP';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'فعال کردن IPv4';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'فعال کردن IPv6';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery => 'فعال کردن نگاشت خودکار پورت';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => 'شبکه‌های LAN';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'فهرست آدرس‌های IP یا زیرشبکه‌های CIDR که به‌عنوان شبکه محلی در نظر گرفته می‌شوند، جداشده با کاما یا خط جدید.';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => 'URIهای منتشرشده سرور';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'یک زیرشبکه یا آدرس را به یک URL منتشرشده نگاشت کنید، مثلاً all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'مسیر گواهینامه';
@@ -7413,11 +7412,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'بافر دریچه گاز';
 
   @override
-  String get adminPlaybackThrottleDelay => 'تأخیر محدودسازی (ثانیه)';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'اجازه استخراج زیرنویس در لحظه';
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => 'حداقل درصد رزومه';
@@ -7473,22 +7472,22 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminGeneralSlowResponseThreshold => 'آستانه پاسخ آهسته (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse => 'فعال کردن هشدارهای پاسخ کند';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => 'فعال کردن Quick Connect';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => 'سرور';
+  String get adminGeneralSectionServer => 'Server';
 
   @override
-  String get adminGeneralSectionMetadata => 'فراداده';
+  String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'مسیرها';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => 'کارایی';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => 'مسیر کش';
@@ -7500,7 +7499,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get adminGeneralServerName => 'نام سرور';
 
   @override
-  String get adminGeneralDisplayLanguage => 'زبان نمایش ترجیحی';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => 'تنظیمات بارگیری نشد';
@@ -7522,7 +7521,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get folders => 'پوشه ها';
 
   @override
-  String get libraries => 'کتابخانه‌ها';
+  String get libraries => 'کتابخانه ها';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -7552,8 +7551,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# شرکت‌کننده',
-      one: '# شرکت‌کننده',
+      other: '# participants',
+      one: '# participant',
     );
     return '$_temp0';
   }
@@ -7699,8 +7698,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# ردیف کشف شد',
-      one: '# ردیف کشف شد',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7741,20 +7740,20 @@ class AppLocalizationsFa extends AppLocalizations {
   String get offlineSavedMedia => 'رسانه ذخیره شده';
 
   @override
-  String get offlineBannerTitle => 'آفلاین هستید';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => 'نمایش دانلودهای شما';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => 'دانلودها';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => 'دسترسی به سرور شما ممکن نیست';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'تا بازگشت سرور، پخش از دانلودها انجام می‌شود';
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7833,34 +7832,33 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pinBackspace => 'بک اسپیس';
 
   @override
-  String get quickConnectAuthorized => 'درخواست Quick Connect تأیید شد.';
+  String get quickConnectAuthorized => 'درخواست اتصال سریع مجاز است.';
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'کد Quick Connect نامعتبر یا منقضی شده است.';
+      'کد اتصال سریع نامعتبر یا منقضی شده است.';
 
   @override
   String get quickConnectNotSupported =>
       'Quick Connect در این سرور پشتیبانی نمی شود.';
 
   @override
-  String get quickConnectAuthorizeFailed =>
-      'تأیید کد Quick Connect ناموفق بود.';
+  String get quickConnectAuthorizeFailed => 'کد اتصال سریع تأیید نشد.';
 
   @override
-  String get quickConnectDisabled => 'Quick Connect در این سرور غیرفعال است.';
+  String get quickConnectDisabled => 'اتصال سریع در این سرور غیرفعال است.';
 
   @override
   String get quickConnectForbidden =>
-      'حساب شما نمی‌تواند این درخواست Quick Connect را تأیید کند.';
+      'حساب شما نمی‌تواند این درخواست اتصال سریع را تأیید کند.';
 
   @override
   String get quickConnectNotFound =>
-      'کد Quick Connect یافت نشد. کد جدیدی را امتحان کنید.';
+      'کد اتصال سریع پیدا نشد. یک کد جدید را امتحان کنید.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect ناموفق بود: $message';
+    return 'اتصال سریع انجام نشد: $message';
   }
 
   @override
@@ -8025,7 +8023,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'پخش موقتاً متوقف شده است. هنوز هم تماشا می کنی؟';
 
   @override
-  String get stillWatchingStop => 'توقف';
+  String get stillWatchingStop => 'توقف کنید';
 
   @override
   String get stillWatchingContinue => 'ادامه دهید';
@@ -8110,13 +8108,13 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'پنهان کردن از «ادامه تماشا»';
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => 'پنهان کردن از «بعدی»';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => 'افزودن به مجموعه';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8169,14 +8167,14 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsAlphabetical => 'حروف الفبا';
 
   @override
-  String get settingsConnectionSection => 'اتصال';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'اجازه گواهی‌های خودامضا';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'به سرورهایی که از گواهی‌های TLS خودامضا یا CA خصوصی استفاده می‌کنند اعتماد کنید. فقط برای سرورهایی که خودتان کنترل می‌کنید فعال کنید. این کار اعتبارسنجی گواهی را برای همه اتصال‌ها غیرفعال می‌کند.';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'حریم خصوصی و ایمنی';
@@ -8192,11 +8190,11 @@ class AppLocalizationsFa extends AppLocalizations {
       'لهجه‌های تم، پس‌زمینه، شاخص‌های تماشا شده، و موسیقی تم';
 
   @override
-  String get settingsDetailsScreen => 'صفحه جزئیات';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'سبک، محوشدگی پس‌زمینه و رفتار برگه‌ها';
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => 'صفحه اصلی';
@@ -8234,11 +8232,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'نمایش دکمه Seerr در نوار ناوبری';
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'همیشه نمایش برچسب‌های متنی در نوار ناوبری بالا';
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8340,8 +8338,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# اعلان مجوز',
-      one: '# اعلان مجوز',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8388,16 +8386,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'از معرفی و برون رفت بگذرید؟';
 
   @override
-  String get settingsMediaSegmentCountdown => 'شمارش معکوس بخش رسانه';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => 'نوار پیشرفت';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => 'زمان‌شمار';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'هیچ‌کدام';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'کاربر سریع';
@@ -8529,7 +8527,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String settingsMillisecondsValue(int value) {
-    return '$value میلی‌ثانیه';
+    return '$value ms';
   }
 
   @override
@@ -8624,7 +8622,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return '$libraryName تازه‌منتشرشده';
+    return 'Recently Released $libraryName';
   }
 
   @override
@@ -8657,11 +8655,11 @@ class AppLocalizationsFa extends AppLocalizations {
       'اجباری پخش بدون تونل. برای دستگاه‌هایی با ناپیوستگی‌های صوتی/تصویری تونل‌سازی مفید است.';
 
   @override
-  String get enableTunnelingTitle => 'فعال کردن تونل‌سازی';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'پیشرفته. صدا و ویدیو را از یک مسیر سخت‌افزاری مشترک عبور می‌دهد. به‌طور پیش‌فرض خاموش است، زیرا در برخی دستگاه‌ها باعث قطعی صدا/تصویر می‌شود.';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title => 'نمایه 7 Dolby Vision را به HEVC نگاشت';
@@ -8687,14 +8685,14 @@ class AppLocalizationsFa extends AppLocalizations {
       'نکات اندازه فونت تعبیه شده در آهنگ زیرنویس را اعمال کنید. غیرفعال کردن استفاده از اندازه زیرنویس از تنظیمات برگزیده سبک.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'نمایش جزئیات رسانه';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'نمایش جزئیات مورد انتخاب‌شده در بالای صفحات کتابخانه.';
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries => 'پنهان کردن پس‌زمینه‌ها هنگام مرور؟';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
   String get useDetailedSubHeadings => 'از عناوین فرعی تفصیلی استفاده کنید';
@@ -8712,37 +8710,37 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get themeStore => 'فروشگاه تم';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle => 'مرور و ذخیره تم‌های انجمن';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
   String get themeStoreDescription =>
-      'یک تم را ذخیره کنید تا مانند سایر تم‌های ذخیره‌شده از آن استفاده کنید.';
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => 'در حال حاضر هیچ تمی در دسترس نیست.';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
   String get themeStoreLoadFailed =>
-      'بارگذاری فروشگاه تم ممکن نشد. اتصال خود را بررسی کرده و دوباره تلاش کنید.';
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => 'ذخیره';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => 'ذخیره و اعمال';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => 'ذخیره شد';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => 'این تم بارگذاری نشد.';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return '«$themeName» ذخیره شد.';
+    return 'Saved \"$themeName\".';
   }
 
   @override
@@ -8800,21 +8798,21 @@ class AppLocalizationsFa extends AppLocalizations {
   String get homeRowsSection => 'ردیف های صفحه اصلی';
 
   @override
-  String get homeRowDisplay => 'نمایش ردیف‌های صفحه اصلی';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => 'بخش‌های ردیف صفحه اصلی';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => 'کلیدهای ردیف صفحه اصلی';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'فعال یا غیرفعال کردن دسته‌بندی‌های ردیف صفحه اصلی مبتنی بر کتابخانه';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
-      'کلیدهای زیر را فعال کنید تا ردیف‌ها در بخش‌های صفحه اصلی نمایش داده شوند.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'نوع ردیف';
@@ -8873,56 +8871,55 @@ class AppLocalizationsFa extends AppLocalizations {
       'نمایش فیلم، سریال یا هر دو در ردیف‌های ژانر.';
 
   @override
-  String get displayPlaylistsRows => 'نمایش ردیف‌های لیست پخش';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'نمایش ردیف‌های لیست پخش در بخش‌های صفحه اصلی.';
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => 'مرتب‌سازی ردیف لیست پخش';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
   String get playlistsRowSortingDescription =>
-      'ردیف‌های لیست پخش را بر اساس تاریخ افزودن، تاریخ انتشار، ترتیب الفبا و موارد دیگر مرتب کنید.';
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => 'نمایش ردیف‌های صوتی';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle =>
-      'نمایش ردیف‌های صوتی در بخش‌های صفحه اصلی.';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => 'مرتب‌سازی ردیف‌های صوتی';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
   String get audioRowsSortingDescription =>
-      'ردیف‌های صوتی را بر اساس تاریخ افزودن، تاریخ انتشار، ترتیب الفبا و موارد دیگر مرتب کنید.';
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => 'لیست‌های پخش صوتی';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get appearance => 'ظاهر';
 
   @override
-  String get layout => 'چیدمان';
+  String get layout => 'Layout';
 
   @override
-  String get theme => 'تم';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => 'صفحه‌کلید';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => 'دکمه‌ها';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => 'رندرینگ';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'پیکربندی MPV';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'اندازه کارت';
@@ -8932,7 +8929,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get externalPlayerAppDescription =>
-      'پخش‌کننده خارجی را تنظیم کنید تا گزینه پخش با فشار طولانی فعال شود';
+      'Set external player to enable long-press play option';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
@@ -9198,7 +9195,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get appearancesSeerr => 'ظاهر (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'مشارکت‌های عوامل (Seerr)';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
   String get watchWithGroup => 'با گروه تماشا کنید';
@@ -9282,8 +9279,8 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count کتابخانه',
-      one: '1 کتابخانه',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
@@ -9374,7 +9371,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get mixedMoviesAndShows => 'فیلم‌ها و نمایش‌های ترکیبی';
 
   @override
-  String get intelQuickSync => 'Intel Quick Sync';
+  String get intelQuickSync => 'همگام سازی سریع اینتل';
 
   @override
   String get rockchipMpp => 'Rockchip MPP';
@@ -9441,13 +9438,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get loadingShuffle => 'در حال بارگیری ترکیبی...';
 
   @override
-  String get libraryShuffleLabel => 'پخش تصادفی کتابخانه';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => 'پخش تصادفی';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => 'پخش تصادفی ژانرها';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
   String get autoHdrSwitching => 'سوئیچینگ خودکار HDR';
@@ -9460,222 +9457,222 @@ class AppLocalizationsFa extends AppLocalizations {
   String get whenFullscreen => 'وقتی تمام صفحه';
 
   @override
-  String get changeArtwork => 'تغییر تصویر';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => 'موجود نیست';
+  String get missing => 'Missing';
 
   @override
   String get transcodingLimits => 'محدودیت های رمزگذاری';
 
   @override
-  String get clearAllArtworkButton => 'همه تصاویر پاک شوند؟';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'آیا مطمئن هستید که می‌خواهید همه تصاویر دانلودشده را پاک کنید؟';
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => 'تأیید پاک کردن';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'آیا مطمئن هستید که می‌خواهید این $itemType را پاک کنید؟';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => 'بارگذاری شود؟';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => 'وضوح: ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'فقط نمایش تصاویر به زبان رابط کاربری';
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => 'تأیید پاک کردن همه';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => 'تصویر با موفقیت بارگذاری شد!';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'بارگذاری تصویر ناموفق بود: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'تنظیم تصویر ناموفق بود: $error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'حذف تصویر ناموفق بود: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'پاک کردن همه تصاویر ناموفق بود: $error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => 'بله';
+  String get yes => 'Yes';
 
   @override
-  String get posterCategory => 'پوستر';
+  String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'پس‌زمینه‌ها';
+  String get backdropsCategory => 'Backdrops';
 
   @override
-  String get bannerCategory => 'بنر';
+  String get bannerCategory => 'Banner';
 
   @override
-  String get logoCategory => 'لوگو';
+  String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => 'تصویر بندانگشتی';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => 'تصویر هنری';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => 'تصویر دیسک';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'اسکرین‌شات';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => 'جلد جعبه';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => 'جلد پشت جعبه';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => 'تصویر منو';
+  String get menuArtCategory => 'Menu Art';
 
   @override
-  String get confirmItemPoster => 'پوستر';
+  String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => 'پس‌زمینه';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
-  String get confirmItemBanner => 'بنر';
+  String get confirmItemBanner => 'banner';
 
   @override
-  String get confirmItemLogo => 'لوگو';
+  String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => 'تصویر بندانگشتی';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => 'تصویر هنری';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => 'تصویر دیسک';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'اسکرین‌شات';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => 'جلد جعبه';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => 'جلد پشت جعبه';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => 'تصویر منو';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'همه';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => 'بالا (1080p+)';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => 'متوسط (720p)';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => 'پایین (<720p)';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => 'منابع';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => 'فصل‌ها';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => 'نشانک‌ها';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => 'یادداشت‌ها';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => 'صف پخش';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => 'خط زمانی';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => 'خط زمانی خالی است';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'کل کتاب';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => 'خط زمانی متمرکز';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => 'برون‌بری نشانک‌ها';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => 'برون‌بری یادداشت‌ها';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => 'برون‌بری همه';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'برون‌بری شد در $path';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'برون‌بری ناموفق بود: $error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => 'متن ترانه';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => 'افزودن نشانک';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => 'افزودن یادداشت';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => 'ویرایش یادداشت';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => 'برای این لحظه یادداشتی بنویسید';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => 'زمان‌سنج خواب';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => 'خاموش';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => 'پایان فصل';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => 'سفارشی';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining باقی‌مانده';
+    return '$remaining left';
   }
 
   @override
@@ -9683,58 +9680,58 @@ class AppLocalizationsFa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count دقیقه',
-      one: '1 دقیقه',
+      other: '$count min',
+      one: '1 min',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'سرعت پخش';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => 'باقی‌مانده';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => 'سپری‌شده';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return '$seconds ثانیه عقب';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return '$seconds ثانیه جلو';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'فصل قبلی';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => 'فصل بعدی';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'فصل $current از $total';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => 'بدون فصل';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => 'هنوز نشانکی نیست';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => 'هنوز یادداشتی نیست';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'نشانک در $position افزوده شد';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'بازنشانی به 1.0x';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9742,249 +9739,249 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'ذخیره';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => 'لغو';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => 'حذف';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => 'ترجیحات زیرنویس';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
   String get subtitlePreferencesDescription =>
-      'تغییر حالت‌های زیرنویس، زبان‌های پیش‌فرض، ظاهر و گزینه‌های رندر.';
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => 'رندر زیرنویس';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => 'گزینه‌های نمایش';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => 'تاریخ انتشار (صعودی)';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => 'تاریخ انتشار (نزولی)';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => 'گروه‌بندی مشارکت‌ها';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => 'گروه‌بندی چند نقش';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle => 'هشدار دسترسی نوشتن در کتابخانه';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => 'روش رفع این مشکل:';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. به کاربر سرویس Jellyfin (مثلاً jellyfin یا PUID/PGID داکر) برای پوشه‌های کتابخانه رسانه خود روی سرور، مجوز نوشتن بدهید.\n\n2. یا به داشبورد Jellyfin -> کتابخانه‌ها بروید، این کتابخانه را ویرایش کنید و «ذخیره آثار هنری در پوشه‌های رسانه» را غیرفعال کنید تا آثار هنری در پایگاه داده داخلی Jellyfin ذخیره شوند.';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => 'بستن';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'کتابخانه «$libraryName» شما طوری پیکربندی شده که آثار هنری را مستقیماً در پوشه‌های رسانه ذخیره کند («ذخیره آثار هنری در پوشه‌های رسانه» فعال است). با این حال، Jellyfin دسترسی نوشتن را آزمایش کرده و مجوز نوشتن فایل در این پوشه را ندارد:\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'به نظر می‌رسد Jellyfin نتوانسته آثار هنری را به‌روزرسانی کند. کتابخانه شما طوری پیکربندی شده که آثار هنری را مستقیماً در پوشه‌های رسانه ذخیره کند («ذخیره آثار هنری در پوشه‌های رسانه» فعال است). این خطا معمولاً زمانی رخ می‌دهد که فرایند سرور Jellyfin مجوز نوشتن فایل در پوشه‌های رسانه شما را نداشته باشد.';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'فهرست‌های خارجی';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => 'پخش دوباره';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => 'اطلاعات فایل';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'اندازه: $size  •  قالب: $format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'نمایش همه ($count) ترک صوتی';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'نمایش همه ($count) ترک زیرنویس';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay => 'در حال بررسی قابلیت پخش مستقیم...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel => 'قابلیت پخش مستقیم: ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => 'اجباری';
+  String get forced => 'Forced';
 
   @override
   String get transcodeContainerNotSupported =>
-      'قالب کانتینر توسط پخش‌کننده پشتیبانی نمی‌شود.';
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'کدک ویدیو پشتیبانی نمی‌شود.';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'کدک صدا پشتیبانی نمی‌شود.';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'قالب زیرنویس پشتیبانی نمی‌شود (نیاز به چاپ روی تصویر دارد).';
+      'Subtitle format is not supported (requires burning).';
 
   @override
   String get transcodeAudioProfileNotSupported =>
-      'پروفایل صدا پشتیبانی نمی‌شود.';
+      'Audio profile is not supported.';
 
   @override
   String get transcodeVideoProfileNotSupported =>
-      'پروفایل ویدیو پشتیبانی نمی‌شود.';
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported => 'سطح ویدیو پشتیبانی نمی‌شود.';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'وضوح ویدیو توسط این دستگاه پشتیبانی نمی‌شود.';
+      'Video resolution is not supported by this device.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'عمق بیت ویدیو پشتیبانی نمی‌شود.';
+      'Video bit depth is not supported.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'نرخ فریم ویدیو پشتیبانی نمی‌شود.';
+      'Video framerate is not supported.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'نرخ بیت فایل از حد پخش جریانی پخش‌کننده فراتر است.';
+      'File bitrate exceeds player streaming limit.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'نرخ بیت ویدیو از حد پخش جریانی فراتر است.';
+      'Video bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'نرخ بیت صدا از حد پخش جریانی فراتر است.';
+      'Audio bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'تعداد کانال‌های صوتی پشتیبانی نمی‌شود.';
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => 'الفبایی';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => 'ترتیب انتشار (صعودی)';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => 'ترتیب انتشار (نزولی)';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => 'سفارشی (کشیدن و رها کردن)';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => 'گزینه‌های مرتب‌سازی لیست پخش';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => 'بازنشانی مرتب‌سازی';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'تماشای دوباره فصل $season قسمت $episode';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'تماشای دوباره لیست پخش';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => 'زیرنویسی یافت نشد.';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => 'کنترل‌های مدیر';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => 'موتور رندر (Impeller)';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller موتور رندر مدرن GPU در Flutter است که انیمیشن‌های روان‌تر و پرش کمتری ارائه می‌دهد. در برخی تی‌وی‌باکس‌ها و GPUهای قدیمی ممکن است باعث اشکال تصویری یا ویدیوی سیاه شود؛ در این صورت آن را خاموش کنید. خودکار بهترین حالت پیش‌فرض را برای دستگاه شما انتخاب می‌کند. برای اعمال، Moonfin را دوباره راه‌اندازی کنید.';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => 'خودکار';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => 'روشن';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => 'خاموش';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => 'راه‌اندازی مجدد لازم است';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'برای تغییر موتور رندر، Moonfin باید دوباره راه‌اندازی شود. اکنون برنامه را ببندید و سپس دوباره باز کنید تا اعمال شود.';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => 'اکنون برنامه بسته شود';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => 'به‌روزرسانی کتابخانه';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => 'به‌روزرسانی همه کتابخانه‌ها';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest => 'تاریخ افزودن (قدیمی‌ترین اول)';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => 'تاریخ افزودن (جدیدترین اول)';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => 'الفبایی (الف تا ی)';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'الفبایی (ی تا الف)';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'در حال بارگذاری تحلیل‌های سرور... $percentage%';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'مطابق با منبع';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => '250 فیلم برتر IMDb';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => '250 سریال برتر IMDb';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'محبوب‌ترین فیلم‌های IMDb';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'محبوب‌ترین سریال‌های IMDb';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies => 'کم‌امتیازترین فیلم‌های IMDb';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies => 'برترین فیلم‌های انگلیسی‌زبان IMDb';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

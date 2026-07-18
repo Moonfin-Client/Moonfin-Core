@@ -12,27 +12,27 @@ class AppLocalizationsSw extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'MAPENDELEO YA AKAUNTI';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => 'Lugha ya Kiolesura';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => 'Chaguo-msingi la Mfumo';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'Ingia';
 
   @override
-  String get empty => 'Tupu';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Inaunganisha kwenye $serverName';
+    return 'Connecting to $serverName';
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'Unganisha Haraka';
 
   @override
   String get password => 'Nenosiri';
@@ -61,12 +61,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect haipatikani: $detail';
+    return 'QuickConnect unavailable: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect haipatikani ($status): $detail';
+    return 'QuickConnect unavailable ($status): $detail';
   }
 
   @override
@@ -80,7 +80,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin toleo $version';
+    return 'Moonfin version $version';
   }
 
   @override
@@ -106,7 +106,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Ondoa \"$serverName\" kutoka kwa seva zako?';
+    return 'Remove \"$serverName\" from your servers?';
   }
 
   @override
@@ -141,62 +141,62 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsAppearanceTheme => 'Mandhari ya Programu';
 
   @override
-  String get detailScreenStyle => 'Mtindo wa skrini ya maelezo';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klasiki ni mpangilio asili wa Moonfin ulio katikati. Kisasa ni mpangilio wa kisinema unaojirekebisha.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Klasiki';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
-  String get detailScreenStyleModern => 'Kisasa';
+  String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'Vichupo Vilivyopanuliwa';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
   String get expandedTabsSubtitle =>
-      'Onyesha maudhui ya kichupo kiotomatiki unapovinjari vichupo. Zima ili kufungua na kufunga kila kichupo mwenyewe.';
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => 'Onyesha Maelezo ya Kiufundi?';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Onyesha maelezo ya kodeki, mwonekano, na mtiririko katika muhtasari wa bango';
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => 'Mfumo wa Mapendekezo';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Tumia algoriti ya maktaba ya ndani ya Moonfin Recommends au Vipimo vya Ufanano vya TMDb mtandaoni. Kumbuka: Mapendekezo ya mtandaoni yanahitaji muunganisho wa Seerr.';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'Ufanano wa TMDb';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Tumia Kikomo cha Ukadiriaji wa Wazazi?';
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Punguza mapendekezo ya Moonfin Recommends kulingana na ukadiriaji wa wazazi wa maudhui lengwa';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => 'Mtindo wa Kiolesura';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Kiotomatiki hulingana na kifaa chako. Chagua Apple au Material ili kulazimisha muonekano.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => 'Kiotomatiki';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -205,38 +205,38 @@ class AppLocalizationsSw extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Ubora wa Glass';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      'Otomatiki huchagua athari bora ya glass kwa kifaa hiki. Kamili hulazimisha ukungu halisi; Iliyopunguzwa hutumia glass nyepesi inayookoa nguvu ya GPU.';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
-  String get glassQualityAuto => 'Otomatiki';
+  String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => 'Kamili';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'Iliyopunguzwa';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'Badili kati ya Moonfin na Neon Pulse bila kuanzisha upya programu';
 
   @override
-  String get customThemeTitle => 'Mandhari Maalum';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
   String get customThemeSubtitle =>
-      'Mandhari maalum hubadilisha vipengele vya kuonekana katika Moonfin nzima. Chagua mojawapo ya chaguo hizi ili kuendana na mtindo wako.';
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
-  String get keyboardPreferSystemIme => 'Pendelea kibodi ya mfumo';
+  String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Tumia mbinu ya kuingiza maandishi ya kifaa chako kama chaguo-msingi';
+      'Use your device input method by default for text entry';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -257,14 +257,14 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get themeGlassSubtitle =>
-      'Mtindo wa glasi-tiririka wenye mandharinyuma ya rangi inayosogea, nyuso zenye ukungu, na rangi ya samawati ya Apple';
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
   String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Mtindo wa sanaa ya pikseli wa zamani wenye rangi nzito, mipaka ya vitalu, vivuli vikali, na fonti ya pikseli';
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -315,7 +315,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Imeshindwa kuunganisha kwenye $target';
+    return 'Unable to connect to $target';
   }
 
   @override
@@ -328,36 +328,35 @@ class AppLocalizationsSw extends AppLocalizations {
   String get exit => 'Utgång';
 
   @override
-  String get gameMenu => 'Menyu';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => 'Imesitishwa';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => 'Hifadhi hali';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => 'Michezo';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => 'Pakia hali';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => 'Sogeza mbele haraka';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => 'Mipangilio ya emulator';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions =>
-      'Kiini hiki hakina chaguo zinazoweza kurekebishwa.';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => 'Shikilia ili kufungua menyu';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
   String get gamePlaybackUnsupported =>
-      'Kucheza michezo hakutumiki kwenye kifaa hiki bado.';
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded =>
@@ -380,13 +379,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get schedule => 'Ratiba';
 
   @override
-  String get series => 'Mifululizo';
+  String get series => 'Mfululizo';
 
   @override
   String get noItemsFound => 'Hakuna vipengee vilivyopatikana';
 
   @override
-  String get home => 'Mwanzo';
+  String get home => 'Nyumbani';
 
   @override
   String get browseAll => 'Vinjari Vyote';
@@ -432,7 +431,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Imeshindwa kupakia folda: $error';
+    return 'Failed to load folder: $error';
   }
 
   @override
@@ -440,7 +439,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return 'vipengee $count';
+    return '$count items';
   }
 
   @override
@@ -457,7 +456,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return 'Vipengee $count';
+    return '$count Items';
   }
 
   @override
@@ -498,7 +497,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Aina';
+    return '$name — Genres';
   }
 
   @override
@@ -537,17 +536,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return 'dk $count zilizopita';
+    return '${count}m ago';
   }
 
   @override
   String hoursAgo(int count) {
-    return 'saa $count zilizopita';
+    return '${count}h ago';
   }
 
   @override
   String daysAgo(int count) {
-    return 'siku $count zilizopita';
+    return '${count}d ago';
   }
 
   @override
@@ -558,7 +557,7 @@ class AppLocalizationsSw extends AppLocalizations {
       'Chagua milisho ya mada ya kuonyesha katika Dokezo.';
 
   @override
-  String get apply => 'Tumia';
+  String get apply => 'Omba';
 
   @override
   String get openLink => 'Fungua Kiungo';
@@ -582,7 +581,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return 'vichwa $count';
+    return '$count titles';
   }
 
   @override
@@ -670,17 +669,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return 'waandishi $count';
+    return '$count authors';
   }
 
   @override
   String genresCount(int count) {
-    return 'aina $count';
+    return '$count genres';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% imekamilika';
+    return '$percent% completed';
   }
 
   @override
@@ -697,11 +696,11 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return 'Vichwa $count vimepangwa kwa uvinjari unaotanguliza usomaji.';
+    return '$count titles arranged for reading-first browsing.';
   }
 
   @override
-  String get titles => 'Vichwa';
+  String get titles => 'Majina';
 
   @override
   String get allTitles => 'Majina Yote';
@@ -734,7 +733,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'Hakuna $label';
+    return 'No $label found';
   }
 
   @override
@@ -753,13 +752,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get readStatus => 'Soma';
 
   @override
-  String get watched => 'Zilizotazamwa';
+  String get watched => 'Imetazamwa';
 
   @override
   String get unread => 'Haijasomwa';
 
   @override
-  String get unwatched => 'Zisizotazamwa';
+  String get unwatched => 'Isiyotazamwa';
 
   @override
   String get seriesStatus => 'Hali ya Mfululizo';
@@ -771,43 +770,43 @@ class AppLocalizationsSw extends AppLocalizations {
   String get books => 'Vitabu';
 
   @override
-  String get latestBooks => 'Vitabu vya Hivi Punde';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => 'Vitabu vya Sauti vya Hivi Punde';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'vitabu $count',
-      one: 'kitabu 1',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Kitabu';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => 'Kitabu cha Sauti';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% kimesomwa';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time zimesalia';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => 'Soma';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => 'Sikiliza';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => 'Mwandishi';
@@ -845,12 +844,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return 'sehemu $count';
+    return '$count sections';
   }
 
   @override
   String firstPublished(int year) {
-    return 'Ilichapishwa kwa mara ya kwanza $year';
+    return 'First published $year';
   }
 
   @override
@@ -865,7 +864,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return 'vitabu $count';
+    return '$count books';
   }
 
   @override
@@ -876,7 +875,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return 'Waandishi $count';
+    return '$count Authors';
   }
 
   @override
@@ -884,8 +883,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'vitabu $count vya sauti',
-      one: 'kitabu 1 cha sauti',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -933,7 +932,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get movies => 'Filamu';
 
   @override
-  String get musicVideos => 'Video za Muziki';
+  String get musicVideos => 'Music Videos';
 
   @override
   String get other => 'Nyingine';
@@ -952,7 +951,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Diski $number';
+    return 'Disc $number';
   }
 
   @override
@@ -978,7 +977,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Ilichapishwa $year';
+    return 'Published $year';
   }
 
   @override
@@ -989,52 +988,52 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Misimu $count',
-      one: 'Msimu 1',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Inaisha $time';
+    return 'Ends at $time';
   }
 
   @override
-  String get items => 'Vipengee';
+  String get items => 'Items';
 
   @override
-  String get extras => 'Nyongeza';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => 'Nyuma ya Pazia';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => 'Matukio Yaliyofutwa';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => 'Vipengele Vifupi';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'Mahojiano';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => 'Matukio';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => 'Filamu Fupi';
+  String get shorts => 'Shorts';
 
   @override
-  String get trailers => 'Trela';
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
-    return '$time zimesalia';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return 'Inaisha baada ya $time';
+    return 'Ends in $time';
   }
 
   @override
@@ -1048,7 +1047,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Endelea kutoka $position';
+    return 'Resume from $position';
   }
 
   @override
@@ -1148,7 +1147,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Futa nyimbo zilizopakuliwa za \"$title\"?';
+    return 'Delete downloaded tracks for \"$title\"?';
   }
 
   @override
@@ -1163,17 +1162,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'Hakuna $itemLabel';
+    return 'No $itemLabel loaded';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Inapakua $title (vipengee $count)...';
+    return 'Downloading $title ($count items)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Una uhakika unataka kufuta \"$name\" kutoka kwa seva? Kitendo hiki hakiwezi kutenduliwa.';
+    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
   }
 
   @override
@@ -1185,7 +1184,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Muundo wa kitabu hauhimiliwi: .$extension';
+    return 'Unsupported book format: .$extension';
   }
 
   @override
@@ -1212,7 +1211,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Manukuu yamepakuliwa na kuchaguliwa: $name';
+    return 'Subtitle downloaded and selected: $name';
   }
 
   @override
@@ -1221,7 +1220,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'Hakuna manukuu ya mbali yaliyopatikana kwa $language.';
+    return 'No remote subtitles found for $language.';
   }
 
   @override
@@ -1229,7 +1228,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Toleo $number';
+    return 'Version $number';
   }
 
   @override
@@ -1249,7 +1248,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Inapakua $name ($quality)...';
+    return 'Downloading $name ($quality)...';
   }
 
   @override
@@ -1257,7 +1256,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Futa faili za ndani za $typeLabel?\n\nHii itaachilia nafasi ya hifadhi. Unaweza kupakua tena baadaye.';
+    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
   }
 
   @override
@@ -1273,10 +1272,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get director => 'MKURUGENZI';
 
   @override
-  String get directors => 'WAKURUGENZI';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => 'MWANDISHI';
+  String get writer => 'WRITER';
 
   @override
   String get writers => 'WAANDISHI';
@@ -1286,12 +1285,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count zaidi';
+    return '+$count more';
   }
 
   @override
   String totalEpisodes(int count) {
-    return 'Vipindi $count';
+    return '$count Episodes';
   }
 
   @override
@@ -1301,12 +1300,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Kipindi $number';
+    return 'Episode $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Sura $number';
+    return 'Chapter $number';
   }
 
   @override
@@ -1314,8 +1313,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'nyimbo $count',
-      one: 'wimbo 1',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1325,25 +1324,25 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'sura $count',
-      one: 'sura 1',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Alizaliwa $date';
+    return 'Born $date';
   }
 
   @override
   String died(String date) {
-    return 'Alifariki $date';
+    return 'Died $date';
   }
 
   @override
   String age(int age) {
-    return 'Umri $age';
+    return 'Age $age';
   }
 
   @override
@@ -1356,17 +1355,17 @@ class AppLocalizationsSw extends AppLocalizations {
   String get shuffle => 'Changanya';
 
   @override
-  String get shuffleAllMusic => 'Changanya muziki wote';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => 'Ingia kwenye Moonfin kwenye simu yako';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => 'Haiwezi kufikia seva yako';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
-    return 'vipakuliwa $count';
+    return '$count downloads';
   }
 
   @override
@@ -1385,32 +1384,32 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return '$action ya manukuu ya mbali inahitaji ruhusa ya usimamizi wa manukuu ya Jellyfin kwa mtumiaji huyu.';
+    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'Kipengee hiki hakikupatikana kwenye seva kwa $action ya manukuu ya mbali.';
+    return 'This item could not be found on the server for remote subtitle $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return '$action ya manukuu ya mbali imeshindwa: $detail';
+    return 'Remote subtitle $action failed: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return '$action ya manukuu ya mbali imeshindwa (HTTP $status).';
+    return 'Remote subtitle $action failed (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Imeshindwa kufanya $action ya manukuu ya mbali.';
+    return 'Failed to $action remote subtitles.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'vipindi vyote vilivyopakuliwa vya \"$name\"';
+    return 'all downloaded episodes for \"$name\"';
   }
 
   @override
@@ -1441,17 +1440,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return 'Kitendo cha $label kimeshindwa: $error';
+    return '$label action failed: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Imeshindwa kuweka sauti ya utumaji: $error';
+    return 'Failed to set cast volume: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return 'Vidhibiti vya $label';
+    return '$label Controls';
   }
 
   @override
@@ -1468,7 +1467,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Simamisha $label';
+    return 'Stop $label';
   }
 
   @override
@@ -1476,7 +1475,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Wimbo $number';
+    return 'Track $number';
   }
 
   @override
@@ -1493,7 +1492,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return 'sekunde $seconds';
+    return '$seconds seconds';
   }
 
   @override
@@ -1562,13 +1561,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get transcodeReasons => 'Sababu za Transcode';
 
   @override
-  String get player => 'Kichezaji';
+  String get player => 'Mchezaji';
 
   @override
   String get container => 'Chombo';
 
   @override
-  String get bitrate => 'Kasi ya biti';
+  String get bitrate => 'Bitrate';
 
   @override
   String get video => 'Video';
@@ -1608,12 +1607,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return 'Hitilafu ya kipindi cha $protocol';
+    return '$protocol session error';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Imeshindwa kupakia maelezo ya kitabu: $error';
+    return 'Failed to load book details: $error';
   }
 
   @override
@@ -1622,7 +1621,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'Muundo huu (.$extension) hauwezi kuonyeshwa ndani ya programu bado.';
+    return 'This format (.$extension) cannot be rendered in-app yet.';
   }
 
   @override
@@ -1635,17 +1634,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Imeshindwa kufungua kisomaji cha ndani ya programu: $error';
+    return 'Failed to open in-app reader: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Alamisho tayari limehifadhiwa kwenye $label.';
+    return 'Bookmark already saved at $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Alamisho limeongezwa: $label';
+    return 'Bookmark added: $label';
   }
 
   @override
@@ -1658,7 +1657,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Ukurasa $number';
+    return 'Page $number';
   }
 
   @override
@@ -1669,12 +1668,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Muundo: .$extension';
+    return 'Format: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% kimesomwa';
+    return '$percent% read';
   }
 
   @override
@@ -1697,7 +1696,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Weka Upya Ukuzaji (${zoom}x)';
+    return 'Reset Zoom (${zoom}x)';
   }
 
   @override
@@ -1720,7 +1719,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Imeshindwa kusasisha hali ya kusoma: $error';
+    return 'Failed to update read state: $error';
   }
 
   @override
@@ -1753,7 +1752,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'Jukwaa hili haliwezi kuendesha injini ya hati iliyopachikwa kwa faili za $extension.';
+    return 'This platform cannot host the embedded document engine for $extension files.';
   }
 
   @override
@@ -1792,33 +1791,33 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Imeshindwa kupakia mwongozo: $error';
+    return 'Failed to load guide: $error';
   }
 
   @override
   String get noChannelsFound => 'Hakuna vituo vilivyopatikana';
 
   @override
-  String get liveBadge => 'MUBASHARA';
+  String get liveBadge => 'LIVE';
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Inayofuata: $time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return 'dk $minutes zimesalia';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return 'saa $hours zimesalia';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return 'saa $hours dk $minutes zimesalia';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1842,19 +1841,19 @@ class AppLocalizationsSw extends AppLocalizations {
   String get favoriteChannel => 'Idhaa Unayoipenda';
 
   @override
-  String get record => 'Rekodi';
+  String get record => 'Record';
 
   @override
-  String get cancelRecordingAction => 'Ghairi Kurekodi';
+  String get cancelRecordingAction => 'Cancel Recording';
 
   @override
-  String get programSetToRecord => 'Kipindi kimewekwa kurekodiwa';
+  String get programSetToRecord => 'Program set to record';
 
   @override
-  String get recordingCancelled => 'Kurekodi kumeghairiwa';
+  String get recordingCancelled => 'Recording cancelled';
 
   @override
-  String get unableToCreateRecording => 'Imeshindwa kuunda rekodi';
+  String get unableToCreateRecording => 'Unable to create recording';
 
   @override
   String get watch => 'Tazama';
@@ -1864,7 +1863,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Imeshindwa kucheza $name';
+    return 'Failed to play $name';
   }
 
   @override
@@ -1890,7 +1889,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Ghairi kurekodi kulikopangwa kwa \"$name\"?';
+    return 'Cancel scheduled recording of \"$name\"?';
   }
 
   @override
@@ -1918,7 +1917,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Simamisha kurekodi \"$name\"?';
+    return 'Stop recording \"$name\"?';
   }
 
   @override
@@ -1933,19 +1932,19 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'Hakuna matokeo ya \"$query\"';
+    return 'No results for \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Utafutaji umeshindwa: $error';
+    return 'Search failed: $error';
   }
 
   @override
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'Aina ya Akaunti ya Seerr';
+  String get seerrAccountType => 'Aina ya Akaunti ya Mtazamaji';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -1979,12 +1978,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Ondoa \"$name\" na faili zake?';
+    return 'Remove \"$name\" and its files?';
   }
 
   @override
   String tracksCount(int count) {
-    return 'nyimbo $count';
+    return '$count tracks';
   }
 
   @override
@@ -1995,12 +1994,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Imeshindwa kupakia albamu: $error';
+    return 'Failed to load album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'Hakuna nyimbo zilizopakuliwa zilizopatikana za $name.';
+    return 'No downloaded tracks found for $name.';
   }
 
   @override
@@ -2017,22 +2016,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Ondoa \"$name\"?';
+    return 'Remove \"$name\"?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return 'dk $minutes';
+    return '$minutes min';
   }
 
   @override
   String seasonEpisodeLabel(int season, int episode) {
-    return 'M$season K$episode';
+    return 'S$season E$episode';
   }
 
   @override
   String episodeNumber(int number) {
-    return 'Kipindi $number';
+    return 'Episode $number';
   }
 
   @override
@@ -2046,12 +2045,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Msimu $number';
+    return 'Season $number';
   }
 
   @override
   String seasonChip(int number) {
-    return 'M$number';
+    return 'S$number';
   }
 
   @override
@@ -2062,7 +2061,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Futa vipindi vyote vilivyopakuliwa katika $season?';
+    return 'Delete all downloaded episodes in $season?';
   }
 
   @override
@@ -2070,8 +2069,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'vipindi $count',
-      one: 'kipindi 1',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2106,7 +2105,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Futa vipengee $count vilivyopakuliwa?';
+    return 'Delete $count downloaded items?';
   }
 
   @override
@@ -2120,7 +2119,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'kati ya kikomo cha $limit';
+    return 'of $limit limit';
   }
 
   @override
@@ -2204,7 +2203,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return 'chaguo $count';
+    return '$count options';
   }
 
   @override
@@ -2280,7 +2279,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get fireworks => 'Fataki';
 
   @override
-  String get confetti => 'Konfeti';
+  String get confetti => 'Confetti';
 
   @override
   String get fallingLeaves => 'Kuanguka Majani';
@@ -2297,7 +2296,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'Kurasa za maelezo, safu za nyumbani, na sauti';
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
@@ -2313,11 +2312,11 @@ class AppLocalizationsSw extends AppLocalizations {
       'Cheza unapovinjari skrini ya nyumbani';
 
   @override
-  String get loopThemeMusic => 'Rudia Muziki wa Mandhari';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'Rudia wimbo badala ya kuucheza mara moja';
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => 'Ukungu wa Mandharinyuma ya Maelezo';
@@ -2340,23 +2339,23 @@ class AppLocalizationsSw extends AppLocalizations {
   String get playerZoomMode => 'Modi ya Kukuza Mchezaji';
 
   @override
-  String get settingsScrollWheelAction => 'Gurudumu la kusogeza la kipanya';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Chagua kitendo cha kusogeza gurudumu la kipanya juu ya video wakati wa uchezaji.';
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => 'Imezimwa';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => 'Sogeza (mbele / nyuma)';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => 'Sauti';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => 'Sauti';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'Inafaa';
@@ -2410,38 +2409,37 @@ class AppLocalizationsSw extends AppLocalizations {
   String get defaultAudioLanguage => 'Lugha Chaguomsingi ya Sauti';
 
   @override
-  String get fallbackAudioLanguage => 'Lugha Mbadala ya Sauti';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack =>
-      'Pendelea Mkondo Chaguo-msingi wa Sauti';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Pendelea mkondo asili wa sauti kuliko udubu uliotafsiriwa.';
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription => 'Pendelea Mikondo ya Maelezo ya Sauti';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Pendelea mikondo ya maelezo ya sauti kuliko mikondo ya kawaida.';
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => 'Kubadilisha Msimbo (Sauti)';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => 'Mtiririko wa Moja kwa Moja (Remux)';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Kubadilisha Msimbo (Kasi ya Biti au Mwonekano)';
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => 'Kubadilisha Msimbo (Video na Sauti)';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => 'Kubadilisha Msimbo (Video)';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => 'Otomatiki (Chaguomsingi ya Seva)';
@@ -2518,28 +2516,27 @@ class AppLocalizationsSw extends AppLocalizations {
       'Washa sauti ya TrueHD (huenda isifanye kazi kwenye mifumo yote)';
 
   @override
-  String get settingsAudioOutputMode => 'Modi ya Utoaji wa Sauti';
+  String get settingsAudioOutputMode => 'Audio Output Mode';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Chagua jinsi sauti inavyosimbuliwa. AVR Passthrough hutuma mikondo ghafi ya Dolby/DTS kwa risiva yako; Otomatiki au Downmix husimbua ndani ya kifaa.';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Kodeki Mbadala ya Sauti';
+  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Chagua muundo lengwa wa kubadilisha msimbo wa sauti ya chaneli nyingi wakati mkondo asili hauwezi kuchezwa moja kwa moja au kupitishwa.';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto =>
-      'Tambua Kiotomatiki\n(Inapendekezwa)';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Chaguo-msingi)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2548,27 +2545,26 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Bila Hasara)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Pekee)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Yenye Ufanisi)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Bila Hasara)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'Chaneli za Juu za Sauti';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Sanidi idadi ya juu ya chaneli za mfumo wako wa sauti. Mikondo ya chaneli nyingi inayozidi kikomo hiki itapunguzwa au kubadilishwa msimbo.';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto =>
-      'Tambua Kiotomatiki\n(Chaguo-msingi la Maunzi)';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2595,14 +2591,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Ya Kina)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Passthrough ya Kodeki';
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Washa miundo ambayo AVR au kifaa chako cha HDMI kinaunga mkono pekee.';
+      'Enable only formats your AVR or HDMI sink supports.';
 
   @override
   String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
@@ -2624,39 +2620,38 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Tuma mtiririko wa biti wa Dolby Digital Plus (EAC3) kwa kisimbuzi cha nje.';
+      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Tuma mtiririko wa biti wa Dolby Atmos kupitia EAC3 (JOC) kwa kisimbuzi cha nje.';
+      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Tuma mtiririko wa biti wa DTS-HD MA (pamoja na DTS core) kwa kisimbuzi cha nje.';
+      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Tuma mtiririko wa biti wa Dolby TrueHD wenye metadata ya Atmos kwa kisimbuzi cha nje.';
+      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
 
   @override
-  String get settingsDetectedAudioCapabilities =>
-      'Uwezo wa Sauti Uliotambuliwa';
+  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'Hakuna muhtasari wa uwezo wa wakati wa utekelezaji unaopatikana bado.';
+      'No runtime capability snapshot available yet.';
 
   @override
-  String get settingsAudioRouteLabel => 'Njia';
+  String get settingsAudioRouteLabel => 'Route';
 
   @override
-  String get settingsAudioDecodeLabel => 'Usimbuaji';
+  String get settingsAudioDecodeLabel => 'Decode';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'Njia ya sauti ya HD';
+  String get settingsAudioHdRoute => 'HD audio route';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2671,10 +2666,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Spika';
+  String get settingsAudioRouteSpeaker => 'Speaker';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Vipokea sauti';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2682,40 +2677,39 @@ class AppLocalizationsSw extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Uchunguzi';
+  String get settingsAudioDiagnostics => 'Diagnostics';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Kiwango cha Video';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Masafa ya Video';
+  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Kodeki ya Manukuu';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Kodeki za Sauti Zinazoruhusiwa';
+      'Allowed Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'Kodeki za Sauti za HLS MPEG-TS';
+      'HLS MPEG-TS Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'Kodeki za Sauti za HLS fMP4';
+      'HLS fMP4 Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
       'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute =>
-      'Njia ya Sauti Inayotumika';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Uwezo wa Njia Kutumia Sauti ya HD';
+      'Route HD Audio Support';
 
   @override
   String get nightMode => 'Hali ya Usiku';
@@ -2778,7 +2772,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'Baada ya vipindi $episodes / saa $hours';
+    return 'After $episodes episodes / ${hours}h';
   }
 
   @override
@@ -2854,45 +2848,45 @@ class AppLocalizationsSw extends AppLocalizations {
       'Badilisha mwonekano wa manukuu kukufaa';
 
   @override
-  String get subtitleMode => 'Modi ya Manukuu';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => 'Yaliyoalamishwa';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => 'Kila Wakati';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => 'Lugha ya Kigeni';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => 'Yaliyolazimishwa';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Hucheza mikondo iliyoalamishwa katika metadata ya faili la maudhui kama \"default\" au \"forced\".';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Hupakia na kuonyesha manukuu kiotomatiki kila video inapoanza.';
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Huwasha manukuu kiotomatiki ikiwa mkondo chaguo-msingi wa sauti uko katika lugha ya kigeni.';
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Hupakia manukuu yaliyowekwa alama ya \"forced\" pekee.';
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Huzima kabisa upakiaji wa manukuu wa kiotomatiki.';
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Lugha Mbadala ya Manukuu';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => 'Mkondo wa Manukuu';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText =>
@@ -2927,7 +2921,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get green => 'Kijani';
 
   @override
-  String get cyan => 'Samawati';
+  String get cyan => 'Cyan';
 
   @override
   String get red => 'Nyekundu';
@@ -2952,17 +2946,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Mipangilio ya wasifu wa $profile imepakiwa.';
+    return 'Loaded $profile profile settings.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Imeshindwa kupakia mipangilio ya wasifu wa $profile.';
+    return 'Failed to load $profile profile settings.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Mipangilio ya ndani imesawazishwa na wasifu wa $profile.';
+    return 'Synced local settings to $profile profile.';
   }
 
   @override
@@ -3098,11 +3092,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get showLibrariesInToolbar => 'Onyesha Maktaba kwenye Upauzana';
 
   @override
-  String get navbarAlwaysExpanded =>
-      'Panua Lebo za Upau wa Urambazaji Kila Wakati';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => 'Onyesha Kitufe cha Seerr';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'Uwazi wa Upau wa Urambazaji';
@@ -3120,16 +3113,16 @@ class AppLocalizationsSw extends AppLocalizations {
   String get purple => 'Zambarau';
 
   @override
-  String get teal => 'Kijani-buluu';
+  String get teal => 'Teal';
 
   @override
-  String get navy => 'Buluu Nyeusi';
+  String get navy => 'Navy';
 
   @override
   String get charcoal => 'Mkaa';
 
   @override
-  String get brown => 'Kahawia';
+  String get brown => 'Brown';
 
   @override
   String get darkRed => 'Nyekundu Iliyokolea';
@@ -3138,7 +3131,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get darkGreen => 'Kijani Kijani';
 
   @override
-  String get slate => 'Kijivu-buluu';
+  String get slate => 'Slate';
 
   @override
   String get indigo => 'Kihindi';
@@ -3178,18 +3171,18 @@ class AppLocalizationsSw extends AppLocalizations {
       'Onyesha chaguo la kuvinjari kwenye folda';
 
   @override
-  String get groupItemsIntoCollections => 'Panga Vipengee katika Makusanyo';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Ficha vipengee vya maktaba vinavyohusiana na Mkusanyo unapovinjari maktaba';
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Ilani ya Kupanga Maktaba';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'Ili kutumia mpangilio huu, tafadhali hakikisha mipangilio ya maktaba ya \"Panga filamu katika makusanyo\" na/au \"Panga vipindi katika makusanyo\" imewashwa chini ya mipangilio ya Onyesho ya maktaba yako kwenye seva yako ya Jellyfin au Emby.';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => 'Mwonekano wa Maktaba';
@@ -3218,7 +3211,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count vimechaguliwa';
+    return '$count selected';
   }
 
   @override
@@ -3302,11 +3295,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Cheza trela kiotomatiki kwenye upau wa midia baada ya sekunde 3';
 
   @override
-  String get trailerAudio => 'Sauti ya Trela';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio =>
-      'Washa sauti ya trela kwenye upau wa maudhui';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => 'Muhtasari wa Kipindi';
@@ -3385,11 +3377,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Changanya safu zote mbili kwenye sehemu moja ya nyumbani';
 
   @override
-  String get fullScreenRows => 'Safu za Nyumbani Zilizopanuliwa';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription =>
-      'Punguza safu za nyumbani hadi safu 1 kwa kila skrini';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Aina ya Picha kwa Safu Mlalo';
@@ -3404,7 +3395,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get lastUser => 'Mtumiaji wa Mwisho';
 
   @override
-  String get currentUser => 'Mtumiaji wa Sasa';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'Thibitisha kila wakati';
@@ -3464,7 +3455,7 @@ class AppLocalizationsSw extends AppLocalizations {
       'Washa kihifadhi skrini kilichojengewa ndani';
 
   @override
-  String get mode => 'Modi';
+  String get mode => 'Hali';
 
   @override
   String get libraryArt => 'Sanaa ya Maktaba';
@@ -3480,7 +3471,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return 'dk $minutes';
+    return '$minutes min';
   }
 
   @override
@@ -3510,10 +3501,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get displayClockDuringScreensaver => 'Onyesha saa wakati wa skrini';
 
   @override
-  String get clockModeStatic => 'Tuli';
+  String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => 'Inayoruka';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => 'Nyanya zilizooza (Wakosoaji)';
@@ -3556,7 +3547,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get showMdbListAndTmdbRatings =>
-      'Onyesha ukadiriaji wa MDBList na TMDB';
+      'Onyesha ukadiriaji wa MDBLlist na TMDB';
 
   @override
   String get ratingLabels => 'Lebo za Ukadiriaji';
@@ -3587,7 +3578,7 @@ class AppLocalizationsSw extends AppLocalizations {
       'Washa na upange upya vyanzo vya ukadiriaji vinavyoonyeshwa kwenye programu nzima';
 
   @override
-  String get pluginLabel => 'Programu-jalizi ya Moonbase';
+  String get pluginLabel => 'Programu-jalizi';
 
   @override
   String get pluginDetected => 'Programu-jalizi Imegunduliwa';
@@ -3605,7 +3596,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nToleo: $version';
+    return '$status\nVersion: $version';
   }
 
   @override
@@ -3644,7 +3635,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get upcomingMovies => 'Filamu Zinazokuja';
 
   @override
-  String get studios => 'Studio';
+  String get studios => 'Studios';
 
   @override
   String get popularSeries => 'Mfululizo Maarufu';
@@ -3659,13 +3650,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get networks => 'Mitandao';
 
   @override
-  String get seerrDiscoveryRows => 'Safu za Ugunduzi za Seerr';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'Weka upya safu mlalo ziwe chaguomsingi';
 
   @override
-  String get enableSeerr => 'Washa Seerr';
+  String get enableSeerr => 'Washa Kionaji';
 
   @override
   String get showSeerrInNavigation =>
@@ -3682,44 +3673,44 @@ class AppLocalizationsSw extends AppLocalizations {
   String get hideAdultContent => 'Ficha maudhui ya watu wazima katika matokeo';
 
   @override
-  String get seerrNotificationsSection => 'Arifa';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'Arifa za maombi mapya';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'Nijulishe mtu anapowasilisha ombi';
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Masasisho ya maombi';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Yaliyoidhinishwa, yaliyokataliwa, na yaliyoongezwa kwenye maktaba yako';
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Masasisho ya matatizo';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
   String get seerrNotifyIssuesSubtitle =>
-      'Matatizo mapya, majibu, na masuluhisho';
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
-    return 'Umeingia kama: $username';
+    return 'Logged in as: $username';
   }
 
   @override
-  String get discoverRows => 'Ukurasa wa Ugunduzi wa Seerr';
+  String get discoverRows => 'Gundua Safu';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Washa safu za kuonyesha kwenye ukurasa mkuu wa Seerr. Buruta ili kupanga upya. Mpangilio maalum husawazishwa na Moonbase.';
+      'Buruta ili kupanga upya. Washa au uzime safu mlalo. Usawazishaji wa mpangilio wa safu mlalo uliowezeshwa na programu-jalizi ya Moonfin.';
 
   @override
   String get discoverRowsDescription =>
-      'Washa safu za kuonyesha kwenye ukurasa mkuu wa Seerr. Buruta ili kupanga upya. Mpangilio maalum husawazishwa na Moonbase.';
+      'Buruta ili kupanga upya. Washa au uzime safu mlalo.';
 
   @override
   String get enabled => 'Imewashwa';
@@ -3732,7 +3723,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Toleo $version';
+    return 'Version $version';
   }
 
   @override
@@ -3782,7 +3773,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Sasisho linapatikana: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -3794,7 +3785,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Inapatikana';
+    return 'v$version Available';
   }
 
   @override
@@ -3837,7 +3828,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get mdbListTmdbRatingSources =>
-      'MDBList, TMDB, na vyanzo vya ukadiriaji';
+      'MDBLlist, TMDB, na vyanzo vya ukadiriaji';
 
   @override
   String gbValue(String value) {
@@ -3859,7 +3850,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get imageCacheCleared => 'Akiba ya picha imefutwa';
 
   @override
-  String get clear => 'Futa';
+  String get clear => 'Wazi';
 
   @override
   String get browse => 'Vinjari';
@@ -3875,19 +3866,19 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Inapakua · $percent%';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Inaingiza';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
-    return 'Vipengee $count';
+    return '$count Items';
   }
 
   @override
-  String get seerrSettings => 'Mipangilio ya Seerr';
+  String get seerrSettings => 'Mipangilio ya Mtazamaji';
 
   @override
   String get requestMore => 'Omba Zaidi';
@@ -3903,7 +3894,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Imeombwa na $name';
+    return 'Requested by $name';
   }
 
   @override
@@ -3920,12 +3911,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Ghairi ombi la \"$title\"?';
+    return 'Cancel request for \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Ghairi maombi $count ya \"$title\"?';
+    return 'Cancel $count requests for \"$title\"?';
   }
 
   @override
@@ -3940,22 +3931,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Bajeti: \$$amount';
+    return 'Budget: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Mapato: \$$amount';
+    return 'Revenue: \$$amount';
   }
 
   @override
   String seasonsCount(int count, String label) {
-    return '$label $count';
+    return '$count $label';
   }
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Omba $type';
+    return 'Request $type';
   }
 
   @override
@@ -3984,14 +3975,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get showMore => 'Onyesha Zaidi';
 
   @override
-  String get appearances => 'Mionekano';
+  String get appearances => 'Mwonekano';
 
   @override
   String get crewSection => 'Wafanyakazi';
 
   @override
   String ageValue(int age) {
-    return 'umri $age';
+    return 'age $age';
   }
 
   @override
@@ -4022,147 +4013,148 @@ class AppLocalizationsSw extends AppLocalizations {
   String get deletedStatus => 'Imefutwa';
 
   @override
-  String get failedStatus => 'Imeshindwa';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => 'Inachakatwa';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return 'Imebadilishwa na $name';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => 'Imekamilika';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => 'Kichwa hiki tayari kimeombwa';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => 'Umefikia kikomo cha maombi';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => 'Kichwa hiki kimezuiwa';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons => 'Hakuna misimu iliyosalia ya kuomba';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
-  String get requestErrorPermission => 'Huna ruhusa ya kufanya ombi hili';
+  String get requestErrorPermission =>
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => 'Maombi';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => 'Matatizo';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => 'Mapya Zaidi';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => 'Yaliyobadilishwa Mwisho';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => 'Hakuna matatizo';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return 'Maombi $remaining kati ya $limit ya filamu yamesalia';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return 'Maombi $remaining kati ya $limit ya misimu yamesalia';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Sehemu ya $name';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => 'Angalia Mkusanyo';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => 'Omba Mkusanyo';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return 'Filamu $total · $available zinapatikana';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Omba filamu $count';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Inaomba $current kati ya $total...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Filamu $count zimeombwa';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Filamu $ok kati ya $total zimeombwa';
+    return 'Requested $ok of $total movies';
   }
 
   @override
   String get collectionAllRequested =>
-      'Filamu zote tayari zinapatikana au zimeombwa';
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => 'Ripoti Tatizo';
+  String get reportIssue => 'Report Issue';
 
   @override
   String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'Sauti';
+  String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => 'Kuna tatizo gani?';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => 'Vipindi Vyote';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => 'Kipindi';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => 'Imefunguliwa';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => 'Limetatuliwa';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => 'Tatua';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => 'Fungua Tena';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return 'Imeripotiwa na $name';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return 'maoni $count';
+    return '$count comments';
   }
 
   @override
-  String get addComment => 'Ongeza maoni';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => 'Futa tatizo hili?';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => 'Wasilisha Ripoti';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'Alama ya TMDB';
@@ -4234,7 +4226,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get forward => 'Mbele';
 
   @override
-  String get general => 'Jumla';
+  String get general => 'Mkuu';
 
   @override
   String get go => 'Nenda';
@@ -4279,7 +4271,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get refresh => 'Onyesha upya';
 
   @override
-  String get remote => 'Rimoti';
+  String get remote => 'Mbali';
 
   @override
   String get rename => 'Badilisha jina';
@@ -4315,7 +4307,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get status => 'Hali';
 
   @override
-  String get stop => 'Simamisha';
+  String get stop => 'Acha';
 
   @override
   String get streaming => 'Kutiririsha';
@@ -4324,7 +4316,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get time => 'Muda';
 
   @override
-  String get trickplay => 'Trickplay';
+  String get trickplay => 'Mchezo wa hila';
 
   @override
   String get uninstall => 'Sanidua';
@@ -4342,7 +4334,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get unmute => 'Rejesha sauti';
 
   @override
-  String get mute => 'Zima sauti';
+  String get mute => 'Nyamazisha';
 
   @override
   String get branding => 'Kuweka chapa';
@@ -4366,13 +4358,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminDrawerLibraries => 'Maktaba';
 
   @override
-  String get adminDrawerDisplay => 'Onyesho';
+  String get adminDrawerDisplay => 'Display';
 
   @override
   String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'Mipangilio ya NFO';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => 'Kubadilisha msimbo';
@@ -4384,7 +4376,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminDrawerStreaming => 'Kutiririsha';
 
   @override
-  String get adminDrawerTrickplay => 'Trickplay';
+  String get adminDrawerTrickplay => 'Mchezo wa hila';
 
   @override
   String get adminDrawerDevices => 'Vifaa';
@@ -4435,22 +4427,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Masasisho ya programu-jalizi yanayopatikana: $count';
+    return 'Plugin updates available: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Programu-jalizi zinazohitaji kuanzishwa upya: $count';
+    return 'Plugins requiring restart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Kazi zilizoratibiwa zilizoshindwa: $count';
+    return 'Failed scheduled tasks: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Maingizo ya hivi karibuni ya onyo/hitilafu: $count';
+    return 'Recent warning/error entries: $count';
   }
 
   @override
@@ -4509,7 +4501,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Hitilafu: $error';
+    return 'Error: $error';
   }
 
   @override
@@ -4536,7 +4528,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Amri imeshindwa: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -4573,7 +4565,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get nowPlaying => 'Sasa Inacheza';
 
   @override
-  String get volume => 'Sauti';
+  String get volume => 'Kiasi';
 
   @override
   String get actions => 'Vitendo';
@@ -4585,7 +4577,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get audioCodec => 'Kodeki ya Sauti';
 
   @override
-  String get hwAccel => 'Kasi ya Maunzi';
+  String get hwAccel => 'HW Accel';
 
   @override
   String get completion => 'Kukamilika';
@@ -4600,14 +4592,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminClearDates => 'Tarehe wazi';
 
   @override
-  String get adminActivitySeverityAll => 'Viwango vyote vya ukali';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => 'Kipindi cha tarehe';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Imeshindwa kupakia kumbukumbu ya shughuli: $error';
+    return 'Failed to load activity log: $error';
   }
 
   @override
@@ -4624,7 +4616,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Imeshindwa kusasisha kifaa: $error';
+    return 'Failed to update device: $error';
   }
 
   @override
@@ -4635,28 +4627,28 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Imeshindwa kufuta kifaa: $error';
+    return 'Failed to delete device: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Ondoa kifaa \'$name\'? Mtumiaji atahitaji kuingia tena kwenye kifaa hiki.';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Futa vifaa vyote';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Ondoa vifaa $count? Watumiaji walioathirika watahitaji kuingia tena. Kifaa chako cha sasa hakiathiriwi.';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Vifaa vimeondolewa';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Baadhi ya vifaa vimeondolewa; $count havikuweza kuondolewa.';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4685,7 +4677,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Imeshindwa kuanza kuchanganua: $error';
+    return 'Failed to start scan: $error';
   }
 
   @override
@@ -4696,12 +4688,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Maktaba imepewa jina jipya \"$name\"';
+    return 'Library renamed to \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Imeshindwa kubadilisha jina: $error';
+    return 'Failed to rename: $error';
   }
 
   @override
@@ -4709,17 +4701,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Maktaba \"$name\" imefutwa';
+    return 'Library \"$name\" deleted';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Imeshindwa kufuta maktaba: $error';
+    return 'Failed to delete library: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Imeshindwa kuongeza njia: $error';
+    return 'Failed to add path: $error';
   }
 
   @override
@@ -4727,12 +4719,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Ondoa \"$path\" kutoka kwa maktaba hii?';
+    return 'Remove \"$path\" from this library?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Imeshindwa kuondoa njia: $error';
+    return 'Failed to remove path: $error';
   }
 
   @override
@@ -4740,7 +4732,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi chaguo: $error';
+    return 'Failed to save options: $error';
   }
 
   @override
@@ -4772,261 +4764,251 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminMetadataCountryHint => 'k.m. Marekani, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'Njia';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => 'Chaguo';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => 'Vipakuzi';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => 'Vihifadhi vya metadata';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Vipakuzi vya manukuu';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => 'Vipakuzi vya maneno ya nyimbo';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Vipakuzi vya metadata: $type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Vichukuzi vya picha: $type';
+    return 'Image fetchers: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'Seva hii haitoi vipakuzi vyovyote kwa aina hii ya maktaba.';
+      'This server exposes no downloaders for this library type.';
 
   @override
-  String get adminLibrarySectionGeneral => 'Jumla';
+  String get adminLibrarySectionGeneral => 'General';
 
   @override
   String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Maelezo Yaliyopachikwa';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Manukuu';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => 'Picha';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => 'Mifululizo';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => 'Muziki';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => 'Filamu';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor => 'Washa ufuatiliaji wa wakati halisi';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Tambua mabadiliko ya faili na uyachakate kiotomatiki.';
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles =>
-      'Chukulia kumbukumbu kama faili za maudhui';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => 'Onyesha picha';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata =>
-      'Hifadhi sanaa katika folda za maudhui';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => 'Kuonyesha upya metadata kiotomatiki';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => 'Kamwe';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => 'Chaguo-msingi';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => 'Onyesho';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => 'Onyesho la maktaba';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
   String get adminLibFolderView =>
-      'Onyesha mwonekano wa folda ili kuonyesha folda za maudhui za kawaida';
+      'Display a folder view to show plain media folders';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'Onyesha vipindi maalum ndani ya misimu vilivyorushwa';
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => 'Panga filamu katika makusanyo';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => 'Panga vipindi katika makusanyo';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
   String get adminLibExternalSuggestions =>
-      'Onyesha maudhui ya nje katika mapendekezo';
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => 'Tabia ya tarehe ya kuongezwa';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => 'Tumia tarehe ya kuongezwa kutoka';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport =>
-      'Tarehe iliyochanganuliwa kwenye maktaba';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => 'Tarehe faili lilipoundwa';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => 'Metadata na Picha';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => 'Lugha inayopendelewa ya metadata';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => 'Sura';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration => 'Muda wa sura bandia (sekunde)';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Urefu wa sura zinazotengenezwa kwa maudhui yasiyo na sura. Weka 0 ili kuzima.';
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution => 'Mwonekano wa picha za sura';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'Mipangilio ya NFO';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'Metadata ya NFO inaoana na Kodi na programu-mteja zinazofanana. Mipangilio hutumika kwa maktaba zote zinazohifadhi metadata ya NFO.';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser =>
-      'Mtumiaji wa kuhifadhia data ya utazamaji katika faili za NFO';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths =>
-      'Hifadhi njia za picha ndani ya faili za NFO';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
   String get adminLibPathSubstitution =>
-      'Washa ubadilishaji wa njia kwa njia za picha za NFO';
+      'Enable path substitution for NFO image paths';
 
   @override
   String get adminLibExtraThumbs =>
-      'Nakili picha za extrafanart kwenye folda ya extrathumbs';
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => 'Hakuna';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return 'siku $days';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Tumia vichwa vilivyopachikwa';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles =>
-      'Tumia vichwa vilivyopachikwa kwa nyongeza';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos =>
-      'Tumia maelezo ya kipindi yaliyopachikwa';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Ruhusu manukuu yaliyopachikwa';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Ruhusu yote';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Maandishi pekee';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Picha pekee';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'Hakuna';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Ruka upakuaji ikiwa manukuu yaliyopachikwa yapo';
+      'Skip download if embedded subtitles are present';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Ruka upakuaji ikiwa mkondo wa sauti unalingana na lugha ya upakuaji';
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch =>
-      'Hitaji ulinganifu kamili wa manukuu';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'Hifadhi manukuu katika folda za maudhui';
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => 'Toa picha za sura';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Toa picha za sura wakati wa kuchanganua maktaba';
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction =>
-      'Washa utoaji wa picha za Trickplay';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Toa picha za Trickplay wakati wa kuchanganua maktaba';
+      'Extract trickplay images during the library scan';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Hifadhi picha za Trickplay katika folda za maudhui';
+      'Save trickplay images into media folders';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Unganisha kiotomatiki mifululizo iliyosambaa katika folda nyingi';
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => 'Jina la kuonyesha la msimu sifuri';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan =>
-      'Washa uchanganuzi wa LUFS kwa usawazishaji wa sauti';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Pendelea lebo isiyo ya kawaida ya wasanii';
+      'Prefer non-standard artists tag';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'Ongeza filamu kwenye makusanyo kiotomatiki';
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => 'Jina la maktaba linahitajika';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Imeshindwa kuunda maktaba: $error';
+    return 'Failed to create library: $error';
   }
 
   @override
@@ -5053,27 +5035,27 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Zima $name? Hataweza kuingia.';
+    return 'Disable $name? They will not be able to sign in.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Washa $name? Ataweza kuingia tena.';
+    return 'Enable $name? They will be able to sign in again.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'Mtumiaji \"$name\" amezimwa';
+    return 'User \"$name\" disabled';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'Mtumiaji \"$name\" amewashwa';
+    return 'User \"$name\" enabled';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Imeshindwa kusasisha sera ya mtumiaji: $error';
+    return 'Failed to update user policy: $error';
   }
 
   @override
@@ -5090,7 +5072,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Imeshindwa kuunda mtumiaji: $error';
+    return 'Failed to create user: $error';
   }
 
   @override
@@ -5111,7 +5093,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi: $error';
+    return 'Failed to save: $error';
   }
 
   @override
@@ -5122,7 +5104,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Imeshindwa: $error';
+    return 'Failed: $error';
   }
 
   @override
@@ -5258,146 +5240,143 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminEnableAllChannels => 'Washa ufikiaji wa vituo vyote';
 
   @override
-  String get adminParentalControl => 'Udhibiti wa Wazazi';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating =>
-      'Ukadiriaji wa juu wa wazazi unaoruhusiwa';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Maudhui yenye ukadiriaji wa juu zaidi yatafichwa kwa mtumiaji huyu.';
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => 'Hakuna';
+  String get adminParentalRatingNone => 'None';
 
   @override
   String get adminBlockUnratedItems =>
-      'Zuia vipengee visivyo na maelezo ya ukadiriaji au visivyotambulika';
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => 'Vitabu';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => 'Chaneli';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => 'TV ya moja kwa moja';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => 'Filamu';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => 'Muziki';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => 'Trela';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'Vipindi';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => 'Ratiba za Ufikiaji';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Ruhusu ufikiaji wakati wa nyakati zilizoratibiwa hapa chini pekee. Ufikiaji unaruhusiwa siku nzima wakati hakuna ratiba iliyowekwa.';
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => 'Ongeza Ratiba';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => 'Siku';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => 'Mwanzo';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'Mwisho';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => 'Kila siku';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => 'Siku ya kazi';
+  String get adminDayWeekday => 'Weekday';
 
   @override
-  String get adminDayWeekend => 'Wikendi';
+  String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => 'Jumapili';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => 'Jumatatu';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => 'Jumanne';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => 'Jumatano';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => 'Alhamisi';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => 'Ijumaa';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => 'Jumamosi';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => 'Lebo zinazoruhusiwa';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
   String get adminAllowedTagsHint =>
-      'Maudhui yenye lebo hizi pekee ndiyo yanaonyeshwa. Acha wazi ili kuruhusu yote.';
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => 'Lebo zilizozuiwa';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
   String get adminBlockedTagsHint =>
-      'Maudhui yenye lebo hizi yamefichwa kwa mtumiaji huyu.';
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => 'Ongeza lebo';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => 'Vifaa vilivyowashwa';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => 'Chaneli zilizowashwa';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => 'Mtoa huduma wa uthibitishaji';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider =>
-      'Mtoa huduma wa kuweka upya nenosiri';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Idadi ya juu ya majaribio ya kuingia yaliyoshindwa kabla ya kufungiwa';
+      'Maximum failed login attempts before lockout';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Weka 0 kwa chaguo-msingi, au -1 ili kuzima kufungiwa.';
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'Ufikiaji wa SyncPlay';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin =>
-      'Ruhusu kuunda na kujiunga na vikundi';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => 'Ruhusu kujiunga na vikundi';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => 'Hakuna ufikiaji';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders => 'Ruhusu kufuta maudhui kutoka';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5405,22 +5384,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Seva imerudisha HTTP $status';
+    return 'Server returned HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Una uhakika unataka kufuta $name?';
+    return 'Are you sure you want to delete $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'Mtumiaji \"$name\" amefutwa';
+    return 'User \"$name\" deleted';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Imeshindwa kufuta mtumiaji: $error';
+    return 'Failed to delete user: $error';
   }
 
   @override
@@ -5441,7 +5420,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Imeshindwa kuunda ufunguo: $error';
+    return 'Failed to create key: $error';
   }
 
   @override
@@ -5452,7 +5431,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Batilisha ufunguo wa $name?';
+    return 'Revoke key for $name?';
   }
 
   @override
@@ -5460,7 +5439,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Imeshindwa kubatilisha ufunguo: $error';
+    return 'Failed to revoke key: $error';
   }
 
   @override
@@ -5480,30 +5459,29 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Tokeni: $token\\nImeundwa: $created';
+    return 'Token: $token\\nCreated: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Unda Nakala Rudufu';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude =>
-      'Chagua cha kujumuisha katika nakala rudufu.';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => 'Hifadhidata';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => 'Hujumuishwa kila wakati';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
   String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'Manukuu';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'Picha za Trickplay';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => 'Inaunda nakala rudufu...';
@@ -5513,7 +5491,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Imeshindwa kuunda nakala rudufu: $error';
+    return 'Failed to create backup: $error';
   }
 
   @override
@@ -5522,12 +5500,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifesti: $name';
+    return 'Manifest: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Imeshindwa kupakia manifesti: $error';
+    return 'Failed to load manifest: $error';
   }
 
   @override
@@ -5538,7 +5516,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Imeshindwa kurejesha nakala rudufu: $error';
+    return 'Failed to restore backup: $error';
   }
 
   @override
@@ -5570,17 +5548,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Imehifadhiwa kwenye $path';
+    return 'Saved to $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi faili: $error';
+    return 'Failed to save file: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Imeshindwa kupakia $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
@@ -5591,7 +5569,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Imeshindwa kupakia kazi: $error';
+    return 'Failed to load tasks: $error';
   }
 
   @override
@@ -5603,17 +5581,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Imeshindwa kuanzisha kazi: $error';
+    return 'Failed to start task: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Imeshindwa kusimamisha kazi: $error';
+    return 'Failed to stop task: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Imeshindwa kupakia kazi: $error';
+    return 'Failed to load task: $error';
   }
 
   @override
@@ -5621,12 +5599,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Imeshindwa kuondoa kichochezi: $error';
+    return 'Failed to remove trigger: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Imeshindwa kuongeza kichochezi: $error';
+    return 'Failed to add trigger: $error';
   }
 
   @override
@@ -5652,7 +5630,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return 'saa $hours';
+    return '$hours hour(s)';
   }
 
   @override
@@ -5663,7 +5641,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Imeshindwa kubadilisha programu-jalizi: $error';
+    return 'Failed to toggle plugin: $error';
   }
 
   @override
@@ -5671,27 +5649,27 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Una uhakika unataka kuondoa \"$name\"?';
+    return 'Are you sure you want to uninstall \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Imeshindwa kuondoa programu-jalizi: $error';
+    return 'Failed to uninstall plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Imeshindwa kusakinisha kifurushi: $error';
+    return 'Failed to install package: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Imeshindwa kusakinisha sasisho: $error';
+    return 'Failed to install update: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Imeshindwa kupakia programu-jalizi: $error';
+    return 'Failed to load plugins: $error';
   }
 
   @override
@@ -5704,12 +5682,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Sakinisha sasisho (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Imeshindwa kupakia katalogi: $error';
+    return 'Failed to load catalog: $error';
   }
 
   @override
@@ -5731,17 +5709,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" itaondolewa baada ya seva kuanzishwa upya';
+    return '\"$name\" will be removed after server restart';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Imeshindwa kuondoa: $error';
+    return 'Failed to uninstall: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Inasasisha \"$name\" hadi v$version...';
+    return 'Updating \"$name\" to v$version...';
   }
 
   @override
@@ -5750,7 +5728,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Imeshindwa kupakia programu-jalizi: $error';
+    return 'Failed to load plugin: $error';
   }
 
   @override
@@ -5758,7 +5736,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Toleo $version';
+    return 'Version $version';
   }
 
   @override
@@ -5779,17 +5757,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Una uhakika unataka kuondoa \"$name\"?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi hazina: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Imeshindwa kupakia hazina: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -5806,12 +5784,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Imeshindwa kupakia mipangilio ya programu-jalizi: $error';
+    return 'Unable to load plugin settings: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Imeshindwa kufungua $uri';
+    return 'Could not open $uri';
   }
 
   @override
@@ -5934,11 +5912,11 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminThrottleBuffering => 'Kuakibisha kaba';
 
   @override
-  String get adminTrickplaySaved => 'Mipangilio ya Trickplay imehifadhiwa';
+  String get adminTrickplaySaved => 'Mipangilio ya mchezo wa hila imehifadhiwa';
 
   @override
   String get adminTrickplayLoadFailed =>
-      'Imeshindwa kupakia mipangilio ya Trickplay';
+      'Imeshindwa kupakia mipangilio ya mchezo wa hila';
 
   @override
   String get adminEnableHardwareAcceleration => 'Washa kuongeza kasi ya maunzi';
@@ -6092,12 +6070,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Imeshindwa kupakia metadata: $error';
+    return 'Failed to load metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi metadata: $error';
+    return 'Failed to save metadata: $error';
   }
 
   @override
@@ -6117,7 +6095,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Imeshindwa kuonyesha upya metadata: $error';
+    return 'Failed to refresh metadata: $error';
   }
 
   @override
@@ -6132,7 +6110,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Utafutaji wa mbali umeshindwa: $error';
+    return 'Remote search failed: $error';
   }
 
   @override
@@ -6146,7 +6124,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Imeshindwa kusasisha aina ya maudhui: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -6162,12 +6140,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return 'Picha ya $imageType imesasishwa';
+    return '$imageType image updated';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Imeshindwa kupakua picha: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6178,27 +6156,27 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return 'Picha ya $imageType imepakiwa';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Imeshindwa kupakia picha: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Futa picha ya $imageType';
+    return 'Delete $imageType image';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return 'Picha ya $imageType imefutwa';
+    return '$imageType image deleted';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Imeshindwa kufuta picha: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
@@ -6209,70 +6187,67 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Ugunduzi wa Tuner umeshindwa: $error';
+    return 'Tuner discovery failed: $error';
   }
 
   @override
   String get adminAddTuner => 'Ongeza Tuner';
 
   @override
-  String get adminEditTuner => 'Hariri Tuner';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'Tuner ya M3U';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'Faili au URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => 'Anwani ya IP ya Tuner';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => 'Jina rafiki';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
-  String get adminTunerUserAgent => 'Wakala wa mtumiaji';
+  String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Kikomo cha miunganisho ya wakati mmoja';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
   String get adminTunerCountHelp =>
-      'Idadi ya juu ya mitiririko ambayo Tuner huruhusu kwa wakati mmoja. Weka 0 kwa isiyo na kikomo.';
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate =>
-      'Kasi ya juu mbadala ya biti ya utiririshaji';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Ingiza chaneli vipendwa pekee';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding =>
-      'Ruhusu kubadilisha msimbo kwa maunzi';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 =>
-      'Ruhusu kontena la kubadilisha msimbo la fMP4';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Ruhusu kushiriki mtiririko';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Washa kurudia mtiririko';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => 'Puuza DTS';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Soma ingizo kwa kasi asili ya fremu';
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => 'Hariri Mtoa Huduma';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6281,50 +6256,50 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'Faili au URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Kiambishi awali cha filamu';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => 'Kategoria za filamu';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Tenganisha kategoria nyingi kwa mstari wima.';
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kategoria za watoto';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => 'Kategoria za habari';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => 'Kategoria za michezo';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => 'Jina la mtumiaji';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => 'Nenosiri';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => 'Nchi';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => 'Chagua nchi';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => 'Msimbo wa posta';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => 'Pata orodha';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => 'Orodha';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => 'Washa Tuner zote';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => 'Aina ya Kitafuta njia';
@@ -6334,7 +6309,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Imeshindwa kuongeza Tuner: $error';
+    return 'Failed to add tuner: $error';
   }
 
   @override
@@ -6348,12 +6323,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Imeshindwa kuongeza mtoa huduma: $error';
+    return 'Failed to add provider: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Imeshindwa kuondoa Tuner: $error';
+    return 'Failed to remove tuner: $error';
   }
 
   @override
@@ -6361,16 +6336,16 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Imeshindwa kuweka upya Tuner: $error';
+    return 'Failed to reset tuner: $error';
   }
 
   @override
   String get adminTunerResetNotSupported =>
-      'Aina hii ya Tuner haitumii kuweka upya.';
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Imeshindwa kuondoa mtoa huduma: $error';
+    return 'Failed to remove provider: $error';
   }
 
   @override
@@ -6389,44 +6364,43 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminSeriesRecordingPath => 'Njia ya kurekodi mfululizo';
 
   @override
-  String get adminMovieRecordingPath => 'Njia ya kurekodi filamu';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => 'Siku za data ya mwongozo';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => 'Kiotomatiki';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return 'siku $days';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor =>
-      'Njia ya programu ya uchakataji-baadaye';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs => 'Hoja za kichakataji-baadaye';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo => 'Hifadhi metadata ya NFO ya rekodi';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => 'Hifadhi picha za rekodi';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => 'Muda';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => 'Njia za kurekodi';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Uchakataji-baadaye';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Data ya mwongozo: $value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6435,7 +6409,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi mipangilio: $error';
+    return 'Failed to save settings: $error';
   }
 
   @override
@@ -6452,7 +6426,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Imeshindwa kusasisha ulinganishaji: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
@@ -6470,15 +6444,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminGuideProviders => 'Watoa Mwongozo';
 
   @override
-  String get adminRefreshGuideData => 'Onyesha Upya Data ya Mwongozo';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted =>
-      'Kuonyesha upya data ya mwongozo kumeanza';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Kazi ya kuonyesha upya mwongozo haipatikani kwenye seva hii.';
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => 'Ongeza Mtoa Huduma';
@@ -6489,22 +6462,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Njia ya kurekodi: $path';
+    return 'Recording path: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Njia ya mfululizo: $path';
+    return 'Series path: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Muda wa ziada kabla: dk $minutes';
+    return 'Pre-padding: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Muda wa ziada baada: dk $minutes';
+    return 'Post-padding: $minutes min';
   }
 
   @override
@@ -6537,7 +6510,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Rejesha nakala rudufu $name sasa?';
+    return 'Restore backup $name now?';
   }
 
   @override
@@ -6561,7 +6534,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminLiveTvTitle => 'Utawala wa TV ya moja kwa moja';
 
   @override
-  String get adminApply => 'Tumia';
+  String get adminApply => 'Omba';
 
   @override
   String get adminNotSet => 'Haijawekwa';
@@ -6583,27 +6556,27 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return 'dk $minutes zilizopita';
+    return '${minutes}m ago';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return 'saa $hours zilizopita';
+    return '${hours}h ago';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return 'siku $days zilizopita';
+    return '${days}d ago';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Imeshindwa kupakia $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return 'matokeo $count';
+    return '$count matches';
   }
 
   @override
@@ -6613,7 +6586,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminMetadataEditorTitle => 'Mhariri wa Metadata';
 
   @override
-  String get adminMetadataIdentify => 'Tambua';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => 'Aina';
@@ -6668,7 +6641,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminMetadataTags => 'Lebo';
 
   @override
-  String get adminMetadataStudios => 'Studio';
+  String get adminMetadataStudios => 'Studios';
 
   @override
   String get adminMetadataPeople => 'Watu';
@@ -6714,22 +6687,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return 'Picha ya $imageType imesasishwa';
+    return '$imageType image updated';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return 'Picha ya $imageType imepakiwa';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return 'Picha ya $imageType imefutwa';
+    return '$imageType image deleted';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Imeshindwa kupakua picha: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6738,12 +6711,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Imeshindwa kupakia picha: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Futa picha ya $imageType';
+    return 'Delete $imageType image';
   }
 
   @override
@@ -6752,12 +6725,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Imeshindwa kufuta picha: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Chagua picha ya $imageType';
+    return 'Choose $imageType image';
   }
 
   @override
@@ -6791,7 +6764,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Sasisho linapatikana: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -6816,7 +6789,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Sakinisha sasisho (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
@@ -6828,7 +6801,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" inasakinishwa...';
+    return '\"$name\" is being installed...';
   }
 
   @override
@@ -6848,7 +6821,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return 'Mipangilio ya $name';
+    return '$name Settings';
   }
 
   @override
@@ -6888,7 +6861,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Imeshindwa kupakia hazina: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -6896,7 +6869,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Una uhakika unataka kuondoa \"$name\"?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
@@ -6904,7 +6877,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Imeshindwa kuhifadhi hazina: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
@@ -7032,20 +7005,19 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminBrandingEnableSplash => 'Washa skrini ya Splash';
 
   @override
-  String get adminBrandingSplashUpload => 'Pakia picha';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded => 'Skrini ya utangulizi imesasishwa';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed =>
-      'Imeshindwa kupakia skrini ya utangulizi';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => 'Skrini ya utangulizi imeondolewa';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => 'Hakuna skrini maalum ya utangulizi';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => 'Kuongeza kasi ya vifaa';
@@ -7060,132 +7032,121 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminPlaybackEnableHwDecoding => 'Washa usimbaji maunzi kwa:';
 
   @override
-  String get adminPlaybackQsvDevice => 'Kifaa cha QSV';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec =>
-      'Washa kisimbuzi cha NVDEC kilichoboreshwa';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Pendelea kisimbuzi asili cha maunzi cha mfumo';
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth =>
-      'Kina cha rangi cha usimbuaji wa maunzi';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => 'Usimbuaji wa HEVC wa biti 10';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => 'Usimbuaji wa VP9 wa biti 10';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext =>
-      'Usimbuaji wa HEVC RExt wa biti 8/10';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext =>
-      'Usimbuaji wa HEVC RExt wa biti 12';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Usimbaji wa maunzi';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Ruhusu usimbaji wa HEVC';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Ruhusu usimbaji wa AV1';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Washa kisimbaji cha Intel cha nguvu ndogo cha H.264';
+      'Enable Intel low-power H.264 encoder';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Washa kisimbaji cha Intel cha nguvu ndogo cha HEVC';
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => 'Uchoraji wa Toni';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Washa uchoraji wa toni';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping =>
-      'Washa uchoraji wa toni wa VPP';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Washa uchoraji wa toni wa VideoToolbox';
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm =>
-      'Algoriti ya uchoraji wa toni';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Modi ya uchoraji wa toni';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Masafa ya uchoraji wa toni';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat =>
-      'Upunguzaji wa ukolezi wa uchoraji wa toni';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Kilele cha uchoraji wa toni';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Kigezo cha uchoraji wa toni';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'Mwangaza wa uchoraji wa toni wa VPP';
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast =>
-      'Utofautishaji wa uchoraji wa toni wa VPP';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality =>
-      'Mipangilio Iliyowekwa Awali na Ubora';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Mpangilio wa awali wa kisimbaji';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'CRF ya usimbaji wa H.264';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'CRF ya usimbaji wa H.265 (HEVC)';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Mbinu ya kuondoa mwingiliano';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Maradufu kasi ya fremu wakati wa kuondoa mwingiliano';
+      'Double the frame rate when deinterlacing';
 
   @override
-  String get adminPlaybackAudioSection => 'Sauti';
+  String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Washa usimbaji wa VBR wa sauti';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost =>
-      'Nyongeza ya upunguzaji wa chaneli za sauti';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm =>
-      'Algoriti ya upunguzaji hadi stereo';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue => 'Ukubwa wa juu wa foleni ya muxing';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
-  String get adminPlaybackAutoOption => 'Otomatiki';
+  String get adminPlaybackAutoOption => 'Auto';
 
   @override
   String get adminPlaybackEncoding => 'Usimbaji';
@@ -7304,10 +7265,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminTaskNeverRun => 'Usiwahi kukimbia';
 
   @override
-  String get adminTaskStop => 'Simamisha';
+  String get adminTaskStop => 'Acha';
 
   @override
-  String get adminRunningTasks => 'Kazi Zinazoendelea';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => 'Kimbia';
@@ -7329,17 +7290,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Kila siku saa $time';
+    return 'Daily at $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Kila $day saa $time';
+    return 'Every $day at $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Kila $duration';
+    return 'Every $duration';
   }
 
   @override
@@ -7377,8 +7338,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'saa $count',
-      one: 'saa 1',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7406,17 +7367,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return 'siku $days zilizopita';
+    return '${days}d ago';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return 'saa $hours zilizopita';
+    return '${hours}h ago';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return 'dk $minutes zilizopita';
+    return '${minutes}m ago';
   }
 
   @override
@@ -7424,27 +7385,27 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return 'dk $minutes';
+    return '${minutes}m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return 'saa $hours';
+    return '${hours}h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return 'siku $days';
+    return '${days}d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$day/$month';
+    return '$month/$day';
   }
 
   @override
   String get adminTrickplayDescription =>
-      'Sanidi utengenezaji wa picha za Trickplay kwa vijipicha vya onyesho la kutafuta.';
+      'Sanidi utengenezaji wa taswira ya hila kwa vijipicha vya onyesho la kukagua.';
 
   @override
   String get adminNetworkingPublicHttpsPort => 'Mlango wa HTTPS wa umma';
@@ -7459,44 +7420,43 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Mlango wa umma wa HTTP';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => 'Hitaji HTTPS';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Elekeza maombi yote ya mbali kwa HTTPS. Haina athari ikiwa seva haina cheti halali.';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => 'Nenosiri la cheti';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'Mipangilio ya IP';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Washa IPv4';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Washa IPv6';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery =>
-      'Washa uchoraji wa milango wa kiotomatiki';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => 'Mitandao ya LAN';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Orodha ya anwani za IP au subneti za CIDR zilizotenganishwa kwa koma au mstari, zinazochukuliwa kuwa kwenye mtandao wa ndani.';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => 'URI za seva zilizochapishwa';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Unganisha subneti au anwani na URL iliyochapishwa, k.m. all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'Njia ya cheti';
@@ -7527,12 +7487,11 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Kuakibisha kaba';
 
   @override
-  String get adminPlaybackThrottleDelay =>
-      'Ucheleweshaji wa kupunguza kasi (sekunde)';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Ruhusu utoaji wa manukuu papo hapo';
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => 'Asilimia ya chini ya wasifu';
@@ -7581,7 +7540,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Imeshindwa kusasisha aina ya maudhui: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -7589,23 +7548,22 @@ class AppLocalizationsSw extends AppLocalizations {
       'Kiwango cha chini cha majibu (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse =>
-      'Washa maonyo ya majibu ya polepole';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => 'Washa Quick Connect';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
-  String get adminGeneralSectionServer => 'Seva';
+  String get adminGeneralSectionServer => 'Server';
 
   @override
   String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'Njia';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => 'Utendaji';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => 'Njia ya akiba';
@@ -7617,7 +7575,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminGeneralServerName => 'Jina la seva';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Lugha inayopendelewa ya kuonyesha';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => 'Imeshindwa kupakia mipangilio';
@@ -7627,12 +7585,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Imeshindwa kusasisha ulinganishaji: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Kikomo cha muda: $duration';
+    return 'Time limit: $duration';
   }
 
   @override
@@ -7669,8 +7627,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'washiriki #',
-      one: 'mshiriki #',
+      other: '# participants',
+      one: '# participant',
     );
     return '$_temp0';
   }
@@ -7713,7 +7671,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Kipengee $index';
+    return 'Item $index';
   }
 
   @override
@@ -7762,12 +7720,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName amejiunga na kikundi cha SyncPlay';
+    return '$userName joined SyncPlay group';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName ameondoka kwenye kikundi cha SyncPlay';
+    return '$userName left SyncPlay group';
   }
 
   @override
@@ -7779,7 +7737,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Inasawazisha uchezaji na $groupName';
+    return 'Syncing playback to $groupName';
   }
 
   @override
@@ -7817,8 +7775,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'safu # zimegunduliwa',
-      one: 'safu # imegunduliwa',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7859,20 +7817,20 @@ class AppLocalizationsSw extends AppLocalizations {
   String get offlineSavedMedia => 'Media Iliyohifadhiwa';
 
   @override
-  String get offlineBannerTitle => 'Uko nje ya mtandao';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => 'Inaonyesha vipakuliwa vyako';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => 'Vipakuliwa';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => 'Haiwezi kufikia seva yako';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Inacheza kutoka kwa vipakuliwa hadi itakaporejea';
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7888,12 +7846,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Udhibiti wa utumaji umeshindwa: $error';
+    return 'Cast control failed: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return 'Vidhibiti vya $kind';
+    return '$kind Controls';
   }
 
   @override
@@ -7904,7 +7862,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Simamisha $kind';
+    return 'Stop $kind';
   }
 
   @override
@@ -7927,12 +7885,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Weka PIN ya tarakimu $length';
+    return 'Enter a $length-digit PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Weka PIN yako ya tarakimu $length';
+    return 'Enter your $length-digit PIN';
   }
 
   @override
@@ -7945,13 +7903,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get pinForgot => 'Je, umesahau PIN?';
 
   @override
-  String get pinClear => 'Futa';
+  String get pinClear => 'Wazi';
 
   @override
-  String get pinBackspace => 'Futa nyuma';
+  String get pinBackspace => 'Backspace';
 
   @override
-  String get quickConnectAuthorized => 'Ombi la Quick Connect limeidhinishwa.';
+  String get quickConnectAuthorized =>
+      'Ombi la Kuunganisha Haraka limeidhinishwa.';
 
   @override
   String get quickConnectInvalidOrExpired =>
@@ -7978,7 +7937,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect imeshindwa: $message';
+    return 'Quick Connect failed: $message';
   }
 
   @override
@@ -7989,7 +7948,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Amri imeshindwa: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -8018,7 +7977,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Imeshindwa kuanza kutuma: $error';
+    return 'Failed to start casting: $error';
   }
 
   @override
@@ -8064,7 +8023,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Inapakua $name...';
+    return 'Downloading $name...';
   }
 
   @override
@@ -8147,14 +8106,14 @@ class AppLocalizationsSw extends AppLocalizations {
       'Uchezaji umesitishwa. Je, bado unatazama?';
 
   @override
-  String get stillWatchingStop => 'Simamisha';
+  String get stillWatchingStop => 'Acha';
 
   @override
   String get stillWatchingContinue => 'Endelea';
 
   @override
   String skipSegment(String segment) {
-    return 'Ruka $segment';
+    return 'Skip $segment';
   }
 
   @override
@@ -8165,12 +8124,12 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Inapakua $current/$total — $fileName';
+    return 'Downloading $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Inapakua $fileName';
+    return 'Downloading $fileName';
   }
 
   @override
@@ -8186,7 +8145,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get playerTooltipCastControls => 'Vidhibiti vya kutuma';
 
   @override
-  String get playerTooltipPlaybackQuality => 'Kasi ya biti';
+  String get playerTooltipPlaybackQuality => 'Bitrate';
 
   @override
   String get playerTooltipEnterFullscreen => 'Ingiza skrini nzima';
@@ -8232,13 +8191,13 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'Ficha kutoka Endelea Kutazama';
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => 'Ficha kutoka Inayofuata';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => 'Ongeza kwenye Mkusanyo';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8293,14 +8252,14 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsAlphabetical => 'Kialfabeti';
 
   @override
-  String get settingsConnectionSection => 'MUUNGANISHO';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts => 'Ruhusu vyeti vilivyojitia saini';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Amini seva zinazotumia vyeti vya TLS vilivyojitia saini au vya CA binafsi. Washa kwa seva unazodhibiti pekee. Hii huzima uthibitishaji wa vyeti kwa miunganisho yote.';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'FARAGHA NA USALAMA';
@@ -8316,11 +8275,11 @@ class AppLocalizationsSw extends AppLocalizations {
       'Lafudhi za mandhari, mandhari, viashirio vilivyotazamwa na muziki wa mandhari';
 
   @override
-  String get settingsDetailsScreen => 'Skrini ya Maelezo';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Mtindo, ukungu wa mandharinyuma, na tabia ya vichupo';
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => 'Ukurasa wa Nyumbani';
@@ -8358,11 +8317,11 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Onyesha kitufe cha Seerr kwenye upau wa urambazaji';
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Onyesha lebo za maandishi kwenye upau wa juu wa urambazaji kila wakati';
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8431,7 +8390,8 @@ class AppLocalizationsSw extends AppLocalizations {
   String get settingsSupportMoonfin => 'Msaada Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle => 'Mchangie msanidi kahawa';
+  String get settingsSupportMoonfinSubtitle =>
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'KISHERIA';
@@ -8465,8 +8425,8 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'ilani # za leseni',
-      one: 'ilani # ya leseni',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8517,17 +8477,16 @@ class AppLocalizationsSw extends AppLocalizations {
       'Ungependa Kuruka Utambulisho na Outros?';
 
   @override
-  String get settingsMediaSegmentCountdown =>
-      'Hesabu ya Kurudi Nyuma ya Sehemu ya Maudhui';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => 'Upau wa Maendeleo';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => 'Kipima Muda';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'Hakuna';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'Mtumiaji wa haraka';
@@ -8551,8 +8510,7 @@ class AppLocalizationsSw extends AppLocalizations {
       'Jinsi video inapaswa kuongezwa ili kutoshea skrini.';
 
   @override
-  String get settingsPlaybackEngineAndroidTv =>
-      'Injini ya Uchezaji (Android TV)';
+  String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
 
   @override
   String get settingsPlaybackEngineAndroidTvDescription =>
@@ -8563,13 +8521,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Media3 (inapendekezwa)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (ya zamani)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (urithi)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (inapendekezwa)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Njia mbadala';
@@ -8760,758 +8718,749 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Zilizotolewa Hivi Karibuni katika $libraryName';
+    return 'Recently Released $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Cheza Kipindi Kinachofuata Kiotomatiki';
+  String get autoplayNextEpisode => 'Autoplay Next Episode';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Cheza kipindi kinachofuata kiotomatiki kinapopatikana.';
+      'Automatically play the next episode when available.';
 
   @override
-  String get skipSilenceTitle => 'Ruka ukimya';
+  String get skipSilenceTitle => 'Skip silence';
 
   @override
   String get skipSilenceSubtitle =>
-      'Ruka kiotomatiki sehemu za sauti zenye ukimya inapotumika na mtiririko.';
+      'Automatically skip silent audio segments when supported by the stream.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Ruhusu athari za sauti za nje';
+  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Ruhusu programu za kisawazishi na athari (k.m. Wavelet) zijiunganishe na vipindi vya uchezaji vya Media3.';
+      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
 
   @override
-  String get disableTunnelingTitle => 'Zima tunneling';
+  String get disableTunnelingTitle => 'Disable tunneling';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Lazimisha uchezaji usio wa tunneling. Ni muhimu kwenye vifaa vyenye mikatizo ya sauti/video ya tunneling.';
+      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
 
   @override
-  String get enableTunnelingTitle => 'Washa tunneling';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Ya kina. Huelekeza sauti na video kupitia njia ya maunzi iliyounganishwa. Imezimwa kwa chaguo-msingi kwa sababu husababisha mikatizo ya sauti/video kwenye baadhi ya vifaa.';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Unganisha Dolby Vision wasifu 7 na HEVC';
+  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Cheza mitiririko ya Dolby Vision wasifu 7 kama HEVC inayooana na HDR10 kwenye vifaa visivyo vya DV.';
+      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
 
   @override
-  String get subtitlesUseEmbeddedStyles =>
-      'Tumia mitindo ya manukuu iliyopachikwa';
+  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Tumia rangi, fonti, na uwekaji vilivyopachikwa katika mkondo wa manukuu. Zima ili kutumia mapendeleo yako ya mtindo wa manukuu badala yake.';
+      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Tumia saizi za fonti za manukuu zilizopachikwa';
+      'Use embedded subtitle font sizes';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Tumia vidokezo vya saizi ya fonti vilivyopachikwa katika mkondo wa manukuu. Zima ili kutumia saizi ya manukuu kutoka kwa mapendeleo yako ya mtindo.';
+      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Onyesha Maelezo ya Maudhui';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Onyesha maelezo ya kipengee kilichochaguliwa juu ya kurasa za Maktaba.';
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries => 'Ficha Mandharinyuma Unapovinjari?';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
-  String get useDetailedSubHeadings => 'Tumia Vichwa Vidogo vya Kina';
+  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Onyesha safu ndogo ya kina au ya kawaida kwenye kurasa za Maktaba.';
+      'Show detailed or minimal subrow on Library pages.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Futa mandhari iliyohifadhiwa?';
+  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Ondoa \"$themeName\" kutoka kwa akiba ya kifaa hiki?';
+    return 'Remove \"$themeName\" from this device cache?';
   }
 
   @override
-  String get themeStore => 'Duka la Mandhari';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle => 'Vinjari na uhifadhi mandhari za jamii';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
   String get themeStoreDescription =>
-      'Hifadhi mandhari ili kuitumia kama mandhari zako nyingine zilizohifadhiwa.';
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => 'Hakuna mandhari zinazopatikana kwa sasa.';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Imeshindwa kupakia Duka la Mandhari. Angalia muunganisho wako na ujaribu tena.';
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => 'Hifadhi';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => 'Hifadhi na utumie';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => 'Imehifadhiwa';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => 'Mandhari hii haikuweza kupakiwa.';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return '\"$themeName\" imehifadhiwa.';
+    return 'Saved \"$themeName\".';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return '\"$themeName\" imefutwa kutoka kwa kifaa hiki.';
+    return 'Deleted \"$themeName\" from this device.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Imeshindwa kufuta \"$themeName\".';
+    return 'Could not delete \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Mandhari zilizohifadhiwa';
+  String get savedThemesTitle => 'Saved themes';
 
   @override
   String get savedThemesDescription =>
-      'Hizi ni mandhari zilizopakuliwa kutoka kwa programu-jalizi ya Moonfin kwa seva ya sasa. Kufuta huondoa nakala hii ya ndani pekee.';
+      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
 
   @override
-  String get savedThemesEmpty =>
-      'Hakuna mandhari zilizohifadhiwa zilizopatikana kwa seva hii.';
+  String get savedThemesEmpty => 'No saved themes were found for this server.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Inatumika sasa';
+    return '$themeId • Currently active';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Futa mandhari iliyohifadhiwa';
+  String get savedThemesDeleteTooltip => 'Delete saved theme';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Dhibiti mandhari za programu-jalizi zilizopakuliwa kwenye kifaa hiki';
+      'Manage downloaded plugin themes on this device';
 
   @override
-  String get themeEditor => 'Kihariri cha Mandhari';
+  String get themeEditor => 'Theme Editor';
 
   @override
   String get themeEditorSubtitle =>
-      'Fungua Kihariri cha Mandhari cha Moonfin kwenye kivinjari chako';
+      'Open the Moonfin Theme Editor in your browser';
 
   @override
-  String get homeScreen => 'Skrini ya Nyumbani';
+  String get homeScreen => 'Home Screen';
 
   @override
-  String get bottomBar => 'Upau wa Chini';
+  String get bottomBar => 'Bottom Bar';
 
   @override
-  String get homeRowsStyleClassic => 'Klasiki';
+  String get homeRowsStyleClassic => 'Classic';
 
   @override
-  String get homeRowsStyleModern => 'Kisasa';
+  String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => 'Safu za Nyumbani';
+  String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => 'Onyesho la Safu za Nyumbani';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => 'Sehemu za Safu za Nyumbani';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => 'Vibadilishi vya Safu za Nyumbani';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Washa au zima kategoria za safu za nyumbani zinazotegemea maktaba';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
-      'Washa vibadilishi vifuatavyo ili kuonyesha safu katika Sehemu za Nyumbani.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Klasiki huhifadhi aina ya picha ya kila safu na kifuniko cha maelezo. Kisasa hutumia safu za wima hadi mandharinyuma.';
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
 
   @override
-  String get displayFavoritesRows => 'Onyesha Safu za Vipendwa';
+  String get displayFavoritesRows => 'Display Favorites Rows';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Onyesha Filamu Vipendwa, Mifululizo, na safu nyingine za vipendwa katika Sehemu za Nyumbani.';
+      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
 
   @override
-  String get favoritesRowSorting => 'Upangaji wa Safu za Vipendwa';
+  String get favoritesRowSorting => 'Favorites Row Sorting';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Panga safu za Vipendwa kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+      'Sort Favorites rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayCollectionsRows => 'Onyesha Safu za Makusanyo';
+  String get displayCollectionsRows => 'Display Collections Rows';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Onyesha safu za Makusanyo katika Sehemu za Nyumbani.';
+      'Show Collections rows in Home Sections.';
 
   @override
-  String get collectionsRowSorting => 'Upangaji wa Safu za Makusanyo';
+  String get collectionsRowSorting => 'Collections Row Sorting';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Panga safu za Makusanyo kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+      'Sort Collections rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayGenresRows => 'Onyesha Safu za Aina';
+  String get displayGenresRows => 'Display Genres Rows';
 
   @override
-  String get displayGenresRowsSubtitle =>
-      'Onyesha safu za Aina katika Sehemu za Nyumbani.';
+  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
 
   @override
-  String get genresRowSorting => 'Upangaji wa Safu za Aina';
+  String get genresRowSorting => 'Genres Row Sorting';
 
   @override
   String get genresRowSortingDescription =>
-      'Panga safu za Aina kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+      'Sort Genres rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get genresRowItems => 'Vipengee vya Safu za Aina';
+  String get genresRowItems => 'Genres Row Items';
 
   @override
   String get genresRowItemsDescription =>
-      'Onyesha Filamu, Mifululizo, au vyote viwili katika safu za Aina.';
+      'Show Movies, Series, or both in Genres rows.';
 
   @override
-  String get displayPlaylistsRows => 'Onyesha Safu za Orodha za Kucheza';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Onyesha safu za Orodha za Kucheza katika Sehemu za Nyumbani.';
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => 'Upangaji wa Safu za Orodha za Kucheza';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Panga safu za Orodha za Kucheza kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => 'Onyesha Safu za Sauti';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle =>
-      'Onyesha safu za Sauti katika Sehemu za Nyumbani.';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => 'Upangaji wa Safu za Sauti';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
   String get audioRowsSortingDescription =>
-      'Panga safu za Sauti kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => 'Orodha za Kucheza za Sauti';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get appearance => 'Mwonekano';
+  String get appearance => 'Appearance';
 
   @override
-  String get layout => 'Mpangilio';
+  String get layout => 'Layout';
 
   @override
-  String get theme => 'Mandhari';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => 'Kibodi';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => 'Vitufe';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => 'Uonyeshaji';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'Usanidi wa MPV';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'Programu ya kicheza cha nje';
+  String get externalPlayerApp => 'External player app';
 
   @override
   String get externalPlayerAppDescription =>
-      'Weka kicheza cha nje ili kuwezesha chaguo la kucheza kwa kubonyeza kwa muda mrefu';
+      'Set external player to enable long-press play option';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Onyesha kichagua programu uchezaji unapoanza.';
+      'Show app chooser when playback starts.';
 
   @override
-  String get loadingInstalledPlayers => 'Inapakia vicheza vilivyosakinishwa...';
+  String get loadingInstalledPlayers => 'Loading installed players...';
 
   @override
-  String get connection => 'Muunganisho';
+  String get connection => 'Connection';
 
   @override
-  String get audioTranscodeTarget => 'Lengo la Kubadilisha Msimbo wa Sauti';
+  String get audioTranscodeTarget => 'Audio Transcode Target';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Inatumika kwenye kifaa hiki';
+  String get supportedOnThisDevice => 'Supported on this device';
 
   @override
-  String get notSupportedOnThisDevice => 'Haitumiki kwenye kifaa hiki';
+  String get notSupportedOnThisDevice => 'Not Supported on this device';
 
   @override
   String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Tuma mtiririko wa biti wa DTS:X (DTS UHD) kwa kisimbuzi cha nje.';
+      'Bitstream DTS:X (DTS UHD) to external decoder.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD yenye Atmos (JOC) Passthrough';
+      'TrueHD with Atmos (JOC) Passthrough';
 
   @override
-  String get mediaPlayerBehavior => 'Tabia ya Kicheza Maudhui';
+  String get mediaPlayerBehavior => 'Media Player Behavior';
 
   @override
-  String get playbackEnhancements => 'Maboresho ya Uchezaji';
+  String get playbackEnhancements => 'Playback Enhancements';
 
   @override
-  String get alwaysOn => 'Imewashwa kila wakati.';
+  String get alwaysOn => 'Always on.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Badilisha Ruka Hitimisho na Onyesho la Inayofuata';
+      'Replace Skip Outro with Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Onyesha kifuniko cha Inayofuata badala ya kitufe cha Ruka Hitimisho.';
+      'Show the Next Up overlay instead of the Skip Outro button.';
 
   @override
-  String get playerRouting => 'Uelekezaji wa Kicheza';
+  String get playerRouting => 'Player Routing';
 
   @override
-  String get preferSoftwareDecoders => 'Pendelea visimbuzi vya programu';
+  String get preferSoftwareDecoders => 'Prefer software decoders';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Tumia FFmpeg (sauti) na libgav1 (AV1) kabla ya visimbuzi vya maunzi. Zima ikiwa passthrough ya sauti ya HDMI inaharibika.';
+      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Fungua uchezaji wa video katika programu ya nje uliyochagua kwenye Android TV.';
+      'Open video playback in your selected external app on Android TV.';
 
   @override
-  String get automaticQueuing => 'Upangaji Foleni wa Kiotomatiki';
+  String get automaticQueuing => 'Automatic Queuing';
 
   @override
-  String get preferSdhSubtitles => 'Pendelea manukuu ya SDH';
+  String get preferSdhSubtitles => 'Prefer SDH subtitles';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Tanguliza mikondo ya manukuu ya SDH/CC wakati wa kuchagua kiotomatiki.';
+      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
 
   @override
-  String get webDiagnostics => 'Uchunguzi wa wavuti';
+  String get webDiagnostics => 'Web diagnostics';
 
   @override
-  String get webDiagnosticsTitle => 'Uchunguzi wa Wavuti wa Moonfin';
+  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
 
   @override
   String get webDiagnosticsIntro =>
-      'Tumia ukurasa huu kuchunguza matatizo ya muunganisho wa kivinjari (CORS, maudhui mchanganyiko, na mipangilio ya ugunduzi).';
+      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Hitilafu ya Maudhui Mchanganyiko Imetambuliwa';
+      'Detected Mixed-Content Failure';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Hitilafu ya CORS/Preflight Imetambuliwa';
+      'Detected CORS/Preflight Failure';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin imetambua ukurasa wa HTTPS unaojaribu kupiga simu kwa URL ya seva ya HTTP. Vivinjari huzuia ombi hili kabla halijafika kwenye seva yako.';
+      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin imetambua hitilafu ya ombi katika kiwango cha kivinjari ambayo mara nyingi husababishwa na vichwa vya CORS au preflight vinavyokosekana kwenye seva ya maudhui.';
+      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'URL lengwa: $url';
+    return 'Target URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Maelezo: $detail';
+    return 'Detail: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext =>
-      'Muktadha wa Sasa wa Utekelezaji';
+  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
 
   @override
-  String get webDiagnosticsOrigin => 'Asili';
+  String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => 'Skimu';
+  String get webDiagnosticsScheme => 'Scheme';
 
   @override
-  String get webDiagnosticsPluginMode => 'Modi ya Programu-jalizi';
+  String get webDiagnosticsPluginMode => 'Plugin Mode';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'Uchanganuzi wa WebRTC';
+  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'URL ya Seva Iliyolazimishwa';
+  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'URL Chaguo-msingi ya Seva';
+  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'URL ya Proksi ya Ugunduzi';
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
 
   @override
-  String get notConfigured => 'haijasanidiwa';
+  String get notConfigured => 'not configured';
 
   @override
-  String get webDiagnosticsMixedContent => 'Maudhui Mchanganyiko';
+  String get webDiagnosticsMixedContent => 'Mixed Content';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'Ukurasa huu umepakiwa kupitia HTTPS, lakini URL moja au zaidi zilizosanidiwa ni za HTTP. Vivinjari huzuia kurasa za HTTPS kupiga simu kwa API za HTTP.';
+      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Suluhisho: toa seva yako ya maudhui au ncha ya proksi kupitia HTTPS, au pakia Moonfin kupitia HTTP kwenye mitandao ya ndani inayoaminika pekee.';
+      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'Hakuna usanidi dhahiri wa maudhui mchanganyiko uliotambuliwa kutoka kwa mipangilio ya sasa ya utekelezaji.';
+      'No obvious mixed-content configuration detected from current runtime settings.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'Orodha ya Kukagua ya CORS';
+  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Ruhusu asili ya kivinjari katika Access-Control-Allow-Origin.';
+      '• Allow the browser origin in Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Jumuisha Authorization, X-Emby-Authorization, na X-Emby-Token katika Access-Control-Allow-Headers.';
+      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Fichua Content-Range na Accept-Ranges kwa utiririshaji na tabia ya kutafuta.';
+      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Rudisha 204 kwa maombi ya preflight ya OPTIONS.';
+      '• Return 204 to OPTIONS preflight requests.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Mfano wa Kijisehemu cha Kichwa (mtindo wa nginx)';
+      'Example Header Snippet (nginx-style)';
 
   @override
-  String get note => 'Kumbuka';
+  String get note => 'Note';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'Njia hii ya uchunguzi imekusudiwa kwa ujenzi wa wavuti. Ikiwa unaiona kwenye jukwaa lingine, ukaguzi huu huenda usitumike.';
+      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
 
   @override
-  String get backToServerSelect => 'Rudi kwa Uteuzi wa Seva';
+  String get backToServerSelect => 'Back To Server Select';
 
   @override
-  String get signOutAllUsers => 'Toa Watumiaji Wote';
+  String get signOutAllUsers => 'Sign Out All Users';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Ruhusa ya maikrofoni imekataliwa kabisa. Iwashe katika mipangilio ya mfumo.';
+      'Microphone permission is permanently denied. Enable it in system settings.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Ruhusa ya maikrofoni inahitajika kwa utafutaji wa sauti.';
+      'Microphone permission is required for voice search.';
 
   @override
-  String get voiceSearchNoMatch => 'Sikuelewa. Jaribu tena.';
+  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'Hakuna usemi uliotambuliwa.';
+  String get voiceSearchNoSpeechDetected => 'No speech detected.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Hitilafu ya maikrofoni.';
+  String get voiceSearchMicrophoneError => 'Microphone error.';
 
   @override
-  String get voiceSearchNeedsInternet =>
-      'Utafutaji wa sauti unahitaji intaneti.';
+  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
 
   @override
-  String get voiceSearchServiceBusy =>
-      'Huduma ya sauti ina shughuli nyingi. Jaribu tena.';
+  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Ruhusa ya maikrofoni imekataliwa kabisa.';
+      'Microphone permission is permanently denied.';
 
   @override
-  String get microphonePermissionDenied => 'Ruhusa ya maikrofoni imekataliwa.';
+  String get microphonePermissionDenied => 'Microphone permission is denied.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Utambuzi wa usemi haupatikani kwenye kifaa hiki.';
+      'Speech recognition is unavailable on this device.';
 
   @override
-  String get openIosRoutePicker => 'Fungua kichagua njia cha iOS';
+  String get openIosRoutePicker => 'Open iOS route picker';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'Kichagua njia cha AirPlay hakipatikani kwenye kifaa hiki.';
+      'AirPlay route picker is unavailable on this device.';
 
   @override
-  String get videos => 'Video';
+  String get videos => 'Videos';
 
   @override
-  String get programs => 'Vipindi';
+  String get programs => 'Programs';
 
   @override
-  String get songs => 'Nyimbo';
+  String get songs => 'Songs';
 
   @override
-  String get photoAlbums => 'Albamu za Picha';
+  String get photoAlbums => 'Photo Albums';
 
   @override
-  String get photos => 'Picha';
+  String get photos => 'Photos';
 
   @override
-  String get people => 'Watu';
+  String get people => 'People';
 
   @override
-  String get recentlyReleasedEpisodes => 'Vipindi Vilivyotolewa Hivi Karibuni';
+  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
 
   @override
-  String get watchAgain => 'Tazama Tena';
+  String get watchAgain => 'Watch Again';
 
   @override
-  String get guestAppearances => 'Kujitokeza kwa Wageni';
+  String get guestAppearances => 'Guest Appearances';
 
   @override
-  String get appearancesSeerr => 'Kujitokeza (Seerr)';
+  String get appearancesSeerr => 'Appearances (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Michango ya Wafanyakazi (Seerr)';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
-  String get watchWithGroup => 'Tazama na kikundi';
+  String get watchWithGroup => 'Watch with group';
 
   @override
-  String get errors => 'Hitilafu';
+  String get errors => 'Errors';
 
   @override
-  String get warnings => 'Maonyo';
+  String get warnings => 'Warnings';
 
   @override
-  String get disk => 'Diski';
+  String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Fungua kwenye Kivinjari';
+  String get openInBrowser => 'Open in Browser';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Kivinjari kilichopachikwa hakipatikani kwenye jukwaa hili.';
+      'Embedded browser is not available on this platform.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Una uhakika unataka kuanzisha upya seva?';
+      'Are you sure you want to restart the server?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Una uhakika unataka kuzima seva? Utahitaji kuianzisha upya mwenyewe.';
+      'Are you sure you want to shut down the server? You will need to restart it manually.';
 
   @override
-  String get internal => 'Ya ndani';
+  String get internal => 'Internal';
 
   @override
-  String get idle => 'Haifanyi kazi';
+  String get idle => 'Idle';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'Hakuna watumiaji waliopatikana';
+  String get adminNoUsersFound => 'No users found';
 
   @override
-  String get adminNoUsersMatchSearch =>
-      'Hakuna watumiaji wanaolingana na utafutaji wako';
+  String get adminNoUsersMatchSearch => 'No users match your search';
 
   @override
-  String get adminNoDevicesFound => 'Hakuna vifaa vilivyopatikana';
+  String get adminNoDevicesFound => 'No devices found';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'Hakuna vifaa vinavyolingana na vichujio vya sasa';
+      'No devices match the current filters';
 
   @override
-  String get passwordSet => 'Nenosiri limewekwa';
+  String get passwordSet => 'Password set';
 
   @override
-  String get noPasswordConfigured => 'Hakuna nenosiri lililosanidiwa';
+  String get noPasswordConfigured => 'No password configured';
 
   @override
-  String get remoteAccess => 'Ufikiaji wa Mbali';
+  String get remoteAccess => 'Remote Access';
 
   @override
-  String get localOnly => 'Ya Ndani Pekee';
+  String get localOnly => 'Local Only';
 
   @override
-  String get adminMediaAnalyticsLoadFailed =>
-      'Imeshindwa kupakia takwimu za maudhui';
+  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Takwimu zilizounganishwa katika maktaba zote za maudhui.';
+      'Combined analytics across all media libraries.';
 
   @override
-  String get analyticsTopArtists => 'Wasanii Bora';
+  String get analyticsTopArtists => 'Top Artists';
 
   @override
-  String get analyticsTopAuthors => 'Waandishi Bora';
+  String get analyticsTopAuthors => 'Top Authors';
 
   @override
-  String get analyticsTopContributors => 'Wachangiaji Bora';
+  String get analyticsTopContributors => 'Top Contributors';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Maktaba $count',
-      one: 'Maktaba 1',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'Hakuna jumla za maudhui yaliyoorodheshwa zinazopatikana kwa uteuzi huu bado.';
+      'No indexed media totals are available for this selection yet.';
 
   @override
-  String get analyticsLibraryDetails => 'Maelezo ya Maktaba';
+  String get analyticsLibraryDetails => 'Library Details';
 
   @override
-  String get analyticsLibraryBreakdown => 'Mchanganuo wa Maktaba';
+  String get analyticsLibraryBreakdown => 'Library Breakdown';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'Hakuna maktaba zinazopatikana.';
+  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
 
   @override
-  String get adminServerAdministrationTitle => 'Usimamizi wa Seva';
+  String get adminServerAdministrationTitle => 'Server Administration';
 
   @override
   String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => 'Akiba ya Picha';
+  String get adminServerPathImageCache => 'Image Cache';
 
   @override
-  String get adminServerPathCache => 'Akiba';
+  String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => 'Kumbukumbu';
+  String get adminServerPathLogs => 'Logs';
 
   @override
   String get adminServerPathMetadata => 'Metadata';
 
   @override
-  String get adminServerPathTranscode => 'Kubadilisha Msimbo';
+  String get adminServerPathTranscode => 'Transcode';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
   String get adminNoServerPathsReturned =>
-      'Hakuna njia za seva zilizorudishwa na seva hii.';
+      'No server paths returned by this server.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% imetumika';
+    return '$percent% used';
   }
 
   @override
-  String get userActivity => 'Shughuli za Mtumiaji';
+  String get userActivity => 'User Activity';
 
   @override
-  String get systemEvents => 'Matukio ya Mfumo';
+  String get systemEvents => 'System Events';
 
   @override
-  String get needsAttention => 'Inahitaji Uangalizi';
+  String get needsAttention => 'Needs Attention';
 
   @override
-  String get adminDrawerSectionServer => 'Seva';
+  String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => 'Uchezaji';
+  String get adminDrawerSectionPlayback => 'Playback';
 
   @override
-  String get adminDrawerSectionDevices => 'Vifaa';
+  String get adminDrawerSectionDevices => 'Devices';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Ya Kina';
+  String get adminDrawerSectionAdvanced => 'Advanced';
 
   @override
-  String get adminDrawerSectionPlugins => 'Programu-jalizi';
+  String get adminDrawerSectionPlugins => 'Plugins';
 
   @override
-  String get adminDrawerSectionLiveTv => 'TV ya moja kwa moja';
+  String get adminDrawerSectionLiveTv => 'Live TV';
 
   @override
-  String get homeVideos => 'Video za Nyumbani';
+  String get homeVideos => 'Home Videos';
 
   @override
-  String get mixedContent => 'Maudhui Mchanganyiko';
+  String get mixedContent => 'Mixed Content';
 
   @override
-  String get homeVideosAndPhotos => 'Video na Picha za Nyumbani';
+  String get homeVideosAndPhotos => 'Home Videos & Photos';
 
   @override
-  String get mixedMoviesAndShows => 'Filamu na Vipindi Mchanganyiko';
+  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9523,300 +9472,299 @@ class AppLocalizationsSw extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'Hakuna rekodi zilizopatikana';
+  String get noRecordingsFound => 'No recordings found';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'Hakuna kurasa za picha zilizopatikana ndani ya kumbukumbu ya .$extension.';
+    return 'No image pages found inside .$extension archive.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Kionyeshi kilichopachikwa kimeshindwa ($code): $description';
+    return 'Embedded renderer failed ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'Kionyeshi cha EPUB kimeshindwa ($code): $description';
+    return 'EPUB renderer failed ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Faili la ndani la kisomaji halipo: $uri';
+    return 'Missing local file for reader: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status wakati wa kufungua data ya kitabu kutoka $uri';
+    return 'HTTP $status while opening book data from $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'Hakuna ncha ya kitabu inayoweza kusomwa inayopatikana';
+      'No readable book endpoint available';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Muundo wa kumbukumbu ya katuni hauhimiliwi: .$extension';
+    return 'Unsupported comic archive format: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'Programu-jalizi ya kutoa CBR haipatikani kwenye jukwaa hili.';
+      'CBR extraction plugin is not available on this platform.';
 
   @override
-  String get failedToExtractCbrArchive =>
-      'Imeshindwa kutoa kumbukumbu ya .cbr.';
+  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'Utoaji wa CB7 haupatikani kwenye jukwaa hili.';
+      'CB7 extraction is not available on this platform.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'Programu-jalizi ya kutoa CB7 haipatikani kwenye jukwaa hili.';
+      'CB7 extraction plugin is not available on this platform.';
 
   @override
-  String get closeGenrePanel => 'Funga paneli ya aina';
+  String get closeGenrePanel => 'Close genre panel';
 
   @override
-  String get loadingShuffle => 'Inapakia mchanganyiko...';
+  String get loadingShuffle => 'Loading shuffle...';
 
   @override
-  String get libraryShuffleLabel => 'MCHANGANYIKO WA MAKTABA';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => 'MCHANGANYIKO NASIBU';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => 'MCHANGANYIKO WA AINA';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Kubadilisha HDR Kiotomatiki';
+  String get autoHdrSwitching => 'Auto HDR Switching';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Washa HDR kiotomatiki kwa uchezaji wa video ya HDR na urejeshe modi ya onyesho unapotoka.';
+      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
 
   @override
-  String get whenFullscreen => 'Wakati wa skrini nzima';
+  String get whenFullscreen => 'When fullscreen';
 
   @override
-  String get changeArtwork => 'Badilisha Sanaa';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => 'Haipo';
+  String get missing => 'Missing';
 
   @override
-  String get transcodingLimits => 'Vikomo vya Kubadilisha Msimbo';
+  String get transcodingLimits => 'Transcoding Limits';
 
   @override
-  String get clearAllArtworkButton => 'Futa sanaa yote?';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Una uhakika unataka kufuta sanaa yote iliyopakuliwa?';
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => 'Thibitisha Kufuta';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Una uhakika ungependa kufuta $itemType?';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => 'Pakia?';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => 'Mwonekano: ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Onyesha sanaa katika lugha ya kiolesura pekee';
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => 'Thibitisha Kufuta Yote';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => 'Picha imepakiwa kwa mafanikio!';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Imeshindwa kupakia picha: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Imeshindwa kuweka picha: $error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Imeshindwa kufuta picha: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Imeshindwa kufuta sanaa yote: $error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => 'Ndiyo';
+  String get yes => 'Yes';
 
   @override
-  String get posterCategory => 'Bango';
+  String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'Mandharinyuma';
+  String get backdropsCategory => 'Backdrops';
 
   @override
-  String get bannerCategory => 'Utepe';
+  String get bannerCategory => 'Banner';
 
   @override
-  String get logoCategory => 'Nembo';
+  String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => 'Kijipicha';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => 'Sanaa';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => 'Sanaa ya Diski';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'Picha ya Skrini';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => 'Jalada la Kisanduku';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => 'Jalada la Nyuma la Kisanduku';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => 'Sanaa ya Menyu';
+  String get menuArtCategory => 'Menu Art';
 
   @override
-  String get confirmItemPoster => 'bango';
+  String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => 'mandharinyuma';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
-  String get confirmItemBanner => 'utepe';
+  String get confirmItemBanner => 'banner';
 
   @override
-  String get confirmItemLogo => 'nembo';
+  String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => 'kijipicha';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => 'sanaa';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => 'sanaa ya diski';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'picha ya skrini';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => 'jalada la kisanduku';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => 'jalada la nyuma la kisanduku';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => 'sanaa ya menyu';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'Zote';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => 'Juu (1080p+)';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => 'Wastani (720p)';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => 'Chini (<720p)';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => 'Vyanzo';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => 'Sura';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => 'Alamisho';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => 'Vidokezo';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => 'Foleni';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => 'Ratiba ya Muda';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => 'Ratiba ya muda ni tupu';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Kitabu Kizima';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => 'Ratiba ya Muda Iliyolengwa';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => 'Hamisha Alamisho';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => 'Hamisha Vidokezo';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => 'Hamisha Yote';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Imehamishiwa $path';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Kuhamisha kumeshindwa: $error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Maneno ya Wimbo';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => 'Ongeza alamisho';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => 'Ongeza kidokezo';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => 'Hariri kidokezo';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => 'Andika kidokezo cha wakati huu';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => 'Kipima muda cha kulala';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => 'Imezimwa';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => 'Mwisho wa sura';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => 'Maalum';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining zimesalia';
+    return '$remaining left';
   }
 
   @override
@@ -9824,58 +9772,58 @@ class AppLocalizationsSw extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'dk $count',
-      one: 'dk 1',
+      other: '$count min',
+      one: '1 min',
     );
     return '$_temp0';
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Kasi ya uchezaji';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => 'Zilizosalia';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => 'Zilizopita';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Nyuma ${seconds}s';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Mbele ${seconds}s';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Sura iliyotangulia';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => 'Sura inayofuata';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Sura $current kati ya $total';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => 'Hakuna sura';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => 'Hakuna alamisho bado';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => 'Hakuna vidokezo bado';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Alamisho limeongezwa kwenye $position';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'Weka upya hadi 1.0x';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9883,256 +9831,249 @@ class AppLocalizationsSw extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Hifadhi';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => 'Ghairi';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => 'Futa';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => 'Mapendeleo ya Manukuu';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Badilisha modi za manukuu, lugha chaguo-msingi, muonekano, na chaguo za uonyeshaji.';
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => 'Uonyeshaji wa Manukuu';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => 'Chaguo za Onyesho';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => 'Tarehe ya Kutolewa (Kupanda)';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => 'Tarehe ya Kutolewa (Kushuka)';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => 'Panga Michango';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => 'Panga majukumu mengi pamoja';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle =>
-      'Onyo la Ufikiaji wa Kuandika kwenye Maktaba';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => 'Jinsi ya kurekebisha hili:';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Mpe mtumiaji wa huduma ya Jellyfin (k.m. jellyfin au PUID/PGID ya Docker) ruhusa za kuandika kwenye folda za maktaba yako ya maudhui kwenye seva.\n\n2. Au, nenda kwenye Dashibodi yako ya Jellyfin -> Maktaba, hariri maktaba hii, na uzime \'Hifadhi sanaa katika folda za maudhui\' ili kuhifadhi sanaa katika hifadhidata ya ndani ya Jellyfin.';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => 'Ondoa';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Maktaba yako ya \'$libraryName\' imesanidiwa kuhifadhi sanaa moja kwa moja katika folda za maudhui (\'Hifadhi sanaa katika folda za maudhui\' imewashwa). Hata hivyo, Jellyfin imejaribu ufikiaji wa kuandika na haina ruhusa ya kuandika faili katika saraka hii:\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'Inaonekana Jellyfin imeshindwa kusasisha sanaa. Maktaba yako imesanidiwa kuhifadhi sanaa moja kwa moja katika folda za maudhui (\'Hifadhi sanaa katika folda za maudhui\' imewashwa). Hitilafu hii hutokea mara nyingi wakati mchakato wa seva ya Jellyfin hauna ruhusa ya kuandika faili katika saraka zako za maudhui.';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'Orodha za Nje';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => 'Cheza Tena';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => 'Maelezo ya Faili';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Ukubwa: $size  •  Muundo: $format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Onyesha Mikondo Yote ($count) ya Sauti';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Onyesha Mikondo Yote ($count) ya Manukuu';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay =>
-      'Inakagua uwezo wa Uchezaji wa Moja kwa Moja...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel =>
-      'Uwezo wa Uchezaji wa Moja kwa Moja: ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => 'Yaliyolazimishwa';
+  String get forced => 'Forced';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Muundo wa kontena hauhimiliwi na kicheza.';
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported => 'Kodeki ya video haihimiliwi.';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported => 'Kodeki ya sauti haihimiliwi.';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Muundo wa manukuu hauhimiliwi (unahitaji kuchomwa).';
+      'Subtitle format is not supported (requires burning).';
 
   @override
   String get transcodeAudioProfileNotSupported =>
-      'Wasifu wa sauti hauhimiliwi.';
+      'Audio profile is not supported.';
 
   @override
   String get transcodeVideoProfileNotSupported =>
-      'Wasifu wa video hauhimiliwi.';
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported =>
-      'Kiwango cha video hakihimiliwi.';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Mwonekano wa video hauhimiliwi na kifaa hiki.';
+      'Video resolution is not supported by this device.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Kina cha biti cha video hakihimiliwi.';
+      'Video bit depth is not supported.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Kasi ya fremu ya video haihimiliwi.';
+      'Video framerate is not supported.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'Kasi ya biti ya faili inazidi kikomo cha utiririshaji cha kicheza.';
+      'File bitrate exceeds player streaming limit.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Kasi ya biti ya video inazidi kikomo cha utiririshaji.';
+      'Video bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Kasi ya biti ya sauti inazidi kikomo cha utiririshaji.';
+      'Audio bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Idadi ya chaneli za sauti haihimiliwi.';
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => 'Kialfabeti';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => 'Mpangilio wa Kutolewa (Kupanda)';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => 'Mpangilio wa Kutolewa (Kushuka)';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => 'Maalum (Buruta-na-Dondosha)';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => 'Chaguo za Kupanga Orodha ya Kucheza';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => 'Weka Upya Upangaji';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Tazama Tena M$season:K$episode';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Tazama Tena Orodha ya Kucheza';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => 'Hakuna manukuu yaliyopatikana.';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => 'Vidhibiti vya Msimamizi';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => 'Injini ya uonyeshaji (Impeller)';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller ni kionyeshi cha kisasa cha GPU cha Flutter kwa uhuishaji laini na mkwaruzo mdogo. Kwenye baadhi ya visanduku vya TV na GPU za zamani inaweza kusababisha hitilafu au video nyeusi; izime ikiwa unaona hayo. Kiotomatiki huchagua chaguo-msingi bora kwa kifaa chako. Anzisha upya Moonfin ili kutumia.';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => 'Kiotomatiki';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => 'Imewashwa';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => 'Imezimwa';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => 'Kuanzisha upya kunahitajika';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin inahitaji kuanzishwa upya ili kubadilisha injini ya uonyeshaji. Funga programu sasa, kisha uifungue tena ili kutumia.';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => 'Funga programu sasa';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => 'Onyesha Upya Maktaba';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => 'Onyesha Upya Maktaba Zote';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest =>
-      'Tarehe ya Kuongezwa (Za Zamani Kwanza)';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => 'Tarehe ya Kuongezwa (Mpya Kwanza)';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => 'Kialfabeti (A hadi Z)';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Kialfabeti (Z hadi A)';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Inapakia Takwimu za Seva... $percentage%';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource =>
-      'Linganisha na chanzo';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => 'Filamu 250 Bora za IMDb';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => 'Vipindi 250 Bora vya TV vya IMDb';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'Filamu Maarufu Zaidi za IMDb';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'Vipindi Maarufu Zaidi vya TV vya IMDb';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies =>
-      'Filamu Zenye Ukadiriaji wa Chini Zaidi za IMDb';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies => 'Filamu Bora za Kiingereza za IMDb';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

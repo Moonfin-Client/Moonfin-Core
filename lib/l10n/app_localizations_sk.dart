@@ -12,27 +12,27 @@ class AppLocalizationsSk extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'PREDVOĽBY ÚČTU';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => 'Jazyk rozhrania';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => 'Predvolené systémom';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'Prihlásiť sa';
 
   @override
-  String get empty => 'Prázdne';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Pripájanie k serveru $serverName';
+    return 'Connecting to $serverName';
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'Rýchle pripojenie';
 
   @override
   String get password => 'heslo';
@@ -41,7 +41,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get username => 'Používateľské meno';
 
   @override
-  String get email => 'E-mail';
+  String get email => 'Email';
 
   @override
   String get quickConnectInstruction =>
@@ -61,12 +61,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect nie je dostupný: $detail';
+    return 'QuickConnect unavailable: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect nie je dostupný ($status): $detail';
+    return 'QuickConnect unavailable ($status): $detail';
   }
 
   @override
@@ -80,7 +80,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin verzia $version';
+    return 'Moonfin version $version';
   }
 
   @override
@@ -106,7 +106,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Odstrániť „$serverName“ zo zoznamu serverov?';
+    return 'Remove \"$serverName\" from your servers?';
   }
 
   @override
@@ -142,62 +142,62 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsAppearanceTheme => 'Téma aplikácie';
 
   @override
-  String get detailScreenStyle => 'Štýl obrazovky s detailmi';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klasický je pôvodné vycentrované rozloženie Moonfin. Moderný je responzívne filmové rozloženie.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Klasický';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
-  String get detailScreenStyleModern => 'Moderný';
+  String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'Rozbalené karty';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
   String get expandedTabsSubtitle =>
-      'Automaticky zobrazovať obsah karty pri prechádzaní kartami. Vypnite, ak chcete karty otvárať a zatvárať ručne.';
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => 'Zobraziť technické podrobnosti?';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Zobraziť kodek, rozlíšenie a informácie o streame v súhrne bannera';
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => 'Systém odporúčaní';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Použite algoritmus Moonfin odporúča pre lokálnu knižnicu alebo online metriky podobnosti TMDb. Poznámka: Online odporúčania vyžadujú integráciu Seerr.';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin odporúča';
+  String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'Podobnosť TMDb';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Použiť limit rodičovského hodnotenia?';
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Obmedziť návrhy funkcie Moonfin odporúča podľa rodičovského hodnotenia cieľového média';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => 'Štýl rozhrania';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatický sa prispôsobí vášmu zariadeniu. Vyberte Apple alebo Material, ak chcete vzhľad vynútiť.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatický';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -206,38 +206,38 @@ class AppLocalizationsSk extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Kvalita skla';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      'Automatická vyberie najlepší efekt skla pre toto zariadenie. Plná vynúti skutočné rozostrenie, Znížená použije odľahčené sklo, ktoré šetrí výkon GPU.';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
-  String get glassQualityAuto => 'Automatická';
+  String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => 'Plná';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'Znížená';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'Prepínajte medzi Moonfin a Neon Pulse bez reštartovania aplikácie';
 
   @override
-  String get customThemeTitle => 'Vlastná téma';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
   String get customThemeSubtitle =>
-      'Vlastné témy menia vizuálne prvky v celej aplikácii Moonfin. Vyberte si možnosť, ktorá vyhovuje vášmu štýlu.';
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
-  String get keyboardPreferSystemIme => 'Uprednostniť systémovú klávesnicu';
+  String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Na zadávanie textu predvolene používať metódu vstupu vášho zariadenia';
+      'Use your device input method by default for text entry';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -254,18 +254,18 @@ class AppLocalizationsSk extends AppLocalizations {
       'Synthwave štýl s purpurovou žiarou, azúrovým textom a silnejším chrómovým kontrastom';
 
   @override
-  String get themeGlass => 'Sklo';
+  String get themeGlass => 'Glass';
 
   @override
   String get themeGlassSubtitle =>
-      'Štýl tekutého skla s plynúcim gradientovým pozadím, matnými povrchmi a modrým akcentom Apple';
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
-  String get theme8BitHero => '8-bitový hrdina';
+  String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Retro pixel-art štýl s výraznou paletou, hranatými okrajmi, ostrými tieňmi a pixelovým písmom';
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -314,7 +314,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Nepodarilo sa pripojiť k $target';
+    return 'Unable to connect to $target';
   }
 
   @override
@@ -327,36 +327,35 @@ class AppLocalizationsSk extends AppLocalizations {
   String get exit => 'VÝCHOD';
 
   @override
-  String get gameMenu => 'Ponuka';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => 'Pozastavené';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => 'Uložiť stav';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => 'Hry';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => 'Načítať stav';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => 'Zrýchlene vpred';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => 'Nastavenia emulátora';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions =>
-      'Toto jadro nemá žiadne nastaviteľné možnosti.';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => 'Podržaním otvoríte ponuku';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
   String get gamePlaybackUnsupported =>
-      'Hranie hier zatiaľ nie je na tomto zariadení podporované.';
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded => 'Nepodarilo sa načítať žiadne domáce riadky';
@@ -378,7 +377,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get schedule => 'Rozvrh';
 
   @override
-  String get series => 'Seriály';
+  String get series => 'séria';
 
   @override
   String get noItemsFound => 'Nenašli sa žiadne položky';
@@ -428,7 +427,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Priečinok sa nepodarilo načítať: $error';
+    return 'Failed to load folder: $error';
   }
 
   @override
@@ -436,7 +435,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count položiek';
+    return '$count items';
   }
 
   @override
@@ -453,7 +452,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count položiek';
+    return '$count Items';
   }
 
   @override
@@ -494,7 +493,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Žánre';
+    return '$name — Genres';
   }
 
   @override
@@ -507,7 +506,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get albumArtists => 'Umelci albumov';
 
   @override
-  String get artists => 'Interpreti';
+  String get artists => 'Umelci';
 
   @override
   String get bookmarks => 'Záložky';
@@ -533,17 +532,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return 'pred $count min';
+    return '${count}m ago';
   }
 
   @override
   String hoursAgo(int count) {
-    return 'pred $count h';
+    return '${count}h ago';
   }
 
   @override
   String daysAgo(int count) {
-    return 'pred $count d';
+    return '${count}d ago';
   }
 
   @override
@@ -578,7 +577,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titulov';
+    return '$count titles';
   }
 
   @override
@@ -604,7 +603,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get listen => 'Počúvaj';
 
   @override
-  String get resume => 'Pokračovať';
+  String get resume => 'Obnoviť';
 
   @override
   String get failedToLoadLibrary => 'Nepodarilo sa načítať knižnicu';
@@ -616,7 +615,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get savedForLater => 'Uložené na neskôr';
 
   @override
-  String get topListens => 'Najpočúvanejšie';
+  String get topListens => 'Top Listens';
 
   @override
   String get unreadDiscoveries => 'Neprečítané objavy';
@@ -666,17 +665,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count autorov';
+    return '$count authors';
   }
 
   @override
   String genresCount(int count) {
-    return '$count žánrov';
+    return '$count genres';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent % dokončené';
+    return '$percent% completed';
   }
 
   @override
@@ -693,7 +692,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titulov usporiadaných na prehliadanie so zameraním na čítanie.';
+    return '$count titles arranged for reading-first browsing.';
   }
 
   @override
@@ -730,7 +729,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'Nenašli sa žiadne $label';
+    return 'No $label found';
   }
 
   @override
@@ -749,13 +748,13 @@ class AppLocalizationsSk extends AppLocalizations {
   String get readStatus => 'Prečítajte si';
 
   @override
-  String get watched => 'Pozreté';
+  String get watched => 'Sledované';
 
   @override
   String get unread => 'Neprečítané';
 
   @override
-  String get unwatched => 'Nepozreté';
+  String get unwatched => 'Nepozerané';
 
   @override
   String get seriesStatus => 'Stav série';
@@ -767,45 +766,43 @@ class AppLocalizationsSk extends AppLocalizations {
   String get books => 'knihy';
 
   @override
-  String get latestBooks => 'Najnovšie knihy';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => 'Najnovšie audioknihy';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count kníh',
-      many: '$count knihy',
-      few: '$count knihy',
-      one: '1 kniha',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Kniha';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => 'Audiokniha';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent % prečítané';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return 'zostáva $time';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => 'Čítať';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => 'Počúvať';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => 'Autor';
@@ -843,12 +840,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count častí';
+    return '$count sections';
   }
 
   @override
   String firstPublished(int year) {
-    return 'Prvé vydanie $year';
+    return 'First published $year';
   }
 
   @override
@@ -863,7 +860,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count kníh';
+    return '$count books';
   }
 
   @override
@@ -875,7 +872,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count autorov';
+    return '$count Authors';
   }
 
   @override
@@ -883,10 +880,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiokníh',
-      many: '$count audioknihy',
-      few: '$count audioknihy',
-      one: '1 audiokniha',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -901,7 +896,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get failedToLoad => 'Načítanie zlyhalo';
 
   @override
-  String get delete => 'Vymazať';
+  String get delete => 'Odstrániť';
 
   @override
   String get save => 'Uložiť';
@@ -922,7 +917,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get nextUp => 'Ďalej nahor';
 
   @override
-  String get seasons => 'Série';
+  String get seasons => 'Ročné obdobia';
 
   @override
   String get chapters => 'kapitoly';
@@ -934,7 +929,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get movies => 'Filmy';
 
   @override
-  String get musicVideos => 'Hudobné videá';
+  String get musicVideos => 'Music Videos';
 
   @override
   String get other => 'Iné';
@@ -949,11 +944,11 @@ class AppLocalizationsSk extends AppLocalizations {
   String get tableOfContents => 'Obsah';
 
   @override
-  String get tracklist => 'Zoznam skladieb';
+  String get tracklist => 'Tracklist';
 
   @override
   String discNumber(int number) {
-    return 'Disk $number';
+    return 'Disc $number';
   }
 
   @override
@@ -979,7 +974,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Vydané $year';
+    return 'Published $year';
   }
 
   @override
@@ -990,54 +985,52 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count sezón',
-      many: '$count sezóny',
-      few: '$count sezóny',
-      one: '1 sezóna',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Skončí o $time';
+    return 'Ends at $time';
   }
 
   @override
-  String get items => 'Položky';
+  String get items => 'Items';
 
   @override
-  String get extras => 'Bonusy';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => 'Zo zákulisia';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => 'Vystrihnuté scény';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => 'Krátke dokumenty';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'Rozhovory';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => 'Scény';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => 'Krátke filmy';
+  String get shorts => 'Shorts';
 
   @override
-  String get trailers => 'Ukážky';
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
-    return 'zostáva $time';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return 'Skončí za $time';
+    return 'Ends in $time';
   }
 
   @override
@@ -1051,11 +1044,11 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Pokračovať od $position';
+    return 'Resume from $position';
   }
 
   @override
-  String get play => 'Prehrať';
+  String get play => 'Hrať';
 
   @override
   String get startOver => 'Začať odznova';
@@ -1079,10 +1072,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get version => 'Verzia';
 
   @override
-  String get cast => 'Preniesť';
+  String get cast => 'Obsadenie';
 
   @override
-  String get trailer => 'Ukážka';
+  String get trailer => 'Trailer';
 
   @override
   String get finished => 'Dokončené';
@@ -1151,7 +1144,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Odstrániť stiahnuté skladby pre „$title“?';
+    return 'Delete downloaded tracks for \"$title\"?';
   }
 
   @override
@@ -1166,17 +1159,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'Nenačítali sa žiadne $itemLabel';
+    return 'No $itemLabel loaded';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Sťahuje sa $title ($count položiek)...';
+    return 'Downloading $title ($count items)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Naozaj chcete odstrániť „$name“ zo servera? Túto akciu nie je možné vrátiť späť.';
+    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
   }
 
   @override
@@ -1187,7 +1180,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Nepodporovaný formát knihy: .$extension';
+    return 'Unsupported book format: .$extension';
   }
 
   @override
@@ -1197,7 +1190,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get subtitleTrack => 'Titulková stopa';
 
   @override
-  String get none => 'Žiadne';
+  String get none => 'žiadne';
 
   @override
   String get downloadSubtitlesLabel => 'Stiahnite si titulky...';
@@ -1214,7 +1207,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Titulky stiahnuté a vybraté: $name';
+    return 'Subtitle downloaded and selected: $name';
   }
 
   @override
@@ -1223,7 +1216,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'Nenašli sa žiadne vzdialené titulky pre jazyk $language.';
+    return 'No remote subtitles found for $language.';
   }
 
   @override
@@ -1231,7 +1224,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Verzia $number';
+    return 'Version $number';
   }
 
   @override
@@ -1251,7 +1244,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Sťahuje sa $name ($quality)...';
+    return 'Downloading $name ($quality)...';
   }
 
   @override
@@ -1259,7 +1252,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Odstrániť lokálne súbory pre $typeLabel?\n\nUvoľní sa tým miesto v úložisku. Neskôr ich môžete stiahnuť znova.';
+    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
   }
 
   @override
@@ -1275,25 +1268,25 @@ class AppLocalizationsSk extends AppLocalizations {
   String get director => 'RIADITEĽ';
 
   @override
-  String get directors => 'REŽISÉRI';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => 'SCENÁRISTA';
+  String get writer => 'WRITER';
 
   @override
-  String get writers => 'SCENÁRISTI';
+  String get writers => 'SPISOVATELIA';
 
   @override
   String get studio => 'ŠTÚDIO';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count ďalších';
+    return '+$count more';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count epizód';
+    return '$count Episodes';
   }
 
   @override
@@ -1303,12 +1296,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Epizóda $number';
+    return 'Episode $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Kapitola $number';
+    return 'Chapter $number';
   }
 
   @override
@@ -1316,10 +1309,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count skladieb',
-      many: '$count skladby',
-      few: '$count skladby',
-      one: '1 skladba',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1329,27 +1320,25 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count kapitol',
-      many: '$count kapitoly',
-      few: '$count kapitoly',
-      one: '1 kapitola',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Narodenie $date';
+    return 'Born $date';
   }
 
   @override
   String died(String date) {
-    return 'Úmrtie $date';
+    return 'Died $date';
   }
 
   @override
   String age(int age) {
-    return 'Vek $age';
+    return 'Age $age';
   }
 
   @override
@@ -1359,20 +1348,20 @@ class AppLocalizationsSk extends AppLocalizations {
   String get readMore => 'Prečítajte si viac';
 
   @override
-  String get shuffle => 'Náhodne';
+  String get shuffle => 'Zamiešať';
 
   @override
-  String get shuffleAllMusic => 'Prehrať všetku hudbu náhodne';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => 'Prihláste sa do Moonfin v telefóne';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => 'Server je nedostupný';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
-    return '$count stiahnutí';
+    return '$count downloads';
   }
 
   @override
@@ -1380,7 +1369,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '$count kan.';
+    return '${count}ch';
   }
 
   @override
@@ -1391,32 +1380,32 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Akcia vzdialených titulkov ($action) vyžaduje pre tohto používateľa oprávnenie Jellyfin na správu titulkov.';
+    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'Táto položka sa na serveri nenašla pre akciu vzdialených titulkov ($action).';
+    return 'This item could not be found on the server for remote subtitle $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Akcia vzdialených titulkov ($action) zlyhala: $detail';
+    return 'Remote subtitle $action failed: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Akcia vzdialených titulkov ($action) zlyhala (HTTP $status).';
+    return 'Remote subtitle $action failed (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Nepodarilo sa vykonať akciu $action pre vzdialené titulky.';
+    return 'Failed to $action remote subtitles.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'všetky stiahnuté epizódy pre „$name“';
+    return 'all downloaded episodes for \"$name\"';
   }
 
   @override
@@ -1447,17 +1436,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return 'Akcia $label zlyhala: $error';
+    return '$label action failed: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Nepodarilo sa nastaviť hlasitosť odosielania: $error';
+    return 'Failed to set cast volume: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return 'Ovládanie $label';
+    return '$label Controls';
   }
 
   @override
@@ -1467,14 +1456,14 @@ class AppLocalizationsSk extends AppLocalizations {
   String get unavailable => 'nedostupné';
 
   @override
-  String get pause => 'Pozastaviť';
+  String get pause => 'Pauza';
 
   @override
   String get syncPosition => 'Synchronizovať pozíciu';
 
   @override
   String stopCast(String label) {
-    return 'Zastaviť $label';
+    return 'Stop $label';
   }
 
   @override
@@ -1482,7 +1471,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Skladba $number';
+    return 'Track $number';
   }
 
   @override
@@ -1499,7 +1488,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds sekúnd';
+    return '$seconds seconds';
   }
 
   @override
@@ -1514,11 +1503,11 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
-  String get auto => 'Automaticky';
+  String get auto => 'Auto';
 
   @override
   String bitrateValueMbps(int mbps) {
-    return '$mbps Mb/s';
+    return '$mbps Mbps';
   }
 
   @override
@@ -1529,12 +1518,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String delayMinusMs(int value) {
-    return '-$value ms';
+    return '-${value}ms';
   }
 
   @override
   String delayPlusMs(int value) {
-    return '+$value ms';
+    return '+${value}ms';
   }
 
   @override
@@ -1553,7 +1542,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get playback => 'Prehrávanie';
 
   @override
-  String get playMethod => 'Spôsob prehrávania';
+  String get playMethod => 'Play Method';
 
   @override
   String get directPlay => 'Priame prehrávanie';
@@ -1568,7 +1557,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get transcodeReasons => 'Dôvody transkódovania';
 
   @override
-  String get player => 'Prehrávač';
+  String get player => 'Hráč';
 
   @override
   String get container => 'Kontajner';
@@ -1592,7 +1581,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get videoBitrate => 'Bitová rýchlosť videa';
 
   @override
-  String get track => 'Stopa';
+  String get track => 'Sledovať';
 
   @override
   String get channels => 'Kanály';
@@ -1614,12 +1603,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return 'Chyba relácie $protocol';
+    return '$protocol session error';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Nepodarilo sa načítať podrobnosti o knihe: $error';
+    return 'Failed to load book details: $error';
   }
 
   @override
@@ -1628,7 +1617,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'Tento formát (.$extension) sa zatiaľ nedá zobraziť v aplikácii.';
+    return 'This format (.$extension) cannot be rendered in-app yet.';
   }
 
   @override
@@ -1641,17 +1630,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Nepodarilo sa otvoriť čítačku v aplikácii: $error';
+    return 'Failed to open in-app reader: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Záložka je už uložená na $label.';
+    return 'Bookmark already saved at $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Záložka pridaná: $label';
+    return 'Bookmark added: $label';
   }
 
   @override
@@ -1663,7 +1652,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Strana $number';
+    return 'Page $number';
   }
 
   @override
@@ -1674,12 +1663,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Formát: .$extension';
+    return 'Format: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent % prečítané';
+    return '$percent% read';
   }
 
   @override
@@ -1703,7 +1692,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Obnoviť priblíženie (${zoom}x)';
+    return 'Reset Zoom (${zoom}x)';
   }
 
   @override
@@ -1726,7 +1715,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Nepodarilo sa aktualizovať stav prečítania: $error';
+    return 'Failed to update read state: $error';
   }
 
   @override
@@ -1758,7 +1747,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'Táto platforma nedokáže spustiť vstavaný dokumentový engine pre súbory $extension.';
+    return 'This platform cannot host the embedded document engine for $extension files.';
   }
 
   @override
@@ -1797,7 +1786,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Nepodarilo sa načítať TV program: $error';
+    return 'Failed to load guide: $error';
   }
 
   @override
@@ -1808,22 +1797,22 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Ďalej: $time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return 'zostáva $minutes min';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return 'zostáva $hours h';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return 'zostáva $hours h $minutes min';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1846,29 +1835,29 @@ class AppLocalizationsSk extends AppLocalizations {
   String get favoriteChannel => 'Obľúbený kanál';
 
   @override
-  String get record => 'Nahrať';
+  String get record => 'Record';
 
   @override
-  String get cancelRecordingAction => 'Zrušiť nahrávanie';
+  String get cancelRecordingAction => 'Cancel Recording';
 
   @override
-  String get programSetToRecord => 'Nahrávanie programu je naplánované';
+  String get programSetToRecord => 'Program set to record';
 
   @override
-  String get recordingCancelled => 'Nahrávanie zrušené';
+  String get recordingCancelled => 'Recording cancelled';
 
   @override
-  String get unableToCreateRecording => 'Nepodarilo sa vytvoriť nahrávku';
+  String get unableToCreateRecording => 'Unable to create recording';
 
   @override
-  String get watch => 'Sledovať';
+  String get watch => 'Sledujte';
 
   @override
   String get close => 'Zavrieť';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Nepodarilo sa prehrať $name';
+    return 'Failed to play $name';
   }
 
   @override
@@ -1894,7 +1883,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Zrušiť naplánované nahrávanie „$name“?';
+    return 'Cancel scheduled recording of \"$name\"?';
   }
 
   @override
@@ -1921,7 +1910,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Zastaviť nahrávanie „$name“?';
+    return 'Stop recording \"$name\"?';
   }
 
   @override
@@ -1936,12 +1925,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'Žiadne výsledky pre „$query“';
+    return 'No results for \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Vyhľadávanie zlyhalo: $error';
+    return 'Search failed: $error';
   }
 
   @override
@@ -1982,12 +1971,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Odstrániť „$name“ a súvisiace súbory?';
+    return 'Remove \"$name\" and its files?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count skladieb';
+    return '$count tracks';
   }
 
   @override
@@ -1998,16 +1987,16 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Nepodarilo sa načítať album: $error';
+    return 'Failed to load album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'Pre album $name sa nenašli žiadne stiahnuté skladby.';
+    return 'No downloaded tracks found for $name.';
   }
 
   @override
-  String get season => 'Séria';
+  String get season => 'Sezóna';
 
   @override
   String get errorLoadingEpisodes => 'Chyba pri načítavaní epizód';
@@ -2020,7 +2009,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Odstrániť „$name“?';
+    return 'Remove \"$name\"?';
   }
 
   @override
@@ -2035,7 +2024,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Epizóda $number';
+    return 'Episode $number';
   }
 
   @override
@@ -2049,7 +2038,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Sezóna $number';
+    return 'Season $number';
   }
 
   @override
@@ -2065,7 +2054,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Odstrániť všetky stiahnuté epizódy v $season?';
+    return 'Delete all downloaded episodes in $season?';
   }
 
   @override
@@ -2073,10 +2062,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count epizód',
-      many: '$count epizódy',
-      few: '$count epizódy',
-      one: '1 epizóda',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2111,7 +2098,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Odstrániť $count stiahnutých položiek?';
+    return 'Delete $count downloaded items?';
   }
 
   @override
@@ -2125,7 +2112,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'z limitu $limit';
+    return 'of $limit limit';
   }
 
   @override
@@ -2209,7 +2196,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count možností';
+    return '$count options';
   }
 
   @override
@@ -2303,11 +2290,11 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'Stránky s detailmi, riadky na domovskej obrazovke a hlasitosť';
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
-    return '$value %';
+    return '$value%';
   }
 
   @override
@@ -2318,18 +2305,18 @@ class AppLocalizationsSk extends AppLocalizations {
       'Prehrať pri prehliadaní domovskej obrazovky';
 
   @override
-  String get loopThemeMusic => 'Opakovať tematickú hudbu';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'Prehrávať skladbu dokola namiesto jedného prehratia';
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => 'Podrobnosti rozostrenie pozadia';
 
   @override
   String pixelValue(int value) {
-    return '$value px';
+    return '${value}px';
   }
 
   @override
@@ -2345,23 +2332,23 @@ class AppLocalizationsSk extends AppLocalizations {
   String get playerZoomMode => 'Režim priblíženia prehrávača';
 
   @override
-  String get settingsScrollWheelAction => 'Koliesko myši';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Vyberte, čo sa má diať pri rolovaní kolieskom myši nad videom počas prehrávania.';
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => 'Vypnuté';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => 'Posun (dopredu/dozadu)';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => 'Hlasitosť';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => 'Hlasitosť';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'Fit';
@@ -2376,7 +2363,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get refreshRateSwitching => 'Prepínanie obnovovacej frekvencie';
 
   @override
-  String get disabled => 'Vypnuté';
+  String get disabled => 'Zakázané';
 
   @override
   String get scaleOnTv => 'Mierka v televízii';
@@ -2415,37 +2402,37 @@ class AppLocalizationsSk extends AppLocalizations {
   String get defaultAudioLanguage => 'Predvolený jazyk zvuku';
 
   @override
-  String get fallbackAudioLanguage => 'Záložný jazyk zvuku';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack => 'Uprednostniť predvolenú zvukovú stopu';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Uprednostniť pôvodnú zvukovú stopu pred lokalizovaným dabingom.';
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription => 'Uprednostniť stopy s audio popisom';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Uprednostniť stopy s audio popisom pred bežnými stopami.';
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => 'Prekódovanie (zvuk)';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => 'Priamy stream (remux)';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Prekódovanie (bitový tok alebo rozlíšenie)';
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => 'Prekódovanie (video a zvuk)';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => 'Prekódovanie (video)';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => 'Auto (predvolené nastavenie servera)';
@@ -2505,7 +2492,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get polish => 'poľský';
 
   @override
-  String get ac3Passthrough => 'Passthrough AC3';
+  String get ac3Passthrough => 'AC3 Passthrough';
 
   @override
   String get dtsPassthrough => 'Priechod DTS';
@@ -2522,28 +2509,27 @@ class AppLocalizationsSk extends AppLocalizations {
       'Povoliť zvuk TrueHD (nemusí fungovať na všetkých platformách)';
 
   @override
-  String get settingsAudioOutputMode => 'Režim zvukového výstupu';
+  String get settingsAudioOutputMode => 'Audio Output Mode';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Vyberte, ako sa má zvuk dekódovať. AVR Passthrough posiela surové streamy Dolby/DTS do vášho receivera, Automaticky alebo Downmix dekódujú lokálne.';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Záložný zvukový kodek';
+  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Vyberte cieľový formát na prekódovanie viackanálového zvuku, keď zdrojový stream nie je možné priamo prehrať ani preposlať.';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto =>
-      'Automaticky zistiť\n(odporúčané)';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(predvolené)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2552,27 +2538,26 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(bezstratový)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(len stereo)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(efektívny)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(bezstratový)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'Maximálny počet zvukových kanálov';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Nastavte maximálny počet kanálov vašej zvukovej zostavy. Viackanálové streamy, ktoré tento limit prekročia, sa zmixujú alebo prekódujú.';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto =>
-      'Automaticky zistiť\n(predvolené hardvérom)';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2584,7 +2569,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Kvadrofónny';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
 
   @override
   String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
@@ -2599,67 +2584,67 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (pokročilé)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Passthrough kodekov';
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Povoľte iba formáty, ktoré podporuje váš AVR alebo HDMI zariadenie.';
+      'Enable only formats your AVR or HDMI sink supports.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'Passthrough EAC3';
+  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'Passthrough EAC3 JOC (Atmos)';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'Passthrough DTS Core';
+  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'Passthrough TrueHD Atmos';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Posielať bitstream Dolby Digital Plus (EAC3) do externého dekodéra.';
+      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Posielať bitstream Dolby Atmos cez EAC3 (JOC) do externého dekodéra.';
+      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Posielať bitstream DTS-HD MA (vrátane jadra DTS) do externého dekodéra.';
+      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Posielať bitstream Dolby TrueHD s metadátami Atmos do externého dekodéra.';
+      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Zistené zvukové schopnosti';
+  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'Zatiaľ nie je k dispozícii žiadna snímka schopností za behu.';
+      'No runtime capability snapshot available yet.';
 
   @override
-  String get settingsAudioRouteLabel => 'Trasa';
+  String get settingsAudioRouteLabel => 'Route';
 
   @override
-  String get settingsAudioDecodeLabel => 'Dekódovanie';
+  String get settingsAudioDecodeLabel => 'Decode';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'Trasa pre HD zvuk';
+  String get settingsAudioHdRoute => 'HD audio route';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2674,51 +2659,50 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Reproduktor';
+  String get settingsAudioRouteSpeaker => 'Speaker';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Slúchadlá';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '$count kan. PCM';
+    return '${count}ch PCM';
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostika';
+  String get settingsAudioDiagnostics => 'Diagnostics';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Úroveň videa';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Rozsah videa';
+  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Kodek titulkov';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Povolené zvukové kodeky';
+      'Allowed Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'Zvukové kodeky HLS MPEG-TS';
+      'HLS MPEG-TS Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'Zvukové kodeky HLS fMP4';
+      'HLS fMP4 Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'passthrough audio-spdif';
+      'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute =>
-      'Aktívna zvuková trasa';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Podpora HD zvuku na trase';
+      'Route HD Audio Support';
 
   @override
   String get nightMode => 'Nočný režim';
@@ -2767,7 +2751,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String secondsValue(int value) {
-    return '$value s';
+    return '${value}s';
   }
 
   @override
@@ -2782,14 +2766,14 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'Po $episodes epizódach / $hours h';
+    return 'After $episodes episodes / ${hours}h';
   }
 
   @override
   String get resumeAndSkip => 'Obnoviť a preskočiť';
 
   @override
-  String get resumeRewind => 'Pretočenie pri pokračovaní';
+  String get resumeRewind => 'Resume Rewind';
 
   @override
   String get unpauseRewind => 'Zrušiť pretáčanie dozadu';
@@ -2857,45 +2841,45 @@ class AppLocalizationsSk extends AppLocalizations {
   String get subtitleCustomizationDescription => 'Prispôsobte vzhľad titulkov';
 
   @override
-  String get subtitleMode => 'Režim titulkov';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => 'Označené';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => 'Vždy';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => 'Cudzojazyčné';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => 'Vynútené';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Prehrá stopy, ktoré sú v metadátach mediálneho súboru interne označené ako „default“ alebo „forced“.';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Automaticky načíta a zobrazí titulky pri každom spustení videa.';
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Automaticky zapne titulky, ak je predvolená zvuková stopa v cudzom jazyku.';
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Načíta iba titulky výslovne označené príznakom „forced“.';
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Úplne vypne automatické načítanie titulkov.';
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Záložný jazyk titulkov';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => 'Stream titulkov';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText => 'Rýchla hnedá líška preskočí lenivého psa';
@@ -2943,7 +2927,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get global => 'globálne';
 
   @override
-  String get desktop => 'Počítač';
+  String get desktop => 'Desktop';
 
   @override
   String get mobile => 'Mobil';
@@ -2953,17 +2937,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Načítali sa nastavenia profilu $profile.';
+    return 'Loaded $profile profile settings.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Nepodarilo sa načítať nastavenia profilu $profile.';
+    return 'Failed to load $profile profile settings.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Lokálne nastavenia sa synchronizovali s profilom $profile.';
+    return 'Synced local settings to $profile profile.';
   }
 
   @override
@@ -3100,10 +3084,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Zobraziť knižnice na paneli s nástrojmi';
 
   @override
-  String get navbarAlwaysExpanded => 'Vždy zobrazovať popisy v navigácii';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => 'Zobraziť tlačidlo Seerr';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'Nepriehľadnosť navigačnej lišty';
@@ -3121,7 +3105,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get purple => 'Fialová';
 
   @override
-  String get teal => 'Modrozelená';
+  String get teal => 'Teal';
 
   @override
   String get navy => 'námorníctvo';
@@ -3142,7 +3126,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get slate => 'Bridlica';
 
   @override
-  String get indigo => 'Indigová';
+  String get indigo => 'Indigo';
 
   @override
   String get libraryDisplay => 'Zobrazenie knižnice';
@@ -3179,19 +3163,18 @@ class AppLocalizationsSk extends AppLocalizations {
       'Zobraziť možnosť prehliadania priečinkov';
 
   @override
-  String get groupItemsIntoCollections => 'Zoskupiť položky do kolekcií';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Skryť položky knižnice patriace do kolekcie pri prehliadaní knižníc';
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle =>
-      'Upozornenie o zoskupovaní knižnice';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'Ak chcete použiť toto nastavenie, uistite sa, že sú v nastaveniach zobrazenia vašej knižnice na serveri Jellyfin alebo Emby zapnuté možnosti „Group movies into collections“ alebo „Group shows into collections“.';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => 'Viditeľnosť knižnice';
@@ -3220,7 +3203,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count vybratých';
+    return '$count selected';
   }
 
   @override
@@ -3287,7 +3270,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get noneExcluded => 'Žiadne vylúčené';
 
   @override
-  String get autoAdvance => 'Automatický posun';
+  String get autoAdvance => 'Auto Advance';
 
   @override
   String get autoAdvanceSlides => 'Automaticky prejsť na ďalšiu snímku';
@@ -3303,10 +3286,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Automatické prehrávanie upútavok na paneli médií po 3 sekundách';
 
   @override
-  String get trailerAudio => 'Zvuk ukážok';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio => 'Zapnúť zvuk ukážok v mediálnom paneli';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => 'Ukážka epizódy';
@@ -3347,7 +3330,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get resumeAudio => 'Obnoviť zvuk';
 
   @override
-  String get resumeBooks => 'Pokračovať v knihách';
+  String get resumeBooks => 'Resume Books';
 
   @override
   String get activeRecordings => 'Aktívne nahrávky';
@@ -3383,11 +3366,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Skombinujte oba riadky do jednej domácej sekcie';
 
   @override
-  String get fullScreenRows => 'Rozšírené riadky na domovskej obrazovke';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription =>
-      'Obmedziť domovskú obrazovku na 1 riadok naraz';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Typ obrázka na riadok';
@@ -3402,7 +3384,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get lastUser => 'Posledný používateľ';
 
   @override
-  String get currentUser => 'Aktuálny používateľ';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'Vždy overiť';
@@ -3509,10 +3491,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Zobrazenie hodín počas šetriča obrazovky';
 
   @override
-  String get clockModeStatic => 'Statické';
+  String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => 'Poskakujúce';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritici)';
@@ -3583,7 +3565,7 @@ class AppLocalizationsSk extends AppLocalizations {
       'Povoľte a zmeňte poradie zdrojov hodnotení zobrazovaných v aplikácii';
 
   @override
-  String get pluginLabel => 'Doplnok Moonbase';
+  String get pluginLabel => 'Plugin';
 
   @override
   String get pluginDetected => 'Plugin zistený';
@@ -3601,14 +3583,14 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVerzia: $version';
+    return '$status\nVersion: $version';
   }
 
   @override
   String get availableServices => 'Dostupné služby';
 
   @override
-  String get serverPluginSync => 'Synchronizácia serverového pluginu';
+  String get serverPluginSync => 'Server Plugin Sync';
 
   @override
   String get syncSettingsWithPlugin =>
@@ -3655,13 +3637,13 @@ class AppLocalizationsSk extends AppLocalizations {
   String get networks => 'siete';
 
   @override
-  String get seerrDiscoveryRows => 'Objavovacie riadky Seerr';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'Obnovte predvolené hodnoty riadkov';
 
   @override
-  String get enableSeerr => 'Povoliť Seerr';
+  String get enableSeerr => 'Povoliť Serr';
 
   @override
   String get showSeerrInNavigation =>
@@ -3678,46 +3660,47 @@ class AppLocalizationsSk extends AppLocalizations {
   String get hideAdultContent => 'Skryť obsah pre dospelých vo výsledkoch';
 
   @override
-  String get seerrNotificationsSection => 'Upozornenia';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'Upozornenia na nové žiadosti';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'Upozorniť ma, keď niekto odošle žiadosť';
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Aktualizácie žiadostí';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Schválené, zamietnuté a pridané do vašej knižnice';
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Aktualizácie problémov';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
-  String get seerrNotifyIssuesSubtitle => 'Nové problémy, odpovede a riešenia';
+  String get seerrNotifyIssuesSubtitle =>
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
-    return 'Prihlásený ako: $username';
+    return 'Logged in as: $username';
   }
 
   @override
-  String get discoverRows => 'Stránka objavovania Seerr';
+  String get discoverRows => 'Objavte riadky';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Povoľte riadky, ktoré chcete vidieť na hlavnej stránke Seerr. Presunutím zmeníte poradie. Vlastné poradie sa synchronizuje s doplnkom Moonbase.';
+      'Presunutím zmeníte poradie. Povoliť alebo zakázať riadky. Povolená synchronizácia poradia riadkov s doplnkom Moonfin.';
 
   @override
   String get discoverRowsDescription =>
-      'Povoľte riadky, ktoré chcete vidieť na hlavnej stránke Seerr. Presunutím zmeníte poradie. Vlastné poradie sa synchronizuje s doplnkom Moonbase.';
+      'Presunutím zmeníte poradie. Povoliť alebo zakázať riadky.';
 
   @override
-  String get enabled => 'Zapnuté';
+  String get enabled => 'Povolené';
 
   @override
   String get hidden => 'Skryté';
@@ -3727,7 +3710,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Verzia $version';
+    return 'Version $version';
   }
 
   @override
@@ -3777,7 +3760,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Dostupná aktualizácia: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -3789,7 +3772,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'Verzia v$version je dostupná';
+    return 'v$version Available';
   }
 
   @override
@@ -3853,7 +3836,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get imageCacheCleared => 'Vyrovnávacia pamäť obrázkov je vymazaná';
 
   @override
-  String get clear => 'Vymazať';
+  String get clear => 'Jasné';
 
   @override
   String get browse => 'Prehľadávať';
@@ -3869,15 +3852,15 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Sťahuje sa · $percent %';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Importuje sa';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
-    return '$count položiek';
+    return '$count Items';
   }
 
   @override
@@ -3897,7 +3880,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Požiadal $name';
+    return 'Requested by $name';
   }
 
   @override
@@ -3914,12 +3897,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Zrušiť žiadosť o „$title“?';
+    return 'Cancel request for \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Zrušiť $count žiadostí o „$title“?';
+    return 'Cancel $count requests for \"$title\"?';
   }
 
   @override
@@ -3934,12 +3917,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Rozpočet: $amount \$';
+    return 'Budget: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Tržby: $amount \$';
+    return 'Revenue: \$$amount';
   }
 
   @override
@@ -3949,7 +3932,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Požiadať o $type';
+    return 'Request $type';
   }
 
   @override
@@ -3978,14 +3961,14 @@ class AppLocalizationsSk extends AppLocalizations {
   String get showMore => 'Zobraziť viac';
 
   @override
-  String get appearances => 'Účinkovanie';
+  String get appearances => 'Vystúpenia';
 
   @override
   String get crewSection => 'Posádka';
 
   @override
   String ageValue(int age) {
-    return 'vek $age';
+    return 'age $age';
   }
 
   @override
@@ -4016,149 +3999,148 @@ class AppLocalizationsSk extends AppLocalizations {
   String get deletedStatus => 'Odstránené';
 
   @override
-  String get failedStatus => 'Zlyhalo';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => 'Spracováva sa';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return 'Upravil $name';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => 'Dokončené';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => 'O tento titul už bolo požiadané';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => 'Dosiahli ste limit žiadostí';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => 'Tento titul je na zozname blokovaných';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons =>
-      'Nezostali žiadne sezóny, o ktoré možno požiadať';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
   String get requestErrorPermission =>
-      'Nemáte oprávnenie na vytvorenie tejto žiadosti';
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => 'Žiadosti';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => 'Problémy';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => 'Najnovšie';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => 'Naposledy upravené';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => 'Žiadne problémy';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return 'Zostáva $remaining z $limit žiadostí o filmy';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return 'Zostáva $remaining z $limit žiadostí o sezóny';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Súčasť kolekcie $name';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => 'Zobraziť kolekciu';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => 'Požiadať o kolekciu';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total filmov · $available dostupných';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Požiadať o $count filmov';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Odosiela sa žiadosť $current z $total...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Požiadané o $count filmov';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Požiadané o $ok z $total filmov';
+    return 'Requested $ok of $total movies';
   }
 
   @override
   String get collectionAllRequested =>
-      'Všetky filmy sú už dostupné alebo požiadané';
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => 'Nahlásiť problém';
+  String get reportIssue => 'Report Issue';
 
   @override
   String get issueTypeVideo => 'Video';
 
   @override
-  String get issueTypeAudio => 'Zvuk';
+  String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => 'V čom je problém?';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => 'Všetky epizódy';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => 'Epizóda';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => 'Otvorené';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => 'Vyriešené';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => 'Vyriešiť';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => 'Znova otvoriť';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return 'Nahlásil $name';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count komentárov';
+    return '$count comments';
   }
 
   @override
-  String get addComment => 'Pridať komentár';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => 'Odstrániť tento problém?';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => 'Odoslať hlásenie';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'Skóre TMDB';
@@ -4173,7 +4155,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get revenueLabel => 'Výnosy';
 
   @override
-  String get runtimeLabel => 'Dĺžka';
+  String get runtimeLabel => 'Runtime';
 
   @override
   String get budgetLabel => 'Rozpočet';
@@ -4182,7 +4164,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get originalLanguageLabel => 'Pôvodný jazyk';
 
   @override
-  String get seasonsLabel => 'Série';
+  String get seasonsLabel => 'Ročné obdobia';
 
   @override
   String get episodesLabel => 'Epizódy';
@@ -4197,7 +4179,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get address => 'Adresa';
 
   @override
-  String get analytics => 'Analytika';
+  String get analytics => 'Analytics';
 
   @override
   String get catalog => 'Katalóg';
@@ -4230,7 +4212,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get forward => 'Vpred';
 
   @override
-  String get general => 'Všeobecné';
+  String get general => 'generál';
 
   @override
   String get go => 'Choď';
@@ -4284,10 +4266,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get revoke => 'Odvolať';
 
   @override
-  String get role => 'Rola';
+  String get role => 'Role';
 
   @override
-  String get root => 'Koreň';
+  String get root => 'Root';
 
   @override
   String get run => 'Bežať';
@@ -4311,7 +4293,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get status => 'Stav';
 
   @override
-  String get stop => 'Zastaviť';
+  String get stop => 'Stop';
 
   @override
   String get streaming => 'Streamovanie';
@@ -4344,10 +4326,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get branding => 'Branding';
 
   @override
-  String get adminDrawerDashboard => 'Nástenka';
+  String get adminDrawerDashboard => 'Dashboard';
 
   @override
-  String get adminDrawerAnalytics => 'Analytika';
+  String get adminDrawerAnalytics => 'Analytics';
 
   @override
   String get adminDrawerSettings => 'Nastavenia';
@@ -4362,19 +4344,19 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminDrawerLibraries => 'Knižnice';
 
   @override
-  String get adminDrawerDisplay => 'Zobrazenie';
+  String get adminDrawerDisplay => 'Display';
 
   @override
-  String get adminDrawerMetadata => 'Metadáta';
+  String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'Nastavenia NFO';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => 'Prekódovanie';
 
   @override
-  String get adminDrawerResume => 'Pokračovať';
+  String get adminDrawerResume => 'Obnoviť';
 
   @override
   String get adminDrawerStreaming => 'Streamovanie';
@@ -4432,22 +4414,22 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Dostupné aktualizácie pluginov: $count';
+    return 'Plugin updates available: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Pluginy vyžadujúce reštart: $count';
+    return 'Plugins requiring restart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Zlyhané naplánované úlohy: $count';
+    return 'Failed scheduled tasks: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Nedávne varovania/chyby: $count';
+    return 'Recent warning/error entries: $count';
   }
 
   @override
@@ -4506,7 +4488,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Chyba: $error';
+    return 'Error: $error';
   }
 
   @override
@@ -4533,7 +4515,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Príkaz zlyhal: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -4555,13 +4537,13 @@ class AppLocalizationsSk extends AppLocalizations {
   String get sessionForward => 'Vpred';
 
   @override
-  String get sessionNext => 'Ďalšie';
+  String get sessionNext => 'Ďalej';
 
   @override
-  String get sessionVolumeDown => 'Hlas. –';
+  String get sessionVolumeDown => 'Vol –';
 
   @override
-  String get sessionVolumeUp => 'Hlas. +';
+  String get sessionVolumeUp => 'Vol +';
 
   @override
   String get uhd4k => '4K';
@@ -4570,7 +4552,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get nowPlaying => 'Prehráva sa';
 
   @override
-  String get volume => 'Hlasitosť';
+  String get volume => 'Objem';
 
   @override
   String get actions => 'Akcie';
@@ -4582,7 +4564,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get audioCodec => 'Audio kodek';
 
   @override
-  String get hwAccel => 'HW akcelerácia';
+  String get hwAccel => 'HW Accel';
 
   @override
   String get completion => 'Dokončenie';
@@ -4597,14 +4579,14 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminClearDates => 'Vymazať dátumy';
 
   @override
-  String get adminActivitySeverityAll => 'Všetky závažnosti';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => 'Rozsah dátumov';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Nepodarilo sa načítať denník aktivity: $error';
+    return 'Failed to load activity log: $error';
   }
 
   @override
@@ -4621,7 +4603,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Nepodarilo sa aktualizovať zariadenie: $error';
+    return 'Failed to update device: $error';
   }
 
   @override
@@ -4632,28 +4614,28 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť zariadenie: $error';
+    return 'Failed to delete device: $error';
   }
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Odstrániť zariadenie „$name“? Používateľ sa bude musieť na tomto zariadení znova prihlásiť.';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Odstrániť všetky zariadenia';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Odstrániť $count zariadení? Dotknutí používatelia sa budú musieť znova prihlásiť. Vaše aktuálne zariadenie to neovplyvní.';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Zariadenia odstránené';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Niektoré zariadenia boli odstránené, $count sa odstrániť nepodarilo.';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4682,7 +4664,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Nepodarilo sa spustiť skenovanie: $error';
+    return 'Failed to start scan: $error';
   }
 
   @override
@@ -4693,12 +4675,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Knižnica bola premenovaná na „$name“';
+    return 'Library renamed to \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Nepodarilo sa premenovať: $error';
+    return 'Failed to rename: $error';
   }
 
   @override
@@ -4706,17 +4688,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Knižnica „$name“ bola odstránená';
+    return 'Library \"$name\" deleted';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť knižnicu: $error';
+    return 'Failed to delete library: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Nepodarilo sa pridať cestu: $error';
+    return 'Failed to add path: $error';
   }
 
   @override
@@ -4724,12 +4706,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Odstrániť „$path“ z tejto knižnice?';
+    return 'Remove \"$path\" from this library?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Nepodarilo sa odstrániť cestu: $error';
+    return 'Failed to remove path: $error';
   }
 
   @override
@@ -4737,7 +4719,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť možnosti: $error';
+    return 'Failed to save options: $error';
   }
 
   @override
@@ -4768,259 +4750,251 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminMetadataCountryHint => 'napr. USA, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'Cesty';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => 'Možnosti';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => 'Sťahovače';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => 'Ukladače metadát';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders => 'Sťahovače titulkov';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => 'Sťahovače textov piesní';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Sťahovače metadát: $type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Načítavače obrázkov: $type';
+    return 'Image fetchers: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'Tento server neponúka žiadne sťahovače pre tento typ knižnice.';
+      'This server exposes no downloaders for this library type.';
 
   @override
-  String get adminLibrarySectionGeneral => 'Všeobecné';
+  String get adminLibrarySectionGeneral => 'General';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadáta';
+  String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Vložené informácie';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Titulky';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => 'Obrázky';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => 'Seriály';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => 'Hudba';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => 'Filmy';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor => 'Zapnúť monitorovanie v reálnom čase';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Zisťovať zmeny súborov a automaticky ich spracovať.';
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles =>
-      'Považovať archívy za mediálne súbory';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => 'Zobrazovať fotografie';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata =>
-      'Ukladať obrázky do mediálnych priečinkov';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => 'Automatická obnova metadát';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => 'Nikdy';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => 'Predvolené';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => 'Zobrazenie';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => 'Zobrazenie knižnice';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
   String get adminLibFolderView =>
-      'Zobraziť priečinkové zobrazenie s čistými mediálnymi priečinkami';
+      'Display a folder view to show plain media folders';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'Zobrazovať špeciály v sezónach, v ktorých boli odvysielané';
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => 'Zoskupiť filmy do kolekcií';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => 'Zoskupiť seriály do kolekcií';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
   String get adminLibExternalSuggestions =>
-      'Zobrazovať externý obsah v návrhoch';
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => 'Správanie dátumu pridania';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => 'Použiť dátum pridania z';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport => 'Dátum naskenovania do knižnice';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => 'Dátum vytvorenia súboru';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => 'Metadáta a obrázky';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => 'Preferovaný jazyk metadát';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => 'Kapitoly';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration =>
-      'Dĺžka zástupných kapitol (sekundy)';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Dĺžka kapitol vygenerovaných pre médiá, ktoré žiadne nemajú. Nastavením na 0 túto možnosť vypnete.';
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution => 'Rozlíšenie obrázkov kapitol';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'Nastavenia NFO';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'Metadáta NFO sú kompatibilné s Kodi a podobnými klientmi. Nastavenia platia pre všetky knižnice, ktoré ukladajú metadáta NFO.';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser =>
-      'Používateľ, pre ktorého sa v súboroch NFO ukladajú údaje o sledovaní';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths =>
-      'Ukladať cesty k obrázkom do súborov NFO';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
   String get adminLibPathSubstitution =>
-      'Zapnúť náhradu ciest pre cesty k obrázkom v NFO';
+      'Enable path substitution for NFO image paths';
 
   @override
   String get adminLibExtraThumbs =>
-      'Kopírovať obrázky extrafanart do priečinka extrathumbs';
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => 'Žiadne';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days dní';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Použiť vložené názvy';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles => 'Použiť vložené názvy pre bonusy';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos =>
-      'Použiť vložené informácie o epizódach';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles => 'Povoliť vložené titulky';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Povoliť všetky';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Len textové';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Len obrázkové';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'Žiadne';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Preskočiť sťahovanie, ak sú prítomné vložené titulky';
+      'Skip download if embedded subtitles are present';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Preskočiť sťahovanie, ak zvuková stopa zodpovedá jazyku sťahovania';
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch => 'Vyžadovať presnú zhodu titulkov';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'Ukladať titulky do mediálnych priečinkov';
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extrahovať obrázky kapitol';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Extrahovať obrázky kapitol počas skenovania knižnice';
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction =>
-      'Zapnúť extrakciu obrázkov trickplay';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Extrahovať obrázky trickplay počas skenovania knižnice';
+      'Extract trickplay images during the library scan';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Ukladať obrázky trickplay do mediálnych priečinkov';
+      'Save trickplay images into media folders';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Automaticky zlúčiť seriály rozdelené do viacerých priečinkov';
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => 'Zobrazovaný názov nultej sezóny';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan =>
-      'Zapnúť skenovanie LUFS na normalizáciu hlasitosti';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Uprednostniť neštandardnú značku interpretov';
+      'Prefer non-standard artists tag';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'Automaticky pridávať filmy do kolekcií';
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => 'Vyžaduje sa názov knižnice';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Nepodarilo sa vytvoriť knižnicu: $error';
+    return 'Failed to create library: $error';
   }
 
   @override
@@ -5047,27 +5021,27 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Zakázať používateľa $name? Nebude sa môcť prihlásiť.';
+    return 'Disable $name? They will not be able to sign in.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Povoliť používateľa $name? Bude sa môcť znova prihlásiť.';
+    return 'Enable $name? They will be able to sign in again.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'Používateľ „$name“ bol zakázaný';
+    return 'User \"$name\" disabled';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'Používateľ „$name“ bol povolený';
+    return 'User \"$name\" enabled';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Nepodarilo sa aktualizovať pravidlá používateľa: $error';
+    return 'Failed to update user policy: $error';
   }
 
   @override
@@ -5084,7 +5058,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Nepodarilo sa vytvoriť používateľa: $error';
+    return 'Failed to create user: $error';
   }
 
   @override
@@ -5104,7 +5078,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť: $error';
+    return 'Failed to save: $error';
   }
 
   @override
@@ -5115,7 +5089,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Zlyhalo: $error';
+    return 'Failed: $error';
   }
 
   @override
@@ -5131,7 +5105,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminDeleteUser => 'Odstrániť používateľa';
 
   @override
-  String get admin => 'Správca';
+  String get admin => 'Admin';
 
   @override
   String get adminFullAccessWarning =>
@@ -5252,145 +5226,143 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminEnableAllChannels => 'Povoliť prístup ku všetkým kanálom';
 
   @override
-  String get adminParentalControl => 'Rodičovská kontrola';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating =>
-      'Maximálne povolené rodičovské hodnotenie';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Obsah s vyšším hodnotením bude pred týmto používateľom skrytý.';
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => 'Žiadne';
+  String get adminParentalRatingNone => 'None';
 
   @override
   String get adminBlockUnratedItems =>
-      'Blokovať položky bez hodnotenia alebo s nerozpoznaným hodnotením';
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => 'Knihy';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => 'Kanály';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => 'Živá televízia';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => 'Filmy';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => 'Hudba';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => 'Ukážky';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'Seriály';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => 'Plány prístupu';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Povoliť prístup len počas nižšie naplánovaných časov. Ak nie je nastavený žiadny plán, prístup je povolený celý deň.';
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => 'Pridať plán';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => 'Deň';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => 'Začiatok';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'Koniec';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => 'Každý deň';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => 'Pracovný deň';
+  String get adminDayWeekday => 'Weekday';
 
   @override
-  String get adminDayWeekend => 'Víkend';
+  String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => 'Nedeľa';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => 'Pondelok';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => 'Utorok';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => 'Streda';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => 'Štvrtok';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => 'Piatok';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => 'Sobota';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => 'Povolené značky';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
   String get adminAllowedTagsHint =>
-      'Zobrazí sa iba obsah s týmito značkami. Ak chcete povoliť všetko, nechajte pole prázdne.';
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => 'Blokované značky';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
   String get adminBlockedTagsHint =>
-      'Obsah s týmito značkami bude pred týmto používateľom skrytý.';
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => 'Pridať značku';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => 'Povolené zariadenia';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => 'Povolené kanály';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => 'Poskytovateľ overenia';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider => 'Poskytovateľ obnovenia hesla';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Maximálny počet neúspešných prihlásení pred zamknutím';
+      'Maximum failed login attempts before lockout';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Nastavte 0 pre predvolenú hodnotu alebo -1 na vypnutie zamykania.';
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'Prístup k SyncPlay';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin =>
-      'Povoliť vytváranie skupín a pripájanie sa k nim';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => 'Povoliť pripájanie sa k skupinám';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => 'Bez prístupu';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders => 'Povoliť odstraňovanie obsahu z';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5398,22 +5370,22 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server vrátil HTTP $status';
+    return 'Server returned HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Naozaj chcete odstrániť používateľa $name?';
+    return 'Are you sure you want to delete $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'Používateľ „$name“ bol odstránený';
+    return 'User \"$name\" deleted';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť používateľa: $error';
+    return 'Failed to delete user: $error';
   }
 
   @override
@@ -5434,7 +5406,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Nepodarilo sa vytvoriť kľúč: $error';
+    return 'Failed to create key: $error';
   }
 
   @override
@@ -5445,7 +5417,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Odvolať kľúč pre $name?';
+    return 'Revoke key for $name?';
   }
 
   @override
@@ -5453,7 +5425,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Nepodarilo sa odvolať kľúč: $error';
+    return 'Failed to revoke key: $error';
   }
 
   @override
@@ -5473,29 +5445,29 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nVytvorené: $created';
+    return 'Token: $token\\nCreated: $created';
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Vytvoriť zálohu';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude => 'Vyberte, čo sa má do zálohy zahrnúť.';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => 'Databáza';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => 'Vždy zahrnuté';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
-  String get adminBackupMetadata => 'Metadáta';
+  String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'Titulky';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'Obrázky trickplay';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => 'Vytvára sa záloha...';
@@ -5505,7 +5477,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Nepodarilo sa vytvoriť zálohu: $error';
+    return 'Failed to create backup: $error';
   }
 
   @override
@@ -5518,7 +5490,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Nepodarilo sa načítať manifest: $error';
+    return 'Failed to load manifest: $error';
   }
 
   @override
@@ -5529,7 +5501,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Nepodarilo sa obnoviť zálohu: $error';
+    return 'Failed to restore backup: $error';
   }
 
   @override
@@ -5561,17 +5533,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Uložené do $path';
+    return 'Saved to $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť súbor: $error';
+    return 'Failed to save file: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Nepodarilo sa načítať $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
@@ -5582,7 +5554,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Nepodarilo sa načítať úlohy: $error';
+    return 'Failed to load tasks: $error';
   }
 
   @override
@@ -5594,17 +5566,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Nepodarilo sa spustiť úlohu: $error';
+    return 'Failed to start task: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Nepodarilo sa zastaviť úlohu: $error';
+    return 'Failed to stop task: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Nepodarilo sa načítať úlohu: $error';
+    return 'Failed to load task: $error';
   }
 
   @override
@@ -5612,12 +5584,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Nepodarilo sa odstrániť spúšťač: $error';
+    return 'Failed to remove trigger: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Nepodarilo sa pridať spúšťač: $error';
+    return 'Failed to add trigger: $error';
   }
 
   @override
@@ -5643,7 +5615,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hod.';
+    return '$hours hour(s)';
   }
 
   @override
@@ -5654,7 +5626,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Nepodarilo sa prepnúť plugin: $error';
+    return 'Failed to toggle plugin: $error';
   }
 
   @override
@@ -5662,27 +5634,27 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Naozaj chcete odinštalovať „$name“?';
+    return 'Are you sure you want to uninstall \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Nepodarilo sa odinštalovať plugin: $error';
+    return 'Failed to uninstall plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Nepodarilo sa nainštalovať balík: $error';
+    return 'Failed to install package: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Nepodarilo sa nainštalovať aktualizáciu: $error';
+    return 'Failed to install update: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Nepodarilo sa načítať pluginy: $error';
+    return 'Failed to load plugins: $error';
   }
 
   @override
@@ -5694,12 +5666,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Nainštalovať aktualizáciu (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Nepodarilo sa načítať katalóg: $error';
+    return 'Failed to load catalog: $error';
   }
 
   @override
@@ -5721,17 +5693,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '„$name“ bude odstránený po reštarte servera';
+    return '\"$name\" will be removed after server restart';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Nepodarilo sa odinštalovať: $error';
+    return 'Failed to uninstall: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Aktualizuje sa „$name“ na v$version...';
+    return 'Updating \"$name\" to v$version...';
   }
 
   @override
@@ -5740,7 +5712,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Nepodarilo sa načítať plugin: $error';
+    return 'Failed to load plugin: $error';
   }
 
   @override
@@ -5748,7 +5720,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Verzia $version';
+    return 'Version $version';
   }
 
   @override
@@ -5768,17 +5740,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Naozaj chcete odstrániť „$name“?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť repozitáre: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Nepodarilo sa načítať repozitáre: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -5795,12 +5767,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Nepodarilo sa načítať nastavenia pluginu: $error';
+    return 'Unable to load plugin settings: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Nepodarilo sa otvoriť $uri';
+    return 'Could not open $uri';
   }
 
   @override
@@ -6031,10 +6003,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get ports => 'Porty';
 
   @override
-  String get adminHttpPort => 'Port HTTP';
+  String get adminHttpPort => 'HTTP port';
 
   @override
-  String get adminHttpsPort => 'Port HTTPS';
+  String get adminHttpsPort => 'HTTPS port';
 
   @override
   String get adminPublicHttpsPort => 'Verejný port HTTPS';
@@ -6043,7 +6015,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminBaseUrl => 'Základná adresa URL';
 
   @override
-  String get adminBaseUrlHint => 'napr. /jellyfin';
+  String get adminBaseUrlHint => 'napr. /medúza';
 
   @override
   String get https => 'HTTPS';
@@ -6070,7 +6042,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminCertificatePath => 'Cesta k certifikátu';
 
   @override
-  String get whitelist => 'Zoznam povolených';
+  String get whitelist => 'Whitelist';
 
   @override
   String get blacklist => 'Čierna listina';
@@ -6083,12 +6055,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Nepodarilo sa načítať metadáta: $error';
+    return 'Failed to load metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť metadáta: $error';
+    return 'Failed to save metadata: $error';
   }
 
   @override
@@ -6108,7 +6080,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Nepodarilo sa obnoviť metadáta: $error';
+    return 'Failed to refresh metadata: $error';
   }
 
   @override
@@ -6122,7 +6094,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Vzdialené vyhľadávanie zlyhalo: $error';
+    return 'Remote search failed: $error';
   }
 
   @override
@@ -6136,7 +6108,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Nepodarilo sa aktualizovať typ obsahu: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
@@ -6152,12 +6124,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return 'Obrázok $imageType bol aktualizovaný';
+    return '$imageType image updated';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Nepodarilo sa stiahnuť obrázok: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6168,27 +6140,27 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return 'Obrázok $imageType bol nahraný';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Nepodarilo sa nahrať obrázok: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Odstrániť obrázok $imageType';
+    return 'Delete $imageType image';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return 'Obrázok $imageType bol odstránený';
+    return '$imageType image deleted';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť obrázok: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
@@ -6199,68 +6171,67 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Vyhľadávanie tunerov zlyhalo: $error';
+    return 'Tuner discovery failed: $error';
   }
 
   @override
   String get adminAddTuner => 'Pridať tuner';
 
   @override
-  String get adminEditTuner => 'Upraviť tuner';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'Tuner M3U';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'Súbor alebo URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => 'IP adresa tunera';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => 'Zrozumiteľný názov';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
   String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Limit súčasných pripojení';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
   String get adminTunerCountHelp =>
-      'Maximálny počet streamov, ktoré tuner naraz povolí. Nastavením na 0 zrušíte obmedzenie.';
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate =>
-      'Záložný maximálny bitový tok streamovania';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Importovať iba obľúbené kanály';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Povoliť hardvérové prekódovanie';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 => 'Povoliť prekódovací kontajner fMP4';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Povoliť zdieľanie streamov';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping => 'Zapnúť opakovanie streamu';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignorovať DTS';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Čítať vstup v natívnej snímkovej frekvencii';
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => 'Upraviť poskytovateľa';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6269,50 +6240,50 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'Súbor alebo URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Predpona filmov';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => 'Kategórie filmov';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Viacero kategórií oddeľte zvislou čiarou.';
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => 'Kategórie pre deti';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => 'Kategórie správ';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => 'Kategórie športu';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => 'Používateľské meno';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => 'Heslo';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => 'Krajina';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => 'Vyberte krajinu';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => 'PSČ';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => 'Získať zoznamy';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => 'Zoznamy';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => 'Zapnúť všetky tunery';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => 'Typ tunera';
@@ -6322,7 +6293,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Nepodarilo sa pridať tuner: $error';
+    return 'Failed to add tuner: $error';
   }
 
   @override
@@ -6336,12 +6307,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Nepodarilo sa pridať poskytovateľa: $error';
+    return 'Failed to add provider: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Nepodarilo sa odstrániť tuner: $error';
+    return 'Failed to remove tuner: $error';
   }
 
   @override
@@ -6349,16 +6320,16 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Nepodarilo sa resetovať tuner: $error';
+    return 'Failed to reset tuner: $error';
   }
 
   @override
   String get adminTunerResetNotSupported =>
-      'Tento typ tunera nepodporuje resetovanie.';
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Nepodarilo sa odstrániť poskytovateľa: $error';
+    return 'Failed to remove provider: $error';
   }
 
   @override
@@ -6377,45 +6348,43 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminSeriesRecordingPath => 'Cesta záznamu série';
 
   @override
-  String get adminMovieRecordingPath => 'Cesta na nahrávanie filmov';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => 'Počet dní údajov programu';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => 'Automaticky';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days dní';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor =>
-      'Cesta k aplikácii na dodatočné spracovanie';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs =>
-      'Argumenty dodatočného spracovania';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo => 'Ukladať metadáta NFO nahrávok';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => 'Ukladať obrázky nahrávok';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => 'Časovanie';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => 'Cesty nahrávok';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Dodatočné spracovanie';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Údaje programu: $value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6424,7 +6393,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť nastavenia: $error';
+    return 'Failed to save settings: $error';
   }
 
   @override
@@ -6443,7 +6412,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Nepodarilo sa aktualizovať mapovania: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
@@ -6460,14 +6429,14 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminGuideProviders => 'Poskytovatelia sprievodcov';
 
   @override
-  String get adminRefreshGuideData => 'Obnoviť údaje programu';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted => 'Obnova údajov programu sa spustila';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Úloha obnovy programu nie je na tomto serveri dostupná.';
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => 'Pridať poskytovateľa';
@@ -6478,26 +6447,26 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Cesta nahrávok: $path';
+    return 'Recording path: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Cesta seriálov: $path';
+    return 'Series path: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Rezerva pred: $minutes min';
+    return 'Pre-padding: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Rezerva po: $minutes min';
+    return 'Post-padding: $minutes min';
   }
 
   @override
-  String get adminTunerDiscovery => 'Vyhľadávanie tunerov';
+  String get adminTunerDiscovery => 'Tuner Discovery';
 
   @override
   String get adminChannelMappings => 'Mapovania kanálov';
@@ -6525,7 +6494,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Obnoviť zálohu $name teraz?';
+    return 'Restore backup $name now?';
   }
 
   @override
@@ -6571,27 +6540,27 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return 'pred $minutes min';
+    return '${minutes}m ago';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return 'pred $hours h';
+    return '${hours}h ago';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return 'pred $days d';
+    return '${days}d ago';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Nepodarilo sa načítať $fileName';
+    return 'Failed to load $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count zhôd';
+    return '$count matches';
   }
 
   @override
@@ -6601,7 +6570,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminMetadataEditorTitle => 'Editor metadát';
 
   @override
-  String get adminMetadataIdentify => 'Identifikovať';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => 'Typ';
@@ -6676,7 +6645,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminMetadataEditPerson => 'Upraviť osobu';
 
   @override
-  String get adminMetadataRole => 'Rola';
+  String get adminMetadataRole => 'Role';
 
   @override
   String get adminMetadataImagePrimary => 'Primárne';
@@ -6701,22 +6670,22 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return 'Obrázok $imageType bol aktualizovaný';
+    return '$imageType image updated';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return 'Obrázok $imageType bol nahraný';
+    return '$imageType image uploaded';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return 'Obrázok $imageType bol odstránený';
+    return '$imageType image deleted';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Nepodarilo sa stiahnuť obrázok: $error';
+    return 'Failed to download image: $error';
   }
 
   @override
@@ -6725,12 +6694,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Nepodarilo sa nahrať obrázok: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Odstrániť obrázok $imageType';
+    return 'Delete $imageType image';
   }
 
   @override
@@ -6739,12 +6708,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť obrázok: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Vybrať obrázok $imageType';
+    return 'Choose $imageType image';
   }
 
   @override
@@ -6777,7 +6746,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Dostupná aktualizácia: v$version';
+    return 'Update available: v$version';
   }
 
   @override
@@ -6801,7 +6770,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Nainštalovať aktualizáciu (v$version)';
+    return 'Install update (v$version)';
   }
 
   @override
@@ -6813,7 +6782,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return 'Inštaluje sa „$name“...';
+    return '\"$name\" is being installed...';
   }
 
   @override
@@ -6833,7 +6802,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return 'Nastavenia $name';
+    return '$name Settings';
   }
 
   @override
@@ -6873,7 +6842,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Nepodarilo sa načítať repozitáre: $error';
+    return 'Failed to load repositories: $error';
   }
 
   @override
@@ -6881,7 +6850,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Naozaj chcete odstrániť „$name“?';
+    return 'Are you sure you want to remove \"$name\"?';
   }
 
   @override
@@ -6889,7 +6858,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Nepodarilo sa uložiť repozitáre: $error';
+    return 'Failed to save repositories: $error';
   }
 
   @override
@@ -6963,10 +6932,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminNetworkingPorts => 'Porty';
 
   @override
-  String get adminNetworkingHttpPort => 'Port HTTP';
+  String get adminNetworkingHttpPort => 'HTTP port';
 
   @override
-  String get adminNetworkingHttpsPort => 'Port HTTPS';
+  String get adminNetworkingHttpsPort => 'HTTPS port';
 
   @override
   String get adminNetworkingEnableHttps => 'Povoliť HTTPS';
@@ -6987,7 +6956,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminNetworkingProxyHint => 'napr. 10.0.0.1';
 
   @override
-  String get adminNetworkingWhitelist => 'Zoznam povolených';
+  String get adminNetworkingWhitelist => 'Whitelist';
 
   @override
   String get adminNetworkingBlacklist => 'Čierna listina';
@@ -7017,21 +6986,19 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminBrandingEnableSplash => 'Povoliť úvodnú obrazovku';
 
   @override
-  String get adminBrandingSplashUpload => 'Nahrať obrázok';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded =>
-      'Úvodná obrazovka bola aktualizovaná';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed =>
-      'Nepodarilo sa nahrať úvodnú obrazovku';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => 'Úvodná obrazovka bola odstránená';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => 'Žiadna vlastná úvodná obrazovka';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => 'Hardvérová akcelerácia';
@@ -7047,125 +7014,121 @@ class AppLocalizationsSk extends AppLocalizations {
       'Povoliť hardvérové ​​dekódovanie pre:';
 
   @override
-  String get adminPlaybackQsvDevice => 'Zariadenie QSV';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec => 'Zapnúť vylepšený dekodér NVDEC';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Uprednostniť natívny systémový hardvérový dekodér';
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth =>
-      'Farebná hĺbka hardvérového dekódovania';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => '10-bitové dekódovanie HEVC';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => '10-bitové dekódovanie VP9';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext =>
-      '8/10-bitové dekódovanie HEVC RExt';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext =>
-      '12-bitové dekódovanie HEVC RExt';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Hardvérové kódovanie';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Povoliť kódovanie HEVC';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Povoliť kódovanie AV1';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Zapnúť nízkoenergetický kodér Intel H.264';
+      'Enable Intel low-power H.264 encoder';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Zapnúť nízkoenergetický kodér Intel HEVC';
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => 'Mapovanie tónov';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Zapnúť mapovanie tónov';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Zapnúť mapovanie tónov VPP';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Zapnúť mapovanie tónov VideoToolbox';
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Algoritmus mapovania tónov';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Režim mapovania tónov';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Rozsah mapovania tónov';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Desaturácia mapovania tónov';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Špička mapovania tónov';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Parameter mapovania tónov';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
-  String get adminPlaybackVppTonemappingBrightness => 'Jas mapovania tónov VPP';
+  String get adminPlaybackVppTonemappingBrightness =>
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast =>
-      'Kontrast mapovania tónov VPP';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Predvoľby a kvalita';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Predvoľba kodéra';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'CRF kódovania H.264';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'CRF kódovania H.265 (HEVC)';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Metóda odstránenia prekladania';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Zdvojnásobiť snímkovú frekvenciu pri odstraňovaní prekladania';
+      'Double the frame rate when deinterlacing';
 
   @override
-  String get adminPlaybackAudioSection => 'Zvuk';
+  String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Zapnúť kódovanie zvuku VBR';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Zosilnenie zmiešaného zvuku';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Algoritmus zmiešania do stereo';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue =>
-      'Maximálna veľkosť fronty multiplexovania';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
-  String get adminPlaybackAutoOption => 'Automaticky';
+  String get adminPlaybackAutoOption => 'Auto';
 
   @override
   String get adminPlaybackEncoding => 'Kódovanie';
@@ -7285,10 +7248,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminTaskNeverRun => 'Nikdy neutekaj';
 
   @override
-  String get adminTaskStop => 'Zastaviť';
+  String get adminTaskStop => 'Stop';
 
   @override
-  String get adminRunningTasks => 'Spustené úlohy';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => 'Bežať';
@@ -7310,17 +7273,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Denne o $time';
+    return 'Daily at $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Každý $day o $time';
+    return 'Every $day at $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Každých $duration';
+    return 'Every $duration';
   }
 
   @override
@@ -7358,10 +7321,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hodín',
-      many: '$count hodiny',
-      few: '$count hodiny',
-      one: '1 hodina',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7389,17 +7350,17 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return 'pred $days d';
+    return '${days}d ago';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return 'pred $hours h';
+    return '${hours}h ago';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return 'pred $minutes min';
+    return '${minutes}m ago';
   }
 
   @override
@@ -7407,22 +7368,22 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '$minutes min';
+    return '${minutes}m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '$hours h';
+    return '${hours}h';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '$days d';
+    return '${days}d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$day. $month.';
+    return '$month/$day';
   }
 
   @override
@@ -7436,50 +7397,49 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'Základná adresa URL';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'napr. /jellyfin';
+  String get adminNetworkingBaseUrlHint => 'napr. /medúza';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Verejný port HTTP';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => 'Vyžadovať HTTPS';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Presmerovať všetky vzdialené požiadavky na HTTPS. Nemá účinok, ak server nemá platný certifikát.';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => 'Heslo certifikátu';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'Nastavenia IP';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Zapnúť IPv4';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Zapnúť IPv6';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery =>
-      'Zapnúť automatické mapovanie portov';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => 'Siete LAN';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Zoznam IP adries alebo podsietí CIDR oddelených čiarkou alebo novým riadkom, ktoré sa považujú za lokálnu sieť.';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => 'Publikované URI servera';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Priraďte podsieť alebo adresu k publikovanej URL, napr. all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'Cesta k certifikátu';
@@ -7509,11 +7469,11 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Tlmenie škrtiacej klapky';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Oneskorenie obmedzenia (sekundy)';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Povoliť extrakciu titulkov za behu';
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => 'Minimálne percento obnovenia';
@@ -7562,30 +7522,29 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Nepodarilo sa aktualizovať typ obsahu: $error';
+    return 'Failed to update content type: $error';
   }
 
   @override
   String get adminGeneralSlowResponseThreshold => 'Prah pomalej odozvy (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse =>
-      'Zapnúť varovania o pomalej odozve';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => 'Povoliť Quick Connect';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
   String get adminGeneralSectionServer => 'Server';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadáta';
+  String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'Cesty';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => 'Výkon';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => 'Cesta vyrovnávacej pamäte';
@@ -7597,7 +7556,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get adminGeneralServerName => 'Názov servera';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Preferovaný jazyk zobrazenia';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => 'Nepodarilo sa načítať nastavenia';
@@ -7607,12 +7566,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Nepodarilo sa aktualizovať mapovania: $error';
+    return 'Failed to update mappings: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Časový limit: $duration';
+    return 'Time limit: $duration';
   }
 
   @override
@@ -7649,10 +7608,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# účastníkov',
-      many: '# účastníka',
-      few: '# účastníci',
-      one: '# účastník',
+      other: '# participants',
+      one: '# participant',
     );
     return '$_temp0';
   }
@@ -7696,7 +7653,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Položka $index';
+    return 'Item $index';
   }
 
   @override
@@ -7744,12 +7701,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName sa pripojil do skupiny SyncPlay';
+    return '$userName joined SyncPlay group';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName opustil skupinu SyncPlay';
+    return '$userName left SyncPlay group';
   }
 
   @override
@@ -7762,7 +7719,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Synchronizuje sa prehrávanie so skupinou $groupName';
+    return 'Syncing playback to $groupName';
   }
 
   @override
@@ -7801,10 +7758,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'nájdených # riadkov',
-      many: 'nájdených # riadka',
-      few: 'nájdené # riadky',
-      one: 'nájdený # riadok',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7845,20 +7800,20 @@ class AppLocalizationsSk extends AppLocalizations {
   String get offlineSavedMedia => 'Uložené médiá';
 
   @override
-  String get offlineBannerTitle => 'Ste offline';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => 'Zobrazujú sa vaše stiahnuté položky';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => 'Stiahnuté';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => 'Server je nedostupný';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Prehráva sa zo stiahnutých položiek, kým sa server nevráti';
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7874,12 +7829,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Ovládanie odosielania zlyhalo: $error';
+    return 'Cast control failed: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return 'Ovládanie $kind';
+    return '$kind Controls';
   }
 
   @override
@@ -7890,7 +7845,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Zastaviť $kind';
+    return 'Stop $kind';
   }
 
   @override
@@ -7913,12 +7868,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Zadajte $length-miestny PIN';
+    return 'Enter a $length-digit PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Zadajte svoj $length-miestny PIN';
+    return 'Enter your $length-digit PIN';
   }
 
   @override
@@ -7931,21 +7886,22 @@ class AppLocalizationsSk extends AppLocalizations {
   String get pinForgot => 'Zabudli ste PIN?';
 
   @override
-  String get pinClear => 'Vymazať';
+  String get pinClear => 'Jasné';
 
   @override
-  String get pinBackspace => 'Vymazať';
+  String get pinBackspace => 'Backspace';
 
   @override
-  String get quickConnectAuthorized => 'Žiadosť Quick Connect bola schválená.';
+  String get quickConnectAuthorized =>
+      'Žiadosť o rýchle pripojenie bola schválená.';
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'Kód Quick Connect je neplatný alebo jeho platnosť vypršala.';
+      'Kód rýchleho pripojenia je neplatný alebo jeho platnosť vypršala.';
 
   @override
   String get quickConnectNotSupported =>
-      'Quick Connect nie je na tomto serveri podporovaný.';
+      'Rýchle pripojenie nie je na tomto serveri podporované.';
 
   @override
   String get quickConnectAuthorizeFailed =>
@@ -7953,19 +7909,19 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get quickConnectDisabled =>
-      'Quick Connect je na tomto serveri zakázaný.';
+      'Rýchle pripojenie je na tomto serveri zakázané.';
 
   @override
   String get quickConnectForbidden =>
-      'Váš účet nemôže autorizovať túto žiadosť Quick Connect.';
+      'Váš účet nemôže autorizovať túto žiadosť o rýchle pripojenie.';
 
   @override
   String get quickConnectNotFound =>
-      'Kód Quick Connect sa nenašiel. Skúste nový kód.';
+      'Kód rýchleho pripojenia sa nenašiel. Skúste nový kód.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect zlyhal: $message';
+    return 'Quick Connect failed: $message';
   }
 
   @override
@@ -7976,7 +7932,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Príkaz zlyhal: $error';
+    return 'Command failed: $error';
   }
 
   @override
@@ -8005,7 +7961,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Nepodarilo sa spustiť odosielanie: $error';
+    return 'Failed to start casting: $error';
   }
 
   @override
@@ -8017,7 +7973,7 @@ class AppLocalizationsSk extends AppLocalizations {
       'Nie sú k dispozícii žiadne zariadenia na vzdialené prehrávanie.\n\nV systéme iOS môžu byť ciele AirPlay v simulátore nedostupné.';
 
   @override
-  String get trackActionPlayNext => 'Prehrať ako ďalšie';
+  String get trackActionPlayNext => 'Play Next';
 
   @override
   String get trackActionAddToQueue => 'Pridať do poradia';
@@ -8032,7 +7988,7 @@ class AppLocalizationsSk extends AppLocalizations {
   String get trackActionDeleteFromPlaylist => 'Odstrániť zo zoznamu skladieb';
 
   @override
-  String get trackActionMoveUp => 'Posunúť nahor';
+  String get trackActionMoveUp => 'Move Up';
 
   @override
   String get trackActionMoveDown => 'Posunúť nadol';
@@ -8051,7 +8007,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Sťahuje sa $name...';
+    return 'Downloading $name...';
   }
 
   @override
@@ -8062,7 +8018,7 @@ class AppLocalizationsSk extends AppLocalizations {
       'Nepodarilo sa odstrániť stiahnutý súbor';
 
   @override
-  String get shuffleBy => 'Zamiešať podľa';
+  String get shuffleBy => 'Shuffle By';
 
   @override
   String get shuffleSelectLibrary => 'Vyberte možnosť Knižnica';
@@ -8127,21 +8083,21 @@ class AppLocalizationsSk extends AppLocalizations {
   String get upNext => 'Ďalej';
 
   @override
-  String get playNext => 'Prehrať ako ďalšie';
+  String get playNext => 'Play Next';
 
   @override
   String get stillWatchingContent =>
       'Prehrávanie bolo pozastavené. ešte stále pozeráš?';
 
   @override
-  String get stillWatchingStop => 'Zastaviť';
+  String get stillWatchingStop => 'Stop';
 
   @override
   String get stillWatchingContinue => 'Pokračovať';
 
   @override
   String skipSegment(String segment) {
-    return 'Preskočiť $segment';
+    return 'Skip $segment';
   }
 
   @override
@@ -8152,12 +8108,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Sťahuje sa $current/$total — $fileName';
+    return 'Downloading $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Sťahuje sa $fileName';
+    return 'Downloading $fileName';
   }
 
   @override
@@ -8219,13 +8175,13 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'Skryť z Pokračovať v sledovaní';
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => 'Skryť z Nasleduje';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => 'Pridať do kolekcie';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8280,15 +8236,14 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsAlphabetical => 'Abecedne';
 
   @override
-  String get settingsConnectionSection => 'PRIPOJENIE';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts =>
-      'Povoliť vlastnoručne podpísané certifikáty';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Dôverovať serverom s vlastnoručne podpísanými certifikátmi TLS alebo s certifikátmi zo súkromnej certifikačnej autority. Zapnite len pre servery, ktoré spravujete. Vypne sa tým overovanie certifikátov pre všetky pripojenia.';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection => 'SÚKROMIE A BEZPEČNOSŤ';
@@ -8304,11 +8259,11 @@ class AppLocalizationsSk extends AppLocalizations {
       'Akcenty tém, pozadia, ukazovatele sledovanosti a hudba tém';
 
   @override
-  String get settingsDetailsScreen => 'Obrazovka s detailmi';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Štýl, rozostrenie pozadia a správanie kariet';
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => 'Domovská stránka';
@@ -8346,11 +8301,11 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Zobraziť tlačidlo Seerr v navigačnom paneli';
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Vždy zobrazovať textové popisy v hornom navigačnom paneli';
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8418,7 +8373,8 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsSupportMoonfin => 'Podporte Moonfina';
 
   @override
-  String get settingsSupportMoonfinSubtitle => 'Kúpte vývojárovi kávu';
+  String get settingsSupportMoonfinSubtitle =>
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'PRÁVNE';
@@ -8452,10 +8408,8 @@ class AppLocalizationsSk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# licenčných oznámení',
-      many: '# licenčného oznámenia',
-      few: '# licenčné oznámenia',
-      one: '# licenčné oznámenie',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8503,17 +8457,16 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Preskočiť úvody a závery?';
 
   @override
-  String get settingsMediaSegmentCountdown =>
-      'Odpočítavanie mediálnych segmentov';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => 'Ukazovateľ priebehu';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => 'Časovač';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'Žiadne';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'Vyzvať používateľa';
@@ -8537,8 +8490,7 @@ class AppLocalizationsSk extends AppLocalizations {
       'Ako by sa malo video upraviť, aby sa zmestilo na obrazovku.';
 
   @override
-  String get settingsPlaybackEngineAndroidTv =>
-      'Prehrávací engine (Android TV)';
+  String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
 
   @override
   String get settingsPlaybackEngineAndroidTvDescription =>
@@ -8548,13 +8500,13 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (odporúčané)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (staršie)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (staršie)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (odporúčané)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Záložná';
@@ -8653,7 +8605,7 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
-  String get settingsLiveTvDirect => 'Živá televízia priamo';
+  String get settingsLiveTvDirect => 'Live TV Direct';
 
   @override
   String get settingsLiveTvDirectSubtitle =>
@@ -8747,760 +8699,749 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Nedávno vydané – $libraryName';
+    return 'Recently Released $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Automaticky prehrať ďalšiu epizódu';
+  String get autoplayNextEpisode => 'Autoplay Next Episode';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automaticky prehrať ďalšiu epizódu, keď je dostupná.';
+      'Automatically play the next episode when available.';
 
   @override
-  String get skipSilenceTitle => 'Preskakovať ticho';
+  String get skipSilenceTitle => 'Skip silence';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automaticky preskakovať tiché zvukové úseky, ak to stream podporuje.';
+      'Automatically skip silent audio segments when supported by the stream.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Povoliť externé zvukové efekty';
+  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Umožniť aplikáciám s ekvalizérom a efektmi (napr. Wavelet) pripojiť sa k prehrávacím reláciám Media3.';
+      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
 
   @override
-  String get disableTunnelingTitle => 'Vypnúť tunelovanie';
+  String get disableTunnelingTitle => 'Disable tunneling';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Vynútiť netunelované prehrávanie. Užitočné na zariadeniach s výpadkami zvuku a videa pri tunelovaní.';
+      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
 
   @override
-  String get enableTunnelingTitle => 'Zapnúť tunelovanie';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Pokročilé. Smeruje zvuk a video cez prepojenú hardvérovú cestu. Predvolene vypnuté, pretože na niektorých zariadeniach spôsobuje výpadky zvuku a videa.';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Mapovať Dolby Vision profil 7 na HEVC';
+  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Prehrávať streamy Dolby Vision profil 7 ako HEVC kompatibilné s HDR10 na zariadeniach bez podpory Dolby Vision.';
+      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Použiť vložené štýly titulkov';
+  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Použiť farby, písma a umiestnenie vložené v stope titulkov. Vypnutím sa použijú vaše predvoľby štýlu titulkov.';
+      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Použiť vložené veľkosti písma titulkov';
+      'Use embedded subtitle font sizes';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Použiť veľkosti písma vložené v stope titulkov. Vypnutím sa použije veľkosť titulkov z vašich predvolieb štýlu.';
+      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Zobraziť podrobnosti o médiu';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Zobraziť podrobnosti o vybratej položke v hornej časti stránok knižnice.';
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries => 'Skryť pozadia pri prehliadaní?';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
-  String get useDetailedSubHeadings => 'Použiť podrobné podnadpisy';
+  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Zobraziť podrobný alebo minimalistický podriadok na stránkach knižnice.';
+      'Show detailed or minimal subrow on Library pages.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Odstrániť uloženú tému?';
+  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Odstrániť „$themeName“ z vyrovnávacej pamäte tohto zariadenia?';
+    return 'Remove \"$themeName\" from this device cache?';
   }
 
   @override
-  String get themeStore => 'Obchod s témami';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle => 'Prehliadajte a ukladajte komunitné témy';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
   String get themeStoreDescription =>
-      'Uložte tému, aby ste ju mohli používať ako ostatné uložené témy.';
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => 'Momentálne nie sú k dispozícii žiadne témy.';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Obchod s témami sa nepodarilo načítať. Skontrolujte pripojenie a skúste to znova.';
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => 'Uložiť';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => 'Uložiť a použiť';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => 'Uložené';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => 'Túto tému sa nepodarilo načítať.';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Téma „$themeName“ bola uložená.';
+    return 'Saved \"$themeName\".';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Téma „$themeName“ bola odstránená z tohto zariadenia.';
+    return 'Deleted \"$themeName\" from this device.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Tému „$themeName“ sa nepodarilo odstrániť.';
+    return 'Could not delete \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Uložené témy';
+  String get savedThemesTitle => 'Saved themes';
 
   @override
   String get savedThemesDescription =>
-      'Toto sú témy stiahnuté z pluginu Moonfin pre aktuálny server. Odstránením sa zmaže len táto lokálna kópia.';
+      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
 
   @override
-  String get savedThemesEmpty =>
-      'Pre tento server sa nenašli žiadne uložené témy.';
+  String get savedThemesEmpty => 'No saved themes were found for this server.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Aktuálne aktívna';
+    return '$themeId • Currently active';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Odstrániť uloženú tému';
+  String get savedThemesDeleteTooltip => 'Delete saved theme';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Spravujte stiahnuté témy pluginu na tomto zariadení';
+      'Manage downloaded plugin themes on this device';
 
   @override
-  String get themeEditor => 'Editor tém';
+  String get themeEditor => 'Theme Editor';
 
   @override
-  String get themeEditorSubtitle => 'Otvoriť editor tém Moonfin v prehliadači';
+  String get themeEditorSubtitle =>
+      'Open the Moonfin Theme Editor in your browser';
 
   @override
-  String get homeScreen => 'Domovská obrazovka';
+  String get homeScreen => 'Home Screen';
 
   @override
-  String get bottomBar => 'Dolný panel';
+  String get bottomBar => 'Bottom Bar';
 
   @override
-  String get homeRowsStyleClassic => 'Klasický';
+  String get homeRowsStyleClassic => 'Classic';
 
   @override
-  String get homeRowsStyleModern => 'Moderný';
+  String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => 'Domovské riadky';
+  String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => 'Zobrazenie domovských riadkov';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => 'Sekcie domovských riadkov';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => 'Prepínače domovských riadkov';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Zapnite alebo vypnite kategórie domovských riadkov podľa knižníc';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
-      'Zapnutím nasledujúcich prepínačov zobrazíte riadky v domovských sekciách.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Klasický zachováva typ obrázka a informačnú vrstvu pre každý riadok. Moderný používa riadky s prechodom z portrétu na pozadie.';
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
 
   @override
-  String get displayFavoritesRows => 'Zobraziť riadky obľúbených';
+  String get displayFavoritesRows => 'Display Favorites Rows';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Zobraziť riadky Obľúbené filmy, Obľúbené seriály a ďalšie obľúbené v domovských sekciách.';
+      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
 
   @override
-  String get favoritesRowSorting => 'Zoradenie riadkov obľúbených';
+  String get favoritesRowSorting => 'Favorites Row Sorting';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Zoraďte riadky obľúbených podľa dátumu pridania, dátumu vydania, abecedy a ďalších kritérií.';
+      'Sort Favorites rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayCollectionsRows => 'Zobraziť riadky kolekcií';
+  String get displayCollectionsRows => 'Display Collections Rows';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Zobraziť riadky kolekcií v domovských sekciách.';
+      'Show Collections rows in Home Sections.';
 
   @override
-  String get collectionsRowSorting => 'Zoradenie riadkov kolekcií';
+  String get collectionsRowSorting => 'Collections Row Sorting';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Zoraďte riadky kolekcií podľa dátumu pridania, dátumu vydania, abecedy a ďalších kritérií.';
+      'Sort Collections rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayGenresRows => 'Zobraziť riadky žánrov';
+  String get displayGenresRows => 'Display Genres Rows';
 
   @override
-  String get displayGenresRowsSubtitle =>
-      'Zobraziť riadky žánrov v domovských sekciách.';
+  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
 
   @override
-  String get genresRowSorting => 'Zoradenie riadkov žánrov';
+  String get genresRowSorting => 'Genres Row Sorting';
 
   @override
   String get genresRowSortingDescription =>
-      'Zoraďte riadky žánrov podľa dátumu pridania, dátumu vydania, abecedy a ďalších kritérií.';
+      'Sort Genres rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get genresRowItems => 'Položky v riadkoch žánrov';
+  String get genresRowItems => 'Genres Row Items';
 
   @override
   String get genresRowItemsDescription =>
-      'Zobraziť v riadkoch žánrov filmy, seriály alebo oboje.';
+      'Show Movies, Series, or both in Genres rows.';
 
   @override
-  String get displayPlaylistsRows => 'Zobraziť riadky playlistov';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Zobraziť riadky playlistov v domovských sekciách.';
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => 'Zoradenie riadkov playlistov';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Zoraďte riadky playlistov podľa dátumu pridania, dátumu vydania, abecedy a ďalších kritérií.';
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => 'Zobraziť zvukové riadky';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle =>
-      'Zobraziť zvukové riadky v domovských sekciách.';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => 'Zoradenie zvukových riadkov';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
   String get audioRowsSortingDescription =>
-      'Zoraďte zvukové riadky podľa dátumu pridania, dátumu vydania, abecedy a ďalších kritérií.';
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => 'Zvukové playlisty';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get appearance => 'Vzhľad';
+  String get appearance => 'Appearance';
 
   @override
-  String get layout => 'Rozloženie';
+  String get layout => 'Layout';
 
   @override
-  String get theme => 'Téma';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => 'Klávesnica';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => 'Tlačidlá';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => 'Vykresľovanie';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'Konfigurácia MPV';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'Externá prehrávacia aplikácia';
+  String get externalPlayerApp => 'External player app';
 
   @override
   String get externalPlayerAppDescription =>
-      'Nastavením externého prehrávača povolíte možnosť prehrania dlhým stlačením';
+      'Set external player to enable long-press play option';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Zobraziť výber aplikácie pri spustení prehrávania.';
+      'Show app chooser when playback starts.';
 
   @override
-  String get loadingInstalledPlayers =>
-      'Načítavajú sa nainštalované prehrávače...';
+  String get loadingInstalledPlayers => 'Loading installed players...';
 
   @override
-  String get connection => 'Pripojenie';
+  String get connection => 'Connection';
 
   @override
-  String get audioTranscodeTarget => 'Cieľ prekódovania zvuku';
+  String get audioTranscodeTarget => 'Audio Transcode Target';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Podporované na tomto zariadení';
+  String get supportedOnThisDevice => 'Supported on this device';
 
   @override
-  String get notSupportedOnThisDevice => 'Nepodporované na tomto zariadení';
+  String get notSupportedOnThisDevice => 'Not Supported on this device';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'Passthrough DTS:X (DTS UHD)';
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Posielať bitstream DTS:X (DTS UHD) do externého dekodéra.';
+      'Bitstream DTS:X (DTS UHD) to external decoder.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'Passthrough TrueHD s Atmos (JOC)';
+      'TrueHD with Atmos (JOC) Passthrough';
 
   @override
-  String get mediaPlayerBehavior => 'Správanie prehrávača médií';
+  String get mediaPlayerBehavior => 'Media Player Behavior';
 
   @override
-  String get playbackEnhancements => 'Vylepšenia prehrávania';
+  String get playbackEnhancements => 'Playback Enhancements';
 
   @override
-  String get alwaysOn => 'Vždy zapnuté.';
+  String get alwaysOn => 'Always on.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Nahradiť tlačidlo Preskočiť outro zobrazením Nasleduje';
+      'Replace Skip Outro with Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Zobraziť vrstvu Nasleduje namiesto tlačidla Preskočiť outro.';
+      'Show the Next Up overlay instead of the Skip Outro button.';
 
   @override
-  String get playerRouting => 'Smerovanie prehrávača';
+  String get playerRouting => 'Player Routing';
 
   @override
-  String get preferSoftwareDecoders => 'Uprednostniť softvérové dekodéry';
+  String get preferSoftwareDecoders => 'Prefer software decoders';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Použiť FFmpeg (zvuk) a libgav1 (AV1) pred hardvérovými dekodérmi. Vypnite, ak prestane fungovať zvukový passthrough cez HDMI.';
+      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Otvárať prehrávanie videa vo vybratej externej aplikácii na Android TV.';
+      'Open video playback in your selected external app on Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatické radenie do fronty';
+  String get automaticQueuing => 'Automatic Queuing';
 
   @override
-  String get preferSdhSubtitles => 'Uprednostniť titulky SDH';
+  String get preferSdhSubtitles => 'Prefer SDH subtitles';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Pri automatickom výbere uprednostniť stopy titulkov SDH/CC.';
+      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
 
   @override
-  String get webDiagnostics => 'Webová diagnostika';
+  String get webDiagnostics => 'Web diagnostics';
 
   @override
-  String get webDiagnosticsTitle => 'Webová diagnostika Moonfin';
+  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
 
   @override
   String get webDiagnosticsIntro =>
-      'Na tejto stránke môžete diagnostikovať problémy s pripojením v prehliadači (CORS, zmiešaný obsah a nastavenia zisťovania).';
+      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Zistené zlyhanie pre zmiešaný obsah';
+      'Detected Mixed-Content Failure';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Zistené zlyhanie CORS/preflight';
+      'Detected CORS/Preflight Failure';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin zistil, že stránka HTTPS sa pokúša volať URL servera cez HTTP. Prehliadače túto požiadavku zablokujú skôr, než sa dostane na váš server.';
+      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin zistil zlyhanie požiadavky na úrovni prehliadača, ktoré býva spôsobené chýbajúcimi hlavičkami CORS alebo preflight na mediálnom serveri.';
+      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Cieľová URL: $url';
+    return 'Target URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Podrobnosti: $detail';
+    return 'Detail: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Aktuálny kontext behu';
+  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
 
   @override
   String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => 'Schéma';
+  String get webDiagnosticsScheme => 'Scheme';
 
   @override
-  String get webDiagnosticsPluginMode => 'Režim pluginu';
+  String get webDiagnosticsPluginMode => 'Plugin Mode';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'Skenovanie WebRTC';
+  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Vynútená URL servera';
+  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Predvolená URL servera';
+  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'URL proxy na zisťovanie';
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
 
   @override
-  String get notConfigured => 'nie je nakonfigurované';
+  String get notConfigured => 'not configured';
 
   @override
-  String get webDiagnosticsMixedContent => 'Zmiešaný obsah';
+  String get webDiagnosticsMixedContent => 'Mixed Content';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'Táto stránka je načítaná cez HTTPS, ale jedna alebo viac nakonfigurovaných URL používa HTTP. Prehliadače blokujú volania z HTTPS stránok na HTTP API.';
+      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Riešenie: sprístupnite mediálny server alebo proxy koncový bod cez HTTPS, alebo načítavajte Moonfin cez HTTP len v dôveryhodných lokálnych sieťach.';
+      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'V aktuálnych nastaveniach behu sa nezistila žiadna zjavná konfigurácia so zmiešaným obsahom.';
+      'No obvious mixed-content configuration detected from current runtime settings.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'Kontrolný zoznam CORS';
+  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Povoľte origin prehliadača v Access-Control-Allow-Origin.';
+      '• Allow the browser origin in Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Zahrňte Authorization, X-Emby-Authorization a X-Emby-Token do Access-Control-Allow-Headers.';
+      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Sprístupnite Content-Range a Accept-Ranges pre streamovanie a posúvanie.';
+      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Na požiadavky OPTIONS preflight vracajte 204.';
+      '• Return 204 to OPTIONS preflight requests.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Ukážka hlavičiek (štýl nginx)';
+      'Example Header Snippet (nginx-style)';
 
   @override
-  String get note => 'Poznámka';
+  String get note => 'Note';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'Táto diagnostická trasa je určená pre webové zostavy. Ak ju vidíte na inej platforme, tieto kontroly nemusia platiť.';
+      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
 
   @override
-  String get backToServerSelect => 'Späť na výber servera';
+  String get backToServerSelect => 'Back To Server Select';
 
   @override
-  String get signOutAllUsers => 'Odhlásiť všetkých používateľov';
+  String get signOutAllUsers => 'Sign Out All Users';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Povolenie pre mikrofón je natrvalo zamietnuté. Zapnite ho v systémových nastaveniach.';
+      'Microphone permission is permanently denied. Enable it in system settings.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Hlasové vyhľadávanie vyžaduje povolenie pre mikrofón.';
+      'Microphone permission is required for voice search.';
 
   @override
-  String get voiceSearchNoMatch => 'Nerozumeli sme. Skúste to znova.';
+  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'Nezistila sa žiadna reč.';
+  String get voiceSearchNoSpeechDetected => 'No speech detected.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Chyba mikrofónu.';
+  String get voiceSearchMicrophoneError => 'Microphone error.';
 
   @override
-  String get voiceSearchNeedsInternet =>
-      'Hlasové vyhľadávanie vyžaduje internet.';
+  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
 
   @override
-  String get voiceSearchServiceBusy =>
-      'Hlasová služba je zaneprázdnená. Skúste to znova.';
+  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Povolenie pre mikrofón je natrvalo zamietnuté.';
+      'Microphone permission is permanently denied.';
 
   @override
-  String get microphonePermissionDenied =>
-      'Povolenie pre mikrofón je zamietnuté.';
+  String get microphonePermissionDenied => 'Microphone permission is denied.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Rozpoznávanie reči nie je na tomto zariadení dostupné.';
+      'Speech recognition is unavailable on this device.';
 
   @override
-  String get openIosRoutePicker => 'Otvoriť výber výstupu iOS';
+  String get openIosRoutePicker => 'Open iOS route picker';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'Výber výstupu AirPlay nie je na tomto zariadení dostupný.';
+      'AirPlay route picker is unavailable on this device.';
 
   @override
-  String get videos => 'Videá';
+  String get videos => 'Videos';
 
   @override
-  String get programs => 'Programy';
+  String get programs => 'Programs';
 
   @override
-  String get songs => 'Skladby';
+  String get songs => 'Songs';
 
   @override
-  String get photoAlbums => 'Fotoalbumy';
+  String get photoAlbums => 'Photo Albums';
 
   @override
-  String get photos => 'Fotografie';
+  String get photos => 'Photos';
 
   @override
-  String get people => 'Osoby';
+  String get people => 'People';
 
   @override
-  String get recentlyReleasedEpisodes => 'Nedávno vydané epizódy';
+  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
 
   @override
-  String get watchAgain => 'Pozrieť znova';
+  String get watchAgain => 'Watch Again';
 
   @override
-  String get guestAppearances => 'Hosťovské účinkovania';
+  String get guestAppearances => 'Guest Appearances';
 
   @override
-  String get appearancesSeerr => 'Účinkovania (Seerr)';
+  String get appearancesSeerr => 'Appearances (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Podiel štábu (Seerr)';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
-  String get watchWithGroup => 'Pozerať so skupinou';
+  String get watchWithGroup => 'Watch with group';
 
   @override
-  String get errors => 'Chyby';
+  String get errors => 'Errors';
 
   @override
-  String get warnings => 'Varovania';
+  String get warnings => 'Warnings';
 
   @override
   String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Otvoriť v prehliadači';
+  String get openInBrowser => 'Open in Browser';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Vstavaný prehliadač nie je na tejto platforme dostupný.';
+      'Embedded browser is not available on this platform.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Naozaj chcete reštartovať server?';
+      'Are you sure you want to restart the server?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Naozaj chcete vypnúť server? Budete ho musieť spustiť ručne.';
+      'Are you sure you want to shut down the server? You will need to restart it manually.';
 
   @override
-  String get internal => 'Interné';
+  String get internal => 'Internal';
 
   @override
-  String get idle => 'Nečinné';
+  String get idle => 'Idle';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'Nenašli sa žiadni používatelia';
+  String get adminNoUsersFound => 'No users found';
 
   @override
-  String get adminNoUsersMatchSearch =>
-      'Vášmu hľadaniu nezodpovedajú žiadni používatelia';
+  String get adminNoUsersMatchSearch => 'No users match your search';
 
   @override
-  String get adminNoDevicesFound => 'Nenašli sa žiadne zariadenia';
+  String get adminNoDevicesFound => 'No devices found';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'Aktuálnym filtrom nezodpovedajú žiadne zariadenia';
+      'No devices match the current filters';
 
   @override
-  String get passwordSet => 'Heslo je nastavené';
+  String get passwordSet => 'Password set';
 
   @override
-  String get noPasswordConfigured => 'Nie je nastavené žiadne heslo';
+  String get noPasswordConfigured => 'No password configured';
 
   @override
-  String get remoteAccess => 'Vzdialený prístup';
+  String get remoteAccess => 'Remote Access';
 
   @override
-  String get localOnly => 'Len lokálne';
+  String get localOnly => 'Local Only';
 
   @override
-  String get adminMediaAnalyticsLoadFailed =>
-      'Nepodarilo sa načítať analytiku médií';
+  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Súhrnná analytika naprieč všetkými mediálnymi knižnicami.';
+      'Combined analytics across all media libraries.';
 
   @override
-  String get analyticsTopArtists => 'Najlepší interpreti';
+  String get analyticsTopArtists => 'Top Artists';
 
   @override
-  String get analyticsTopAuthors => 'Najlepší autori';
+  String get analyticsTopAuthors => 'Top Authors';
 
   @override
-  String get analyticsTopContributors => 'Najlepší prispievatelia';
+  String get analyticsTopContributors => 'Top Contributors';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count knižníc',
-      many: '$count knižnice',
-      few: '$count knižnice',
-      one: '1 knižnica',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'Pre tento výber zatiaľ nie sú k dispozícii žiadne súhrny indexovaných médií.';
+      'No indexed media totals are available for this selection yet.';
 
   @override
-  String get analyticsLibraryDetails => 'Podrobnosti o knižnici';
+  String get analyticsLibraryDetails => 'Library Details';
 
   @override
-  String get analyticsLibraryBreakdown => 'Rozpis knižníc';
+  String get analyticsLibraryBreakdown => 'Library Breakdown';
 
   @override
-  String get analyticsNoLibrariesAvailable =>
-      'Nie sú k dispozícii žiadne knižnice.';
+  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
 
   @override
-  String get adminServerAdministrationTitle => 'Správa servera';
+  String get adminServerAdministrationTitle => 'Server Administration';
 
   @override
-  String get adminServerPathData => 'Údaje';
+  String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => 'Vyrovnávacia pamäť obrázkov';
+  String get adminServerPathImageCache => 'Image Cache';
 
   @override
-  String get adminServerPathCache => 'Vyrovnávacia pamäť';
+  String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => 'Denníky';
+  String get adminServerPathLogs => 'Logs';
 
   @override
-  String get adminServerPathMetadata => 'Metadáta';
+  String get adminServerPathMetadata => 'Metadata';
 
   @override
-  String get adminServerPathTranscode => 'Prekódovanie';
+  String get adminServerPathTranscode => 'Transcode';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
   String get adminNoServerPathsReturned =>
-      'Tento server nevrátil žiadne cesty.';
+      'No server paths returned by this server.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent % využité';
+    return '$percent% used';
   }
 
   @override
-  String get userActivity => 'Aktivita používateľov';
+  String get userActivity => 'User Activity';
 
   @override
-  String get systemEvents => 'Systémové udalosti';
+  String get systemEvents => 'System Events';
 
   @override
-  String get needsAttention => 'Vyžaduje pozornosť';
+  String get needsAttention => 'Needs Attention';
 
   @override
   String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => 'Prehrávanie';
+  String get adminDrawerSectionPlayback => 'Playback';
 
   @override
-  String get adminDrawerSectionDevices => 'Zariadenia';
+  String get adminDrawerSectionDevices => 'Devices';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Pokročilé';
+  String get adminDrawerSectionAdvanced => 'Advanced';
 
   @override
-  String get adminDrawerSectionPlugins => 'Pluginy';
+  String get adminDrawerSectionPlugins => 'Plugins';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Živá televízia';
+  String get adminDrawerSectionLiveTv => 'Live TV';
 
   @override
-  String get homeVideos => 'Domáce videá';
+  String get homeVideos => 'Home Videos';
 
   @override
-  String get mixedContent => 'Zmiešaný obsah';
+  String get mixedContent => 'Mixed Content';
 
   @override
-  String get homeVideosAndPhotos => 'Domáce videá a fotografie';
+  String get homeVideosAndPhotos => 'Home Videos & Photos';
 
   @override
-  String get mixedMoviesAndShows => 'Zmiešané filmy a seriály';
+  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9512,150 +9453,150 @@ class AppLocalizationsSk extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'Nenašli sa žiadne nahrávky';
+  String get noRecordingsFound => 'No recordings found';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'V archíve .$extension sa nenašli žiadne obrázkové strany.';
+    return 'No image pages found inside .$extension archive.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Vstavané vykresľovanie zlyhalo ($code): $description';
+    return 'Embedded renderer failed ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'Vykresľovanie EPUB zlyhalo ($code): $description';
+    return 'EPUB renderer failed ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Chýba lokálny súbor pre čítačku: $uri';
+    return 'Missing local file for reader: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status pri otváraní údajov knihy z $uri';
+    return 'HTTP $status while opening book data from $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'Nie je dostupný žiadny čitateľný koncový bod knihy';
+      'No readable book endpoint available';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Nepodporovaný formát komiksového archívu: .$extension';
+    return 'Unsupported comic archive format: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'Plugin na rozbaľovanie CBR nie je na tejto platforme dostupný.';
+      'CBR extraction plugin is not available on this platform.';
 
   @override
-  String get failedToExtractCbrArchive => 'Nepodarilo sa rozbaliť archív .cbr.';
+  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'Rozbaľovanie CB7 nie je na tejto platforme dostupné.';
+      'CB7 extraction is not available on this platform.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'Plugin na rozbaľovanie CB7 nie je na tejto platforme dostupný.';
+      'CB7 extraction plugin is not available on this platform.';
 
   @override
-  String get closeGenrePanel => 'Zavrieť panel žánrov';
+  String get closeGenrePanel => 'Close genre panel';
 
   @override
-  String get loadingShuffle => 'Načítava sa náhodný výber...';
+  String get loadingShuffle => 'Loading shuffle...';
 
   @override
-  String get libraryShuffleLabel => 'NÁHODNE Z KNIŽNICE';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => 'NÁHODNÝ VÝBER';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => 'NÁHODNE PODĽA ŽÁNRU';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Automatické prepínanie HDR';
+  String get autoHdrSwitching => 'Auto HDR Switching';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automaticky zapnúť HDR pri prehrávaní HDR videa a po ukončení obnoviť režim zobrazenia.';
+      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
 
   @override
-  String get whenFullscreen => 'Na celej obrazovke';
+  String get whenFullscreen => 'When fullscreen';
 
   @override
-  String get changeArtwork => 'Zmeniť obrázok';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => 'Chýba';
+  String get missing => 'Missing';
 
   @override
-  String get transcodingLimits => 'Limity prekódovania';
+  String get transcodingLimits => 'Transcoding Limits';
 
   @override
-  String get clearAllArtworkButton => 'Vymazať všetky obrázky?';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Naozaj chcete vymazať všetky stiahnuté obrázky?';
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => 'Potvrdiť vymazanie';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Naozaj chcete vymazať položku „$itemType“?';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => 'Nahrať?';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => 'Rozlíšenie: ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Zobrazovať len obrázky v jazyku rozhrania';
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => 'Potvrdiť vymazanie všetkého';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => 'Obrázok bol úspešne nahraný!';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Nepodarilo sa nahrať obrázok: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Nepodarilo sa nastaviť obrázok: $error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Nepodarilo sa odstrániť obrázok: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Nepodarilo sa vymazať všetky obrázky: $error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => 'Áno';
+  String get yes => 'Yes';
 
   @override
-  String get posterCategory => 'Plagát';
+  String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'Pozadia';
+  String get backdropsCategory => 'Backdrops';
 
   @override
   String get bannerCategory => 'Banner';
@@ -9664,31 +9605,31 @@ class AppLocalizationsSk extends AppLocalizations {
   String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => 'Miniatúra';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => 'Grafika';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => 'Grafika disku';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'Snímka obrazovky';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => 'Predná strana obalu';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => 'Zadná strana obalu';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => 'Grafika ponuky';
+  String get menuArtCategory => 'Menu Art';
 
   @override
-  String get confirmItemPoster => 'plagát';
+  String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => 'pozadie';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
   String get confirmItemBanner => 'banner';
@@ -9697,114 +9638,114 @@ class AppLocalizationsSk extends AppLocalizations {
   String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => 'miniatúra';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => 'grafika';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => 'grafika disku';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'snímka obrazovky';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => 'predná strana obalu';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => 'zadná strana obalu';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => 'grafika ponuky';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'Všetky';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => 'Vysoké (1080p+)';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => 'Stredné (720p)';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => 'Nízke (<720p)';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => 'Zdroje';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => 'Kapitoly';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => 'Záložky';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => 'Poznámky';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => 'Fronta';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => 'Časová os';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => 'Časová os je prázdna';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Celá kniha';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => 'Zameraná časová os';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => 'Exportovať záložky';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => 'Exportovať poznámky';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => 'Exportovať všetko';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exportované do $path';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Export zlyhal: $error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Text';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => 'Pridať záložku';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => 'Pridať poznámku';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => 'Upraviť poznámku';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => 'Napíšte poznámku k tomuto momentu';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => 'Časovač vypnutia';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => 'Vypnuté';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => 'Koniec kapitoly';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => 'Vlastné';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return 'zostáva $remaining';
+    return '$remaining left';
   }
 
   @override
@@ -9819,51 +9760,51 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Rýchlosť prehrávania';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => 'Zostáva';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => 'Uplynulo';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Späť o $seconds s';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Vpred o $seconds s';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Predchádzajúca kapitola';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => 'Ďalšia kapitola';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Kapitola $current z $total';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => 'Žiadne kapitoly';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => 'Zatiaľ žiadne záložky';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => 'Zatiaľ žiadne poznámky';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Záložka pridaná na $position';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'Obnoviť na 1.0x';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9871,255 +9812,249 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Uložiť';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => 'Zrušiť';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => 'Vymazať';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => 'Predvoľby titulkov';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Zmeňte režimy titulkov, predvolené jazyky, vzhľad a možnosti vykresľovania.';
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => 'Vykresľovanie titulkov';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => 'Možnosti zobrazenia';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => 'Dátum vydania (vzostupne)';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => 'Dátum vydania (zostupne)';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => 'Zoskupiť podiely';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => 'Zoskupiť viacero rolí';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle =>
-      'Upozornenie na prístup na zápis do knižnice';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => 'Ako to opraviť:';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Udeľte servisnému používateľovi Jellyfin (napr. jellyfin alebo Docker PUID/PGID) oprávnenia na zápis do priečinkov vašej mediálnej knižnice na serveri.\n\n2. Alebo v nástenke Jellyfin prejdite do sekcie Libraries, upravte túto knižnicu a vypnite možnosť „Save artwork into media folders“, aby sa obrázky ukladali do internej databázy Jellyfin.';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => 'Zavrieť';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Vaša knižnica „$libraryName“ je nastavená tak, aby ukladala obrázky priamo do mediálnych priečinkov (možnosť „Save artwork into media folders“ je zapnutá). Jellyfin však otestoval prístup na zápis a nemá oprávnenie zapisovať súbory do tohto adresára:\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'Zdá sa, že Jellyfin nedokázal aktualizovať obrázky. Vaša knižnica je nastavená tak, aby ukladala obrázky priamo do mediálnych priečinkov (možnosť „Save artwork into media folders“ je zapnutá). Táto chyba sa zvyčajne vyskytuje, keď serverový proces Jellyfin nemá oprávnenie zapisovať súbory do vašich mediálnych adresárov.';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'Externé zoznamy';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => 'Prehrať znova';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => 'Informácie o súbore';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Veľkosť: $size  •  Formát: $format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Zobraziť všetky zvukové stopy ($count)';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Zobraziť všetky stopy titulkov ($count)';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay =>
-      'Kontroluje sa možnosť priameho prehrávania...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel => 'Možnosť priameho prehrávania: ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => 'Vynútené';
+  String get forced => 'Forced';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Prehrávač nepodporuje formát kontajnera.';
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported =>
-      'Kodek videa nie je podporovaný.';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported =>
-      'Kodek zvuku nie je podporovaný.';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Formát titulkov nie je podporovaný (vyžaduje vypálenie do obrazu).';
+      'Subtitle format is not supported (requires burning).';
 
   @override
   String get transcodeAudioProfileNotSupported =>
-      'Profil zvuku nie je podporovaný.';
+      'Audio profile is not supported.';
 
   @override
   String get transcodeVideoProfileNotSupported =>
-      'Profil videa nie je podporovaný.';
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported =>
-      'Úroveň videa nie je podporovaná.';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Toto zariadenie nepodporuje rozlíšenie videa.';
+      'Video resolution is not supported by this device.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Bitová hĺbka videa nie je podporovaná.';
+      'Video bit depth is not supported.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Snímková frekvencia videa nie je podporovaná.';
+      'Video framerate is not supported.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'Bitový tok súboru prekračuje limit streamovania prehrávača.';
+      'File bitrate exceeds player streaming limit.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Bitový tok videa prekračuje limit streamovania.';
+      'Video bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Bitový tok zvuku prekračuje limit streamovania.';
+      'Audio bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Počet zvukových kanálov nie je podporovaný.';
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => 'Abecedne';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => 'Poradie vydania (vzostupne)';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => 'Poradie vydania (zostupne)';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => 'Vlastné (ťahaním myšou)';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => 'Možnosti zoradenia playlistu';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => 'Obnoviť zoradenie';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Pozrieť znova S$season:E$episode';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Pozrieť playlist znova';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => 'Nenašli sa žiadne titulky.';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => 'Ovládanie správcu';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => 'Vykresľovací engine (Impeller)';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller je moderný GPU renderer Flutteru pre plynulejšie animácie a menej trhania. Na niektorých TV boxoch a starších GPU môže spôsobovať chyby zobrazenia alebo čierne video; v takom prípade ho vypnite. Automatický vyberie najlepšiu predvoľbu pre vaše zariadenie. Zmena sa prejaví po reštarte Moonfin.';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => 'Automatický';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => 'Zapnuté';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => 'Vypnuté';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => 'Vyžaduje sa reštart';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin sa musí reštartovať, aby sa zmenil vykresľovací engine. Zatvorte teraz aplikáciu a znova ju otvorte.';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => 'Zatvoriť aplikáciu';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => 'Obnoviť knižnicu';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => 'Obnoviť všetky knižnice';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest => 'Dátum pridania (najstaršie prvé)';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => 'Dátum pridania (najnovšie prvé)';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => 'Abecedne (A – Z)';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Abecedne (Z – A)';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Načítava sa analytika servera... $percentage %';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Podľa zdroja';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 filmov';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 seriálov';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'Najpopulárnejšie filmy na IMDb';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'Najpopulárnejšie seriály na IMDb';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies => 'Najhoršie hodnotené filmy na IMDb';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies =>
-      'Najlepšie hodnotené anglické filmy na IMDb';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

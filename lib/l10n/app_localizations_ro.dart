@@ -12,19 +12,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => 'PREFERINȚE CONT';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => 'Limba interfeței';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => 'Implicit din sistem';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'Conectare';
 
   @override
-  String get empty => 'Gol';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
@@ -32,7 +32,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'Conectare rapidă';
 
   @override
   String get password => 'Parolă';
@@ -51,7 +51,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get waitingForAuthorization => 'Se așteaptă autorizația...';
 
   @override
-  String get back => 'Înapoi';
+  String get back => 'Spate';
 
   @override
   String get serverUnavailable => 'Serverul este indisponibil';
@@ -113,7 +113,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get cancel => 'Anula';
 
   @override
-  String get remove => 'Elimină';
+  String get remove => 'Elimina';
 
   @override
   String get connectToServer => 'Conectați-vă la server';
@@ -141,62 +141,62 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAppearanceTheme => 'Tema aplicației';
 
   @override
-  String get detailScreenStyle => 'Stilul ecranului de detalii';
+  String get detailScreenStyle => 'Detail screen style';
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Clasic este aspectul centrat original Moonfin. Modern este un aspect cinematografic adaptiv.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Clasic';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
   String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get expandedTabs => 'File extinse';
+  String get expandedTabs => 'Expanded Tabs';
 
   @override
   String get expandedTabsSubtitle =>
-      'Afișează automat conținutul filelor în timp ce navigați printre ele. Dezactivați pentru a deschide și închide fiecare filă manual.';
+      'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
-  String get showTechnicalDetails => 'Afișați detaliile tehnice?';
+  String get showTechnicalDetails => 'Show Technical Details?';
 
   @override
   String get showTechnicalDetailsSubtitle =>
-      'Afișează informații despre codec, rezoluție și flux în rezumatul din banner';
+      'Show codec, resolution, and stream information in banner summary';
 
   @override
-  String get recommendationSystem => 'Sistem de recomandări';
+  String get recommendationSystem => 'Recommendation System';
 
   @override
   String get recommendationSystemSubtitle =>
-      'Folosiți algoritmul local Moonfin Recommends sau metricile de similaritate TMDb online. Notă: recomandările online necesită integrarea Seerr.';
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Recommends';
 
   @override
-  String get recommendationSystemTmdb => 'Similaritate TMDb';
+  String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Aplicați limita de clasificare parentală?';
+      'Apply Parental Rating Cap?';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limitează sugestiile Moonfin Recommends în funcție de clasificarea parentală a conținutului vizat';
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
 
   @override
-  String get interfaceStyle => 'Stilul interfeței';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automat se potrivește cu dispozitivul dvs. Alegeți Apple sau Material pentru a impune un anumit aspect.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
-  String get interfaceStyleAutomatic => 'Automat';
+  String get interfaceStyleAutomatic => 'Automatic';
 
   @override
   String get interfaceStyleApple => 'Apple';
@@ -205,31 +205,31 @@ class AppLocalizationsRo extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get glassQuality => 'Calitatea efectului de sticlă';
+  String get glassQuality => 'Glass Quality';
 
   @override
   String get glassQualitySubtitle =>
-      'Auto alege cel mai bun efect de sticlă pentru acest dispozitiv. Complet impune estomparea reală, iar Redus folosește un efect de sticlă ușor, care economisește resursele GPU.';
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
 
   @override
   String get glassQualityAuto => 'Auto';
 
   @override
-  String get glassQualityFull => 'Complet';
+  String get glassQualityFull => 'Full';
 
   @override
-  String get glassQualityReduced => 'Redus';
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
       'Comutați între Moonfin și Neon Pulse fără a reporni aplicația';
 
   @override
-  String get customThemeTitle => 'Temă personalizată';
+  String get customThemeTitle => 'Custom Theme';
 
   @override
   String get customThemeSubtitle =>
-      'Temele personalizate modifică elementele vizuale din întreaga aplicație Moonfin. Alegeți una dintre aceste opțiuni, potrivită stilului dvs.';
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
   String get keyboardPreferSystemIme => 'Prefer tastatura de sistem';
@@ -257,14 +257,14 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get themeGlassSubtitle =>
-      'Stil liquid-glass, cu un fundal în degrade care se deplasează lent, suprafețe mate și accent albastru Apple';
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
 
   @override
   String get theme8BitHero => '8-bit Hero';
 
   @override
   String get theme8BitHeroSubtitle =>
-      'Stil retro pixel-art, cu o paletă masivă, borduri în blocuri, umbre puternice și un font pixelat';
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle => 'Conectați-vă cu contul Emby Connect';
@@ -327,35 +327,35 @@ class AppLocalizationsRo extends AppLocalizations {
   String get exit => 'Ieșire';
 
   @override
-  String get gameMenu => 'Meniu';
+  String get gameMenu => 'Menu';
 
   @override
-  String get gamePaused => 'În pauză';
+  String get gamePaused => 'Paused';
 
   @override
-  String get gameSaveState => 'Salvează starea';
+  String get gameSaveState => 'Save state';
 
   @override
-  String get games => 'Jocuri';
+  String get games => 'Games';
 
   @override
-  String get gameLoadState => 'Încarcă starea';
+  String get gameLoadState => 'Load state';
 
   @override
-  String get gameFastForward => 'Derulare rapidă';
+  String get gameFastForward => 'Fast-forward';
 
   @override
-  String get gameEmulatorSettings => 'Setări emulator';
+  String get gameEmulatorSettings => 'Emulator settings';
 
   @override
-  String get gameNoCoreOptions => 'Acest nucleu nu are opțiuni reglabile.';
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
 
   @override
-  String get gameHoldToOpenMenu => 'Țineți apăsat pentru meniu';
+  String get gameHoldToOpenMenu => 'Hold to open menu';
 
   @override
   String get gamePlaybackUnsupported =>
-      'Rularea jocurilor nu este încă acceptată pe acest dispozitiv.';
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded => 'Nu au putut fi încărcate rânduri de acasă';
@@ -377,7 +377,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get schedule => 'Programa';
 
   @override
-  String get series => 'Seriale';
+  String get series => 'Serie';
 
   @override
   String get noItemsFound => 'Nu s-au găsit articole';
@@ -489,7 +489,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get large => 'Mare';
 
   @override
-  String get extraLarge => 'Foarte mare';
+  String get extraLarge => 'Extra Large';
 
   @override
   String libraryGenresTitle(String name) {
@@ -553,7 +553,7 @@ class AppLocalizationsRo extends AppLocalizations {
       'Alegeți ce fluxuri de subiecte să afișați în Discover.';
 
   @override
-  String get apply => 'Aplică';
+  String get apply => 'Aplicați';
 
   @override
   String get openLink => 'Deschide Link';
@@ -602,7 +602,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get listen => 'Asculta';
 
   @override
-  String get resume => 'Reia';
+  String get resume => 'Relua';
 
   @override
   String get failedToLoadLibrary => 'Nu s-a putut încărca biblioteca';
@@ -747,13 +747,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get readStatus => 'Citire';
 
   @override
-  String get watched => 'Vizionate';
+  String get watched => 'Privit';
 
   @override
   String get unread => 'Necitit';
 
   @override
-  String get unwatched => 'Nevizionate';
+  String get unwatched => 'Nevizionat';
 
   @override
   String get seriesStatus => 'Stare serie';
@@ -765,44 +765,43 @@ class AppLocalizationsRo extends AppLocalizations {
   String get books => 'Cărți';
 
   @override
-  String get latestBooks => 'Cele mai recente cărți';
+  String get latestBooks => 'Latest Books';
 
   @override
-  String get latestAudiobooks => 'Cele mai recente cărți audio';
+  String get latestAudiobooks => 'Latest Audiobooks';
 
   @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de cărți',
-      few: '$count cărți',
-      one: '1 carte',
+      other: '$count books',
+      one: '1 book',
     );
     return '$_temp0';
   }
 
   @override
-  String get bookFormatBook => 'Carte';
+  String get bookFormatBook => 'Book';
 
   @override
-  String get bookFormatAudiobook => 'Carte audio';
+  String get bookFormatAudiobook => 'Audiobook';
 
   @override
   String bookPercentRead(int percent) {
-    return '$percent% citit';
+    return '$percent% read';
   }
 
   @override
   String bookTimeLeft(String time) {
-    return '$time rămase';
+    return '$time left';
   }
 
   @override
-  String get bookHeroRead => 'Citește';
+  String get bookHeroRead => 'Read';
 
   @override
-  String get bookHeroListen => 'Ascultă';
+  String get bookHeroListen => 'Listen';
 
   @override
   String get author => 'Autor';
@@ -879,9 +878,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de cărți audio',
-      few: '$count cărți audio',
-      one: '1 carte audio',
+      other: '$count audiobooks',
+      one: '1 audiobook',
     );
     return '$_temp0';
   }
@@ -896,10 +894,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get failedToLoad => 'Nu s-a putut încărca';
 
   @override
-  String get delete => 'Șterge';
+  String get delete => 'Şterge';
 
   @override
-  String get save => 'Salvează';
+  String get save => 'Salva';
 
   @override
   String get moreLikeThis => 'Mai mult ca asta';
@@ -917,7 +915,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get nextUp => 'Următorul';
 
   @override
-  String get seasons => 'Sezoane';
+  String get seasons => 'anotimpuri';
 
   @override
   String get chapters => 'Capitole';
@@ -948,7 +946,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Discul $number';
+    return 'Disc $number';
   }
 
   @override
@@ -985,9 +983,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de Sezoane',
-      few: '$count Sezoane',
-      one: '1 Sezon',
+      other: '$count Seasons',
+      one: '1 Season',
     );
     return '$_temp0';
   }
@@ -998,40 +995,40 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get items => 'Elemente';
+  String get items => 'Items';
 
   @override
-  String get extras => 'Extra';
+  String get extras => 'Extras';
 
   @override
-  String get behindTheScenes => 'Din culise';
+  String get behindTheScenes => 'Behind the Scenes';
 
   @override
-  String get deletedScenes => 'Scene șterse';
+  String get deletedScenes => 'Deleted Scenes';
 
   @override
-  String get featurettes => 'Featurette-uri';
+  String get featurettes => 'Featurettes';
 
   @override
-  String get interviews => 'Interviuri';
+  String get interviews => 'Interviews';
 
   @override
-  String get scenes => 'Scene';
+  String get scenes => 'Scenes';
 
   @override
-  String get shorts => 'Scurtmetraje';
+  String get shorts => 'Shorts';
 
   @override
-  String get trailers => 'Trailere';
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
-    return '$time rămase';
+    return '$time remaining';
   }
 
   @override
   String endsIn(String time) {
-    return 'Se termină în $time';
+    return 'Ends in $time';
   }
 
   @override
@@ -1049,7 +1046,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get play => 'Redă';
+  String get play => 'Juca';
 
   @override
   String get startOver => 'Începe de la capăt';
@@ -1073,7 +1070,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get version => 'Versiune';
 
   @override
-  String get cast => 'Proiectează';
+  String get cast => 'Distribuție';
 
   @override
   String get trailer => 'Trailer';
@@ -1191,7 +1188,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get subtitleTrack => 'Piesa de subtitrare';
 
   @override
-  String get none => 'Niciuna';
+  String get none => 'Nici unul';
 
   @override
   String get downloadSubtitlesLabel => 'Descărcați subtitrări...';
@@ -1267,16 +1264,16 @@ class AppLocalizationsRo extends AppLocalizations {
   String get deleteFiles => 'Ștergeți fișierele';
 
   @override
-  String get director => 'REGIZOR';
+  String get director => 'DIRECTOR';
 
   @override
-  String get directors => 'REGIZORI';
+  String get directors => 'DIRECTORS';
 
   @override
-  String get writer => 'SCENARIST';
+  String get writer => 'WRITER';
 
   @override
-  String get writers => 'SCENARIȘTI';
+  String get writers => 'SCRIITORII';
 
   @override
   String get studio => 'STUDIO';
@@ -1311,9 +1308,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de piese',
-      few: '$count piese',
-      one: '1 piesă',
+      other: '$count tracks',
+      one: '1 track',
     );
     return '$_temp0';
   }
@@ -1323,9 +1319,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de capitole',
-      few: '$count capitole',
-      one: '1 capitol',
+      other: '$count chapters',
+      one: '1 chapter',
     );
     return '$_temp0';
   }
@@ -1352,16 +1347,16 @@ class AppLocalizationsRo extends AppLocalizations {
   String get readMore => 'Citeşte mai mult';
 
   @override
-  String get shuffle => 'Aleatoriu';
+  String get shuffle => 'Amesteca';
 
   @override
-  String get shuffleAllMusic => 'Redă aleatoriu toată muzica';
+  String get shuffleAllMusic => 'Shuffle all music';
 
   @override
-  String get carSignInPrompt => 'Conectați-vă la Moonfin pe telefon';
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
 
   @override
-  String get carServerUnreachable => 'Serverul nu poate fi contactat';
+  String get carServerUnreachable => 'Can\'t reach your server';
 
   @override
   String downloadsCount(int count) {
@@ -1373,7 +1368,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '${count}can.';
+    return '${count}ch';
   }
 
   @override
@@ -1535,7 +1530,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get subtitleDelay => 'Întârziere subtitrare';
 
   @override
-  String get reset => 'Resetează';
+  String get reset => 'Resetați';
 
   @override
   String get unknown => 'Necunoscut';
@@ -1553,7 +1548,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get directPlay => 'Redare directă';
 
   @override
-  String get directStream => 'Flux direct';
+  String get directStream => 'Direct Stream';
 
   @override
   String get transcoding => 'Transcodare';
@@ -1586,7 +1581,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get videoBitrate => 'Rata de biți video';
 
   @override
-  String get track => 'Piesă';
+  String get track => 'Urmări';
 
   @override
   String get channels => 'Canale';
@@ -1801,22 +1796,22 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String guideNextProgram(String time, String title) {
-    return 'Urmează: $time  $title';
+    return 'Next: $time  $title';
   }
 
   @override
   String guideMinutesLeft(int minutes) {
-    return '${minutes}m rămase';
+    return '${minutes}m left';
   }
 
   @override
   String guideHoursLeft(int hours) {
-    return '${hours}h rămase';
+    return '${hours}h left';
   }
 
   @override
   String guideHoursMinutesLeft(int hours, int minutes) {
-    return '${hours}h ${minutes}m rămase';
+    return '${hours}h ${minutes}m left';
   }
 
   @override
@@ -1839,7 +1834,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get favoriteChannel => 'Canalul preferat';
 
   @override
-  String get record => 'Înregistrează';
+  String get record => 'Înregistra';
 
   @override
   String get cancelRecordingAction => 'Anulează înregistrarea';
@@ -1854,10 +1849,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get unableToCreateRecording => 'Nu se poate crea înregistrarea';
 
   @override
-  String get watch => 'Vizionează';
+  String get watch => 'Ceas';
 
   @override
-  String get close => 'Închide';
+  String get close => 'Aproape';
 
   @override
   String failedToPlayChannel(String name) {
@@ -2067,9 +2062,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de episoade',
-      few: '$count episoade',
-      one: '1 episod',
+      other: '$count episodes',
+      one: '1 episode',
     );
     return '$_temp0';
   }
@@ -2299,7 +2293,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get themeMusicSettingsSubtitle =>
-      'Pagini de detalii, rânduri de pe ecranul principal și volum';
+      'Detail pages, home rows, and volume';
 
   @override
   String percentValue(int value) {
@@ -2314,11 +2308,11 @@ class AppLocalizationsRo extends AppLocalizations {
       'Joacă atunci când navighezi pe ecranul de pornire';
 
   @override
-  String get loopThemeMusic => 'Repetă muzica tematică';
+  String get loopThemeMusic => 'Loop Theme Music';
 
   @override
   String get loopThemeMusicSubtitle =>
-      'Repetă piesa în loc să o redea o singură dată';
+      'Repeat the track instead of playing it once';
 
   @override
   String get detailsBackgroundBlur => 'Detalii Blur de fundal';
@@ -2341,23 +2335,23 @@ class AppLocalizationsRo extends AppLocalizations {
   String get playerZoomMode => 'Modul Zoom jucător';
 
   @override
-  String get settingsScrollWheelAction => 'Rotița mouse-ului';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Alegeți ce se întâmplă când derulați cu rotița mouse-ului peste videoclip în timpul redării.';
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => 'Oprit';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => 'Derulare (înainte / înapoi)';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => 'Volum';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => 'Volum';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'Fit';
@@ -2411,37 +2405,37 @@ class AppLocalizationsRo extends AppLocalizations {
   String get defaultAudioLanguage => 'Limba audio implicită';
 
   @override
-  String get fallbackAudioLanguage => 'Limbă audio de rezervă';
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
 
   @override
-  String get preferDefaultAudioTrack => 'Preferă pista audio implicită';
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
 
   @override
   String get preferDefaultAudioTrackDescription =>
-      'Preferă pista audio originală în locul dublajului localizat.';
+      'Prefer original audio track over localized dub.';
 
   @override
-  String get preferAudioDescription => 'Preferă pistele cu descriere audio';
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
 
   @override
   String get preferAudioDescriptionDescription =>
-      'Preferă pistele cu descriere audio în locul celor normale.';
+      'Prefer audio description tracks over normal tracks.';
 
   @override
-  String get transcodingAudio => 'Transcodare (Audio)';
+  String get transcodingAudio => 'Transcoding (Audio)';
 
   @override
-  String get directStreamRemux => 'Flux direct (Remux)';
+  String get directStreamRemux => 'Direct Stream (Remux)';
 
   @override
   String get transcodingBitrateOrResolution =>
-      'Transcodare (Bitrate sau rezoluție)';
+      'Transcoding (Bitrate or Resolution)';
 
   @override
-  String get transcodingVideoAndAudio => 'Transcodare (Video & Audio)';
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
 
   @override
-  String get transcodingVideo => 'Transcodare (Video)';
+  String get transcodingVideo => 'Transcoding (Video)';
 
   @override
   String get autoServerDefault => 'Auto (Server implicit)';
@@ -2522,7 +2516,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Alegeți modul în care este decodat sunetul. AVR Passthrough trimite fluxurile Dolby/DTS brute către receiverul dvs., iar Auto sau Downmix decodează local.';
+      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
@@ -2532,14 +2526,13 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Selectați formatul țintă pentru transcodarea sunetului multicanal atunci când fluxul sursă nu poate fi redat direct sau trimis prin passthrough.';
+      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
 
   @override
-  String get settingsAudioFallbackCodecAuto =>
-      'Detectare automată\n(Recomandat)';
+  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
 
   @override
-  String get settingsAudioFallbackCodecAac => 'AAC\n(Implicit)';
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
 
   @override
   String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
@@ -2548,27 +2541,26 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
 
   @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Fără pierderi)';
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Doar stereo)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Eficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
 
   @override
-  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Fără pierderi)';
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'Număr maxim de canale audio';
+  String get settingsMaxAudioChannels => 'Max Audio Channels';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configurați numărul maxim de canale al sistemului dvs. audio. Fluxurile multicanal care depășesc această limită vor fi downmixate sau transcodate.';
+      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto =>
-      'Detectare automată\n(Implicit hardware)';
+  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2580,7 +2572,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
 
   @override
-  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Cvadrafonic';
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Quadraphonic';
 
   @override
   String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Surround';
@@ -2598,7 +2590,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAudioPassthroughAdvanced => 'Passthrough (avansat)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Passthrough codec';
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
@@ -2674,11 +2666,11 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Difuzor';
 
   @override
-  String get settingsAudioRouteHeadphones => 'Căști';
+  String get settingsAudioRouteHeadphones => 'Headphones';
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '${count}can. PCM';
+    return '${count}ch PCM';
   }
 
   @override
@@ -2750,7 +2742,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get nextUpAndQueuing => 'Următorul și așteptarea';
 
   @override
-  String get nextUpDisplay => 'Afișare „Urmează”';
+  String get nextUpDisplay => 'Next Up Display';
 
   @override
   String get extended => 'Extins';
@@ -2767,7 +2759,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaQueuing => 'Coadă media';
+  String get mediaQueuing => 'Media Queuing';
 
   @override
   String get autoQueueNextEpisodes =>
@@ -2855,45 +2847,45 @@ class AppLocalizationsRo extends AppLocalizations {
       'Personalizați aspectul subtitrarilor';
 
   @override
-  String get subtitleMode => 'Mod subtitrări';
+  String get subtitleMode => 'Subtitle Mode';
 
   @override
-  String get subtitleModeFlagged => 'Marcate';
+  String get subtitleModeFlagged => 'Flagged';
 
   @override
-  String get subtitleModeAlways => 'Întotdeauna';
+  String get subtitleModeAlways => 'Always';
 
   @override
-  String get subtitleModeForeign => 'Străine';
+  String get subtitleModeForeign => 'Foreign';
 
   @override
-  String get subtitleModeForced => 'Forțate';
+  String get subtitleModeForced => 'Forced';
 
   @override
   String get subtitleModeFlaggedDescription =>
-      'Redă pistele marcate intern în metadatele fișierului media drept „implicite” sau „forțate”.';
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
 
   @override
   String get subtitleModeAlwaysDescription =>
-      'Încarcă și afișează automat subtitrările de fiecare dată când începe un videoclip.';
+      'Automatically loads and displays subtitles every time a video starts.';
 
   @override
   String get subtitleModeForeignDescription =>
-      'Activează automat subtitrările dacă pista audio implicită este într-o limbă străină.';
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
 
   @override
   String get subtitleModeForcedDescription =>
-      'Încarcă doar subtitrările marcate explicit cu indicatorul de metadate „forțat”.';
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
 
   @override
   String get subtitleModeNoneDescription =>
-      'Dezactivează complet încărcarea automată a subtitrărilor.';
+      'Completely disables automatic subtitle loading.';
 
   @override
-  String get fallbackSubtitleLanguage => 'Limbă de rezervă pentru subtitrări';
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
 
   @override
-  String get subtitleStream => 'Flux de subtitrare';
+  String get subtitleStream => 'Subtitle Stream';
 
   @override
   String get subtitlePreviewText => 'Vulpea maro iute sare peste câinele leneș';
@@ -2902,13 +2894,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get verticalOffset => 'Offset vertical';
 
   @override
-  String get pgsDirectPlay => 'Redare directă PGS';
+  String get pgsDirectPlay => 'PGS Direct Play';
 
   @override
   String get directPlayPgsSubtitles => 'Redare directă subtitrări PGS';
 
   @override
-  String get assSsaDirectPlay => 'Redare directă ASS/SSA';
+  String get assSsaDirectPlay => 'ASS/SSA Direct Play';
 
   @override
   String get directPlayAssSsaSubtitles => 'Redare directă subtitrări ASS/SSA';
@@ -3098,11 +3090,10 @@ class AppLocalizationsRo extends AppLocalizations {
       'Afișați bibliotecile în bara de instrumente';
 
   @override
-  String get navbarAlwaysExpanded =>
-      'Afișează mereu etichetele barei de navigare';
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
-  String get showSeerrButton => 'Afișează butonul Seerr';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'Opacitatea barei de navigare';
@@ -3120,7 +3111,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get purple => 'Violet';
 
   @override
-  String get teal => 'Turcoaz';
+  String get teal => 'Teal';
 
   @override
   String get navy => 'Marinei';
@@ -3177,19 +3168,18 @@ class AppLocalizationsRo extends AppLocalizations {
       'Afișează opțiunea de navigare în folder';
 
   @override
-  String get groupItemsIntoCollections => 'Grupează elementele în colecții';
+  String get groupItemsIntoCollections => 'Group Items into Collections';
 
   @override
   String get hideCollectionAssociatedItems =>
-      'Ascunde elementele asociate colecțiilor când navigați prin biblioteci';
+      'Hide Collection associated library items when browsing libraries';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle =>
-      'Notificare privind gruparea bibliotecii';
+  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
 
   @override
   String get groupItemsIntoCollectionsDialogMessage =>
-      'Pentru a folosi această setare, asigurați-vă că setările de bibliotecă „Grupează filmele în colecții” și/sau „Grupează serialele în colecții” sunt activate în setările de afișare ale bibliotecii de pe serverul Jellyfin sau Emby.';
+      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
 
   @override
   String get libraryVisibility => 'Vizibilitatea bibliotecii';
@@ -3222,7 +3212,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaBar => 'Bară media';
+  String get mediaBar => 'Media Bar';
 
   @override
   String get mediaSources => 'Surse media';
@@ -3301,11 +3291,10 @@ class AppLocalizationsRo extends AppLocalizations {
       'Redați automat trailerele în bara media după 3 secunde';
 
   @override
-  String get trailerAudio => 'Sunet trailer';
+  String get trailerAudio => 'Trailer Audio';
 
   @override
-  String get enableTrailerAudio =>
-      'Activează sunetul pentru trailerele din bara media';
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
 
   @override
   String get episodePreview => 'Previzualizarea episodului';
@@ -3385,11 +3374,10 @@ class AppLocalizationsRo extends AppLocalizations {
       'Combinați ambele rânduri într-o singură secțiune de acasă';
 
   @override
-  String get fullScreenRows => 'Rânduri extinse pe ecranul principal';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription =>
-      'Limitează ecranul principal la un singur rând';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Tip de imagine pe rând';
@@ -3404,7 +3392,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get lastUser => 'Ultimul utilizator';
 
   @override
-  String get currentUser => 'Utilizator curent';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'Autentificați-vă întotdeauna';
@@ -3465,7 +3453,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get enableBuiltInScreensaver => 'Activați screensaverul încorporat';
 
   @override
-  String get mode => 'Mod';
+  String get mode => 'Modul';
 
   @override
   String get libraryArt => 'Biblioteca Art';
@@ -3515,7 +3503,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get clockModeStatic => 'Static';
 
   @override
-  String get clockModeBouncing => 'În mișcare';
+  String get clockModeBouncing => 'Bouncing';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (critici)';
@@ -3588,7 +3576,7 @@ class AppLocalizationsRo extends AppLocalizations {
       'Activați și reordonați sursele de evaluare afișate în aplicație';
 
   @override
-  String get pluginLabel => 'Plugin Moonbase';
+  String get pluginLabel => 'Plugin';
 
   @override
   String get pluginDetected => 'Plugin detectat';
@@ -3633,7 +3621,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get recentlyAdded => 'Adăugat recent';
 
   @override
-  String get trending => 'În tendințe';
+  String get trending => 'Trending';
 
   @override
   String get popularMovies => 'Filme populare';
@@ -3660,7 +3648,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get networks => 'Rețele';
 
   @override
-  String get seerrDiscoveryRows => 'Rânduri de descoperire Seerr';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'Resetați rândurile la valorile implicite';
@@ -3684,28 +3672,28 @@ class AppLocalizationsRo extends AppLocalizations {
       'Ascunde conținutul pentru adulți în rezultate';
 
   @override
-  String get seerrNotificationsSection => 'Notificări';
+  String get seerrNotificationsSection => 'Notifications';
 
   @override
-  String get seerrNotifyNewRequestsTitle => 'Notificări pentru cereri noi';
+  String get seerrNotifyNewRequestsTitle => 'New request notifications';
 
   @override
   String get seerrNotifyNewRequestsSubtitle =>
-      'Anunță-mă când cineva trimite o cerere';
+      'Alert me when someone submits a request';
 
   @override
-  String get seerrNotifyLibraryAddedTitle => 'Actualizări ale cererilor';
+  String get seerrNotifyLibraryAddedTitle => 'Request updates';
 
   @override
   String get seerrNotifyLibraryAddedSubtitle =>
-      'Aprobate, respinse și adăugate în biblioteca dvs.';
+      'Approved, declined, and added to your library';
 
   @override
-  String get seerrNotifyIssuesTitle => 'Actualizări ale problemelor';
+  String get seerrNotifyIssuesTitle => 'Issue updates';
 
   @override
   String get seerrNotifyIssuesSubtitle =>
-      'Probleme noi, răspunsuri și rezolvări';
+      'New issues, replies, and resolutions';
 
   @override
   String loggedInAs(String username) {
@@ -3713,15 +3701,15 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get discoverRows => 'Pagina de descoperire Seerr';
+  String get discoverRows => 'Descoperiți Rânduri';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Activați rândurile pe care doriți să le vedeți pe pagina principală Seerr. Trageți pentru a le reordona. Ordinea personalizată se sincronizează cu Moonbase.';
+      'Trageți pentru a reordona. Activați sau dezactivați rândurile. Sincronizarea comenzii rândurilor este activată cu pluginul Moonfin.';
 
   @override
   String get discoverRowsDescription =>
-      'Activați rândurile pe care doriți să le vedeți pe pagina principală Seerr. Trageți pentru a le reordona. Ordinea personalizată se sincronizează cu Moonbase.';
+      'Trageți pentru a reordona. Activați sau dezactivați rândurile.';
 
   @override
   String get enabled => 'Activat';
@@ -3861,7 +3849,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get imageCacheCleared => 'Memoria cache pentru imagini a fost golită';
 
   @override
-  String get clear => 'Golește';
+  String get clear => 'Clar';
 
   @override
   String get browse => 'Răsfoiește';
@@ -3877,11 +3865,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String seerrDownloadingPercent(int percent) {
-    return 'Se descarcă · $percent%';
+    return 'Downloading · $percent%';
   }
 
   @override
-  String get seerrImportingStatus => 'Se importă';
+  String get seerrImportingStatus => 'Importing';
 
   @override
   String itemsCount(int count) {
@@ -3915,7 +3903,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get declineAction => 'Declin';
 
   @override
-  String get similar => 'Similare';
+  String get similar => 'Similar';
 
   @override
   String get recommendations => 'Recomandări';
@@ -4018,108 +4006,108 @@ class AppLocalizationsRo extends AppLocalizations {
   String get notRequestedStatus => 'Nu este solicitat';
 
   @override
-  String get blocklistedStatus => 'Pe lista de blocare';
+  String get blocklistedStatus => 'Blocklisted';
 
   @override
   String get deletedStatus => 'Șters';
 
   @override
-  String get failedStatus => 'Eșuat';
+  String get failedStatus => 'Failed';
 
   @override
-  String get processingStatus => 'În procesare';
+  String get processingStatus => 'Processing';
 
   @override
   String modifiedByName(String name) {
-    return 'Modificat de $name';
+    return 'Modified by $name';
   }
 
   @override
-  String get completedStatus => 'Finalizat';
+  String get completedStatus => 'Completed';
 
   @override
-  String get requestErrorDuplicate => 'Acest titlu a fost deja cerut';
+  String get requestErrorDuplicate => 'This title was already requested';
 
   @override
-  String get requestErrorQuota => 'Ați atins limita de cereri';
+  String get requestErrorQuota => 'Request limit reached';
 
   @override
-  String get requestErrorBlocklisted => 'Acest titlu este pe lista de blocare';
+  String get requestErrorBlocklisted => 'This title is blocklisted';
 
   @override
-  String get requestErrorNoSeasons => 'Nu mai sunt sezoane de cerut';
+  String get requestErrorNoSeasons => 'No seasons left to request';
 
   @override
   String get requestErrorPermission =>
-      'Nu aveți permisiunea de a face această cerere';
+      'You don\'t have permission to make this request';
 
   @override
-  String get seerrRequestsTitle => 'Cereri';
+  String get seerrRequestsTitle => 'Requests';
 
   @override
-  String get seerrIssuesTitle => 'Probleme';
+  String get seerrIssuesTitle => 'Issues';
 
   @override
-  String get sortNewest => 'Cele mai noi';
+  String get sortNewest => 'Newest';
 
   @override
-  String get sortLastModified => 'Ultima modificare';
+  String get sortLastModified => 'Last Modified';
 
   @override
-  String get noIssues => 'Nicio problemă';
+  String get noIssues => 'No issues';
 
   @override
   String movieQuotaRemaining(int remaining, int limit) {
-    return '$remaining din $limit cereri de filme rămase';
+    return '$remaining of $limit movie requests remaining';
   }
 
   @override
   String seasonQuotaRemaining(int remaining, int limit) {
-    return '$remaining din $limit cereri de sezoane rămase';
+    return '$remaining of $limit season requests remaining';
   }
 
   @override
   String partOfCollectionName(String name) {
-    return 'Face parte din $name';
+    return 'Part of $name';
   }
 
   @override
-  String get viewCollection => 'Vezi colecția';
+  String get viewCollection => 'View Collection';
 
   @override
-  String get requestCollection => 'Cere colecția';
+  String get requestCollection => 'Request Collection';
 
   @override
   String collectionMoviesSummary(int total, int available) {
-    return '$total filme · $available disponibile';
+    return '$total movies · $available available';
   }
 
   @override
   String requestMoviesCount(int count) {
-    return 'Cere $count filme';
+    return 'Request $count movies';
   }
 
   @override
   String requestingProgress(int current, int total) {
-    return 'Se cere $current din $total...';
+    return 'Requesting $current of $total...';
   }
 
   @override
   String requestedMoviesCount(int count) {
-    return 'Au fost cerute $count filme';
+    return 'Requested $count movies';
   }
 
   @override
   String requestedMoviesPartial(int ok, int total) {
-    return 'Au fost cerute $ok din $total filme';
+    return 'Requested $ok of $total movies';
   }
 
   @override
   String get collectionAllRequested =>
-      'Toate filmele sunt deja disponibile sau cerute';
+      'All movies are already available or requested';
 
   @override
-  String get reportIssue => 'Raportează o problemă';
+  String get reportIssue => 'Report Issue';
 
   @override
   String get issueTypeVideo => 'Video';
@@ -4128,44 +4116,44 @@ class AppLocalizationsRo extends AppLocalizations {
   String get issueTypeAudio => 'Audio';
 
   @override
-  String get whatsWrong => 'Care este problema?';
+  String get whatsWrong => 'What\'s wrong?';
 
   @override
-  String get allEpisodes => 'Toate episoadele';
+  String get allEpisodes => 'All Episodes';
 
   @override
-  String get episode => 'Episod';
+  String get episode => 'Episode';
 
   @override
-  String get openStatus => 'Deschisă';
+  String get openStatus => 'Open';
 
   @override
-  String get resolvedStatus => 'Rezolvată';
+  String get resolvedStatus => 'Resolved';
 
   @override
-  String get resolveAction => 'Rezolvă';
+  String get resolveAction => 'Resolve';
 
   @override
-  String get reopenAction => 'Redeschide';
+  String get reopenAction => 'Reopen';
 
   @override
   String reportedByName(String name) {
-    return 'Raportată de $name';
+    return 'Reported by $name';
   }
 
   @override
   String commentsCount(int count) {
-    return '$count comentarii';
+    return '$count comments';
   }
 
   @override
-  String get addComment => 'Adăugați un comentariu';
+  String get addComment => 'Add a comment';
 
   @override
-  String get deleteIssueConfirm => 'Ștergeți această problemă?';
+  String get deleteIssueConfirm => 'Delete this issue?';
 
   @override
-  String get submitReport => 'Trimite raportul';
+  String get submitReport => 'Submit Report';
 
   @override
   String get tmdbScore => 'Scorul TMDB';
@@ -4189,7 +4177,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get originalLanguageLabel => 'Limba originală';
 
   @override
-  String get seasonsLabel => 'Sezoane';
+  String get seasonsLabel => 'anotimpuri';
 
   @override
   String get episodesLabel => 'Episoade';
@@ -4198,13 +4186,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get access => 'Acces';
 
   @override
-  String get add => 'Adaugă';
+  String get add => 'Adăuga';
 
   @override
   String get address => 'Adresa';
 
   @override
-  String get analytics => 'Analiză';
+  String get analytics => 'Analytics';
 
   @override
   String get catalog => 'Catalog';
@@ -4222,10 +4210,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get disable => 'Dezactivați';
 
   @override
-  String get done => 'Gata';
+  String get done => 'Făcut';
 
   @override
-  String get edit => 'Editează';
+  String get edit => 'Edita';
 
   @override
   String get encoding => 'Codificare';
@@ -4234,7 +4222,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get error => 'Eroare';
 
   @override
-  String get forward => 'Înainte';
+  String get forward => 'Redirecţiona';
 
   @override
   String get general => 'General';
@@ -4282,7 +4270,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get refresh => 'Reîmprospăta';
 
   @override
-  String get remote => 'Telecomandă';
+  String get remote => 'Telecomanda';
 
   @override
   String get rename => 'Redenumiți';
@@ -4300,7 +4288,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get run => 'Fugi';
 
   @override
-  String get search => 'Caută';
+  String get search => 'Căutare';
 
   @override
   String get select => 'Selecta';
@@ -4318,7 +4306,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get status => 'Stare';
 
   @override
-  String get stop => 'Oprește';
+  String get stop => 'Stop';
 
   @override
   String get streaming => 'Streaming';
@@ -4345,7 +4333,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get unmute => 'Activați sunetul';
 
   @override
-  String get mute => 'Fără sunet';
+  String get mute => 'Mut';
 
   @override
   String get branding => 'Branding';
@@ -4354,7 +4342,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminDrawerDashboard => 'Bord';
 
   @override
-  String get adminDrawerAnalytics => 'Analiză';
+  String get adminDrawerAnalytics => 'Analytics';
 
   @override
   String get adminDrawerSettings => 'Setări';
@@ -4369,19 +4357,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminDrawerLibraries => 'Biblioteci';
 
   @override
-  String get adminDrawerDisplay => 'Afișare';
+  String get adminDrawerDisplay => 'Display';
 
   @override
-  String get adminDrawerMetadata => 'Metadate';
+  String get adminDrawerMetadata => 'Metadata';
 
   @override
-  String get adminDrawerNfo => 'Setări NFO';
+  String get adminDrawerNfo => 'NFO Settings';
 
   @override
   String get adminDrawerTranscoding => 'Transcodare';
 
   @override
-  String get adminDrawerResume => 'Reluare';
+  String get adminDrawerResume => 'Relua';
 
   @override
   String get adminDrawerStreaming => 'Streaming';
@@ -4553,13 +4541,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminSetVolume => 'Setați volumul';
 
   @override
-  String get sessionPrev => 'Anter.';
+  String get sessionPrev => 'Prev';
 
   @override
   String get sessionRewind => 'Derulează înapoi';
 
   @override
-  String get sessionForward => 'Înainte';
+  String get sessionForward => 'Redirecţiona';
 
   @override
   String get sessionNext => 'Următorul';
@@ -4589,7 +4577,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioCodec => 'Codec audio';
 
   @override
-  String get hwAccel => 'Accel. HW';
+  String get hwAccel => 'HW Accel';
 
   @override
   String get completion => 'Finalizare';
@@ -4604,10 +4592,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminClearDates => 'Date clare';
 
   @override
-  String get adminActivitySeverityAll => 'Toate nivelurile de gravitate';
+  String get adminActivitySeverityAll => 'All severities';
 
   @override
-  String get adminActivityDateRange => 'Interval de date';
+  String get adminActivityDateRange => 'Date range';
 
   @override
   String adminActivityLoadFailed(String error) {
@@ -4645,23 +4633,23 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Eliminați dispozitivul „$name”? Utilizatorul va trebui să se conecteze din nou pe acest dispozitiv.';
+    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
   }
 
   @override
-  String get adminDeleteAllDevices => 'Șterge toate dispozitivele';
+  String get adminDeleteAllDevices => 'Delete all devices';
 
   @override
   String adminDeleteAllDevicesConfirm(int count) {
-    return 'Eliminați $count dispozitive? Utilizatorii afectați vor trebui să se conecteze din nou. Dispozitivul dvs. curent nu este afectat.';
+    return 'Remove $count devices? Affected users will need to sign in again. Your current device is not affected.';
   }
 
   @override
-  String get adminDevicesDeletedAll => 'Dispozitivele au fost eliminate';
+  String get adminDevicesDeletedAll => 'Devices removed';
 
   @override
   String adminDevicesDeletedPartial(int count) {
-    return 'Unele dispozitive au fost eliminate; $count nu au putut fi eliminate.';
+    return 'Removed some devices; $count could not be removed.';
   }
 
   @override
@@ -4778,256 +4766,244 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminMetadataCountryHint => 'de ex. SUA, DE, FR';
 
   @override
-  String get adminLibraryTabPaths => 'Căi';
+  String get adminLibraryTabPaths => 'Paths';
 
   @override
-  String get adminLibraryTabOptions => 'Opțiuni';
+  String get adminLibraryTabOptions => 'Options';
 
   @override
-  String get adminLibraryTabDownloaders => 'Servicii de descărcare';
+  String get adminLibraryTabDownloaders => 'Downloaders';
 
   @override
-  String get adminLibMetadataSavers => 'Servicii de salvare a metadatelor';
+  String get adminLibMetadataSavers => 'Metadata savers';
 
   @override
-  String get adminLibSubtitleDownloaders =>
-      'Servicii de descărcare a subtitrărilor';
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
 
   @override
-  String get adminLibLyricDownloaders => 'Servicii de descărcare a versurilor';
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
 
   @override
   String adminLibMetadataDownloadersFor(String type) {
-    return 'Servicii de descărcare a metadatelor: $type';
+    return 'Metadata downloaders: $type';
   }
 
   @override
   String adminLibImageFetchersFor(String type) {
-    return 'Servicii de preluare a imaginilor: $type';
+    return 'Image fetchers: $type';
   }
 
   @override
   String get adminLibNoDownloaders =>
-      'Acest server nu oferă servicii de descărcare pentru acest tip de bibliotecă.';
+      'This server exposes no downloaders for this library type.';
 
   @override
   String get adminLibrarySectionGeneral => 'General';
 
   @override
-  String get adminLibrarySectionMetadata => 'Metadate';
+  String get adminLibrarySectionMetadata => 'Metadata';
 
   @override
-  String get adminLibrarySectionEmbedded => 'Informații încorporate';
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
 
   @override
-  String get adminLibrarySectionSubtitles => 'Subtitrări';
+  String get adminLibrarySectionSubtitles => 'Subtitles';
 
   @override
-  String get adminLibrarySectionImages => 'Imagini';
+  String get adminLibrarySectionImages => 'Images';
 
   @override
-  String get adminLibrarySectionSeries => 'Seriale';
+  String get adminLibrarySectionSeries => 'Series';
 
   @override
-  String get adminLibrarySectionMusic => 'Muzică';
+  String get adminLibrarySectionMusic => 'Music';
 
   @override
-  String get adminLibrarySectionMovies => 'Filme';
+  String get adminLibrarySectionMovies => 'Movies';
 
   @override
-  String get adminLibRealtimeMonitor => 'Activează monitorizarea în timp real';
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
 
   @override
   String get adminLibRealtimeMonitorHint =>
-      'Detectează modificările fișierelor și le procesează automat.';
+      'Detect file changes and process them automatically.';
 
   @override
-  String get adminLibArchiveMediaFiles => 'Tratează arhivele ca fișiere media';
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
 
   @override
-  String get adminLibEnablePhotos => 'Afișează fotografiile';
+  String get adminLibEnablePhotos => 'Display photos';
 
   @override
-  String get adminLibSaveLocalMetadata =>
-      'Salvează imaginile în folderele media';
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
 
   @override
-  String get adminLibRefreshInterval => 'Reîmprospătare automată a metadatelor';
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
 
   @override
-  String get adminLibRefreshNever => 'Niciodată';
+  String get adminLibRefreshNever => 'Never';
 
   @override
-  String get adminLibDefault => 'Implicit';
+  String get adminLibDefault => 'Default';
 
   @override
-  String get adminLibDisplayTitle => 'Afișare';
+  String get adminLibDisplayTitle => 'Display';
 
   @override
-  String get adminLibDisplaySection => 'Afișarea bibliotecii';
+  String get adminLibDisplaySection => 'Library display';
 
   @override
   String get adminLibFolderView =>
-      'Afișează o vizualizare de foldere pentru folderele media simple';
+      'Display a folder view to show plain media folders';
 
   @override
   String get adminLibSpecialsInSeasons =>
-      'Afișează episoadele speciale în sezoanele în care au fost difuzate';
+      'Display specials within seasons they aired in';
 
   @override
-  String get adminLibGroupMovies => 'Grupează filmele în colecții';
+  String get adminLibGroupMovies => 'Group movies into collections';
 
   @override
-  String get adminLibGroupShows => 'Grupează serialele în colecții';
+  String get adminLibGroupShows => 'Group shows into collections';
 
   @override
   String get adminLibExternalSuggestions =>
-      'Afișează conținut extern în sugestii';
+      'Show external content in suggestions';
 
   @override
-  String get adminLibDateAddedSection => 'Comportamentul datei adăugării';
+  String get adminLibDateAddedSection => 'Date added behavior';
 
   @override
-  String get adminLibDateAddedLabel => 'Folosește data adăugării din';
+  String get adminLibDateAddedLabel => 'Use date added from';
 
   @override
-  String get adminLibDateAddedImport => 'Data scanării în bibliotecă';
+  String get adminLibDateAddedImport => 'Date scanned into the library';
 
   @override
-  String get adminLibDateAddedFile => 'Data creării fișierului';
+  String get adminLibDateAddedFile => 'Date the file was created';
 
   @override
-  String get adminLibMetadataTitle => 'Metadate și imagini';
+  String get adminLibMetadataTitle => 'Metadata and Images';
 
   @override
-  String get adminLibMetadataLangSection => 'Limba preferată pentru metadate';
+  String get adminLibMetadataLangSection => 'Preferred metadata language';
 
   @override
-  String get adminLibChaptersSection => 'Capitole';
+  String get adminLibChaptersSection => 'Chapters';
 
   @override
-  String get adminLibDummyChapterDuration =>
-      'Durata capitolelor generate (secunde)';
+  String get adminLibDummyChapterDuration => 'Dummy chapter duration (seconds)';
 
   @override
   String get adminLibDummyChapterDurationHint =>
-      'Durata capitolelor generate pentru conținutul media care nu are capitole. Setați 0 pentru dezactivare.';
+      'Length of chapters generated for media that has none. Set to 0 to disable.';
 
   @override
-  String get adminLibChapterImageResolution =>
-      'Rezoluția imaginilor de capitol';
+  String get adminLibChapterImageResolution => 'Chapter image resolution';
 
   @override
-  String get adminLibNfoTitle => 'Setări NFO';
+  String get adminLibNfoTitle => 'NFO Settings';
 
   @override
   String get adminLibNfoHelp =>
-      'Metadatele NFO sunt compatibile cu Kodi și cu clienți similari. Setările se aplică tuturor bibliotecilor care salvează metadate NFO.';
+      'NFO metadata is compatible with Kodi and similar clients. Settings apply to all libraries that save NFO metadata.';
 
   @override
-  String get adminLibKodiUser =>
-      'Utilizatorul pentru care se salvează datele de vizionare în fișierele NFO';
+  String get adminLibKodiUser => 'User to store watch data for in NFO files';
 
   @override
-  String get adminLibSaveImagePaths =>
-      'Salvează căile imaginilor în fișierele NFO';
+  String get adminLibSaveImagePaths => 'Save image paths within NFO files';
 
   @override
   String get adminLibPathSubstitution =>
-      'Activează substituția căilor pentru imaginile din fișierele NFO';
+      'Enable path substitution for NFO image paths';
 
   @override
   String get adminLibExtraThumbs =>
-      'Copiază imaginile extrafanart într-un folder extrathumbs';
+      'Copy extrafanart images into an extrathumbs folder';
 
   @override
-  String get adminLibNone => 'Niciunul';
+  String get adminLibNone => 'None';
 
   @override
   String adminLibRefreshDays(int days) {
-    return '$days zile';
+    return '$days days';
   }
 
   @override
-  String get adminLibEmbeddedTitles => 'Folosește titlurile încorporate';
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
 
   @override
-  String get adminLibEmbeddedExtrasTitles =>
-      'Folosește titlurile încorporate pentru materialele extra';
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
 
   @override
-  String get adminLibEmbeddedEpisodeInfos =>
-      'Folosește informațiile încorporate despre episoade';
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
 
   @override
-  String get adminLibAllowEmbeddedSubtitles =>
-      'Permite subtitrările încorporate';
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
 
   @override
-  String get adminLibEmbeddedAllowAll => 'Permite toate';
+  String get adminLibEmbeddedAllowAll => 'Allow all';
 
   @override
-  String get adminLibEmbeddedAllowText => 'Doar text';
+  String get adminLibEmbeddedAllowText => 'Text only';
 
   @override
-  String get adminLibEmbeddedAllowImage => 'Doar imagine';
+  String get adminLibEmbeddedAllowImage => 'Image only';
 
   @override
-  String get adminLibEmbeddedAllowNone => 'Niciuna';
+  String get adminLibEmbeddedAllowNone => 'None';
 
   @override
   String get adminLibSkipIfEmbeddedSubs =>
-      'Omite descărcarea dacă există subtitrări încorporate';
+      'Skip download if embedded subtitles are present';
 
   @override
   String get adminLibSkipIfAudioMatches =>
-      'Omite descărcarea dacă pista audio corespunde limbii de descărcare';
+      'Skip download if the audio track matches the download language';
 
   @override
-  String get adminLibRequirePerfectMatch =>
-      'Necesită o potrivire perfectă a subtitrării';
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
 
   @override
   String get adminLibSaveSubtitlesWithMedia =>
-      'Salvează subtitrările în folderele media';
+      'Save subtitles into media folders';
 
   @override
-  String get adminLibChapterImageExtraction => 'Extrage imaginile de capitol';
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
 
   @override
   String get adminLibChapterImagesDuringScan =>
-      'Extrage imaginile de capitol în timpul scanării bibliotecii';
+      'Extract chapter images during the library scan';
 
   @override
-  String get adminLibTrickplayExtraction =>
-      'Activează extragerea imaginilor Trickplay';
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
 
   @override
   String get adminLibTrickplayDuringScan =>
-      'Extrage imaginile Trickplay în timpul scanării bibliotecii';
+      'Extract trickplay images during the library scan';
 
   @override
   String get adminLibSaveTrickplayWithMedia =>
-      'Salvează imaginile Trickplay în folderele media';
+      'Save trickplay images into media folders';
 
   @override
   String get adminLibAutomaticSeriesGrouping =>
-      'Îmbină automat serialele răspândite în mai multe foldere';
+      'Automatically merge series that are spread across multiple folders';
 
   @override
-  String get adminLibSeasonZeroName => 'Numele afișat pentru sezonul zero';
+  String get adminLibSeasonZeroName => 'Season zero display name';
 
   @override
-  String get adminLibLufsScan =>
-      'Activează scanarea LUFS pentru normalizarea audio';
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
 
   @override
   String get adminLibPreferNonstandardArtist =>
-      'Preferă eticheta non-standard pentru artiști';
+      'Prefer non-standard artists tag';
 
   @override
   String get adminLibAutoAddToCollection =>
-      'Adaugă automat filmele în colecții';
+      'Automatically add movies to collections';
 
   @override
   String get adminLibraryNameRequired => 'Numele bibliotecii este obligatoriu';
@@ -5267,145 +5243,143 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminEnableAllChannels => 'Activați accesul la toate canalele';
 
   @override
-  String get adminParentalControl => 'Control parental';
+  String get adminParentalControl => 'Parental Control';
 
   @override
-  String get adminMaxParentalRating => 'Clasificarea parentală maximă permisă';
+  String get adminMaxParentalRating => 'Maximum allowed parental rating';
 
   @override
   String get adminMaxParentalRatingHint =>
-      'Conținutul cu o clasificare mai mare va fi ascuns pentru acest utilizator.';
+      'Content with a higher rating will be hidden from this user.';
 
   @override
-  String get adminParentalRatingNone => 'Niciuna';
+  String get adminParentalRatingNone => 'None';
 
   @override
   String get adminBlockUnratedItems =>
-      'Blochează elementele fără clasificare sau cu clasificare nerecunoscută';
+      'Block items with no or unrecognized rating information';
 
   @override
-  String get adminUnratedBook => 'Cărți';
+  String get adminUnratedBook => 'Books';
 
   @override
-  String get adminUnratedChannelContent => 'Canale';
+  String get adminUnratedChannelContent => 'Channels';
 
   @override
-  String get adminUnratedLiveTvChannel => 'TV în direct';
+  String get adminUnratedLiveTvChannel => 'Live TV';
 
   @override
-  String get adminUnratedMovie => 'Filme';
+  String get adminUnratedMovie => 'Movies';
 
   @override
-  String get adminUnratedMusic => 'Muzică';
+  String get adminUnratedMusic => 'Music';
 
   @override
-  String get adminUnratedTrailer => 'Trailere';
+  String get adminUnratedTrailer => 'Trailers';
 
   @override
-  String get adminUnratedSeries => 'Seriale';
+  String get adminUnratedSeries => 'Shows';
 
   @override
-  String get adminAccessSchedules => 'Programe de acces';
+  String get adminAccessSchedules => 'Access Schedules';
 
   @override
   String get adminAccessSchedulesHint =>
-      'Permite accesul doar în intervalele programate mai jos. Dacă nu este setat niciun program, accesul este permis toată ziua.';
+      'Allow access only during the scheduled times below. Access is allowed all day when no schedule is set.';
 
   @override
-  String get adminAddSchedule => 'Adaugă program';
+  String get adminAddSchedule => 'Add Schedule';
 
   @override
-  String get adminScheduleDay => 'Ziua';
+  String get adminScheduleDay => 'Day';
 
   @override
-  String get adminScheduleStart => 'Început';
+  String get adminScheduleStart => 'Start';
 
   @override
-  String get adminScheduleEnd => 'Sfârșit';
+  String get adminScheduleEnd => 'End';
 
   @override
-  String get adminDayEveryday => 'În fiecare zi';
+  String get adminDayEveryday => 'Every day';
 
   @override
-  String get adminDayWeekday => 'Zi lucrătoare';
+  String get adminDayWeekday => 'Weekday';
 
   @override
   String get adminDayWeekend => 'Weekend';
 
   @override
-  String get adminDaySunday => 'Duminică';
+  String get adminDaySunday => 'Sunday';
 
   @override
-  String get adminDayMonday => 'Luni';
+  String get adminDayMonday => 'Monday';
 
   @override
-  String get adminDayTuesday => 'Marți';
+  String get adminDayTuesday => 'Tuesday';
 
   @override
-  String get adminDayWednesday => 'Miercuri';
+  String get adminDayWednesday => 'Wednesday';
 
   @override
-  String get adminDayThursday => 'Joi';
+  String get adminDayThursday => 'Thursday';
 
   @override
-  String get adminDayFriday => 'Vineri';
+  String get adminDayFriday => 'Friday';
 
   @override
-  String get adminDaySaturday => 'Sâmbătă';
+  String get adminDaySaturday => 'Saturday';
 
   @override
-  String get adminAllowedTags => 'Etichete permise';
+  String get adminAllowedTags => 'Allowed tags';
 
   @override
   String get adminAllowedTagsHint =>
-      'Se afișează doar conținutul cu aceste etichete. Lăsați gol pentru a permite tot conținutul.';
+      'Only content with these tags is shown. Leave empty to allow all.';
 
   @override
-  String get adminBlockedTags => 'Etichete blocate';
+  String get adminBlockedTags => 'Blocked tags';
 
   @override
   String get adminBlockedTagsHint =>
-      'Conținutul cu aceste etichete este ascuns pentru acest utilizator.';
+      'Content with these tags is hidden from this user.';
 
   @override
-  String get adminAddTag => 'Adaugă etichetă';
+  String get adminAddTag => 'Add tag';
 
   @override
-  String get adminEnabledDevices => 'Dispozitive activate';
+  String get adminEnabledDevices => 'Enabled devices';
 
   @override
-  String get adminEnabledChannels => 'Canale activate';
+  String get adminEnabledChannels => 'Enabled channels';
 
   @override
-  String get adminAuthProvider => 'Furnizor de autentificare';
+  String get adminAuthProvider => 'Authentication provider';
 
   @override
-  String get adminPasswordResetProvider => 'Furnizor pentru resetarea parolei';
+  String get adminPasswordResetProvider => 'Password reset provider';
 
   @override
   String get adminLoginAttemptsBeforeLockout =>
-      'Numărul maxim de încercări eșuate de conectare înainte de blocare';
+      'Maximum failed login attempts before lockout';
 
   @override
   String get adminLoginAttemptsHint =>
-      'Setați 0 pentru valoarea implicită sau -1 pentru a dezactiva blocarea.';
+      'Set to 0 for the default, or -1 to disable lockout.';
 
   @override
-  String get adminSyncPlayAccess => 'Acces SyncPlay';
+  String get adminSyncPlayAccess => 'SyncPlay access';
 
   @override
-  String get adminSyncPlayCreateAndJoin =>
-      'Permite crearea grupurilor și alăturarea la ele';
+  String get adminSyncPlayCreateAndJoin => 'Allow creating and joining groups';
 
   @override
-  String get adminSyncPlayJoin => 'Permite alăturarea la grupuri';
+  String get adminSyncPlayJoin => 'Allow joining groups';
 
   @override
-  String get adminSyncPlayNone => 'Fără acces';
+  String get adminSyncPlayNone => 'No access';
 
   @override
-  String get adminContentDeletionFolders =>
-      'Permite ștergerea conținutului din';
+  String get adminContentDeletionFolders => 'Allow content deletion from';
 
   @override
   String get adminResetPasswordWarning =>
@@ -5493,26 +5467,25 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get adminBackupOptionsTitle => 'Creează o copie de rezervă';
+  String get adminBackupOptionsTitle => 'Create Backup';
 
   @override
-  String get adminBackupInclude =>
-      'Alegeți ce să includeți în copia de rezervă.';
+  String get adminBackupInclude => 'Choose what to include in the backup.';
 
   @override
-  String get adminBackupDatabase => 'Baza de date';
+  String get adminBackupDatabase => 'Database';
 
   @override
-  String get adminBackupDatabaseAlways => 'Inclusă întotdeauna';
+  String get adminBackupDatabaseAlways => 'Always included';
 
   @override
-  String get adminBackupMetadata => 'Metadate';
+  String get adminBackupMetadata => 'Metadata';
 
   @override
-  String get adminBackupSubtitles => 'Subtitrări';
+  String get adminBackupSubtitles => 'Subtitles';
 
   @override
-  String get adminBackupTrickplay => 'Imagini Trickplay';
+  String get adminBackupTrickplay => 'Trickplay images';
 
   @override
   String get adminCreatingBackup => 'Se creează backup...';
@@ -6220,62 +6193,60 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminAddTuner => 'Adăugați tuner';
 
   @override
-  String get adminEditTuner => 'Editează tunerul';
+  String get adminEditTuner => 'Edit Tuner';
 
   @override
-  String get adminTunerTypeM3u => 'Tuner M3U';
+  String get adminTunerTypeM3u => 'M3U Tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
 
   @override
-  String get adminTunerFileOrUrl => 'Fișier sau URL';
+  String get adminTunerFileOrUrl => 'File or URL';
 
   @override
-  String get adminTunerIpAddress => 'Adresa IP a tunerului';
+  String get adminTunerIpAddress => 'Tuner IP address';
 
   @override
-  String get adminTunerFriendlyName => 'Nume prietenos';
+  String get adminTunerFriendlyName => 'Friendly name';
 
   @override
   String get adminTunerUserAgent => 'User agent';
 
   @override
-  String get adminTunerCount => 'Limita de conexiuni simultane';
+  String get adminTunerCount => 'Simultaneous connection limit';
 
   @override
   String get adminTunerCountHelp =>
-      'Numărul maxim de fluxuri pe care tunerul le permite simultan. Setați 0 pentru nelimitat.';
+      'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.';
 
   @override
-  String get adminTunerFallbackBitrate =>
-      'Bitrate maxim de rezervă pentru streaming';
+  String get adminTunerFallbackBitrate => 'Fallback max streaming bitrate';
 
   @override
-  String get adminTunerImportFavoritesOnly => 'Importă doar canalele favorite';
+  String get adminTunerImportFavoritesOnly => 'Import only favorite channels';
 
   @override
-  String get adminTunerAllowHwTranscoding => 'Permite transcodarea hardware';
+  String get adminTunerAllowHwTranscoding => 'Allow hardware transcoding';
 
   @override
-  String get adminTunerAllowFmp4 => 'Permite containerul de transcodare fMP4';
+  String get adminTunerAllowFmp4 => 'Allow fMP4 transcoding container';
 
   @override
-  String get adminTunerAllowStreamSharing => 'Permite partajarea fluxurilor';
+  String get adminTunerAllowStreamSharing => 'Allow stream sharing';
 
   @override
-  String get adminTunerEnableStreamLooping =>
-      'Activează redarea în buclă a fluxului';
+  String get adminTunerEnableStreamLooping => 'Enable stream looping';
 
   @override
-  String get adminTunerIgnoreDts => 'Ignoră DTS';
+  String get adminTunerIgnoreDts => 'Ignore DTS';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Citește sursa la rata de cadre nativă';
+      'Read input at native frame rate';
 
   @override
-  String get adminEditProvider => 'Editează furnizorul';
+  String get adminEditProvider => 'Edit Provider';
 
   @override
   String get adminProviderXmltv => 'XMLTV';
@@ -6284,50 +6255,50 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminProviderSchedulesDirect => 'Schedules Direct';
 
   @override
-  String get adminXmltvPath => 'Fișier sau URL';
+  String get adminXmltvPath => 'File or URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Prefix pentru filme';
+  String get adminXmltvMoviePrefix => 'Movie prefix';
 
   @override
-  String get adminXmltvMovieCategories => 'Categorii de filme';
+  String get adminXmltvMovieCategories => 'Movie categories';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'Separați mai multe categorii cu o bară verticală.';
+      'Separate multiple categories with a vertical bar.';
 
   @override
-  String get adminXmltvKidsCategories => 'Categorii pentru copii';
+  String get adminXmltvKidsCategories => 'Kids categories';
 
   @override
-  String get adminXmltvNewsCategories => 'Categorii de știri';
+  String get adminXmltvNewsCategories => 'News categories';
 
   @override
-  String get adminXmltvSportsCategories => 'Categorii sportive';
+  String get adminXmltvSportsCategories => 'Sports categories';
 
   @override
-  String get adminSdUsername => 'Nume de utilizator';
+  String get adminSdUsername => 'Username';
 
   @override
-  String get adminSdPassword => 'Parolă';
+  String get adminSdPassword => 'Password';
 
   @override
-  String get adminSdCountry => 'Țară';
+  String get adminSdCountry => 'Country';
 
   @override
-  String get adminSdCountrySelect => 'Selectați o țară';
+  String get adminSdCountrySelect => 'Select a country';
 
   @override
-  String get adminSdPostalCode => 'Cod poștal';
+  String get adminSdPostalCode => 'Postal code';
 
   @override
-  String get adminSdGetListings => 'Obține programele';
+  String get adminSdGetListings => 'Get listings';
 
   @override
-  String get adminSdListings => 'Programe';
+  String get adminSdListings => 'Listings';
 
   @override
-  String get adminEnableAllTuners => 'Activează toate tunerele';
+  String get adminEnableAllTuners => 'Enable all tuners';
 
   @override
   String get adminTunerType => 'Tip tuner';
@@ -6370,7 +6341,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get adminTunerResetNotSupported =>
-      'Acest tip de tuner nu acceptă resetarea.';
+      'This tuner type does not support resetting.';
 
   @override
   String adminProviderRemoveFailed(String error) {
@@ -6393,46 +6364,43 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminSeriesRecordingPath => 'Calea de înregistrare în serie';
 
   @override
-  String get adminMovieRecordingPath => 'Calea pentru înregistrarea filmelor';
+  String get adminMovieRecordingPath => 'Movie recording path';
 
   @override
-  String get adminGuideDays => 'Zile de date pentru ghid';
+  String get adminGuideDays => 'Guide data days';
 
   @override
-  String get adminGuideDaysAuto => 'Automat';
+  String get adminGuideDaysAuto => 'Automatic';
 
   @override
   String adminGuideDaysValue(int days) {
-    return '$days zile';
+    return '$days days';
   }
 
   @override
-  String get adminRecordingPostProcessor =>
-      'Calea aplicației de post-procesare';
+  String get adminRecordingPostProcessor => 'Post-processing application path';
 
   @override
-  String get adminRecordingPostProcessorArgs =>
-      'Argumente pentru post-procesare';
+  String get adminRecordingPostProcessorArgs => 'Post-processor arguments';
 
   @override
-  String get adminSaveRecordingNfo =>
-      'Salvează metadatele NFO ale înregistrării';
+  String get adminSaveRecordingNfo => 'Save recording NFO metadata';
 
   @override
-  String get adminSaveRecordingImages => 'Salvează imaginile înregistrării';
+  String get adminSaveRecordingImages => 'Save recording images';
 
   @override
-  String get adminLiveTvSectionTiming => 'Sincronizare';
+  String get adminLiveTvSectionTiming => 'Timing';
 
   @override
-  String get adminLiveTvSectionPaths => 'Căi pentru înregistrări';
+  String get adminLiveTvSectionPaths => 'Recording paths';
 
   @override
-  String get adminLiveTvSectionPostProcessing => 'Post-procesare';
+  String get adminLiveTvSectionPostProcessing => 'Post-processing';
 
   @override
   String adminGuideDaysDisplay(String value) {
-    return 'Date pentru ghid: $value';
+    return 'Guide data: $value';
   }
 
   @override
@@ -6475,15 +6443,14 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminGuideProviders => 'Furnizori de ghiduri';
 
   @override
-  String get adminRefreshGuideData => 'Reîmprospătează datele ghidului';
+  String get adminRefreshGuideData => 'Refresh Guide Data';
 
   @override
-  String get adminGuideRefreshStarted =>
-      'Reîmprospătarea datelor ghidului a început';
+  String get adminGuideRefreshStarted => 'Guide data refresh started';
 
   @override
   String get adminGuideRefreshUnavailable =>
-      'Sarcina de reîmprospătare a ghidului nu este disponibilă pe acest server.';
+      'Guide refresh task is not available on this server.';
 
   @override
   String get adminAddProvider => 'Adăugați furnizorul';
@@ -6509,11 +6476,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Marjă la final: $minutes min';
+    return 'Post-padding: $minutes min';
   }
 
   @override
-  String get adminTunerDiscovery => 'Detectarea tunerelor';
+  String get adminTunerDiscovery => 'Tuner Discovery';
 
   @override
   String get adminChannelMappings => 'Mapările canalelor';
@@ -6565,13 +6532,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminLiveTvTitle => 'Administrare TV în direct';
 
   @override
-  String get adminApply => 'Aplică';
+  String get adminApply => 'Aplicați';
 
   @override
   String get adminNotSet => 'Nu setat';
 
   @override
-  String get adminReset => 'Resetează';
+  String get adminReset => 'Resetați';
 
   @override
   String get adminLogsTitle => 'Jurnalele serverului';
@@ -6617,7 +6584,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminMetadataEditorTitle => 'Editor de metadate';
 
   @override
-  String get adminMetadataIdentify => 'Identifică';
+  String get adminMetadataIdentify => 'Identify';
 
   @override
   String get adminMetadataType => 'Tip';
@@ -6902,7 +6869,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get adminReposRemove => 'Elimină';
+  String get adminReposRemove => 'Elimina';
 
   @override
   String adminReposSaveFailed(String error) {
@@ -7034,21 +7001,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminBrandingEnableSplash => 'Activați ecranul de introducere';
 
   @override
-  String get adminBrandingSplashUpload => 'Încarcă o imagine';
+  String get adminBrandingSplashUpload => 'Upload image';
 
   @override
-  String get adminBrandingSplashUploaded =>
-      'Ecranul de pornire a fost actualizat';
+  String get adminBrandingSplashUploaded => 'Splashscreen updated';
 
   @override
-  String get adminBrandingSplashUploadFailed =>
-      'Încărcarea ecranului de pornire a eșuat';
+  String get adminBrandingSplashUploadFailed => 'Failed to upload splashscreen';
 
   @override
-  String get adminBrandingSplashDeleted => 'Ecranul de pornire a fost eliminat';
+  String get adminBrandingSplashDeleted => 'Splashscreen removed';
 
   @override
-  String get adminBrandingNoSplash => 'Niciun ecran de pornire personalizat';
+  String get adminBrandingNoSplash => 'No custom splashscreen';
 
   @override
   String get adminPlaybackHwAccel => 'Accelerație hardware';
@@ -7064,123 +7029,118 @@ class AppLocalizationsRo extends AppLocalizations {
       'Activați decodarea hardware pentru:';
 
   @override
-  String get adminPlaybackQsvDevice => 'Dispozitiv QSV';
+  String get adminPlaybackQsvDevice => 'QSV device';
 
   @override
-  String get adminPlaybackEnhancedNvdec =>
-      'Activează decodorul NVDEC îmbunătățit';
+  String get adminPlaybackEnhancedNvdec => 'Enable enhanced NVDEC decoder';
 
   @override
   String get adminPlaybackPreferNativeDecoder =>
-      'Preferă decodorul hardware nativ al sistemului';
+      'Prefer system native hardware decoder';
 
   @override
-  String get adminPlaybackColorDepth =>
-      'Adâncimea de culoare la decodarea hardware';
+  String get adminPlaybackColorDepth => 'Hardware decoding color depth';
 
   @override
-  String get adminPlaybackColorDepth10Hevc => 'Decodare HEVC pe 10 biți';
+  String get adminPlaybackColorDepth10Hevc => '10-bit HEVC decoding';
 
   @override
-  String get adminPlaybackColorDepth10Vp9 => 'Decodare VP9 pe 10 biți';
+  String get adminPlaybackColorDepth10Vp9 => '10-bit VP9 decoding';
 
   @override
-  String get adminPlaybackColorDepth10HevcRext =>
-      'Decodare HEVC RExt pe 8/10 biți';
+  String get adminPlaybackColorDepth10HevcRext => 'HEVC RExt 8/10-bit decoding';
 
   @override
-  String get adminPlaybackColorDepth12HevcRext =>
-      'Decodare HEVC RExt pe 12 biți';
+  String get adminPlaybackColorDepth12HevcRext => 'HEVC RExt 12-bit decoding';
 
   @override
-  String get adminPlaybackHwEncodingSection => 'Codare hardware';
+  String get adminPlaybackHwEncodingSection => 'Hardware encoding';
 
   @override
-  String get adminPlaybackAllowHevcEncoding => 'Permite codarea HEVC';
+  String get adminPlaybackAllowHevcEncoding => 'Allow HEVC encoding';
 
   @override
-  String get adminPlaybackAllowAv1Encoding => 'Permite codarea AV1';
+  String get adminPlaybackAllowAv1Encoding => 'Allow AV1 encoding';
 
   @override
   String get adminPlaybackIntelLowPowerH264 =>
-      'Activează codorul Intel H.264 cu consum redus';
+      'Enable Intel low-power H.264 encoder';
 
   @override
   String get adminPlaybackIntelLowPowerHevc =>
-      'Activează codorul Intel HEVC cu consum redus';
+      'Enable Intel low-power HEVC encoder';
 
   @override
-  String get adminPlaybackToneMapping => 'Tone mapping';
+  String get adminPlaybackToneMapping => 'Tone Mapping';
 
   @override
-  String get adminPlaybackEnableTonemapping => 'Activează tone mapping';
+  String get adminPlaybackEnableTonemapping => 'Enable tone mapping';
 
   @override
-  String get adminPlaybackEnableVppTonemapping => 'Activează tone mapping VPP';
+  String get adminPlaybackEnableVppTonemapping => 'Enable VPP tone mapping';
 
   @override
   String get adminPlaybackEnableVtTonemapping =>
-      'Activează tone mapping VideoToolbox';
+      'Enable VideoToolbox tone mapping';
 
   @override
-  String get adminPlaybackTonemappingAlgorithm => 'Algoritm de tone mapping';
+  String get adminPlaybackTonemappingAlgorithm => 'Tone mapping algorithm';
 
   @override
-  String get adminPlaybackTonemappingMode => 'Mod de tone mapping';
+  String get adminPlaybackTonemappingMode => 'Tone mapping mode';
 
   @override
-  String get adminPlaybackTonemappingRange => 'Interval de tone mapping';
+  String get adminPlaybackTonemappingRange => 'Tone mapping range';
 
   @override
-  String get adminPlaybackTonemappingDesat => 'Desaturare la tone mapping';
+  String get adminPlaybackTonemappingDesat => 'Tone mapping desaturation';
 
   @override
-  String get adminPlaybackTonemappingPeak => 'Vârf de tone mapping';
+  String get adminPlaybackTonemappingPeak => 'Tone mapping peak';
 
   @override
-  String get adminPlaybackTonemappingParam => 'Parametru de tone mapping';
+  String get adminPlaybackTonemappingParam => 'Tone mapping parameter';
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'Luminozitate tone mapping VPP';
+      'VPP tone mapping brightness';
 
   @override
-  String get adminPlaybackVppTonemappingContrast => 'Contrast tone mapping VPP';
+  String get adminPlaybackVppTonemappingContrast => 'VPP tone mapping contrast';
 
   @override
-  String get adminPlaybackPresetsQuality => 'Presetări și calitate';
+  String get adminPlaybackPresetsQuality => 'Presets & Quality';
 
   @override
-  String get adminPlaybackEncoderPreset => 'Presetare codor';
+  String get adminPlaybackEncoderPreset => 'Encoder preset';
 
   @override
-  String get adminPlaybackH264Crf => 'CRF pentru codarea H.264';
+  String get adminPlaybackH264Crf => 'H.264 encoding CRF';
 
   @override
-  String get adminPlaybackH265Crf => 'CRF pentru codarea H.265 (HEVC)';
+  String get adminPlaybackH265Crf => 'H.265 (HEVC) encoding CRF';
 
   @override
-  String get adminPlaybackDeinterlaceMethod => 'Metodă de deinterlațare';
+  String get adminPlaybackDeinterlaceMethod => 'Deinterlace method';
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Dublează rata de cadre la deinterlațare';
+      'Double the frame rate when deinterlacing';
 
   @override
   String get adminPlaybackAudioSection => 'Audio';
 
   @override
-  String get adminPlaybackEnableAudioVbr => 'Activează codarea audio VBR';
+  String get adminPlaybackEnableAudioVbr => 'Enable audio VBR encoding';
 
   @override
-  String get adminPlaybackDownmixBoost => 'Amplificare la downmix audio';
+  String get adminPlaybackDownmixBoost => 'Audio downmix boost';
 
   @override
-  String get adminPlaybackDownmixAlgorithm => 'Algoritm de downmix stereo';
+  String get adminPlaybackDownmixAlgorithm => 'Stereo downmix algorithm';
 
   @override
-  String get adminPlaybackMaxMuxingQueue =>
-      'Dimensiunea maximă a cozii de multiplexare';
+  String get adminPlaybackMaxMuxingQueue => 'Max muxing queue size';
 
   @override
   String get adminPlaybackAutoOption => 'Auto';
@@ -7249,7 +7209,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminTrickplayPriorityAboveNormal => 'Peste Normal';
 
   @override
-  String get adminTrickplayPriorityNormal => 'Normală';
+  String get adminTrickplayPriorityNormal => 'Normal';
 
   @override
   String get adminTrickplayPriorityBelowNormal => 'Sub Normal';
@@ -7303,10 +7263,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminTaskNeverRun => 'Nu fugi niciodată';
 
   @override
-  String get adminTaskStop => 'Oprește';
+  String get adminTaskStop => 'Stop';
 
   @override
-  String get adminRunningTasks => 'Sarcini în execuție';
+  String get adminRunningTasks => 'Running Tasks';
 
   @override
   String get adminTaskRun => 'Fugi';
@@ -7376,9 +7336,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de ore',
-      few: '$count ore',
-      one: '1 oră',
+      other: '$count hours',
+      one: '1 hour',
     );
     return '$_temp0';
   }
@@ -7434,12 +7393,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}z';
+    return '${days}d';
   }
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$day/$month';
+    return '$month/$day';
   }
 
   @override
@@ -7459,44 +7418,43 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingPublicHttpPort => 'Port HTTP public';
+  String get adminNetworkingPublicHttpPort => 'Public HTTP port';
 
   @override
-  String get adminNetworkingRequireHttps => 'Solicită HTTPS';
+  String get adminNetworkingRequireHttps => 'Require HTTPS';
 
   @override
   String get adminNetworkingRequireHttpsHint =>
-      'Redirecționează toate cererile la distanță către HTTPS. Nu are efect dacă serverul nu are un certificat valid.';
+      'Redirect all remote requests to HTTPS. Has no effect if the server has no valid certificate.';
 
   @override
-  String get adminNetworkingCertPassword => 'Parola certificatului';
+  String get adminNetworkingCertPassword => 'Certificate password';
 
   @override
-  String get adminNetworkingIpSettings => 'Setări IP';
+  String get adminNetworkingIpSettings => 'IP Settings';
 
   @override
-  String get adminNetworkingEnableIpv4 => 'Activează IPv4';
+  String get adminNetworkingEnableIpv4 => 'Enable IPv4';
 
   @override
-  String get adminNetworkingEnableIpv6 => 'Activează IPv6';
+  String get adminNetworkingEnableIpv6 => 'Enable IPv6';
 
   @override
-  String get adminNetworkingAutoDiscovery =>
-      'Activează maparea automată a porturilor';
+  String get adminNetworkingAutoDiscovery => 'Enable automatic port mapping';
 
   @override
-  String get adminNetworkingLocalSubnets => 'Rețele LAN';
+  String get adminNetworkingLocalSubnets => 'LAN networks';
 
   @override
   String get adminNetworkingLocalSubnetsHint =>
-      'Listă de adrese IP sau subrețele CIDR, separate prin virgulă sau pe linii separate, considerate ca făcând parte din rețeaua locală.';
+      'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.';
 
   @override
-  String get adminNetworkingPublishedUris => 'URI-uri publicate ale serverului';
+  String get adminNetworkingPublishedUris => 'Published server URIs';
 
   @override
   String get adminNetworkingPublishedUriHint =>
-      'Asociați o subrețea sau o adresă unui URL publicat, de ex. all=https://example.com';
+      'Map a subnet or address to a published URL, e.g. all=https://example.com';
 
   @override
   String get adminNetworkingCertPath => 'Calea certificatului';
@@ -7526,11 +7484,11 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminPlaybackThrottleBuffering => 'Tampon de accelerație';
 
   @override
-  String get adminPlaybackThrottleDelay => 'Întârziere de limitare (secunde)';
+  String get adminPlaybackThrottleDelay => 'Throttle delay (seconds)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>
-      'Permite extragerea subtitrărilor în timp real';
+      'Allow subtitle extraction on the fly';
 
   @override
   String get adminResumeMinPct => 'Procentul minim de reluare';
@@ -7586,23 +7544,22 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminGeneralSlowResponseThreshold => 'Prag de răspuns lent (ms)';
 
   @override
-  String get adminGeneralEnableSlowResponse =>
-      'Activează avertismentele privind răspunsurile lente';
+  String get adminGeneralEnableSlowResponse => 'Enable slow response warnings';
 
   @override
-  String get adminGeneralQuickConnect => 'Activează Quick Connect';
+  String get adminGeneralQuickConnect => 'Enable Quick Connect';
 
   @override
   String get adminGeneralSectionServer => 'Server';
 
   @override
-  String get adminGeneralSectionMetadata => 'Metadate';
+  String get adminGeneralSectionMetadata => 'Metadata';
 
   @override
-  String get adminGeneralSectionPaths => 'Căi';
+  String get adminGeneralSectionPaths => 'Paths';
 
   @override
-  String get adminGeneralSectionPerformance => 'Performanță';
+  String get adminGeneralSectionPerformance => 'Performance';
 
   @override
   String get adminGeneralCachePath => 'Calea cache';
@@ -7614,7 +7571,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminGeneralServerName => 'Numele serverului';
 
   @override
-  String get adminGeneralDisplayLanguage => 'Limba de afișare preferată';
+  String get adminGeneralDisplayLanguage => 'Preferred display language';
 
   @override
   String get adminSettingsLoadFailed => 'Nu s-au încărcat setările';
@@ -7666,8 +7623,7 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# de participanți',
-      few: '# participanți',
+      other: '# participants',
       one: '# participant',
     );
     return '$_temp0';
@@ -7814,9 +7770,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# de rânduri descoperite',
-      few: '# rânduri descoperite',
-      one: '# rând descoperit',
+      other: '# rows discovered',
+      one: '# row discovered',
     );
     return '$_temp0';
   }
@@ -7857,20 +7812,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get offlineSavedMedia => 'Media salvate';
 
   @override
-  String get offlineBannerTitle => 'Sunteți offline';
+  String get offlineBannerTitle => 'You\'re offline';
 
   @override
-  String get offlineBannerSubtitle => 'Se afișează descărcările dvs.';
+  String get offlineBannerSubtitle => 'Showing your downloads';
 
   @override
-  String get offlineBannerAction => 'Descărcări';
+  String get offlineBannerAction => 'Downloads';
 
   @override
-  String get serverUnreachableBannerTitle => 'Serverul nu poate fi contactat';
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
 
   @override
   String get serverUnreachableBannerSubtitle =>
-      'Se redă din descărcări până când revine';
+      'Playing from downloads until it\'s back';
 
   @override
   String get castGoogleCast => 'Google Cast';
@@ -7943,42 +7898,42 @@ class AppLocalizationsRo extends AppLocalizations {
   String get pinForgot => 'Ați uitat codul PIN?';
 
   @override
-  String get pinClear => 'Golește';
+  String get pinClear => 'Clar';
 
   @override
   String get pinBackspace => 'Backspace';
 
   @override
   String get quickConnectAuthorized =>
-      'Cererea Quick Connect a fost autorizată.';
+      'Solicitare de conectare rapidă autorizată.';
 
   @override
   String get quickConnectInvalidOrExpired =>
-      'Codul Quick Connect este invalid sau a expirat.';
+      'Codul de conectare rapidă este invalid sau a expirat.';
 
   @override
   String get quickConnectNotSupported =>
-      'Quick Connect nu este acceptat pe acest server.';
+      'Conectarea rapidă nu este acceptată pe acest server.';
 
   @override
   String get quickConnectAuthorizeFailed =>
-      'Autorizarea codului Quick Connect a eșuat.';
+      'Nu s-a putut autoriza codul de conectare rapidă.';
 
   @override
   String get quickConnectDisabled =>
-      'Quick Connect este dezactivat pe acest server.';
+      'Conectarea rapidă este dezactivată pe acest server.';
 
   @override
   String get quickConnectForbidden =>
-      'Contul dvs. nu poate autoriza această cerere Quick Connect.';
+      'Contul dvs. nu poate autoriza această solicitare de conectare rapidă.';
 
   @override
   String get quickConnectNotFound =>
-      'Codul Quick Connect nu a fost găsit. Încercați un cod nou.';
+      'Codul de conectare rapidă nu a fost găsit. Încercați un cod nou.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect a eșuat: $message';
+    return 'Conectarea rapidă a eșuat: $message';
   }
 
   @override
@@ -8146,7 +8101,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get stillWatchingContent => 'Redarea a fost întreruptă. Încă te uiți?';
 
   @override
-  String get stillWatchingStop => 'Oprește';
+  String get stillWatchingStop => 'Stop';
 
   @override
   String get stillWatchingContinue => 'Continua';
@@ -8231,13 +8186,13 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get contextMenuHideFromContinueWatching =>
-      'Ascunde din „Continuați vizionarea”';
+      'Hide from Continue Watching';
 
   @override
-  String get contextMenuHideFromNextUp => 'Ascunde din „Urmează”';
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
 
   @override
-  String get contextMenuAddToCollection => 'Adaugă în colecție';
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -8292,15 +8247,14 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAlphabetical => 'Alfabetic';
 
   @override
-  String get settingsConnectionSection => 'CONEXIUNE';
+  String get settingsConnectionSection => 'CONNECTION';
 
   @override
-  String get settingsAllowSelfSignedCerts =>
-      'Permite certificatele autosemnate';
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
 
   @override
   String get settingsAllowSelfSignedCertsSubtitle =>
-      'Aveți încredere în serverele care folosesc certificate TLS autosemnate sau emise de o autoritate privată. Activați doar pentru serverele pe care le controlați. Această opțiune dezactivează validarea certificatelor pentru toate conexiunile.';
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
 
   @override
   String get settingsPrivacyAndSafetySection =>
@@ -8317,11 +8271,11 @@ class AppLocalizationsRo extends AppLocalizations {
       'Accente teme, fundaluri, indicatori vizionați și muzică tematică';
 
   @override
-  String get settingsDetailsScreen => 'Ecranul de detalii';
+  String get settingsDetailsScreen => 'Details Screen';
 
   @override
   String get settingsDetailsScreenSubtitle =>
-      'Stil, estomparea fundalului și comportamentul filelor';
+      'Style, background blur, and tab behavior';
 
   @override
   String get settingsHomePage => 'Pagina principală';
@@ -8359,11 +8313,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Afișează butonul Seerr în bara de navigare';
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Afișează mereu etichetele text în bara de navigare de sus';
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8467,9 +8421,8 @@ class AppLocalizationsRo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# de notificări de licență',
-      few: '# notificări de licență',
-      one: '# notificare de licență',
+      other: '# license notices',
+      one: '# license notice',
     );
     return '$_temp0';
   }
@@ -8519,17 +8472,16 @@ class AppLocalizationsRo extends AppLocalizations {
       'Sari peste introsuri si versiuni suplimentare?';
 
   @override
-  String get settingsMediaSegmentCountdown =>
-      'Numărătoare inversă pentru segmentele media';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => 'Bară de progres';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => 'Cronometru';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'Fără';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'Prompt utilizator';
@@ -8666,7 +8618,7 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get settingsLiveTvDirect => 'TV în direct (direct)';
+  String get settingsLiveTvDirect => 'Live TV Direct';
 
   @override
   String get settingsLiveTvDirectSubtitle =>
@@ -8758,7 +8710,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return '$libraryName lansate recent';
+    return 'Recently Released $libraryName';
   }
 
   @override
@@ -8790,11 +8742,11 @@ class AppLocalizationsRo extends AppLocalizations {
       'Forțați redarea fără tunel. Util pe dispozitive cu discontinuități audio/video de tunel.';
 
   @override
-  String get enableTunnelingTitle => 'Activează tunelarea';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Opțiune avansată. Direcționează sunetul și imaginea printr-o cale hardware cuplată. Este dezactivată implicit deoarece provoacă întreruperi audio/video pe unele dispozitive.';
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title => 'Hartați Dolby Vision profilul 7 la HEVC';
@@ -8820,15 +8772,14 @@ class AppLocalizationsRo extends AppLocalizations {
       'Aplicați indicii privind dimensiunea fontului încorporate în pista de subtitrare. Dezactivați utilizarea dimensiunii subtitrarilor din preferințele dvs. de stil.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Afișează detaliile media';
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Afișează detaliile elementului selectat în partea de sus a paginilor de bibliotecă.';
+      'Show details of the selected item at the top of Library pages.';
 
   @override
-  String get hideBackdropsInLibraries =>
-      'Ascundeți fundalurile în timpul navigării?';
+  String get hideBackdropsInLibraries => 'Hide Backdrops while Browsing?';
 
   @override
   String get useDetailedSubHeadings => 'Utilizați subtitluri detaliate';
@@ -8846,39 +8797,37 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get themeStore => 'Magazin de teme';
+  String get themeStore => 'Theme Store';
 
   @override
-  String get themeStoreSubtitle =>
-      'Descoperiți și salvați teme create de comunitate';
+  String get themeStoreSubtitle => 'Browse and save community themes';
 
   @override
   String get themeStoreDescription =>
-      'Salvați o temă pentru a o folosi ca pe celelalte teme salvate.';
+      'Save a theme to use it like your other saved themes.';
 
   @override
-  String get themeStoreEmpty => 'Momentan nu este disponibilă nicio temă.';
+  String get themeStoreEmpty => 'No themes are available right now.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Magazinul de teme nu a putut fi încărcat. Verificați conexiunea și încercați din nou.';
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
 
   @override
-  String get themeStoreSave => 'Salvează';
+  String get themeStoreSave => 'Save';
 
   @override
-  String get themeStoreSaveAndApply => 'Salvează și aplică';
+  String get themeStoreSaveAndApply => 'Save & apply';
 
   @override
-  String get themeStoreSaved => 'Salvată';
+  String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage =>
-      'Această temă nu a putut fi încărcată.';
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return '„$themeName” a fost salvată.';
+    return 'Saved \"$themeName\".';
   }
 
   @override
@@ -8915,609 +8864,597 @@ class AppLocalizationsRo extends AppLocalizations {
       'Gestionați temele de plugin descărcate pe acest dispozitiv';
 
   @override
-  String get themeEditor => 'Editor de teme';
+  String get themeEditor => 'Theme Editor';
 
   @override
   String get themeEditorSubtitle =>
-      'Deschideți editorul de teme Moonfin în browser';
+      'Open the Moonfin Theme Editor in your browser';
 
   @override
-  String get homeScreen => 'Ecran principal';
+  String get homeScreen => 'Home Screen';
 
   @override
-  String get bottomBar => 'Bară inferioară';
+  String get bottomBar => 'Bottom Bar';
 
   @override
-  String get homeRowsStyleClassic => 'Clasic';
+  String get homeRowsStyleClassic => 'Classic';
 
   @override
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => 'Rânduri pe ecranul principal';
+  String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => 'Afișarea rândurilor de pe ecranul principal';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => 'Secțiunile rândurilor de pe ecranul principal';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles =>
-      'Comutatoare pentru rândurile de pe ecranul principal';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Activați sau dezactivați categoriile de rânduri bazate pe biblioteci';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
-      'Activați comutatoarele de mai jos pentru a afișa rândurile în secțiunile ecranului principal.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';
 
   @override
   String get rowsTypeDescription =>
-      'Modul Clasic păstrează tipul de imagine și suprapunerea cu informații pentru fiecare rând. Modul Modern folosește rânduri de la portret la fundal.';
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
 
   @override
-  String get displayFavoritesRows => 'Afișează rândurile cu favorite';
+  String get displayFavoritesRows => 'Display Favorites Rows';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Afișează filmele și serialele favorite, precum și celelalte rânduri cu favorite, în secțiunile ecranului principal.';
+      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
 
   @override
-  String get favoritesRowSorting => 'Sortarea rândurilor cu favorite';
+  String get favoritesRowSorting => 'Favorites Row Sorting';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sortați rândurile cu favorite după data adăugării, data lansării, alfabetic și după alte criterii.';
+      'Sort Favorites rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayCollectionsRows => 'Afișează rândurile cu colecții';
+  String get displayCollectionsRows => 'Display Collections Rows';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Afișează rândurile cu colecții în secțiunile ecranului principal.';
+      'Show Collections rows in Home Sections.';
 
   @override
-  String get collectionsRowSorting => 'Sortarea rândurilor cu colecții';
+  String get collectionsRowSorting => 'Collections Row Sorting';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sortați rândurile cu colecții după data adăugării, data lansării, alfabetic și după alte criterii.';
+      'Sort Collections rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayGenresRows => 'Afișează rândurile cu genuri';
+  String get displayGenresRows => 'Display Genres Rows';
 
   @override
-  String get displayGenresRowsSubtitle =>
-      'Afișează rândurile cu genuri în secțiunile ecranului principal.';
+  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
 
   @override
-  String get genresRowSorting => 'Sortarea rândurilor cu genuri';
+  String get genresRowSorting => 'Genres Row Sorting';
 
   @override
   String get genresRowSortingDescription =>
-      'Sortați rândurile cu genuri după data adăugării, data lansării, alfabetic și după alte criterii.';
+      'Sort Genres rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get genresRowItems => 'Elementele rândurilor cu genuri';
+  String get genresRowItems => 'Genres Row Items';
 
   @override
   String get genresRowItemsDescription =>
-      'Afișați filme, seriale sau ambele în rândurile cu genuri.';
+      'Show Movies, Series, or both in Genres rows.';
 
   @override
-  String get displayPlaylistsRows => 'Afișează rândurile cu liste de redare';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Afișează rândurile cu liste de redare în secțiunile ecranului principal.';
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => 'Sortarea rândurilor cu liste de redare';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sortați rândurile cu liste de redare după data adăugării, data lansării, alfabetic și după alte criterii.';
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displayAudioRows => 'Afișează rândurile audio';
+  String get displayAudioRows => 'Display Audio Rows';
 
   @override
-  String get displayAudioRowsSubtitle =>
-      'Afișează rândurile audio în secțiunile ecranului principal.';
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
 
   @override
-  String get audioRowsSorting => 'Sortarea rândurilor audio';
+  String get audioRowsSorting => 'Audio Rows sorting';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sortați rândurile audio după data adăugării, data lansării, alfabetic și după alte criterii.';
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get audioPlaylists => 'Liste de redare audio';
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get appearance => 'Aspect';
+  String get appearance => 'Appearance';
 
   @override
-  String get layout => 'Aranjament';
+  String get layout => 'Layout';
 
   @override
-  String get theme => 'Temă';
+  String get theme => 'Theme';
 
   @override
-  String get keyboard => 'Tastatură';
+  String get keyboard => 'Keyboard';
 
   @override
-  String get navButtons => 'Butoane';
+  String get navButtons => 'Buttons';
 
   @override
-  String get rendering => 'Randare';
+  String get rendering => 'Rendering';
 
   @override
-  String get mpvConfiguration => 'Configurare MPV';
+  String get mpvConfiguration => 'MPV configuration';
 
   @override
   String get cardSize => 'Card Size';
 
   @override
-  String get externalPlayerApp => 'Aplicație player extern';
+  String get externalPlayerApp => 'External player app';
 
   @override
   String get externalPlayerAppDescription =>
-      'Setați un player extern pentru a activa opțiunea de redare la apăsare lungă';
+      'Set external player to enable long-press play option';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Afișează selectorul de aplicații la începerea redării.';
+      'Show app chooser when playback starts.';
 
   @override
-  String get loadingInstalledPlayers => 'Se încarcă playerele instalate...';
+  String get loadingInstalledPlayers => 'Loading installed players...';
 
   @override
-  String get connection => 'Conexiune';
+  String get connection => 'Connection';
 
   @override
-  String get audioTranscodeTarget => 'Format țintă pentru transcodarea audio';
+  String get audioTranscodeTarget => 'Audio Transcode Target';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Acceptat pe acest dispozitiv';
+  String get supportedOnThisDevice => 'Supported on this device';
 
   @override
-  String get notSupportedOnThisDevice => 'Neacceptat pe acest dispozitiv';
+  String get notSupportedOnThisDevice => 'Not Supported on this device';
 
   @override
   String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Trimite DTS:X (DTS UHD) ca bitstream către decodorul extern.';
+      'Bitstream DTS:X (DTS UHD) to external decoder.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD cu Atmos (JOC) Passthrough';
+      'TrueHD with Atmos (JOC) Passthrough';
 
   @override
-  String get mediaPlayerBehavior => 'Comportamentul playerului media';
+  String get mediaPlayerBehavior => 'Media Player Behavior';
 
   @override
-  String get playbackEnhancements => 'Îmbunătățiri ale redării';
+  String get playbackEnhancements => 'Playback Enhancements';
 
   @override
-  String get alwaysOn => 'Întotdeauna activ.';
+  String get alwaysOn => 'Always on.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Înlocuiește „Sari peste generic” cu afișarea „Urmează”';
+      'Replace Skip Outro with Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Afișează suprapunerea „Urmează” în locul butonului „Sari peste generic”.';
+      'Show the Next Up overlay instead of the Skip Outro button.';
 
   @override
-  String get playerRouting => 'Direcționarea playerului';
+  String get playerRouting => 'Player Routing';
 
   @override
-  String get preferSoftwareDecoders => 'Preferă decodoarele software';
+  String get preferSoftwareDecoders => 'Prefer software decoders';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Folosește FFmpeg (audio) și libgav1 (AV1) înaintea decodoarelor hardware. Dezactivați dacă passthrough-ul audio HDMI nu funcționează.';
+      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
 
   @override
   String get useExternalPlayer => 'Use external player';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Deschide redarea video în aplicația externă selectată, pe Android TV.';
+      'Open video playback in your selected external app on Android TV.';
 
   @override
-  String get automaticQueuing => 'Adăugare automată în coadă';
+  String get automaticQueuing => 'Automatic Queuing';
 
   @override
-  String get preferSdhSubtitles => 'Preferă subtitrările SDH';
+  String get preferSdhSubtitles => 'Prefer SDH subtitles';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritizează pistele de subtitrare SDH/CC la selectarea automată.';
+      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
 
   @override
-  String get webDiagnostics => 'Diagnosticare web';
+  String get webDiagnostics => 'Web diagnostics';
 
   @override
-  String get webDiagnosticsTitle => 'Diagnosticare web Moonfin';
+  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
 
   @override
   String get webDiagnosticsIntro =>
-      'Folosiți această pagină pentru a diagnostica problemele de conectivitate ale browserului (CORS, conținut mixt și setări de descoperire).';
+      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'A fost detectată o eroare de conținut mixt';
+      'Detected Mixed-Content Failure';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'A fost detectată o eroare CORS/preflight';
+      'Detected CORS/Preflight Failure';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin a detectat o pagină HTTPS care încearcă să apeleze un URL de server HTTP. Browserele blochează această cerere înainte să ajungă la server.';
+      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin a detectat o eroare de cerere la nivel de browser, cauzată de obicei de lipsa antetelor CORS sau preflight de pe serverul media.';
+      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'URL țintă: $url';
+    return 'Target URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detaliu: $detail';
+    return 'Detail: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext =>
-      'Contextul curent de execuție';
+  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
 
   @override
-  String get webDiagnosticsOrigin => 'Origine';
+  String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => 'Schemă';
+  String get webDiagnosticsScheme => 'Scheme';
 
   @override
-  String get webDiagnosticsPluginMode => 'Mod plugin';
+  String get webDiagnosticsPluginMode => 'Plugin Mode';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'Scanare WebRTC';
+  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'URL de server forțat';
+  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'URL de server implicit';
+  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'URL proxy pentru descoperire';
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
 
   @override
-  String get notConfigured => 'neconfigurat';
+  String get notConfigured => 'not configured';
 
   @override
-  String get webDiagnosticsMixedContent => 'Conținut mixt';
+  String get webDiagnosticsMixedContent => 'Mixed Content';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'Această pagină este încărcată prin HTTPS, dar unul sau mai multe URL-uri configurate folosesc HTTP. Browserele blochează apelurile către API-uri HTTP din pagini HTTPS.';
+      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Soluție: serviți serverul media sau punctul final proxy prin HTTPS ori încărcați Moonfin prin HTTP doar în rețele locale de încredere.';
+      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'Nu a fost detectată nicio configurație evidentă de conținut mixt în setările curente de execuție.';
+      'No obvious mixed-content configuration detected from current runtime settings.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'Listă de verificare CORS';
+  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Permiteți originea browserului în Access-Control-Allow-Origin.';
+      '• Allow the browser origin in Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Includeți Authorization, X-Emby-Authorization și X-Emby-Token în Access-Control-Allow-Headers.';
+      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expuneți Content-Range și Accept-Ranges pentru streaming și derulare.';
+      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Returnați 204 la cererile preflight OPTIONS.';
+      '• Return 204 to OPTIONS preflight requests.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Exemplu de fragment de antet (stil nginx)';
+      'Example Header Snippet (nginx-style)';
 
   @override
-  String get note => 'Notă';
+  String get note => 'Note';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'Această rută de diagnosticare este destinată versiunilor web. Dacă o vedeți pe altă platformă, este posibil ca aceste verificări să nu se aplice.';
+      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
 
   @override
-  String get backToServerSelect => 'Înapoi la selectarea serverului';
+  String get backToServerSelect => 'Back To Server Select';
 
   @override
-  String get signOutAllUsers => 'Deconectează toți utilizatorii';
+  String get signOutAllUsers => 'Sign Out All Users';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Permisiunea pentru microfon este refuzată definitiv. Activați-o din setările sistemului.';
+      'Microphone permission is permanently denied. Enable it in system settings.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Căutarea vocală necesită permisiunea pentru microfon.';
+      'Microphone permission is required for voice search.';
 
   @override
-  String get voiceSearchNoMatch => 'Nu am înțeles. Încercați din nou.';
+  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'Nu a fost detectată nicio voce.';
+  String get voiceSearchNoSpeechDetected => 'No speech detected.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Eroare de microfon.';
+  String get voiceSearchMicrophoneError => 'Microphone error.';
 
   @override
-  String get voiceSearchNeedsInternet =>
-      'Căutarea vocală necesită conexiune la internet.';
+  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
 
   @override
-  String get voiceSearchServiceBusy =>
-      'Serviciul vocal este ocupat. Încercați din nou.';
+  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Permisiunea pentru microfon este refuzată definitiv.';
+      'Microphone permission is permanently denied.';
 
   @override
-  String get microphonePermissionDenied =>
-      'Permisiunea pentru microfon este refuzată.';
+  String get microphonePermissionDenied => 'Microphone permission is denied.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Recunoașterea vocală nu este disponibilă pe acest dispozitiv.';
+      'Speech recognition is unavailable on this device.';
 
   @override
-  String get openIosRoutePicker => 'Deschide selectorul de rute iOS';
+  String get openIosRoutePicker => 'Open iOS route picker';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'Selectorul de rute AirPlay nu este disponibil pe acest dispozitiv.';
+      'AirPlay route picker is unavailable on this device.';
 
   @override
-  String get videos => 'Videoclipuri';
+  String get videos => 'Videos';
 
   @override
-  String get programs => 'Programe';
+  String get programs => 'Programs';
 
   @override
-  String get songs => 'Melodii';
+  String get songs => 'Songs';
 
   @override
-  String get photoAlbums => 'Albume foto';
+  String get photoAlbums => 'Photo Albums';
 
   @override
-  String get photos => 'Fotografii';
+  String get photos => 'Photos';
 
   @override
-  String get people => 'Persoane';
+  String get people => 'People';
 
   @override
-  String get recentlyReleasedEpisodes => 'Episoade lansate recent';
+  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
 
   @override
-  String get watchAgain => 'Vizionează din nou';
+  String get watchAgain => 'Watch Again';
 
   @override
-  String get guestAppearances => 'Apariții ca invitat';
+  String get guestAppearances => 'Guest Appearances';
 
   @override
-  String get appearancesSeerr => 'Apariții (Seerr)';
+  String get appearancesSeerr => 'Appearances (Seerr)';
 
   @override
-  String get crewContributionsSeerr =>
-      'Contribuții în echipa de producție (Seerr)';
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
 
   @override
-  String get watchWithGroup => 'Vizionează cu grupul';
+  String get watchWithGroup => 'Watch with group';
 
   @override
-  String get errors => 'Erori';
+  String get errors => 'Errors';
 
   @override
-  String get warnings => 'Avertismente';
+  String get warnings => 'Warnings';
 
   @override
-  String get disk => 'Disc';
+  String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Deschide în browser';
+  String get openInBrowser => 'Open in Browser';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Browserul încorporat nu este disponibil pe această platformă.';
+      'Embedded browser is not available on this platform.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Sigur doriți să reporniți serverul?';
+      'Are you sure you want to restart the server?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Sigur doriți să opriți serverul? Va trebui să îl reporniți manual.';
+      'Are you sure you want to shut down the server? You will need to restart it manually.';
 
   @override
-  String get internal => 'Intern';
+  String get internal => 'Internal';
 
   @override
-  String get idle => 'Inactiv';
+  String get idle => 'Idle';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'Niciun utilizator găsit';
+  String get adminNoUsersFound => 'No users found';
 
   @override
-  String get adminNoUsersMatchSearch =>
-      'Niciun utilizator nu corespunde căutării';
+  String get adminNoUsersMatchSearch => 'No users match your search';
 
   @override
-  String get adminNoDevicesFound => 'Niciun dispozitiv găsit';
+  String get adminNoDevicesFound => 'No devices found';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'Niciun dispozitiv nu corespunde filtrelor curente';
+      'No devices match the current filters';
 
   @override
-  String get passwordSet => 'Parolă setată';
+  String get passwordSet => 'Password set';
 
   @override
-  String get noPasswordConfigured => 'Nicio parolă configurată';
+  String get noPasswordConfigured => 'No password configured';
 
   @override
-  String get remoteAccess => 'Acces la distanță';
+  String get remoteAccess => 'Remote Access';
 
   @override
-  String get localOnly => 'Doar local';
+  String get localOnly => 'Local Only';
 
   @override
-  String get adminMediaAnalyticsLoadFailed =>
-      'Încărcarea analizelor media a eșuat';
+  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Analize combinate din toate bibliotecile media.';
+      'Combined analytics across all media libraries.';
 
   @override
-  String get analyticsTopArtists => 'Artiști de top';
+  String get analyticsTopArtists => 'Top Artists';
 
   @override
-  String get analyticsTopAuthors => 'Autori de top';
+  String get analyticsTopAuthors => 'Top Authors';
 
   @override
-  String get analyticsTopContributors => 'Contribuitori de top';
+  String get analyticsTopContributors => 'Top Contributors';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count de Biblioteci',
-      few: '$count Biblioteci',
-      one: '1 Bibliotecă',
+      other: '$count Libraries',
+      one: '1 Library',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'Nu sunt încă disponibile totaluri de conținut media indexat pentru această selecție.';
+      'No indexed media totals are available for this selection yet.';
 
   @override
-  String get analyticsLibraryDetails => 'Detalii despre bibliotecă';
+  String get analyticsLibraryDetails => 'Library Details';
 
   @override
-  String get analyticsLibraryBreakdown => 'Defalcare pe biblioteci';
+  String get analyticsLibraryBreakdown => 'Library Breakdown';
 
   @override
-  String get analyticsNoLibrariesAvailable =>
-      'Nu este disponibilă nicio bibliotecă.';
+  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
 
   @override
-  String get adminServerAdministrationTitle => 'Administrarea serverului';
+  String get adminServerAdministrationTitle => 'Server Administration';
 
   @override
-  String get adminServerPathData => 'Date';
+  String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => 'Cache de imagini';
+  String get adminServerPathImageCache => 'Image Cache';
 
   @override
   String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => 'Jurnale';
+  String get adminServerPathLogs => 'Logs';
 
   @override
-  String get adminServerPathMetadata => 'Metadate';
+  String get adminServerPathMetadata => 'Metadata';
 
   @override
-  String get adminServerPathTranscode => 'Transcodare';
+  String get adminServerPathTranscode => 'Transcode';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
   String get adminNoServerPathsReturned =>
-      'Acest server nu a returnat nicio cale.';
+      'No server paths returned by this server.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% utilizat';
+    return '$percent% used';
   }
 
   @override
-  String get userActivity => 'Activitatea utilizatorilor';
+  String get userActivity => 'User Activity';
 
   @override
-  String get systemEvents => 'Evenimente de sistem';
+  String get systemEvents => 'System Events';
 
   @override
-  String get needsAttention => 'Necesită atenție';
+  String get needsAttention => 'Needs Attention';
 
   @override
   String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => 'Redare';
+  String get adminDrawerSectionPlayback => 'Playback';
 
   @override
-  String get adminDrawerSectionDevices => 'Dispozitive';
+  String get adminDrawerSectionDevices => 'Devices';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Avansat';
+  String get adminDrawerSectionAdvanced => 'Advanced';
 
   @override
-  String get adminDrawerSectionPlugins => 'Pluginuri';
+  String get adminDrawerSectionPlugins => 'Plugins';
 
   @override
-  String get adminDrawerSectionLiveTv => 'TV în direct';
+  String get adminDrawerSectionLiveTv => 'Live TV';
 
   @override
-  String get homeVideos => 'Videoclipuri personale';
+  String get homeVideos => 'Home Videos';
 
   @override
-  String get mixedContent => 'Conținut mixt';
+  String get mixedContent => 'Mixed Content';
 
   @override
-  String get homeVideosAndPhotos => 'Videoclipuri și fotografii personale';
+  String get homeVideosAndPhotos => 'Home Videos & Photos';
 
   @override
-  String get mixedMoviesAndShows => 'Filme și seriale mixte';
+  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -9529,150 +9466,150 @@ class AppLocalizationsRo extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'Nicio înregistrare găsită';
+  String get noRecordingsFound => 'No recordings found';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'Nu au fost găsite pagini imagine în arhiva .$extension.';
+    return 'No image pages found inside .$extension archive.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Randarea încorporată a eșuat ($code): $description';
+    return 'Embedded renderer failed ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'Randarea EPUB a eșuat ($code): $description';
+    return 'EPUB renderer failed ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Lipsește fișierul local pentru cititor: $uri';
+    return 'Missing local file for reader: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status la deschiderea datelor cărții din $uri';
+    return 'HTTP $status while opening book data from $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'Nu este disponibil niciun punct final pentru citirea cărții';
+      'No readable book endpoint available';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Format de arhivă de benzi desenate neacceptat: .$extension';
+    return 'Unsupported comic archive format: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'Pluginul de extragere CBR nu este disponibil pe această platformă.';
+      'CBR extraction plugin is not available on this platform.';
 
   @override
-  String get failedToExtractCbrArchive => 'Extragerea arhivei .cbr a eșuat.';
+  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'Extragerea CB7 nu este disponibilă pe această platformă.';
+      'CB7 extraction is not available on this platform.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'Pluginul de extragere CB7 nu este disponibil pe această platformă.';
+      'CB7 extraction plugin is not available on this platform.';
 
   @override
-  String get closeGenrePanel => 'Închide panoul cu genuri';
+  String get closeGenrePanel => 'Close genre panel';
 
   @override
-  String get loadingShuffle => 'Se încarcă redarea aleatorie...';
+  String get loadingShuffle => 'Loading shuffle...';
 
   @override
-  String get libraryShuffleLabel => 'REDARE ALEATORIE DIN BIBLIOTECĂ';
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
 
   @override
-  String get randomShuffleLabel => 'REDARE ALEATORIE';
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
 
   @override
-  String get genresShuffleLabel => 'REDARE ALEATORIE PE GENURI';
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Comutare automată HDR';
+  String get autoHdrSwitching => 'Auto HDR Switching';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Activează automat HDR la redarea videoclipurilor HDR și restabilește modul de afișare la ieșire.';
+      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
 
   @override
-  String get whenFullscreen => 'Pe ecran complet';
+  String get whenFullscreen => 'When fullscreen';
 
   @override
-  String get changeArtwork => 'Schimbă imaginea';
+  String get changeArtwork => 'Change Artwork';
 
   @override
-  String get missing => 'Lipsă';
+  String get missing => 'Missing';
 
   @override
-  String get transcodingLimits => 'Limite de transcodare';
+  String get transcodingLimits => 'Transcoding Limits';
 
   @override
-  String get clearAllArtworkButton => 'Ștergeți toate imaginile?';
+  String get clearAllArtworkButton => 'Clear all artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Sigur doriți să ștergeți toate imaginile descărcate?';
+      'Are you sure you want to clear all downloaded artwork?';
 
   @override
-  String get confirmClear => 'Confirmați ștergerea';
+  String get confirmClear => 'Confirm Clear';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Sigur doriți să ștergeți imaginea de tip $itemType?';
+    return 'Are you sure you would like to clear this $itemType?';
   }
 
   @override
-  String get uploadButton => 'Încărcați?';
+  String get uploadButton => 'Upload?';
 
   @override
-  String get resolutionLabel => 'Rezoluție: ';
+  String get resolutionLabel => 'Resolution: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Afișează doar imaginile în limba interfeței';
+      'Only show artwork in interface language';
 
   @override
-  String get confirmClearAll => 'Confirmați ștergerea tuturor';
+  String get confirmClearAll => 'Confirm Clear All';
 
   @override
-  String get imageUploadSuccess => 'Imaginea a fost încărcată cu succes!';
+  String get imageUploadSuccess => 'Image uploaded successfully!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Încărcarea imaginii a eșuat: $error';
+    return 'Failed to upload image: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Setarea imaginii a eșuat: $error';
+    return 'Failed to set image: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Ștergerea imaginii a eșuat: $error';
+    return 'Failed to delete image: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Ștergerea tuturor imaginilor a eșuat: $error';
+    return 'Failed to clear all artwork: $error';
   }
 
   @override
-  String get yes => 'Da';
+  String get yes => 'Yes';
 
   @override
   String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'Fundaluri';
+  String get backdropsCategory => 'Backdrops';
 
   @override
   String get bannerCategory => 'Banner';
@@ -9681,31 +9618,31 @@ class AppLocalizationsRo extends AppLocalizations {
   String get logoCategory => 'Logo';
 
   @override
-  String get thumbnailCategory => 'Miniatură';
+  String get thumbnailCategory => 'Thumbnail';
 
   @override
-  String get artCategory => 'Grafică';
+  String get artCategory => 'Art';
 
   @override
-  String get discArtCategory => 'Grafică de disc';
+  String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'Captură de ecran';
+  String get screenshotCategory => 'Screenshot';
 
   @override
-  String get boxCoverCategory => 'Copertă cutie';
+  String get boxCoverCategory => 'Box Cover';
 
   @override
-  String get boxRearCoverCategory => 'Coperta din spate a cutiei';
+  String get boxRearCoverCategory => 'Box Rear Cover';
 
   @override
-  String get menuArtCategory => 'Grafică de meniu';
+  String get menuArtCategory => 'Menu Art';
 
   @override
   String get confirmItemPoster => 'poster';
 
   @override
-  String get confirmItemBackdrop => 'fundal';
+  String get confirmItemBackdrop => 'backdrop';
 
   @override
   String get confirmItemBanner => 'banner';
@@ -9714,114 +9651,114 @@ class AppLocalizationsRo extends AppLocalizations {
   String get confirmItemLogo => 'logo';
 
   @override
-  String get confirmItemThumbnail => 'miniatură';
+  String get confirmItemThumbnail => 'thumbnail';
 
   @override
-  String get confirmItemArt => 'grafică';
+  String get confirmItemArt => 'art';
 
   @override
-  String get confirmItemDiscArt => 'grafică de disc';
+  String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'captură de ecran';
+  String get confirmItemScreenshot => 'screenshot';
 
   @override
-  String get confirmItemBoxCover => 'copertă cutie';
+  String get confirmItemBoxCover => 'box cover';
 
   @override
-  String get confirmItemBoxRearCover => 'coperta din spate a cutiei';
+  String get confirmItemBoxRearCover => 'box rear cover';
 
   @override
-  String get confirmItemMenuArt => 'grafică de meniu';
+  String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'Toate';
+  String get resolutionAll => 'All';
 
   @override
-  String get resolutionHigh => 'Înaltă (1080p+)';
+  String get resolutionHigh => 'High (1080p+)';
 
   @override
-  String get resolutionMedium => 'Medie (720p)';
+  String get resolutionMedium => 'Medium (720p)';
 
   @override
-  String get resolutionLow => 'Scăzută (<720p)';
+  String get resolutionLow => 'Low (<720p)';
 
   @override
-  String get sources => 'Surse';
+  String get sources => 'Sources';
 
   @override
-  String get audiobookChapters => 'Capitole';
+  String get audiobookChapters => 'Chapters';
 
   @override
-  String get audiobookBookmarks => 'Marcaje';
+  String get audiobookBookmarks => 'Bookmarks';
 
   @override
-  String get audiobookNotes => 'Notițe';
+  String get audiobookNotes => 'Notes';
 
   @override
-  String get audiobookQueue => 'Coadă';
+  String get audiobookQueue => 'Queue';
 
   @override
-  String get audiobookTimeline => 'Cronologie';
+  String get audiobookTimeline => 'Timeline';
 
   @override
-  String get audiobookTimelineEmpty => 'Cronologia este goală';
+  String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Toată cartea';
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
-  String get audiobookFocusedTimeline => 'Cronologie focalizată';
+  String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
-  String get audiobookExportBookmarks => 'Exportă marcajele';
+  String get audiobookExportBookmarks => 'Export Bookmarks';
 
   @override
-  String get audiobookExportNotes => 'Exportă notițele';
+  String get audiobookExportNotes => 'Export Notes';
 
   @override
-  String get audiobookExportAll => 'Exportă tot';
+  String get audiobookExportAll => 'Export All';
 
   @override
   String audiobookExportSuccess(String path) {
-    return 'Exportat în $path';
+    return 'Exported to $path';
   }
 
   @override
   String audiobookExportFailed(String error) {
-    return 'Exportul a eșuat: $error';
+    return 'Export failed: $error';
   }
 
   @override
-  String get audiobookLyrics => 'Versuri';
+  String get audiobookLyrics => 'Lyrics';
 
   @override
-  String get audiobookAddBookmark => 'Adaugă un marcaj';
+  String get audiobookAddBookmark => 'Add bookmark';
 
   @override
-  String get audiobookAddNote => 'Adaugă o notiță';
+  String get audiobookAddNote => 'Add note';
 
   @override
-  String get audiobookEditNote => 'Editează notița';
+  String get audiobookEditNote => 'Edit note';
 
   @override
-  String get audiobookNoteHint => 'Scrieți o notiță pentru acest moment';
+  String get audiobookNoteHint => 'Write a note for this moment';
 
   @override
-  String get audiobookSleepTimer => 'Cronometru de adormire';
+  String get audiobookSleepTimer => 'Sleep timer';
 
   @override
-  String get audiobookSleepOff => 'Oprit';
+  String get audiobookSleepOff => 'Off';
 
   @override
-  String get audiobookSleepEndOfChapter => 'Sfârșitul capitolului';
+  String get audiobookSleepEndOfChapter => 'End of chapter';
 
   @override
-  String get audiobookSleepCustom => 'Personalizat';
+  String get audiobookSleepCustom => 'Custom';
 
   @override
   String audiobookSleepRemaining(String remaining) {
-    return '$remaining rămase';
+    return '$remaining left';
   }
 
   @override
@@ -9836,51 +9773,51 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get audiobookPlaybackSpeed => 'Viteza de redare';
+  String get audiobookPlaybackSpeed => 'Playback speed';
 
   @override
-  String get audiobookRemainingTime => 'Rămas';
+  String get audiobookRemainingTime => 'Remaining';
 
   @override
-  String get audiobookElapsedTime => 'Scurs';
+  String get audiobookElapsedTime => 'Elapsed';
 
   @override
   String audiobookSkipBackSeconds(int seconds) {
-    return 'Înapoi ${seconds}s';
+    return 'Back ${seconds}s';
   }
 
   @override
   String audiobookSkipForwardSeconds(int seconds) {
-    return 'Înainte ${seconds}s';
+    return 'Forward ${seconds}s';
   }
 
   @override
-  String get audiobookPreviousChapter => 'Capitolul anterior';
+  String get audiobookPreviousChapter => 'Previous chapter';
 
   @override
-  String get audiobookNextChapter => 'Capitolul următor';
+  String get audiobookNextChapter => 'Next chapter';
 
   @override
   String audiobookChapterIndicator(int current, int total) {
-    return 'Capitolul $current din $total';
+    return 'Chapter $current of $total';
   }
 
   @override
-  String get audiobookNoChapters => 'Niciun capitol';
+  String get audiobookNoChapters => 'No chapters';
 
   @override
-  String get audiobookNoBookmarks => 'Niciun marcaj încă';
+  String get audiobookNoBookmarks => 'No bookmarks yet';
 
   @override
-  String get audiobookNoNotes => 'Nicio notiță încă';
+  String get audiobookNoNotes => 'No notes yet';
 
   @override
   String audiobookBookmarkAdded(String position) {
-    return 'Marcaj adăugat la $position';
+    return 'Bookmark added at $position';
   }
 
   @override
-  String get audiobookSpeedReset => 'Resetează la 1.0x';
+  String get audiobookSpeedReset => 'Reset to 1.0x';
 
   @override
   String audiobookSpeedCustomLabel(String value) {
@@ -9888,256 +9825,249 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get audiobookSave => 'Salvează';
+  String get audiobookSave => 'Save';
 
   @override
-  String get audiobookCancel => 'Anulează';
+  String get audiobookCancel => 'Cancel';
 
   @override
-  String get audiobookDelete => 'Șterge';
+  String get audiobookDelete => 'Delete';
 
   @override
-  String get subtitlePreferences => 'Preferințe pentru subtitrări';
+  String get subtitlePreferences => 'Subtitle Preferences';
 
   @override
   String get subtitlePreferencesDescription =>
-      'Modificați modurile de subtitrare, limbile implicite, aspectul și opțiunile de randare.';
+      'Change subtitle modes, default languages, appearance, and rendering options.';
 
   @override
-  String get subtitleRendering => 'Randarea subtitrărilor';
+  String get subtitleRendering => 'Subtitle Rendering';
 
   @override
-  String get displayOptions => 'Opțiuni de afișare';
+  String get displayOptions => 'Display Options';
 
   @override
-  String get releaseDateAscending => 'Data lansării (crescător)';
+  String get releaseDateAscending => 'Release Date (Ascending)';
 
   @override
-  String get releaseDateDescending => 'Data lansării (descrescător)';
+  String get releaseDateDescending => 'Release Date (Descending)';
 
   @override
-  String get groupContributions => 'Gruparea contribuțiilor';
+  String get groupContributions => 'Group Contributions';
 
   @override
-  String get groupMultipleRoles => 'Grupează rolurile multiple';
+  String get groupMultipleRoles => 'Group multiple roles';
 
   @override
-  String get libraryWriteAccessWarningTitle =>
-      'Avertisment privind accesul de scriere în bibliotecă';
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
 
   @override
-  String get libraryWriteAccessHowToFix => 'Cum puteți rezolva:';
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
 
   @override
   String get libraryWriteAccessFixSteps =>
-      '1. Acordați permisiuni de scriere utilizatorului serviciului Jellyfin (de ex. jellyfin sau PUID/PGID din Docker) pentru folderele bibliotecii media de pe server.\n\n2. Sau accesați panoul de control Jellyfin -> Biblioteci, editați această bibliotecă și dezactivați „Salvează imaginile în folderele media” pentru a stoca imaginile în baza de date internă a Jellyfin.';
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
 
   @override
-  String get dismiss => 'Închide';
+  String get dismiss => 'Dismiss';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return 'Biblioteca dvs. „$libraryName” este configurată să salveze imaginile direct în folderele media (opțiunea „Salvează imaginile în folderele media” este activată). Totuși, Jellyfin a testat accesul de scriere și nu are permisiunea de a scrie fișiere în acest director:\n\n$failedPath';
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override
   String get libraryWriteAccessReactiveBody =>
-      'Se pare că Jellyfin nu a reușit să actualizeze imaginea. Biblioteca dvs. este configurată să salveze imaginile direct în folderele media (opțiunea „Salvează imaginile în folderele media” este activată). Această eroare apare de obicei atunci când procesul serverului Jellyfin nu are permisiunea de a scrie fișiere în directoarele media.';
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'Liste externe';
+  String get externalLists => 'External Lists';
 
   @override
-  String get replay => 'Redă din nou';
+  String get replay => 'Replay';
 
   @override
-  String get fileInformation => 'Informații despre fișier';
+  String get fileInformation => 'File Information';
 
   @override
   String fileSizeFormat(Object size, Object format) {
-    return 'Dimensiune: $size  •  Format: $format';
+    return 'Size: $size  •  Format: $format';
   }
 
   @override
   String showAllAudioTracks(int count) {
-    return 'Afișează toate pistele audio ($count)';
+    return 'Show All ($count) Audio Tracks';
   }
 
   @override
   String showAllSubtitleTracks(int count) {
-    return 'Afișează toate pistele de subtitrare ($count)';
+    return 'Show All ($count) Subtitle Tracks';
   }
 
   @override
-  String get checkingDirectPlay =>
-      'Se verifică suportul pentru redare directă...';
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
 
   @override
-  String get directPlayCapabilityLabel => 'Suport pentru redare directă: ';
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
 
   @override
-  String get forced => 'Forțat';
+  String get forced => 'Forced';
 
   @override
   String get transcodeContainerNotSupported =>
-      'Formatul containerului nu este acceptat de player.';
+      'Container format is not supported by the player.';
 
   @override
-  String get transcodeVideoCodecNotSupported =>
-      'Codecul video nu este acceptat.';
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
 
   @override
-  String get transcodeAudioCodecNotSupported =>
-      'Codecul audio nu este acceptat.';
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
 
   @override
   String get transcodeSubtitleCodecNotSupported =>
-      'Formatul subtitrării nu este acceptat (necesită încorporare în imagine).';
+      'Subtitle format is not supported (requires burning).';
 
   @override
   String get transcodeAudioProfileNotSupported =>
-      'Profilul audio nu este acceptat.';
+      'Audio profile is not supported.';
 
   @override
   String get transcodeVideoProfileNotSupported =>
-      'Profilul video nu este acceptat.';
+      'Video profile is not supported.';
 
   @override
-  String get transcodeVideoLevelNotSupported =>
-      'Nivelul video nu este acceptat.';
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
 
   @override
   String get transcodeVideoResolutionNotSupported =>
-      'Rezoluția video nu este acceptată de acest dispozitiv.';
+      'Video resolution is not supported by this device.';
 
   @override
   String get transcodeVideoBitDepthNotSupported =>
-      'Adâncimea de biți a imaginii nu este acceptată.';
+      'Video bit depth is not supported.';
 
   @override
   String get transcodeVideoFramerateNotSupported =>
-      'Rata de cadre nu este acceptată.';
+      'Video framerate is not supported.';
 
   @override
   String get transcodeContainerBitrateExceedsLimit =>
-      'Bitrate-ul fișierului depășește limita de streaming a playerului.';
+      'File bitrate exceeds player streaming limit.';
 
   @override
   String get transcodeVideoBitrateExceedsLimit =>
-      'Bitrate-ul video depășește limita de streaming.';
+      'Video bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioBitrateExceedsLimit =>
-      'Bitrate-ul audio depășește limita de streaming.';
+      'Audio bitrate exceeds streaming limit.';
 
   @override
   String get transcodeAudioChannelsNotSupported =>
-      'Numărul de canale audio nu este acceptat.';
+      'Number of audio channels is not supported.';
 
   @override
-  String get sortAlphabetical => 'Alfabetic';
+  String get sortAlphabetical => 'Alphabetical';
 
   @override
-  String get sortReleaseAscending => 'Ordinea lansării (crescător)';
+  String get sortReleaseAscending => 'Release Order (Ascending)';
 
   @override
-  String get sortReleaseDescending => 'Ordinea lansării (descrescător)';
+  String get sortReleaseDescending => 'Release Order (Descending)';
 
   @override
-  String get sortCustomDragDrop => 'Personalizat (trageți și plasați)';
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
 
   @override
-  String get playlistSortOptions => 'Opțiuni de sortare a listei de redare';
+  String get playlistSortOptions => 'Playlist Sort Options';
 
   @override
-  String get resetSort => 'Resetează sortarea';
+  String get resetSort => 'Reset Sort';
 
   @override
   String rewatchSeasonEpisode(int season, int episode) {
-    return 'Revizionează S$season:E$episode';
+    return 'Rewatch S$season:E$episode';
   }
 
   @override
-  String get rewatchPlaylist => 'Revizionează lista de redare';
+  String get rewatchPlaylist => 'Rewatch Playlist';
 
   @override
-  String get noSubtitlesFound => 'Nu au fost găsite subtitrări.';
+  String get noSubtitlesFound => 'No subtitles found.';
 
   @override
-  String get adminControls => 'Comenzi de administrare';
+  String get adminControls => 'Admin Controls';
 
   @override
-  String get impellerRendering => 'Motor de randare (Impeller)';
+  String get impellerRendering => 'Rendering engine (Impeller)';
 
   @override
   String get impellerRenderingSubtitle =>
-      'Impeller este motorul GPU modern al Flutter, pentru animații mai fluide și mai puține sacadări. Pe unele TV box-uri și plăci grafice mai vechi poate provoca artefacte sau imagine neagră; dezactivați-l dacă observați astfel de probleme. Opțiunea Automat alege cea mai bună valoare implicită pentru dispozitivul dvs. Reporniți Moonfin pentru a aplica modificarea.';
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
 
   @override
-  String get impellerAuto => 'Automat';
+  String get impellerAuto => 'Automatic';
 
   @override
-  String get impellerOn => 'Activat';
+  String get impellerOn => 'On';
 
   @override
-  String get impellerOff => 'Dezactivat';
+  String get impellerOff => 'Off';
 
   @override
-  String get impellerRestartTitle => 'Repornire necesară';
+  String get impellerRestartTitle => 'Restart required';
 
   @override
   String get impellerRestartMessage =>
-      'Moonfin trebuie repornit pentru a schimba motorul de randare. Închideți aplicația acum, apoi redeschideți-o pentru a aplica modificarea.';
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
 
   @override
-  String get impellerCloseNow => 'Închide aplicația acum';
+  String get impellerCloseNow => 'Close app now';
 
   @override
-  String get adminRefreshLibrary => 'Reîmprospătează biblioteca';
+  String get adminRefreshLibrary => 'Refresh Library';
 
   @override
-  String get adminRefreshAllLibraries => 'Reîmprospătează toate bibliotecile';
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 
   @override
-  String get adminRepoSortDateOldest =>
-      'Data adăugării (cele mai vechi primele)';
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
 
   @override
-  String get adminRepoSortDateNewest => 'Data adăugării (cele mai noi primele)';
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
 
   @override
-  String get adminRepoSortNameAsc => 'Alfabetic (de la A la Z)';
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
 
   @override
-  String get adminRepoSortNameDesc => 'Alfabetic (de la Z la A)';
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
 
   @override
   String adminAnalyticsLoadingProgress(int percentage) {
-    return 'Se încarcă analizele serverului... $percentage%';
+    return 'Loading Server Analytics... $percentage%';
   }
 
   @override
-  String get adminLibChapterImageResolutionMatchSource => 'Ca sursa';
+  String get adminLibChapterImageResolutionMatchSource => 'Match source';
 
   @override
-  String get imdbTop250Movies => 'IMDb Top 250 filme';
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
 
   @override
-  String get imdbTop250TvShows => 'IMDb Top 250 seriale TV';
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
 
   @override
-  String get imdbMostPopularMovies => 'Cele mai populare filme IMDb';
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
 
   @override
-  String get imdbMostPopularTvShows => 'Cele mai populare seriale TV IMDb';
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
 
   @override
-  String get imdbLowestRatedMovies => 'Filme cu cel mai mic scor IMDb';
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
 
   @override
-  String get imdbTopEnglishMovies =>
-      'Cele mai bine cotate filme în engleză pe IMDb';
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

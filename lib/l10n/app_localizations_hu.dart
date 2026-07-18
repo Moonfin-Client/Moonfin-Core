@@ -15,7 +15,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get accountPreferences => 'Fiókbeállítások';
 
   @override
-  String get interfaceLanguage => 'Alkalmazás nyelvi beállításainak címkéje';
+  String get interfaceLanguage => 'Felület nyelve';
 
   @override
   String get systemLanguageDefault => 'Alapértelmezett';
@@ -28,7 +28,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Kapcsolódás a $serverName szerverhez';
+    return 'Csatlakozás $serverName-hez';
   }
 
   @override
@@ -385,7 +385,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsFound => 'Nem találhatók elemek';
 
   @override
-  String get home => 'Kezdőlap';
+  String get home => 'Kezdőképernyő';
 
   @override
   String get browseAll => 'Összes böngészése';
@@ -1191,7 +1191,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subtitleTrack => 'Feliratsáv';
 
   @override
-  String get none => 'Nincs';
+  String get none => 'Egyik sem';
 
   @override
   String get downloadSubtitlesLabel => 'Feliratok letöltése...';
@@ -3255,7 +3255,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => 'Ki';
+  String get mediaBarModeOff => 'Kikapcsolva';
 
   @override
   String get enableMediaBar => 'Médiasáv engedélyezése';
@@ -3986,7 +3986,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get showMore => 'Továbbiak megjelenítése';
 
   @override
-  String get appearances => 'Szereplések';
+  String get appearances => 'Megjelenések';
 
   @override
   String get crewSection => 'Stáb';
@@ -4561,7 +4561,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sessionRewind => 'Visszatekerés';
 
   @override
-  String get sessionForward => 'Előretekerés';
+  String get sessionForward => 'Előre';
 
   @override
   String get sessionNext => 'Következő';
@@ -6231,7 +6231,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminEditTuner => 'Tuner szerkesztése';
 
   @override
-  String get adminTunerTypeM3u => 'M3U tuner';
+  String get adminTunerTypeM3u => 'M3U-tuner';
 
   @override
   String get adminTunerTypeHdHomerun => 'HDHomeRun';
@@ -6243,17 +6243,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminTunerIpAddress => 'Tuner IP-címe';
 
   @override
-  String get adminTunerFriendlyName => 'Megjelenített név';
+  String get adminTunerFriendlyName => 'Barátságos név';
 
   @override
-  String get adminTunerUserAgent => 'Felhasználói ügynök';
+  String get adminTunerUserAgent => 'User agent';
 
   @override
   String get adminTunerCount => 'Egyidejű kapcsolatok korlátja';
 
   @override
   String get adminTunerCountHelp =>
-      'A tuner által egyszerre engedélyezett adatfolyamok maximális száma. A korlátlanhoz állítsd 0-ra.';
+      'A tuner által egyidejűleg engedélyezett streamek maximális száma. Állítsd 0-ra a korlátlanhoz.';
 
   @override
   String get adminTunerFallbackBitrate =>
@@ -6271,19 +6271,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminTunerAllowFmp4 => 'fMP4 átkódolási konténer engedélyezése';
 
   @override
-  String get adminTunerAllowStreamSharing =>
-      'Adatfolyam megosztásának engedélyezése';
+  String get adminTunerAllowStreamSharing => 'Streammegosztás engedélyezése';
 
   @override
-  String get adminTunerEnableStreamLooping =>
-      'Adatfolyam ismétlésének engedélyezése';
+  String get adminTunerEnableStreamLooping => 'Streamismétlés engedélyezése';
 
   @override
   String get adminTunerIgnoreDts => 'DTS figyelmen kívül hagyása';
 
   @override
   String get adminTunerReadAtNativeFramerate =>
-      'Bemenet beolvasása natív képkockasebességgel';
+      'Bemenet olvasása natív képsebességgel';
 
   @override
   String get adminEditProvider => 'Szolgáltató szerkesztése';
@@ -6298,14 +6296,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminXmltvPath => 'Fájl vagy URL';
 
   @override
-  String get adminXmltvMoviePrefix => 'Filmek előtagja';
+  String get adminXmltvMoviePrefix => 'Filmelőtag';
 
   @override
   String get adminXmltvMovieCategories => 'Filmkategóriák';
 
   @override
   String get adminXmltvCategoriesHelp =>
-      'A kategóriákat függőleges vonallal válaszd el egymástól.';
+      'Több kategória elválasztásához használj függőleges vonalat.';
 
   @override
   String get adminXmltvKidsCategories => 'Gyerekkategóriák';
@@ -6326,19 +6324,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminSdCountry => 'Ország';
 
   @override
-  String get adminSdCountrySelect => 'Válassz egy országot';
+  String get adminSdCountrySelect => 'Válassz országot';
 
   @override
   String get adminSdPostalCode => 'Irányítószám';
 
   @override
-  String get adminSdGetListings => 'Műsorújság lekérése';
+  String get adminSdGetListings => 'Műsorlisták lekérése';
 
   @override
-  String get adminSdListings => 'Műsorújság';
+  String get adminSdListings => 'Műsorlisták';
 
   @override
-  String get adminEnableAllTuners => 'Az összes tuner engedélyezése';
+  String get adminEnableAllTuners => 'Összes tuner engedélyezése';
 
   @override
   String get adminTunerType => 'Tuner típusa';
@@ -7149,11 +7147,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get adminPlaybackVppTonemappingBrightness =>
-      'VPP tónusleképezési fényerő';
+      'VPP-tónusleképezés fényereje';
 
   @override
   String get adminPlaybackVppTonemappingContrast =>
-      'VPP tónusleképezési kontraszt';
+      'VPP-tónusleképezés kontrasztja';
 
   @override
   String get adminPlaybackPresetsQuality => 'Előbeállítások és minőség';
@@ -7172,7 +7170,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get adminPlaybackDeinterlaceDoubleRate =>
-      'Képkockasebesség megduplázása váltottsoros bontáskor';
+      'Képsebesség duplázása váltottsorosság megszüntetésekor';
 
   @override
   String get adminPlaybackAudioSection => 'Hang';
@@ -7447,7 +7445,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$month. $day.';
+    return '$month/$day';
   }
 
   @override
@@ -7537,7 +7535,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get adminPlaybackThrottleDelay =>
-      'Korlátozási késleltetés (másodperc)';
+      'Visszafogási késleltetés (másodperc)';
 
   @override
   String get adminPlaybackEnableSubtitleExtraction =>

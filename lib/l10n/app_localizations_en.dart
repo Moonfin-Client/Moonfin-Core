@@ -13264,6 +13264,17 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   }
 
   @override
+  String get discoverRows => 'Discover Rows';
+
+  @override
+  String get discoverRowsDescriptionPlugin =>
+      'Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.';
+
+  @override
+  String get discoverRowsDescription =>
+      'Drag to reorder. Enable or disable rows.';
+
+  @override
   String get enabled => 'Enabled';
 
   @override
