@@ -1,8 +1,15 @@
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
-import 'package:server_jellyfin/server_jellyfin.dart';
 import 'package:server_emby/server_emby.dart';
+import 'package:server_jellyfin/server_jellyfin.dart';
 
+import '../../util/platform_detection.dart';
 import '../../util/server_url.dart';
+import '../offline/connectivity_aware_media_server_client.dart';
+import '../offline/offline_catalog.dart';
+import 'connectivity_service.dart';
+import 'storage_path_service.dart';
+
 
 class MediaServerClientFactory {
   final DeviceInfo deviceInfo;
@@ -49,6 +56,26 @@ class MediaServerClientFactory {
   }
 
   MediaServerClient _createClient({
+    required ServerType serverType,
+    required String baseUrl,
+  }) {
+    final raw = _createRawClient(
+      serverType: serverType,
+      baseUrl: baseUrl,
+    );
+    final getIt = GetIt.instance;
+    return ConnectivityAwareMediaServerClient(
+      raw,
+      useOffline: () =>
+          !PlatformDetection.isTV &&
+          getIt.isRegistered<ConnectivityService>() &&
+          !getIt<ConnectivityService>().canReachServer,
+      catalog: getIt<OfflineCatalog>(),
+      storagePath: getIt<StoragePathService>(),
+    );
+  }
+
+  MediaServerClient _createRawClient({
     required ServerType serverType,
     required String baseUrl,
   }) {
