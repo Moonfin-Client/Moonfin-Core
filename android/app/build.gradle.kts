@@ -114,6 +114,17 @@ android {
             manifestPlaceholders["appName"] = "$baseAppName Beta"
             manifestPlaceholders["enableImpeller"] = "false"
         }
+        // Deliberately a separate installable TV package for local builds. It
+        // must never replace the signed upstream Android TV application.
+        create("androidTvHarvey") {
+            dimension = "device"
+            applicationId = "$baseAppId.harvey"
+            versionCode = androidTvVersionCode
+            versionName = androidTvVersionName
+            ndk { abiFilters += tvAbis }
+            manifestPlaceholders["appName"] = "Moonfin Custom"
+            manifestPlaceholders["enableImpeller"] = "false"
+        }
     }
 
     signingConfigs {
@@ -175,4 +186,15 @@ tasks.register<Copy>("copyAndroidTvDebugApkForFlutter") {
 
 tasks.matching { it.name == "assembleDebug" }.configureEach {
     finalizedBy("copyAndroidTvDebugApkForFlutter")
+}
+
+// This local side-by-side package is not registered in the upstream Firebase
+// project. Do not borrow the official app's Firebase identity merely to make a
+// build pass. PushMessagingService already handles unavailable Firebase setup
+// as a non-fatal condition, while normal Jellyfin/Moonbase operation remains
+// unaffected.
+tasks.matching {
+    it.name == "processAndroidTvHarveyReleaseGoogleServices"
+}.configureEach {
+    enabled = false
 }
