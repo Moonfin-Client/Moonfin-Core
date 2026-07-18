@@ -129,6 +129,14 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   onChanged: _pushPersonalizationSync,
                 ),
                 SwitchPreferenceTile(
+                  preference: UserPreferences.movieTvNavigationOnly,
+                  title: 'Movies and TV navigation only',
+                  subtitle:
+                      'Hide music, music videos, Live TV, books, photos, and unused library types.',
+                  icon: Icons.movie_filter_rounded,
+                  onChanged: _pushPersonalizationSync,
+                ),
+                SwitchPreferenceTile(
                   preference: UserPreferences.navbarAlwaysExpanded,
                   title: l10n.navbarAlwaysExpanded,
                   subtitle: l10n.settingsAlwaysExpandNavbarLabels,

@@ -966,6 +966,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// Keep primary navigation focused on video libraries. Turning this off is
+  /// the rollback path for music, books, photos, Live TV, and custom types.
+  static final movieTvNavigationOnly = Preference(
+    key: 'pref_movie_tv_navigation_only',
+    defaultValue: true,
+  );
+
   static final navbarAlwaysExpanded = Preference(
     key: 'pref_navbar_always_expanded',
     defaultValue: false,
@@ -2372,4 +2379,3 @@ class UserPreferences extends ChangeNotifier {
     return result;
   }
 }
-

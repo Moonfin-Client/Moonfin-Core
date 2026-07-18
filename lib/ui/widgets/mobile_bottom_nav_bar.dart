@@ -16,6 +16,7 @@ import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/game_library.dart';
+import '../../util/navigation_library_filter.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
 import '../screens/settings/settings_side_panel.dart';
@@ -111,13 +112,18 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
 
       unawaited(GetIt.instance<GameLibraryRegistry>().refresh());
 
-      List<AggregatedLibrary> filtered = libs;
+      List<AggregatedLibrary> filtered = filterNavigationLibraries(
+        libs,
+        movieTvOnly: _prefs.get(UserPreferences.movieTvNavigationOnly),
+      );
       if (useMultiServer) {
         try {
           final config = await _viewsRepo.getUserConfiguration();
           final excluded = config.myMediaExcludes.toSet();
           if (excluded.isNotEmpty) {
-            filtered = libs.where((lib) => !excluded.contains(lib.id)).toList();
+            filtered = filtered
+                .where((lib) => !excluded.contains(lib.id))
+                .toList();
           }
         } catch (_) {}
       }

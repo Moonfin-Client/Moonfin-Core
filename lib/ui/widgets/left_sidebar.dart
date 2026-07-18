@@ -21,6 +21,7 @@ import '../../l10n/app_localizations.dart';
 import '../../util/clock_format.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/game_library.dart';
+import '../../util/navigation_library_filter.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
@@ -251,13 +252,18 @@ class _LeftSidebarState extends State<LeftSidebar> {
 
       unawaited(GetIt.instance<GameLibraryRegistry>().refresh());
 
-      List<AggregatedLibrary> filtered = libs;
+      List<AggregatedLibrary> filtered = filterNavigationLibraries(
+        libs,
+        movieTvOnly: _prefs.get(UserPreferences.movieTvNavigationOnly),
+      );
       if (useMultiServer) {
         try {
           final config = await _viewsRepo.getUserConfiguration();
           final excluded = config.myMediaExcludes.toSet();
           if (excluded.isNotEmpty) {
-            filtered = libs.where((lib) => !excluded.contains(lib.id)).toList();
+            filtered = filtered
+                .where((lib) => !excluded.contains(lib.id))
+                .toList();
           }
         } catch (_) {}
       }
@@ -1056,10 +1062,11 @@ class _LeftSidebarState extends State<LeftSidebar> {
             },
           ),
         ),
-        SidebarMusicCard(
-          isExpanded: _showLabels,
-          focusNode: _musicCardFocusNode,
-        ),
+        if (!_prefs.get(UserPreferences.movieTvNavigationOnly))
+          SidebarMusicCard(
+            isExpanded: _showLabels,
+            focusNode: _musicCardFocusNode,
+          ),
         if (showClock)
           Visibility(
             visible: _showLabels,

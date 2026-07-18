@@ -122,6 +122,14 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
                   ),
                   onChanged: _pushSync,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.movieTvNavigationOnly,
+                  title: 'Movies and TV navigation only',
+                  subtitle:
+                      'Hide music, music videos, Live TV, books, photos, and other library types from navigation.',
+                  icon: Icons.movie_filter_rounded,
+                  onChanged: _pushSync,
+                ),
               ],
             ),
             SettingsSectionHeader(l10n.appearance),
