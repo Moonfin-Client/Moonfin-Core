@@ -1,27 +1,8 @@
-enum SubtitleMode {
-  flagged,
-  always,
-  foreign,
-  forced,
-  none,
-}
+enum SubtitleMode { flagged, always, foreign, forced, none }
 
-enum AudioOutputMode {
-  auto,
-  forceStereo,
-  avrPassthrough,
-}
+enum AudioOutputMode { auto, forceStereo, avrPassthrough }
 
-enum AudioFallbackCodec {
-  auto,
-  aac,
-  ac3,
-  eac3,
-  truehd,
-  mp3,
-  opus,
-  flac,
-}
+enum AudioFallbackCodec { auto, aac, ac3, eac3, truehd, mp3, opus, flac }
 
 /// High-level audio output choice shown to the user. It is a convenience that
 /// bulk-writes through to [AudioOutputMode] and the individual passthrough
@@ -31,35 +12,15 @@ enum AudioFallbackCodec {
 ///   reports it supports (toggles unset, capability-authoritative).
 /// - [stereo]: force a stereo downmix.
 /// - [advanced]: user manages [AudioOutputMode] + per-codec toggles directly.
-enum AudioPassthroughPreset {
-  auto,
-  surroundReceiver,
-  stereo,
-  advanced,
-}
+enum AudioPassthroughPreset { auto, surroundReceiver, stereo, advanced }
 
-enum PlaybackEnginePreference {
-  media3,
-  mpv,
-}
+enum PlaybackEnginePreference { media3, mpv }
 
-enum DolbyVisionFallbackBehavior {
-  ask,
-  hdr10Fallback,
-  transcode,
-}
+enum DolbyVisionFallbackBehavior { ask, hdr10Fallback, transcode }
 
-enum DolbyVisionProfile7DirectPlayBehavior {
-  auto,
-  enabled,
-  disabled,
-}
+enum DolbyVisionProfile7DirectPlayBehavior { auto, enabled, disabled }
 
-enum ClockBehavior {
-  always,
-  inMenus,
-  never,
-}
+enum ClockBehavior { always, inMenus, never }
 
 enum MaxVideoResolution {
   auto(width: 0, height: 0),
@@ -73,11 +34,7 @@ enum MaxVideoResolution {
   final int height;
 }
 
-enum NavbarPosition {
-  top,
-  left,
-  bottom,
-}
+enum NavbarPosition { top, left, bottom }
 
 enum NextUpBehavior {
   extended,
@@ -93,20 +50,17 @@ enum PosterSize {
   large(portraitHeight: 180, landscapeHeight: 132),
   extraLarge(portraitHeight: 210, landscapeHeight: 154);
 
-  const PosterSize({required this.portraitHeight, required this.landscapeHeight});
+  const PosterSize({
+    required this.portraitHeight,
+    required this.landscapeHeight,
+  });
   final int portraitHeight;
   final int landscapeHeight;
 }
 
-enum FavoritesViewStyle {
-  home,
-  library,
-}
+enum FavoritesViewStyle { home, library }
 
-enum HomeRowsStyle {
-  v1,
-  v2,
-}
+enum HomeRowsStyle { v1, v2 }
 
 enum DesktopUiScale {
   small(0.9),
@@ -118,17 +72,9 @@ enum DesktopUiScale {
   final double scaleFactor;
 }
 
-enum RefreshRateSwitchingBehavior {
-  disabled,
-  scaleOnTv,
-  scaleOnDevice,
-}
+enum RefreshRateSwitchingBehavior { disabled, scaleOnTv, scaleOnDevice }
 
-enum AutoHdrSwitchingBehavior {
-  disabled,
-  whenFullscreen,
-  always,
-}
+enum AutoHdrSwitchingBehavior { disabled, whenFullscreen, always }
 
 enum StillWatchingBehavior {
   short_(episodes: 2, hours: 1.0),
@@ -142,24 +88,11 @@ enum StillWatchingBehavior {
   final double hours;
 }
 
-enum WatchedIndicatorBehavior {
-  always,
-  hideUnwatched,
-  episodesOnly,
-  never,
-}
+enum WatchedIndicatorBehavior { always, hideUnwatched, episodesOnly, never }
 
-enum ZoomMode {
-  fit,
-  autoCrop,
-  stretch,
-}
+enum ZoomMode { fit, autoCrop, stretch }
 
-enum DesktopScrollWheelAction {
-  off,
-  seek,
-  volume,
-}
+enum DesktopScrollWheelAction { off, seek, volume }
 
 /// Glass rendering budget. `auto` picks per-device (real blur on capable
 /// hardware, zero-blur sheen on TV boxes/web); `full` forces real blur;
@@ -188,35 +121,21 @@ enum AppTheme {
   final int colorValue;
 }
 
-enum VisualThemeId {
-  moonfin,
-  neonPulse,
-  glass,
-  eightbitHero,
-}
+enum VisualThemeId { moonfin, neonPulse, glass, eightbitHero }
 
 /// Selectable structural style for the media detail screen.
 ///
 /// [moonfin] is the original centered-stack layout (default). [modern] is the
 /// responsive cinematic layout (landscape two-pane / portrait stack). Resolved
 /// globally (not scoped per server/user).
-enum DetailScreenStyle {
-  classic,
-  modern;
-}
+enum DetailScreenStyle { classic, modern }
 
 /// Selectable algorithm source for similarity recommendation system.
-enum RecommendationSystemSource {
-  local,
-  online;
-}
+enum RecommendationSystemSource { local, online }
 
 /// Default mobile (portrait phone) view for the Live TV guide: a Now/Next
 /// channel card list or the compact time grid.
-enum EpgMobileView {
-  list,
-  grid,
-}
+enum EpgMobileView { list, grid }
 
 enum RatingType {
   tomatoes,
@@ -233,34 +152,19 @@ enum RatingType {
   hidden,
 }
 
-enum MediaSegmentAction {
-  nothing,
-  skip,
-  askToSkip,
-}
+enum MediaSegmentAction { nothing, skip, askToSkip }
 
-enum MediaSegmentCountdown {
-  progressBar,
-  timer,
-  both,
-  none,
-}
+enum MediaSegmentCountdown { progressBar, timer, both, none }
 
-enum ImageType {
-  poster,
-  thumb,
-  banner,
-}
+enum ImageType { poster, thumb, banner }
 
-enum UserSelectBehavior {
-  disabled,
-  lastUser,
-  currentUser,
-}
+enum UserSelectBehavior { disabled, lastUser, currentUser }
 
 enum HomeSectionType {
   mediaBar('mediabar'),
   latestMedia('latestmedia'),
+  topTenMovies('toptenmovies'),
+  topTenTvShows('toptentvshows'),
   recentlyReleased('recentlyreleased'),
   libraryTilesSmall('smalllibrarytiles'),
   libraryButtons('librarybuttons'),
@@ -370,22 +274,11 @@ enum GenresRowItemFilter {
   final String displayName;
 }
 
-enum SortDirection {
-  ascending,
-  descending,
-}
+enum SortDirection { ascending, descending }
 
-enum PlayedStatusFilter {
-  all,
-  watched,
-  unwatched,
-}
+enum PlayedStatusFilter { all, watched, unwatched }
 
-enum SeriesStatusFilter {
-  all,
-  continuing,
-  ended,
-}
+enum SeriesStatusFilter { all, continuing, ended }
 
 enum FavoriteTypeFilter {
   all,
@@ -475,35 +368,35 @@ enum SeerrRowType {
 
 extension SeerrRowTypeHomeSection on SeerrRowType {
   HomeSectionType get homeSectionType => switch (this) {
-        SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
-        SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
-        SeerrRowType.trending => HomeSectionType.seerrTrending,
-        SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
-        SeerrRowType.movieGenres => HomeSectionType.seerrMovieGenres,
-        SeerrRowType.upcomingMovies => HomeSectionType.seerrUpcomingMovies,
-        SeerrRowType.studios => HomeSectionType.seerrStudios,
-        SeerrRowType.popularSeries => HomeSectionType.seerrPopularSeries,
-        SeerrRowType.seriesGenres => HomeSectionType.seerrSeriesGenres,
-        SeerrRowType.upcomingSeries => HomeSectionType.seerrUpcomingSeries,
-        SeerrRowType.networks => HomeSectionType.seerrNetworks,
-      };
+    SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
+    SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
+    SeerrRowType.trending => HomeSectionType.seerrTrending,
+    SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
+    SeerrRowType.movieGenres => HomeSectionType.seerrMovieGenres,
+    SeerrRowType.upcomingMovies => HomeSectionType.seerrUpcomingMovies,
+    SeerrRowType.studios => HomeSectionType.seerrStudios,
+    SeerrRowType.popularSeries => HomeSectionType.seerrPopularSeries,
+    SeerrRowType.seriesGenres => HomeSectionType.seerrSeriesGenres,
+    SeerrRowType.upcomingSeries => HomeSectionType.seerrUpcomingSeries,
+    SeerrRowType.networks => HomeSectionType.seerrNetworks,
+  };
 }
 
 extension HomeSectionTypeSeerrRow on HomeSectionType {
   SeerrRowType? get seerrRowType => switch (this) {
-        HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
-        HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
-        HomeSectionType.seerrTrending => SeerrRowType.trending,
-        HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
-        HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
-        HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
-        HomeSectionType.seerrStudios => SeerrRowType.studios,
-        HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
-        HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
-        HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
-        HomeSectionType.seerrNetworks => SeerrRowType.networks,
-        _ => null,
-      };
+    HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
+    HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
+    HomeSectionType.seerrTrending => SeerrRowType.trending,
+    HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
+    HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
+    HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
+    HomeSectionType.seerrStudios => SeerrRowType.studios,
+    HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
+    HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
+    HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
+    HomeSectionType.seerrNetworks => SeerrRowType.networks,
+    _ => null,
+  };
 }
 
 enum ScreensaverMode { library, logo }
@@ -537,9 +430,12 @@ enum SinceYouWatchedSourceType {
 
   String get displayName {
     switch (this) {
-      case movies: return 'Movies';
-      case shows: return 'Shows';
-      case both: return 'Both';
+      case movies:
+        return 'Movies';
+      case shows:
+        return 'Shows';
+      case both:
+        return 'Both';
     }
   }
 }
@@ -551,9 +447,12 @@ enum SinceYouWatchedSourceItem {
 
   String get displayName {
     switch (this) {
-      case recentlyWatched: return 'Recently Watched';
-      case favorites: return 'Favorites';
-      case random: return 'Random';
+      case recentlyWatched:
+        return 'Recently Watched';
+      case favorites:
+        return 'Favorites';
+      case random:
+        return 'Random';
     }
   }
 }
@@ -575,6 +474,6 @@ enum RewatchSortBy {
   recentlyWatched,
   random;
 
-  String get displayName => this == recentlyWatched ? 'Recently Watched' : 'Random';
+  String get displayName =>
+      this == recentlyWatched ? 'Recently Watched' : 'Random';
 }
-

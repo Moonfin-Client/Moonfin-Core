@@ -5,6 +5,8 @@ enum HomeRowType {
   resumeAudio,
   nextUp,
   latestMedia,
+  topTenMovies,
+  topTenTvShows,
   recentlyReleased,
   favorites,
   collections,
@@ -49,16 +51,15 @@ class HomeRow {
     bool? isLoading,
     int? totalCount,
     bool? isAudio,
-  }) =>
-      HomeRow(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        items: items ?? this.items,
-        rowType: rowType ?? this.rowType,
-        isLoading: isLoading ?? this.isLoading,
-        totalCount: totalCount ?? this.totalCount,
-        isAudio: isAudio ?? this.isAudio,
-      );
+  }) => HomeRow(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    items: items ?? this.items,
+    rowType: rowType ?? this.rowType,
+    isLoading: isLoading ?? this.isLoading,
+    totalCount: totalCount ?? this.totalCount,
+    isAudio: isAudio ?? this.isAudio,
+  );
 
   bool get isEmpty => items.isEmpty && !isLoading;
   bool get hasMore => items.length < totalCount;

@@ -180,11 +180,21 @@ class HomeSectionConfig {
       order: 3,
     ),
     HomeSectionConfig(
-      type: HomeSectionType.recentlyReleased,
-      enabled: false,
+      type: HomeSectionType.topTenMovies,
+      enabled: true,
       order: 4,
     ),
-    HomeSectionConfig(type: HomeSectionType.liveTv, enabled: false, order: 5),
+    HomeSectionConfig(
+      type: HomeSectionType.topTenTvShows,
+      enabled: true,
+      order: 5,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.recentlyReleased,
+      enabled: false,
+      order: 6,
+    ),
+    HomeSectionConfig(type: HomeSectionType.liveTv, enabled: false, order: 7),
     HomeSectionConfig(
       type: HomeSectionType.libraryButtons,
       enabled: false,
@@ -324,9 +334,12 @@ class HomeSectionConfig {
   ];
 
   static bool isSupportedJson(Map<String, dynamic> json) {
-    if (json['kind'] != HomeSectionKind.pluginDynamic.serializedName) return true;
+    if (json['kind'] != HomeSectionKind.pluginDynamic.serializedName)
+      return true;
     final source = json['pluginSource'] as String?;
-    return HomeSectionPluginSource.values.any((s) => s.serializedName == source);
+    return HomeSectionPluginSource.values.any(
+      (s) => s.serializedName == source,
+    );
   }
 
   static List<HomeSectionConfig> fromJsonString(String jsonString) {

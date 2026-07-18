@@ -1595,6 +1595,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       switch (type) {
         HomeSectionType.mediaBar => l10n.mediaBar,
         HomeSectionType.latestMedia => l10n.latestMedia,
+        HomeSectionType.topTenMovies => 'Top 10 Movies',
+        HomeSectionType.topTenTvShows => 'Top 10 TV Shows',
         HomeSectionType.recentlyReleased => l10n.recentlyReleased,
         HomeSectionType.libraryTilesSmall => l10n.myMedia,
         HomeSectionType.libraryButtons => l10n.myMediaSmall,

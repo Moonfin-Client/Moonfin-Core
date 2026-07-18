@@ -51,15 +51,20 @@ class RowDataSource {
 
   // Cache for local recommendations to make them practically instantaneous
   static const int _recommendationCacheMaxEntries = 64;
-  static final Map<String, List<Map<String, dynamic>>> _recommendationCache = {};
-  static final Map<String, List<AggregatedItem>> _scoredRecommendationsCache = {};
+  static final Map<String, List<Map<String, dynamic>>> _recommendationCache =
+      {};
+  static final Map<String, List<AggregatedItem>> _scoredRecommendationsCache =
+      {};
 
   static void clearRecommendationCache() {
     _recommendationCache.clear();
     _scoredRecommendationsCache.clear();
   }
 
-  static void _cacheRecommendations(String key, List<Map<String, dynamic>> items) {
+  static void _cacheRecommendations(
+    String key,
+    List<Map<String, dynamic>> items,
+  ) {
     _recommendationCache.remove(key);
     _recommendationCache[key] = items;
     while (_recommendationCache.length > _recommendationCacheMaxEntries) {
@@ -215,6 +220,51 @@ class RowDataSource {
       totalCount: items.length < _defaultLimit ? items.length : _maxItems,
       isAudio: collectionType == 'music',
     );
+  }
+
+  /// Returns the ten most relevant accessible titles for a Top 10 home row.
+  /// Jellyfin applies the current user's library permissions before this client
+  /// side ranking runs.  Recent additions dominate the score, with community
+  /// rating providing a stable tie-breaker for a new or quiet library.
+  Future<HomeRow> loadTopTen(String serverId, {required bool movies}) async {
+    final response = await _getItemsWithFallback(
+      includeItemTypes: [movies ? 'Movie' : 'Series'],
+      excludeItemTypes: const ['Episode'],
+      sortBy: 'DateCreated',
+      sortOrder: 'Descending',
+      recursive: true,
+      limit: 100,
+    );
+    final now = DateTime.now();
+    final ranked =
+        _parseItems(
+            response,
+            serverId,
+          ).where((item) => item.type == (movies ? 'Movie' : 'Series')).toList()
+          ..sort(
+            (a, b) => _topTenScore(b, now).compareTo(_topTenScore(a, now)),
+          );
+    final items = ranked.take(10).toList(growable: false);
+    return HomeRow(
+      id: movies ? 'top_ten_movies' : 'top_ten_tv_shows',
+      title: movies ? 'Top 10 Movies' : 'Top 10 TV Shows',
+      items: items,
+      rowType: movies ? HomeRowType.topTenMovies : HomeRowType.topTenTvShows,
+      totalCount: items.length,
+    );
+  }
+
+  static double _topTenScore(AggregatedItem item, DateTime now) {
+    final created = item.rawData['DateCreated']?.toString();
+    final date = created == null ? null : DateTime.tryParse(created);
+    final ageDays = date == null
+        ? 3650
+        : now.difference(date).inDays.clamp(0, 3650);
+    final recency = (365 - ageDays).clamp(0, 365).toDouble() * 10;
+    final rating = item.communityRating ?? 0;
+    final year = item.productionYear ?? 0;
+    final releaseBonus = year >= now.year - 1 ? 120 : 0;
+    return recency + (rating * 25) + releaseBonus;
   }
 
   Future<HomeRow> loadRecentlyReleased(
@@ -1160,7 +1210,9 @@ class RowDataSource {
           if (row.id.startsWith('sinceYouWatched')) {
             final cached = _scoredRecommendationsCache[row.id];
             if (cached != null) {
-              final nextItems = cached.take(currentOffset + _defaultLimit).toList();
+              final nextItems = cached
+                  .take(currentOffset + _defaultLimit)
+                  .toList();
               return (nextItems, cached.length);
             }
             return (row.items, row.totalCount);
@@ -1244,7 +1296,10 @@ class RowDataSource {
     String? fields,
   }) async {
     if (_isAccessDenied(parentId)) {
-      return const <String, dynamic>{'Items': <dynamic>[], 'TotalRecordCount': 0};
+      return const <String, dynamic>{
+        'Items': <dynamic>[],
+        'TotalRecordCount': 0,
+      };
     }
     try {
       final response = await _client.itemsApi.getItems(
@@ -1648,7 +1703,10 @@ class RowDataSource {
           );
           List<ImdbExternalListItem> items;
           if (forceRefresh) {
-            items = await customService.fetchCustomRow(config, forceRefresh: true);
+            items = await customService.fetchCustomRow(
+              config,
+              forceRefresh: true,
+            );
           } else {
             items = await customService.loadCustomRowFromCache(config);
             if (items.isEmpty) {
@@ -1657,7 +1715,8 @@ class RowDataSource {
           }
           Map<String, dynamic> rowConfig = {};
           try {
-            rowConfig = jsonDecode(additionalData ?? '{}') as Map<String, dynamic>;
+            rowConfig =
+                jsonDecode(additionalData ?? '{}') as Map<String, dynamic>;
           } catch (_) {}
           final showUserRatings = rowConfig['show_user_ratings'] == true;
 
@@ -1689,7 +1748,9 @@ class RowDataSource {
             items: aggregatedItems,
           );
         } catch (e) {
-          debugPrint('[RowDataSource] Failed to load custom dynamic section: $e');
+          debugPrint(
+            '[RowDataSource] Failed to load custom dynamic section: $e',
+          );
           return HomeRow(
             id: rowId,
             title: title,
@@ -1698,7 +1759,6 @@ class RowDataSource {
         }
     }
   }
-
 
   List<AggregatedItem> _parseItems(
     Map<String, dynamic> response,
@@ -1800,7 +1860,9 @@ class RowDataSource {
     final prefs = GetIt.instance<UserPreferences>();
     final sourceType = prefs.get(UserPreferences.sinceYouWatchedSourceType);
     final sourceItemType = prefs.get(UserPreferences.sinceYouWatchedSourceItem);
-    final isLocal = prefs.get(UserPreferences.sinceYouWatchedSource) == SinceYouWatchedSource.local;
+    final isLocal =
+        prefs.get(UserPreferences.sinceYouWatchedSource) ==
+        SinceYouWatchedSource.local;
 
     final List<String> queryItemTypes;
     if (sourceItemType == SinceYouWatchedSourceItem.recentlyWatched) {
@@ -1840,13 +1902,13 @@ class RowDataSource {
         fields: '$_fields,Tags,People,SeriesId',
       );
       final rawBaseItems = _parseItems(res, serverId);
-      
+
       // Resolve Episode items to their parent Series (Show) items
       final resolvedBaseItems = <AggregatedItem>[];
       final seenSeriesIds = <String>{};
       final episodeToSeriesMap = <String, String>{}; // Episode ID -> Series ID
       final seriesIdsToFetch = <String>[];
-      
+
       for (final item in rawBaseItems) {
         if (item.type == 'Movie') {
           resolvedBaseItems.add(item);
@@ -1863,7 +1925,7 @@ class RowDataSource {
           resolvedBaseItems.add(item);
         }
       }
-      
+
       if (seriesIdsToFetch.isNotEmpty) {
         try {
           final seriesRes = await _client.itemsApi.getItems(
@@ -1872,10 +1934,10 @@ class RowDataSource {
           );
           final fetchedSeries = _parseItems(seriesRes, serverId);
           final seriesMap = {for (final s in fetchedSeries) s.id: s};
-          
+
           final finalItems = <AggregatedItem>[];
           final addedSeriesIds = <String>{};
-          
+
           for (final item in rawBaseItems) {
             if (item.type == 'Movie') {
               finalItems.add(item);
@@ -1968,14 +2030,36 @@ class RowDataSource {
   }) async {
     final prefs = GetIt.instance<UserPreferences>();
     final itemDetail = baseItem.rawData;
-    final types = candidateItemTypes ?? (baseItem.type == 'Series' ? const ['Series'] : const ['Movie']);
+    final types =
+        candidateItemTypes ??
+        (baseItem.type == 'Series' ? const ['Series'] : const ['Movie']);
     List<AggregatedItem> recommendedItems = [];
 
     if (isLocal) {
-      final genres = (itemDetail['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-      final tags = (itemDetail['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-      final people = (itemDetail['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
-      final baseStudios = (itemDetail['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toList() ?? const <String>[];
+      final genres =
+          (itemDetail['Genres'] as List?)
+              ?.map((e) => e?.toString())
+              .whereType<String>()
+              .toList() ??
+          const <String>[];
+      final tags =
+          (itemDetail['Tags'] as List?)
+              ?.map((e) => e?.toString())
+              .whereType<String>()
+              .toList() ??
+          const <String>[];
+      final people =
+          (itemDetail['People'] as List?)
+              ?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
+              .whereType<Map<String, dynamic>>()
+              .toList() ??
+          const <Map<String, dynamic>>[];
+      final baseStudios =
+          (itemDetail['Studios'] as List?)
+              ?.map((e) => e is Map ? e['Name']?.toString() : e?.toString())
+              .whereType<String>()
+              .toList() ??
+          const <String>[];
       final baseYear = itemDetail['ProductionYear'] as int?;
 
       final actorNames = people
@@ -2017,7 +2101,8 @@ class RowDataSource {
       if (genres.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:genres:${types.join(",")}:${genres.join(",")}';
+            final cacheKey =
+                '$serverId:genres:${types.join(",")}:${genres.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -2031,7 +2116,8 @@ class RowDataSource {
               genres: genres,
               recursive: true,
               limit: 40,
-              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+              fields:
+                  'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -2050,7 +2136,8 @@ class RowDataSource {
       if (tags.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:tags:${types.join(",")}:${tags.join(",")}';
+            final cacheKey =
+                '$serverId:tags:${types.join(",")}:${tags.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -2064,7 +2151,8 @@ class RowDataSource {
               tags: tags,
               recursive: true,
               limit: 40,
-              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+              fields:
+                  'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -2080,15 +2168,12 @@ class RowDataSource {
       }
 
       // Fetch candidates matching any directors, writers, or actors in parallel using a single combined query
-      final allPersonIds = [
-        ...directorIds,
-        ...writerIds,
-        ...actorIds.take(10),
-      ];
+      final allPersonIds = [...directorIds, ...writerIds, ...actorIds.take(10)];
       if (allPersonIds.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:people:${types.join(",")}:${allPersonIds.join(",")}';
+            final cacheKey =
+                '$serverId:people:${types.join(",")}:${allPersonIds.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -2102,7 +2187,8 @@ class RowDataSource {
               personIds: allPersonIds,
               recursive: true,
               limit: 40,
-              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+              fields:
+                  'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -2119,8 +2205,12 @@ class RowDataSource {
 
       await Future.wait(futures);
 
-      final bool effectiveIncludeWatched = includeWatched ?? prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
-      final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
+      final bool effectiveIncludeWatched =
+          includeWatched ??
+          prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
+      final bool applyRatingCap = prefs.get(
+        UserPreferences.recommendationsApplyParentalRatingCap,
+      );
       final sourceRating = baseItem.officialRating;
       final sourceRatingLevel = _getRatingLevel(sourceRating);
 
@@ -2158,7 +2248,8 @@ class RowDataSource {
       // If we have fewer than 15 items after candidate scoring and filtering, fetch filler items
       if (scoredCandidates.length < 15) {
         try {
-          final fallbackCacheKey = '$serverId:fallback:${types.join(",")}:${genres.join(",")}';
+          final fallbackCacheKey =
+              '$serverId:fallback:${types.join(",")}:${genres.join(",")}';
           final List<Map<String, dynamic>> items;
           if (_recommendationCache.containsKey(fallbackCacheKey)) {
             items = _recommendationCache[fallbackCacheKey]!;
@@ -2170,7 +2261,8 @@ class RowDataSource {
               limit: 30,
               sortBy: 'ProductionYear,SortName',
               sortOrder: 'Descending',
-              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+              fields:
+                  'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -2180,7 +2272,9 @@ class RowDataSource {
           }
           for (final item in items) {
             final id = item['Id']?.toString() ?? '';
-            if (id.isNotEmpty && !candidatesMap.containsKey(id) && id != baseItem.id) {
+            if (id.isNotEmpty &&
+                !candidatesMap.containsKey(id) &&
+                id != baseItem.id) {
               final userData = item['UserData'] as Map?;
               final isPlayed = userData?['Played'] as bool? ?? false;
               if (!effectiveIncludeWatched && isPlayed) continue;
@@ -2225,11 +2319,13 @@ class RowDataSource {
 
       recommendedItems = scoredCandidates
           .take(limit)
-          .map((e) => AggregatedItem(
-                id: e.key['Id']?.toString() ?? '',
-                serverId: serverId,
-                rawData: e.key,
-              ))
+          .map(
+            (e) => AggregatedItem(
+              id: e.key['Id']?.toString() ?? '',
+              serverId: serverId,
+              rawData: e.key,
+            ),
+          )
           .toList();
     } else {
       // Online
@@ -2255,7 +2351,9 @@ class RowDataSource {
             }
           }
         } catch (e) {
-          print('[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e');
+          print(
+            '[RowDataSource] Failed to resolve TMDB ID for online recommendations: $e',
+          );
         }
       }
 
@@ -2265,10 +2363,12 @@ class RowDataSource {
           final apiKey = prefs.get(UserPreferences.tmdbApiKey);
           if (apiKey.isNotEmpty) {
             try {
-              final dio = Dio(BaseOptions(
-                connectTimeout: const Duration(seconds: 10),
-                receiveTimeout: const Duration(seconds: 10),
-              ));
+              final dio = Dio(
+                BaseOptions(
+                  connectTimeout: const Duration(seconds: 10),
+                  receiveTimeout: const Duration(seconds: 10),
+                ),
+              );
               final isTv = baseItem.type == 'Series';
               final path = isTv
                   ? 'tv/$tmdbIdInt/recommendations'
@@ -2284,44 +2384,55 @@ class RowDataSource {
               );
               if (response.statusCode == 200 && response.data != null) {
                 final results = response.data['results'] as List? ?? [];
-                recommendedItems = results.map((res) {
-                  final idVal = res['id'];
-                  final id = idVal?.toString() ?? '';
-                  final title = (res['title'] as String?) ?? (res['name'] as String?) ?? 'Unknown';
-                  final posterPath = res['poster_path'] as String? ?? '';
-                  final backdropPath = res['backdrop_path'] as String? ?? '';
-                  
-                  final dateStr = (res['release_date'] as String?) ?? (res['first_air_date'] as String?);
-                  int? year;
-                  if (dateStr != null && dateStr.length >= 4) {
-                    year = int.tryParse(dateStr.substring(0, 4));
-                  }
-                  
-                  final mediaTypeRaw = res['media_type'] as String?;
-                  final String type;
-                  if (mediaTypeRaw != null) {
-                    type = mediaTypeRaw == 'tv' ? 'Series' : 'Movie';
-                  } else {
-                    type = isTv ? 'Series' : 'Movie';
-                  }
-                  
-                  return AggregatedItem(
-                    id: id,
-                    serverId: 'seerr',
-                    rawData: {
-                      'Name': title,
-                      'Type': type,
-                      'Overview': res['overview'] as String? ?? '',
-                      'PosterPath': posterPath,
-                      'BackdropPath': backdropPath,
-                      'ProductionYear': year,
-                      'SeerrMediaType': type == 'Series' ? 'tv' : 'movie',
-                    },
-                  );
-                }).take(limit).toList();
+                recommendedItems = results
+                    .map((res) {
+                      final idVal = res['id'];
+                      final id = idVal?.toString() ?? '';
+                      final title =
+                          (res['title'] as String?) ??
+                          (res['name'] as String?) ??
+                          'Unknown';
+                      final posterPath = res['poster_path'] as String? ?? '';
+                      final backdropPath =
+                          res['backdrop_path'] as String? ?? '';
+
+                      final dateStr =
+                          (res['release_date'] as String?) ??
+                          (res['first_air_date'] as String?);
+                      int? year;
+                      if (dateStr != null && dateStr.length >= 4) {
+                        year = int.tryParse(dateStr.substring(0, 4));
+                      }
+
+                      final mediaTypeRaw = res['media_type'] as String?;
+                      final String type;
+                      if (mediaTypeRaw != null) {
+                        type = mediaTypeRaw == 'tv' ? 'Series' : 'Movie';
+                      } else {
+                        type = isTv ? 'Series' : 'Movie';
+                      }
+
+                      return AggregatedItem(
+                        id: id,
+                        serverId: 'seerr',
+                        rawData: {
+                          'Name': title,
+                          'Type': type,
+                          'Overview': res['overview'] as String? ?? '',
+                          'PosterPath': posterPath,
+                          'BackdropPath': backdropPath,
+                          'ProductionYear': year,
+                          'SeerrMediaType': type == 'Series' ? 'tv' : 'movie',
+                        },
+                      );
+                    })
+                    .take(limit)
+                    .toList();
               }
             } catch (e) {
-              print('[RowDataSource] Direct TMDB recommendation query failed: $e');
+              print(
+                '[RowDataSource] Direct TMDB recommendation query failed: $e',
+              );
             }
           }
 
@@ -2342,28 +2453,35 @@ class RowDataSource {
                   if (blockNsfw) {
                     if (item.adult) return false;
                     final text = '${item.displayTitle} ${item.overview ?? ''}';
-                    if (SeerrDiscoverViewModel.nsfwPatterns.any((p) => p.hasMatch(text))) {
+                    if (SeerrDiscoverViewModel.nsfwPatterns.any(
+                      (p) => p.hasMatch(text),
+                    )) {
                       return false;
                     }
                   }
                   return true;
                 }).toList();
 
-                recommendedItems = filtered.map((item) {
-                  return AggregatedItem(
-                    id: item.id.toString(),
-                    serverId: 'seerr',
-                    rawData: {
-                      'Name': item.displayTitle,
-                      'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-                      'Overview': item.overview ?? '',
-                      'PosterPath': item.posterPath ?? '',
-                      'BackdropPath': item.backdropPath ?? '',
-                      'ProductionYear': _extractYear(item.releaseDate ?? item.firstAirDate),
-                      'SeerrMediaType': item.mediaType,
-                    },
-                  );
-                }).take(limit).toList();
+                recommendedItems = filtered
+                    .map((item) {
+                      return AggregatedItem(
+                        id: item.id.toString(),
+                        serverId: 'seerr',
+                        rawData: {
+                          'Name': item.displayTitle,
+                          'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+                          'Overview': item.overview ?? '',
+                          'PosterPath': item.posterPath ?? '',
+                          'BackdropPath': item.backdropPath ?? '',
+                          'ProductionYear': _extractYear(
+                            item.releaseDate ?? item.firstAirDate,
+                          ),
+                          'SeerrMediaType': item.mediaType,
+                        },
+                      );
+                    })
+                    .take(limit)
+                    .toList();
               }
             } catch (_) {}
           }
@@ -2378,7 +2496,9 @@ class RowDataSource {
     final prefs = GetIt.instance<UserPreferences>();
     final includeMovies = prefs.get(UserPreferences.rewatchIncludeMovies);
     final includeShows = prefs.get(UserPreferences.rewatchIncludeShows);
-    final includeCollections = prefs.get(UserPreferences.rewatchIncludeCollections);
+    final includeCollections = prefs.get(
+      UserPreferences.rewatchIncludeCollections,
+    );
     final sortBy = prefs.get(UserPreferences.rewatchSortBy);
 
     final watchedItems = <AggregatedItem>[];
@@ -2414,11 +2534,12 @@ class RowDataSource {
         );
         final episodes = _parseItems(res, serverId);
         final seriesIds = <String>[];
-        
+
         for (final ep in episodes) {
           final sId = ep.rawData['SeriesId']?.toString();
           if (sId != null && sId.isNotEmpty) {
-            final lpDate = ep.rawData['UserData']?['LastPlayedDate']?.toString() ?? '';
+            final lpDate =
+                ep.rawData['UserData']?['LastPlayedDate']?.toString() ?? '';
             if (lpDate.isNotEmpty) {
               final existing = seriesLastPlayedDates[sId] ?? '';
               if (lpDate.compareTo(existing) > 0) {
@@ -2430,21 +2551,24 @@ class RowDataSource {
             }
           }
         }
-            
+
         if (seriesIds.isNotEmpty) {
           final seriesRes = await _client.itemsApi.getItems(
             ids: seriesIds,
             fields: '$_fields,UserData',
           );
           final parsedSeries = _parseItems(seriesRes, serverId);
-          
+
           final checkFutures = parsedSeries.map((s) async {
             final userData = s.rawData['UserData'] as Map?;
             final isPlayed = userData?['Played'] as bool? ?? false;
-            final unplayedCount = s.rawData['UnplayedItemCount'] as int? ?? userData?['UnplayedItemCount'] as int? ?? 0;
-            
+            final unplayedCount =
+                s.rawData['UnplayedItemCount'] as int? ??
+                userData?['UnplayedItemCount'] as int? ??
+                0;
+
             if (!isPlayed || unplayedCount > 0) return null;
-            
+
             try {
               final episodesRes = await _client.itemsApi.getItems(
                 parentId: s.id,
@@ -2453,7 +2577,10 @@ class RowDataSource {
                 filters: const ['IsUnplayed'],
                 limit: 1,
               );
-              final itemsCount = episodesRes['TotalRecordCount'] as int? ?? (episodesRes['Items'] as List?)?.length ?? 0;
+              final itemsCount =
+                  episodesRes['TotalRecordCount'] as int? ??
+                  (episodesRes['Items'] as List?)?.length ??
+                  0;
               if (itemsCount == 0) {
                 return s;
               }
@@ -2462,9 +2589,11 @@ class RowDataSource {
             }
             return null;
           }).toList();
-          
+
           final checkedResults = await Future.wait(checkFutures);
-          final filteredSeries = checkedResults.whereType<AggregatedItem>().toList();
+          final filteredSeries = checkedResults
+              .whereType<AggregatedItem>()
+              .toList();
           watchedItems.addAll(filteredSeries);
         }
       } catch (_) {}
@@ -2481,7 +2610,7 @@ class RowDataSource {
           fields: '$_fields',
         );
         final collections = _parseItems(res, serverId);
-        
+
         final collectionFutures = collections.map((col) async {
           try {
             final childrenRes = await _client.itemsApi.getItems(
@@ -2490,32 +2619,28 @@ class RowDataSource {
               fields: 'UserData',
             );
             final children = childrenRes['Items'] as List? ?? [];
-            if (children.isNotEmpty && children.every((c) => (c['UserData']?['Played'] as bool?) == true)) {
+            if (children.isNotEmpty &&
+                children.every(
+                  (c) => (c['UserData']?['Played'] as bool?) == true,
+                )) {
               // Find max LastPlayedDate of children to assign to the collection
               String maxLp = '';
               for (final c in children) {
                 final lp = c['UserData']?['LastPlayedDate']?.toString() ?? '';
                 if (lp.compareTo(maxLp) > 0) maxLp = lp;
               }
-              return {
-                'col': col,
-                'isPlayed': true,
-                'lastPlayed': maxLp,
-              };
+              return {'col': col, 'isPlayed': true, 'lastPlayed': maxLp};
             }
           } catch (_) {}
-          return {
-            'col': col,
-            'isPlayed': false,
-            'lastPlayed': '',
-          };
+          return {'col': col, 'isPlayed': false, 'lastPlayed': ''};
         }).toList();
 
         final collectionInfos = await Future.wait(collectionFutures);
         for (final info in collectionInfos) {
           if (info['isPlayed'] as bool) {
             watchedItems.add(info['col'] as AggregatedItem);
-            collectionLastPlayedDates[(info['col'] as AggregatedItem).id] = info['lastPlayed'] as String;
+            collectionLastPlayedDates[(info['col'] as AggregatedItem).id] =
+                info['lastPlayed'] as String;
           }
         }
       } catch (_) {}
@@ -2527,14 +2652,16 @@ class RowDataSource {
         String lpA = a.rawData['UserData']?['LastPlayedDate']?.toString() ?? '';
         if (a.type == 'BoxSet' && collectionLastPlayedDates.containsKey(a.id)) {
           lpA = collectionLastPlayedDates[a.id]!;
-        } else if (a.type == 'Series' && seriesLastPlayedDates.containsKey(a.id)) {
+        } else if (a.type == 'Series' &&
+            seriesLastPlayedDates.containsKey(a.id)) {
           lpA = seriesLastPlayedDates[a.id]!;
         }
-        
+
         String lpB = b.rawData['UserData']?['LastPlayedDate']?.toString() ?? '';
         if (b.type == 'BoxSet' && collectionLastPlayedDates.containsKey(b.id)) {
           lpB = collectionLastPlayedDates[b.id]!;
-        } else if (b.type == 'Series' && seriesLastPlayedDates.containsKey(b.id)) {
+        } else if (b.type == 'Series' &&
+            seriesLastPlayedDates.containsKey(b.id)) {
           lpB = seriesLastPlayedDates[b.id]!;
         }
         return lpB.compareTo(lpA);
@@ -2593,20 +2720,47 @@ class RowDataSource {
   }) {
     double score = 0.0;
 
-    final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    final cGenres =
+        (candidate['Genres'] as List?)
+            ?.map((e) => e?.toString())
+            .whereType<String>()
+            .toList() ??
+        const <String>[];
     for (final g in genres) {
       if (cGenres.contains(g)) score += 3.0;
     }
 
-    final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    final cTags =
+        (candidate['Tags'] as List?)
+            ?.map((e) => e?.toString())
+            .whereType<String>()
+            .toList() ??
+        const <String>[];
     for (final t in tags) {
       if (cTags.contains(t)) score += 3.0;
     }
 
-    final cPeople = (candidate['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
-    final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-    final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-    final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+    final cPeople =
+        (candidate['People'] as List?)
+            ?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
+            .whereType<Map<String, dynamic>>()
+            .toList() ??
+        const <Map<String, dynamic>>[];
+    final cActors = cPeople
+        .where((p) => p['Type'] == 'Actor')
+        .map((p) => p['Name']?.toString())
+        .whereType<String>()
+        .toSet();
+    final cDirectors = cPeople
+        .where((p) => p['Type'] == 'Director')
+        .map((p) => p['Name']?.toString())
+        .whereType<String>()
+        .toSet();
+    final cWriters = cPeople
+        .where((p) => p['Type'] == 'Writer')
+        .map((p) => p['Name']?.toString())
+        .whereType<String>()
+        .toSet();
     for (final a in actorNames) {
       if (cActors.contains(a)) score += 5.0;
     }
@@ -2617,7 +2771,12 @@ class RowDataSource {
       if (cWriters.contains(w)) score += 6.0;
     }
 
-    final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+    final cStudios =
+        (candidate['Studios'] as List?)
+            ?.map((e) => e is Map ? e['Name']?.toString() : e?.toString())
+            .whereType<String>()
+            .toSet() ??
+        const <String>{};
     for (final s in baseStudios) {
       if (cStudios.contains(s)) score += 3.0;
     }
@@ -2631,7 +2790,10 @@ class RowDataSource {
       }
     }
 
-    if (_isSequelOrSimilarTitle(baseName, candidate['Name']?.toString() ?? '')) {
+    if (_isSequelOrSimilarTitle(
+      baseName,
+      candidate['Name']?.toString() ?? '',
+    )) {
       score += 10.0;
     }
 
@@ -2644,7 +2806,19 @@ class RowDataSource {
   }
 
   bool _isSequelOrSimilarTitle(String titleA, String titleB) {
-    const stopWords = {'the', 'and', 'with', 'from', 'under', 'over', 'about', 'chapter', 'part', 'movie', 'film'};
+    const stopWords = {
+      'the',
+      'and',
+      'with',
+      'from',
+      'under',
+      'over',
+      'about',
+      'chapter',
+      'part',
+      'movie',
+      'film',
+    };
 
     List<String> keyWords(String s) => s
         .toLowerCase()
