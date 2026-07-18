@@ -5738,16 +5738,20 @@ class _TopTenRankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.bottomLeft,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(padding: const EdgeInsets.only(left: 34), child: child),
-        Positioned(
-          left: 6,
-          bottom: 12,
-          child: IgnorePointer(
-            child: Text(
+        SizedBox(
+          width: 64,
+          height: 116,
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: IgnorePointer(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.bottomRight,
+                child: Text(
               '$rank',
               style: TextStyle(
                 fontSize: 112,
@@ -5759,9 +5763,12 @@ class _TopTenRankCard extends StatelessWidget {
                   Shadow(color: Colors.black87, blurRadius: 6, offset: Offset(2, 2)),
                 ],
               ),
+                ),
+              ),
             ),
           ),
         ),
+        child,
       ],
     );
   }
