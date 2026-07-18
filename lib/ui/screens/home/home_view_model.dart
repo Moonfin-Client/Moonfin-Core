@@ -319,6 +319,11 @@ class HomeViewModel extends ChangeNotifier {
         }
       }
 
+      final topTenMigrated = await _prefs.migrateTopTenHomeSections();
+      if (topTenMigrated) {
+        debugPrint('[Top10] migrated legacy home-section layout');
+      }
+
       final activeConfigs = _prefs.activeHomeSectionConfigs;
       final fallbackUsed = activeConfigs.isEmpty;
       final configuredSections = fallbackUsed
@@ -340,8 +345,8 @@ class HomeViewModel extends ChangeNotifier {
               ),
             ]
           : activeConfigs;
-      // Existing profiles predate the Top 10 defaults. Add them once without
-      // overriding a profile that has explicitly disabled either section.
+      // The persisted migration above covers layouts that predate Top 10.
+      // Keep this fallback for transient/unpersisted configurations.
       final storedSections = _prefs.homeSectionsConfig;
       final configs = [
         ...configuredSections,

@@ -266,6 +266,7 @@ class UserPreferences extends ChangeNotifier {
     'seerrBlockNsfw',
     'enabledRatings',
     'home_sections_config',
+    'top_ten_home_sections_migration_version',
     'pref_audio_display_latest',
     'pref_audio_display_last_played',
     'pref_audio_display_favorites',
@@ -1662,6 +1663,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  /// Tracks the one-time migration that enables the new Top 10 sections for
+  /// profiles whose old serialized defaults already contained disabled slots.
+  static final topTenHomeSectionsMigrationVersion = Preference(
+    key: 'top_ten_home_sections_migration_version',
+    defaultValue: 0,
+  );
+
   static final lastExternalRowsRefreshTime = Preference(
     key: 'last_external_rows_refresh_time',
     defaultValue: 0,
@@ -1824,6 +1832,57 @@ class UserPreferences extends ChangeNotifier {
 
   Future<void> setHomeSectionsConfig(List<HomeSectionConfig> configs) =>
       set(homeSectionsJson, HomeSectionConfig.toJsonString(configs));
+
+  /// Adds the Top 10 defaults to an existing profile exactly once.
+  ///
+  /// Older persisted layouts include every built-in section as a disabled
+  /// placeholder. Merely checking whether a Top 10 entry exists therefore
+  /// leaves those profiles without the new rows. This migration enables and
+  /// places the first entry for each Top 10 type, removes duplicate legacy
+  /// entries, and records completion so a later user toggle is respected.
+  Future<bool> migrateTopTenHomeSections() async {
+    if (get(topTenHomeSectionsMigrationVersion) >= 1) return false;
+
+    final stored = homeSectionsConfig;
+    final source = stored.isEmpty ? HomeSectionConfig.defaults() : stored;
+    final migrated = <HomeSectionConfig>[];
+    var hasMovies = false;
+    var hasTvShows = false;
+
+    for (final config in source) {
+      switch (config.type) {
+        case HomeSectionType.topTenMovies:
+          if (hasMovies) continue;
+          hasMovies = true;
+          migrated.add(config.copyWith(enabled: true, order: 4));
+        case HomeSectionType.topTenTvShows:
+          if (hasTvShows) continue;
+          hasTvShows = true;
+          migrated.add(config.copyWith(enabled: true, order: 5));
+        default:
+          migrated.add(config);
+      }
+    }
+
+    if (!hasMovies) {
+      migrated.add(const HomeSectionConfig(
+        type: HomeSectionType.topTenMovies,
+        enabled: true,
+        order: 4,
+      ));
+    }
+    if (!hasTvShows) {
+      migrated.add(const HomeSectionConfig(
+        type: HomeSectionType.topTenTvShows,
+        enabled: true,
+        order: 5,
+      ));
+    }
+
+    await setHomeSectionsConfig(migrated);
+    await set(topTenHomeSectionsMigrationVersion, 1);
+    return true;
+  }
 
   List<HomeSectionType> get activeHomeSections {
     final enabled = homeSectionsConfig.where((c) => c.enabled).toList()

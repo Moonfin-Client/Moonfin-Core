@@ -18,8 +18,10 @@ import '../utils/genre_browse_utils.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import '../repositories/seerr_repository.dart';
 import '../../preference/seerr_preferences.dart';
+import '../../util/platform_detection.dart';
 import '../viewmodels/seerr_discover_view_model.dart';
 import 'custom_external_lists_service.dart';
 
@@ -31,6 +33,9 @@ class RowDataSource {
   static const _defaultSortBy = 'SortName';
   static const _defaultSortOrder = 'Ascending';
   static const _genreArtworkConcurrency = 6;
+  static const _platformChannel = MethodChannel(
+    'org.moonfin.androidtv/platform',
+  );
 
   static const _fields =
       'DateCreated,Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
@@ -236,21 +241,60 @@ class RowDataSource {
       limit: 100,
     );
     final now = DateTime.now();
-    final ranked =
-        _parseItems(
-            response,
-            serverId,
-          ).where((item) => item.type == (movies ? 'Movie' : 'Series')).toList()
-          ..sort(
-            (a, b) => _topTenScore(b, now).compareTo(_topTenScore(a, now)),
-          );
+    final ranked = rankTopTenItems(
+      _parseItems(response, serverId),
+      movies: movies,
+      now: now,
+    );
     final items = ranked.take(10).toList(growable: false);
+    _reportTopTenDiagnostic(
+      movies: movies,
+      candidateCount: ranked.length,
+      itemCount: items.length,
+    );
     return HomeRow(
       id: movies ? 'top_ten_movies' : 'top_ten_tv_shows',
       title: movies ? 'Top 10 Movies' : 'Top 10 TV Shows',
       items: items,
       rowType: movies ? HomeRowType.topTenMovies : HomeRowType.topTenTvShows,
       totalCount: items.length,
+    );
+  }
+
+  /// Ranks direct, per-user Jellyfin results. Community rating is the
+  /// deterministic fallback when there is no household-activity signal, so a
+  /// quiet/new profile still receives a non-empty row whenever accessible
+  /// titles exist.
+  @visibleForTesting
+  static List<AggregatedItem> rankTopTenItems(
+    Iterable<AggregatedItem> candidates, {
+    required bool movies,
+    required DateTime now,
+  }) {
+    final expectedType = movies ? 'Movie' : 'Series';
+    final ranked = candidates
+        .where((item) => item.type == expectedType)
+        .toList(growable: false)
+      ..sort((a, b) => _topTenScore(b, now).compareTo(_topTenScore(a, now)));
+    return ranked;
+  }
+
+  static void _reportTopTenDiagnostic({
+    required bool movies,
+    required int candidateCount,
+    required int itemCount,
+  }) {
+    final section = movies ? 'movies' : 'tvShows';
+    debugPrint(
+      '[Top10] section=$section candidates=$candidateCount items=$itemCount',
+    );
+    if (!PlatformDetection.isAndroid) return;
+    unawaited(
+      _platformChannel.invokeMethod<void>('logTopTenDiagnostic', {
+        'section': section,
+        'candidates': candidateCount,
+        'items': itemCount,
+      }).catchError((_) {}),
     );
   }
 

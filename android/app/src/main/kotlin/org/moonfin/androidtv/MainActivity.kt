@@ -26,6 +26,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Process
 import android.os.PowerManager
+import android.util.Log
 import android.util.Rational
 import android.view.Display
 import android.view.InputDevice
@@ -232,6 +233,16 @@ class MainActivity : AudioServiceActivity() {
                 }
                 "audioCapabilities" -> {
                     result.success(AudioCapabilities.query(this))
+                }
+                "logTopTenDiagnostic" -> {
+                    val section = call.argument<String>("section") ?: "unknown"
+                    val candidates = call.argument<Int>("candidates") ?: 0
+                    val items = call.argument<Int>("items") ?: 0
+                    Log.i(
+                        "MoonfinTopTen",
+                        "section=$section candidates=$candidates items=$items",
+                    )
+                    result.success(null)
                 }
                 "exitApp" -> {
                     result.success(true)
