@@ -25,6 +25,17 @@ enum CollectionSortOption {
 
 enum ItemDetailState { loading, ready, error }
 
+/// Why a delete request failed.
+///
+/// [detail] is a short status line safe to show the user. The raw response
+/// body never travels here because it can leak server paths.
+class DeleteItemFailure {
+  final int? statusCode;
+  final String? detail;
+
+  const DeleteItemFailure({this.statusCode, this.detail});
+}
+
 class ParentCollection {
   final String id;
   final String name;
@@ -579,15 +590,23 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<String?> deleteItem() async {
+  /// Returns `null` when the item was deleted, otherwise why it failed.
+  Future<DeleteItemFailure?> deleteItem() async {
     try {
       await _client.itemsApi.deleteItem(itemId);
       return null;
     } catch (e) {
       if (e is DioException) {
-        return e.response?.data?.toString() ?? e.message ?? e.toString();
+        // The body can be an HTML error page or JSON holding server paths, so
+        // it gets logged instead of shown.
+        debugPrint('[ItemDetailViewModel] Delete failed: ${e.response?.data}');
+        return DeleteItemFailure(
+          statusCode: e.response?.statusCode,
+          detail: e.response?.statusMessage ?? e.message,
+        );
       }
-      return e.toString();
+      debugPrint('[ItemDetailViewModel] Delete failed: $e');
+      return const DeleteItemFailure();
     }
   }
 

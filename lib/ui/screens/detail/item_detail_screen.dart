@@ -105,6 +105,59 @@ void _animateScrollToTop(ScrollPosition position) {
   );
 }
 
+const _destructiveRed = Color(0xFFD32F2F);
+const _destructiveRedDim = Color(0xFFB71C1C);
+
+String _deleteFailureMessage(
+  AppLocalizations l10n,
+  DeleteItemFailure failure, {
+  required bool isPlaylist,
+}) {
+  // Lacking the Jellyfin delete permission is the usual reason this fails, so
+  // it gets its own string.
+  if (failure.statusCode == 401 || failure.statusCode == 403) {
+    return l10n.requestErrorPermission;
+  }
+  final detail = failure.detail;
+  if (detail == null || detail.isEmpty) {
+    return isPlaylist ? l10n.failedToDeletePlaylist : l10n.failedToDeleteItem;
+  }
+  return l10n.failedToDeleteItemWithError(detail);
+}
+
+/// Runs the delete once the caller has navigated away, so the result comes
+/// back through the root navigator rather than the disposed detail screen.
+void _deleteItemInBackground(
+  ItemDetailViewModel viewModel, {
+  required bool isPlaylist,
+}) {
+  unawaited(
+    viewModel.deleteItem().then((failure) {
+      // Ask for the refresh before looking for a context, otherwise a missing
+      // navigator would also skip the refresh.
+      if (failure == null) {
+        homeRefreshBus.requestNowOrAfterNavigation();
+      }
+
+      final activeContext =
+          appRouter.routerDelegate.navigatorKey.currentContext;
+      if (activeContext == null || !activeContext.mounted) return;
+      final l10n = AppLocalizations.of(activeContext);
+
+      ScaffoldMessenger.of(activeContext).showSnackBar(
+        failure == null
+            ? SnackBar(content: Text(l10n.itemDeleted))
+            : SnackBar(
+                content: Text(
+                  _deleteFailureMessage(l10n, failure, isPlaylist: isPlaylist),
+                ),
+                backgroundColor: _destructiveRed,
+              ),
+      );
+    }),
+  );
+}
+
 Future<bool> _showDeleteConfirmationDialog(
   BuildContext context, {
   required String title,
@@ -117,60 +170,19 @@ Future<bool> _showDeleteConfirmationDialog(
       title: Text(title, style: const TextStyle(color: Colors.white)),
       content: Text(message, style: const TextStyle(color: Colors.white70)),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(ctx, false),
-          style: ButtonStyle(
-            foregroundColor: const WidgetStatePropertyAll(Colors.white),
-            overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
-              if (states.contains(WidgetState.focused)) {
-                return AppColorScheme.accent.withValues(alpha: 0.15);
-              }
-              return null;
-            }),
-            side: WidgetStateProperty.resolveWith<BorderSide?>((states) {
-              if (states.contains(WidgetState.focused)) {
-                return BorderSide(color: AppColorScheme.accent, width: 2.5);
-              }
-              return BorderSide.none;
-            }),
-            padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-          ),
+          focusRingColor: AppColorScheme.accent,
           child: Text(AppLocalizations.of(ctx).cancel),
         ),
-        FilledButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(ctx, true),
-          style: ButtonStyle(
-            foregroundColor: const WidgetStatePropertyAll(Colors.white),
-            backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
-              if (states.contains(WidgetState.focused)) {
-                return const Color(0xFFD32F2F);
-              }
-              return const Color(0xFFB71C1C);
-            }),
-            overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
-              if (states.contains(WidgetState.focused)) {
-                return Colors.white.withValues(alpha: 0.15);
-              }
-              return null;
-            }),
-            side: WidgetStateProperty.resolveWith<BorderSide?>((states) {
-              if (states.contains(WidgetState.focused)) {
-                return const BorderSide(color: Colors.white, width: 2.5);
-              }
-              return BorderSide.none;
-            }),
-            padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-          ),
+          isDestructive: true,
+          backgroundColor: _destructiveRedDim,
+          focusedBackgroundColor: _destructiveRed,
           child: Text(
             AppLocalizations.of(ctx).delete,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -3296,22 +3308,7 @@ class _DetailContentState extends State<_DetailContent> {
     if (!confirmed) return;
 
     appRouter.go(Destinations.home);
-    unawaited(viewModel.deleteItem().then((error) {
-      if (error == null) {
-        homeRefreshBus.requestNowOrAfterNavigation();
-      } else {
-        final activeContext = appRouter.routerDelegate.navigatorKey.currentContext;
-        if (activeContext != null && activeContext.mounted) {
-          final activeL10n = AppLocalizations.of(activeContext);
-          ScaffoldMessenger.of(activeContext).showSnackBar(
-            SnackBar(
-              content: Text(activeL10n.failedToDeleteItemWithError(error)),
-              backgroundColor: const Color(0xFFD32F2F),
-            ),
-          );
-        }
-      }
-    }));
+    _deleteItemInBackground(viewModel, isPlaylist: isPlaylist);
   }
 
   Future<void> _showRenamePlaylistDialog(
@@ -6733,22 +6730,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (!confirmed) return;
 
     appRouter.go(Destinations.home);
-    unawaited(viewModel.deleteItem().then((error) {
-      if (error == null) {
-        homeRefreshBus.requestNowOrAfterNavigation();
-      } else {
-        final activeContext = appRouter.routerDelegate.navigatorKey.currentContext;
-        if (activeContext != null && activeContext.mounted) {
-          final activeL10n = AppLocalizations.of(activeContext);
-          ScaffoldMessenger.of(activeContext).showSnackBar(
-            SnackBar(
-              content: Text(activeL10n.failedToDeleteItemWithError(error)),
-              backgroundColor: const Color(0xFFD32F2F),
-            ),
-          );
-        }
-      }
-    }));
+    _deleteItemInBackground(viewModel, isPlaylist: false);
   }
 
   int? _activePlaybackAudioIndex() {
