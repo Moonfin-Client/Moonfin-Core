@@ -132,7 +132,7 @@ class MediaBarViewModel extends ChangeNotifier {
       _lastMode = mode;
       _lastContentType = contentType;
       _lastItemCount = itemCount;
-      load();
+      load(force: true);
     }
   }
 
@@ -145,7 +145,9 @@ class MediaBarViewModel extends ChangeNotifier {
   Future<void> load({
     BuildContext? context,
     bool preserveCurrent = true,
+    bool force = false,
   }) async {
+    if (_state is! MediaBarLoading && !force) return;
     if (_isLoading) return;
     _isLoading = true;
     final loadGeneration = ++_loadGeneration;

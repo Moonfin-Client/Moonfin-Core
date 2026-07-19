@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
@@ -15,6 +17,7 @@ class MediaBarRepository {
 
   final MediaServerClient _client;
   final UserPreferences _prefs;
+  final _random = math.Random();
 
   static const _fields =
       'Type,Genres,OfficialRating,CommunityRating,CriticRating,'
@@ -24,6 +27,11 @@ class MediaBarRepository {
   MediaBarRepository(this._client, this._prefs);
 
   Future<MediaBarState> loadItems() async {
+    if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
+        GetIt.instance<MediaBarRepository>() != this) {
+      return const MediaBarDisabled();
+    }
+
     final mediaBarMode = _prefs.get(UserPreferences.mediaBarMode);
     if (!UserPreferences.isMediaBarModeEnabled(mediaBarMode)) {
       return const MediaBarDisabled();
@@ -63,30 +71,76 @@ class MediaBarRepository {
       _ => const ['Movie', 'Series'],
     };
 
+    final preferredCollectionTypes = switch (contentType) {
+      'movies' => const ['movies'],
+      'tvshows' => const ['tvshows'],
+      _ => const ['tvshows', 'movies'],
+    };
+
+    final allParentIds = <String>{};
+    final allParentItemTypes = <String, List<String>>{};
+
     try {
-      final allItems = <Map<String, dynamic>>[];
+      final viewsResponse = await _client.userViewsApi.getUserViews().timeout(
+        const Duration(seconds: 4),
+      );
+      final views = (viewsResponse['Items'] as List? ?? [])
+          .cast<Map<String, dynamic>>();
 
-      final fetchTasks = <Future<List<Map<String, dynamic>>>>[];
-
-      if (libraryIds.isEmpty && collectionIds.isEmpty) {
-        fetchTasks.add(_fetchItems(includeTypes, fetchLimit));
-      } else {
-        for (final libraryId in libraryIds) {
-          fetchTasks.add(
-            _fetchItems(includeTypes, fetchLimit, parentId: libraryId),
-          );
+      final validLibraryIds = <String>{};
+      for (final view in views) {
+        final viewId = view['Id']?.toString();
+        final type = _normalizeCollectionType(view['CollectionType']);
+        if (viewId != null && preferredCollectionTypes.contains(type)) {
+          validLibraryIds.add(viewId);
+          if (type == 'movies') {
+            allParentItemTypes[viewId] = const ['Movie'];
+          } else if (type == 'tvshows') {
+            allParentItemTypes[viewId] = const ['Series'];
+          }
         }
       }
 
-      for (final collectionId in collectionIds) {
-        fetchTasks.add(
-          _fetchItems(includeTypes, fetchLimit, parentId: collectionId),
-        );
-      }
+      // Filter libraryIds to only include valid movies/tvshows library IDs
+      final filteredLibraryIds = libraryIds
+          .where((id) => validLibraryIds.contains(id))
+          .toList();
 
-      final fetchedBatches = await Future.wait(fetchTasks);
-      for (final batch in fetchedBatches) {
-        allItems.addAll(batch);
+      allParentIds.addAll(filteredLibraryIds);
+      allParentIds.addAll(collectionIds);
+
+      if (allParentIds.isEmpty) {
+        allParentIds.addAll(validLibraryIds);
+      }
+    } catch (_) {
+      // Fallback: If UserViews lookup fails, trust user's selection directly
+      allParentIds.addAll(libraryIds);
+      allParentIds.addAll(collectionIds);
+    }
+
+    try {
+      final allItems = <Map<String, dynamic>>[];
+
+      if (allParentIds.isEmpty) {
+        return const MediaBarDisabled();
+      } else {
+        for (final parentId in allParentIds) {
+          if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
+              GetIt.instance<MediaBarRepository>() != this) {
+            return const MediaBarDisabled();
+          }
+          try {
+            final targetTypes = allParentItemTypes[parentId] ?? includeTypes;
+            final batch = await _fetchItems(
+              targetTypes,
+              fetchLimit,
+              parentId: parentId,
+            );
+            allItems.addAll(batch);
+          } catch (_) {
+            // Keep fetching remaining libraries if one fails
+          }
+        }
       }
 
       var selected = _selectItemsWithBackdrops(
@@ -95,10 +149,16 @@ class MediaBarRepository {
         excludedGenres,
       );
 
-      if (selected.isEmpty &&
-          (libraryIds.isNotEmpty || collectionIds.isNotEmpty)) {
+      if (selected.isEmpty && allParentIds.isNotEmpty) {
         final fallbackItems = <Map<String, dynamic>>[];
-        fallbackItems.addAll(await _fetchItems(includeTypes, fetchLimit));
+        final targetTypes = allParentItemTypes[allParentIds.first] ?? includeTypes;
+        fallbackItems.addAll(
+          await _fetchItems(
+            targetTypes,
+            fetchLimit,
+            parentId: allParentIds.first,
+          ),
+        );
 
         selected = _selectItemsWithBackdrops(
           fallbackItems,
@@ -254,22 +314,66 @@ class MediaBarRepository {
     int limit, {
     String? parentId,
   }) async {
+    if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
+        GetIt.instance<MediaBarRepository>() != this) {
+      return const <Map<String, dynamic>>[];
+    }
     try {
-      final response = await _client.itemsApi
+      // 1. Get the total count of items in this parent library.
+      // We sort by 'SortName' (indexed) and ask for limit: 1 with count enabled.
+      // Since it's sorted by an indexed column, SQLite counts it instantly.
+      final countResponse = await _client.itemsApi
           .getItems(
             includeItemTypes: itemTypes,
-            sortBy: 'Random',
-            sortOrder: 'Descending',
-            recursive: true,
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            recursive: parentId == null,
             parentId: parentId,
-            limit: limit,
-            fields: _fields,
-            enableTotalRecordCount: false,
-            enableImageTypes: 'Backdrop,Logo',
+            limit: 1,
+            enableTotalRecordCount: true,
           )
-          .timeout(const Duration(seconds: 3));
-      final rawItems = response['Items'] as List? ?? [];
-      return rawItems.cast<Map<String, dynamic>>();
+          .timeout(const Duration(seconds: 15));
+
+      final total = countResponse['TotalRecordCount'] as int? ?? 0;
+
+      if (total <= 0) {
+        return const <Map<String, dynamic>>[];
+      }
+
+      // If library is small, we just shuffle the items we got in the first page (up to 40)
+      List<Map<String, dynamic>> rawItems;
+      const requestLimit = 40;
+
+      if (total <= requestLimit) {
+        final firstPageItems = countResponse['Items'] as List? ?? [];
+        rawItems = firstPageItems.cast<Map<String, dynamic>>().toList();
+      } else {
+        // 2. Select a random window/offset
+        final maxStartIndex = total - requestLimit;
+        final startIndex = _random.nextInt(maxStartIndex + 1);
+
+        final windowResponse = await _client.itemsApi
+            .getItems(
+              includeItemTypes: itemTypes,
+              sortBy: 'SortName',
+              sortOrder: 'Ascending',
+              recursive: parentId == null,
+              parentId: parentId,
+              startIndex: startIndex,
+              limit: requestLimit,
+              fields: _fields,
+              enableTotalRecordCount: false,
+              enableImageTypes: 'Backdrop,Logo',
+            )
+            .timeout(const Duration(seconds: 15));
+
+        final windowItems = windowResponse['Items'] as List? ?? [];
+        rawItems = windowItems.cast<Map<String, dynamic>>().toList();
+      }
+
+      // Shuffle locally to provide a fresh random feel on every launch
+      rawItems.shuffle(_random);
+      return rawItems;
     } on TimeoutException {
       return _fetchItemsFromFallbackSource(
         itemTypes,
@@ -308,7 +412,7 @@ class MediaBarRepository {
             limit: reducedLimit,
             fields: _fields,
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 15));
       final rawItems = latestResponse['Items'] as List? ?? [];
       return rawItems.cast<Map<String, dynamic>>();
     } catch (_) {}
@@ -326,7 +430,7 @@ class MediaBarRepository {
             enableTotalRecordCount: false,
             enableImageTypes: 'Backdrop,Logo',
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 15));
       final rawItems = fallbackResponse['Items'] as List? ?? [];
       return rawItems.cast<Map<String, dynamic>>();
     } catch (_) {
