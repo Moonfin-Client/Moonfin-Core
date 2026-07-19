@@ -31,7 +31,7 @@ Map<String, dynamic> buildHtmlVideoBackendDeviceProfile(
     maxResolution: maxResolution,
     pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
     assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
-    supportsEmbeddedTextSubtitles: false,
+    supportsEmbeddedSubtitles: false,
     supportsExternalTextSubtitles: false,
     supportsAvc: PlatformDetection.supportsAvc,
     supportsAvcHigh10: PlatformDetection.supportsAvcHigh10,

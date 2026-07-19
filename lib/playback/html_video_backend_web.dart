@@ -75,7 +75,6 @@ class HtmlVideoBackend extends PlayerBackend {
       ..autoplay = false
       ..controls = false
       ..preload = 'auto'
-      ..crossOrigin = 'anonymous'
       ..style.border = '0'
       ..style.width = '100%'
       ..style.height = '100%'
@@ -251,7 +250,25 @@ class HtmlVideoBackend extends PlayerBackend {
     } catch (_) {}
   }
 
+  static bool _isCrossOrigin(String url) {
+    final target = Uri.tryParse(url);
+    if (target == null || !target.hasAuthority) return false;
+    final page = Uri.base;
+    return target.scheme != page.scheme ||
+        target.host != page.host ||
+        target.port != page.port;
+  }
+
   void _applyNativeSource(String url) {
+    // Subtitle tracks are fetched in whatever CORS mode the video element is
+    // in, so a remote server needs this. Asking for CORS on a same origin
+    // stream only gives playback another way to fail, and the element outlives
+    // the source, so it comes back off again.
+    if (_isCrossOrigin(url)) {
+      _videoElement.crossOrigin = 'anonymous';
+    } else {
+      _videoElement.removeAttribute('crossorigin');
+    }
     _videoElement.src = url;
     _videoElement.load();
   }
@@ -546,7 +563,6 @@ class HtmlVideoBackend extends PlayerBackend {
       ..src = url
       ..label = title ?? language ?? 'External Subtitle'
       ..srclang = language ?? 'en';
-    track.setAttribute('default', '');
 
     if (codec != null && codec.isNotEmpty) {
       track.setAttribute('data-codec', codec);
@@ -554,10 +570,6 @@ class HtmlVideoBackend extends PlayerBackend {
 
     _videoElement.appendChild(track);
     _externalTracks.add(track);
-
-    try {
-      (track as dynamic).track.mode = 'showing';
-    } catch (_) {}
 
     await setSubtitleTrack(_externalTracks.length - 1);
   }

@@ -119,7 +119,7 @@ class DeviceProfileBuilder {
     MaxVideoResolution maxResolution = MaxVideoResolution.auto,
     bool pgsDirectPlay = true,
     bool assDirectPlay = true,
-    bool supportsEmbeddedTextSubtitles = true,
+    bool supportsEmbeddedSubtitles = true,
     bool supportsExternalTextSubtitles = true,
     bool supportsAvc = false,
     bool supportsAvcHigh10 = false,
@@ -399,7 +399,7 @@ class DeviceProfileBuilder {
       'SubtitleProfiles': _subtitleProfiles(
         pgsDirectPlay: pgsDirectPlay,
         assDirectPlay: assDirectPlay,
-        supportsEmbeddedTextSubtitles: supportsEmbeddedTextSubtitles,
+        supportsEmbeddedSubtitles: supportsEmbeddedSubtitles,
         supportsExternalTextSubtitles: supportsExternalTextSubtitles,
       ),
     };
@@ -1575,10 +1575,14 @@ class DeviceProfileBuilder {
     };
   }
 
+  /// [supportsEmbeddedSubtitles] covers embedded streams of every kind, image
+  /// formats included, so a player that can't read them leaves the server to
+  /// burn them in. [supportsExternalTextSubtitles] is narrower and only covers
+  /// the plain text formats, which is why ass and ssa still offer External.
   static List<Map<String, dynamic>> _subtitleProfiles({
     required bool pgsDirectPlay,
     required bool assDirectPlay,
-    bool supportsEmbeddedTextSubtitles = true,
+    bool supportsEmbeddedSubtitles = true,
     bool supportsExternalTextSubtitles = true,
   }) {
     final profiles = <Map<String, dynamic>>[];
@@ -1594,7 +1598,7 @@ class DeviceProfileBuilder {
     }
 
     for (final format in const <String>['srt', 'subrip', 'ttml']) {
-      if (supportsEmbeddedTextSubtitles) {
+      if (supportsEmbeddedSubtitles) {
         add(format, 'Embed');
       }
       if (supportsExternalTextSubtitles) {
@@ -1603,21 +1607,21 @@ class DeviceProfileBuilder {
     }
 
     for (final format in const <String>['dvbsub', 'dvdsub', 'idx']) {
-      if (supportsEmbeddedTextSubtitles) {
+      if (supportsEmbeddedSubtitles) {
         add(format, 'Embed');
       }
       add(format, 'Encode');
     }
 
     for (final format in const <String>['pgs', 'pgssub']) {
-      if (pgsDirectPlay && supportsEmbeddedTextSubtitles) {
+      if (pgsDirectPlay && supportsEmbeddedSubtitles) {
         add(format, 'Embed');
       }
       add(format, 'Encode');
     }
 
     for (final format in const <String>['ass', 'ssa']) {
-      if (assDirectPlay && supportsEmbeddedTextSubtitles) {
+      if (assDirectPlay && supportsEmbeddedSubtitles) {
         add(format, 'Embed');
         add(format, 'External');
       } else if (assDirectPlay) {

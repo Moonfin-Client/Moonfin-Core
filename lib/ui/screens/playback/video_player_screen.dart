@@ -6084,8 +6084,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showControls();
   }
 
-
-
   Widget _buildZoomButton({
     double size = 24,
     double extent = 48,
