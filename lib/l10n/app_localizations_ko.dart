@@ -3284,6 +3284,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fullScreenRowsDescription => '화면당 홈 행을 1개로 제한합니다';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => '행별 이미지 유형';
 
   @override

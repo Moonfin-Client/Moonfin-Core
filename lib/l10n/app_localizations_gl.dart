@@ -3406,6 +3406,13 @@ class AppLocalizationsGl extends AppLocalizations {
       'Limita as filas de inicio a 1 fila por pantalla';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Tipo de imaxe por fila';
 
   @override

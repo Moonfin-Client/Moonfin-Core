@@ -3370,6 +3370,13 @@ class AppLocalizationsAf extends AppLocalizations {
   String get fullScreenRowsDescription => 'Beperk tuisrye tot 1 ry per skerm';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Per ry tipe beeld';
 
   @override

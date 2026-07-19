@@ -3405,6 +3405,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get fullScreenRowsDescription => 'Limita a una sola fila per pantalla';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Tipus d\'imatge per fila';
 
   @override

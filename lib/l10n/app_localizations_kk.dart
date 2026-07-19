@@ -3379,6 +3379,13 @@ class AppLocalizationsKk extends AppLocalizations {
       'Негізгі бет жолдарын әр экранға бір жолмен шектеу';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Әр жолдағы кескін түрі';
 
   @override

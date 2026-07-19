@@ -3379,6 +3379,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ana sayfa satırlarını ekran başına 1 satırla sınırla';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Satır Başına Görüntü Türü';
 
   @override

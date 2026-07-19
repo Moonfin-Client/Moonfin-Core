@@ -3393,6 +3393,13 @@ class AppLocalizationsUk extends AppLocalizations {
       'Обмежити головну до 1 рядка на екран';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Тип зображення на рядок';
 
   @override

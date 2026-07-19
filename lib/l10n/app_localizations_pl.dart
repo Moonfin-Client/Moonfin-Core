@@ -3373,6 +3373,13 @@ class AppLocalizationsPl extends AppLocalizations {
       'Ogranicz ekran główny do 1 wiersza na ekran';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Typ obrazu na wiersz';
 
   @override

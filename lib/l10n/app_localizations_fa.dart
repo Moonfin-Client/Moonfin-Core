@@ -3345,6 +3345,13 @@ class AppLocalizationsFa extends AppLocalizations {
       'محدود کردن ردیف‌های صفحه اصلی به 1 ردیف در هر صفحه';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'نوع تصویر در هر ردیف';
 
   @override

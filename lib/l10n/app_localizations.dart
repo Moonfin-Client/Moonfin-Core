@@ -6124,6 +6124,18 @@ abstract class AppLocalizations {
   /// **'Limit home rows to 1 row per screen'**
   String get fullScreenRowsDescription;
 
+  /// Title for home rows padding setting
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Padding'**
+  String get modernHomeRowsPadding;
+
+  /// Description for home rows padding setting
+  ///
+  /// In en, this message translates to:
+  /// **'Customize padding between home rows'**
+  String get modernHomeRowsPaddingDescription;
+
   /// Title for per-row image type screen
   ///
   /// In en, this message translates to:

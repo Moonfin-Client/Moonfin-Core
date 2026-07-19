@@ -3364,6 +3364,13 @@ class AppLocalizationsSi extends AppLocalizations {
       'මුල් තිර පේළි එක් තිරයකට පේළි 1කට සීමා කරන්න';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'පේළි රූප වර්ගය අනුව';
 
   @override

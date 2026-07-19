@@ -3489,6 +3489,13 @@ class AppLocalizationsSr extends AppLocalizations {
   String get fullScreenRowsDescription => 'Ограничи на 1 ред по екрану';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Тип слике по реду';
 
   @override

@@ -3397,6 +3397,13 @@ class AppLocalizationsSq extends AppLocalizations {
       'Kufizo rreshtat e kreut në 1 rresht për ekran';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Lloji i imazhit për rresht';
 
   @override

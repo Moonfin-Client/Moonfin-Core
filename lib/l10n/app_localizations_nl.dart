@@ -3380,6 +3380,13 @@ class AppLocalizationsNl extends AppLocalizations {
       'Beperk startrijen tot 1 rij per scherm';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Per rij afbeeldingstype';
 
   @override

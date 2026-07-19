@@ -3385,6 +3385,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'హోమ్ వరుసలను స్క్రీన్‌కు 1 వరుసకు పరిమితం చేయండి';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'ప్రతి వరుస చిత్రం రకం';
 
   @override

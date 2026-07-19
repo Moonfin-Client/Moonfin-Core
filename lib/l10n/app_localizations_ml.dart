@@ -3388,6 +3388,13 @@ class AppLocalizationsMl extends AppLocalizations {
       'ഹോം വരികൾ ഒരു സ്ക്രീനിന് 1 വരിയായി പരിമിതപ്പെടുത്തുക';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'ഓരോ വരി ചിത്ര തരം';
 
   @override

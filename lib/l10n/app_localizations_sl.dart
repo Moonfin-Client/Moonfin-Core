@@ -3394,6 +3394,13 @@ class AppLocalizationsSl extends AppLocalizations {
       'Omeji domačo stran na 1 vrstico naenkrat';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Vrsta slike na vrstico';
 
   @override

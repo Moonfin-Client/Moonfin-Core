@@ -3372,6 +3372,13 @@ class AppLocalizationsEt extends AppLocalizations {
       'Näita korraga ainult üht avaekraani rida';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Rea pilditüübi kohta';
 
   @override

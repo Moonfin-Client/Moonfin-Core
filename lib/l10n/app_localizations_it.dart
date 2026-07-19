@@ -3388,6 +3388,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Limita le righe home a 1 per schermata';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Tipo Immagine per Riga';
 
   @override

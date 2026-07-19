@@ -3391,6 +3391,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Korlátozd a kezdőképernyő sorait képernyőnként 1 sorra';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Soronkénti képtípus';
 
   @override
