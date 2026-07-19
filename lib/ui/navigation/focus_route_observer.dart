@@ -2,9 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
+import '../../util/platform_detection.dart';
+
 /// Grants initial focus to the first focusable descendant of a freshly
 /// pushed (or popped-back-to) route. Works around Flutter Navigator's
 /// default of not auto-focusing any child of a new route's FocusScope.
+///
+/// Phones and tablets sit this out. There is nothing to steer with a d-pad
+/// there, and landing on the first widget pops the keyboard open on any screen
+/// that opens with a text field.
 class FocusRouteObserver extends NavigatorObserver {
   static const _maxAttempts = 8;
   static const _retryDelay = Duration(milliseconds: 50);
@@ -30,6 +36,7 @@ class FocusRouteObserver extends NavigatorObserver {
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {}
 
   void _scheduleFocus(Route<dynamic> route) {
+    if (PlatformDetection.isMobile) return;
     _retryTimer?.cancel();
     WidgetsBinding.instance.addPostFrameCallback((_) => _tryFocus(route, 0));
   }
