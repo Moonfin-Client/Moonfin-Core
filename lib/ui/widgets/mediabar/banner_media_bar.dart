@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/media_bar_slide_item.dart';
+import '../../../data/models/media_bar_state.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -158,7 +159,29 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
   @override
   Widget build(BuildContext context) {
     final items = widget.viewModel.items;
-    if (items.isEmpty) return const SizedBox.shrink();
+    if (items.isEmpty) {
+      final state = widget.viewModel.state;
+      if (state is MediaBarLoading) {
+        final isMobile = PlatformDetection.useMobileUi;
+        final navbarAtTop =
+            widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+        final topInset = isMobile
+            ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
+            : 0.0;
+        final loadingHeight = widget.height - topInset - 12.0;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
+          child: SizedBox(
+            height: loadingHeight,
+            width: double.infinity,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    }
     final index = _index.clamp(0, items.length - 1);
     final item = items[index];
 
