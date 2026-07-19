@@ -133,13 +133,11 @@ class SeerrMediaDetailState {
         .toList();
   }
 
-  List<SeerrRequest> get cancelableRequests {
-    final user = currentUser;
-    if (user == null) return [];
-    final active = activeRequests;
-    if (user.hasPermission(SeerrPermission.manageRequests)) return active;
-    return [];
-  }
+  bool get canManageRequests =>
+      currentUser?.hasPermission(SeerrPermission.manageRequests) ?? false;
+
+  List<SeerrRequest> get cancelableRequests =>
+      canManageRequests ? activeRequests : const [];
 
   bool get hasExistingRequest {
     final requests = mediaInfo?.requests;
@@ -388,17 +386,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       );
 
       await _reloadDetails('Request submitted');
-    } on SeerrRequestException catch (e) {
-      _state = _state.copyWith(
-        isRequesting: false,
-        requestError: e.serverMessage ?? e.kind.name,
-        requestErrorKind: e.kind,
-      );
     } catch (e) {
-      _state = _state.copyWith(
-        isRequesting: false,
-        requestError: e.toString(),
-      );
+      _setRequestFailure(e);
     }
     notifyListeners();
   }
@@ -467,10 +456,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       }
       await _reloadDetails('Request cancelled');
     } catch (e) {
-      _state = _state.copyWith(
-        isRequesting: false,
-        requestError: e.toString(),
-      );
+      _setRequestFailure(e);
     }
     notifyListeners();
   }
@@ -504,10 +490,22 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       await mutation();
       await _reloadDetails(successMessage);
     } catch (e) {
-      _state = _state.copyWith(isRequesting: false, requestError: e.toString());
+      _setRequestFailure(e);
     }
 
     notifyListeners();
+  }
+
+  /// Keeps the typed kind when Seerr refused the mutation so the UI can show a
+  /// translated reason instead of a raw exception.
+  void _setRequestFailure(Object error) {
+    _state = error is SeerrRequestException
+        ? _state.copyWith(
+            isRequesting: false,
+            requestError: error.serverMessage ?? error.kind.name,
+            requestErrorKind: error.kind,
+          )
+        : _state.copyWith(isRequesting: false, requestError: error.toString());
   }
 
   Future<void> _reloadDetails(String successMessage) async {
@@ -536,11 +534,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     _syncDownloadPolling();
   }
 
-  bool get canManageRequests {
-    final user = _state.currentUser;
-    if (user == null) return false;
-    return user.hasPermission(SeerrPermission.manageRequests);
-  }
+  bool get canManageRequests => _state.canManageRequests;
 
   bool get canRequest {
     final user = _state.currentUser;

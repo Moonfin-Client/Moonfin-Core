@@ -79,6 +79,16 @@ class SeerrHttpClient {
     );
   }
 
+  /// Turns the request mutation error codes Seerr uses, such as a 403 for a
+  /// permission or quota refusal, into a typed exception the UI can localize.
+  void _throwIfRequestError(Response response) {
+    final requestError = SeerrRequestException.fromResponse(
+      response.statusCode,
+      response.data,
+    );
+    if (requestError != null) throw requestError;
+  }
+
   void _requireSuccess(Response response, String context) {
     if (response.statusCode == null || response.statusCode! < 200 || response.statusCode! > 299) {
       throw DioException(
@@ -277,9 +287,7 @@ class SeerrHttpClient {
       data: body,
       options: _authJsonOptions(),
     );
-    final requestError =
-        SeerrRequestException.fromResponse(response.statusCode, response.data);
-    if (requestError != null) throw requestError;
+    _throwIfRequestError(response);
     _requireSuccess(response, 'createRequest');
     return response.data as Map<String, dynamic>;
   }
@@ -289,6 +297,7 @@ class SeerrHttpClient {
       _apiUrl('request/$requestId'),
       options: _authOptions(),
     );
+    _throwIfRequestError(response);
     _requireSuccess(response, 'deleteRequest');
   }
 
@@ -326,6 +335,7 @@ class SeerrHttpClient {
       _apiUrl(endpoint),
       options: _authJsonOptions(),
     );
+    _throwIfRequestError(response);
     _requireSuccess(response, opName);
   }
 
