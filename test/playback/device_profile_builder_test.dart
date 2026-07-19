@@ -216,6 +216,31 @@ void main() {
       expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
       expect(unsupportedRanges, contains('DOVI_WITH_ELHDR10_PLUS'));
     });
+
+    test(
+      'skipping device defects keeps DoVi HDR10+ direct-playable on a buggy '
+      'model (external players decode with their own pipeline)',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          supportsHevc: true,
+          supportsHevcMain10: true,
+          supportsHevcDolbyVision: true,
+          supportsHevcDolbyVisionEl: true,
+          supportsHevcHdr10: true,
+          supportsHevcHdr10Plus: true,
+          supportsDvProfile5: true,
+          supportsDvProfile7: true,
+          supportsDvProfile8: true,
+          knownHevcDoviHdr10PlusBug: true,
+          applyKnownDeviceDefects: false,
+        );
+
+        final unsupportedRanges = _hevcUnsupportedRangeTypes(profile);
+
+        expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+        expect(unsupportedRanges, isNot(contains('DOVI_WITH_ELHDR10_PLUS')));
+      },
+    );
   });
 
   group('DeviceProfileBuilder stereo AAC fallback', () {

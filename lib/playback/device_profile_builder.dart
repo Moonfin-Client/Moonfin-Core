@@ -159,6 +159,12 @@ class DeviceProfileBuilder {
     bool supportsDvProfile8 = false,
     bool knownHevcDoviHdr10PlusBug = false,
     bool allowDolbyVisionProfile7ElDirectPlay = false,
+    // Known-defect exclusions protect this app's own decoders. A profile
+    // built for an external player must skip them, since the external app
+    // decodes with its own pipeline and a needless exclusion downgrades an
+    // otherwise direct-playable stream to a transcode the external handoff
+    // then rejects.
+    bool applyKnownDeviceDefects = true,
   }) {
     final webCapabilities = PlatformDetection.isWeb
         ? detectWebPlaybackCapabilities()
@@ -289,9 +295,10 @@ class DeviceProfileBuilder {
     ].join(',');
 
     final hasKnownHevcDoviHdr10PlusBug =
-        (webCapabilities?.knownHevcDoviHdr10PlusBug ??
-            knownHevcDoviHdr10PlusBug) ||
-        KnownDefects.hevcDoviHdr10PlusBug;
+        applyKnownDeviceDefects &&
+        ((webCapabilities?.knownHevcDoviHdr10PlusBug ??
+                knownHevcDoviHdr10PlusBug) ||
+            KnownDefects.hevcDoviHdr10PlusBug);
 
     final effectiveBitrateBps =
         bitrateBps ?? webCapabilities?.maxStreamingBitrate;
