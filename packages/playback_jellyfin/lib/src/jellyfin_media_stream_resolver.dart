@@ -315,14 +315,16 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     final remotePath = source.path;
     final isManagedLiveStream =
         source.liveStreamId != null && source.liveStreamId!.isNotEmpty;
-    if (source.supportsDirectPlay &&
-        source.isRemote &&
-        !isManagedLiveStream &&
-        source.protocol?.toLowerCase() == 'http' &&
-        remotePath != null &&
-        (remotePath.startsWith('http://') ||
-            remotePath.startsWith('https://'))) {
-      return (remotePath, StreamPlayMethod.directPlay);
+    if (MediaStreamResolver.isRemoteDirectPlayEligible(
+      enableDirectPlay: enableDirectPlay,
+      isRemote: source.isRemote,
+      isManagedLiveStream: isManagedLiveStream,
+      supportsDirectPlay: source.supportsDirectPlay,
+      protocol: source.protocol,
+      path: remotePath,
+      serverBaseUrl: _client.baseUrl,
+    )) {
+      return (remotePath!, StreamPlayMethod.directPlay);
     }
 
     // Live TV: play the source path directly instead of the HLS transcode.

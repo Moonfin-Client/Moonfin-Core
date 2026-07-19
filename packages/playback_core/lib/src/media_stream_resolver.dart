@@ -53,6 +53,74 @@ abstract class MediaStreamResolver {
         (path.startsWith('http://') || path.startsWith('https://'));
   }
 
+  /// Whether a remote HTTP source `path` (typically a `.strm` file, which the
+  /// server reports as `Protocol: Http` + `IsRemote: true` with the URL from the
+  /// file as its `Path`) can be fetched by this client instead of streaming
+  /// through the server.
+  ///
+  /// A `.strm` URL is written from the server's point of view, so it often names
+  /// a host only the server can reach: loopback, or a LAN address. Handing that
+  /// to the player from a device outside that network gives a black screen. The
+  /// server can always reach it, so the safe answer is to fall through to
+  /// `/Videos/{id}/stream` and let the server pull the source.
+  ///
+  /// Loopback is never usable. A private/LAN host is only usable when we reached
+  /// the server itself over a private address, which means we're on that network.
+  /// Public hosts stay direct so genuine internet sources aren't proxied for no
+  /// reason. Excluded on web (cross-origin direct play is blocked there) and
+  /// whenever direct play is off, so a forced transcode isn't handed a raw URL.
+  static bool isRemoteDirectPlayEligible({
+    required bool enableDirectPlay,
+    required bool isRemote,
+    required bool isManagedLiveStream,
+    required bool supportsDirectPlay,
+    required String? protocol,
+    required String? path,
+    required String serverBaseUrl,
+  }) {
+    if (!enableDirectPlay || isWebPlatform) return false;
+    if (!isRemote || !supportsDirectPlay || isManagedLiveStream) return false;
+    if (protocol?.toLowerCase() != 'http') return false;
+    if (path == null ||
+        !(path.startsWith('http://') || path.startsWith('https://'))) {
+      return false;
+    }
+
+    final host = Uri.tryParse(path)?.host.toLowerCase() ?? '';
+    if (host.isEmpty || _isLoopbackHost(host)) return false;
+    if (!_isPrivateHost(host)) return true;
+
+    final serverHost = Uri.tryParse(serverBaseUrl)?.host.toLowerCase() ?? '';
+    return _isPrivateHost(serverHost);
+  }
+
+  static final RegExp _privateIpv6 = RegExp(r'^(f[cd]|fe[89ab])');
+
+  static bool _isLoopbackHost(String host) =>
+      host == 'localhost' || host == '::1' || host.startsWith('127.');
+
+  /// Hosts that only resolve inside the server's own network: RFC1918 and
+  /// link-local ranges, unique-local and link-local IPv6, mDNS names, and bare
+  /// single-label hostnames.
+  static bool _isPrivateHost(String host) {
+    if (_isLoopbackHost(host)) return true;
+    if (host.contains(':')) return _privateIpv6.hasMatch(host);
+    if (host.startsWith('10.') ||
+        host.startsWith('192.168.') ||
+        host.startsWith('169.254.')) {
+      return true;
+    }
+    if (host.startsWith('172.')) {
+      final parts = host.split('.');
+      final secondOctet = parts.length > 1 ? int.tryParse(parts[1]) : null;
+      if (secondOctet != null && secondOctet >= 16 && secondOctet <= 31) {
+        return true;
+      }
+    }
+    if (host.endsWith('.local')) return true;
+    return !host.contains('.');
+  }
+
   /// Re-authorities a server-owned Live TV path onto the connected server base.
   ///
   /// Emby/Jellyfin can return the server's own remux endpoint
