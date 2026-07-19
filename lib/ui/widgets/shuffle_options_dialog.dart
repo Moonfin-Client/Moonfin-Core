@@ -16,8 +16,11 @@ const String _kShuffleOverlayItemFields =
     'ProviderIds,Genres';
 const String _kShuffleCandidateItemFields = 'Type';
 const _kShuffleUnscopedPerLibraryTimeout = Duration(seconds: 8);
+const _kShuffleUnscopedOverallTimeout = Duration(seconds: 20);
 const _kShuffleUserViewsTimeout = Duration(seconds: 6);
 const _kShuffleHydrationTimeout = Duration(seconds: 3);
+
+final _shuffleRandom = math.Random();
 
 const List<String> _kShuffleExcludeItemTypes = <String>[
   'BoxSet',
@@ -76,8 +79,12 @@ Future<List<AggregatedItem>> _collectRandomItems({
   String? genreName,
 }) async {
   if (fields == _kShuffleCandidateItemFields) {
-    try {
-      final response = await client.itemsApi.getItems(
+    Future<Map<String, dynamic>> candidateQuery({
+      required int queryLimit,
+      int? startIndex,
+      required bool withCount,
+    }) {
+      return client.itemsApi.getItems(
         includeItemTypes: _shuffleIncludeItemTypes(contentType),
         excludeItemTypes: _kShuffleExcludeItemTypes,
         collapseBoxSetItems: false,
@@ -85,26 +92,54 @@ Future<List<AggregatedItem>> _collectRandomItems({
         parentId: parentId,
         genres: genreName != null ? <String>[genreName] : null,
         fields: fields,
-        enableTotalRecordCount: false,
+        startIndex: startIndex,
+        limit: queryLimit,
+        enableTotalRecordCount: withCount,
       );
+    }
+
+    List<AggregatedItem> parseCandidates(Map<String, dynamic> response) {
       final rawItems = (response['Items'] as List?) ?? const <dynamic>[];
-      final items = rawItems
+      return rawItems
           .whereType<Map>()
-          .map((raw) => AggregatedItem(
-                id: raw['Id']?.toString() ?? '',
-                serverId: serverId,
-                rawData: raw.cast<String, dynamic>(),
-              ))
+          .map(
+            (raw) => AggregatedItem(
+              id: raw['Id']?.toString() ?? '',
+              serverId: serverId,
+              rawData: raw.cast<String, dynamic>(),
+            ),
+          )
           .where((item) => !_isExcludedShuffleItemType(item.type))
-          .toList()
-        ..shuffle();
-      _shuffleLogInfo(
-        '_collectRandomItems client-side random success parentId=$parentId count=${items.length}',
+          .toList();
+    }
+
+    try {
+      // Sorting randomly on the server makes SQLite scan the whole library and
+      // pulling every row back to shuffle here costs just as much, so read one
+      // random window instead.
+      final firstPage = await candidateQuery(
+        queryLimit: requestLimit,
+        withCount: true,
       );
-      return items.take(limit).toList();
+      final total = firstPage['TotalRecordCount'] as int? ?? 0;
+      if (total > 0) {
+        // A small library fits in that first page, so only go back to the
+        // server when there is more of it to reach.
+        final items = total <= requestLimit
+            ? parseCandidates(firstPage)
+            : parseCandidates(
+                await candidateQuery(
+                  queryLimit: requestLimit,
+                  startIndex: _shuffleRandom.nextInt(total - requestLimit + 1),
+                  withCount: false,
+                ),
+              );
+        items.shuffle();
+        return items.take(limit).toList();
+      }
     } catch (e, stack) {
       _shuffleLogError(
-        '_collectRandomItems client-side random failed parentId=$parentId',
+        '_collectRandomItems windowed random failed parentId=$parentId',
         e,
         stack,
       );
@@ -411,11 +446,22 @@ Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
 
   final stopwatch = Stopwatch()..start();
   final pool = List<AggregatedLibrary>.from(libraries)..shuffle();
-  
+
   final allCandidates = <AggregatedItem>[];
   final seenIds = <String>{};
+  final deadline = DateTime.now().add(_kShuffleUnscopedOverallTimeout);
 
   for (final library in pool) {
+    // Walking libraries one at a time can outlast the user's patience on a slow
+    // server, so stop once the budget is gone and use whatever came back.
+    final remaining = deadline.difference(DateTime.now());
+    if (remaining <= Duration.zero) {
+      break;
+    }
+    final requestTimeout = remaining < _kShuffleUnscopedPerLibraryTimeout
+        ? remaining
+        : _kShuffleUnscopedPerLibraryTimeout;
+
     try {
       final candidates = await _collectRandomItems(
         client: client,
@@ -426,7 +472,7 @@ Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
         maxAttempts: 1,
         fields: _kShuffleCandidateItemFields,
         parentId: library.id,
-      );
+      ).timeout(requestTimeout);
       for (final candidate in candidates) {
         if (seenIds.add(candidate.id)) {
           allCandidates.add(candidate);
@@ -434,7 +480,7 @@ Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
       }
     } catch (error, stackTrace) {
       _shuffleLogError(
-        '_collectUnscopedShuffleItems candidates collection failure contentType=$contentType libraryId=${library.id}',
+        '_collectUnscopedShuffleItems candidates collection failure contentType=$contentType libraryId=${library.id} requestTimeoutMs=${requestTimeout.inMilliseconds}',
         error,
         stackTrace,
       );
@@ -459,7 +505,7 @@ Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
       ids: selectedCandidates.map((c) => c.id).toList(),
       fields: fields,
     ).timeout(_kShuffleHydrationTimeout);
-    
+
     _shuffleLogInfo(
       '_collectUnscopedShuffleItems complete contentType=$contentType libraries=${libraries.length} requested=$limit result=${hydrated.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
     );
@@ -470,7 +516,10 @@ Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
       error,
       stackTrace,
     );
-    return selectedCandidates;
+    // The candidates only carry Type, so handing them back would draw blank
+    // cards. Returning nothing lets the caller fall back to a scoped fetch that
+    // asks for the full fields.
+    return const <AggregatedItem>[];
   }
 }
 

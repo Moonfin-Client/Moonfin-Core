@@ -7164,20 +7164,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .toList();
   }
 
-  List<AggregatedItem> _truncateQueueIfImmediateNextUnplayable(
+  Future<List<AggregatedItem>> _truncateQueueIfImmediateNextUnplayable(
     List<AggregatedItem> queue, {
     required int startIndex,
-  }) {
+  }) async {
     if (startIndex < 0 || startIndex >= queue.length - 1) {
       return queue;
     }
 
-    final immediateNext = queue[startIndex + 1];
+    // Queues arrive without MediaSources and a missing key reads as playable,
+    // so hydrate the next item first or a broken episode passes the check and
+    // fails once the current one ends.
+    final nextIndex = startIndex + 1;
+    final immediateNext = await _ensureHydrated(queue[nextIndex]);
+    queue[nextIndex] = immediateNext;
     if (isEligibleNextEpisodeCandidate(immediateNext)) {
       return queue;
     }
 
-    return queue.sublist(0, startIndex + 1);
+    return queue.sublist(0, nextIndex);
   }
 
   Future<bool> _pushPlayerRouteWhileStartingPlayback(
@@ -7443,7 +7448,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             selectedEpisode = await _ensureHydrated(selectedEpisode);
             queueEpisodes[idx] = selectedEpisode;
 
-            final seriesQueue = _truncateQueueIfImmediateNextUnplayable(
+            final seriesQueue = await _truncateQueueIfImmediateNextUnplayable(
               queueEpisodes,
               startIndex: idx,
             );
@@ -7496,13 +7501,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             episodes[idx] = selectedEpisode;
             if (!context.mounted) return;
 
-            final seasonQueue = _truncateQueueIfImmediateNextUnplayable(
+            final seasonQueue = await _truncateQueueIfImmediateNextUnplayable(
               episodes,
               startIndex: idx,
             );
             final startPosition = resume
                 ? (selectedEpisode.playbackPosition ?? Duration.zero)
                 : Duration.zero;
+            if (!context.mounted) return;
             final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
               [selectedEpisode],
@@ -7569,10 +7575,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               playableEpisodes[idx] = selectedEpisode;
               if (!context.mounted) return;
 
-              final episodeQueue = _truncateQueueIfImmediateNextUnplayable(
-                playableEpisodes,
-                startIndex: idx,
-              );
+              final episodeQueue =
+                  await _truncateQueueIfImmediateNextUnplayable(
+                    playableEpisodes,
+                    startIndex: idx,
+                  );
+              if (!context.mounted) return;
 
               // Fallback to the master item's position context if it's the target episode
               final startPosition = resume
