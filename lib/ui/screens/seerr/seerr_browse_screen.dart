@@ -635,15 +635,11 @@ class _SeerrFilterChipState extends State<_SeerrFilterChip>
       child: Focus(
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.select ||
-              event.logicalKey == LogicalKeyboardKey.enter ||
-              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
-            if (event is KeyDownEvent) {
-              widget.onTap();
-            }
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
+          if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+          // Claim the release and repeats as well, otherwise the focus that
+          // gets restored when a dialog closes replays the press underneath.
+          if (event is KeyDownEvent) widget.onTap();
+          return KeyEventResult.handled;
         },
         child: GestureDetector(
           onTap: widget.onTap,
@@ -654,8 +650,8 @@ class _SeerrFilterChipState extends State<_SeerrFilterChip>
               color: widget.selected
                   ? _seerrAccent
                   : (focused
-                      ? AppColorScheme.buttonFocused
-                      : AppColorScheme.onSurface.withAlpha(20)),
+                        ? AppColorScheme.buttonFocused
+                        : AppColorScheme.onSurface.withAlpha(20)),
               borderRadius: AppRadius.circular(14),
               border: showFocusBorder
                   ? Border.fromBorderSide(
@@ -670,12 +666,14 @@ class _SeerrFilterChipState extends State<_SeerrFilterChip>
               widget.label,
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: widget.selected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: widget.selected
+                    ? FontWeight.w600
+                    : FontWeight.normal,
                 color: widget.selected
                     ? AppColorScheme.onSurface
                     : (focused
-                        ? AppColorScheme.onButtonFocused
-                        : AppColorScheme.onSurface.withAlpha(179)),
+                          ? AppColorScheme.onButtonFocused
+                          : AppColorScheme.onSurface.withAlpha(179)),
               ),
             ),
           ),
@@ -781,15 +779,11 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
         focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.select ||
-              event.logicalKey == LogicalKeyboardKey.enter ||
-              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
-            if (event is KeyDownEvent) {
-              widget.onTap();
-            }
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
+          if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+          // Claim the release and repeats as well, otherwise the focus that
+          // gets restored when a dialog closes replays the press underneath.
+          if (event is KeyDownEvent) widget.onTap();
+          return KeyEventResult.handled;
         },
         child: GestureDetector(
           onTap: widget.onTap,
@@ -855,15 +849,11 @@ class _ToolbarButtonState extends State<_ToolbarButton> with FocusStateMixin {
       child: Focus(
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.select ||
-              event.logicalKey == LogicalKeyboardKey.enter ||
-              event.logicalKey == LogicalKeyboardKey.gameButtonA) {
-            if (event is KeyDownEvent) {
-              widget.onTap();
-            }
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
+          if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+          // Claim the release and repeats as well, otherwise the focus that
+          // gets restored when a dialog closes replays the press underneath.
+          if (event is KeyDownEvent) widget.onTap();
+          return KeyEventResult.handled;
         },
         child: GestureDetector(
           onTap: widget.onTap,
@@ -1001,7 +991,8 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
             ),
             Divider(color: AppColorScheme.onSurface.withAlpha(20)),
             ...vm.sortOptions.map((option) {
-              final isSelected = s.sortBy.value.startsWith(option.value.split('.').first);
+              final base = option.value.split('.').first;
+              final isSelected = s.sortBy.value.split('.').first == base;
               final isAsc = s.sortBy.value.endsWith('.asc');
               return _radioTile(
                 label: option.label,
@@ -1010,16 +1001,19 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                     ? Icon(
                         isAsc ? Icons.arrow_upward : Icons.arrow_downward,
                         size: 16,
-                        color: AppColorScheme.accent,
+                        color: _seerrAccent,
                       )
                     : null,
                 onTap: () {
                   if (_popped) return;
                   _popped = true;
+                  // Tapping the active choice flips direction instead of
+                  // reselecting the same sort.
                   if (isSelected) {
-                    final base = option.value.split('.').first;
                     final newDir = isAsc ? 'desc' : 'asc';
-                    vm.setSortBy(SeerrSortOption(option.label, '$base.$newDir'));
+                    vm.setSortBy(
+                      SeerrSortOption(option.label, '$base.$newDir'),
+                    );
                   } else {
                     vm.setSortBy(option);
                   }
@@ -1053,12 +1047,12 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: selected
-                        ? AppColorScheme.accent
+                        ? _seerrAccent
                         : AppColorScheme.onSurface.withAlpha(128),
                     width: 2,
                   ),
                 ),
-                color: selected ? AppColorScheme.accent : Colors.transparent,
+                color: selected ? _seerrAccent : Colors.transparent,
               ),
               child:
                   selected
@@ -1086,10 +1080,7 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                 ),
               ),
             ),
-            if (trailing != null) ...[
-              const SizedBox(width: 12),
-              trailing,
-            ],
+            if (trailing != null) ...[const SizedBox(width: 12), trailing],
           ],
         ),
       ),
@@ -1159,7 +1150,10 @@ class _SeerrSettingsDialogState extends State<_SeerrSettingsDialog> {
                 onTap: () async {
                   if (_popped) return;
                   _popped = true;
-                  await widget.prefs.set(UserPreferences.libraryPosterSize, option);
+                  await widget.prefs.set(
+                    UserPreferences.libraryPosterSize,
+                    option,
+                  );
                   if (context.mounted) {
                     Navigator.of(context).pop();
                   }
@@ -1197,12 +1191,12 @@ class _SeerrSettingsDialogState extends State<_SeerrSettingsDialog> {
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: selected
-                        ? AppColorScheme.accent
+                        ? _seerrAccent
                         : AppColorScheme.onSurface.withAlpha(128),
                     width: 2,
                   ),
                 ),
-                color: selected ? AppColorScheme.accent : Colors.transparent,
+                color: selected ? _seerrAccent : Colors.transparent,
               ),
               child:
                   selected
