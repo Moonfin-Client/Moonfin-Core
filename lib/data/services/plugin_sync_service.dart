@@ -1077,6 +1077,7 @@ class PluginSyncService extends ChangeNotifier {
               case prefs.HomeSectionType.tmdbTrendingAllWeekly: _prefs.set(UserPreferences.tmdbTrendingAllWeeklyEnabled, c.enabled);
               case prefs.HomeSectionType.radarrCalendar: _prefs.set(UserPreferences.enableRadarrCalendar, c.enabled);
               case prefs.HomeSectionType.sonarrCalendar: _prefs.set(UserPreferences.enableSonarrCalendar, c.enabled);
+              case prefs.HomeSectionType.rewatch: _prefs.set(UserPreferences.displayRewatchRow, c.enabled);
               default:
             }
 
