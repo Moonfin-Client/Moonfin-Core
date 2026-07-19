@@ -3,7 +3,12 @@ import '../preference/preference_constants.dart';
 import 'language_matching.dart';
 
 bool isExternalSubtitleStream(Map<String, dynamic> stream) {
-  return stream['IsExternal'] == true;
+  if (stream['IsExternal'] == true) {
+    return true;
+  }
+  final deliveryMethod =
+      (stream['DeliveryMethod'] as String?)?.trim().toLowerCase();
+  return deliveryMethod == 'external';
 }
 
 bool isSdhSubtitleStream(Map<String, dynamic> stream) {

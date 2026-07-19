@@ -521,10 +521,12 @@ class Media3PlayerBackend extends PlayerBackend {
     _skipSilenceEnabled = _prefs.get(UserPreferences.media3SkipSilence);
     _volumeBoostLevel = 0;
     final preferredAudioLanguage = _normalizeTrackLanguagePref(
-      _prefs.get(UserPreferences.defaultAudioLanguage),
+      payload['preferredAudioLanguage']?.toString() ??
+          _prefs.get(UserPreferences.defaultAudioLanguage),
     );
     final preferredSubtitleLanguage = _normalizeTrackLanguagePref(
-      _prefs.get(UserPreferences.defaultSubtitleLanguage),
+      payload['preferredTextLanguage']?.toString() ??
+          _prefs.get(UserPreferences.defaultSubtitleLanguage),
     );
     final tunnelingDisabledByUser = _prefs.get(
       UserPreferences.media3TunnelingDisabled,
