@@ -1,14 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
-import '../../navigation/destinations.dart';
-import '../../widgets/game/game_poster_rail.dart';
 import '../../../util/platform_detection.dart';
+import '../../navigation/destinations.dart';
+import '../../widgets/game/game_system_card.dart';
 
-/// Browses a retro-game library as premium per-system box-art rows. Tapping a game opens the
-/// game detail screen. Responsive card sizing across mobile, desktop, and TV (d-pad focus).
+/// Displays the platforms in a retro-game library. Selecting a platform opens
+/// its vertically scrolling, searchable game grid.
 class GameLibraryScreen extends StatefulWidget {
   const GameLibraryScreen({super.key, required this.libraryId, this.title});
 
@@ -44,15 +47,26 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
     }
 
     try {
-      final systems = await games.getSystems(widget.libraryId);
-      final all = await games.getGames(widget.libraryId);
+      // Start both requests together. Platform tiles use a small selection of
+      // their games for artwork, while the platform screen remains responsible
+      // for displaying the complete game grid.
+      final systemsFuture = games.getSystems(widget.libraryId);
+      final allGamesFuture = games.getGames(widget.libraryId);
+      final (systems, allGames) = await (systemsFuture, allGamesFuture).wait;
       final grouped = <String, List<GameSummary>>{};
-      for (final g in all) {
-        grouped.putIfAbsent(g.system, () => <GameSummary>[]).add(g);
+      for (final game in allGames) {
+        grouped
+            .putIfAbsent(game.system.toLowerCase(), () => <GameSummary>[])
+            .add(game);
       }
+      final populatedSystems = systems
+          .where(
+            (system) => grouped[system.id.toLowerCase()]?.isNotEmpty == true,
+          )
+          .toList(growable: false);
       if (!mounted) return;
       setState(() {
-        _systems = systems;
+        _systems = populatedSystems;
         _gamesBySystem = grouped;
         _loading = false;
       });
@@ -60,7 +74,7 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Failed to load games: $e';
+        _error = 'Failed to load game platforms: $e';
       });
     }
   }
@@ -68,6 +82,7 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColorScheme.background,
       appBar: AppBar(title: Text(widget.title ?? 'Games')),
       body: _buildBody(),
     );
@@ -98,30 +113,40 @@ class _GameLibraryScreenState extends State<GameLibraryScreen> {
       );
     }
 
-    final cardWidth = PlatformDetection.isTV
-        ? 132.0
-        : (PlatformDetection.useDesktopUi ? 120.0 : 100.0);
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      itemCount: _systems.length,
-      itemBuilder: (context, index) {
-        final system = _systems[index];
-        final games = _gamesBySystem[system.id] ?? const [];
-        if (games.isEmpty) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 24),
-          child: GamePosterRail(
-            title: system.name,
-            libraryId: widget.libraryId,
-            games: games,
-            trailingCount: games.length,
-            cardWidth: cardWidth,
-            autofocusFirst: index == 0,
-            onTapGame: (game) => context.push(
-              Destinations.gameDetailOf(widget.libraryId, game.id),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 600;
+        final horizontalPadding = compact ? 16.0 : 48.0;
+        return GridView.builder(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            20,
+            horizontalPadding,
+            32,
           ),
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: compact ? 360 : 320,
+            mainAxisExtent: compact ? 116 : 126,
+            mainAxisSpacing: 18,
+            crossAxisSpacing: 18,
+          ),
+          itemCount: _systems.length,
+          itemBuilder: (context, index) {
+            final system = _systems[index];
+            return GameSystemCard(
+              libraryId: widget.libraryId,
+              system: system,
+              games: _gamesBySystem[system.id.toLowerCase()] ?? const [],
+              autofocus: PlatformDetection.isTV && index == 0,
+              onTap: () => context.push(
+                Destinations.gameSystemOf(
+                  widget.libraryId,
+                  system.id,
+                  systemName: system.name,
+                ),
+              ),
+            );
+          },
         );
       },
     );

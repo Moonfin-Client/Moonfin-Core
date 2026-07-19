@@ -32,6 +32,7 @@ import '../screens/browse/book_browse_screen.dart';
 import '../screens/browse/music_browse_screen.dart';
 import '../screens/detail/item_detail_screen.dart';
 import '../screens/games/game_library_screen.dart';
+import '../screens/games/game_system_screen.dart';
 import '../screens/games/game_detail_screen.dart';
 import '../screens/playback/game_emulator_screen.dart';
 import '../screens/playback/native_game_player_screen.dart';
@@ -398,6 +399,19 @@ final appRouter = GoRouter(
     ),
 
     // Games
+    GoRoute(
+      path: Destinations.gameSystem,
+      builder: (context, state) {
+        final libraryId = state.pathParameters['libraryId']!;
+        final systemId = state.pathParameters['systemId']!;
+        return GameSystemScreen(
+          key: ValueKey('game-system-$libraryId-$systemId'),
+          libraryId: libraryId,
+          systemId: systemId,
+          systemName: state.uri.queryParameters['name'],
+        );
+      },
+    ),
     GoRoute(
       path: Destinations.gameLibrary,
       builder: (context, state) {
