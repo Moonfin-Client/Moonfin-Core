@@ -3,14 +3,12 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
-import '../../data/services/connectivity_service.dart';
 import '../../data/services/download_notification_service.dart';
 import '../../data/services/download_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/seerr_notification_service.dart';
 import '../../data/services/storage_path_service.dart';
-import '../../util/platform_detection.dart';
 
 final _getIt = GetIt.instance;
 
@@ -47,14 +45,9 @@ void setActiveServerClient(MediaServerClient client) {
   final rawClient = client is ConnectivityAwareMediaServerClient
       ? client.onlineClient
       : client;
-  // TV can't download, so it keeps the online client and its cached home
-  // rows instead of an empty offline catalog.
   final wrapped = ConnectivityAwareMediaServerClient(
     rawClient,
-    useOffline: () =>
-        !PlatformDetection.isTV &&
-        _getIt.isRegistered<ConnectivityService>() &&
-        !_getIt<ConnectivityService>().canReachServer,
+    useOffline: shouldUseOfflineCatalog,
     catalog: _getIt<OfflineCatalog>(),
     storagePath: _getIt<StoragePathService>(),
   );

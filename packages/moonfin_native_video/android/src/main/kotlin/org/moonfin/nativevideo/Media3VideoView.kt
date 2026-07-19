@@ -3115,12 +3115,11 @@ class Media3VideoView(
         Media3Bridge.emitEvent(stateMap() + ("event" to "state"))
     }
 
+    // Offline playback hands us bare filesystem paths. Media3 needs a scheme to
+    // pick a data source, so anything arriving without one becomes a file uri.
     private fun parseUri(url: String): Uri {
-        return if (url.startsWith("/") || !url.contains("://")) {
-            Uri.fromFile(java.io.File(url))
-        } else {
-            Uri.parse(url)
-        }
+        val parsed = Uri.parse(url)
+        return if (parsed.scheme.isNullOrEmpty()) Uri.fromFile(File(url)) else parsed
     }
 
     private fun startTicker() {
