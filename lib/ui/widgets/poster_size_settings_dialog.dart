@@ -80,19 +80,21 @@ class _PosterSizeSettingsDialogState extends State<PosterSizeSettingsDialog> {
                 _imageTypeTile(type, currentImageType == type),
               Divider(color: dividerColor),
             ],
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
-              child: Text(
-                l10n.posterSize,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: sectionColor,
+            if (currentImageType != ImageType.banner) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  l10n.posterSize,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
                 ),
               ),
-            ),
-            for (final size in PosterSize.values)
-              _posterSizeTile(size, currentSize == size),
+              for (final size in PosterSize.values)
+                _posterSizeTile(size, currentSize == size),
+            ],
           ],
         ),
       ),

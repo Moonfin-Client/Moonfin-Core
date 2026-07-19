@@ -297,7 +297,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
     final posterSize = _posterSize;
     final baseWidth = switch (_imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (16 / 9),
+      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -310,7 +310,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
 
     return switch (_imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => 2 / 3,
     };
   }
@@ -400,7 +400,9 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
             ? _mobileHorizontalPadding
             : _horizontalPadding * desktopScale;
         final spacing = 16.0 * desktopScale;
-        final minColumns = isMobile ? 1 : 2;
+        final minColumns = _imageType == ImageType.banner
+            ? (constraints.maxWidth < 600 ? 1 : 2)
+            : (isMobile ? 1 : 2);
         final maxColumns = isMobile ? 4 : 8;
         final crossAxisCount =
             ((constraints.maxWidth - horizontalPadding * 2 + spacing) /

@@ -164,9 +164,39 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
   final _selectKeyHandler = LongPressSelectKeyHandler();
 
   @override
+  void initState() {
+    super.initState();
+    _addFocusListener();
+  }
+
+  @override
+  void didUpdateWidget(covariant MediaCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      _removeFocusListener(oldWidget.focusNode);
+      _addFocusListener();
+    }
+  }
+
+  @override
   void dispose() {
+    _removeFocusListener(widget.focusNode);
     _selectKeyHandler.dispose();
     super.dispose();
+  }
+
+  void _addFocusListener() {
+    widget.focusNode?.addListener(_onFocusNodeChanged);
+  }
+
+  void _removeFocusListener(FocusNode? node) {
+    node?.removeListener(_onFocusNodeChanged);
+  }
+
+  void _onFocusNodeChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -234,66 +264,105 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
             curve: PlatformDetection.isAppleTV
                 ? Curves.easeOutCubic
                 : Curves.linear,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _CardImage(
-                  imageUrl: widget.imageUrl,
-                  title: widget.title,
-                  aspectRatio: widget.aspectRatio,
-                  isFavorite: widget.isFavorite,
-                  isPlayed: widget.isPlayed,
-                  unplayedCount: widget.unplayedCount,
-                  playedPercentage: widget.playedPercentage,
-                  watchedBehavior: widget.watchedBehavior,
-                  focused: effectiveFocused,
-                  hovered: hovered,
-                  focusColor: widget.focusColor,
-                  suppressFocusBorder: widget.suppressImageFocusBorder,
-                  suppressFocusGlow: widget.suppressFocusGlow,
-                  isCircular: widget.itemType == 'Person',
-                  itemType: widget.itemType,
-                  seerrMediaType: widget.seerrMediaType,
-                  seerrStatus: widget.seerrStatus,
-                  imageOverlays: widget.imageOverlays,
-                  overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
-                  isGenreFallback: widget.isGenreFallback,
-                ),
-                if (widget.title != null) ...[
-                  const SizedBox(height: 6),
-                  SizedBox(
-                    height: titleLineHeight,
-                    child: showMarquee
-                        ? MarqueeText(text: widget.title!, style: titleStyle)
-                        : Text(
-                            widget.title!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: titleStyle,
-                          ),
-                  ),
-                ],
-                if (widget.subtitleWidget != null) ...[
-                  SizedBox(height: widget.title != null ? 2 : 6),
-                  widget.subtitleWidget!,
-                ] else if (widget.subtitle != null &&
-                    widget.subtitle!.isNotEmpty)
-                  SizedBox(
-                    height: subtitleLineHeight,
-                    child: showMarquee
-                        ? MarqueeText(
-                            text: widget.subtitle!,
-                            style: subtitleStyle,
-                          )
-                        : Text(
-                            widget.subtitle!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: subtitleStyle,
-                          ),
-                  ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, cardConstraints) {
+                final cardWidth = cardConstraints.maxWidth.isFinite
+                    ? cardConstraints.maxWidth
+                    : (widget.width.isFinite ? widget.width : 150.0);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _CardImage(
+                      imageUrl: widget.imageUrl,
+                      title: widget.title,
+                      aspectRatio: widget.aspectRatio,
+                      isFavorite: widget.isFavorite,
+                      isPlayed: widget.isPlayed,
+                      unplayedCount: widget.unplayedCount,
+                      playedPercentage: widget.playedPercentage,
+                      watchedBehavior: widget.watchedBehavior,
+                      focused: effectiveFocused,
+                      hovered: hovered,
+                      focusColor: widget.focusColor,
+                      suppressFocusBorder: widget.suppressImageFocusBorder,
+                      suppressFocusGlow: widget.suppressFocusGlow,
+                      isCircular: widget.itemType == 'Person',
+                      itemType: widget.itemType,
+                      seerrMediaType: widget.seerrMediaType,
+                      seerrStatus: widget.seerrStatus,
+                      imageOverlays: widget.imageOverlays,
+                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                      isGenreFallback: widget.isGenreFallback,
+                    ),
+                    if ((widget.aspectRatio - (1000 / 185)).abs() < 0.01) ...[
+                      if (widget.title != null) ...[
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          height: titleLineHeight,
+                          width: cardWidth,
+                          child: () {
+                            final combinedText = widget.subtitle != null && widget.subtitle!.isNotEmpty
+                                ? '${widget.title}  •  ${widget.subtitle}'
+                                : widget.title!;
+                            return showMarquee
+                                ? MarqueeText(text: combinedText, style: titleStyle)
+                                : Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(text: widget.title!, style: titleStyle),
+                                        if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
+                                          TextSpan(text: '  •  ', style: subtitleStyle),
+                                          TextSpan(text: widget.subtitle!, style: subtitleStyle),
+                                        ],
+                                      ],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                          }(),
+                        ),
+                      ],
+                    ] else ...[
+                      if (widget.title != null) ...[
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          height: titleLineHeight,
+                          width: cardWidth,
+                          child: showMarquee
+                              ? MarqueeText(text: widget.title!, style: titleStyle)
+                              : Text(
+                                  widget.title!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: titleStyle,
+                                ),
+                        ),
+                      ],
+                      if (widget.subtitleWidget != null) ...[
+                        SizedBox(height: widget.title != null ? 2 : 6),
+                        widget.subtitleWidget!,
+                      ] else if (widget.subtitle != null &&
+                          widget.subtitle!.isNotEmpty)
+                        SizedBox(
+                          height: subtitleLineHeight,
+                          width: cardWidth,
+                          child: showMarquee
+                              ? MarqueeText(
+                                  text: widget.subtitle!,
+                                  style: subtitleStyle,
+                                )
+                              : Text(
+                                  widget.subtitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: subtitleStyle,
+                                ),
+                        ),
+                    ],
+                  ],
+                );
+              },
             ),
           ),
         ),

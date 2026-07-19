@@ -245,7 +245,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final posterSize = _vm.posterSize;
     final baseWidth = switch (_vm.imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (16 / 9),
+      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -254,7 +254,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   double _selectedImageAspectRatio() {
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => 2 / 3,
     };
   }
@@ -265,11 +265,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.imageType != ImageType.poster &&
         _vm.items.isNotEmpty &&
         _vm.items.every(_vm.isNavigableFolder)) {
-      return 16 / 9;
+      return _vm.imageType == ImageType.banner ? 1000 / 185 : 16 / 9;
     }
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => 2 / 3,
     };
   }
@@ -278,7 +278,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) return 1.0;
     if (_vm.isFilterBrowse) return _selectedImageAspectRatio();
     if (_vm.isNavigableFolder(item) && _vm.imageType != ImageType.poster) {
-      return 16 / 9;
+      return _vm.imageType == ImageType.banner ? 1000 / 185 : 16 / 9;
     }
     return switch (_vm.imageType) {
       ImageType.thumb => switch (item.type) {
@@ -289,7 +289,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         'Person' => 1.0,
         _ => 16 / 9,
       },
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -348,6 +348,37 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         }
         return null;
       }
+      if (_vm.imageType == ImageType.banner) {
+        if (itemBannerTag != null) {
+          return api.getBannerImageUrl(
+            item.id,
+            maxWidth: landscapeMaxW,
+            tag: itemBannerTag,
+          );
+        }
+        if (item.backdropImageTags.isNotEmpty) {
+          return api.getBackdropImageUrl(
+            item.id,
+            maxWidth: landscapeMaxW,
+            tag: item.backdropImageTags.first,
+          );
+        }
+        if (itemThumbTag != null) {
+          return api.getThumbImageUrl(
+            item.id,
+            maxWidth: landscapeMaxW,
+            tag: itemThumbTag,
+          );
+        }
+        if (item.primaryImageTag != null) {
+          return api.getPrimaryImageUrl(
+            item.id,
+            maxWidth: posterMaxW,
+            tag: item.primaryImageTag,
+          );
+        }
+        return null;
+      }
       if (itemThumbTag != null) {
         return api.getThumbImageUrl(
           item.id,
@@ -400,18 +431,18 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           tag: itemBannerTag,
         );
       }
-      if (item.primaryImageTag != null) {
-        return api.getPrimaryImageUrl(
-          item.id,
-          maxWidth: posterMaxW,
-          tag: item.primaryImageTag,
-        );
-      }
       if (item.backdropImageTags.isNotEmpty) {
         return api.getBackdropImageUrl(
           item.id,
           maxWidth: landscapeMaxW,
           tag: item.backdropImageTags.first,
+        );
+      }
+      if (item.primaryImageTag != null) {
+        return api.getPrimaryImageUrl(
+          item.id,
+          maxWidth: posterMaxW,
+          tag: item.primaryImageTag,
         );
       }
       return null;
@@ -670,11 +701,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       builder: (context, constraints) {
         final isMobile = _isCompact(context);
         final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+        final minClamp = _vm.imageType == ImageType.banner
+            ? (constraints.maxWidth < 600 ? 1 : 2)
+            : 2;
         final crossAxisCount =
             ((constraints.maxWidth - gridPadding * 2 + spacing) /
                     (cardWidth + spacing))
                 .floor()
-                .clamp(2, 20);
+                .clamp(minClamp, 20);
 
         final cellWidth =
             (constraints.maxWidth -
@@ -1811,19 +1845,21 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               for (final type in ImageType.values) _settingsRadioTile(vm, type),
               Divider(color: dividerColor),
             ],
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
-              child: Text(
-                l10n.posterSize,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: sectionColor,
+            if (vm.imageType != ImageType.banner) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  l10n.posterSize,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
                 ),
               ),
-            ),
-            for (final size in PosterSize.values)
-              _posterSizeRadioTile(vm, size),
+              for (final size in PosterSize.values)
+                _posterSizeRadioTile(vm, size),
+            ],
           ],
         ),
       ),

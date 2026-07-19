@@ -116,6 +116,7 @@ class _MarqueeTextState extends State<MarqueeText>
       text: TextSpan(text: widget.text, style: widget.style),
       textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
       maxLines: 1,
+      textScaler: MediaQuery.textScalerOf(context),
     )..layout();
     final textWidth = textPainter.width;
 

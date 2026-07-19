@@ -23,7 +23,7 @@ class FolderBrowseViewModel extends ChangeNotifier {
   static const _fields =
       'Type,ProductionYear,ImageTags,BackdropImageTags,ChildCount,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
   // Cap image tags to one per type (server returns all by default)
-  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
 
   FolderBrowseViewModel(this._client, {String? serverId})

@@ -68,7 +68,7 @@ class RowDataSource {
   }
 
   // Cap image tags to one per type (server returns all by default)
-  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
 
   // ParentIds that returned 401/403 (no library access) this session. They are

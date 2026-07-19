@@ -155,7 +155,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     final posterSize = _vm.posterSize;
     final baseWidth = switch (_vm.imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (16 / 9),
+      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -164,7 +164,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
   double _gridBaseAspectRatio() {
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => 2 / 3,
     };
   }
@@ -179,7 +179,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         'Person' => 1.0,
         _ => 16 / 9,
       },
-      ImageType.banner => 16 / 9,
+      ImageType.banner => 1000 / 185,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -480,9 +480,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       builder: (context, constraints) {
         const spacing = 12.0;
         final available = constraints.maxWidth - horizontalPadding * 2;
+        final minClamp = _vm.imageType == ImageType.banner
+            ? (constraints.maxWidth < 600 ? 1 : 2)
+            : 2;
         final columns = ((available + spacing) / (cardWidth + spacing))
             .floor()
-            .clamp(2, 20);
+            .clamp(minClamp, 20);
         final cellWidth = (available - (columns - 1) * spacing) / columns;
         final ar = _gridBaseAspectRatio();
         final hasSubtitles = items.any(
@@ -605,11 +608,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       builder: (context, constraints) {
         final isMobile = _isCompact(context);
         final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+        final minClamp = _vm.imageType == ImageType.banner
+            ? (constraints.maxWidth < 600 ? 1 : 2)
+            : 2;
         final crossAxisCount =
             ((constraints.maxWidth - gridPadding * 2 + spacing) /
                     (cardWidth + spacing))
                 .floor()
-                .clamp(2, 20);
+                .clamp(minClamp, 20);
 
         final cellWidth =
             (constraints.maxWidth -
@@ -1283,10 +1289,12 @@ class _DisplaySettingsDialogState extends State<_DisplaySettingsDialog> {
             Divider(color: dividerColor),
             _sectionHeader(AppLocalizations.of(context).imageType),
             for (final type in ImageType.values) _imageTypeRadioTile(vm, type),
-            Divider(color: dividerColor),
-            _sectionHeader(AppLocalizations.of(context).posterSize),
-            for (final size in PosterSize.values)
-              _posterSizeRadioTile(vm, size),
+            if (vm.imageType != ImageType.banner) ...[
+              Divider(color: dividerColor),
+              _sectionHeader(AppLocalizations.of(context).posterSize),
+              for (final size in PosterSize.values)
+                _posterSizeRadioTile(vm, size),
+            ],
           ],
         ),
       ),

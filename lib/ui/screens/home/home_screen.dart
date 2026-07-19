@@ -5198,7 +5198,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     return switch (imageType) {
-      ImageType.thumb || ImageType.banner => thumbAspectRatio(),
+      ImageType.thumb => thumbAspectRatio(),
+      ImageType.banner => 1000 / 185,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -5253,6 +5254,20 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (imageType == ImageType.banner) {
       final maxW = (height * 16 / 9 * requestScale).toInt();
+      if (itemBannerTag != null) {
+        return imageApi.getBannerImageUrl(
+          item.id,
+          maxWidth: maxW,
+          tag: itemBannerTag,
+        );
+      }
+      if (item.backdropImageTags.isNotEmpty) {
+        return imageApi.getBackdropImageUrl(
+          item.id,
+          maxWidth: maxW,
+          tag: item.backdropImageTags.first,
+        );
+      }
       if (isMyMediaRow) {
         final myMediaPrimary = _resolvePrimaryImageUrl(
           item,
@@ -5263,25 +5278,11 @@ class _ContentRowsState extends State<_ContentRows>
           return myMediaPrimary;
         }
       }
-      if (itemBannerTag != null) {
-        return imageApi.getBannerImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: itemBannerTag,
-        );
-      }
       if (itemThumbTag != null) {
         return imageApi.getThumbImageUrl(
           item.id,
           maxWidth: maxW,
           tag: itemThumbTag,
-        );
-      }
-      if (item.backdropImageTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          item.id,
-          maxWidth: maxW,
-          tag: item.backdropImageTags.first,
         );
       }
       return _resolveImageUrl(
