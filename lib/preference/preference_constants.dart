@@ -253,6 +253,15 @@ enum MediaSegmentCountdown {
   none,
 }
 
+/// Banner artwork is authored at 1000x185. Card geometry and image requests
+/// both use this so the artwork that comes back matches what gets drawn.
+const double kBannerAspectRatio = 1000 / 185;
+
+/// Card height for banner mode. Banner mode hides the poster size control, so
+/// it reads this instead of PosterSize.landscapeHeight, which would otherwise
+/// keep resizing banners with no way to change them.
+const double kBannerCardHeight = 110;
+
 enum ImageType {
   poster,
   thumb,

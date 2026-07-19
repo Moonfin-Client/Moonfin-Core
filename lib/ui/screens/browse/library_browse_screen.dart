@@ -245,7 +245,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final posterSize = _vm.posterSize;
     final baseWidth = switch (_vm.imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
+      ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -254,7 +254,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   double _selectedImageAspectRatio() {
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => 2 / 3,
     };
   }
@@ -265,11 +265,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.imageType != ImageType.poster &&
         _vm.items.isNotEmpty &&
         _vm.items.every(_vm.isNavigableFolder)) {
-      return _vm.imageType == ImageType.banner ? 1000 / 185 : 16 / 9;
+      return _vm.imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9;
     }
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => 2 / 3,
     };
   }
@@ -278,7 +278,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) return 1.0;
     if (_vm.isFilterBrowse) return _selectedImageAspectRatio();
     if (_vm.isNavigableFolder(item) && _vm.imageType != ImageType.poster) {
-      return _vm.imageType == ImageType.banner ? 1000 / 185 : 16 / 9;
+      return _vm.imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9;
     }
     return switch (_vm.imageType) {
       ImageType.thumb => switch (item.type) {
@@ -289,7 +289,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         'Person' => 1.0,
         _ => 16 / 9,
       },
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -436,6 +436,22 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           item.id,
           maxWidth: landscapeMaxW,
           tag: item.backdropImageTags.first,
+        );
+      }
+      // A landscape thumb beats the portrait primary here, since cropping a
+      // poster down to banner shape loses far more of the image.
+      if (itemThumbTag != null) {
+        return api.getThumbImageUrl(
+          item.id,
+          maxWidth: landscapeMaxW,
+          tag: itemThumbTag,
+        );
+      }
+      if (parentThumbItemId != null && parentThumbTag != null) {
+        return api.getThumbImageUrl(
+          parentThumbItemId,
+          maxWidth: landscapeMaxW,
+          tag: parentThumbTag,
         );
       }
       if (item.primaryImageTag != null) {
@@ -748,6 +764,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     imageUrl: _imageUrl(item),
                     width: double.infinity,
                     aspectRatio: itemAspectRatio,
+                    isBanner: _vm.imageType == ImageType.banner,
                     focusColor: focusColor,
                     focusNode: getGridItemFocusNode(index),
                     cardFocusExpansion: _prefs.get(

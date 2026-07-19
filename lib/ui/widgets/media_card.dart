@@ -48,6 +48,11 @@ class MediaCard extends StatefulWidget {
   final Color? subtitleColor;
   final bool isGenreFallback;
 
+  /// Puts the title and subtitle on one line, which is what the very wide
+  /// banner artwork has room for. The caller sets this rather than having the
+  /// card guess from [aspectRatio].
+  final bool isBanner;
+
   /// Extra widgets layered over the poster image (inside its clip), e.g.
   /// format badges. Position each with [Positioned].
   final List<Widget> imageOverlays;
@@ -93,6 +98,7 @@ class MediaCard extends StatefulWidget {
     this.imageOverlays = const [],
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.isBanner = false,
   });
 
   static IconData iconForType(String? type) {
@@ -199,6 +205,45 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     }
   }
 
+  /// Title and subtitle on one line, which is the shape banner artwork wants.
+  /// A rich [MediaCard.subtitleWidget] can't be inlined here, so the caller
+  /// renders it below instead, the same precedence the taller cards use.
+  Widget _bannerLabel({
+    required TextStyle titleStyle,
+    required TextStyle subtitleStyle,
+    required bool showMarquee,
+  }) {
+    const separator = '  •  ';
+    final inlineSubtitle =
+        widget.subtitleWidget == null &&
+            widget.subtitle != null &&
+            widget.subtitle!.isNotEmpty
+        ? widget.subtitle
+        : null;
+    // Both branches share these spans so the subtitle keeps its own style
+    // once the card is focused and the text starts scrolling.
+    final spans = <InlineSpan>[
+      TextSpan(text: widget.title!),
+      if (inlineSubtitle != null) ...[
+        TextSpan(text: separator, style: subtitleStyle),
+        TextSpan(text: inlineSubtitle, style: subtitleStyle),
+      ],
+    ];
+    return showMarquee
+        ? MarqueeText(
+            text: inlineSubtitle != null
+                ? '${widget.title}$separator$inlineSubtitle'
+                : widget.title!,
+            style: titleStyle,
+            spans: spans,
+          )
+        : Text.rich(
+            TextSpan(style: titleStyle, children: spans),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
@@ -295,33 +340,22 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
                       isGenreFallback: widget.isGenreFallback,
                     ),
-                    if ((widget.aspectRatio - (1000 / 185)).abs() < 0.01) ...[
+                    if (widget.isBanner) ...[
                       if (widget.title != null) ...[
                         const SizedBox(height: 6),
                         SizedBox(
                           height: titleLineHeight,
                           width: cardWidth,
-                          child: () {
-                            final combinedText = widget.subtitle != null && widget.subtitle!.isNotEmpty
-                                ? '${widget.title}  •  ${widget.subtitle}'
-                                : widget.title!;
-                            return showMarquee
-                                ? MarqueeText(text: combinedText, style: titleStyle)
-                                : Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        TextSpan(text: widget.title!, style: titleStyle),
-                                        if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
-                                          TextSpan(text: '  •  ', style: subtitleStyle),
-                                          TextSpan(text: widget.subtitle!, style: subtitleStyle),
-                                        ],
-                                      ],
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  );
-                          }(),
+                          child: _bannerLabel(
+                            titleStyle: titleStyle,
+                            subtitleStyle: subtitleStyle,
+                            showMarquee: showMarquee,
+                          ),
                         ),
+                      ],
+                      if (widget.subtitleWidget != null) ...[
+                        SizedBox(height: widget.title != null ? 2 : 6),
+                        widget.subtitleWidget!,
                       ],
                     ] else ...[
                       if (widget.title != null) ...[

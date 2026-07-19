@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 class MarqueeText extends StatefulWidget {
   final String text;
   final TextStyle style;
+
+  /// Optional rich content rendered in place of [text], so one scrolling line
+  /// can mix styles, such as a bold title followed by a dimmer subtitle.
+  /// [style] still applies as the root, and [text] stays as the plain text
+  /// equivalent used to spot content changes.
+  final List<InlineSpan>? spans;
+
   final int minDurationMs;
   final int maxDurationMs;
   final double millisPerPixel;
@@ -13,6 +20,7 @@ class MarqueeText extends StatefulWidget {
     super.key,
     required this.text,
     required this.style,
+    this.spans,
     this.minDurationMs = 2200,
     this.maxDurationMs = 12000,
     this.millisPerPixel = 50,
@@ -29,7 +37,11 @@ class _MarqueeTextState extends State<MarqueeText>
   late final ScrollController _controller;
   late final AnimationController _anim;
   double _lastTextWidth = 0.0;
-  double _lastParentWidth = 0.0;
+
+  /// What gets painted and measured, the spans when given, otherwise [text].
+  TextSpan get _span => widget.spans != null
+      ? TextSpan(style: widget.style, children: widget.spans)
+      : TextSpan(text: widget.text, style: widget.style);
 
   @override
   void initState() {
@@ -80,7 +92,6 @@ class _MarqueeTextState extends State<MarqueeText>
     if (!mounted) return;
 
     _lastTextWidth = textWidth;
-    _lastParentWidth = parentWidth;
 
     final overflows = textWidth > parentWidth;
     if (!overflows) {
@@ -112,8 +123,9 @@ class _MarqueeTextState extends State<MarqueeText>
 
   @override
   Widget build(BuildContext context) {
+    final span = _span;
     final textPainter = TextPainter(
-      text: TextSpan(text: widget.text, style: widget.style),
+      text: span,
       textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
       maxLines: 1,
       textScaler: MediaQuery.textScalerOf(context),
@@ -131,12 +143,7 @@ class _MarqueeTextState extends State<MarqueeText>
         final overflows = textWidth > parentWidth;
 
         if (!overflows) {
-          return Text(
-            widget.text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: widget.style,
-          );
+          return Text.rich(span, maxLines: 1, overflow: TextOverflow.ellipsis);
         }
 
         return SingleChildScrollView(
@@ -145,9 +152,9 @@ class _MarqueeTextState extends State<MarqueeText>
           physics: const NeverScrollableScrollPhysics(),
           child: Row(
             children: [
-              Text(widget.text, maxLines: 1, style: widget.style),
+              Text.rich(span, maxLines: 1),
               SizedBox(width: widget.gap),
-              Text(widget.text, maxLines: 1, style: widget.style),
+              Text.rich(span, maxLines: 1),
             ],
           ),
         );

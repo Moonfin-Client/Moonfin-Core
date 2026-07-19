@@ -297,7 +297,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
     final posterSize = _posterSize;
     final baseWidth = switch (_imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
+      ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -310,7 +310,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
 
     return switch (_imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => 2 / 3,
     };
   }

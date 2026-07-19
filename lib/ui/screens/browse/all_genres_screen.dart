@@ -260,7 +260,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     final posterSize = _posterSize;
     final baseWidth = switch (_imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
+      ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * _desktopUiScaleFactor();
@@ -269,7 +269,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   double _cardAspectRatio() {
     return switch (_imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => 2 / 3,
     };
   }

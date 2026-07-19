@@ -155,7 +155,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     final posterSize = _vm.posterSize;
     final baseWidth = switch (_vm.imageType) {
       ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
-      ImageType.banner => posterSize.landscapeHeight * (1000 / 185),
+      ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
       ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
@@ -164,7 +164,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
   double _gridBaseAspectRatio() {
     return switch (_vm.imageType) {
       ImageType.thumb => 16 / 9,
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => 2 / 3,
     };
   }
@@ -179,7 +179,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         'Person' => 1.0,
         _ => 16 / 9,
       },
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -310,6 +310,29 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     int? maxHeight,
   }) {
     final api = _vm.imageApi;
+    if (_vm.imageType == ImageType.banner) {
+      // Same order library browse uses. The portrait primary comes last
+      // because a banner card crops it down to a sliver.
+      final bannerTag = item.bannerImageTag;
+      if (bannerTag != null) {
+        return api.getBannerImageUrl(
+          item.id,
+          maxWidth: maxWidth,
+          tag: bannerTag,
+        );
+      }
+      if (item.backdropImageTags.isNotEmpty) {
+        return api.getBackdropImageUrl(
+          item.id,
+          maxWidth: maxWidth,
+          tag: item.backdropImageTags.first,
+        );
+      }
+      final thumbTag = item.thumbImageTag;
+      if (thumbTag != null) {
+        return api.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
+      }
+    }
     if (_vm.imageType == ImageType.thumb && item.backdropImageTags.isNotEmpty) {
       return api.getBackdropImageUrl(item.id, maxWidth: maxWidth);
     }
@@ -551,6 +574,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       ),
       width: double.infinity,
       aspectRatio: itemAspectRatio,
+      isBanner: _vm.imageType == ImageType.banner,
       focusColor: focusColor,
       focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
       cardFocusExpansion: focusExpansion,
@@ -661,6 +685,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
                     ),
                     width: double.infinity,
                     aspectRatio: itemAspectRatio,
+                    isBanner: _vm.imageType == ImageType.banner,
                     focusColor: focusColor,
                     focusNode: getGridItemFocusNode(index),
                     cardFocusExpansion: focusExpansion,

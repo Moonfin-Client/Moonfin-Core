@@ -10,6 +10,8 @@ PODS:
   - flutter_inappwebview_ios/Core (0.0.1):
     - Flutter
     - OrderedSet (~> 6.0.3)
+  - gamepads_ios (0.1.1):
+    - Flutter
   - google-cast-sdk-no-bluetooth-xcframework (4.8.0):
     - Protobuf (~> 3.13)
   - LzmaSDK-ObjC (2.1.1)
@@ -30,6 +32,7 @@ DEPENDENCIES:
   - archive_extract (from `.symlinks/plugins/archive_extract/ios`)
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
+  - gamepads_ios (from `.symlinks/plugins/gamepads_ios/ios`)
   - google-cast-sdk-no-bluetooth-xcframework (~> 4.8.0)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
@@ -50,6 +53,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_inappwebview_ios:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
+  gamepads_ios:
+    :path: ".symlinks/plugins/gamepads_ios/ios"
   media_kit_libs_ios_video:
     :path: ".symlinks/plugins/media_kit_libs_ios_video/ios"
   media_kit_video:
@@ -61,6 +66,7 @@ SPEC CHECKSUMS:
   archive_extract: acd7ac4b098e5adc7af644e1d70e6df4ff6f9a28
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
+  gamepads_ios: c75c6d31377d275b0effb9174c619e2705678c09
   google-cast-sdk-no-bluetooth-xcframework: 1783f52a1b2dc0293ac3ae995db5435989a87da7
   LzmaSDK-ObjC: 6c68c37743a658fc9a4c7b70f7d6045b587aa42b
   media_kit_libs_ios_video: 5a18affdb97d1f5d466dc79988b13eff6c5e2854

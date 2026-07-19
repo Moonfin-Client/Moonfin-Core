@@ -60,6 +60,9 @@ class AggregatedItem {
   String? get thumbImageTag =>
       (rawData['ImageTags'] as Map?)?['Thumb'] as String?;
 
+  String? get bannerImageTag =>
+      (rawData['ImageTags'] as Map?)?['Banner'] as String?;
+
   String? get primaryImageTagField => rawData['PrimaryImageTag'] as String?;
 
   String? get primaryImageItemId => rawData['PrimaryImageItemId']?.toString();

@@ -4443,6 +4443,10 @@ class _ContentRowsState extends State<_ContentRows>
                     imageUrl: imageUrl,
                     width: width,
                     aspectRatio: ar,
+                    // Safe to compare doubles here, since ar is assigned
+                    // this same constant and audio and Seerr filter rows
+                    // already get a different ratio.
+                    isBanner: ar == kBannerAspectRatio,
                     isFavorite: item.isFavorite,
                     isPlayed: item.isPlayed,
                     unplayedCount: item.unplayedItemCount,
@@ -5199,7 +5203,7 @@ class _ContentRowsState extends State<_ContentRows>
 
     return switch (imageType) {
       ImageType.thumb => thumbAspectRatio(),
-      ImageType.banner => 1000 / 185,
+      ImageType.banner => kBannerAspectRatio,
       ImageType.poster => MediaCard.aspectRatioForType(item.type),
     };
   }
@@ -5253,7 +5257,9 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (imageType == ImageType.banner) {
-      final maxW = (height * 16 / 9 * requestScale).toInt();
+      // Ask for the banner ratio. At 16/9 the artwork comes back about three
+      // times too narrow for the card and has to be upscaled.
+      final maxW = (height * kBannerAspectRatio * requestScale).toInt();
       if (itemBannerTag != null) {
         return imageApi.getBannerImageUrl(
           item.id,
@@ -5376,7 +5382,13 @@ class _ContentRowsState extends State<_ContentRows>
     ImageType imageType,
     double requestScale,
   ) {
-    final maxW = (height * 16 / 9 * requestScale).toInt();
+    // The banner branch below shares this width, so it has to account for the
+    // banner ratio or that artwork comes back too narrow.
+    final maxW =
+        (height *
+                (imageType == ImageType.banner ? kBannerAspectRatio : 16 / 9) *
+                requestScale)
+            .toInt();
     final maxH = (height * requestScale).toInt();
     final seriesId = item.seriesId;
     final seriesPrimaryTag = item.seriesPrimaryImageTag;
