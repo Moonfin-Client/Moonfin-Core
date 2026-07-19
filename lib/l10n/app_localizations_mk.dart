@@ -3392,10 +3392,10 @@ class AppLocalizationsMk extends AppLocalizations {
       'Ограничи ги почетните редови на 1 ред по екран';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

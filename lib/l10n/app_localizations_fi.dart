@@ -3384,10 +3384,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Näytä vain yksi aloitusnäytön rivi kerrallaan';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

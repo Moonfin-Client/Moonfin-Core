@@ -3396,10 +3396,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'Korlátozd a kezdőképernyő sorait képernyőnként 1 sorra';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

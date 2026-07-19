@@ -3369,10 +3369,10 @@ class AppLocalizationsNb extends AppLocalizations {
       'Begrens hjem-rader til én rad per skjerm';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

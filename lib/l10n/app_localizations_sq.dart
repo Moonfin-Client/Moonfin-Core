@@ -3402,10 +3402,10 @@ class AppLocalizationsSq extends AppLocalizations {
       'Kufizo rreshtat e kreut në 1 rresht për ekran';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

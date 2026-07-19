@@ -4627,12 +4627,12 @@
   "@fullScreenRowsDescription": {
     "description": "Description for full screen home rows"
   },
-  "modernHomeRowsPadding": "Home Row Padding",
-  "@modernHomeRowsPadding": {
+  "homeRowsPadding": "Home Row Padding",
+  "@homeRowsPadding": {
     "description": "Title for home rows padding setting"
   },
-  "modernHomeRowsPaddingDescription": "Customize padding between home rows",
-  "@modernHomeRowsPaddingDescription": {
+  "homeRowsPaddingDescription": "Customize padding between home rows",
+  "@homeRowsPaddingDescription": {
     "description": "Description for home rows padding setting"
   },
   "perRowImageType": "Per Row Image Type",

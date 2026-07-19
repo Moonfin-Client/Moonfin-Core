@@ -3262,10 +3262,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fullScreenRowsDescription => '将首页行限制为每屏 1 行';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

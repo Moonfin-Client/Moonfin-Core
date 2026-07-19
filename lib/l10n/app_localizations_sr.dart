@@ -3494,10 +3494,10 @@ class AppLocalizationsSr extends AppLocalizations {
   String get fullScreenRowsDescription => 'Ограничи на 1 ред по екрану';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

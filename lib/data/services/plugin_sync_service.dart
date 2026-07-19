@@ -1062,6 +1062,16 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.homeRowsStyle,
         enumValues: prefs.HomeRowsStyle.values,
       );
+      _applyInt(
+        resolved,
+        'modernHomeRowsPadding',
+        UserPreferences.modernHomeRowsPadding,
+      );
+      _applyInt(
+        resolved,
+        'classicHomeRowsPadding',
+        UserPreferences.classicHomeRowsPadding,
+      );
       _applyString(
         resolved,
         'recommendationSystemSource',
@@ -1813,6 +1823,12 @@ class PluginSyncService extends ChangeNotifier {
           .name,
       'cardFocusExpansion': _prefs.get(UserPreferences.cardFocusExpansion),
       'homeRowsStyle': _prefs.get(UserPreferences.homeRowsStyle).name,
+      'modernHomeRowsPadding': _prefs.get(
+        UserPreferences.modernHomeRowsPadding,
+      ),
+      'classicHomeRowsPadding': _prefs.get(
+        UserPreferences.classicHomeRowsPadding,
+      ),
       'recommendationSystemSource':
           _prefs.get(UserPreferences.recommendationSystemSource).name,
       'detailScreenStyle': _prefs.get(UserPreferences.detailScreenStyle).name,

@@ -3384,10 +3384,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ana sayfa satırlarını ekran başına 1 satırla sınırla';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

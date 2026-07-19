@@ -3392,10 +3392,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rodyti tik po vieną pradžios ekrano eilutę';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

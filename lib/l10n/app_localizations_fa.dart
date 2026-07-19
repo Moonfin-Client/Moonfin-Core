@@ -3350,10 +3350,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'محدود کردن ردیف‌های صفحه اصلی به 1 ردیف در هر صفحه';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override
