@@ -3264,6 +3264,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get fullScreenRowsDescription => '每個畫面淨係顯示一行主畫面列表';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => '每行圖像類型';
 
   @override

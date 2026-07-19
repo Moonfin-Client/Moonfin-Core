@@ -3398,6 +3398,13 @@ class AppLocalizationsCy extends AppLocalizations {
       'Cyfyngu rhesi cartref i 1 rhes fesul sgrin';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Math Delwedd Fesul Rhes';
 
   @override

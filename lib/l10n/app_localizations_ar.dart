@@ -3382,6 +3382,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'قصر صفوف الرئيسية على صف واحد لكل شاشة';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'نوع الصورة لكل صف';
 
   @override

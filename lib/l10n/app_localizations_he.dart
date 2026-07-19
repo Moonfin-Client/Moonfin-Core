@@ -3343,6 +3343,13 @@ class AppLocalizationsHe extends AppLocalizations {
       'הגבל את שורות מסך הבית לשורה אחת לכל מסך';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'סוג תמונה לפי שורה';
 
   @override

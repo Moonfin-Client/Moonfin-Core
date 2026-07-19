@@ -3371,6 +3371,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Limigi hejmajn vicojn al 1 vico po ekrano';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Per Vico Bilda Tipo';
 
   @override

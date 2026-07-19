@@ -3391,6 +3391,13 @@ class AppLocalizationsBg extends AppLocalizations {
       'Ограничаване до 1 начален ред на екран';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Тип изображение на ред';
 
   @override

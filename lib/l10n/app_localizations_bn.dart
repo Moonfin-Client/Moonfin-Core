@@ -3363,6 +3363,13 @@ class AppLocalizationsBn extends AppLocalizations {
       'প্রতি স্ক্রিনে হোম সারি ১টিতে সীমাবদ্ধ করুন';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'প্রতি সারি ইমেজ টাইপ';
 
   @override

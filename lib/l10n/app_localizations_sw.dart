@@ -3397,6 +3397,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Punguza safu za nyumbani hadi safu 1 kwa kila skrini';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Aina ya Picha kwa Safu Mlalo';
 
   @override

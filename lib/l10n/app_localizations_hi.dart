@@ -3363,6 +3363,13 @@ class AppLocalizationsHi extends AppLocalizations {
       'प्रति स्क्रीन होम पंक्तियाँ 1 तक सीमित करें';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'प्रति पंक्ति छवि प्रकार';
 
   @override

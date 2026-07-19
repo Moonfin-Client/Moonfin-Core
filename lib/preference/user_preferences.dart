@@ -650,6 +650,16 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final modernHomeRowsPadding = Preference<int>(
+    key: 'pref_modern_home_rows_padding',
+    defaultValue: 460,
+  );
+
+  static final classicHomeRowsPadding = Preference<int>(
+    key: 'pref_classic_home_rows_padding',
+    defaultValue: 30,
+  );
+
   static final desktopUiScale = EnumPreference(
     key: 'pref_desktop_ui_scale',
     defaultValue: DesktopUiScale.medium,

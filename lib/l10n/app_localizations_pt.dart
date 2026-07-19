@@ -3389,6 +3389,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Limitar as linhas do início a 1 linha por tela';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Tipo de Imagem por Linha';
 
   @override

@@ -3391,6 +3391,13 @@ class AppLocalizationsBe extends AppLocalizations {
       'Паказваць не больш за адзін радок галоўнай на экран';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Тып выявы ў радку';
 
   @override

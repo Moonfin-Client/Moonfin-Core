@@ -3349,6 +3349,13 @@ class AppLocalizationsTh extends AppLocalizations {
       'จำกัดแถวหน้าแรกให้เหลือ 1 แถวต่อหน้าจอ';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'ประเภทรูปภาพต่อแถว';
 
   @override

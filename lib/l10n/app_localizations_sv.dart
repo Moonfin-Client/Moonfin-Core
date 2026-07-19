@@ -3378,6 +3378,13 @@ class AppLocalizationsSv extends AppLocalizations {
       'Begränsa hemrader till 1 rad per skärm';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Bildtyp per rad';
 
   @override

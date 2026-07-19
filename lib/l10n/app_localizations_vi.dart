@@ -3376,6 +3376,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Giới hạn còn 1 hàng trang chủ mỗi màn hình';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Loại hình ảnh trên mỗi hàng';
 
   @override

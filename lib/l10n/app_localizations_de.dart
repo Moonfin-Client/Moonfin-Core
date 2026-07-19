@@ -3464,6 +3464,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Startseite auf eine Zeile pro Bildschirm begrenzen';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Bildtyp pro Reihe';
 
   @override

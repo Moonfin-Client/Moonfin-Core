@@ -3392,6 +3392,13 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rodyti tik po vieną pradžios ekrano eilutę';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Eilutės vaizdo tipas';
 
   @override

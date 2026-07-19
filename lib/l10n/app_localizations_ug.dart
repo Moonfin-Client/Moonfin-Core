@@ -3381,6 +3381,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'ھەر ئېكرانغا باش بەت قۇرىنى 1 قۇر بىلەن چەكلەيدۇ';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'ھەر بىر قۇر رەسىم تىپى';
 
   @override

@@ -573,6 +573,7 @@ class _EnumPreferenceTileState<T extends Enum>
 class SliderPreferenceTile extends StatefulWidget {
   final Preference<int> preference;
   final String title;
+  final String? description;
   final IconData? icon;
   final double min;
   final double max;
@@ -580,11 +581,13 @@ class SliderPreferenceTile extends StatefulWidget {
   final String Function(int value)? labelOf;
   final VoidCallback? onChangeEnd;
   final bool autofocus;
+  final bool enabled;
 
   const SliderPreferenceTile({
     super.key,
     required this.preference,
     required this.title,
+    this.description,
     this.icon,
     required this.min,
     required this.max,
@@ -592,6 +595,7 @@ class SliderPreferenceTile extends StatefulWidget {
     this.labelOf,
     this.onChangeEnd,
     this.autofocus = false,
+    this.enabled = true,
   });
 
   @override
@@ -636,6 +640,7 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
   }
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    if (!widget.enabled) return KeyEventResult.ignored;
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
@@ -667,10 +672,11 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
 
   @override
   Widget build(BuildContext context) {
-    final invert = _outerFocused && settingsTileInvertsOnFocus;
+    final invert = widget.enabled && _outerFocused && settingsTileInvertsOnFocus;
     return Focus(
       focusNode: _outerFocusNode,
       autofocus: widget.autofocus,
+      canRequestFocus: widget.enabled,
       onKeyEvent: _onKeyEvent,
       onFocusChange: (focused) {
         if (focused) {
@@ -712,6 +718,16 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (widget.description != null)
+                      Text(
+                        widget.description!,
+                        style: TextStyle(
+                          fontSize: _kSettingsSubtitleTextStyle.fontSize,
+                          color: invert
+                              ? AppColors.black.withValues(alpha: 0.54)
+                              : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
                     if (widget.labelOf != null)
                       Text(
                         widget.labelOf!(value),
@@ -731,8 +747,8 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                             min: widget.min,
                             max: widget.max,
                             divisions: widget.divisions,
-                            onChanged: (v) => _binding.value = v.round(),
-                            onChangeEnd: (_) => widget.onChangeEnd?.call(),
+                            onChanged: widget.enabled ? (v) => _binding.value = v.round() : null,
+                            onChangeEnd: widget.enabled ? (_) => widget.onChangeEnd?.call() : null,
                           )
                         : Slider(
                             focusNode: _sliderInternalNode,
@@ -745,8 +761,8 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                             divisions: widget.divisions,
                             label:
                                 widget.labelOf?.call(value) ?? value.toString(),
-                            onChanged: (v) => _binding.value = v.round(),
-                            onChangeEnd: (_) => widget.onChangeEnd?.call(),
+                            onChanged: widget.enabled ? (v) => _binding.value = v.round() : null,
+                            onChangeEnd: widget.enabled ? (_) => widget.onChangeEnd?.call() : null,
                           ),
                   ],
                 ),

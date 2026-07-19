@@ -3297,6 +3297,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fullScreenRowsDescription => '1 画面に表示するホーム行を 1 行に制限します';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => '行ごとの画像タイプ';
 
   @override

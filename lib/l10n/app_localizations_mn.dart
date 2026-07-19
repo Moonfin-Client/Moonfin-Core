@@ -3377,6 +3377,13 @@ class AppLocalizationsMn extends AppLocalizations {
       'Нэг дэлгэцэд нүүр хуудасны 1 эгнээ харуулна';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Мөр бүрийн зургийн төрөл';
 
   @override

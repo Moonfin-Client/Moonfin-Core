@@ -3372,6 +3372,13 @@ class AppLocalizationsDa extends AppLocalizations {
       'Begræns startskærmen til én række pr. skærm';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Billedtype pr. række';
 
   @override

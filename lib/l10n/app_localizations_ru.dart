@@ -3401,6 +3401,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Показывать не больше одного ряда на экране';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Тип изображения по строкам';
 
   @override

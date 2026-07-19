@@ -3390,6 +3390,13 @@ class AppLocalizationsLv extends AppLocalizations {
       'Rādīt tikai vienu sākuma ekrāna rindu';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Rindas attēla veids';
 
   @override

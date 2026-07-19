@@ -3397,6 +3397,13 @@ class AppLocalizationsRo extends AppLocalizations {
       'Limitează ecranul principal la un singur rând';
 
   @override
+  String get modernHomeRowsPadding => 'Home Row Padding';
+
+  @override
+  String get modernHomeRowsPaddingDescription =>
+      'Customize padding between home rows';
+
+  @override
   String get perRowImageType => 'Tip de imagine pe rând';
 
   @override

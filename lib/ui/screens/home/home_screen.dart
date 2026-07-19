@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -950,6 +951,8 @@ class _ContentRowsState extends State<_ContentRows>
     if (!mounted) return;
 
     _layoutPrefsVersion++;
+    _invalidateStaticRowHeightCache();
+    _invalidateRowTargetOffsetCache();
 
     final useMedia3 = _useMedia3InlinePreview();
     if (useMedia3 != _lastMedia3PreviewPreference) {
@@ -2320,6 +2323,7 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
     final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
 
     double childHeight = 0.0;
@@ -2330,7 +2334,9 @@ class _ContentRowsState extends State<_ContentRows>
         childHeight = squarePosterSide + (56 * metadataScale);
       } else if (isRowsV2) {
         final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
-        childHeight = imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale) + (10 * metadataScale);
+        final isLibraryTiles = row.rowType == HomeRowType.libraryTiles;
+        final budget = isLibraryTiles ? 38.0 : _v2MetadataHeightBudget(prefs);
+        childHeight = imageHeight + (budget * metadataScale) + (10 * metadataScale);
       } else {
         final imageHeight = posterSize.portraitHeight.toDouble() * platformScale;
         childHeight = imageHeight + (46 * metadataScale) + (10 * metadataScale);
@@ -2344,10 +2350,13 @@ class _ContentRowsState extends State<_ContentRows>
       final rowImageType = isSeerrRowOverride
           ? ImageType.thumb
           : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
-      var maxCardHeight = 220.0 * metadataScale;
+      var maxCardHeight = 0.0;
       if (isRowsV2) {
+        maxCardHeight = 220.0 * metadataScale;
         final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
-        maxCardHeight = imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale);
+        final isLibraryTiles = row.rowType == HomeRowType.libraryTiles;
+        final budget = isLibraryTiles ? 38.0 : _v2MetadataHeightBudget(prefs);
+        maxCardHeight = imageHeight + (budget * metadataScale);
       } else {
         for (final item in row.items) {
           final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
@@ -2358,6 +2367,15 @@ class _ContentRowsState extends State<_ContentRows>
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
+        }
+        if (maxCardHeight == 0.0) {
+          maxCardHeight = posterSize.portraitHeight.toDouble() * platformScale + (46 * metadataScale);
+        }
+        final isLibrary = row.rowType == HomeRowType.libraryTilesSmall ||
+            row.rowType == HomeRowType.libraryTiles;
+        if (!fullScreenRows && !isLibrary) {
+          final classicPadding = prefs.get(UserPreferences.classicHomeRowsPadding).toDouble();
+          maxCardHeight += classicPadding;
         }
       }
       childHeight = maxCardHeight + (10 * metadataScale);
@@ -2373,7 +2391,26 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
-    final totalHeight = childHeight + headerHeight;
+    var totalHeight = childHeight + headerHeight;
+    if (!fullScreenRows) {
+      if (isRowsV2) {
+        final customHeight = prefs.get(UserPreferences.modernHomeRowsPadding).toDouble();
+        if (row.rowType != HomeRowType.libraryTilesSmall &&
+            row.rowType != HomeRowType.libraryTiles) {
+          totalHeight = customHeight;
+        } else {
+          final offset = (customHeight - 440.0).clamp(0.0, 120.0);
+          totalHeight += offset;
+        }
+      } else {
+        if (row.rowType == HomeRowType.libraryTilesSmall ||
+            row.rowType == HomeRowType.libraryTiles) {
+          final classicPadding = prefs.get(UserPreferences.classicHomeRowsPadding).toDouble();
+          final offset = (classicPadding - 10.0).clamp(0.0, 120.0);
+          totalHeight += offset;
+        }
+      }
+    }
     _staticRowHeightCache[rowIndex] = totalHeight;
     return totalHeight;
   }
@@ -2415,11 +2452,21 @@ class _ContentRowsState extends State<_ContentRows>
       return preferredTop.clamp(defaultTop, _rowTopOffsets[0]);
     }
 
-    if (isRowsV2) {
-      final targetTop = (viewportHeight - rowHeight) / 2.0;
-      return targetTop.clamp(defaultTop, double.infinity);
+    final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
+    if (fullScreenRows) {
+      if (isRowsV2) {
+        final targetTop = (viewportHeight - rowHeight) / 2.0;
+        return targetTop.clamp(defaultTop, double.infinity);
+      }
+      return defaultTop;
+    } else {
+      final isMyMedia = row.rowType == HomeRowType.libraryTilesSmall ||
+          row.rowType == HomeRowType.libraryTiles;
+      if (isMyMedia) {
+        return defaultTop;
+      }
+      return 0.0;
     }
-    return defaultTop;
   }
 
   Future<void> _scrollTvRowIntoOverlayBand(int rowIndex) async {
@@ -3057,6 +3104,7 @@ class _ContentRowsState extends State<_ContentRows>
   ) {
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
     if (row.isLoading) {
       return _libraryRowExtent(
         220 * metadataScale,
@@ -3078,12 +3126,15 @@ class _ContentRowsState extends State<_ContentRows>
       final platformScale = PlatformDetection.isTV
           ? 0.8 * desktopScale
           : desktopScale;
-      var maxCardHeight = 220.0 * metadataScale;
+      var maxCardHeight = 0.0;
       if (isRowsV2) {
+        maxCardHeight = 220.0 * metadataScale;
         final imageHeight =
             posterSize.portraitHeight.toDouble() * platformScale * 2;
+        final isLibraryTiles = row.rowType == HomeRowType.libraryTiles;
+        final budget = isLibraryTiles ? 38.0 : _v2MetadataHeightBudget(prefs);
         maxCardHeight =
-            imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale);
+            imageHeight + (budget * metadataScale);
       } else {
         for (final item in row.items) {
           final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
@@ -3096,6 +3147,15 @@ class _ContentRowsState extends State<_ContentRows>
           if (cardHeight > maxCardHeight) {
             maxCardHeight = cardHeight;
           }
+        }
+        if (maxCardHeight == 0.0) {
+          maxCardHeight = posterSize.portraitHeight.toDouble() * platformScale + (46 * metadataScale);
+        }
+        final isLibrary = row.rowType == HomeRowType.libraryTilesSmall ||
+            row.rowType == HomeRowType.libraryTiles;
+        if (!fullScreenRows && !isLibrary) {
+          final classicPadding = prefs.get(UserPreferences.classicHomeRowsPadding).toDouble();
+          maxCardHeight += classicPadding;
         }
       }
       return _libraryRowExtent(maxCardHeight, metadataScale: metadataScale);
@@ -3277,7 +3337,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
 
-    final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
+    final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus) ?? 0;
 
     // Compute viewport geometry
     final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
@@ -3556,7 +3616,7 @@ class _ContentRowsState extends State<_ContentRows>
                     bottom: neededBottomPadding,
                   ),
                   itemCount: rows.length + headerCount,
-                  cacheExtent: 600,
+                  scrollCacheExtent: const ScrollCacheExtent.pixels(600.0),
                   itemBuilder: (context, index) {
                     if (includeMediaBar && index == 0) {
                       return ValueListenableBuilder<bool>(
@@ -3689,11 +3749,9 @@ class _ContentRowsState extends State<_ContentRows>
                     final contentHeight = _rowContentHeight(row, posterSize, prefs);
                     final targetExtent = rowExtents[rowIndex];
                     final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
-                    final extraTopPadding = fullScreenRows
-                        ? (isRowsV2
-                            ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
-                            : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity))
-                        : 0.0;
+                    final extraTopPadding = isRowsV2
+                        ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
+                        : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity);
 
                     final paddedRowChild = extraTopPadding > 0.0
                         ? Padding(
@@ -3702,8 +3760,7 @@ class _ContentRowsState extends State<_ContentRows>
                           )
                         : rowChild;
 
-                    final bool lockRowHeight = fullScreenRows ||
-                        (!PlatformDetection.useMobileUi && showInfoOverlay);
+                    final bool lockRowHeight = !PlatformDetection.useMobileUi || !fullScreenRows;
 
                     if (row.isLoading) {
                       final itemWidget = Padding(
@@ -3998,7 +4055,8 @@ class _ContentRowsState extends State<_ContentRows>
         : desktopScale;
     final v2ImageHeight =
         posterSize.portraitHeight.toDouble() * platformScale * 2;
-    final v2MetadataHeightBudget = _v2MetadataHeightBudget(prefs);
+    final isLibraryTiles = row.rowType == HomeRowType.libraryTiles;
+    final v2MetadataHeightBudget = isLibraryTiles ? 38.0 : _v2MetadataHeightBudget(prefs);
     final v2PortraitAspect = row.isAudio ? 1.0 : 2 / 3;
     final v2FocusedAspect = row.isAudio ? 1.0 : 16 / 9;
     final v2PortraitWidth = v2ImageHeight * v2PortraitAspect;
@@ -4044,6 +4102,13 @@ class _ContentRowsState extends State<_ContentRows>
         final cardHeight = height + (46 * metadataScale);
         if (cardHeight > maxCardHeight) maxCardHeight = cardHeight;
         if (firstCardWidth == 0) firstCardWidth = height * ar;
+      }
+      final isLibrary = row.rowType == HomeRowType.libraryTilesSmall ||
+          row.rowType == HomeRowType.libraryTiles;
+      final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
+      if (!fullScreenRows && !isLibrary) {
+        final classicPadding = prefs.get(UserPreferences.classicHomeRowsPadding).toDouble();
+        maxCardHeight += classicPadding;
       }
     }
 
