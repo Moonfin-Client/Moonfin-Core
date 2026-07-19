@@ -1316,7 +1316,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadLatestMediaRows() async {
-    final viewsFuture = GetIt.instance<UserViewsRepository>().getAllViewsIncludingHidden();
+    final viewsFuture = GetIt.instance<UserViewsRepository>()
+        .getAllViewsIncludingHidden();
     final configFuture = _client.usersApi
         .getUserConfiguration()
         .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
@@ -1341,7 +1342,7 @@ class HomeViewModel extends ChangeNotifier {
           lib.id,
           lib.name,
           _serverId,
-          lib.collectionType,
+          lib.collectionType.toLowerCase(),
         );
         return row.items.isNotEmpty ? row : null;
       } catch (_) {
@@ -1355,7 +1356,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadRecentlyReleasedRow() async {
-    final viewsFuture = GetIt.instance<UserViewsRepository>().getAllViewsIncludingHidden();
+    final viewsFuture = GetIt.instance<UserViewsRepository>()
+        .getAllViewsIncludingHidden();
     final configFuture = _client.usersApi
         .getUserConfiguration()
         .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
@@ -1380,7 +1382,7 @@ class HomeViewModel extends ChangeNotifier {
           lib.id,
           lib.name,
           _serverId,
-          lib.collectionType,
+          lib.collectionType.toLowerCase(),
         );
         return row.items.isNotEmpty ? row : null;
       } catch (_) {

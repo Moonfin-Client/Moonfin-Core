@@ -148,26 +148,33 @@ class UserConfiguration {
     Map<String, dynamic> raw = const {},
   }) : _raw = raw;
 
-  factory UserConfiguration.fromJson(Map<String, dynamic> json) =>
-      UserConfiguration(
-        orderedViews: _stringList(json['OrderedViews'] ?? json['orderedViews']),
-        latestItemsExcludes: _stringList(json['LatestItemsExcludes'] ?? json['latestItemsExcludes']),
-        myMediaExcludes: _stringList(json['MyMediaExcludes'] ?? json['myMediaExcludes']),
-        groupedFolders: _stringList(json['GroupedFolders'] ?? json['groupedFolders']),
-        hidePlayedInLatest: (json['HidePlayedInLatest'] ?? json['hidePlayedInLatest']) as bool? ?? true,
-        enableNextEpisodeAutoPlay:
-            (json['EnableNextEpisodeAutoPlay'] ?? json['enableNextEpisodeAutoPlay']) as bool? ?? true,
-        playDefaultAudioTrack:
-            (json['PlayDefaultAudioTrack'] ?? json['playDefaultAudioTrack']) as bool? ?? true,
-        rememberAudioSelections:
-            (json['RememberAudioSelections'] ?? json['rememberAudioSelections']) as bool? ?? true,
-        rememberSubtitleSelections:
-            (json['RememberSubtitleSelections'] ?? json['rememberSubtitleSelections']) as bool? ?? true,
-        audioLanguagePreference: _nonEmptyString(json['AudioLanguagePreference'] ?? json['audioLanguagePreference']),
-        subtitleLanguagePreference: _nonEmptyString(json['SubtitleLanguagePreference'] ?? json['subtitleLanguagePreference']),
-        subtitleMode: _subtitleModeString(json['SubtitleMode'] ?? json['subtitleMode']),
-        raw: json,
-      );
+  factory UserConfiguration.fromJson(Map<String, dynamic> json) {
+    // Servers differ on casing, so read either spelling of each key.
+    Object? read(String key) => json[key] ?? json[_camelOf(key)];
+
+    return UserConfiguration(
+      orderedViews: _stringList(read('OrderedViews')),
+      latestItemsExcludes: _stringList(read('LatestItemsExcludes')),
+      myMediaExcludes: _stringList(read('MyMediaExcludes')),
+      groupedFolders: _stringList(read('GroupedFolders')),
+      hidePlayedInLatest: read('HidePlayedInLatest') as bool? ?? true,
+      enableNextEpisodeAutoPlay:
+          read('EnableNextEpisodeAutoPlay') as bool? ?? true,
+      playDefaultAudioTrack: read('PlayDefaultAudioTrack') as bool? ?? true,
+      rememberAudioSelections: read('RememberAudioSelections') as bool? ?? true,
+      rememberSubtitleSelections:
+          read('RememberSubtitleSelections') as bool? ?? true,
+      audioLanguagePreference: _nonEmptyString(read('AudioLanguagePreference')),
+      subtitleLanguagePreference: _nonEmptyString(
+        read('SubtitleLanguagePreference'),
+      ),
+      subtitleMode: _subtitleModeString(read('SubtitleMode')),
+      raw: json,
+    );
+  }
+
+  static String _camelOf(String pascal) =>
+      pascal[0].toLowerCase() + pascal.substring(1);
 
   static List<String> _stringList(dynamic value) {
     if (value is List) return value.cast<String>();
@@ -223,39 +230,48 @@ class UserConfiguration {
     );
   }
 
+  /// Every key this class owns, in the casing it writes back.
+  static const _ownedKeys = [
+    'OrderedViews',
+    'LatestItemsExcludes',
+    'MyMediaExcludes',
+    'GroupedFolders',
+    'HidePlayedInLatest',
+    'EnableNextEpisodeAutoPlay',
+    'PlayDefaultAudioTrack',
+    'RememberAudioSelections',
+    'RememberSubtitleSelections',
+    'AudioLanguagePreference',
+    'SubtitleLanguagePreference',
+    'SubtitleMode',
+  ];
+
   Map<String, dynamic> toJson() {
     final json = Map<String, dynamic>.from(_raw);
+    // The raw payload is the base, so drop any camel spelling that came in
+    // with it or a stale copy rides along beside the fresh value.
+    for (final key in _ownedKeys) {
+      json.remove(_camelOf(key));
+    }
     json['OrderedViews'] = orderedViews;
-    json['orderedViews'] = orderedViews;
     json['LatestItemsExcludes'] = latestItemsExcludes;
-    json['latestItemsExcludes'] = latestItemsExcludes;
     json['MyMediaExcludes'] = myMediaExcludes;
-    json['myMediaExcludes'] = myMediaExcludes;
     json['GroupedFolders'] = groupedFolders;
-    json['groupedFolders'] = groupedFolders;
     json['HidePlayedInLatest'] = hidePlayedInLatest;
-    json['hidePlayedInLatest'] = hidePlayedInLatest;
     json['EnableNextEpisodeAutoPlay'] = enableNextEpisodeAutoPlay;
-    json['enableNextEpisodeAutoPlay'] = enableNextEpisodeAutoPlay;
     json['PlayDefaultAudioTrack'] = playDefaultAudioTrack;
-    json['playDefaultAudioTrack'] = playDefaultAudioTrack;
     json['RememberAudioSelections'] = rememberAudioSelections;
-    json['rememberAudioSelections'] = rememberAudioSelections;
     json['RememberSubtitleSelections'] = rememberSubtitleSelections;
-    json['rememberSubtitleSelections'] = rememberSubtitleSelections;
 
     // key absence is used as a check, so only set if not null
     if (audioLanguagePreference != null) {
       json['AudioLanguagePreference'] = audioLanguagePreference;
-      json['audioLanguagePreference'] = audioLanguagePreference;
     }
     if (subtitleLanguagePreference != null) {
       json['SubtitleLanguagePreference'] = subtitleLanguagePreference;
-      json['subtitleLanguagePreference'] = subtitleLanguagePreference;
     }
     if (subtitleMode != null) {
       json['SubtitleMode'] = subtitleMode;
-      json['subtitleMode'] = subtitleMode;
     }
     return json;
   }

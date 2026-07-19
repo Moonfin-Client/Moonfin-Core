@@ -665,10 +665,7 @@ class RowDataSource {
           ? 'libraryTilesSmall'
           : 'libraryTiles',
       title: _l10n.myMedia,
-      response: {
-        ...response,
-        'Items': filteredItems,
-      },
+      response: {...response, 'Items': filteredItems},
       serverId: serverId,
       rowType: rowType,
     );

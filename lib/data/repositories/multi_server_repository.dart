@@ -19,6 +19,7 @@ import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
+import 'user_views_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
 
@@ -912,55 +913,6 @@ class MultiServerRepository {
     );
   }
 
-  Future<List<Map<String, dynamic>>> _getAllViewsIncludingHidden(MediaServerClient client) async {
-    try {
-      final foldersFuture = client.adminLibraryApi.getMediaFolders();
-      final userViewsFuture = client.userViewsApi.getUserViews();
-
-      final folders = await foldersFuture;
-      final userViewsResponse = await userViewsFuture;
-      final userViews = userViewsResponse['Items'] as List? ?? [];
-
-      final List<Map<String, dynamic>> result = folders.map<Map<String, dynamic>>((folder) {
-        final matchingView = userViews.where((v) {
-          final data = v as Map<String, dynamic>;
-          final cType = data['CollectionType'] as String?;
-          final name = data['Name'] as String?;
-          if (folder.collectionType != null && folder.collectionType!.isNotEmpty) {
-            return cType == folder.collectionType;
-          }
-          return name == folder.name;
-        }).firstOrNull;
-
-        final matchingData = matchingView as Map<String, dynamic>?;
-
-        return {
-          'Id': matchingData?['Id']?.toString() ?? folder.itemId,
-          'Name': folder.name,
-          'CollectionType': folder.collectionType ?? '',
-        };
-      }).toList();
-
-      final existingIds = result.map((l) => l['Id']?.toString() ?? '').toSet();
-      for (final view in userViews) {
-        final data = view as Map<String, dynamic>;
-        final id = data['Id']?.toString() ?? '';
-        if (!existingIds.contains(id)) {
-          result.add(data);
-        }
-      }
-      return result;
-    } catch (_) {
-      try {
-        final response = await client.userViewsApi.getUserViews();
-        final items = response['Items'] as List? ?? [];
-        return items.cast<Map<String, dynamic>>();
-      } catch (_) {
-        return const [];
-      }
-    }
-  }
-
   Future<List<HomeRow>> getAggregatedLatestMediaRows() async {
     final sessions = await getLoggedInServers();
     final hasMultiple = sessions.length > 1;
@@ -969,7 +921,7 @@ class MultiServerRepository {
     for (final session in sessions) {
       try {
         final views = await _withTimeout(
-          () => _getAllViewsIncludingHidden(session.client),
+          () => loadAllViewsIncludingHidden(session.client),
           label: 'views from ${session.server.name}',
         );
 
@@ -980,10 +932,8 @@ class MultiServerRepository {
         } catch (_) {}
 
         for (final view in views) {
-          final data = view as Map<String, dynamic>;
-          final id = data['Id']?.toString() ?? '';
-          final collectionType = (data['CollectionType'] as String?)
-              ?.toLowerCase();
+          final id = view.id;
+          final collectionType = view.collectionType.toLowerCase();
           if (collectionType == 'playlists' ||
               collectionType == 'boxsets' ||
               collectionType == 'livetv') {
@@ -991,7 +941,7 @@ class MultiServerRepository {
           }
           if (latestExcludes.contains(id)) continue;
 
-          final name = data['Name'] as String? ?? '';
+          final name = view.name;
           final displayName = hasMultiple
               ? '$name (${session.server.name})'
               : name;
