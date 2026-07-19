@@ -672,7 +672,15 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
 
   @override
   Widget build(BuildContext context) {
-    final invert = widget.enabled && _outerFocused && settingsTileInvertsOnFocus;
+    final invert =
+        widget.enabled && _outerFocused && settingsTileInvertsOnFocus;
+    return Opacity(
+      opacity: widget.enabled ? 1.0 : 0.4,
+      child: _buildTile(context, invert: invert),
+    );
+  }
+
+  Widget _buildTile(BuildContext context, {required bool invert}) {
     return Focus(
       focusNode: _outerFocusNode,
       autofocus: widget.autofocus,
@@ -747,8 +755,12 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                             min: widget.min,
                             max: widget.max,
                             divisions: widget.divisions,
-                            onChanged: widget.enabled ? (v) => _binding.value = v.round() : null,
-                            onChangeEnd: widget.enabled ? (_) => widget.onChangeEnd?.call() : null,
+                            onChanged: widget.enabled
+                                ? (v) => _binding.value = v.round()
+                                : null,
+                            onChangeEnd: widget.enabled
+                                ? (_) => widget.onChangeEnd?.call()
+                                : null,
                           )
                         : Slider(
                             focusNode: _sliderInternalNode,
@@ -761,8 +773,12 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                             divisions: widget.divisions,
                             label:
                                 widget.labelOf?.call(value) ?? value.toString(),
-                            onChanged: widget.enabled ? (v) => _binding.value = v.round() : null,
-                            onChangeEnd: widget.enabled ? (_) => widget.onChangeEnd?.call() : null,
+                            onChanged: widget.enabled
+                                ? (v) => _binding.value = v.round()
+                                : null,
+                            onChangeEnd: widget.enabled
+                                ? (_) => widget.onChangeEnd?.call()
+                                : null,
                           ),
                   ],
                 ),

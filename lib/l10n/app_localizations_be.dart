@@ -3386,10 +3386,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Паказваць не больш за адзін радок галоўнай на экран';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

@@ -3403,10 +3403,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Περιορισμός των σειρών της αρχικής σε 1 σειρά ανά οθόνη';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

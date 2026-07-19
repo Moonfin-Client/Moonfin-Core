@@ -3292,10 +3292,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fullScreenRowsDescription => '1 画面に表示するホーム行を 1 行に制限します';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

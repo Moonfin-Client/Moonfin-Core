@@ -3348,10 +3348,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

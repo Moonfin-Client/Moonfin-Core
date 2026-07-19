@@ -3390,10 +3390,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Obmedziť domovskú obrazovku na 1 riadok naraz';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

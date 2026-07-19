@@ -26,8 +26,12 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final rowsStyle = _prefs.get(UserPreferences.homeRowsStyle);
-    final isFullScreenRows = !PlatformDetection.useMobileUi && _prefs.get(UserPreferences.fullScreenRows);
-    final isInfoOverlayOn = rowsStyle == HomeRowsStyle.v1 && _prefs.get(UserPreferences.homeRowInfoOverlay);
+    final isFullScreenRows =
+        !PlatformDetection.useMobileUi &&
+        _prefs.get(UserPreferences.fullScreenRows);
+    final isInfoOverlayOn =
+        rowsStyle == HomeRowsStyle.v1 &&
+        _prefs.get(UserPreferences.homeRowInfoOverlay);
     final isPaddingEnabled = !isFullScreenRows && !isInfoOverlayOn;
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.homeScreen)),
@@ -63,7 +67,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 icon: Icons.image_aspect_ratio,
                 onChanged: _pushPersonalizationSync,
               ),
-               if (!PlatformDetection.useMobileUi)
+              if (!PlatformDetection.useMobileUi)
                 SwitchPreferenceTile(
                   preference: UserPreferences.fullScreenRows,
                   title: l10n.fullScreenRows,
@@ -87,24 +91,18 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                     setState(() {});
                   },
                 ),
-              IgnorePointer(
-                ignoring: !isPaddingEnabled,
-                child: Opacity(
-                  opacity: isPaddingEnabled ? 1.0 : 0.4,
-                  child: SliderPreferenceTile(
-                    preference: rowsStyle == HomeRowsStyle.v2
-                        ? UserPreferences.modernHomeRowsPadding
-                        : UserPreferences.classicHomeRowsPadding,
-                    title: l10n.modernHomeRowsPadding,
-                    description: l10n.modernHomeRowsPaddingDescription,
-                    icon: Icons.unfold_more,
-                    min: rowsStyle == HomeRowsStyle.v2 ? 360 : 10,
-                    max: rowsStyle == HomeRowsStyle.v2 ? 560 : 130,
-                    divisions: rowsStyle == HomeRowsStyle.v2 ? 10 : 6,
-                    enabled: isPaddingEnabled,
-                    onChangeEnd: _pushPersonalizationSync,
-                  ),
-                ),
+              SliderPreferenceTile(
+                preference: rowsStyle == HomeRowsStyle.v2
+                    ? UserPreferences.modernHomeRowsPadding
+                    : UserPreferences.classicHomeRowsPadding,
+                title: l10n.homeRowsPadding,
+                description: l10n.homeRowsPaddingDescription,
+                icon: Icons.unfold_more,
+                min: rowsStyle == HomeRowsStyle.v2 ? 360 : 10,
+                max: rowsStyle == HomeRowsStyle.v2 ? 560 : 130,
+                divisions: rowsStyle == HomeRowsStyle.v2 ? 10 : 6,
+                enabled: isPaddingEnabled,
+                onChangeEnd: _pushPersonalizationSync,
               ),
               EnumPreferenceTile<PosterSize>(
                 preference: UserPreferences.posterSize,

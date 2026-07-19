@@ -3405,10 +3405,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get fullScreenRowsDescription => 'Limita a una sola fila per pantalla';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

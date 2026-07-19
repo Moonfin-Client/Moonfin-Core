@@ -3358,10 +3358,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'প্রতি স্ক্রিনে হোম সারি ১টিতে সীমাবদ্ধ করুন';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

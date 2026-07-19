@@ -3384,10 +3384,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Limitar as linhas do início a 1 linha por tela';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

@@ -3391,10 +3391,10 @@ class AppLocalizationsTa extends AppLocalizations {
       'ஒரு திரைக்கு 1 முகப்பு வரிசை என வரம்பிடும்';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

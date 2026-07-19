@@ -6128,13 +6128,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Home Row Padding'**
-  String get modernHomeRowsPadding;
+  String get homeRowsPadding;
 
   /// Description for home rows padding setting
   ///
   /// In en, this message translates to:
   /// **'Customize padding between home rows'**
-  String get modernHomeRowsPaddingDescription;
+  String get homeRowsPaddingDescription;
 
   /// Title for per-row image type screen
   ///

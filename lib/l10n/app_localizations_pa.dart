@@ -3357,10 +3357,10 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਹੋਮ ਕਤਾਰਾਂ ਨੂੰ ਪ੍ਰਤੀ ਸਕ੍ਰੀਨ 1 ਕਤਾਰ ਤੱਕ ਸੀਮਿਤ ਕਰੋ';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

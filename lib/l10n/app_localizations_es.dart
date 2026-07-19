@@ -3390,10 +3390,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Limitar las filas del inicio a 1 por pantalla';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

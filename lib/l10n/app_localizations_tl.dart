@@ -3396,10 +3396,10 @@ class AppLocalizationsTl extends AppLocalizations {
       'Limitahan ang mga home row sa 1 row bawat screen';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override

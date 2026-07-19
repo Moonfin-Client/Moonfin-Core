@@ -3379,10 +3379,10 @@ class AppLocalizationsCs extends AppLocalizations {
       'Omezit domovské řádky na 1 řádek na obrazovku';
 
   @override
-  String get modernHomeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Home Row Padding';
 
   @override
-  String get modernHomeRowsPaddingDescription =>
+  String get homeRowsPaddingDescription =>
       'Customize padding between home rows';
 
   @override
