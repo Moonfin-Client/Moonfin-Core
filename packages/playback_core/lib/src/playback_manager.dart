@@ -261,6 +261,8 @@ class PlaybackManager implements AudioOwnable {
   Map<String, dynamic> _buildBackendMediaPayload({
     required String url,
     List<Map<String, dynamic>> mediaStreams = const [],
+    int? audioStreamIndex,
+    int? subtitleStreamIndex,
     String? container,
     String? videoRangeType,
     String? mediaType,
@@ -269,21 +271,49 @@ class PlaybackManager implements AudioOwnable {
     String? hybridAudioUrl,
   }) {
     final resolvedMediaType = mediaType?.trim().toLowerCase();
-    final audioStream = _defaultAudioStream(mediaStreams);
+
+    final audio = mediaStreams.where((s) => s['Type'] == 'Audio').toList();
+    final Map<String, dynamic>? audioStream;
+    if (audioStreamIndex != null) {
+      audioStream = audio.firstWhere(
+        (s) => s['Index'] == audioStreamIndex,
+        orElse: () => _defaultAudioStream(mediaStreams) ?? const <String, dynamic>{},
+      );
+    } else {
+      audioStream = _defaultAudioStream(mediaStreams);
+    }
+
+    final subtitle = mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+    final Map<String, dynamic>? subtitleStream;
+    if (subtitleStreamIndex != null && subtitleStreamIndex != -1) {
+      subtitleStream = subtitle.firstWhere(
+        (s) => s['Index'] == subtitleStreamIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+    } else {
+      subtitleStream = null;
+    }
+
     final videoStream = mediaStreams
         .where((s) => s['Type'] == 'Video')
         .firstOrNull;
+
+    final audioStreamLang = audioStream != null && audioStream.isNotEmpty ? _extractLanguage(audioStream) : null;
+    final subtitleStreamLang = subtitleStream != null && subtitleStream.isNotEmpty ? _extractLanguage(subtitleStream) : null;
+
     return <String, dynamic>{
       'url': url,
       if (container != null && container.isNotEmpty) 'container': container,
       if (videoRangeType != null && videoRangeType.isNotEmpty)
         'videoRangeType': videoRangeType,
-      if (audioStream != null) ...{
+      if (audioStream != null && audioStream.isNotEmpty) ...{
         'audioCodec': (audioStream['Codec'] ?? '').toString(),
         'audioProfile': (audioStream['Profile'] ?? '').toString(),
         if (audioStream['Channels'] is int) 'audioChannels': audioStream['Channels'],
         if (audioStream['Index'] is int) 'audioStreamIndex': audioStream['Index'],
       },
+      if (audioStreamLang != null) 'preferredAudioLanguage': audioStreamLang,
+      if (subtitleStreamLang != null) 'preferredTextLanguage': subtitleStreamLang,
       if (videoStream != null && videoStream['DvProfile'] is int)
         'videoDvProfile': videoStream['DvProfile'],
       if (videoStream != null && videoStream['RealFrameRate'] is num)
@@ -1300,6 +1330,8 @@ class PlaybackManager implements AudioOwnable {
       final backendMediaPayload = _buildBackendMediaPayload(
         url: resolution.streamUrl,
         mediaStreams: resolution.mediaStreams,
+        audioStreamIndex: _audioStreamIndex,
+        subtitleStreamIndex: _subtitleStreamIndex,
         container: resolution.container,
         videoRangeType: resolution.videoRangeType,
         mediaType: resolution.mediaType,
@@ -2359,7 +2391,12 @@ class PlaybackManager implements AudioOwnable {
         const <Map<String, dynamic>>[];
     try {
       await _backend!.play(
-        _buildBackendMediaPayload(url: url, mediaStreams: offlineStreams),
+        _buildBackendMediaPayload(
+          url: url,
+          mediaStreams: offlineStreams,
+          audioStreamIndex: _audioStreamIndex,
+          subtitleStreamIndex: _subtitleStreamIndex,
+        ),
         startPosition: startPosition,
       );
       await _syncBackendRepeatModeIfSupported();
