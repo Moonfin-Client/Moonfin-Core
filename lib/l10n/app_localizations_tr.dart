@@ -32,7 +32,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'Hızlı Bağlantı';
 
   @override
   String get password => 'Şifre';
@@ -1089,6 +1089,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get downloaded => 'İndirildi';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Tümünü İndir';
 
   @override
@@ -1130,7 +1133,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'Silme işlemi şu hata nedeniyle başarısız oldu: $error';
   }
 
   @override
@@ -3384,11 +3387,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ana sayfa satırlarını ekran başına 1 satırla sınırla';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Ana Sayfa Satır Boşluğu';
 
   @override
   String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+      'Ana sayfa satırları arasındaki boşluğu özelleştir';
 
   @override
   String get perRowImageType => 'Satır Başına Görüntü Türü';

@@ -1093,6 +1093,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get downloaded => 'Atsisiųsta';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Atsisiųsti viską';
 
   @override

@@ -1096,6 +1096,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get downloaded => 'تم التنزيل';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'تحميل الكل';
 
   @override

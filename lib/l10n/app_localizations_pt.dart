@@ -1092,6 +1092,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get downloaded => 'Baixado';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Baixar Tudo';
 
   @override

@@ -1088,6 +1088,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get downloaded => 'چۈشۈرۈلدى';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'ھەممىنى چۈشۈرۈڭ';
 
   @override

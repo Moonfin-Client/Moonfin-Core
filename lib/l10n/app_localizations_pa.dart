@@ -1090,6 +1090,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get downloaded => 'ਡਾਊਨਲੋਡ ਕੀਤਾ';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'ਸਾਰੇ ਡਾਊਨਲੋਡ ਕਰੋ';
 
   @override

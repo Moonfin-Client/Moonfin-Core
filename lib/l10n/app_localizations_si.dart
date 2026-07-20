@@ -1085,6 +1085,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get downloaded => 'බාගත කර ඇත';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'සියල්ල බාගත කරන්න';
 
   @override

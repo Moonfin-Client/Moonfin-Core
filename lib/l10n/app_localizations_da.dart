@@ -1088,6 +1088,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get downloaded => 'Downloadet';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Download alle';
 
   @override

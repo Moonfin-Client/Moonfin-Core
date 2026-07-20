@@ -1090,6 +1090,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get downloaded => 'Татаж авсан';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Бүгдийг татаж авах';
 
   @override

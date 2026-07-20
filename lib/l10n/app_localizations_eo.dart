@@ -1089,6 +1089,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get downloaded => 'Elŝutite';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Elŝutu Ĉion';
 
   @override

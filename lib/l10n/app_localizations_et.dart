@@ -1092,6 +1092,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get downloaded => 'Alla laaditud';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Laadige kõik alla';
 
   @override

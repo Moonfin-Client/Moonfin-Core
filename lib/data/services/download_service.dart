@@ -45,6 +45,11 @@ class DownloadProgress {
     this.isComplete = false,
     this.error,
   });
+
+  /// True while the transfer has effectively finished but the file is still
+  /// being moved to its final location and validated. Progress is clamped to
+  /// 0.99 during this window, so without this the UI looks stuck at 99%.
+  bool get isFinalizing => !isComplete && error == null && progress >= 0.99;
 }
 
 /// Per-attempt state for a media download running on the native

@@ -1095,6 +1095,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get downloaded => 'Завантажено';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Завантажити все';
 
   @override

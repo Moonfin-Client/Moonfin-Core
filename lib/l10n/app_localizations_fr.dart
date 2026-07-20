@@ -1097,6 +1097,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get downloaded => 'Téléchargé';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Tout télécharger';
 
   @override

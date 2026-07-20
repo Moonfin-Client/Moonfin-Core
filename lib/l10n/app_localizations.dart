@@ -2122,6 +2122,12 @@ abstract class AppLocalizations {
   /// **'Downloaded'**
   String get downloaded;
 
+  /// Status label shown while a finished download is being moved to its final location and validated
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing…'**
+  String get finalizingDownload;
+
   /// Action button label to download all items
   ///
   /// In en, this message translates to:

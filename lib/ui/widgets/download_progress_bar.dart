@@ -37,20 +37,24 @@ class DownloadProgressBar extends StatelessWidget {
         final double? progressValue;
         final String? percentLabel;
 
+        final finalizing = current.isFinalizing;
+        // During finalization the bar goes indeterminate and the percentage is
+        // replaced with a "Finalizing" label instead of sitting at 99%.
+        progressValue = finalizing || current.progress < 0
+            ? null
+            : current.progress;
+        percentLabel = finalizing
+            ? l10n.finalizingDownload
+            : current.progress >= 0
+            ? '${(current.progress * 100).toInt()}%'
+            : null;
+
         if (isBatch) {
           final done = downloadService.completedCount;
           final total = downloadService.totalQueued;
           title = l10n.downloadingBatchProgress(done + 1, total, current.fileName);
-          progressValue = current.progress >= 0 ? current.progress : null;
-          percentLabel = current.progress >= 0
-              ? '${(current.progress * 100).toInt()}%'
-              : null;
         } else {
           title = l10n.downloadingFile(current.fileName);
-          progressValue = current.progress >= 0 ? current.progress : null;
-          percentLabel = current.progress >= 0
-              ? '${(current.progress * 100).toInt()}%'
-              : null;
         }
 
         return GestureDetector(

@@ -1090,6 +1090,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get downloaded => 'Жүктеп алынды';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Барлығын жүктеп алыңыз';
 
   @override

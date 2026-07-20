@@ -1094,6 +1094,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get downloaded => 'ഡൗൺലോഡ് ചെയ്തു';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'എല്ലാം ഡൗൺലോഡ് ചെയ്യുക';
 
   @override

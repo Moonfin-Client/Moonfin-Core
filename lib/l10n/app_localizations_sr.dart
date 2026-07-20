@@ -1154,6 +1154,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get downloaded => 'Преузето';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Преузми све';
 
   @override

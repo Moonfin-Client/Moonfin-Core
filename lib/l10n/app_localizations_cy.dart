@@ -1097,6 +1097,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get downloaded => 'Wedi\'i lawrlwytho';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Lawrlwythwch Pawb';
 
   @override

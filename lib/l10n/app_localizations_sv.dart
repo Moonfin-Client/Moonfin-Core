@@ -1089,6 +1089,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get downloaded => 'Nedladdat';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Ladda ner alla';
 
   @override

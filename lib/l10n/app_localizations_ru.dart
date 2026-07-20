@@ -1098,6 +1098,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloaded => 'Скачано';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Скачать все';
 
   @override

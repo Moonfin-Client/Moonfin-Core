@@ -1156,6 +1156,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get downloaded => 'Preuzeto';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Preuzmi sve';
 
   @override

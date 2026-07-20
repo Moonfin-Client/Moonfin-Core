@@ -1085,6 +1085,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get downloaded => 'ডাউনলোড করা হয়েছে';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'সব ডাউনলোড করুন';
 
   @override

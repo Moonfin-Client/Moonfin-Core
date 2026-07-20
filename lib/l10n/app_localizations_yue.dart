@@ -1053,6 +1053,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get downloaded => '已下載';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => '下載全部';
 
   @override

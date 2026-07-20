@@ -1083,6 +1083,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get downloaded => 'ดาวน์โหลดแล้ว';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'ดาวน์โหลดทั้งหมด';
 
   @override

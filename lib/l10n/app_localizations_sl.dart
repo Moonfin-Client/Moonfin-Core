@@ -1098,6 +1098,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get downloaded => 'Preneseno';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Prenesi vse';
 
   @override

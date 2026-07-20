@@ -1097,6 +1097,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get downloaded => 'Imepakuliwa';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Pakua Zote';
 
   @override

@@ -1093,6 +1093,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get downloaded => 'Terunduh';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Unduh Semua';
 
   @override

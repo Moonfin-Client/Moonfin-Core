@@ -1088,6 +1088,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get downloaded => 'डाउनलोड';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'सभी डाउनलोड करें';
 
   @override

@@ -1094,6 +1094,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get downloaded => 'Ladattu';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Lataa kaikki';
 
   @override

@@ -1060,6 +1060,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get downloaded => 'ダウンロード済み';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'すべてダウンロード';
 
   @override
@@ -1100,7 +1103,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return '削除に失敗しました: $error';
   }
 
   @override

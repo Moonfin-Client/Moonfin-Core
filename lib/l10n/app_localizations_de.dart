@@ -1158,6 +1158,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get downloaded => 'Heruntergeladen';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Alle herunterladen';
 
   @override

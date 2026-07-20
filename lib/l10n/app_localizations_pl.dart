@@ -1090,6 +1090,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get downloaded => 'Pobrano';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Pobierz wszystko';
 
   @override

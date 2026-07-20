@@ -9323,7 +9323,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
             progress.error == null) {
           // Transcoded downloads on the native engine report no byte counts,
           // so show an ellipsis rather than a misleading "0.0 MB".
-          final label = progress.progress >= 0
+          final label = progress.isFinalizing
+              ? AppLocalizations.of(context).finalizingDownload
+              : progress.progress >= 0
               ? '${(progress.progress * 100).toInt()}%'
               : progress.bytesReceived > 0
               ? '${(progress.bytesReceived / 1048576).toStringAsFixed(1)} MB'

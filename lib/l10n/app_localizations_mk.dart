@@ -1092,6 +1092,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get downloaded => 'Преземено';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Преземете ги сите';
 
   @override

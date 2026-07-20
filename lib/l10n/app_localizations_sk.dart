@@ -1100,6 +1100,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get downloaded => 'Stiahnuté';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Stiahnuť všetko';
 
   @override

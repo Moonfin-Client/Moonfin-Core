@@ -1098,6 +1098,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get downloaded => 'Λήψη';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Λήψη όλων';
 
   @override

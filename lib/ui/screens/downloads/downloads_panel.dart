@@ -523,16 +523,37 @@ class _ActiveDownloadsSection extends StatelessWidget {
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 6),
-                  child: ClipRRect(
-                    borderRadius: AppRadius.circular(2),
-                    child: LinearProgressIndicator(
-                      value: p.progress >= 0 ? p.progress : null,
-                      backgroundColor: AppColorScheme.onSurface.withValues(
-                        alpha: 0.12,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ClipRRect(
+                        borderRadius: AppRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: p.isFinalizing || p.progress < 0
+                              ? null
+                              : p.progress,
+                          backgroundColor: AppColorScheme.onSurface.withValues(
+                            alpha: 0.12,
+                          ),
+                          color: AppColorScheme.accent,
+                          minHeight: 4,
+                        ),
                       ),
-                      color: AppColorScheme.accent,
-                      minHeight: 4,
-                    ),
+                      if (p.isFinalizing)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            l10n.finalizingDownload,
+                            style: TextStyle(
+                              color: AppColorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 trailing: IconButton(

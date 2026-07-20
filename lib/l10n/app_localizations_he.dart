@@ -1081,6 +1081,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get downloaded => 'הורד';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'הורד הכל';
 
   @override

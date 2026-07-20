@@ -1085,6 +1085,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get downloaded => 'دانلود شد';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'دانلود همه';
 
   @override

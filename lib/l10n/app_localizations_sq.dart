@@ -1096,6 +1096,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get downloaded => 'U shkarkua';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Shkarkoni të gjitha';
 
   @override

@@ -1097,6 +1097,9 @@ class AppLocalizationsGl extends AppLocalizations {
   String get downloaded => 'Descargado';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Descargar Todo';
 
   @override

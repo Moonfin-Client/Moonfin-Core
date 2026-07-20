@@ -1458,6 +1458,10 @@
   "@downloaded": {
     "description": "Status label for a downloaded item"
   },
+  "finalizingDownload": "Finalizing…",
+  "@finalizingDownload": {
+    "description": "Status label shown while a finished download is being moved to its final location and validated"
+  },
   "downloadAll": "Download All",
   "@downloadAll": {
     "description": "Action button label to download all items"

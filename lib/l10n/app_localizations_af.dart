@@ -1094,6 +1094,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get downloaded => 'Afgelaai';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Laai Alles af';
 
   @override

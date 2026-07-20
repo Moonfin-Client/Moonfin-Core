@@ -1094,6 +1094,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get downloaded => 'Na-download';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'I-download Lahat';
 
   @override

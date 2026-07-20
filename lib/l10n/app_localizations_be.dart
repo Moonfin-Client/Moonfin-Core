@@ -1095,6 +1095,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get downloaded => 'Спампавана';
 
   @override
+  String get finalizingDownload => 'Finalizing…';
+
+  @override
   String get downloadAll => 'Спампаваць усе';
 
   @override
