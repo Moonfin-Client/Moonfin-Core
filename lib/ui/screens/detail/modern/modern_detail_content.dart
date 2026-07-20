@@ -4217,8 +4217,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       return;
     }
 
+    final wasCollapsed = _selectedTab < 0;
     setState(() => _selectedTab = index);
-    if (index >= 0) {
+    if (index >= 0 && !_expandedTabs && wasCollapsed) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           final desktopScale = _desktopUiScale(prefs: widget.prefs);
