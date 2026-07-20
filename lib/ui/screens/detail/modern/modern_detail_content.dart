@@ -4129,7 +4129,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  base.withValues(alpha: 1.0 * gradientScale),
+                  base.withValues(alpha: gradientScale),
                   base.withValues(alpha: 0.90 * gradientScale),
                   base.withValues(alpha: 0.45 * gradientScale),
                   base.withValues(alpha: 0.0),
@@ -4144,7 +4144,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  base.withValues(alpha: 1.0 * gradientScale),
+                  base.withValues(alpha: gradientScale),
                   base.withValues(alpha: 0.80 * gradientScale),
                   base.withValues(alpha: 0.0),
                 ],
