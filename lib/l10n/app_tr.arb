@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Hızlı Bağlantı",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -9006,5 +9006,23 @@
     "hideBackdropsInLibraries": "Göz atarken arka plan resimleri gizlensin mi?",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
+    },
+    "failedToDeleteItemWithError": "Silme işlemi şu hata nedeniyle başarısız oldu: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "homeRowsPadding": "Ana Sayfa Satır Boşluğu",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Ana sayfa satırları arasındaki boşluğu özelleştir",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
     }
 }
