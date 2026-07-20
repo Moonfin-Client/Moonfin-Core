@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include <flutter/plugin_registrar_windows.h>
+
 #include "native_game.h"
 #include "win32_window.h"
 
@@ -31,6 +33,7 @@ class FlutterWindow : public Win32Window {
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
 
   // Native retro-game playback.
+  std::unique_ptr<flutter::PluginRegistrarWindows> native_game_registrar_;
   std::unique_ptr<NativeGame> native_game_;
 };
 
