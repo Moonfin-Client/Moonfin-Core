@@ -4081,6 +4081,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final base = AppColorScheme.background;
     final item = _vm.item;
     final url = backdropUrl ?? (item?.type == 'Person' ? (_randomBackdropUrl ?? _imageUrl(item!)) : null);
+    final blurAmount = widget.prefs
+        .get(UserPreferences.detailsBackgroundBlurAmount)
+        .toDouble();
+    final opacityFactor = blurAmount / 25.0;
+    final maxAlpha = item?.type == 'Person' ? 0.40 : 0.80;
+    final alpha = opacityFactor * maxAlpha;
+    final gradientScale = 0.3 + 0.7 * opacityFactor;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -4110,7 +4118,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ),
           ColoredBox(
             color: Colors.black.withValues(
-              alpha: item?.type == 'Person' ? 0.20 : 0.40,
+              alpha: alpha,
             ),
           ),
         ],
@@ -4121,9 +4129,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  base,
-                  base.withValues(alpha: 0.90),
-                  base.withValues(alpha: 0.45),
+                  base.withValues(alpha: 1.0 * gradientScale),
+                  base.withValues(alpha: 0.90 * gradientScale),
+                  base.withValues(alpha: 0.45 * gradientScale),
                   base.withValues(alpha: 0.0),
                 ],
                 stops: const [0.0, 0.35, 0.60, 0.85],
@@ -4136,8 +4144,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  base,
-                  base.withValues(alpha: 0.80),
+                  base.withValues(alpha: 1.0 * gradientScale),
+                  base.withValues(alpha: 0.80 * gradientScale),
                   base.withValues(alpha: 0.0),
                 ],
                 stops: const [0.0, 0.45, 0.80],
@@ -4152,7 +4160,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 colors: [
                   base.withValues(alpha: 0.0),
                   base.withValues(alpha: 0.0),
-                  base.withValues(alpha: 0.32),
+                  base.withValues(alpha: 0.32 * gradientScale),
                 ],
                 stops: const [0.0, 0.7, 1.0],
               ),
@@ -4165,8 +4173,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  base.withValues(alpha: 0.15),
-                  base.withValues(alpha: 0.55),
+                  base.withValues(alpha: 0.15 * gradientScale),
+                  base.withValues(alpha: 0.55 * gradientScale),
                   base,
                 ],
                 stops: const [0.0, 0.55, 1.0],

@@ -59,6 +59,17 @@ class _DetailsScreenSettingsScreenState
                       divisions: 25,
                       labelOf: (v) => '$v',
                       onChangeEnd: _pushPersonalizationSync,
+                    )
+                  else
+                    SliderPreferenceTile(
+                      preference: UserPreferences.detailsBackgroundBlurAmount,
+                      title: l10n.detailsBackgroundOpacity,
+                      description: l10n.detailsBackgroundOpacitySubtitle,
+                      icon: Icons.opacity,
+                      min: 0,
+                      max: 25,
+                      divisions: 25,
+                      onChangeEnd: _pushPersonalizationSync,
                     ),
                   if (_prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
                     SwitchPreferenceTile(
