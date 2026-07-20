@@ -82,7 +82,9 @@ class MdbListRepository {
             final rawSource = (r['source'] as String).toLowerCase();
             final source = rawSource == 'popcorn'
                 ? 'tomatoes_audience'
-                : rawSource;
+                : rawSource == 'tomato'
+                    ? 'tomatoes'
+                    : rawSource;
             final value = switch (source) {
               'metacriticuser' =>
                 (r['score'] as num?)?.toDouble() ??

@@ -9,7 +9,9 @@ final _textShadows = [
 const _coreRatingSources = {'tomatoes', 'stars'};
 
 String _normalizeRatingSource(String source) {
-  return source == 'popcorn' ? 'tomatoes_audience' : source;
+  if (source == 'popcorn') return 'tomatoes_audience';
+  if (source == 'tomato') return 'tomatoes';
+  return source;
 }
 
 class RatingsRow extends StatelessWidget {
