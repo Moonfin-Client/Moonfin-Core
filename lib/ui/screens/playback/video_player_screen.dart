@@ -3191,25 +3191,38 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             return KeyEventResult.ignored;
           }
           if (!_controlsVisible) {
+            _togglePlayPause();
             _showControls(focusSeekbar: true);
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
         case LogicalKeyboardKey.mediaPlay:
           unawaited(_resumeWithConfiguredRewind());
-          _showControls();
-          _focusTvPrimaryButton();
+          if (!_controlsVisible) {
+            _showControls(focusSeekbar: true);
+          } else {
+            _showControls();
+            _focusTvPrimaryButton();
+          }
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaPause:
           _manager.pause();
-          _showControls();
-          _focusTvPrimaryButton();
+          if (!_controlsVisible) {
+            _showControls(focusSeekbar: true);
+          } else {
+            _showControls();
+            _focusTvPrimaryButton();
+          }
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaPlayPause:
         case LogicalKeyboardKey.space:
           _togglePlayPause();
-          _showControls();
-          _focusTvPrimaryButton();
+          if (!_controlsVisible) {
+            _showControls(focusSeekbar: true);
+          } else {
+            _showControls();
+            _focusTvPrimaryButton();
+          }
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaStop:
           _exitPlayback();
