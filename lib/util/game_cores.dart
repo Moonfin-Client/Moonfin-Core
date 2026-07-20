@@ -140,11 +140,10 @@ bool get supportsCoreDownloads =>
     (PlatformDetection.isAndroid || PlatformDetection.isDesktop) &&
     _buildbotTarget() != null;
 
-/// Whether gameplay input comes from the keyboard through Flutter rather than a
-/// native controller source. Windows and Linux have no native gamepad reader, so
-/// the player screen maps keys to a RetroPad mask and sends it down.
-bool get usesKeyboardInput =>
-    PlatformDetection.isWindows || PlatformDetection.isLinux;
+/// Whether the player screen accepts keyboard gameplay, mapping keys to a
+/// RetroPad mask sent down to the core. All desktops do, so a game is playable
+/// without a controller.
+bool get usesKeyboardInput => PlatformDetection.isDesktop;
 
 /// Whether the player shows on-screen touch controls. Android phones and tablets
 /// have no physical buttons, so a virtual gamepad drives the RetroPad mask.

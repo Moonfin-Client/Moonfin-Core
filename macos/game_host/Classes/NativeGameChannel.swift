@@ -96,6 +96,10 @@ public final class NativeGameChannel: NSObject, FlutterStreamHandler {
       result(map)
     case "controllerCount":
       result(session?.input.controllerCount ?? 0)
+    case "setInput":
+      let mask = (args["mask"] as? NSNumber)?.uint16Value ?? 0
+      session?.input.setDartMask(mask)
+      result(nil)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -129,7 +133,6 @@ public final class NativeGameChannel: NSObject, FlutterStreamHandler {
 
     let session = GameSession(textures: textures)
     session.onEvent = { [weak self] payload in self?.send(payload) }
-    session.input.onMenuPressed = { [weak self] in self?.send(["event": "menuPressed"]) }
     session.input.onButton = { [weak self] index, pressed in
       self?.send(["event": "button", "index": index, "pressed": pressed])
     }

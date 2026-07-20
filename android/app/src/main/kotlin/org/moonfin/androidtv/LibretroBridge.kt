@@ -237,7 +237,11 @@ class LibretroBridge(flutterEngine: FlutterEngine) {
   }
 
   private fun applyMask() {
-    nativeSetMask(0, portMask or pulseMask or touchMask)
+    // Start (bit 3) is withheld from the physical pad mask because Dart owns
+    // it: a quick press is pulsed back down, a hold opens the in game menu.
+    // The pulse and Dart masks keep the bit so those paths still work.
+    val startBit = 1 shl 3
+    nativeSetMask(0, (portMask and startBit.inv()) or pulseMask or touchMask)
   }
 
   // Called from MainActivity's key dispatch on the UI thread.

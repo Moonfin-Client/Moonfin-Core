@@ -31,7 +31,9 @@ final class GameInputController {
   private var pulseMask: UInt16 = 0
   private var pulseWork: [Int: DispatchWorkItem] = [:]
 
-  var onMenuPressed: (() -> Void)?
+  // RetroPad mask supplied from Dart (keyboard play and the deferred Start).
+  private var dartMask: UInt16 = 0
+
   var onButton: ((Int, Bool) -> Void)?
   var onControllersChanged: ((Int) -> Void)?
 
@@ -81,7 +83,17 @@ final class GameInputController {
     maskLock.lock()
     defer { maskLock.unlock() }
     guard port >= 0, port < portMasks.count else { return 0 }
-    return port == 0 ? portMasks[0] | pulseMask : portMasks[port]
+    guard port == 0 else { return portMasks[port] }
+    // Start is withheld from the physical pad because Dart owns it: a quick
+    // press is pulsed back down, a hold opens the in game menu. The pulse and
+    // Dart masks keep the bit so those paths still work.
+    return (portMasks[0] & ~Pad.start) | pulseMask | dartMask
+  }
+
+  func setDartMask(_ mask: UInt16) {
+    maskLock.lock()
+    dartMask = mask
+    maskLock.unlock()
   }
 
   func pulse(index: Int, durationMs: Int) {
@@ -110,8 +122,10 @@ final class GameInputController {
       gamepad.valueChangedHandler = { [weak self] pad, _ in
         self?.refresh(pad: pad, port: port)
       }
-      gamepad.buttonMenu.pressedChangedHandler = { [weak self] _, _, pressed in
-        if pressed { self?.onMenuPressed?() }
+      // buttonMenu changes do not always reach valueChangedHandler, so refresh
+      // from its own handler too.
+      gamepad.buttonMenu.pressedChangedHandler = { [weak self] _, _, _ in
+        self?.refresh(pad: gamepad, port: port)
       }
     }
     maskLock.lock()
@@ -137,7 +151,12 @@ final class GameInputController {
     if pad.rightTrigger.isPressed { mask |= Pad.r2 }
     if pad.leftThumbstickButton?.isPressed == true { mask |= Pad.l3 }
     if pad.rightThumbstickButton?.isPressed == true { mask |= Pad.r3 }
-    if pad.buttonOptions?.isPressed == true { mask |= Pad.start }
+    // Standard layout: the Menu button (Xbox menu, DualSense options) is Start
+    // and the Options button (view, create) is Select. Start stays in the full
+    // mask here so its presses mirror to Dart, and mask(forPort:) withholds it
+    // from the core.
+    if pad.buttonMenu.isPressed { mask |= Pad.start }
+    if pad.buttonOptions?.isPressed == true { mask |= Pad.select }
 
     maskLock.lock()
     let old = portMasks[port]

@@ -4,14 +4,17 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gamepads/gamepads.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../playback/native_game_player.dart';
 import '../../../util/game_cores.dart';
+import '../../../util/platform_detection.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 
 /// Native game player: the libretro core runs in the runner and renders into a
@@ -62,8 +65,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   int _fastForward = 1;
   List<GameCoreOption> _options = const [];
 
-  // Keyboard gameplay on Windows and Linux: keys map to RetroPad bits and the
-  // combined mask is sent to the core.
+  // Controller Start is deferred so it can double as the menu gesture: a quick
+  // press reaches the game on release, holding it opens the overlay.
+  static const _startHoldDuration = Duration(milliseconds: 1500);
+  Timer? _startHoldTimer;
+  bool _startHeld = false;
+  bool _startHoldConsumed = false;
+
+  // Desktop keyboard: keys map to RetroPad bits and the combined mask is sent
+  // to the core.
   int _keyboardMask = 0;
   static final _keyToBit = <LogicalKeyboardKey, int>{
     LogicalKeyboardKey.arrowUp: 1 << 4,
@@ -80,6 +90,30 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     LogicalKeyboardKey.keyW: 1 << 11,
   };
 
+  // Windows and Linux read controllers in Dart through the gamepads package.
+  // The other platforms poll them natively in the runner.
+  bool get _readsGamepadsInDart =>
+      PlatformDetection.isWindows || PlatformDetection.isLinux;
+  StreamSubscription<NormalizedGamepadEvent>? _gamepadEvents;
+  int _gamepadMask = 0;
+  int _stickMask = 0;
+  static const _gamepadDeadzone = 0.5;
+  static const _gamepadButtonToBit = <GamepadButton, int>{
+    GamepadButton.a: 1 << 0,
+    GamepadButton.b: 1 << 8,
+    GamepadButton.x: 1 << 1,
+    GamepadButton.y: 1 << 9,
+    GamepadButton.dpadUp: 1 << 4,
+    GamepadButton.dpadDown: 1 << 5,
+    GamepadButton.dpadLeft: 1 << 6,
+    GamepadButton.dpadRight: 1 << 7,
+    GamepadButton.leftBumper: 1 << 10,
+    GamepadButton.rightBumper: 1 << 11,
+    GamepadButton.back: 1 << 2,
+    GamepadButton.leftStick: 1 << 14,
+    GamepadButton.rightStick: 1 << 15,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -88,12 +122,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     // pad navigation stays suppressed for the lifetime of this screen.
     GamepadSuppressor.push();
     _events = _player.events.listen(_onEvent);
+    if (_readsGamepadsInDart) {
+      _gamepadEvents = Gamepads.normalizedEvents.listen(_onGamepadEvent);
+    }
     _prepare();
   }
 
   @override
   void dispose() {
     _events?.cancel();
+    _gamepadEvents?.cancel();
+    _startHoldTimer?.cancel();
     GamepadSuppressor.pop();
     WakelockPlus.disable();
     unawaited(_player.stop());
@@ -110,18 +149,26 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       case 'controllersChanged':
         final count = (event['count'] as num?)?.toInt() ?? 0;
         if (mounted) setState(() => _controllers = count);
-        if (count == 0) {
-          _player.pause();
-        } else {
-          _player.resume();
+        // Keyboard platforms play fine without a controller, so losing the last
+        // one should not pause the game there.
+        if (!usesKeyboardInput) {
+          if (count == 0) {
+            _player.pause();
+          } else {
+            _player.resume();
+          }
         }
       case 'menuPressed':
         _toggleOverlay();
       case 'remotePress':
         _onRemotePress(event['key']?.toString());
       case 'button':
-        if (_overlayOpen && (event['pressed'] as bool? ?? false)) {
-          _nav(_navForButton((event['index'] as num?)?.toInt() ?? -1));
+        final index = (event['index'] as num?)?.toInt() ?? -1;
+        final pressed = event['pressed'] as bool? ?? false;
+        if (index == 3 && !PlatformDetection.isAppleTV) {
+          _onStartButton(pressed);
+        } else if (_overlayOpen && pressed) {
+          _nav(_navForButton(index));
         }
       case 'error':
         if (mounted) {
@@ -130,14 +177,119 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     }
   }
 
-  // Mirrored RetroPad indices: 0=confirm (bottom face), 4=up, 5=down, 6=left, 7=right.
+  // Mirrored RetroPad indices: 0=confirm (bottom face), 8=cancel (east face),
+  // 4=up, 5=down, 6=left, 7=right.
   String? _navForButton(int index) => const {
         4: 'up',
         5: 'down',
         6: 'left',
         7: 'right',
         0: 'confirm',
+        8: 'cancel',
       }[index];
+
+  // Controller Start: a quick press is pulsed to the game on release, holding
+  // past the threshold opens the overlay, and while the overlay is open a press
+  // just closes it. tvOS keeps its native Start injection and menu button, so
+  // this tracker never runs there.
+  void _onStartButton(bool pressed) {
+    if (pressed) {
+      if (_overlayOpen) {
+        _startHoldConsumed = true;
+        _toggleOverlay();
+        return;
+      }
+      _startHoldConsumed = false;
+      _startHoldTimer?.cancel();
+      _startHoldTimer = Timer(_startHoldDuration, () {
+        _startHoldTimer = null;
+        _startHoldConsumed = true;
+        if (mounted) {
+          setState(() => _startHeld = false);
+          _toggleOverlay();
+        }
+      });
+      if (mounted) setState(() => _startHeld = true);
+    } else {
+      _startHoldTimer?.cancel();
+      _startHoldTimer = null;
+      final consumed = _startHoldConsumed;
+      _startHoldConsumed = false;
+      if (mounted && _startHeld) setState(() => _startHeld = false);
+      if (!consumed) _player.pulseButton(3);
+    }
+  }
+
+  void _sendMask() {
+    _player.setInput(0, _keyboardMask | _touchMask | _gamepadMask | _stickMask);
+  }
+
+  void _onGamepadEvent(NormalizedGamepadEvent event) {
+    final button = event.button;
+    if (button != null) {
+      final pressed = event.value != 0;
+      if (button == GamepadButton.start) {
+        _onStartButton(pressed);
+        return;
+      }
+      if (_overlayOpen) {
+        // The game is paused under the overlay, so drop any held buttons and
+        // drive the menu instead.
+        if (_gamepadMask != 0 || _stickMask != 0) {
+          _gamepadMask = 0;
+          _stickMask = 0;
+          _sendMask();
+        }
+        if (pressed) _nav(_navActionForGamepad(button));
+        return;
+      }
+      final bit = _gamepadButtonToBit[button];
+      if (bit == null) return;
+      _gamepadMask = pressed ? _gamepadMask | bit : _gamepadMask & ~bit;
+      _sendMask();
+      return;
+    }
+    final axis = event.axis;
+    if (axis == null || _overlayOpen) return;
+    switch (axis) {
+      case GamepadAxis.leftStickX:
+        _setStickBits(1 << 6, 1 << 7, event.value);
+      case GamepadAxis.leftStickY:
+        _setStickBits(1 << 5, 1 << 4, event.value);
+      case GamepadAxis.leftTrigger:
+        _setTriggerBit(1 << 12, event.value);
+      case GamepadAxis.rightTrigger:
+        _setTriggerBit(1 << 13, event.value);
+      default:
+        return;
+    }
+    _sendMask();
+  }
+
+  // Negative stick values map to the first bit, positive to the second. The Y
+  // axis reports up as positive, so up is the positive bit there.
+  void _setStickBits(int negativeBit, int positiveBit, double value) {
+    _stickMask &= ~(negativeBit | positiveBit);
+    if (value <= -_gamepadDeadzone) {
+      _stickMask |= negativeBit;
+    } else if (value >= _gamepadDeadzone) {
+      _stickMask |= positiveBit;
+    }
+  }
+
+  void _setTriggerBit(int bit, double value) {
+    _stickMask = value >= _gamepadDeadzone ? _stickMask | bit : _stickMask & ~bit;
+  }
+
+  String? _navActionForGamepad(GamepadButton button) => switch (button) {
+        GamepadButton.dpadUp => 'up',
+        GamepadButton.dpadDown => 'down',
+        GamepadButton.dpadLeft => 'left',
+        GamepadButton.dpadRight => 'right',
+        GamepadButton.a => 'confirm',
+        GamepadButton.b => 'cancel',
+        _ => null,
+      };
 
   void _onRemotePress(String? key) => _nav(key == 'select' ? 'confirm' : key);
 
@@ -147,13 +299,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   int _touchMask = 0;
   void _touchPress(int bit, bool down) {
     _touchMask = down ? _touchMask | bit : _touchMask & ~bit;
-    _player.setInput(0, _touchMask);
+    _sendMask();
   }
 
-  // Desktop keyboard: Escape opens the overlay, arrows and Enter drive it while
-  // open, and everything else feeds the RetroPad mask to the core.
+  // Desktop keyboard: Escape or Backspace opens the overlay, arrows and Enter
+  // drive it while open, and everything else feeds the RetroPad mask to the
+  // core.
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event is KeyDownEvent &&
+        (event.logicalKey == LogicalKeyboardKey.escape ||
+            event.logicalKey == LogicalKeyboardKey.backspace)) {
       _toggleOverlay();
       return KeyEventResult.handled;
     }
@@ -186,7 +341,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     } else {
       return KeyEventResult.ignored;
     }
-    _player.setInput(0, _keyboardMask);
+    _sendMask();
     return KeyEventResult.handled;
   }
 
@@ -205,6 +360,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
         if (_overlayOpen) _changeValue(1);
       case 'confirm':
         if (_overlayOpen) _confirm();
+      case 'cancel':
+        if (_settingsOpen) {
+          setState(() => _settingsOpen = false);
+        } else if (_overlayOpen) {
+          _closeOverlay();
+        }
     }
   }
 
@@ -234,7 +395,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       if (corePath == null) {
         if (mounted) {
           setState(() => _error =
-              'The core for this system is not installed. Add it in Settings, under Emulator Cores.');
+              'The core for this system is not installed. Add it in Settings > Playback > Emulator Cores.');
         }
         return;
       }
@@ -538,9 +699,25 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scaffold = _buildScaffold(context);
-    if (!usesKeyboardInput) return scaffold;
-    return Focus(autofocus: true, onKeyEvent: _onKey, child: scaffold);
+    Widget scaffold = _buildScaffold(context);
+    if (usesKeyboardInput) {
+      scaffold = Focus(autofocus: true, onKeyEvent: _onKey, child: scaffold);
+    }
+    // Back never exits directly while a game runs: it walks out of settings and
+    // the overlay first, then opens the overlay, whose Exit action saves before
+    // popping. The loading and error screens pop normally.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (_textureId == null || _error != null) {
+          _backOut();
+        } else {
+          _toggleOverlay();
+        }
+      },
+      child: scaffold,
+    );
   }
 
   Widget _buildScaffold(BuildContext context) {
@@ -588,7 +765,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
                 ),
               ),
             ),
-          if (_textureId != null && _controllers == 0 && !_overlayOpen)
+          if (_textureId != null &&
+              _controllers == 0 &&
+              !_overlayOpen &&
+              !usesKeyboardInput)
             Container(
               color: Colors.black87,
               alignment: Alignment.center,
@@ -610,6 +790,21 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
             ),
           if (_textureId != null && !_overlayOpen && usesOnScreenControls)
             _buildTouchControls(),
+          if (_textureId != null &&
+              !_overlayOpen &&
+              !usesOnScreenControls &&
+              PlatformDetection.isDesktop)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white54, size: 30),
+                  onPressed: _toggleOverlay,
+                ),
+              ),
+            ),
+          if (_startHeld && !_overlayOpen) _buildHoldIndicator(),
           if (_overlayOpen) _buildOverlay(),
         ],
       ),
@@ -716,6 +911,46 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     );
   }
 
+  Widget _buildHoldIndicator() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 40,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: _startHoldDuration,
+                  builder: (_, value, _) => CircularProgressIndicator(
+                    value: value,
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                AppLocalizations.of(context).gameHoldToOpenMenu,
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildOverlay() {
     final title = _settingsOpen ? 'Emulator settings' : (widget.gameName ?? 'Paused');
     final rows = _settingsOpen
@@ -725,68 +960,88 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
             .map((e) => _overlayRow(
                   '${e.value.label}:  ${e.value.current}',
                   e.key == _settingsSelected,
+                  () {
+                    setState(() => _settingsSelected = e.key);
+                    _changeValue(1);
+                  },
                 ))
             .toList()
         : _actions()
             .asMap()
             .entries
-            .map((e) => _overlayRow(e.value.label, e.key == _selected))
+            .map((e) => _overlayRow(e.value.label, e.key == _selected, () {
+                  setState(() => _selected = e.key);
+                  e.value.onSelect();
+                }))
             .toList();
 
-    return Container(
-      color: Colors.black.withValues(alpha: 0.72),
-      alignment: Alignment.center,
+    // The scrim resumes on tap, and the panel absorbs taps so only its rows
+    // act.
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _toggleOverlay,
       child: Container(
-        width: 520,
-        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1E),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16, left: 12),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+        color: Colors.black.withValues(alpha: 0.72),
+        alignment: Alignment.center,
+        child: GestureDetector(
+          onTap: () {},
+          child: Container(
+            width: 520,
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C1E),
+              borderRadius: BorderRadius.circular(20),
             ),
-            if (_settingsOpen && _options.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  'This core has no adjustable options.',
-                  style: TextStyle(color: Colors.white54, fontSize: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16, left: 12),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              )
-            else
-              ...rows,
-          ],
+                if (_settingsOpen && _options.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'This core has no adjustable options.',
+                      style: TextStyle(color: Colors.white54, fontSize: 20),
+                    ),
+                  )
+                else
+                  ...rows,
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _overlayRow(String label, bool selected) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 3),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: selected ? Colors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: selected ? Colors.black : Colors.white,
-          fontSize: 22,
+  Widget _overlayRow(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 3),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: selected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.black : Colors.white,
+            fontSize: 22,
+          ),
         ),
       ),
     );
