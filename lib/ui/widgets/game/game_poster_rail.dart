@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../preference/user_preferences.dart';
 import '../../../util/game_library.dart';
 import 'game_poster_card.dart';
 
@@ -31,6 +34,13 @@ class GamePosterRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final focusColor = isNeon
+        ? ThemeRegistry.active.borders.focusBorder.color
+        : Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,7 +67,7 @@ class GamePosterRail extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: cardWidth * 1.34 + 44,
+          height: cardWidth * 1.34 + 6 + 42 * textScale,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -70,6 +80,9 @@ class GamePosterRail extends StatelessWidget {
               seed: games[i].id,
               width: cardWidth,
               autofocus: autofocusFirst && i == 0,
+              focusColor: focusColor,
+              cardFocusExpansion: cardFocusExpansion,
+              suppressFocusGlow: isNeon,
               onTap: () => onTapGame(games[i]),
             ),
           ),

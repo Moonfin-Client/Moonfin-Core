@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/platform_detection.dart';
 import '../../mixins/focus_state_mixin.dart';
 
 /// Games-scoped copy of Moonfin's standard alphabetical library filter.
@@ -98,51 +99,68 @@ class _GameAlphaLetterButtonState extends State<_GameAlphaLetterButton>
     final prefs = GetIt.instance<UserPreferences>();
     final desktopScale = prefs.get(UserPreferences.desktopUiScale).scaleFactor;
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final visualSize = 30 * desktopScale;
+    final targetSize = PlatformDetection.useMobileUi ? 44.0 : visualSize;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setHovered(true),
-      onExit: (_) => setHovered(false),
-      child: Focus(
-        focusNode: widget.focusNode,
-        onFocusChange: setFocused,
-        onKeyEvent: (_, event) {
-          if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
-          // consume release/repeat events too so a restored focus target cannot receive a replayed select press.
-          if (event is KeyDownEvent) widget.onTap();
-          return KeyEventResult.handled;
-        },
-        child: GestureDetector(
-          onTap: widget.onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 120),
-            width: 30 * desktopScale,
-            height: 30 * desktopScale,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: widget.isSelected
-                  ? AppColorScheme.onSurface.withAlpha(26)
-                  : null,
-              borderRadius: AppRadius.circular(4),
-              border: showFocusBorder
-                  ? Border.fromBorderSide(
-                      ThemeRegistry.active.borders.focusBorder.copyWith(
-                        color: focusColor,
-                        width: 1.5,
-                      ),
-                    )
-                  : null,
-            ),
-            child: Text(
-              widget.label,
-              style: TextStyle(
-                fontSize: 15 * desktopScale,
-                fontWeight: widget.isSelected
-                    ? FontWeight.w700
-                    : FontWeight.w500,
-                color: widget.isSelected
-                    ? AppColorScheme.accent
-                    : AppColorScheme.onSurface.withAlpha(140),
+    return Semantics(
+      button: true,
+      selected: widget.isSelected,
+      label: widget.label,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setHovered(true),
+        onExit: (_) => setHovered(false),
+        child: Focus(
+          focusNode: widget.focusNode,
+          onFocusChange: setFocused,
+          onKeyEvent: (_, event) {
+            if (!event.logicalKey.isSelectKey) {
+              return KeyEventResult.ignored;
+            }
+            // Consume release/repeat too so focus restoration cannot replay a
+            // Select press on the newly focused control.
+            if (event is KeyDownEvent) widget.onTap();
+            return KeyEventResult.handled;
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onTap,
+            child: SizedBox(
+              width: targetSize,
+              height: targetSize,
+              child: Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  width: visualSize,
+                  height: visualSize,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: widget.isSelected
+                        ? AppColorScheme.onSurface.withAlpha(26)
+                        : null,
+                    borderRadius: AppRadius.circular(4),
+                    border: showFocusBorder
+                        ? Border.fromBorderSide(
+                            ThemeRegistry.active.borders.focusBorder.copyWith(
+                              color: focusColor,
+                              width: 1.5,
+                            ),
+                          )
+                        : null,
+                  ),
+                  child: Text(
+                    widget.label,
+                    style: TextStyle(
+                      fontSize: 15 * desktopScale,
+                      fontWeight: widget.isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      color: widget.isSelected
+                          ? AppColorScheme.accent
+                          : AppColorScheme.onSurface.withAlpha(140),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
