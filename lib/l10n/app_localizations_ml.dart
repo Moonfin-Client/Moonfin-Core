@@ -2330,6 +2330,28 @@ class AppLocalizationsMl extends AppLocalizations {
   String get detailsBackgroundBlur => 'വിശദാംശങ്ങളുടെ പശ്ചാത്തല മങ്ങൽ';
 
   @override
+  String get detailsBackgroundOpacity => 'Details Background Opacity';
+
+  @override
+  String get detailsBackgroundOpacitySubtitle =>
+      'Adjust amount of opacity on modern detail pages from light to dark.';
+
+  @override
+  String get opacityLightest => 'Lightest';
+
+  @override
+  String get opacityLight => 'Light';
+
+  @override
+  String get opacityMedium => 'Medium';
+
+  @override
+  String get opacityDark => 'Dark';
+
+  @override
+  String get opacityDarkest => 'Darkest';
+
+  @override
   String pixelValue(int value) {
     return '${value}px';
   }
