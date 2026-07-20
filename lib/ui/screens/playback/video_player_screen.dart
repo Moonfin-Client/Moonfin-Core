@@ -2547,6 +2547,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
+  // After a transport action from a remote key, reveal the OSD and focus the
+  // seekbar when it was hidden, or the primary button when it was already up.
+  void _revealControlsAfterTransport() {
+    if (!_controlsVisible) {
+      _showControls(focusSeekbar: true);
+    } else {
+      _showControls();
+      _focusTvPrimaryButton();
+    }
+  }
+
   void _focusTvSeekbar({int attempt = 0}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_controlsVisible || _isOsdLocked) return;
@@ -3198,31 +3209,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           return KeyEventResult.ignored;
         case LogicalKeyboardKey.mediaPlay:
           unawaited(_resumeWithConfiguredRewind());
-          if (!_controlsVisible) {
-            _showControls(focusSeekbar: true);
-          } else {
-            _showControls();
-            _focusTvPrimaryButton();
-          }
+          _revealControlsAfterTransport();
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaPause:
           _manager.pause();
-          if (!_controlsVisible) {
-            _showControls(focusSeekbar: true);
-          } else {
-            _showControls();
-            _focusTvPrimaryButton();
-          }
+          _revealControlsAfterTransport();
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaPlayPause:
         case LogicalKeyboardKey.space:
           _togglePlayPause();
-          if (!_controlsVisible) {
-            _showControls(focusSeekbar: true);
-          } else {
-            _showControls();
-            _focusTvPrimaryButton();
-          }
+          _revealControlsAfterTransport();
           return KeyEventResult.handled;
         case LogicalKeyboardKey.mediaStop:
           _exitPlayback();

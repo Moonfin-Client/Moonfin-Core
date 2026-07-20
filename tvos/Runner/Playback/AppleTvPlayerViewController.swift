@@ -1541,8 +1541,11 @@ final class AppleTvPlayerViewController: UIViewController {
                 togglePlayPause()
                 if !isOsdOnScreen {
                     focusedZone = .scrubber
-                    updateFocusHighlight()
+                } else {
+                    focusedZone = .buttons
+                    focusedControlIndex = controls.firstIndex(of: .playPause) ?? 0
                 }
+                updateFocusHighlight()
                 showOsd()
                 return
             case .select:
