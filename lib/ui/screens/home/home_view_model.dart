@@ -53,6 +53,7 @@ class HomeViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   bool _bgMergeInFlight = false;
+  bool _bgResumeRefreshInFlight = false;
   bool _reloadRequestedWhileLoading = false;
   bool _pendingReloadPreserveExisting = true;
   bool _pendingReloadForceRefresh = false;
@@ -750,6 +751,81 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> refresh({bool preserveExisting = true}) async {
     await load(preserveExisting: preserveExisting);
+  }
+
+  /// Lightweight refresh for returning to home from a pushed route. Viewing or
+  /// playing an item only changes the resume and next-up rows, so this refetches
+  /// just those and updates them in place, leaving every other row (and its
+  /// pagination, scroll, and focus state) untouched. A full [refresh] still runs
+  /// on the Home button, pull-to-refresh, cold start, and periodic refresh.
+  Future<void> refreshResumeAndNextUp() async {
+    // A full load already covers these rows, so don't compete with it.
+    if (_isLoading) return;
+
+    if (_prefs.get(UserPreferences.mergeContinueWatchingNextUp)) {
+      _loadResumeAndNextUpInBackground();
+      return;
+    }
+
+    if (_bgResumeRefreshInFlight) return;
+    _bgResumeRefreshInFlight = true;
+    try {
+      await Future.wait([
+        _refreshRowInPlace(
+          'resume',
+          () => _multiServerEnabled
+              ? _multiServerRepo.getAggregatedResume()
+              : _dataSource.loadResume(_serverId),
+          _prefs.filterContinueWatching,
+        ),
+        _refreshRowInPlace(
+          'nextUp',
+          () => _multiServerEnabled
+              ? _multiServerRepo.getAggregatedNextUp()
+              : _dataSource.loadNextUp(_serverId),
+          _prefs.filterNextUp,
+        ),
+        _refreshRowInPlace(
+          'resumeAudio',
+          () => _multiServerEnabled
+              ? _multiServerRepo.getAggregatedResumeAudio()
+              : _dataSource.loadResumeAudio(_serverId),
+          _prefs.filterContinueWatching,
+        ),
+      ]);
+    } finally {
+      _bgResumeRefreshInFlight = false;
+    }
+    _topShelf.update(_rows);
+    _watchNext.update(_rows);
+  }
+
+  /// Refetches the row with [rowId] and replaces it in place, or removes it when
+  /// it becomes empty. Does nothing when the row isn't currently present (e.g.
+  /// the section is disabled), so it never disturbs the rest of the list.
+  Future<void> _refreshRowInPlace(
+    String rowId,
+    Future<HomeRow> Function() fetch,
+    List<AggregatedItem> Function(List<AggregatedItem>) filter,
+  ) async {
+    if (!_rows.any((r) => r.id == rowId)) return;
+    final HomeRow fresh;
+    try {
+      fresh = await fetch();
+    } catch (_) {
+      // Transient failure: keep the existing row rather than wiping it.
+      return;
+    }
+    final index = _rows.indexWhere((r) => r.id == rowId);
+    if (index < 0) return;
+    final items = _filterEmptyElements(filter(fresh.items));
+    _rows = List.of(_rows);
+    if (items.isEmpty) {
+      _rows.removeAt(index);
+    } else {
+      _rows[index] = _rows[index].copyWith(items: items, isLoading: false);
+    }
+    notifyListeners();
   }
 
   Future<void> loadMoreForRow(int rowIndex) async {

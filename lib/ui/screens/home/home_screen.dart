@@ -100,6 +100,8 @@ class _HomeShellState extends State<_HomeShell>
   late final HomeViewModel _viewModel;
 
   final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
+  final GlobalKey<_ContentRowsState> _contentRowsKey =
+      GlobalKey<_ContentRowsState>();
   final ValueNotifier<String?> _backdropUrlNotifier = ValueNotifier(null);
   Timer? _selectionDebounce;
   Timer? _backdropDebounce;
@@ -396,11 +398,16 @@ class _HomeShellState extends State<_HomeShell>
       _themeMusicService.fadeOutAndStop();
       return;
     }
+    // Only the resume / next-up rows can change from viewing an item, so a
+    // lightweight in-place refresh keeps every other row (its paginated items,
+    // scroll offset, and focus) intact. A full refresh still runs on the Home
+    // button and pull-to-refresh.
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        _viewModel.refresh(preserveExisting: true);
+        unawaited(_viewModel.refreshResumeAndNextUp());
       }
     });
+    _contentRowsKey.currentState?.restoreReturnFocus();
     _maybeRegisterThemeMusic();
     if (_selectedItemNotifier.value != null) {
       _maybePlayThemeMusic(_selectedItemNotifier.value);
@@ -448,6 +455,7 @@ class _HomeShellState extends State<_HomeShell>
               const _GradientScrim(),
               Positioned.fill(
                 child: _ContentRows(
+                  key: _contentRowsKey,
                   viewModel: _viewModel,
                   mediaBarViewModel: _viewModel.mediaBarViewModel,
                   prefs: _userPrefs,
@@ -603,6 +611,7 @@ class _ContentRows extends StatefulWidget {
   final ValueChanged<bool>? onScrolledToTopChanged;
 
   const _ContentRows({
+    super.key,
     required this.viewModel,
     required this.mediaBarViewModel,
     required this.prefs,
@@ -636,7 +645,11 @@ class _ContentRowsState extends State<_ContentRows>
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
   final Map<int, GlobalKey> _rowKeys = {};
   final Map<int, GlobalKey> _rowContainerKeys = {};
-  final Map<int, ScrollController> _rowHorizontalControllers = {};
+  // Horizontal scroll controllers and their last offsets, keyed by row.id so a
+  // row keeps its own scroll position even when a refresh reorders or shrinks
+  // the list (index-keyed state would otherwise bind to the wrong row).
+  final Map<String, ScrollController> _rowHorizontalControllers = {};
+  final Map<String, double> _rowHorizontalOffsetsById = {};
   List<HomeRow>? _cachedExtentRows;
   PosterSize? _cachedExtentPosterSize;
   double? _cachedExtentDesktopScale;
@@ -657,6 +670,10 @@ class _ContentRowsState extends State<_ContentRows>
   final Set<String> _fetchingBackdrops = {};
   final Map<int, double> _staticRowHeightCache = {};
   final ValueNotifier<int?> _activeFocusedRowNotifier = ValueNotifier(null);
+  // Id of the row that last held focus. Unlike _activeFocusedRowIndex (which is
+  // nulled when focus leaves for a pushed route), this survives navigation so
+  // focus can be restored to the same row+item on return.
+  String? _lastFocusedRowId;
   int? get _activeFocusedRowIndex => _activeFocusedRowNotifier.value;
   set _activeFocusedRowIndex(int? value) {
     if (_activeFocusedRowNotifier.value != value) {
@@ -2278,26 +2295,37 @@ class _ContentRowsState extends State<_ContentRows>
     return _rowContainerKeys.putIfAbsent(rowIndex, () => GlobalKey());
   }
 
+  String _rowIdForIndex(int rowIndex) {
+    final rows = widget.viewModel.rows;
+    if (rowIndex >= 0 && rowIndex < rows.length) return rows[rowIndex].id;
+    return '__row_$rowIndex';
+  }
+
   ScrollController _rowHorizontalController(int rowIndex) {
-    return _rowHorizontalControllers.putIfAbsent(rowIndex, () {
-      final controller = ScrollController();
-      controller.addListener(() => _onRowScrolled(rowIndex, controller));
+    final rowId = _rowIdForIndex(rowIndex);
+    return _rowHorizontalControllers.putIfAbsent(rowId, () {
+      final controller = ScrollController(
+        initialScrollOffset: _rowHorizontalOffsetsById[rowId] ?? 0.0,
+      );
+      controller.addListener(() => _onRowScrolled(rowId, controller));
       return controller;
     });
   }
 
-  void _onRowScrolled(int rowIndex, ScrollController controller) {
+  void _onRowScrolled(String rowId, ScrollController controller) {
     if (!controller.hasClients) return;
+    _rowHorizontalOffsetsById[rowId] = controller.offset;
     const loadMoreTriggerDistance = 600.0;
     final remaining =
         controller.position.maxScrollExtent - controller.offset;
     if (remaining <= loadMoreTriggerDistance) {
-      widget.viewModel.loadMoreForRow(rowIndex);
+      final index = widget.viewModel.rows.indexWhere((r) => r.id == rowId);
+      if (index >= 0) widget.viewModel.loadMoreForRow(index);
     }
   }
 
   void _scrollHomeRowHorizontal(int rowIndex, double delta) {
-    final controller = _rowHorizontalControllers[rowIndex];
+    final controller = _rowHorizontalControllers[_rowIdForIndex(rowIndex)];
     if (controller == null || !controller.hasClients) return;
 
     final target = (controller.offset + delta).clamp(
@@ -2491,6 +2519,44 @@ class _ContentRowsState extends State<_ContentRows>
       duration: _focusHandoffDuration,
       curve: _focusHandoffCurve,
     );
+  }
+
+  /// Re-focuses the row+item the user was on before opening a details page.
+  /// The lightweight return refresh leaves that row and item in place, so this
+  /// lands on the exact item (by id, falling back to the remembered index).
+  /// TV/leanback only, and no-ops elsewhere. Retries while the row settles.
+  void restoreReturnFocus({int attempt = 0}) {
+    if (!mounted || PlatformDetection.useMobileUi) return;
+    final isDesktop = !PlatformDetection.isTV && !PlatformDetection.useMobileUi;
+    if (isDesktop) return;
+    if (!_mayRestoreHomeFocus()) return;
+    final rowId = _lastFocusedRowId;
+    if (rowId == null) return;
+
+    final rows = widget.viewModel.rows;
+    final rowIndex = rows.indexWhere((r) => r.id == rowId);
+    final ready =
+        rowIndex >= 0 &&
+        _rowHasFocusableItems(rows[rowIndex]) &&
+        _rowStateOf(rowIndex) != null;
+
+    if (ready) {
+      final itemId = widget.selectedItemNotifier.value?.id;
+      final itemIndex = itemId == null
+          ? -1
+          : rows[rowIndex].items.indexWhere((i) => i.id == itemId);
+      _requestRowFocusFromMemory(
+        rowIndex,
+        preferredIndex: itemIndex >= 0 ? itemIndex : null,
+      );
+      return;
+    }
+
+    if (attempt < 12) {
+      Future<void>.delayed(const Duration(milliseconds: 50), () {
+        restoreReturnFocus(attempt: attempt + 1);
+      });
+    }
   }
 
   bool _requestRowFocusFromMemory(int rowIndex, {int? preferredIndex}) {
@@ -2810,6 +2876,10 @@ class _ContentRowsState extends State<_ContentRows>
         _finishSharedPreview();
       }
       _activeFocusedRowIndex = rowIndex;
+      final rows = widget.viewModel.rows;
+      if (rowIndex >= 0 && rowIndex < rows.length) {
+        _lastFocusedRowId = rows[rowIndex].id;
+      }
 
       if (!PlatformDetection.useMobileUi &&
           _mediaBarVisible &&
