@@ -8,42 +8,53 @@ bool gameTitleMatchesBrowseFilters(
   String query = '',
   String letter = '',
 }) {
-  final normalizedTitle = title.trim();
-  final normalizedQuery = query.trim();
+  return GameBrowseTextIndex(
+    title,
+    alternateText: alternateText,
+  ).matches(queryWords: gameBrowseQueryWords(query), letter: letter);
+}
 
-  if (normalizedQuery.isNotEmpty) {
-    final titleWords = {
-      ..._searchWords(normalizedTitle),
-      ..._searchWords(alternateText),
-    };
-    final queryWords = _searchWords(normalizedQuery);
+/// Search and sort data prepared once for an item in a game library.
+///
+/// Large systems can contain thousands of ROMs, so callers should retain this
+/// object rather than repeatedly tokenizing titles on every search keystroke.
+class GameBrowseTextIndex {
+  GameBrowseTextIndex(String title, {String alternateText = ''})
+    : searchWords = {..._searchWords(title), ..._searchWords(alternateText)},
+      alphabeticalBucket = _alphabeticalBucket(title),
+      sortKey = _foldForBrowse(title.trim()).toLowerCase();
+
+  final Set<String> searchWords;
+  final String alphabeticalBucket;
+  final String sortKey;
+
+  bool matches({required List<String> queryWords, String letter = ''}) {
     if (queryWords.isNotEmpty &&
         !queryWords.every(
-          (term) => titleWords.any((word) => word.startsWith(term)),
+          (term) => searchWords.any((word) => word.startsWith(term)),
         )) {
       return false;
     }
+    return letter.isEmpty || alphabeticalBucket == letter.toUpperCase();
   }
-
-  return _matchesAlphabeticalBucket(normalizedTitle, letter);
 }
+
+/// Tokenizes a query once for use against prepared [GameBrowseTextIndex] data.
+List<String> gameBrowseQueryWords(String query) => _searchWords(query.trim());
 
 /// Breaks search text into words while retaining non-ASCII letters. Search
 /// terms match word prefixes rather than arbitrary text inside another word.
 List<String> _searchWords(String value) {
-  return value
+  return _foldForBrowse(value)
       .toLowerCase()
       .split(_wordSeparators)
       .where((word) => word.isNotEmpty)
       .toList(growable: false);
 }
 
-final RegExp _wordSeparators = RegExp(r'''[\s\-_./\\,:;!?()[\]{}'"+&]+''');
-
-bool _matchesAlphabeticalBucket(String title, String selectedBucket) {
-  if (selectedBucket.isEmpty) return true;
-  return _alphabeticalBucket(title) == selectedBucket.toUpperCase();
-}
+final RegExp _wordSeparators = RegExp(
+  r'''[\s\-_./\\,:;!?()[\]{}'"+&\u2010-\u2015\u2018\u2019\u201c\u201d]+''',
+);
 
 String _alphabeticalBucket(String value) {
   final trimmed = value.trimLeft();
@@ -55,6 +66,15 @@ String _alphabeticalBucket(String value) {
 
   final unit = folded.codeUnitAt(0);
   return unit >= 0x41 && unit <= 0x5A ? folded : '#';
+}
+
+String _foldForBrowse(String value) {
+  final result = StringBuffer();
+  for (final rune in value.runes) {
+    final character = String.fromCharCode(rune);
+    result.write(_accentFolds[character.toUpperCase()] ?? character);
+  }
+  return result.toString();
 }
 
 const Map<String, String> _accentFolds = {
