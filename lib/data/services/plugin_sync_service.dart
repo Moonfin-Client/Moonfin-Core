@@ -1055,32 +1055,12 @@ class PluginSyncService extends ChangeNotifier {
           var order = 0;
           for (final c in parsed) {
             sections.add(c.copyWith(order: order++));
-            switch (c.type) {
-              case prefs.HomeSectionType.imdbTop250Movies: _prefs.set(UserPreferences.imdbTop250MoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.imdbTop250TvShows: _prefs.set(UserPreferences.imdbTop250TvShowsEnabled, c.enabled);
-              case prefs.HomeSectionType.imdbMostPopularMovies: _prefs.set(UserPreferences.imdbMostPopularMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.imdbMostPopularTvShows: _prefs.set(UserPreferences.imdbMostPopularTvShowsEnabled, c.enabled);
-              case prefs.HomeSectionType.imdbLowestRatedMovies: _prefs.set(UserPreferences.imdbLowestRatedMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.imdbTopEnglishMovies: _prefs.set(UserPreferences.imdbTopEnglishMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbPopularMovies: _prefs.set(UserPreferences.tmdbPopularMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTopRatedMovies: _prefs.set(UserPreferences.tmdbTopRatedMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbNowPlayingMovies: _prefs.set(UserPreferences.tmdbNowPlayingMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbUpcomingMovies: _prefs.set(UserPreferences.tmdbUpcomingMoviesEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbPopularTv: _prefs.set(UserPreferences.tmdbPopularTvEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTopRatedTv: _prefs.set(UserPreferences.tmdbTopRatedTvEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbAiringTodayTv: _prefs.set(UserPreferences.tmdbAiringTodayTvEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbOnTheAirTv: _prefs.set(UserPreferences.tmdbOnTheAirTvEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTrendingMovieDaily: _prefs.set(UserPreferences.tmdbTrendingMovieDailyEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTrendingMovieWeekly: _prefs.set(UserPreferences.tmdbTrendingMovieWeeklyEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTrendingTvDaily: _prefs.set(UserPreferences.tmdbTrendingTvDailyEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTrendingTvWeekly: _prefs.set(UserPreferences.tmdbTrendingTvWeeklyEnabled, c.enabled);
-              case prefs.HomeSectionType.tmdbTrendingAllWeekly: _prefs.set(UserPreferences.tmdbTrendingAllWeeklyEnabled, c.enabled);
-              case prefs.HomeSectionType.radarrCalendar: _prefs.set(UserPreferences.enableRadarrCalendar, c.enabled);
-              case prefs.HomeSectionType.sonarrCalendar: _prefs.set(UserPreferences.enableSonarrCalendar, c.enabled);
-              case prefs.HomeSectionType.rewatch: _prefs.set(UserPreferences.displayRewatchRow, c.enabled);
-              default:
+            // External list and calendar rows are also gated by their own toggle, so
+            // flip it to match the layout moonbase pushed or the row stays hidden.
+            final toggle = _rowEnabledPreference(c.type);
+            if (toggle != null) {
+              _prefs.set(toggle, c.enabled);
             }
-
           }
           _appendDisabledBuiltinSections(sections, order);
           await _prefs.setHomeSectionsConfig(sections);
@@ -1651,6 +1631,30 @@ class PluginSyncService extends ChangeNotifier {
       default:
         throw ArgumentError('Not a TMDB section type: $type');
     }
+  }
+
+  Preference<bool>? _rowEnabledPreference(prefs.HomeSectionType type) {
+    if (_isTmdbSectionType(type)) return _tmdbPrefForType(type);
+    return switch (type) {
+      prefs.HomeSectionType.imdbTop250Movies =>
+        UserPreferences.imdbTop250MoviesEnabled,
+      prefs.HomeSectionType.imdbTop250TvShows =>
+        UserPreferences.imdbTop250TvShowsEnabled,
+      prefs.HomeSectionType.imdbMostPopularMovies =>
+        UserPreferences.imdbMostPopularMoviesEnabled,
+      prefs.HomeSectionType.imdbMostPopularTvShows =>
+        UserPreferences.imdbMostPopularTvShowsEnabled,
+      prefs.HomeSectionType.imdbLowestRatedMovies =>
+        UserPreferences.imdbLowestRatedMoviesEnabled,
+      prefs.HomeSectionType.imdbTopEnglishMovies =>
+        UserPreferences.imdbTopEnglishMoviesEnabled,
+      prefs.HomeSectionType.radarrCalendar =>
+        UserPreferences.enableRadarrCalendar,
+      prefs.HomeSectionType.sonarrCalendar =>
+        UserPreferences.enableSonarrCalendar,
+      prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
+      _ => null,
+    };
   }
 
   @override
