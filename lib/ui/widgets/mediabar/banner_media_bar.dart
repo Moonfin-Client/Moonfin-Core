@@ -164,19 +164,21 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
       if (state is MediaBarLoading) {
         final isMobile = PlatformDetection.useMobileUi;
         final navbarAtTop =
-            widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+            widget.prefs.get(UserPreferences.navbarPosition) ==
+            NavbarPosition.top;
         final topInset = isMobile
             ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
             : 0.0;
-        final loadingHeight = widget.height - topInset - 12.0;
+        final loadingHeight = (widget.height - topInset - 12.0).clamp(
+          0.0,
+          double.infinity,
+        );
         return Padding(
           padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
           child: SizedBox(
             height: loadingHeight,
             width: double.infinity,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           ),
         );
       }

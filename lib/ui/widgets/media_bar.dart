@@ -1783,7 +1783,8 @@ class _MediaBarState extends State<MediaBar>
                 ),
                 if (showRetry)
                   TextButton(
-                    onPressed: () => widget.viewModel.load(context: context),
+                    onPressed: () =>
+                        widget.viewModel.load(context: context, force: true),
                     child: Text(AppLocalizations.of(context).retry),
                   ),
               ],

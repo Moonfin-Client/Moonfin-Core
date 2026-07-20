@@ -299,7 +299,6 @@ class HomeViewModel extends ChangeNotifier {
     }
     _isLoading = true;
     _mediaBarViewModel.load(force: forceRefresh);
-    await Future.delayed(const Duration(milliseconds: 150));
     notifyListeners();
     _rowOffsets.clear();
     _multiServerRepo.clearOffsets();

@@ -319,9 +319,8 @@ class MediaBarRepository {
       return const <Map<String, dynamic>>[];
     }
     try {
-      // 1. Get the total count of items in this parent library.
-      // We sort by 'SortName' (indexed) and ask for limit: 1 with count enabled.
-      // Since it's sorted by an indexed column, SQLite counts it instantly.
+      // Get the total count for this parent so we can pick a random window.
+      // Asking for a single item keeps it cheap.
       final countResponse = await _client.itemsApi
           .getItems(
             includeItemTypes: itemTypes,
@@ -340,36 +339,32 @@ class MediaBarRepository {
         return const <Map<String, dynamic>>[];
       }
 
-      // If library is small, we just shuffle the items we got in the first page (up to 40)
-      List<Map<String, dynamic>> rawItems;
+      // Fetch a random window with the fields and backdrop tags the selector
+      // needs. A small library takes its whole set starting from the first item.
       const requestLimit = 40;
+      final windowSize = math.min(total, requestLimit);
+      final maxStartIndex = total - windowSize;
+      final startIndex = maxStartIndex > 0
+          ? _random.nextInt(maxStartIndex + 1)
+          : 0;
 
-      if (total <= requestLimit) {
-        final firstPageItems = countResponse['Items'] as List? ?? [];
-        rawItems = firstPageItems.cast<Map<String, dynamic>>().toList();
-      } else {
-        // 2. Select a random window/offset
-        final maxStartIndex = total - requestLimit;
-        final startIndex = _random.nextInt(maxStartIndex + 1);
+      final windowResponse = await _client.itemsApi
+          .getItems(
+            includeItemTypes: itemTypes,
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            recursive: parentId == null,
+            parentId: parentId,
+            startIndex: startIndex,
+            limit: windowSize,
+            fields: _fields,
+            enableTotalRecordCount: false,
+            enableImageTypes: 'Backdrop,Logo',
+          )
+          .timeout(const Duration(seconds: 15));
 
-        final windowResponse = await _client.itemsApi
-            .getItems(
-              includeItemTypes: itemTypes,
-              sortBy: 'SortName',
-              sortOrder: 'Ascending',
-              recursive: parentId == null,
-              parentId: parentId,
-              startIndex: startIndex,
-              limit: requestLimit,
-              fields: _fields,
-              enableTotalRecordCount: false,
-              enableImageTypes: 'Backdrop,Logo',
-            )
-            .timeout(const Duration(seconds: 15));
-
-        final windowItems = windowResponse['Items'] as List? ?? [];
-        rawItems = windowItems.cast<Map<String, dynamic>>().toList();
-      }
+      final windowItems = windowResponse['Items'] as List? ?? [];
+      final rawItems = windowItems.cast<Map<String, dynamic>>().toList();
 
       // Shuffle locally to provide a fresh random feel on every launch
       rawItems.shuffle(_random);
