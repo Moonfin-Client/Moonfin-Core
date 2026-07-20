@@ -296,7 +296,17 @@ class EmbyConnectServer {
 
     try {
       final uri = Uri.parse(sanitized);
-      sanitized = uri.replace(query: '', fragment: '').toString();
+      // Rebuild the URI without its query or fragment. Passing empty strings to
+      // Uri.replace keeps an empty query and fragment that serialize as a
+      // trailing "?#", which corrupts the exchange URL and the address shown in
+      // the server list.
+      sanitized = Uri(
+        scheme: uri.hasScheme ? uri.scheme : null,
+        userInfo: uri.userInfo.isEmpty ? null : uri.userInfo,
+        host: uri.host.isEmpty ? null : uri.host,
+        port: uri.hasPort ? uri.port : null,
+        path: uri.path,
+      ).toString();
       if (sanitized.endsWith('/')) {
         sanitized = sanitized.substring(0, sanitized.length - 1);
       }
