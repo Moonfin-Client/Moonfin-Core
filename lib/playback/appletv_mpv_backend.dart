@@ -243,10 +243,12 @@ class AppleTvMpvBackend implements PlayerBackend {
       'dolbyVisionFallbackBehavior':
           _prefs.get(UserPreferences.dolbyVisionFallbackBehavior).name,
       'preferredAudioLanguage': _normalizeTrackLanguagePref(
-        _prefs.get(UserPreferences.defaultAudioLanguage),
+        payload['preferredAudioLanguage']?.toString() ??
+            _prefs.get(UserPreferences.defaultAudioLanguage),
       ),
       'preferredTextLanguage': _normalizeTrackLanguagePref(
-        _prefs.get(UserPreferences.defaultSubtitleLanguage),
+        payload['preferredTextLanguage']?.toString() ??
+            _prefs.get(UserPreferences.defaultSubtitleLanguage),
       ),
       'speed': _playbackSpeed,
       'volume': _volume,

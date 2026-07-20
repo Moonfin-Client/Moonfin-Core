@@ -272,24 +272,26 @@ class PlaybackManager implements AudioOwnable {
   }) {
     final resolvedMediaType = mediaType?.trim().toLowerCase();
 
-    final audio = mediaStreams.where((s) => s['Type'] == 'Audio').toList();
     final Map<String, dynamic>? audioStream;
     if (audioStreamIndex != null) {
-      audioStream = audio.firstWhere(
-        (s) => s['Index'] == audioStreamIndex,
-        orElse: () => _defaultAudioStream(mediaStreams) ?? const <String, dynamic>{},
+      final match = mediaStreams.firstWhere(
+        (s) => s['Type'] == 'Audio' && s['Index'] == audioStreamIndex,
+        orElse: () => const <String, dynamic>{},
       );
+      audioStream = match.isNotEmpty
+          ? match
+          : _defaultAudioStream(mediaStreams);
     } else {
       audioStream = _defaultAudioStream(mediaStreams);
     }
 
-    final subtitle = mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
     final Map<String, dynamic>? subtitleStream;
     if (subtitleStreamIndex != null && subtitleStreamIndex != -1) {
-      subtitleStream = subtitle.firstWhere(
-        (s) => s['Index'] == subtitleStreamIndex,
+      final match = mediaStreams.firstWhere(
+        (s) => s['Type'] == 'Subtitle' && s['Index'] == subtitleStreamIndex,
         orElse: () => const <String, dynamic>{},
       );
+      subtitleStream = match.isNotEmpty ? match : null;
     } else {
       subtitleStream = null;
     }
@@ -298,22 +300,23 @@ class PlaybackManager implements AudioOwnable {
         .where((s) => s['Type'] == 'Video')
         .firstOrNull;
 
-    final audioStreamLang = audioStream != null && audioStream.isNotEmpty ? _extractLanguage(audioStream) : null;
-    final subtitleStreamLang = subtitleStream != null && subtitleStream.isNotEmpty ? _extractLanguage(subtitleStream) : null;
+    final audioStreamLang = _extractLanguage(audioStream);
+    final subtitleStreamLang = _extractLanguage(subtitleStream);
 
     return <String, dynamic>{
       'url': url,
       if (container != null && container.isNotEmpty) 'container': container,
       if (videoRangeType != null && videoRangeType.isNotEmpty)
         'videoRangeType': videoRangeType,
-      if (audioStream != null && audioStream.isNotEmpty) ...{
+      if (audioStream != null) ...{
         'audioCodec': (audioStream['Codec'] ?? '').toString(),
         'audioProfile': (audioStream['Profile'] ?? '').toString(),
         if (audioStream['Channels'] is int) 'audioChannels': audioStream['Channels'],
         if (audioStream['Index'] is int) 'audioStreamIndex': audioStream['Index'],
       },
       if (audioStreamLang != null) 'preferredAudioLanguage': audioStreamLang,
-      if (subtitleStreamLang != null) 'preferredTextLanguage': subtitleStreamLang,
+      if (subtitleStreamLang != null)
+        'preferredTextLanguage': subtitleStreamLang,
       if (videoStream != null && videoStream['DvProfile'] is int)
         'videoDvProfile': videoStream['DvProfile'],
       if (videoStream != null && videoStream['RealFrameRate'] is num)
