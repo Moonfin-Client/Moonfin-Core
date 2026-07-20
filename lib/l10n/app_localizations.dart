@@ -4174,42 +4174,6 @@ abstract class AppLocalizations {
   /// **'Details Background Opacity'**
   String get detailsBackgroundOpacity;
 
-  /// Subtitle description of details background opacity
-  ///
-  /// In en, this message translates to:
-  /// **'Adjust amount of opacity on modern detail pages from light to dark.'**
-  String get detailsBackgroundOpacitySubtitle;
-
-  /// Label for lightest opacity setting
-  ///
-  /// In en, this message translates to:
-  /// **'Lightest'**
-  String get opacityLightest;
-
-  /// Label for light opacity setting
-  ///
-  /// In en, this message translates to:
-  /// **'Light'**
-  String get opacityLight;
-
-  /// Label for medium opacity setting
-  ///
-  /// In en, this message translates to:
-  /// **'Medium'**
-  String get opacityMedium;
-
-  /// Label for dark opacity setting
-  ///
-  /// In en, this message translates to:
-  /// **'Dark'**
-  String get opacityDark;
-
-  /// Label for darkest opacity setting
-  ///
-  /// In en, this message translates to:
-  /// **'Darkest'**
-  String get opacityDarkest;
-
   /// Pixel value display
   ///
   /// In en, this message translates to:
