@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:jellyfin_preference/jellyfin_preference.dart';
-
 import '../../l10n/app_localizations.dart';
 import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
@@ -67,14 +65,12 @@ class BuiltinExternalList {
   final HomeSectionType section;
   final String rowId;
   final bool isImdb;
-  final Preference<bool> enabledPref;
   final String Function(AppLocalizations l10n) label;
 
   const BuiltinExternalList({
     required this.section,
     required this.rowId,
     required this.isImdb,
-    required this.enabledPref,
     required this.label,
   });
 
@@ -90,133 +86,114 @@ final List<BuiltinExternalList> kBuiltinExternalLists = [
     section: HomeSectionType.imdbTop250Movies,
     rowId: 'imdb_top_250_movies',
     isImdb: true,
-    enabledPref: UserPreferences.imdbTop250MoviesEnabled,
     label: (l10n) => l10n.imdbTop250Movies,
   ),
   BuiltinExternalList(
     section: HomeSectionType.imdbTop250TvShows,
     rowId: 'imdb_top_250_tv_shows',
     isImdb: true,
-    enabledPref: UserPreferences.imdbTop250TvShowsEnabled,
     label: (l10n) => l10n.imdbTop250TvShows,
   ),
   BuiltinExternalList(
     section: HomeSectionType.imdbMostPopularMovies,
     rowId: 'imdb_most_popular_movies',
     isImdb: true,
-    enabledPref: UserPreferences.imdbMostPopularMoviesEnabled,
     label: (l10n) => l10n.imdbMostPopularMovies,
   ),
   BuiltinExternalList(
     section: HomeSectionType.imdbMostPopularTvShows,
     rowId: 'imdb_most_popular_tv_shows',
     isImdb: true,
-    enabledPref: UserPreferences.imdbMostPopularTvShowsEnabled,
     label: (l10n) => l10n.imdbMostPopularTvShows,
   ),
   BuiltinExternalList(
     section: HomeSectionType.imdbLowestRatedMovies,
     rowId: 'imdb_lowest_rated_movies',
     isImdb: true,
-    enabledPref: UserPreferences.imdbLowestRatedMoviesEnabled,
     label: (l10n) => l10n.imdbLowestRatedMovies,
   ),
   BuiltinExternalList(
     section: HomeSectionType.imdbTopEnglishMovies,
     rowId: 'imdb_top_english_movies',
     isImdb: true,
-    enabledPref: UserPreferences.imdbTopEnglishMoviesEnabled,
     label: (l10n) => l10n.imdbTopEnglishMovies,
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbPopularMovies,
     rowId: 'tmdb_popular_movies',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbPopularMoviesEnabled,
     label: (l10n) => 'Popular Movies',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTopRatedMovies,
     rowId: 'tmdb_top_rated_movies',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTopRatedMoviesEnabled,
     label: (l10n) => 'Top Rated Movies',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbNowPlayingMovies,
     rowId: 'tmdb_now_playing_movies',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbNowPlayingMoviesEnabled,
     label: (l10n) => 'Now Playing Movies',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbUpcomingMovies,
     rowId: 'tmdb_upcoming_movies',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbUpcomingMoviesEnabled,
     label: (l10n) => 'Upcoming Movies',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbPopularTv,
     rowId: 'tmdb_popular_tv',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbPopularTvEnabled,
     label: (l10n) => 'Popular TV',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTopRatedTv,
     rowId: 'tmdb_top_rated_tv',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTopRatedTvEnabled,
     label: (l10n) => 'Top Rated TV',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbAiringTodayTv,
     rowId: 'tmdb_airing_today_tv',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbAiringTodayTvEnabled,
     label: (l10n) => 'Airing Today TV',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbOnTheAirTv,
     rowId: 'tmdb_on_the_air_tv',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbOnTheAirTvEnabled,
     label: (l10n) => 'On The Air TV',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTrendingMovieDaily,
     rowId: 'tmdb_trending_movie_daily',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTrendingMovieDailyEnabled,
     label: (l10n) => 'Trending Movies (Daily)',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTrendingMovieWeekly,
     rowId: 'tmdb_trending_movie_weekly',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTrendingMovieWeeklyEnabled,
     label: (l10n) => 'Trending Movies (Weekly)',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTrendingTvDaily,
     rowId: 'tmdb_trending_tv_daily',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTrendingTvDailyEnabled,
     label: (l10n) => 'Trending TV (Daily)',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTrendingTvWeekly,
     rowId: 'tmdb_trending_tv_weekly',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTrendingTvWeeklyEnabled,
     label: (l10n) => 'Trending TV (Weekly)',
   ),
   BuiltinExternalList(
     section: HomeSectionType.tmdbTrendingAllWeekly,
     rowId: 'tmdb_trending_all_weekly',
     isImdb: false,
-    enabledPref: UserPreferences.tmdbTrendingAllWeeklyEnabled,
     label: (l10n) => 'Trending All (Weekly)',
   ),
 ];
@@ -246,7 +223,8 @@ List<HomeSectionConfig> _customExternalListConfigs(UserPreferences prefs) {
 }
 
 /// The options shown in the media bar External Media picker: every custom list plus
-/// each enabled built-in chart.
+/// every built-in chart. Charts are offered regardless of whether they are also
+/// enabled as home rows, so the media bar source can be set on its own.
 List<ExternalListOption> externalListOptions(
   UserPreferences prefs,
   AppLocalizations l10n,
@@ -266,12 +244,12 @@ List<ExternalListOption> externalListOptions(
   }
 
   for (final chart in kBuiltinExternalLists) {
-    if (!prefs.get(chart.enabledPref)) continue;
-    final config = chart.config(chart.label(l10n));
+    final label = chart.label(l10n);
+    final config = chart.config(label);
     options.add(
       ExternalListOption(
         stableId: config.stableId,
-        label: chart.label(l10n),
+        label: label,
         config: config,
       ),
     );
@@ -281,8 +259,7 @@ List<ExternalListOption> externalListOptions(
 }
 
 /// Resolves the stored stable ids back to their configs for fetching. Ids that no
-/// longer match a configured list (deleted custom list or disabled chart) are
-/// skipped.
+/// longer match a configured list (a deleted custom list) are skipped.
 List<HomeSectionConfig> resolveExternalListConfigs(
   UserPreferences prefs,
   Iterable<String> stableIds,
@@ -295,7 +272,6 @@ List<HomeSectionConfig> resolveExternalListConfigs(
     byId[config.stableId] = config;
   }
   for (final chart in kBuiltinExternalLists) {
-    if (!prefs.get(chart.enabledPref)) continue;
     // The title doesn't affect the stable id or the fetch, so an empty one is fine.
     final config = chart.config();
     byId[config.stableId] = config;
