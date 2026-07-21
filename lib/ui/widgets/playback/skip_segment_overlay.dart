@@ -208,22 +208,26 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                 ),
               ),
               if (isDesktop)
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: IconButton(
-                    onPressed: widget.onDismiss,
-                    tooltip: l10n.close,
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    constraints: const BoxConstraints.tightFor(
-                      width: 24,
-                      height: 24,
-                    ),
-                    icon: Icon(
-                      Icons.close_rounded,
-                      size: 16,
-                      color: AppColorScheme.onSurface,
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: IconButton(
+                        onPressed: widget.onDismiss,
+                        tooltip: l10n.close,
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 24,
+                          height: 24,
+                        ),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: AppColorScheme.onSurface,
+                        ),
+                      ),
                     ),
                   ),
                 ),
