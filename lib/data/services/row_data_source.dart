@@ -32,6 +32,9 @@ class RowDataSource {
   static const _defaultSortOrder = 'Ascending';
   static const _genreArtworkConcurrency = 6;
 
+  static String? _sortByParameter(LibrarySortBy? sortBy) =>
+      sortBy == null ? _defaultSortBy : sortBy.sortByParameter;
+
   static const _fields =
       'DateCreated,Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
       'OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
@@ -250,13 +253,13 @@ class RowDataSource {
   Future<HomeRow> loadPlaylists(
     String serverId, {
     String? mediaType,
-    String? sortBy,
-    String? sortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final response = await _getItemsWithFallback(
       includeItemTypes: const ['Playlist'],
-      sortBy: sortBy ?? 'SortName',
-      sortOrder: sortOrder ?? 'Ascending',
+      sortBy: sortBy,
+      sortOrder: sortOrder,
       recursive: true,
       limit: _defaultLimit,
       fields: '$_fields,ChildCount,RecursiveItemCount',
@@ -287,8 +290,8 @@ class RowDataSource {
     required String rowId,
     required String title,
     List<String>? includeItemTypes,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     return _loadSortedItemsRow(
       serverId: serverId,
@@ -304,8 +307,8 @@ class RowDataSource {
 
   Future<HomeRow> loadCollections(
     String serverId, {
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     return _loadSortedItemsRow(
       serverId: serverId,
@@ -320,8 +323,8 @@ class RowDataSource {
 
   Future<HomeRow> loadAudioArtists(
     String serverId, {
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final row = await _loadSortedItemsRow(
       serverId: serverId,
@@ -337,8 +340,8 @@ class RowDataSource {
 
   Future<HomeRow> loadAudioAlbums(
     String serverId, {
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final row = await _loadSortedItemsRow(
       serverId: serverId,
@@ -354,8 +357,8 @@ class RowDataSource {
 
   Future<HomeRow> loadAudioPlaylists(
     String serverId, {
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final row = await loadPlaylists(
       serverId,
@@ -373,8 +376,8 @@ class RowDataSource {
 
   Future<HomeRow> loadGenres(
     String serverId, {
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     List<String>? includeItemTypes,
     String? parentId,
   }) async {
@@ -533,8 +536,8 @@ class RowDataSource {
     required String collectionId,
     required String title,
     required String rowId,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     int startIndex = 0,
     int limit = _defaultLimit,
   }) async {
@@ -560,8 +563,8 @@ class RowDataSource {
     required String playlistId,
     required String title,
     required String rowId,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     int startIndex = 0,
     int limit = _defaultLimit,
   }) async {
@@ -587,8 +590,8 @@ class RowDataSource {
     required String genreId,
     required String title,
     required String rowId,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     List<String>? includeItemTypes,
     int startIndex = 0,
     int limit = _defaultLimit,
@@ -619,8 +622,8 @@ class RowDataSource {
     required HomeRowType rowType,
     List<String>? includeItemTypes,
     bool? isFavorite,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     int limit = _defaultLimit,
   }) async {
     final response = await _getItemsWithFallback(
@@ -708,8 +711,8 @@ class RowDataSource {
     String parentId,
     String serverId, {
     List<String>? includeItemTypes,
-    String sortBy = 'SortName',
-    String sortOrder = 'Ascending',
+    String? sortBy = 'SortName',
+    String? sortOrder = 'Ascending',
   }) async {
     final response = await _getItemsWithFallback(
       parentId: parentId,
@@ -778,8 +781,8 @@ class RowDataSource {
     String serverId, {
     required String title,
     required List<String> includeItemTypes,
-    String sortBy = 'SortName',
-    String sortOrder = 'Ascending',
+    String? sortBy = 'SortName',
+    String? sortOrder = 'Ascending',
   }) async {
     final isAlbumArtistBrowse =
         includeItemTypes.length == 1 && includeItemTypes.first == 'AlbumArtist';
@@ -935,9 +938,9 @@ class RowDataSource {
         if (parsed != null &&
             parsed.source == HomeSectionPluginSource.playlists) {
           final playlistId = parsed.additionalData;
-          var sortBy = _defaultSortBy;
+          String? sortBy = _defaultSortBy;
           if (prefs != null) {
-            sortBy = prefs.get(UserPreferences.playlistsRowSortBy).apiValue;
+            sortBy = prefs.get(UserPreferences.playlistsRowSortBy).sortByParameter;
           }
           response = await _getItemsWithFallback(
             parentId: playlistId,
@@ -966,9 +969,9 @@ class RowDataSource {
           );
         }
       case HomeRowType.favorites:
-        final sortBy =
-            prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.favoritesRowSortBy),
+        );
         response = await _getItemsWithFallback(
           includeItemTypes: FavoriteTypeFilter.fromRowId(row.id).itemTypes,
           sortBy: sortBy,
@@ -979,9 +982,10 @@ class RowDataSource {
           isFavorite: true,
         );
       case HomeRowType.collections:
-        final sortBy =
-            prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.collectionsRowSortBy),
+        );
+        final sortOrder = sortBy == null ? null : _defaultSortOrder;
         final parsed = _parseStableId(row.id);
         final parentId =
             (parsed != null &&
@@ -995,15 +999,15 @@ class RowDataSource {
           parentId: parentId,
           includeItemTypes: includeItemTypes,
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: sortOrder,
           recursive: true,
           startIndex: currentOffset,
           limit: _defaultLimit,
         );
       case HomeRowType.audioArtists:
-        final sortBy =
-            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.audioRowsSortBy),
+        );
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicArtist'],
           sortBy: sortBy,
@@ -1013,9 +1017,9 @@ class RowDataSource {
           limit: _defaultLimit,
         );
       case HomeRowType.audioAlbums:
-        final sortBy =
-            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.audioRowsSortBy),
+        );
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicAlbum'],
           sortBy: sortBy,
@@ -1025,9 +1029,9 @@ class RowDataSource {
           limit: _defaultLimit,
         );
       case HomeRowType.audioPlaylists:
-        final sortBy =
-            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.audioRowsSortBy),
+        );
         final pageCount = (currentOffset / _defaultLimit).ceil();
         final startIndex = pageCount * _defaultLimit;
         response = await _getItemsWithFallback(
@@ -1040,9 +1044,9 @@ class RowDataSource {
           fields: '$_fields,ChildCount,RecursiveItemCount',
         );
       case HomeRowType.genres:
-        final sortBy =
-            prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
-            _defaultSortBy;
+        final sortBy = _sortByParameter(
+          prefs?.get(UserPreferences.genresRowSortBy),
+        );
         final includeItemTypes = prefs
             ?.get(UserPreferences.genresRowItemFilter)
             .includeItemTypes;
@@ -1568,11 +1572,13 @@ class RowDataSource {
           );
         }
         try {
-          var sortBy = _defaultSortBy;
+          String? sortBy = _defaultSortBy;
+          String? sortOrder = _defaultSortOrder;
           if (GetIt.instance.isRegistered<UserPreferences>()) {
             sortBy = GetIt.instance<UserPreferences>()
                 .get(UserPreferences.collectionsRowSortBy)
-                .apiValue;
+                .sortByParameter;
+            if (sortBy == null) sortOrder = null;
           }
           final row = await loadCollectionRow(
             serverId,
@@ -1580,7 +1586,7 @@ class RowDataSource {
             title: title,
             rowId: rowId,
             sortBy: sortBy,
-            sortOrder: _defaultSortOrder,
+            sortOrder: sortOrder,
           );
           return row;
         } catch (_) {
@@ -1596,11 +1602,11 @@ class RowDataSource {
           return HomeRow(id: rowId, title: title, rowType: HomeRowType.genres);
         }
         try {
-          var sortBy = _defaultSortBy;
+          String? sortBy = _defaultSortBy;
           List<String>? includeItemTypes;
           if (GetIt.instance.isRegistered<UserPreferences>()) {
             final prefs = GetIt.instance<UserPreferences>();
-            sortBy = prefs.get(UserPreferences.genresRowSortBy).apiValue;
+            sortBy = prefs.get(UserPreferences.genresRowSortBy).sortByParameter;
             includeItemTypes = prefs
                 .get(UserPreferences.genresRowItemFilter)
                 .includeItemTypes;
@@ -1628,11 +1634,11 @@ class RowDataSource {
           );
         }
         try {
-          var sortBy = _defaultSortBy;
+          String? sortBy = _defaultSortBy;
           if (GetIt.instance.isRegistered<UserPreferences>()) {
             sortBy = GetIt.instance<UserPreferences>()
                 .get(UserPreferences.playlistsRowSortBy)
-                .apiValue;
+                .sortByParameter;
           }
           final row = await loadPlaylistRow(
             serverId,

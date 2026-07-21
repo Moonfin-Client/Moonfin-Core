@@ -1039,15 +1039,18 @@ class HomeViewModel extends ChangeNotifier {
     final l10n = currentAppLocalizations();
     final favoritesSortBy = _prefs
         .get(UserPreferences.favoritesRowSortBy)
-        .apiValue;
+        .sortByParameter;
     final collectionsSortBy = _prefs
         .get(UserPreferences.collectionsRowSortBy)
-        .apiValue;
-    final genresSortBy = _prefs.get(UserPreferences.genresRowSortBy).apiValue;
+        .sortByParameter;
+    final genresSortBy = _prefs
+        .get(UserPreferences.genresRowSortBy)
+        .sortByParameter;
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
         .includeItemTypes;
     const sortOrder = 'Ascending';
+    final collectionsSortOrder = collectionsSortBy != null ? sortOrder : null;
     switch (section) {
       case HomeSectionType.resume:
         final row = _multiServerEnabled
@@ -1071,7 +1074,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.playlists:
         final playlistsSortBy = _prefs
             .get(UserPreferences.playlistsRowSortBy)
-            .apiValue;
+            .sortByParameter;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedPlaylists(
@@ -1087,7 +1090,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.audioArtists:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
+            .sortByParameter;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioArtists(
@@ -1103,7 +1106,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.audioAlbums:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
+            .sortByParameter;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioAlbums(
@@ -1119,7 +1122,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.audioPlaylists:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
-            .apiValue;
+            .sortByParameter;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioPlaylists(
@@ -1166,12 +1169,12 @@ class HomeViewModel extends ChangeNotifier {
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedCollections(
                   sortBy: collectionsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: collectionsSortOrder,
                 )
               : await _dataSource.loadCollections(
                   _serverId,
                   sortBy: collectionsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: collectionsSortOrder,
                 ),
         ];
       case HomeSectionType.genres:

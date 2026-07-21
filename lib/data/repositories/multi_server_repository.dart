@@ -60,6 +60,9 @@ class MultiServerRepository {
   static const _defaultSortOrder = 'Ascending';
   static const _genreArtworkConcurrency = 6;
 
+  static String? _sortByParameter(LibrarySortBy? sortBy) =>
+      sortBy == null ? _defaultSortBy : sortBy.sortByParameter;
+
   List<ServerUserSession>? _cachedSessions;
   DateTime _cacheExpiry = DateTime(0);
   final Map<String, int> _rowOffsets = {};
@@ -292,8 +295,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedPlaylists({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     String? mediaType,
   }) async {
     final sessions = await getLoggedInServers();
@@ -329,14 +332,20 @@ class MultiServerRepository {
     );
 
     final all = results.expand((e) => e).toList();
-    if (sortBy == 'SortName') {
+    if (sortBy == null) {
+      // Keep the server-provided order.
+    } else if (sortBy == 'SortName') {
       if (sortOrder == 'Ascending') {
         all.sort((a, b) => a.name.compareTo(b.name));
       } else {
         all.sort((a, b) => b.name.compareTo(a.name));
       }
     } else {
-      _sortAggregatedItems(all, sortBy: sortBy, sortOrder: sortOrder);
+      _sortAggregatedItems(
+        all,
+        sortBy: sortBy,
+        sortOrder: sortOrder ?? _defaultSortOrder,
+      );
     }
 
     final takenItems = all.take(limit).toList();
@@ -356,8 +365,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedAudioArtists({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final row = await _getAggregatedSortedItemsRow(
       id: 'audioArtists',
@@ -374,8 +383,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedAudioAlbums({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final row = await _getAggregatedSortedItemsRow(
       id: 'audioAlbums',
@@ -392,8 +401,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedAudioPlaylists({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     return getAggregatedPlaylists(
       limit: limit,
@@ -409,8 +418,8 @@ class MultiServerRepository {
     required String title,
     List<String>? includeItemTypes,
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     return _getAggregatedSortedItemsRow(
       id: rowId,
@@ -427,8 +436,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedCollections({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     return _getAggregatedSortedItemsRow(
       id: 'collections',
@@ -444,8 +453,8 @@ class MultiServerRepository {
 
   Future<HomeRow> getAggregatedGenres({
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
     List<String>? includeItemTypes,
   }) async {
     const cacheKeyPrefix = 'genres';
@@ -478,11 +487,14 @@ class MultiServerRepository {
       ),
     );
 
-    final all = _sortAggregatedItems(
-      results.expand((e) => e).toList(growable: false),
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-    );
+    final combined = results.expand((e) => e).toList(growable: false);
+    final all = sortBy == null
+        ? combined
+        : _sortAggregatedItems(
+            combined,
+            sortBy: sortBy,
+            sortOrder: sortOrder ?? _defaultSortOrder,
+          );
 
     final takenItems = all.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
@@ -532,9 +544,9 @@ class MultiServerRepository {
               final pageCount = (startIndex / _defaultLimit).ceil();
               final targetStartIndex = pageCount * _defaultLimit;
               _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
-              final sortBy =
-                  prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.playlistsRowSortBy),
+              );
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['Playlist'],
@@ -558,9 +570,9 @@ class MultiServerRepository {
               final pageCount = (startIndex / _defaultLimit).ceil();
               final targetStartIndex = pageCount * _defaultLimit;
               _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
-              final sortBy =
-                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.audioRowsSortBy),
+              );
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['Playlist'],
@@ -583,9 +595,9 @@ class MultiServerRepository {
               return items;
             case HomeRowType.audioArtists:
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
-              final sortBy =
-                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.audioRowsSortBy),
+              );
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['MusicArtist'],
@@ -604,9 +616,9 @@ class MultiServerRepository {
               return items;
             case HomeRowType.audioAlbums:
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
-              final sortBy =
-                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.audioRowsSortBy),
+              );
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['MusicAlbum'],
@@ -625,9 +637,9 @@ class MultiServerRepository {
               return items;
             case HomeRowType.favorites:
               final favoriteFilter = FavoriteTypeFilter.fromRowId(row.id);
-              final sortBy =
-                  prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.favoritesRowSortBy),
+              );
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
@@ -647,15 +659,16 @@ class MultiServerRepository {
                   response['TotalRecordCount'] as int? ?? items.length;
               return items;
             case HomeRowType.collections:
-              final sortBy =
-                  prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.collectionsRowSortBy),
+              );
+              final sortOrder = sortBy != null ? 'Ascending' : null;
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['BoxSet'],
                 sortBy: sortBy,
-                sortOrder: 'Ascending',
+                sortOrder: sortOrder,
                 recursive: true,
                 startIndex: startIndex,
                 limit: _defaultLimit,
@@ -668,9 +681,9 @@ class MultiServerRepository {
                   response['TotalRecordCount'] as int? ?? items.length;
               return items;
             case HomeRowType.genres:
-              final sortBy =
-                  prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
-                  _defaultSortBy;
+              final sortBy = _sortByParameter(
+                prefs?.get(UserPreferences.genresRowSortBy),
+              );
               final includeItemTypes = prefs
                   ?.get(UserPreferences.genresRowItemFilter)
                   .includeItemTypes;
@@ -777,10 +790,14 @@ class MultiServerRepository {
         row.rowType == HomeRowType.latestMedia) {
       if (row.rowType == HomeRowType.playlists ||
           row.rowType == HomeRowType.audioPlaylists) {
-        final sortBy = row.rowType == HomeRowType.audioPlaylists
-            ? (prefs?.get(UserPreferences.audioRowsSortBy).apiValue ?? _defaultSortBy)
-            : (prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy);
-        if (sortBy == 'SortName') {
+        final sortBy = _sortByParameter(
+          row.rowType == HomeRowType.audioPlaylists
+              ? prefs?.get(UserPreferences.audioRowsSortBy)
+              : prefs?.get(UserPreferences.playlistsRowSortBy),
+        );
+        if (sortBy == null) {
+          // Keep the server-provided order.
+        } else if (sortBy == 'SortName') {
           uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
         } else {
           _sortAggregatedItems(
@@ -794,26 +811,24 @@ class MultiServerRepository {
     } else {
       final sortBy = switch (row.rowType) {
         HomeRowType.favorites =>
-          prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
-              _defaultSortBy,
+          _sortByParameter(prefs?.get(UserPreferences.favoritesRowSortBy)),
         HomeRowType.collections =>
-          prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
-              _defaultSortBy,
+          _sortByParameter(prefs?.get(UserPreferences.collectionsRowSortBy)),
         HomeRowType.genres =>
-          prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
-              _defaultSortBy,
+          _sortByParameter(prefs?.get(UserPreferences.genresRowSortBy)),
         HomeRowType.audioArtists ||
         HomeRowType.audioAlbums =>
-          prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-              _defaultSortBy,
+          _sortByParameter(prefs?.get(UserPreferences.audioRowsSortBy)),
         _ => _defaultSortBy,
       };
 
-      sortedCombined = _sortAggregatedItems(
-        uniqueCombined,
-        sortBy: sortBy,
-        sortOrder: 'Ascending',
-      );
+      sortedCombined = sortBy == null
+          ? uniqueCombined
+          : _sortAggregatedItems(
+              uniqueCombined,
+              sortBy: sortBy,
+              sortOrder: 'Ascending',
+            );
     }
 
     final totalCount = sessions.fold<int>(0, (sum, session) {
@@ -831,8 +846,8 @@ class MultiServerRepository {
     List<String>? includeItemTypes,
     bool? isFavorite,
     int limit = _defaultLimit,
-    String sortBy = _defaultSortBy,
-    String sortOrder = _defaultSortOrder,
+    String? sortBy = _defaultSortBy,
+    String? sortOrder = _defaultSortOrder,
   }) async {
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
@@ -859,12 +874,14 @@ class MultiServerRepository {
       ),
     );
 
-    final all = _sortAggregatedItems(
-      results.expand((e) => e).toList(growable: false),
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-    );
-
+    final combined = results.expand((e) => e).toList(growable: false);
+    final all = sortBy == null
+        ? combined
+        : _sortAggregatedItems(
+            combined,
+            sortBy: sortBy,
+            sortOrder: sortOrder ?? _defaultSortOrder,
+          );
     final takenItems = all.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
       return sum + (_rowTotals['${id}_${session.server.id}'] ?? 0);
