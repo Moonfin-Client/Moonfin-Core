@@ -12,7 +12,9 @@ import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 import '../services/custom_external_lists_service.dart';
 import '../services/external_list_registry.dart';
+import '../services/seerr/seerr_api_models.dart';
 import '../utils/tmdb_image.dart';
+import 'seerr_repository.dart';
 import 'tmdb_repository.dart';
 
 class MediaBarRepository {
@@ -200,8 +202,8 @@ class MediaBarRepository {
       final combined = <MediaBarSlideItem>[...libraryItems, ...externalSlides]
         ..shuffle();
       final trimmed = combined.take(maxItems).toList();
-      final withLogos = await _enrichExternalLogos(trimmed);
-      return MediaBarReady(withLogos);
+      final enriched = await _enrichExternalSlides(trimmed);
+      return MediaBarReady(enriched);
     } catch (e) {
       final firstLibraryItems = await _fetchItemsFromFirstSeriesOrMoviesLibrary(
         includeTypes,
@@ -522,36 +524,99 @@ class MediaBarRepository {
     );
   }
 
-  // External items carry no Jellyfin logo, so pull a TMDB title logo for the slides
-  // that survived the trim. Only the shown slides are fetched, and misses fall back
-  // to the slide's title text.
-  Future<List<MediaBarSlideItem>> _enrichExternalLogos(
+  // The list fetch only gives images and a title, so pull the rest of what the media
+  // bar shows for the external slides that survived the trim: a TMDB title logo, plus
+  // the overview, genres, runtime, community rating, and trailers from Seerr. Only the
+  // shown slides are fetched, and anything that fails just stays unset.
+  Future<List<MediaBarSlideItem>> _enrichExternalSlides(
     List<MediaBarSlideItem> slides,
   ) async {
-    if (!GetIt.instance.isRegistered<TmdbRepository>()) return slides;
-    final tmdb = GetIt.instance<TmdbRepository>();
-
-    final pending = <int, Future<String?>>{};
-    for (var i = 0; i < slides.length; i++) {
-      final slide = slides[i];
-      if (slide.serverId != 'seerr' || slide.logoUrl != null) continue;
-      final tmdbId = slide.tmdbId;
-      if (tmdbId == null || tmdbId.isEmpty) continue;
-      final type = slide.itemType == 'Series' ? 'tv' : 'movie';
-      pending[i] = tmdb.getTitleLogo(tmdbId: tmdbId, type: type);
-    }
-    if (pending.isEmpty) return slides;
+    final hasTmdb = GetIt.instance.isRegistered<TmdbRepository>();
+    final hasSeerr = GetIt.instance.isRegistered<SeerrRepository>();
+    if (!hasTmdb && !hasSeerr) return slides;
 
     final result = List<MediaBarSlideItem>.from(slides);
-    await Future.wait(
-      pending.entries.map((entry) async {
-        final logo = await entry.value;
-        if (logo != null) {
-          result[entry.key] = result[entry.key].copyWith(logoUrl: logo);
-        }
-      }),
-    );
+    await Future.wait([
+      for (var i = 0; i < slides.length; i++)
+        if (slides[i].serverId == 'seerr' &&
+            (slides[i].tmdbId?.isNotEmpty ?? false))
+          _enrichExternalSlide(result, i, hasTmdb: hasTmdb, hasSeerr: hasSeerr),
+    ]);
     return result;
+  }
+
+  Future<void> _enrichExternalSlide(
+    List<MediaBarSlideItem> slides,
+    int index, {
+    required bool hasTmdb,
+    required bool hasSeerr,
+  }) async {
+    final slide = slides[index];
+    final tmdbId = slide.tmdbId!;
+    final isTv = slide.itemType == 'Series';
+
+    String? logo;
+    _ExternalMeta? meta;
+    await Future.wait([
+      if (hasTmdb && slide.logoUrl == null)
+        GetIt.instance<TmdbRepository>()
+            .getTitleLogo(tmdbId: tmdbId, type: isTv ? 'tv' : 'movie')
+            .then((value) => logo = value),
+      if (hasSeerr) _fetchExternalMeta(tmdbId, isTv).then((value) => meta = value),
+    ]);
+
+    slides[index] = slide.copyWith(
+      logoUrl: logo,
+      overview: meta?.overview,
+      genres: meta?.genres,
+      runtime: meta?.runtime,
+      communityRating: meta?.communityRating,
+      remoteTrailers: meta?.remoteTrailers,
+    );
+  }
+
+  Future<_ExternalMeta?> _fetchExternalMeta(String tmdbId, bool isTv) async {
+    final id = int.tryParse(tmdbId);
+    if (id == null) return null;
+    final repo = GetIt.instance<SeerrRepository>();
+    try {
+      if (isTv) {
+        final details = await repo.getTvDetails(id);
+        return _ExternalMeta(
+          overview: details.overview,
+          genres: details.genres.map((g) => g.name).take(3).toList(),
+          runtime: null,
+          communityRating: details.voteAverage,
+          remoteTrailers: _trailersFrom(details.relatedVideos),
+        );
+      }
+      final details = await repo.getMovieDetails(id);
+      final minutes = details.runtime;
+      return _ExternalMeta(
+        overview: details.overview,
+        genres: details.genres.map((g) => g.name).take(3).toList(),
+        runtime: minutes != null && minutes > 0 ? Duration(minutes: minutes) : null,
+        communityRating: details.voteAverage,
+        remoteTrailers: _trailersFrom(details.relatedVideos),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<Map<String, dynamic>> _trailersFrom(List<SeerrVideo> videos) {
+    final trailers = <Map<String, dynamic>>[];
+    for (final video in videos) {
+      var url = video.url;
+      if ((url == null || url.isEmpty) &&
+          video.site?.toLowerCase() == 'youtube' &&
+          (video.key?.isNotEmpty ?? false)) {
+        url = 'https://www.youtube.com/watch?v=${video.key}';
+      }
+      if (url == null || url.isEmpty) continue;
+      trailers.add({'Url': url, 'Name': video.name ?? ''});
+    }
+    return trailers;
   }
 
   bool _isBoxSet(Map<String, dynamic> item) {
@@ -618,4 +683,21 @@ class MediaBarRepository {
           const [],
     );
   }
+}
+
+/// The extra fields pulled from Seerr to flesh out an external slide.
+class _ExternalMeta {
+  final String? overview;
+  final List<String> genres;
+  final Duration? runtime;
+  final double? communityRating;
+  final List<Map<String, dynamic>> remoteTrailers;
+
+  const _ExternalMeta({
+    required this.overview,
+    required this.genres,
+    required this.runtime,
+    required this.communityRating,
+    required this.remoteTrailers,
+  });
 }

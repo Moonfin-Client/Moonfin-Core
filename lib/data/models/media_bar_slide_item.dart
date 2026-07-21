@@ -37,25 +37,32 @@ class MediaBarSlideItem {
     this.remoteTrailers = const [],
   });
 
-  MediaBarSlideItem copyWith({String? logoUrl}) {
+  MediaBarSlideItem copyWith({
+    String? logoUrl,
+    String? overview,
+    List<String>? genres,
+    Duration? runtime,
+    double? communityRating,
+    List<Map<String, dynamic>>? remoteTrailers,
+  }) {
     return MediaBarSlideItem(
       itemId: itemId,
       serverId: serverId,
       title: title,
-      overview: overview,
+      overview: overview ?? this.overview,
       backdropUrl: backdropUrl,
       logoUrl: logoUrl ?? this.logoUrl,
       posterUrl: posterUrl,
       officialRating: officialRating,
       year: year,
-      genres: genres,
-      runtime: runtime,
-      communityRating: communityRating,
+      genres: genres ?? this.genres,
+      runtime: runtime ?? this.runtime,
+      communityRating: communityRating ?? this.communityRating,
       criticRating: criticRating,
       tmdbId: tmdbId,
       imdbId: imdbId,
       itemType: itemType,
-      remoteTrailers: remoteTrailers,
+      remoteTrailers: remoteTrailers ?? this.remoteTrailers,
     );
   }
 }
