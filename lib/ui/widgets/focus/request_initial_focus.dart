@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
+import '../left_sidebar.dart';
+import '../top_toolbar.dart';
+
 /// Wraps a screen subtree and grants focus to the first focusable descendant
 /// after the first frame so dpad navigation works on a freshly pushed route.
 /// Retries briefly if focusable widgets are not yet registered (e.g. while
@@ -39,7 +42,14 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.targetNode, widget.targetNode) &&
         widget.targetNode != null) {
-      if (!FocusScope.of(context).hasFocus) {
+      // A target arriving late, usually once async content loads, is the
+      // screen's preferred landing spot. By then the generic route focus
+      // grab may have parked focus in the sidebar or toolbar, so the target
+      // still wins over chrome, just never over focused content.
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? true;
+      final chromeHasFocus = LeftSidebar.isFocusedNotifier.value ||
+          TopToolbar.isFocusedNotifier.value;
+      if (isCurrent && (!FocusScope.of(context).hasFocus || chromeHasFocus)) {
         _retryTimer?.cancel();
         _settled = false;
         _scheduleFrameFocusCheck(0);

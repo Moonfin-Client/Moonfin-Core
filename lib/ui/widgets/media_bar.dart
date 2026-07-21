@@ -45,6 +45,7 @@ import 'navigation_layout.dart';
 import 'mediabar/bookshelf_layout.dart';
 import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
+import 'mediabar/media_bar_status_focus.dart';
 import 'rating_display.dart';
 import 'web_local_trailer.dart';
 import 'web_youtube_trailer.dart';
@@ -1704,19 +1705,24 @@ class _MediaBarState extends State<MediaBar>
     final useGalleryStyle = mode == UserPreferences.mediaBarModeGallery;
 
     return switch (state) {
-      MediaBarLoading() => SizedBox(
-          height: widget.height,
-          child: const Center(
-            child: CircularProgressIndicator(),
+      MediaBarLoading() => _wrapStatusFocus(
+          SizedBox(
+            height: widget.height,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
         ),
       MediaBarDisabled() => const SizedBox.shrink(),
-      MediaBarError(message: final message) => _buildStatusPanel(
-        context,
-        title: l10n.mediaBarError,
-        detail: message,
-        showRetry: true,
-      ),
+      MediaBarError(message: final message) => _wrapStatusFocus(
+          _buildStatusPanel(
+            context,
+            title: l10n.mediaBarError,
+            detail: message,
+            showRetry: true,
+          ),
+          onSelect: () => widget.viewModel.load(context: context, force: true),
+        ),
       MediaBarReady(items: final items) =>
         items.isEmpty
             ? const SizedBox.shrink()
@@ -1728,6 +1734,18 @@ class _MediaBarState extends State<MediaBar>
                               ? _buildMakdSlideshow(context, items)
                               : _buildSlideshow(context, items)))),
     };
+  }
+
+  Widget _wrapStatusFocus(Widget child, {VoidCallback? onSelect}) {
+    return MediaBarStatusFocus(
+      focusNode: widget.focusNode,
+      skipTraversal: true,
+      onNavigateUp: widget.onNavigateUp,
+      onNavigateDown: widget.onNavigateDown,
+      onNavigateLeft: widget.onNavigateLeft,
+      onSelect: onSelect,
+      child: child,
+    );
   }
 
   Widget _buildStatusPanel(

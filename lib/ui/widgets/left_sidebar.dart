@@ -25,6 +25,7 @@ import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
+import '../navigation/route_lifecycle_observer.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
@@ -70,7 +71,7 @@ class LeftSidebar extends StatefulWidget {
   State<LeftSidebar> createState() => _LeftSidebarState();
 }
 
-class _LeftSidebarState extends State<LeftSidebar> {
+class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   final _userRepo = GetIt.instance<UserRepository>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _viewsRepo = GetIt.instance<UserViewsRepository>();
@@ -91,7 +92,10 @@ class _LeftSidebarState extends State<LeftSidebar> {
   bool _librariesExpanded = false;
   bool _canExpandViaFocus = false;
   bool _skipExpandOnNextFocusFromNavigation = false;
-  bool get _sidebarHadFocus => LeftSidebar.isFocusedNotifier.value;
+  // Tracked per instance instead of reading the shared isFocusedNotifier,
+  // where a stale value from another route's sidebar would break focus-gain
+  // detection and leave focus stuck in a collapsed rail.
+  bool _sidebarHadFocus = false;
   Timer? _clockTimer;
   Timer? _labelTimer;
   Timer? _focusExpandGateTimer;
@@ -108,7 +112,12 @@ class _LeftSidebarState extends State<LeftSidebar> {
     super.initState();
     _currentTime = ValueNotifier<String>('');
     _focusNavbarCallback = () {
-      if (!mounted) return;
+      if (!mounted || _homeFocusNode.context == null) return;
+      // Expand the rail directly instead of relying on the focus listener,
+      // whose expansion can be blocked right after this sidebar mounts.
+      if (!_isMobile && !_isExpanded) {
+        _expand();
+      }
       _homeFocusNode.requestFocus();
     };
     _focusAvatarCallback = () {
@@ -155,8 +164,35 @@ class _LeftSidebarState extends State<LeftSidebar> {
     }
   }
 
+  ModalRoute<dynamic>? _observedRoute;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPopNext() {
+    // Our route is current again. An out of order route teardown can leave
+    // the focus bridge pointing at a torn-down chrome instance, so re-assert
+    // that it targets this live one.
+    NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
+    NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
+  }
+
   @override
   void dispose() {
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+      _observedRoute = null;
+    }
     if (identical(
       NavigationLayout.focusNavbarNotifier.value,
       _focusNavbarCallback,
@@ -193,7 +229,11 @@ class _LeftSidebarState extends State<LeftSidebar> {
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     _currentTime.dispose();
-    LeftSidebar.isFocusedNotifier.value = false;
+    // Only clear the shared flag if this instance held focus, so a torn-down
+    // route's sidebar can't wipe the state of the one the user is on.
+    if (_sidebarHadFocus) {
+      LeftSidebar.isFocusedNotifier.value = false;
+    }
     super.dispose();
   }
 
@@ -325,12 +365,22 @@ class _LeftSidebarState extends State<LeftSidebar> {
         _focusHomeTimer?.cancel();
         _focusHomeTimer = Timer(Duration.zero, () {
           if (!mounted) return;
-          _homeFocusNode.requestFocus();
+          // Only jump to the home item when nothing specific was focused.
+          // A handoff can target a specific item like the avatar, and
+          // re-requesting home here would stomp it.
+          final primary = FocusManager.instance.primaryFocus;
+          final hasSpecificChild = primary != null &&
+              !identical(primary, _sidebarFocus) &&
+              _isDescendantOf(primary, _sidebarFocus);
+          if (!hasSpecificChild) {
+            _homeFocusNode.requestFocus();
+          }
         });
       }
     } else if (!hasFocus && _sidebarHadFocus && _canExpandViaFocus) {
       _collapse();
     }
+    _sidebarHadFocus = hasFocus;
     LeftSidebar.isFocusedNotifier.value = hasFocus;
   }
 
@@ -352,7 +402,13 @@ class _LeftSidebarState extends State<LeftSidebar> {
     setState(() => _canExpandViaFocus = false);
     _focusExpandGateTimer?.cancel();
     _focusExpandGateTimer = Timer(const Duration(milliseconds: 600), () {
-      if (mounted) setState(() => _canExpandViaFocus = true);
+      if (!mounted) return;
+      setState(() => _canExpandViaFocus = true);
+      // A focus handoff can land while the gate is closed, which leaves a
+      // focused item inside a collapsed rail. Heal that now.
+      if (_sidebarFocus.hasFocus && !_isExpanded) {
+        _expand();
+      }
     });
   }
 

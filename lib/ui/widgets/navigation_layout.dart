@@ -247,22 +247,33 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
             children: [
               Positioned.fill(child: insetBody),
               if (translateWithScroll)
-                ValueListenableBuilder<double>(
-                  valueListenable: _toolbarScrollOffset,
-                  builder: (_, offset, child) {
-                    final translate = widget.showNavigationChrome
-                        ? offset.clamp(0.0, maxTranslate)
-                        : maxTranslate;
-                    return Positioned(
-                      left: 0,
-                      right: 0,
-                      top: -translate,
-                      child: IgnorePointer(
-                        ignoring: !widget.showNavigationChrome || translate >= maxTranslate,
-                        child: child!,
-                      ),
-                    );
-                  },
+                ValueListenableBuilder<bool>(
+                  valueListenable: TopToolbar.isFocusedNotifier,
+                  builder: (_, toolbarFocused, child) =>
+                      ValueListenableBuilder<double>(
+                    valueListenable: _toolbarScrollOffset,
+                    builder: (_, offset, child) {
+                      // A focused toolbar must be visible. Screens can hand
+                      // focus to it while the content is scrolled down, which
+                      // would leave focus in a toolbar translated off screen.
+                      final translate = !widget.showNavigationChrome
+                          ? maxTranslate
+                          : toolbarFocused
+                          ? 0.0
+                          : offset.clamp(0.0, maxTranslate);
+                      return Positioned(
+                        left: 0,
+                        right: 0,
+                        top: -translate,
+                        child: IgnorePointer(
+                          ignoring: !widget.showNavigationChrome ||
+                              translate >= maxTranslate,
+                          child: child!,
+                        ),
+                      );
+                    },
+                    child: child,
+                  ),
                   child: toolbar,
                 )
               else

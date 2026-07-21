@@ -555,7 +555,7 @@ class HomeViewModel extends ChangeNotifier {
       _watchNext.update(_rows);
 
       if (showMergedResume) {
-        _loadResumeAndNextUpInBackground();
+        unawaited(_loadResumeAndNextUpInBackground());
       }
     } finally {
       _isLoading = false;
@@ -763,7 +763,7 @@ class HomeViewModel extends ChangeNotifier {
     if (_isLoading) return;
 
     if (_prefs.get(UserPreferences.mergeContinueWatchingNextUp)) {
-      _loadResumeAndNextUpInBackground();
+      await _loadResumeAndNextUpInBackground();
       return;
     }
 
@@ -1871,10 +1871,10 @@ class HomeViewModel extends ChangeNotifier {
     return 'Favorite ${filter.displayName}';
   }
 
-  void _loadResumeAndNextUpInBackground() {
-    if (_bgMergeInFlight) return;
+  Future<void> _loadResumeAndNextUpInBackground() {
+    if (_bgMergeInFlight) return Future<void>.value();
     _bgMergeInFlight = true;
-    unawaited(() async {
+    return () async {
       try {
         if (_multiServerEnabled) {
           final resumeFuture = _multiServerRepo.getAggregatedResume();
@@ -1935,7 +1935,7 @@ class HomeViewModel extends ChangeNotifier {
       } finally {
         _bgMergeInFlight = false;
       }
-    }());
+    }();
   }
 
   void _applyMergedResumeResult(List<AggregatedItem> mergedItems) {

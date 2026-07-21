@@ -385,6 +385,7 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   void didPushNext() {
+    _contentRowsKey.currentState?.noteLeavingHome();
     if (_themeMusicRegistered) {
       _themeMusicService.unregisterDetailScreen(this);
       _themeMusicRegistered = false;
@@ -402,12 +403,15 @@ class _HomeShellState extends State<_HomeShell>
     // Only the resume / next-up rows can change from viewing an item, so a
     // lightweight in-place refresh keeps every other row (its paginated items,
     // scroll offset, and focus) intact. A full refresh still runs on the Home
-    // button and pull-to-refresh.
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        unawaited(_viewModel.refreshResumeAndNextUp());
-      }
+    // button and pull-to-refresh. The refresh can remove a row that refetched
+    // empty, so once it lands, re-assert focus in case it held the focused row.
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      if (!mounted) return;
+      await _viewModel.refreshResumeAndNextUp();
+      if (!mounted) return;
+      _contentRowsKey.currentState?.ensureFocusAfterReturnRefresh();
     });
+    _contentRowsKey.currentState?.reassertNavigationCallbacks();
     _contentRowsKey.currentState?.restoreReturnFocus();
     _maybeRegisterThemeMusic();
     if (_selectedItemNotifier.value != null) {
@@ -644,11 +648,12 @@ class _ContentRowsState extends State<_ContentRows>
       ? null
       : GetIt.instance<Media3PlayerBackend>();
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
-  final Map<int, GlobalKey> _rowKeys = {};
-  final Map<int, GlobalKey> _rowContainerKeys = {};
-  // Horizontal scroll controllers and their last offsets, keyed by row.id so a
-  // row keeps its own scroll position even when a refresh reorders or shrinks
-  // the list (index-keyed state would otherwise bind to the wrong row).
+  // Row keys, scroll controllers, and their last offsets are keyed by row.id
+  // so a row keeps its own state even when a refresh reorders or shrinks the
+  // list. Index-keyed state would bind to the wrong row and dispose the
+  // trailing row's state, killing focus if it lived there.
+  final Map<String, GlobalKey> _rowKeys = {};
+  final Map<String, GlobalKey> _rowContainerKeys = {};
   final Map<String, ScrollController> _rowHorizontalControllers = {};
   final Map<String, double> _rowHorizontalOffsetsById = {};
   List<HomeRow>? _cachedExtentRows;
@@ -675,6 +680,7 @@ class _ContentRowsState extends State<_ContentRows>
   // nulled when focus leaves for a pushed route), this survives navigation so
   // focus can be restored to the same row+item on return.
   String? _lastFocusedRowId;
+  bool _returnFocusToMediaBar = false;
   int? get _activeFocusedRowIndex => _activeFocusedRowNotifier.value;
   set _activeFocusedRowIndex(int? value) {
     if (_activeFocusedRowNotifier.value != value) {
@@ -1075,8 +1081,18 @@ class _ContentRowsState extends State<_ContentRows>
     }
     _lastMediaBarStateRuntime = runtime;
     _lastMediaBarItemCount = itemCount;
+    // If the bar leaves the layout while holding focus, its node detaches
+    // and focus dies with it, so move focus to content first.
+    final barFocusDetaching =
+        !_isMediaBarIncluded() && _mediaBarFocusNode.hasFocus;
     _updateOffsets();
     setState(() {});
+    if (barFocusDetaching) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _homeContentHasRealFocus()) return;
+        _focusFirstAvailableHomeTarget();
+      });
+    }
   }
 
   void _updateOffsets() {
@@ -1239,8 +1255,8 @@ class _ContentRowsState extends State<_ContentRows>
 
       final rowIndex = _activeFocusedRowIndex;
       if (rowIndex != null) {
-        final rowState = _rowKeys[rowIndex]?.currentState;
-        if (rowState is LockedFocusRowState<dynamic>) {
+        final rowState = _rowStateOf(rowIndex);
+        if (rowState != null) {
           rowState.requestFocusFromMemory();
           if (FocusManager.instance.primaryFocus != null) {
             return;
@@ -2125,7 +2141,11 @@ class _ContentRowsState extends State<_ContentRows>
         if (attempt < 4) {
           _requestFocusToNavbar(attempt: attempt + 1);
         } else {
-          FocusScope.of(context).focusInDirection(TraversalDirection.up);
+          // The navbar callback never landed, likely stale or disposed
+          // chrome. The content wrappers are all skipTraversal, so
+          // directional traversal can't reach the navbar either. Put focus
+          // back on content rather than letting it evaporate.
+          _focusFirstAvailableHomeTarget(allowNavbarFallback: false);
         }
       });
       return;
@@ -2134,6 +2154,8 @@ class _ContentRowsState extends State<_ContentRows>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _requestFocusToNavbar(attempt: attempt + 1);
       });
+    } else {
+      _focusFirstAvailableHomeTarget(allowNavbarFallback: false);
     }
   }
 
@@ -2289,11 +2311,14 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   GlobalKey _rowKey(int rowIndex) {
-    return _rowKeys.putIfAbsent(rowIndex, () => GlobalKey());
+    return _rowKeys.putIfAbsent(_rowIdForIndex(rowIndex), () => GlobalKey());
   }
 
   GlobalKey _rowContainerKey(int rowIndex) {
-    return _rowContainerKeys.putIfAbsent(rowIndex, () => GlobalKey());
+    return _rowContainerKeys.putIfAbsent(
+      _rowIdForIndex(rowIndex),
+      () => GlobalKey(),
+    );
   }
 
   String _rowIdForIndex(int rowIndex) {
@@ -2341,7 +2366,12 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   LockedFocusRowState? _rowStateOf(int rowIndex) {
-    return _rowKeys[rowIndex]?.currentState as LockedFocusRowState?;
+    return _rowKeys[_rowIdForIndex(rowIndex)]?.currentState
+        as LockedFocusRowState?;
+  }
+
+  BuildContext? _rowContextOf(int rowIndex) {
+    return _rowKeys[_rowIdForIndex(rowIndex)]?.currentContext;
   }
 
   double _staticRowHeight(int rowIndex) {
@@ -2531,6 +2561,15 @@ class _ContentRowsState extends State<_ContentRows>
     final isDesktop = !PlatformDetection.isTV && !PlatformDetection.useMobileUi;
     if (isDesktop) return;
     if (!_mayRestoreHomeFocus()) return;
+
+    if (_returnFocusToMediaBar) {
+      if (_isMediaBarIncluded()) {
+        unawaited(_moveFocusFromRowsToMediaBar());
+        return;
+      }
+      _returnFocusToMediaBar = false;
+    }
+
     final rowId = _lastFocusedRowId;
     if (rowId == null) return;
 
@@ -2557,6 +2596,64 @@ class _ContentRowsState extends State<_ContentRows>
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         restoreReturnFocus(attempt: attempt + 1);
       });
+    } else {
+      // The remembered row is gone, likely removed by the return refresh.
+      // Land somewhere focusable instead of leaving focus stranded.
+      _focusFirstAvailableHomeTarget();
+    }
+  }
+
+  void noteLeavingHome() {
+    _returnFocusToMediaBar = _mediaBarFocusNode.hasFocus;
+  }
+
+  /// Points the navbar to content focus bridge back at this live instance,
+  /// since an out of order route teardown can leave it targeting a torn-down
+  /// home.
+  void reassertNavigationCallbacks() {
+    NavigationLayout.focusContentFromNavbarNotifier.value =
+        _focusContentFromNavbar;
+  }
+
+  /// Called after the post-return row refresh lands. If the refresh removed
+  /// the row that held focus, focus is now dead and no key handler will ever
+  /// run, so re-assert it. Bails whenever anything real still has focus so
+  /// it never steals.
+  void ensureFocusAfterReturnRefresh() {
+    if (!mounted || !PlatformDetection.isTV) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_mayRestoreHomeFocus()) return;
+      if (TopToolbar.isFocusedNotifier.value ||
+          LeftSidebar.isFocusedNotifier.value) {
+        return;
+      }
+      if (_homeContentHasRealFocus()) return;
+      if (!_focusIsGenuinelyLost()) return;
+      if (_returnFocusToMediaBar || _lastFocusedRowId != null) {
+        restoreReturnFocus();
+      } else {
+        _focusFirstAvailableHomeTarget();
+      }
+    });
+  }
+
+  /// Focuses the first available home target: the first focusable row, else
+  /// the media bar, else the navbar. [allowNavbarFallback] is false when
+  /// called from [_requestFocusToNavbar]'s own fallback, which would
+  /// otherwise recurse forever when neither navbar nor content is focusable.
+  void _focusFirstAvailableHomeTarget({bool allowNavbarFallback = true}) {
+    if (!_mayRestoreHomeFocus()) return;
+    final rows = widget.viewModel.rows;
+    if (rows.any(_rowHasFocusableItems)) {
+      unawaited(_focusAdjacentRowItem(rows, -1, 1));
+      return;
+    }
+    if (_isMediaBarIncluded()) {
+      _requestMediaBarFocus(force: true);
+      return;
+    }
+    if (allowNavbarFallback) {
+      _requestFocusToNavbar();
     }
   }
 
@@ -2711,7 +2808,7 @@ class _ContentRowsState extends State<_ContentRows>
               if (!navComplete.isCompleted) navComplete.complete();
               return;
             }
-            final rowCtx = _rowKeys[target]?.currentContext;
+            final rowCtx = _rowContextOf(target);
             if (rowCtx == null) {
               if (!navComplete.isCompleted) navComplete.complete();
               return;
@@ -2728,7 +2825,7 @@ class _ContentRowsState extends State<_ContentRows>
                   if (!navComplete.isCompleted) navComplete.complete();
                   return;
                 }
-                final innerCtx = _rowKeys[target]?.currentContext;
+                final innerCtx = _rowContextOf(target);
                 if (innerCtx == null) {
                   if (!navComplete.isCompleted) navComplete.complete();
                   return;
@@ -3030,11 +3127,7 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (_mediaBarFocusNode.hasFocus) return;
 
-    final homeRowsHaveFocus = _rowKeys.values.any((key) {
-      final state = key.currentState;
-      return state is LockedFocusRowState && state.hasFocusedItem;
-    });
-    final homeContentHadFocus = homeRowsHaveFocus || _mediaBarFocusNode.hasFocus;
+    final homeContentHadFocus = _homeContentHasRealFocus();
 
     if (_activeFocusedRowIndex == null) {
       if (_scrollController.hasClients && _scrollController.offset > 0.0) {
@@ -3104,12 +3197,26 @@ class _ContentRowsState extends State<_ContentRows>
           _mediaBarFocusNode.requestFocus();
         }
       } else {
-        final rowState = _rowKeys[bestRowIndex]?.currentState;
-        if (rowState is LockedFocusRowState<dynamic>) {
-          rowState.requestFocusFromMemory();
-        }
+        _rowStateOf(bestRowIndex)?.requestFocusFromMemory();
       }
     }
+  }
+
+  bool _homeContentHasRealFocus() {
+    final homeRowsHaveFocus = _rowKeys.values.any((key) {
+      final state = key.currentState;
+      return state is LockedFocusRowState && state.hasFocusedItem;
+    });
+    return homeRowsHaveFocus || _mediaBarFocusNode.hasFocus;
+  }
+
+  // True when nothing is focused, focus collapsed to a bare scope after a
+  // node was disposed, or the focused node is detached.
+  bool _focusIsGenuinelyLost() {
+    final primary = FocusManager.instance.primaryFocus;
+    return primary == null ||
+        primary is FocusScopeNode ||
+        primary.context == null;
   }
 
   bool _handleGlobalHardwareKey(KeyEvent event) {
@@ -3121,35 +3228,35 @@ class _ContentRowsState extends State<_ContentRows>
     // Let the focused top navbar handle its own d-pad keys.
     if (TopToolbar.isFocusedNotifier.value) return false;
 
-    final homeRowsHaveFocus = _rowKeys.values.any((key) {
-      final state = key.currentState;
-      return state is LockedFocusRowState && state.hasFocusedItem;
-    });
-    final homeContentHadFocus = homeRowsHaveFocus || _mediaBarFocusNode.hasFocus;
-
-    if (homeContentHadFocus) return false;
+    if (_homeContentHasRealFocus()) return false;
     if (event.logicalKey.isBackKey) return false;
+
+    // Never steal keys from a live node elsewhere.
+    if (!_focusIsGenuinelyLost()) return false;
 
     final activeRow = _activeFocusedRowIndex;
     if (activeRow != null) {
-      final rowState = _rowKeys[activeRow]?.currentState;
-      if (rowState is LockedFocusRowState<dynamic>) {
+      final rowState = _rowStateOf(activeRow);
+      if (rowState != null) {
         rowState.requestFocusFromMemory();
         return true;
       }
-    } else {
-      if (_isMediaBarIncluded()) {
-        _mediaBarFocusNode.requestFocus();
-      } else {
-        final rowState = _rowKeys[0]?.currentState;
-        if (rowState is LockedFocusRowState<dynamic>) {
-          rowState.requestFocusFromMemory();
-        }
-      }
+    }
+    if (_isMediaBarIncluded() && _mediaBarFocusNode.context != null) {
+      _mediaBarFocusNode.requestFocus();
       return true;
     }
-
-    return false;
+    final rows = widget.viewModel.rows;
+    for (var i = 0; i < rows.length; i++) {
+      if (!_rowHasFocusableItems(rows[i])) continue;
+      final rowState = _rowStateOf(i);
+      if (rowState != null) {
+        rowState.requestFocusFromMemory();
+        return true;
+      }
+    }
+    _requestFocusToNavbar();
+    return true;
   }
 
   double _libraryRowExtent(double rowHeight, {double metadataScale = 1.0}) =>

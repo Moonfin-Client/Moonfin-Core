@@ -24,6 +24,7 @@ import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
+import '../navigation/route_lifecycle_observer.dart';
 import 'expandable_icon_button.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
@@ -99,7 +100,7 @@ class TopToolbar extends StatefulWidget {
   State<TopToolbar> createState() => _TopToolbarState();
 }
 
-class _TopToolbarState extends State<TopToolbar> {
+class _TopToolbarState extends State<TopToolbar> with RouteAware {
   final _userRepo = GetIt.instance<UserRepository>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _viewsRepo = GetIt.instance<UserViewsRepository>();
@@ -121,6 +122,9 @@ class _TopToolbarState extends State<TopToolbar> {
   VoidCallback? _previousFocusNavbarCallback;
   VoidCallback? _previousFocusAvatarCallback;
   FocusNode? _previousFocus;
+  // Tracked per instance so only the toolbar that actually held focus
+  // clears the shared isFocusedNotifier on dispose.
+  bool _toolbarHadFocus = false;
   List<AggregatedLibrary> _libraries = [];
   Timer? _clockTimer;
   late final ValueNotifier<String> _currentTime;
@@ -133,8 +137,16 @@ class _TopToolbarState extends State<TopToolbar> {
   void initState() {
     super.initState();
     _currentTime = ValueNotifier<String>('');
-    _focusNavbarCallback = () => _homeFocus.requestFocus();
-    _focusAvatarCallback = () => _avatarFocus.requestFocus();
+    // Guarded so a stale registration from a torn-down toolbar is a safe
+    // no-op instead of focusing a disposed node.
+    _focusNavbarCallback = () {
+      if (!mounted || _homeFocus.context == null) return;
+      _homeFocus.requestFocus();
+    };
+    _focusAvatarCallback = () {
+      if (!mounted || _avatarFocus.context == null) return;
+      _avatarFocus.requestFocus();
+    };
     _previousFocusNavbarCallback = NavigationLayout.focusNavbarNotifier.value;
     _previousFocusAvatarCallback =
       NavigationLayout.focusNavbarAvatarNotifier.value;
@@ -162,8 +174,35 @@ class _TopToolbarState extends State<TopToolbar> {
     });
   }
 
+  ModalRoute<dynamic>? _observedRoute;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPopNext() {
+    // Our route is current again. An out of order route teardown can leave
+    // the focus bridge pointing at a torn-down chrome instance, so re-assert
+    // that it targets this live one.
+    NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
+    NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
+  }
+
   @override
   void dispose() {
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+      _observedRoute = null;
+    }
     if (identical(
       NavigationLayout.focusNavbarNotifier.value,
       _focusNavbarCallback,
@@ -178,7 +217,11 @@ class _TopToolbarState extends State<TopToolbar> {
           _previousFocusAvatarCallback;
     }
     _clockTimer?.cancel();
-    TopToolbar.isFocusedNotifier.value = false;
+    // Only clear the shared flag if this instance held focus, so a torn-down
+    // route's toolbar can't wipe the state of the one the user is on.
+    if (_toolbarHadFocus) {
+      TopToolbar.isFocusedNotifier.value = false;
+    }
     _avatarFocus.removeListener(_onAvatarFocusChanged);
     FocusManager.instance.removeListener(_trackPreviousFocus);
     _toolbarScopeNode.dispose();
@@ -530,6 +573,7 @@ class _TopToolbarState extends State<TopToolbar> {
           child: Focus(
             focusNode: _toolbarScopeNode,
             onFocusChange: (hasFocus) {
+              _toolbarHadFocus = hasFocus;
               TopToolbar.isFocusedNotifier.value = hasFocus;
             },
             onKeyEvent: (_, event) {
