@@ -133,8 +133,11 @@ Future<void> _restoreWindowGeometry() async {
     await windowManager.show();
     await windowManager.focus();
     if (startFullscreen) {
-      // Via FullscreenHelper so its cached state matches the window.
-      await FullscreenHelper.setFullscreen(true);
+      // Delay slightly to let the window render its first frame before transitioning to fullscreen.
+      // This avoids Win32 graphics context race conditions (black screens) and window layout artifacts.
+      Future.delayed(const Duration(milliseconds: 150), () async {
+        await FullscreenHelper.setFullscreen(true);
+      });
     }
   });
 }
