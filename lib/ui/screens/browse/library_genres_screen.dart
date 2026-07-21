@@ -28,8 +28,9 @@ const _initialArtworkBatch = 12;
 const _backgroundArtworkConcurrency = 4;
 
 bool _isCompact(BuildContext context) =>
-    PlatformDetection.useMobileUi ||
-    MediaQuery.sizeOf(context).width < _kCompactBreakpoint;
+    !PlatformDetection.isTV &&
+    (PlatformDetection.useMobileUi ||
+        MediaQuery.sizeOf(context).width < _kCompactBreakpoint);
 
 class LibraryGenresScreen extends StatefulWidget {
   final String libraryId;

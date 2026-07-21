@@ -52,7 +52,11 @@ class PlatformDetection {
   /// UI and is handled by [isAppleTV]/[useLeanbackUi].
   static bool get isApple => isIOS || isMacOS;
 
-  static bool get isTV => _isTv || isTizen || isAppleTV;
+  static bool get isTV =>
+      _isTv ||
+      isTizen ||
+      isAppleTV ||
+      const bool.fromEnvironment('MOONFIN_FORCE_TV');
   static bool _isTv = false;
   static void setTvMode(bool value) => _isTv = value;
 

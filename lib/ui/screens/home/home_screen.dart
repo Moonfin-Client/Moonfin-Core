@@ -390,6 +390,7 @@ class _HomeShellState extends State<_HomeShell>
       _themeMusicRegistered = false;
     }
     _themeMusicService.fadeOutAndStop();
+    _contentRowsKey.currentState?._finishSharedPreview(releaseResources: true);
   }
 
   @override

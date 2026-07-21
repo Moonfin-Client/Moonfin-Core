@@ -112,6 +112,15 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
           _focusedIndex.clamp(0, widget.items.isEmpty ? 0 : widget.items.length - 1);
       _syncItemKeys();
     }
+    if (_hasRowFocus && widget.items.isNotEmpty && _focusedIndex < widget.items.length) {
+      final oldItem = (oldWidget.items.length > _focusedIndex)
+          ? oldWidget.items[_focusedIndex]
+          : null;
+      final newItem = widget.items[_focusedIndex];
+      if (oldItem != newItem) {
+        widget.onIndexChanged?.call(_focusedIndex, newItem);
+      }
+    }
   }
 
   @override

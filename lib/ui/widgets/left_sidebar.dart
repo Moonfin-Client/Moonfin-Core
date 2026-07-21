@@ -109,28 +109,22 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _currentTime = ValueNotifier<String>('');
     _focusNavbarCallback = () {
       if (!mounted) return;
-      if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
-        _homeFocusNode.requestFocus();
-      }
+      _homeFocusNode.requestFocus();
     };
     _focusAvatarCallback = () {
       if (!mounted) return;
-      if (PlatformDetection.isTV) {
-        if (_profileFocusNode.context != null) {
-          _profileFocusNode.requestFocus();
-        } else {
-          _expand();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
-            if (_profileFocusNode.context != null) {
-              _profileFocusNode.requestFocus();
-            } else {
-              _homeFocusNode.requestFocus();
-            }
-          });
-        }
-      } else if ((PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
-        _homeFocusNode.requestFocus();
+      if (_profileFocusNode.context != null) {
+        _profileFocusNode.requestFocus();
+      } else {
+        _expand();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          if (_profileFocusNode.context != null) {
+            _profileFocusNode.requestFocus();
+          } else {
+            _homeFocusNode.requestFocus();
+          }
+        });
       }
     };
     _previousFocusNavbarCallback = NavigationLayout.focusNavbarNotifier.value;

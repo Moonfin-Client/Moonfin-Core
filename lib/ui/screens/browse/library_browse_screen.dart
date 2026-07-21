@@ -33,8 +33,9 @@ Color get _jellyfinBlue => AppColorScheme.accent;
 const _horizontalPadding = 60.0;
 const _kCompactBreakpoint = 600.0;
 bool _isCompact(BuildContext context) =>
-    PlatformDetection.useMobileUi ||
-    MediaQuery.sizeOf(context).width < _kCompactBreakpoint;
+    !PlatformDetection.isTV &&
+    (PlatformDetection.useMobileUi ||
+        MediaQuery.sizeOf(context).width < _kCompactBreakpoint);
 
 double _desktopUiScaleFactor() {
   return GetIt.instance<UserPreferences>()

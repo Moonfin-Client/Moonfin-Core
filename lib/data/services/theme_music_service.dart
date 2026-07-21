@@ -58,7 +58,11 @@ class ThemeMusicService {
   void unregisterDetailScreen(Object token) {
     _activeDetailScreens.remove(token);
     if (_activeDetailScreens.isEmpty) {
-      fadeOutAndStop();
+      if (_player != null) {
+        fadeOutAndStop();
+      } else {
+        stop();
+      }
     }
   }
 
@@ -105,7 +109,7 @@ class ThemeMusicService {
     ThemeAudioPlayer? localPlayer;
     try {
       final data = await _client.itemsApi.getThemeMedia(themeItemId);
-      if (generation != _playGeneration) return;
+      if (generation != _playGeneration || _activeDetailScreens.isEmpty) return;
 
       final songsResult = data['ThemeSongsResult'] as Map<String, dynamic>?;
       final songs =
@@ -121,20 +125,20 @@ class ThemeMusicService {
       _player = localPlayer;
 
       await localPlayer.setVolume(0);
-      if (generation != _playGeneration) {
+      if (generation != _playGeneration || _activeDetailScreens.isEmpty) {
         await _safeDispose(localPlayer);
         return;
       }
 
       await localPlayer.open(url);
-      if (generation != _playGeneration) {
+      if (generation != _playGeneration || _activeDetailScreens.isEmpty) {
         await _safeDispose(localPlayer);
         return;
       }
 
       if (_prefs.get(UserPreferences.themeMusicLoop)) {
         await localPlayer.setLoop();
-        if (generation != _playGeneration) {
+        if (generation != _playGeneration || _activeDetailScreens.isEmpty) {
           await _safeDispose(localPlayer);
           return;
         }
@@ -143,7 +147,7 @@ class ThemeMusicService {
       _fadeIn(generation);
     } catch (_) {
       if (localPlayer != null &&
-          (generation != _playGeneration || _player != localPlayer)) {
+          (generation != _playGeneration || _player != localPlayer || _activeDetailScreens.isEmpty)) {
         await _safeDispose(localPlayer);
       }
     }

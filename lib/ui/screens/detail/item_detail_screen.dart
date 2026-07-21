@@ -78,8 +78,9 @@ const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
 const _kCompactBreakpoint = 600.0;
 
 bool _isCompact(BuildContext context) =>
-    PlatformDetection.useMobileUi ||
-    MediaQuery.sizeOf(context).width < _kCompactBreakpoint;
+    !PlatformDetection.isTV &&
+    (PlatformDetection.useMobileUi ||
+        MediaQuery.sizeOf(context).width < _kCompactBreakpoint);
 
 bool _useDesktopDetailLayout(BuildContext context) {
   final size = MediaQuery.sizeOf(context);
