@@ -837,7 +837,7 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
     final prefs = GetIt.instance<UserPreferences>();
     final preferSystemIme = prefs.get(UserPreferences.preferSystemImeKeyboard);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
-    final bottomPadding = isTV ? AppSpacing.spaceLg : (AppSpacing.spaceLg + MediaQuery.viewInsetsOf(context).bottom);
+    final bottomPadding = AppSpacing.spaceLg;
 
     return FocusScope(
       node: _focusScopeNode,

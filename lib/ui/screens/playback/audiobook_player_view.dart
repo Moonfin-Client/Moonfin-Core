@@ -958,6 +958,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             } else if (ev.type == TimelineEventType.bookmark) {
               _manager.seekTo(Duration(
                   milliseconds: (ev.originalObject as AudiobookBookmark).positionMs));
+              if (!tv && mounted) {
+                Navigator.of(context).pop();
+              }
             } else if (ev.type == TimelineEventType.note) {
               _manager.seekTo(Duration(
                   milliseconds: (ev.originalObject as AudiobookNote).positionMs));
@@ -982,7 +985,12 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       AudiobookDrawerTab.bookmarks => AudiobookBookmarksList(
           item: item,
           service: _bookmarks,
-          onJump: (b) => _manager.seekTo(Duration(milliseconds: b.positionMs)),
+          onJump: (b) {
+            _manager.seekTo(Duration(milliseconds: b.positionMs));
+            if (!tv && mounted) {
+              Navigator.of(context).pop();
+            }
+          },
           tvFocusedIndex: tvIdx,
           tvSubIndex: subIdx,
           onExport: () {
