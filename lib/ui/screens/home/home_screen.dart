@@ -3379,6 +3379,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   double _v2MetadataHeightBudget(UserPreferences prefs) {
+    if (PlatformDetection.useMobileUi) {
+      return 50.0;
+    }
     final hasAdditionalRatings = prefs.get(
       UserPreferences.enableAdditionalRatings,
     );
