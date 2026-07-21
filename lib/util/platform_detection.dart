@@ -308,6 +308,7 @@ class PlatformDetection {
   }
 
   static bool get _hasMobileFormFactor {
+    if (isDesktop) return false;
     if (isAndroid || isIOS) return true;
     final size = _screenLogicalSize;
     if (size == null) return _isMobilePlatformSignal;
