@@ -830,7 +830,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasCrew) crew,
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
-          details,
           ...extraTabs,
           if (_vm.parentCollections.isNotEmpty)
             _ModernTab(
