@@ -1008,6 +1008,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
                 ),
               ),
             ),
+            // Shoulder buttons, used by PlayStation, SNES, and Game Boy Advance.
+            Positioned(
+              left: 24,
+              bottom: 200,
+              child: _touchButton(1 << 10, const Text('L')),
+            ),
+            Positioned(
+              right: 24,
+              bottom: 200,
+              child: _touchButton(1 << 11, const Text('R')),
+            ),
             Positioned(
               top: 8,
               right: 8,
