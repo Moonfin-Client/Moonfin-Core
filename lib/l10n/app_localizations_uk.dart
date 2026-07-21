@@ -3233,6 +3233,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get excludedGenres => 'Виключені жанри';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Виберіть усі';
 
   @override

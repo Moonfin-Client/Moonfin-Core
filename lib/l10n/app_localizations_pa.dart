@@ -3197,6 +3197,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get excludedGenres => 'ਵੱਖ ਕੀਤੀਆਂ ਸ਼ੈਲੀਆਂ';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'ਸਭ ਚੁਣੋ';
 
   @override

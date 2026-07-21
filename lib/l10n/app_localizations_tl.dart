@@ -3233,6 +3233,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get excludedGenres => 'Mga Ibinukod na Genre';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Piliin ang Lahat';
 
   @override

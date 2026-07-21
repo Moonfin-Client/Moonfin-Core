@@ -3233,6 +3233,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get excludedGenres => 'Genres Eithriedig';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Dewiswch Pawb';
 
   @override

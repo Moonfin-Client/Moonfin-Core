@@ -3209,6 +3209,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get excludedGenres => 'Uitgesluit genres';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Kies Alles';
 
   @override

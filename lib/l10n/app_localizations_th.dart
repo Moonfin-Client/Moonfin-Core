@@ -3185,6 +3185,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get excludedGenres => 'ประเภทที่ยกเว้น';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'เลือกทั้งหมด';
 
   @override

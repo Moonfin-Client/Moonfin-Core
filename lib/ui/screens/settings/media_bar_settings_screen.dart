@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/external_list_registry.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -154,6 +155,35 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
         _saveCsv(UserPreferences.mediaBarCollectionIds, result.toList());
       }
     } catch (_) {
+    } finally {
+      _selectorOpen = false;
+    }
+  }
+
+  Future<void> _showExternalMediaSelector() async {
+    if (_selectorOpen) return;
+    _selectorOpen = true;
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
+    final selected = _splitCsv(UserPreferences.mediaBarExternalListIds).toSet();
+
+    try {
+      final options = externalListOptions(prefs, l10n);
+      final availableIds = options.map((o) => o.stableId).toSet();
+      final pruned = selected.intersection(availableIds);
+      if (pruned.length != selected.length) {
+        _saveCsv(UserPreferences.mediaBarExternalListIds, pruned.toList());
+      }
+
+      if (!mounted) return;
+      final result = await _showMultiSelectDialog(
+        title: l10n.externalMedia,
+        items: {for (final o in options) o.stableId: o.label},
+        selected: pruned,
+      );
+      if (result != null) {
+        _saveCsv(UserPreferences.mediaBarExternalListIds, result.toList());
+      }
     } finally {
       _selectorOpen = false;
     }
@@ -424,6 +454,18 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     ),
                   ),
                   onTap: _showCollectionSelector,
+                ),
+                _MediaBarActionTile(
+                  leading: const Icon(Icons.playlist_play),
+                  title: Text(l10n.externalMedia),
+                  subtitle: Text(
+                    _sourceSubtitle(
+                      UserPreferences.mediaBarExternalListIds,
+                      l10n.noneSelected,
+                      l10n,
+                    ),
+                  ),
+                  onTap: _showExternalMediaSelector,
                 ),
                 _MediaBarActionTile(
                   leading: const Icon(Icons.label_off),

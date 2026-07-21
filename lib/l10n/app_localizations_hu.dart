@@ -3229,6 +3229,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get excludedGenres => 'Kizárt műfajok';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Összes kijelölése';
 
   @override

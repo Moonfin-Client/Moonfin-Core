@@ -3220,6 +3220,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get excludedGenres => 'Vyloučené žánry';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Vyberte Vše';
 
   @override

@@ -29,6 +29,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
+import '../../data/repositories/seerr_repository.dart';
 import '../screensaver/screensaver_controller.dart';
 import '../../util/language_matching.dart';
 import '../../util/overlay_color_palette.dart';
@@ -2585,8 +2586,50 @@ class _MediaBarState extends State<MediaBar>
   void _navigateToItem(BuildContext context, List<MediaBarSlideItem> items) {
     final item = items.elementAtOrNull(_currentIndex);
     if (item != null) {
+      if (item.serverId == 'seerr') {
+        _navigateExternalSlide(context, item);
+        return;
+      }
       _cancelTrailerPreview();
       context.push(Destinations.item(item.itemId, serverId: item.serverId));
+    }
+  }
+
+  // External (Seerr/TMDB) slides have no library item id, so open the regular
+  // details screen when the title is already in the library and the Seerr media
+  // details otherwise. The library check reuses the Seerr mediaInfo bridge, so it
+  // only runs when a tmdb id and Seerr are both available and falls back to the
+  // Seerr screen when anything is missing.
+  Future<void> _navigateExternalSlide(
+    BuildContext context,
+    MediaBarSlideItem item,
+  ) async {
+    _cancelTrailerPreview();
+    final mediaType = (item.itemType == 'Series' || item.itemType == 'tv')
+        ? 'tv'
+        : 'movie';
+    final tmdbId = int.tryParse(item.tmdbId ?? '');
+
+    String? jellyfinId;
+    if (tmdbId != null && GetIt.instance.isRegistered<SeerrRepository>()) {
+      try {
+        final repo = GetIt.instance<SeerrRepository>();
+        final info = mediaType == 'tv'
+            ? (await repo.getTvDetails(tmdbId)).mediaInfo
+            : (await repo.getMovieDetails(tmdbId)).mediaInfo;
+        final id = info?.jellyfinMediaId ?? info?.jellyfinMediaId4k;
+        if (id != null && id.isNotEmpty) jellyfinId = id;
+      } catch (_) {}
+    }
+
+    if (!context.mounted) return;
+    if (jellyfinId != null) {
+      context.push(Destinations.item(jellyfinId));
+    } else {
+      context.push(
+        Destinations.seerrMedia(item.itemId),
+        extra: {'mediaType': mediaType, 'title': item.title},
+      );
     }
   }
 
@@ -2721,6 +2764,10 @@ class _MediaBarState extends State<MediaBar>
   ) {
     final item = items.elementAtOrNull(_currentIndex);
     if (item != null) {
+      if (item.serverId == 'seerr') {
+        _navigateExternalSlide(context, item);
+        return;
+      }
       _cancelTrailerPreview();
       context.push(
         Destinations.item(item.itemId, serverId: item.serverId, autoPlay: true),

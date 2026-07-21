@@ -3224,6 +3224,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get excludedGenres => 'మినహాయించబడిన శైలులు';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'అన్నీ ఎంచుకోండి';
 
   @override

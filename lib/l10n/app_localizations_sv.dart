@@ -3212,6 +3212,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get excludedGenres => 'Exkluderade genrer';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Välj Alla';
 
   @override

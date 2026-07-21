@@ -4410,6 +4410,10 @@
   "@excludedGenres": {
     "description": "Setting for excluded genres"
   },
+  "externalMedia": "External Media",
+  "@externalMedia": {
+    "description": "Media bar source that draws items from configured external lists"
+  },
   "selectAll": "Select All",
   "@selectAll": {
     "description": "Button to select all items"

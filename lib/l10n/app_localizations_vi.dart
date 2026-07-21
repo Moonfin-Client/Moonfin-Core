@@ -3209,6 +3209,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get excludedGenres => 'Thể loại bị loại trừ';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Chọn tất cả';
 
   @override

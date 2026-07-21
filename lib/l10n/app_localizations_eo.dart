@@ -3204,6 +3204,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get excludedGenres => 'Ekskluditaj Ĝenroj';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Elektu Ĉiujn';
 
   @override

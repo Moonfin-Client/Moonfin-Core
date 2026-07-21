@@ -3109,6 +3109,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get excludedGenres => '排除的類型';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => '選擇全部';
 
   @override

@@ -3213,6 +3213,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get excludedGenres => 'Välistatud žanrid';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Valige Kõik';
 
   @override

@@ -3196,6 +3196,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get excludedGenres => 'बहिष्कृत शैलियाँ';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'सबका चयन करें';
 
   @override

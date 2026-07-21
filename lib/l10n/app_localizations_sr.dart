@@ -3323,6 +3323,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get excludedGenres => 'Изузети жанрови';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Изаберите Све';
 
   @override

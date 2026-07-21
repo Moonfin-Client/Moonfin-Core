@@ -3210,6 +3210,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get excludedGenres => 'Оруулсан төрөл';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Бүгдийг сонгоно уу';
 
   @override

@@ -36,4 +36,26 @@ class MediaBarSlideItem {
     this.itemType = 'Movie',
     this.remoteTrailers = const [],
   });
+
+  MediaBarSlideItem copyWith({String? logoUrl}) {
+    return MediaBarSlideItem(
+      itemId: itemId,
+      serverId: serverId,
+      title: title,
+      overview: overview,
+      backdropUrl: backdropUrl,
+      logoUrl: logoUrl ?? this.logoUrl,
+      posterUrl: posterUrl,
+      officialRating: officialRating,
+      year: year,
+      genres: genres,
+      runtime: runtime,
+      communityRating: communityRating,
+      criticRating: criticRating,
+      tmdbId: tmdbId,
+      imdbId: imdbId,
+      itemType: itemType,
+      remoteTrailers: remoteTrailers,
+    );
+  }
 }

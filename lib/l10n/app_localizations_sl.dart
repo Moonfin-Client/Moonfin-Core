@@ -3232,6 +3232,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get excludedGenres => 'Izključeni žanri';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Izberite Vse';
 
   @override

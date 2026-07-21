@@ -3229,6 +3229,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get excludedGenres => 'விலக்கப்பட்ட வகைகள்';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'அனைத்தையும் தேர்ந்தெடுக்கவும்';
 
   @override

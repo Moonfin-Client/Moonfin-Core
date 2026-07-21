@@ -3225,6 +3225,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get excludedGenres => 'Izslēgtie žanri';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Atlasiet visu';
 
   @override

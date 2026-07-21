@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../utils/tmdb_image.dart';
+
 /// A studio for the details screen: its name and, when the plugin has a cached
 /// logo, an authenticated URL to that logo image.
 typedef StudioCompany = ({String name, String? imageUrl});
@@ -12,6 +14,7 @@ class TmdbRepository {
   static const _maxEpisodeCacheEntries = 256;
   static const _maxSeasonCacheEntries = 64;
   static const _maxCompaniesCacheEntries = 128;
+  static const _maxTitleLogoCacheEntries = 256;
 
   final MediaServerClient _client;
 
@@ -20,9 +23,11 @@ class TmdbRepository {
   final _episodeCache = <String, double>{};
   final _seasonCache = <String, Map<int, double>>{};
   final _companiesCache = <String, List<StudioCompany>>{};
+  final _titleLogoCache = <String, String?>{};
   final _pendingEpisodes = <String, Completer<double?>>{};
   final _pendingSeasons = <String, Completer<Map<int, double>?>>{};
   final _pendingCompanies = <String, Completer<List<StudioCompany>?>>{};
+  final _pendingTitleLogos = <String, Completer<String?>>{};
 
   TmdbRepository(this._client);
 
@@ -74,6 +79,47 @@ class TmdbRepository {
       debugPrint('[Moonfin] TMDB production companies fetch failed: $e');
       completer.complete(null);
       _pendingCompanies.remove(cacheKey);
+      return null;
+    }
+  }
+
+  /// Fetches the title-treatment logo for a TMDB movie or series from the Moonfin
+  /// plugin, returning an image URL or null when there is none. Fills the media bar
+  /// logo slot for external items, which have no Jellyfin logo of their own. Type is
+  /// "movie" or "tv". Misses are cached too so a title without a logo is not
+  /// re-fetched every load.
+  Future<String?> getTitleLogo({
+    required String tmdbId,
+    required String type,
+  }) async {
+    final cacheKey = '$type:$tmdbId';
+
+    if (_titleLogoCache.containsKey(cacheKey)) {
+      final cached = _titleLogoCache.remove(cacheKey);
+      _titleLogoCache[cacheKey] = cached;
+      return cached;
+    }
+
+    final existing = _pendingTitleLogos[cacheKey];
+    if (existing != null) return existing.future;
+
+    final completer = Completer<String?>();
+    _pendingTitleLogos[cacheKey] = completer;
+
+    try {
+      final response = await _get('/Moonfin/Tmdb/TitleLogo', {
+        'tmdbId': tmdbId,
+        'type': type,
+      });
+      final url = tmdbImageUrl(response?['logoPath']?.toString(), 500);
+      _storeTitleLogoCache(cacheKey, url);
+      completer.complete(url);
+      _pendingTitleLogos.remove(cacheKey);
+      return url;
+    } catch (e) {
+      debugPrint('[Moonfin] TMDB title logo fetch failed: $e');
+      completer.complete(null);
+      _pendingTitleLogos.remove(cacheKey);
       return null;
     }
   }
@@ -214,9 +260,11 @@ class TmdbRepository {
     _episodeCache.clear();
     _seasonCache.clear();
     _companiesCache.clear();
+    _titleLogoCache.clear();
     _pendingEpisodes.clear();
     _pendingSeasons.clear();
     _pendingCompanies.clear();
+    _pendingTitleLogos.clear();
   }
 
   void dispose() {
@@ -253,6 +301,14 @@ class TmdbRepository {
     _companiesCache[cacheKey] = companies;
     while (_companiesCache.length > _maxCompaniesCacheEntries) {
       _companiesCache.remove(_companiesCache.keys.first);
+    }
+  }
+
+  void _storeTitleLogoCache(String cacheKey, String? url) {
+    _titleLogoCache.remove(cacheKey);
+    _titleLogoCache[cacheKey] = url;
+    while (_titleLogoCache.length > _maxTitleLogoCacheEntries) {
+      _titleLogoCache.remove(_titleLogoCache.keys.first);
     }
   }
 

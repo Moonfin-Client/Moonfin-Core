@@ -10,6 +10,10 @@ import 'package:server_core/server_core.dart';
 import '../../preference/user_preferences.dart';
 import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
+import '../services/custom_external_lists_service.dart';
+import '../services/external_list_registry.dart';
+import '../utils/tmdb_image.dart';
+import 'tmdb_repository.dart';
 
 class MediaBarRepository {
   static const _precacheBackdropCount = 1;
@@ -181,12 +185,23 @@ class MediaBarRepository {
         );
       }
 
-      if (selected.isEmpty) {
-        return const MediaBarError('No items with backdrop images found');
+      final externalSlides = await _buildExternalSlides(contentType);
+
+      if (externalSlides.isEmpty) {
+        if (selected.isEmpty) {
+          return const MediaBarError('No items with backdrop images found');
+        }
+        return MediaBarReady(selected.map(_toSlideItem).toList());
       }
 
-      final items = selected.map(_toSlideItem).toList();
-      return MediaBarReady(items);
+      // Additive mix: external items share the pool with library items, then the
+      // whole thing is shuffled and trimmed so both sources get a fair showing.
+      final libraryItems = selected.map(_toSlideItem).toList();
+      final combined = <MediaBarSlideItem>[...libraryItems, ...externalSlides]
+        ..shuffle();
+      final trimmed = combined.take(maxItems).toList();
+      final withLogos = await _enrichExternalLogos(trimmed);
+      return MediaBarReady(withLogos);
     } catch (e) {
       final firstLibraryItems = await _fetchItemsFromFirstSeriesOrMoviesLibrary(
         includeTypes,
@@ -436,6 +451,107 @@ class MediaBarRepository {
   bool _hasBackdrop(Map<String, dynamic> item) {
     final tags = item['BackdropImageTags'] as List?;
     return tags != null && tags.isNotEmpty;
+  }
+
+  List<String> _selectedExternalListIds() {
+    return _prefs
+        .get(UserPreferences.mediaBarExternalListIds)
+        .split(',')
+        .where((s) => s.isNotEmpty)
+        .toList();
+  }
+
+  // Fetches the selected external lists and turns their entries into slides. These
+  // are TMDB/Seerr items, so they carry a tmdb backdrop rather than a Jellyfin one
+  // and are tagged with a seerr server id so tapping routes to the right screen.
+  Future<List<MediaBarSlideItem>> _buildExternalSlides(String contentType) async {
+    final ids = _selectedExternalListIds();
+    if (ids.isEmpty) return const [];
+    if (!GetIt.instance.isRegistered<CustomExternalListsService>()) {
+      return const [];
+    }
+
+    final service = GetIt.instance<CustomExternalListsService>();
+    final configs = resolveExternalListConfigs(_prefs, ids);
+    if (configs.isEmpty) return const [];
+
+    final lists = await Future.wait(
+      configs.map(
+        (c) => service
+            .fetchCustomRow(c)
+            .catchError((_) => <ImdbExternalListItem>[]),
+      ),
+    );
+
+    final wantMovie = contentType != 'tvshows';
+    final wantSeries = contentType != 'movies';
+    final seen = <String>{};
+    final slides = <MediaBarSlideItem>[];
+    for (final list in lists) {
+      for (final item in list) {
+        final slide = _toExternalSlideItem(item);
+        if (slide == null) continue;
+        final isSeries = slide.itemType == 'Series';
+        if (isSeries ? !wantSeries : !wantMovie) continue;
+        if (!seen.add(slide.itemId)) continue;
+        slides.add(slide);
+      }
+    }
+    return slides;
+  }
+
+  MediaBarSlideItem? _toExternalSlideItem(ImdbExternalListItem item) {
+    final id = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
+    if (id.isEmpty) return null;
+
+    // The media bar needs a backdrop, so fall back to the poster like the home rows
+    // do rather than dropping a poster-only entry.
+    final backdrop = tmdbImageUrl(item.backdropUrl ?? item.posterUrl, 1280);
+    if (backdrop == null) return null;
+
+    return MediaBarSlideItem(
+      itemId: id,
+      serverId: 'seerr',
+      title: item.title,
+      backdropUrl: backdrop,
+      posterUrl: tmdbImageUrl(item.posterUrl, 600),
+      year: item.year,
+      tmdbId: item.tmdbId.isNotEmpty ? item.tmdbId : null,
+      imdbId: item.imdbId.isNotEmpty ? item.imdbId : null,
+      itemType: item.type,
+    );
+  }
+
+  // External items carry no Jellyfin logo, so pull a TMDB title logo for the slides
+  // that survived the trim. Only the shown slides are fetched, and misses fall back
+  // to the slide's title text.
+  Future<List<MediaBarSlideItem>> _enrichExternalLogos(
+    List<MediaBarSlideItem> slides,
+  ) async {
+    if (!GetIt.instance.isRegistered<TmdbRepository>()) return slides;
+    final tmdb = GetIt.instance<TmdbRepository>();
+
+    final pending = <int, Future<String?>>{};
+    for (var i = 0; i < slides.length; i++) {
+      final slide = slides[i];
+      if (slide.serverId != 'seerr' || slide.logoUrl != null) continue;
+      final tmdbId = slide.tmdbId;
+      if (tmdbId == null || tmdbId.isEmpty) continue;
+      final type = slide.itemType == 'Series' ? 'tv' : 'movie';
+      pending[i] = tmdb.getTitleLogo(tmdbId: tmdbId, type: type);
+    }
+    if (pending.isEmpty) return slides;
+
+    final result = List<MediaBarSlideItem>.from(slides);
+    await Future.wait(
+      pending.entries.map((entry) async {
+        final logo = await entry.value;
+        if (logo != null) {
+          result[entry.key] = result[entry.key].copyWith(logoUrl: logo);
+        }
+      }),
+    );
+    return result;
   }
 
   bool _isBoxSet(Map<String, dynamic> item) {

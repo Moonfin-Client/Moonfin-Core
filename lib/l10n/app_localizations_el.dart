@@ -3241,6 +3241,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get excludedGenres => 'Εξαιρούμενα είδη';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Επιλέξτε Όλα';
 
   @override

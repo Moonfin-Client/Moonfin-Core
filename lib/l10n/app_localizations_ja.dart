@@ -3139,6 +3139,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get excludedGenres => '除外ジャンル';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'すべて選択';
 
   @override

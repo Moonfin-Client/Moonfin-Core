@@ -1776,6 +1776,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  static final mediaBarExternalListIds = Preference(
+    key: 'mediaBarExternalListIds',
+    defaultValue: '',
+  );
+
   static final episodePreviewEnabled = Preference(
     key: 'episodePreviewEnabled',
     defaultValue: false,

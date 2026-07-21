@@ -3225,6 +3225,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get excludedGenres => 'Изключени жанрове';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Изберете Всички';
 
   @override

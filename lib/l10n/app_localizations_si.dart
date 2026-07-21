@@ -3203,6 +3203,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get excludedGenres => 'බැහැර කළ ප්‍රභේද';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'සියල්ල තෝරන්න';
 
   @override

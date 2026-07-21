@@ -3218,6 +3218,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get excludedGenres => 'Hariç Tutulan Türler';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Tümünü Seç';
 
   @override

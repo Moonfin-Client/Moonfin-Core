@@ -34,6 +34,7 @@ class MediaBarViewModel extends ChangeNotifier {
   late String _lastMode;
   late String _lastContentType;
   late String _lastItemCount;
+  late String _lastExternalListIds;
 
   List<MediaBarSlideItem> get items =>
       _state is MediaBarReady ? (_state as MediaBarReady).items : const [];
@@ -116,6 +117,7 @@ class MediaBarViewModel extends ChangeNotifier {
     );
     _lastContentType = _prefs.get(UserPreferences.mediaBarContentType);
     _lastItemCount = _prefs.get(UserPreferences.mediaBarItemCount);
+    _lastExternalListIds = _prefs.get(UserPreferences.mediaBarExternalListIds);
     _prefs.addListener(_onPrefsChanged);
   }
 
@@ -125,13 +127,16 @@ class MediaBarViewModel extends ChangeNotifier {
     );
     final contentType = _prefs.get(UserPreferences.mediaBarContentType);
     final itemCount = _prefs.get(UserPreferences.mediaBarItemCount);
+    final externalListIds = _prefs.get(UserPreferences.mediaBarExternalListIds);
 
     if (mode != _lastMode ||
         contentType != _lastContentType ||
-        itemCount != _lastItemCount) {
+        itemCount != _lastItemCount ||
+        externalListIds != _lastExternalListIds) {
       _lastMode = mode;
       _lastContentType = contentType;
       _lastItemCount = itemCount;
+      _lastExternalListIds = externalListIds;
       load(force: true);
     }
   }

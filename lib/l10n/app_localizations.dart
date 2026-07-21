@@ -5824,6 +5824,12 @@ abstract class AppLocalizations {
   /// **'Excluded Genres'**
   String get excludedGenres;
 
+  /// Media bar source that draws items from configured external lists
+  ///
+  /// In en, this message translates to:
+  /// **'External Media'**
+  String get externalMedia;
+
   /// Button to select all items
   ///
   /// In en, this message translates to:

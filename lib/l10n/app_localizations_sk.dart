@@ -3230,6 +3230,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get excludedGenres => 'Vylúčené žánre';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Vyberte možnosť Všetky';
 
   @override

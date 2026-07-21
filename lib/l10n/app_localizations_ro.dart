@@ -3228,6 +3228,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get excludedGenres => 'Genuri excluse';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Selectați Toate';
 
   @override

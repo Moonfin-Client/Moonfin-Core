@@ -3234,6 +3234,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get excludedGenres => 'Zhanret e përjashtuara';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Zgjidhni Të gjitha';
 
   @override

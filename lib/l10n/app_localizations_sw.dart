@@ -3228,6 +3228,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get excludedGenres => 'Aina Zisizojumuishwa';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Chagua Zote';
 
   @override

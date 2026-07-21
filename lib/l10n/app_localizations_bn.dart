@@ -3198,6 +3198,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get excludedGenres => 'বর্জিত জেনারস';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'সব নির্বাচন করুন';
 
   @override

@@ -3226,6 +3226,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get excludedGenres => 'ഒഴിവാക്കിയ വിഭാഗങ്ങൾ';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'എല്ലാം തിരഞ്ഞെടുക്കുക';
 
   @override

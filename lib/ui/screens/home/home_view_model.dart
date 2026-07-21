@@ -32,6 +32,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import 'package:dio/dio.dart';
 import '../../../data/services/custom_external_lists_service.dart';
+import '../../../data/services/external_list_registry.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final RowDataSource _dataSource;
@@ -2268,16 +2269,7 @@ class HomeViewModel extends ChangeNotifier {
   ) async {
     try {
       final customService = GetIt.instance<CustomExternalListsService>();
-      final config = HomeSectionConfig.pluginDynamic(
-        serverId: 'seerr', // placeholder
-        pluginSection: rowId,
-        pluginDisplayText: title,
-        pluginSource: HomeSectionPluginSource.custom,
-        pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
-          'type': rowId,
-        }),
-      );
+      final config = imdbRowConfig(rowId: rowId, title: title);
 
       var items = await customService.loadCustomRowFromCache(config);
       if (items.isEmpty) {
@@ -2330,15 +2322,10 @@ class HomeViewModel extends ChangeNotifier {
   ) async {
     try {
       final customService = GetIt.instance<CustomExternalListsService>();
-      final config = HomeSectionConfig.pluginDynamic(
-        serverId: 'seerr', // placeholder
-        pluginSection: rowId,
-        pluginDisplayText: title,
-        pluginSource: HomeSectionPluginSource.custom,
-        pluginAdditionalData: jsonEncode({
-          'source': 'tmdb_chart',
-          'type': _tmdbChartTypeForSection(sectionType),
-        }),
+      final config = tmdbChartConfig(
+        section: sectionType,
+        rowId: rowId,
+        title: title,
       );
 
       var items = await customService.loadCustomRowFromCache(config);
@@ -2383,25 +2370,6 @@ class HomeViewModel extends ChangeNotifier {
       debugPrint('[TmdbChartRow] Failed to load TMDB chart row $sectionType: $e');
       return const [];
     }
-  }
-
-  String _tmdbChartTypeForSection(HomeSectionType sectionType) {
-    return switch (sectionType) {
-      HomeSectionType.tmdbPopularMovies => 'movie/popular',
-      HomeSectionType.tmdbTopRatedMovies => 'movie/top_rated',
-      HomeSectionType.tmdbNowPlayingMovies => 'movie/now_playing',
-      HomeSectionType.tmdbUpcomingMovies => 'movie/upcoming',
-      HomeSectionType.tmdbPopularTv => 'tv/popular',
-      HomeSectionType.tmdbTopRatedTv => 'tv/top_rated',
-      HomeSectionType.tmdbAiringTodayTv => 'tv/airing_today',
-      HomeSectionType.tmdbOnTheAirTv => 'tv/on_the_air',
-      HomeSectionType.tmdbTrendingMovieDaily => 'trending/movie/day',
-      HomeSectionType.tmdbTrendingMovieWeekly => 'trending/movie/week',
-      HomeSectionType.tmdbTrendingTvDaily => 'trending/tv/day',
-      HomeSectionType.tmdbTrendingTvWeekly => 'trending/tv/week',
-      HomeSectionType.tmdbTrendingAllWeekly => 'trending/all/week',
-      _ => 'movie/popular',
-    };
   }
 
   int? _extractYear(String? dateString) {

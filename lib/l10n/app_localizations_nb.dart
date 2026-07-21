@@ -3203,6 +3203,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get excludedGenres => 'Ekskluderte sjangere';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Velg alle';
 
   @override

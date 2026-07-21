@@ -3180,6 +3180,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get excludedGenres => 'ז\'אנרים לא נכללים';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'בחר הכל';
 
   @override

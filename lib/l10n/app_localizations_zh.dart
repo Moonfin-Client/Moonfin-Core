@@ -3107,6 +3107,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get excludedGenres => '排除的类型';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => '选择全部';
 
   @override

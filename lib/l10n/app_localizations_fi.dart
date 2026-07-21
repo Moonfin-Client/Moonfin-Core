@@ -3219,6 +3219,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get excludedGenres => 'Poissuljetut genret';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Valitse Kaikki';
 
   @override

@@ -22,6 +22,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
+import '../../../data/utils/tmdb_image.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/background_service.dart';
@@ -4916,11 +4917,8 @@ class _ContentRowsState extends State<_ContentRows>
       row.id == 'seerr_studios' ||
       row.id == 'seerr_networks';
 
-  static String? _seerrTmdbImageUrl(String? path, int width) {
-    if (path == null || path.isEmpty) return null;
-    if (path.startsWith('http')) return path;
-    return 'https://image.tmdb.org/t/p/w$width$path';
-  }
+  static String? _seerrTmdbImageUrl(String? path, int width) =>
+      tmdbImageUrl(path, width);
 
   static void _navigateToSeerrItem(BuildContext context, AggregatedItem item) {
     final filterType = item.rawData['FilterType'] as String?;

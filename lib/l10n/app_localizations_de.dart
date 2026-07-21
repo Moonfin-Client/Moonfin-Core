@@ -3295,6 +3295,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get excludedGenres => 'Ausgeschlossene Genres';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Alle auswählen';
 
   @override

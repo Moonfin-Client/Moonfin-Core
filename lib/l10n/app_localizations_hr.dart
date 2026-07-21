@@ -3324,6 +3324,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get excludedGenres => 'Isključeni žanrovi';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Odaberite sve';
 
   @override

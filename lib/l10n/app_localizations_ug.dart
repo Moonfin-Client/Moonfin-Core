@@ -3214,6 +3214,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get excludedGenres => 'چىقىرىۋېتىلگەن ژانىرلار';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'ھەممىنى تاللاڭ';
 
   @override

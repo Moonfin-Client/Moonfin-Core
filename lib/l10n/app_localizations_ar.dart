@@ -3217,6 +3217,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get excludedGenres => 'الأنواع المستبعدة';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'حدد الكل';
 
   @override

@@ -146,6 +146,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('mediaBarLibraryIds', UserPreferences.mediaBarLibraryIds, SyncCodec.csvList),
   SyncedField('mediaBarCollectionIds', UserPreferences.mediaBarCollectionIds, SyncCodec.csvList),
   SyncedField('mediaBarExcludedGenres', UserPreferences.mediaBarExcludedGenres, SyncCodec.csvList),
+  SyncedField('mediaBarExternalListIds', UserPreferences.mediaBarExternalListIds, SyncCodec.csvList),
   SyncedField('themeMusicEnabled', UserPreferences.themeMusicEnabled, SyncCodec.boolean),
   SyncedField('themeMusicVolume', UserPreferences.themeMusicVolume, SyncCodec.integer),
   SyncedField('themeMusicOnHomeRows', UserPreferences.themeMusicOnHomeRows, SyncCodec.boolean),

@@ -3218,6 +3218,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get excludedGenres => 'Шығарылған жанрлар';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Барлығын таңдаңыз';
 
   @override

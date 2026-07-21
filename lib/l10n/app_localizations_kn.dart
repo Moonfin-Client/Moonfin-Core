@@ -3224,6 +3224,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get excludedGenres => 'ಹೊರತುಪಡಿಸಿದ ಪ್ರಕಾರಗಳು';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ';
 
   @override

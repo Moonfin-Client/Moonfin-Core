@@ -3186,6 +3186,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get excludedGenres => 'ژانرهای حذف شده';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'همه را انتخاب کنید';
 
   @override

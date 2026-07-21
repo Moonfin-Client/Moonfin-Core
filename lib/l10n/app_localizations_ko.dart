@@ -3132,6 +3132,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get excludedGenres => '제외 장르';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => '모두 선택';
 
   @override

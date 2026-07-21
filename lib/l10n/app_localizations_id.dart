@@ -3207,6 +3207,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get excludedGenres => 'Genre yang Dikecualikan';
 
   @override
+  String get externalMedia => 'External Media';
+
+  @override
   String get selectAll => 'Pilih Semua';
 
   @override
