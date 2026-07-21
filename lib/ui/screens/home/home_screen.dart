@@ -5284,7 +5284,14 @@ class _ContentRowsState extends State<_ContentRows>
     return switch (imageType) {
       ImageType.thumb => thumbAspectRatio(),
       ImageType.banner => kBannerAspectRatio,
-      ImageType.poster => MediaCard.aspectRatioForType(item.type),
+      ImageType.poster => switch (item.type) {
+        'MusicAlbum' ||
+        'MusicArtist' ||
+        'Audio' ||
+        'Playlist' ||
+        'Person' => 1.0,
+        _ => 2 / 3,
+      },
     };
   }
 
@@ -5323,7 +5330,10 @@ class _ContentRowsState extends State<_ContentRows>
     final parentThumbItemId = item.rawData['ParentThumbItemId']?.toString();
     final parentThumbTag = item.rawData['ParentThumbImageTag'] as String?;
 
-    if (useSeriesThumbs && item.type == 'Episode') {
+    // Episodes have no poster of their own, so a poster row falls back to the
+    // series poster even when the series-thumb preference is off.
+    if (item.type == 'Episode' &&
+        (useSeriesThumbs || imageType == ImageType.poster)) {
       final seriesImage = _resolveSeriesImageForRowType(
         item,
         imageApi,
