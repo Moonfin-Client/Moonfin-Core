@@ -216,6 +216,7 @@ flutter:
     - assets/icons/
     - assets/icons/ratings/
     - assets/fonts/
+    - assets/subtitle_fonts/
     - assets/licenses/cores/
 
   fonts:

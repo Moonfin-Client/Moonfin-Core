@@ -179,6 +179,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   final bool _hwDecodingEnabled;
   bool _didNotifyNativeHandle = false;
   bool _didConfigureAppleMobileLibassFont = false;
+  bool _didConfigureAndroidLibassFonts = false;
   Map<String, String>? _appliedAudioPassthroughProperties;
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
@@ -569,6 +570,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
+    await _configureAndroidLibassFonts();
     await _applyAudioPassthroughOptions();
     await _applyCustomMpvConfIfEnabled();
     await _applyAssOverrideMode();
@@ -1095,6 +1097,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
         await fontFile.writeAsBytes(data.buffer.asUint8List(), flush: true);
       }
 
+      await _copyBundledScriptFonts(fontsDirectory);
+
       final native = _player.platform as NativePlayer;
       await _nativeSetProperty(native, 'sub-fonts-dir', fontsDirectory.path);
       await _nativeSetProperty(native, 'sub-font', _libassFontFamily);
@@ -1102,6 +1106,79 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-visibility', 'yes');
       _didConfigureAppleMobileLibassFont = true;
     } catch (_) {}
+  }
+
+  static const String _subtitleFontAssetDir = 'assets/subtitle_fonts';
+
+  Future<void> _copyBundledScriptFonts(Directory fontsDirectory) async {
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      final assets = manifest.listAssets().where(
+        (asset) => asset.startsWith('$_subtitleFontAssetDir/'),
+      );
+      for (final asset in assets) {
+        final name = asset.split('/').last;
+        final target = File('${fontsDirectory.path}/$name');
+        if (await target.exists()) continue;
+        final data = await rootBundle.load(asset);
+        await target.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      }
+    } catch (_) {}
+  }
+
+  static const List<String> _androidScriptFontPrefixes = [
+    'NotoNaskhArabic', 'NotoSansArabic',
+    'NotoSansDevanagari', 'NotoSansBengali', 'NotoSansTamil',
+    'NotoSansTelugu', 'NotoSansKannada', 'NotoSansMalayalam',
+    'NotoSansGujarati', 'NotoSansGurmukhi', 'NotoSansOriya',
+    'NotoSansSinhala', 'NotoSansThai', 'NotoSansLao',
+    'NotoSansKhmer', 'NotoSansMyanmar', 'NotoSansHebrew',
+    'NotoSansGeorgian', 'NotoSansArmenian', 'NotoSansEthiopic',
+    'NotoSansSymbols', 'NotoSansSymbols2', 'NotoSansMath', 'NotoMusic',
+  ];
+
+  Future<void> _configureAndroidLibassFonts() async {
+    if (!PlatformDetection.isAndroid || _didConfigureAndroidLibassFonts) {
+      return;
+    }
+    if (_player.platform is! NativePlayer) return;
+    try {
+      final native = _player.platform as NativePlayer;
+      final fontsDirPath = (await native.getProperty('sub-fonts-dir')).trim();
+      if (fontsDirPath.isEmpty) return;
+      final fontsDir = Directory(fontsDirPath);
+      if (!await fontsDir.exists()) return;
+
+      final systemFonts = Directory('/system/fonts');
+      if (!await systemFonts.exists()) return;
+      final systemFiles = systemFonts.listSync().whereType<File>().toList();
+
+      for (final prefix in _androidScriptFontPrefixes) {
+        final source = _firstScriptFont(systemFiles, prefix);
+        if (source == null) continue;
+        final name = source.path.split('/').last;
+        final target = File('${fontsDir.path}/$name');
+        if (await target.exists()) continue;
+        await target.writeAsBytes(await source.readAsBytes(), flush: true);
+      }
+      _didConfigureAndroidLibassFonts = true;
+    } catch (_) {}
+  }
+
+  // Match by filename prefix, but the following character must not be a digit so
+  // "NotoSansSymbols" does not swallow "NotoSansSymbols2".
+  static File? _firstScriptFont(List<File> fonts, String prefix) {
+    final lowerPrefix = prefix.toLowerCase();
+    for (final font in fonts) {
+      final name = font.path.split('/').last;
+      if (!name.toLowerCase().startsWith(lowerPrefix)) continue;
+      if (name.length > prefix.length) {
+        final next = name.codeUnitAt(prefix.length);
+        if (next >= 0x30 && next <= 0x39) continue;
+      }
+      return font;
+    }
+    return null;
   }
 
   Future<void> _applyAssOverrideMode() async {
