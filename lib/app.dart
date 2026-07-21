@@ -662,8 +662,8 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       return true;
     }
 
-    final altPressed = HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.altLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.altRight);
+    final altPressed = keys.contains(LogicalKeyboardKey.altLeft) ||
+        keys.contains(LogicalKeyboardKey.altRight);
 
     if (PlatformDetection.useDesktopUi &&
         (key == LogicalKeyboardKey.f11 || (key == LogicalKeyboardKey.enter && altPressed))) {
@@ -811,10 +811,14 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
 
   Future<void> _handleWindowClose() async {
     _geometrySaveTimer?.cancel();
+    // Read the window bounds before hiding so the saved geometry stays correct
+    // on platforms where a hidden window reports stale size or position.
+    await _saveWindowGeometry();
+    // Hide right away so the window disappears instantly while the slower
+    // database and preference teardown finishes.
     try {
       await windowManager.hide();
     } catch (_) {}
-    await _saveWindowGeometry();
     await AppExit.prepareForExit();
     await windowManager.destroy();
   }

@@ -134,10 +134,10 @@ Future<void> _restoreWindowGeometry() async {
     await windowManager.focus();
     if (startFullscreen) {
       // Delay slightly to let the window render its first frame before transitioning to fullscreen.
-      // This avoids Win32 graphics context race conditions (black screens) and window layout artifacts.
-      Future.delayed(const Duration(milliseconds: 150), () async {
+      // This avoids graphics context race conditions (black screens) and window layout artifacts.
+      unawaited(Future.delayed(const Duration(milliseconds: 150), () async {
         await FullscreenHelper.setFullscreen(true);
-      });
+      }));
     }
   });
 }
