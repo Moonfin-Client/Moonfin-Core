@@ -89,6 +89,24 @@ echo "Cleaning previous Flutter outputs..."
 echo "Resolving packages..."
 "$FLUTTER" pub get
 
+# Provision the bundled libretro cores before the build, since pod install (run
+# by flutter build ipa) resolves moonfin_game_host's vendored_frameworks glob
+# then and would otherwise embed nothing. IOS_CORES_MODE=fetch downloads
+# prebuilt cores for a dev build. The default builds them from pinned sources
+# with no JIT for the App Store. Set IOS_CORES_FORCE=1 to reprovision.
+GAME_HOST_DIR="$REPO_ROOT/ios/game_host"
+if [ -z "$(ls "$GAME_HOST_DIR"/cores/*.framework 2>/dev/null)" ] || [ "${IOS_CORES_FORCE:-0}" = "1" ]; then
+  echo "Provisioning bundled libretro cores (mode: ${IOS_CORES_MODE:-build})..."
+  if [ "${IOS_CORES_MODE:-build}" = "fetch" ]; then
+    "$GAME_HOST_DIR/fetch_cores.sh"
+  else
+    "$GAME_HOST_DIR/build_cores.sh"
+  fi
+  "$GAME_HOST_DIR/wrap_frameworks.sh"
+else
+  echo "Bundled libretro cores already present, skipping provisioning."
+fi
+
 rm -f "$ROOT_IPA_OUTPUT"
 rm -f "$ROOT_UNSIGNED_IPA_OUTPUT"
 rm -f "$IPA_DIR"/*.ipa 2>/dev/null || true

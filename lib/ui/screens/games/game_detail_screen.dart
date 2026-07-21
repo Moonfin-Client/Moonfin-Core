@@ -90,7 +90,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
 
   Future<void> _loadSave(GamesApi games, GameDetail game) async {
     try {
-      final save = await games.getSave(gameStateKey(game.id));
+      final save = await games.getSave(gameStateKey(game.id, game.core));
       if (!mounted) return;
       setState(() => _hasSave = save != null && save.isNotEmpty);
     } catch (_) {}

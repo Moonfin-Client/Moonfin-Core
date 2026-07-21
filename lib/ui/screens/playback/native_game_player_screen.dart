@@ -45,7 +45,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   final NativeGamePlayer _player = NativeGamePlayer.create();
 
-  String get _stateKey => gameStateKey(widget.gameId);
+  String get _stateKey => gameStateKey(widget.gameId, widget.core);
 
   String? _error;
   String _status = '';
@@ -65,11 +65,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   int _fastForward = 1;
   List<GameCoreOption> _options = const [];
 
+  // When set, the overlay shows the value list for this option instead of the
+  // settings list, so a choice can be seen and picked rather than cycled blind.
+  int? _pickerOption;
+  int _pickerSelected = 0;
+  bool get _pickerOpen => _pickerOption != null;
+
   // The overlay lists are driven by an index rather than Flutter focus, so they
   // need to be scrolled to the selection by hand.
   static const double _rowExtent = 58;
   final ScrollController _overlayScroll = ScrollController();
   final ScrollController _settingsScroll = ScrollController();
+  final ScrollController _pickerScroll = ScrollController();
 
   // Controller Start is deferred so it can double as the menu gesture: a quick
   // press reaches the game on release, holding it opens the overlay.
@@ -124,6 +131,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   void initState() {
     super.initState();
     WakelockPlus.enable();
+    _enterImmersive();
     // The pad belongs to the libretro core while a game is running, so UI level
     // pad navigation stays suppressed for the lifetime of this screen.
     GamepadSuppressor.push();
@@ -141,8 +149,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     _startHoldTimer?.cancel();
     _overlayScroll.dispose();
     _settingsScroll.dispose();
+    _pickerScroll.dispose();
     GamepadSuppressor.pop();
     WakelockPlus.disable();
+    // Best-effort restore if disposed without going through an exit path.
+    unawaited(_restoreSystemUi());
     unawaited(_player.stop());
     super.dispose();
   }
@@ -157,9 +168,9 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       case 'controllersChanged':
         final count = (event['count'] as num?)?.toInt() ?? 0;
         if (mounted) setState(() => _controllers = count);
-        // Keyboard platforms play fine without a controller, so losing the last
-        // one should not pause the game there.
-        if (!usesKeyboardInput) {
+        // Keyboard and touch platforms play fine without a controller, so
+        // losing the last one should not pause the game there.
+        if (!usesKeyboardInput && !usesOnScreenControls) {
           if (count == 0) {
             _player.pause();
           } else {
@@ -369,11 +380,19 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       case 'confirm':
         if (_overlayOpen) _confirm();
       case 'cancel':
-        if (_settingsOpen) {
-          setState(() => _settingsOpen = false);
-        } else if (_overlayOpen) {
-          _closeOverlay();
-        }
+        if (_overlayOpen) _overlayBack();
+    }
+  }
+
+  // Steps back one overlay level: the value picker returns to the settings
+  // list, the settings list to the pause menu, and the pause menu resumes.
+  void _overlayBack() {
+    if (_pickerOpen) {
+      setState(() => _pickerOption = null);
+    } else if (_settingsOpen) {
+      setState(() => _settingsOpen = false);
+    } else {
+      _closeOverlay();
     }
   }
 
@@ -561,12 +580,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
 
   void _toggleOverlay() {
     if (_textureId == null) return;
-    if (_settingsOpen) {
-      setState(() => _settingsOpen = false);
-      return;
-    }
     if (_overlayOpen) {
-      _closeOverlay();
+      _overlayBack();
     } else {
       _player.pause();
       setState(() {
@@ -580,23 +595,40 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     setState(() {
       _overlayOpen = false;
       _settingsOpen = false;
+      _pickerOption = null;
     });
     _player.resume();
   }
 
   void _moveSelection(int delta) {
-    final count = _settingsOpen ? _options.length : _actions().length;
+    final int count;
+    final int current;
+    final ScrollController controller;
+    if (_pickerOpen) {
+      count = _options[_pickerOption!].choices.length;
+      current = _pickerSelected;
+      controller = _pickerScroll;
+    } else if (_settingsOpen) {
+      count = _options.length;
+      current = _settingsSelected;
+      controller = _settingsScroll;
+    } else {
+      count = _actions().length;
+      current = _selected;
+      controller = _overlayScroll;
+    }
     if (count == 0) return;
-    final next = ((_settingsOpen ? _settingsSelected : _selected) + delta) % count;
-    final wrapped = next < 0 ? next + count : next;
+    final wrapped = ((current + delta) % count + count) % count;
     setState(() {
-      if (_settingsOpen) {
+      if (_pickerOpen) {
+        _pickerSelected = wrapped;
+      } else if (_settingsOpen) {
         _settingsSelected = wrapped;
       } else {
         _selected = wrapped;
       }
     });
-    _ensureVisible(_settingsOpen ? _settingsScroll : _overlayScroll, wrapped);
+    _ensureVisible(controller, wrapped);
   }
 
   // Scrolls the selected row back into view, walking the list by whole rows.
@@ -621,21 +653,53 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   }
 
   void _confirm() {
-    if (_settingsOpen) return;
-    _actions()[_selected].onSelect();
+    if (_pickerOpen) {
+      _applyPicker();
+    } else if (_settingsOpen) {
+      _openPicker(_settingsSelected);
+    } else {
+      _actions()[_selected].onSelect();
+    }
   }
 
+  // Left and right still cycle the highlighted setting in place, a quick tweak
+  // for anyone on a d-pad who doesn't want the full picker.
   void _changeValue(int delta) {
-    if (!_settingsOpen || _options.isEmpty) return;
+    if (!_settingsOpen || _pickerOpen || _options.isEmpty) return;
     final opt = _options[_settingsSelected];
     if (opt.choices.length < 2) return;
     var idx = opt.choices.indexOf(opt.current) + delta;
     idx %= opt.choices.length;
     if (idx < 0) idx += opt.choices.length;
-    final value = opt.choices[idx];
+    _applyOption(_settingsSelected, opt.choices[idx]);
+  }
+
+  // Opens the value list for a setting so its choices can be seen and picked.
+  void _openPicker(int optionIndex) {
+    final opt = _options[optionIndex];
+    if (opt.choices.length < 2) return;
+    setState(() {
+      _pickerOption = optionIndex;
+      _pickerSelected =
+          opt.choices.indexOf(opt.current).clamp(0, opt.choices.length - 1);
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _pickerOpen) _ensureVisible(_pickerScroll, _pickerSelected);
+    });
+  }
+
+  void _applyPicker() {
+    final index = _pickerOption;
+    if (index == null) return;
+    _applyOption(index, _options[index].choices[_pickerSelected]);
+    setState(() => _pickerOption = null);
+  }
+
+  void _applyOption(int optionIndex, String value) {
+    final opt = _options[optionIndex];
     _player.setOption(opt.id, value);
     setState(() {
-      _options[_settingsSelected] = GameCoreOption(
+      _options[optionIndex] = GameCoreOption(
         id: opt.id,
         label: opt.label,
         current: value,
@@ -714,6 +778,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       // Exit must not be blocked by sync failures.
     }
     await _player.stop();
+    await _restoreSystemUi();
     if (mounted) context.pop();
   }
 
@@ -721,7 +786,25 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   // game does.
   void _backOut() {
     unawaited(_player.stop());
+    unawaited(_restoreSystemUi());
     if (mounted) context.pop();
+  }
+
+  // Phones and tablets play full screen in landscape, the natural orientation
+  // for the on-screen pad and most games. TV and desktop are left alone.
+  void _enterImmersive() {
+    if (!usesOnScreenControls) return;
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+  Future<void> _restoreSystemUi() async {
+    if (!usesOnScreenControls) return;
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
   }
 
   @override
@@ -795,7 +878,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
           if (_textureId != null &&
               _controllers == 0 &&
               !_overlayOpen &&
-              !usesKeyboardInput)
+              !usesKeyboardInput &&
+              !usesOnScreenControls)
             Container(
               color: Colors.black87,
               alignment: Alignment.center,
@@ -979,13 +1063,19 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   }
 
   Widget _buildOverlay() {
-    final title = _settingsOpen ? 'Emulator settings' : (widget.gameName ?? 'Paused');
-    final actions = _settingsOpen ? const <_OverlayAction>[] : _actions();
-    final count = _settingsOpen ? _options.length : actions.length;
-    final selected = _settingsOpen ? _settingsSelected : _selected;
+    final l10n = AppLocalizations.of(context);
+    final showBack = _settingsOpen || _pickerOpen;
+    final String title;
+    if (_pickerOpen) {
+      title = _options[_pickerOption!].label;
+    } else if (_settingsOpen) {
+      title = l10n.gameEmulatorSettings;
+    } else {
+      title = widget.gameName ?? l10n.gamePaused;
+    }
 
-    // The scrim resumes on tap, and the panel absorbs taps so only its rows
-    // act.
+    // The scrim steps back one level on tap, and the panel absorbs taps so only
+    // its rows act.
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: _toggleOverlay,
@@ -1010,50 +1100,40 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16, left: 12),
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      children: [
+                        if (showBack)
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: _overlayBack,
+                            child: const SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: Center(
+                                child: Icon(Icons.arrow_back,
+                                    color: Colors.white, size: 28),
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  if (_settingsOpen && _options.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        'This core has no adjustable options.',
-                        style: TextStyle(color: Colors.white54, fontSize: 20),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        // A distinct key per list so each controller attaches
-                        // to its own scroll position.
-                        key: ValueKey(_settingsOpen),
-                        controller:
-                            _settingsOpen ? _settingsScroll : _overlayScroll,
-                        shrinkWrap: true,
-                        itemExtent: _rowExtent,
-                        itemCount: count,
-                        itemBuilder: (context, i) => _settingsOpen
-                            ? _overlayRow(
-                                '${_options[i].label}:  ${_options[i].current}',
-                                i == selected,
-                                () {
-                                  setState(() => _settingsSelected = i);
-                                  _changeValue(1);
-                                },
-                              )
-                            : _overlayRow(actions[i].label, i == selected, () {
-                                setState(() => _selected = i);
-                                actions[i].onSelect();
-                              }),
-                      ),
-                    ),
+                  _buildOverlayBody(l10n),
                 ],
               ),
             ),
@@ -1063,7 +1143,78 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     );
   }
 
-  Widget _overlayRow(String label, bool selected, VoidCallback onTap) {
+  Widget _buildOverlayBody(AppLocalizations l10n) {
+    if (_pickerOpen) {
+      final opt = _options[_pickerOption!];
+      return Flexible(
+        child: ListView.builder(
+          key: const ValueKey('picker'),
+          controller: _pickerScroll,
+          shrinkWrap: true,
+          itemExtent: _rowExtent,
+          itemCount: opt.choices.length,
+          itemBuilder: (context, i) => _overlayRow(
+            opt.choices[i],
+            i == _pickerSelected,
+            () {
+              setState(() => _pickerSelected = i);
+              _applyPicker();
+            },
+            trailing: opt.choices[i] == opt.current ? Icons.check : null,
+          ),
+        ),
+      );
+    }
+    if (_settingsOpen) {
+      if (_options.isEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            l10n.gameNoCoreOptions,
+            style: const TextStyle(color: Colors.white54, fontSize: 20),
+          ),
+        );
+      }
+      return Flexible(
+        child: ListView.builder(
+          key: const ValueKey('settings'),
+          controller: _settingsScroll,
+          shrinkWrap: true,
+          itemExtent: _rowExtent,
+          itemCount: _options.length,
+          itemBuilder: (context, i) => _overlayRow(
+            '${_options[i].label}:  ${_options[i].current}',
+            i == _settingsSelected,
+            () {
+              setState(() => _settingsSelected = i);
+              _openPicker(i);
+            },
+          ),
+        ),
+      );
+    }
+    final actions = _actions();
+    return Flexible(
+      child: ListView.builder(
+        key: const ValueKey('actions'),
+        controller: _overlayScroll,
+        shrinkWrap: true,
+        itemExtent: _rowExtent,
+        itemCount: actions.length,
+        itemBuilder: (context, i) => _overlayRow(
+          actions[i].label,
+          i == _selected,
+          () {
+            setState(() => _selected = i);
+            actions[i].onSelect();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _overlayRow(String label, bool selected, VoidCallback onTap,
+      {IconData? trailing}) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -1075,14 +1226,23 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
           color: selected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: selected ? Colors.black : Colors.white,
-            fontSize: 22,
-          ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: selected ? Colors.black : Colors.white,
+                  fontSize: 22,
+                ),
+              ),
+            ),
+            if (trailing != null)
+              Icon(trailing,
+                  size: 22, color: selected ? Colors.black : Colors.white),
+          ],
         ),
       ),
     );

@@ -14,11 +14,15 @@ PODS:
     - Flutter
   - google-cast-sdk-no-bluetooth-xcframework (4.8.0):
     - Protobuf (~> 3.13)
+  - libretro_host (0.1.0)
   - LzmaSDK-ObjC (2.1.1)
   - media_kit_libs_ios_video (1.0.4):
     - Flutter
   - media_kit_video (0.0.1):
     - Flutter
+  - moonfin_game_host (0.1.0):
+    - Flutter
+    - libretro_host
   - OrderedSet (6.0.3)
   - Protobuf (3.29.6)
   - rar (0.2.1):
@@ -34,8 +38,10 @@ DEPENDENCIES:
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - gamepads_ios (from `.symlinks/plugins/gamepads_ios/ios`)
   - google-cast-sdk-no-bluetooth-xcframework (~> 4.8.0)
+  - libretro_host (from `../native/libretro_host`)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
+  - moonfin_game_host (from `game_host`)
   - rar (from `.symlinks/plugins/rar/ios`)
 
 SPEC REPOS:
@@ -55,10 +61,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   gamepads_ios:
     :path: ".symlinks/plugins/gamepads_ios/ios"
+  libretro_host:
+    :path: "../native/libretro_host"
   media_kit_libs_ios_video:
     :path: ".symlinks/plugins/media_kit_libs_ios_video/ios"
   media_kit_video:
     :path: ".symlinks/plugins/media_kit_video/ios"
+  moonfin_game_host:
+    :path: game_host
   rar:
     :path: ".symlinks/plugins/rar/ios"
 
@@ -68,14 +78,16 @@ SPEC CHECKSUMS:
   flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
   gamepads_ios: c75c6d31377d275b0effb9174c619e2705678c09
   google-cast-sdk-no-bluetooth-xcframework: 1783f52a1b2dc0293ac3ae995db5435989a87da7
+  libretro_host: ab2303cee53cfb89940048dbc3684953e91ef18d
   LzmaSDK-ObjC: 6c68c37743a658fc9a4c7b70f7d6045b587aa42b
   media_kit_libs_ios_video: 5a18affdb97d1f5d466dc79988b13eff6c5e2854
   media_kit_video: 1746e198cb697d1ffb734b1d05ec429d1fcd1474
+  moonfin_game_host: 539b8cd8cf057bb8ee7b79e8de58dc76627919f2
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   Protobuf: 8d5596f7468be5400861a6bbfb2dfe9d0d1cde34
   rar: 00d3f5fc4c0fc99c36a86c59147fa0d66381adc0
   UnrarKit: 62f535c7a34ec52d2514b9b148f33dcfa9a9dc39
 
-PODFILE CHECKSUM: 1cf7a1e565a086518f37887a73f779d72952f563
+PODFILE CHECKSUM: b898afeda6c2573f3791d035b8b15a80b5e70b7f
 
 COCOAPODS: 1.16.2

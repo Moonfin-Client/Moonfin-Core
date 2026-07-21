@@ -431,9 +431,10 @@ final appRouter = GoRouter(
         return _opaqueFullScreenPage<void>(
           state: state,
           // Native libretro or the EmulatorJS WebView: forced where only one
-          // backend works (tvOS and Linux native, iOS EmulatorJS), the user's
-          // choice on Android, Windows, and macOS.
-          child: usesNativeGameBackend
+          // backend works (tvOS and Linux native), the user's choice elsewhere,
+          // and per game where native can't play the system but the WebView can
+          // (a PSP or N64 title on the bundled Apple targets).
+          child: usesNativeGameBackendFor(core)
               ? NativeGamePlayerScreen(
                   libraryId: libraryId,
                   gameId: gameId,

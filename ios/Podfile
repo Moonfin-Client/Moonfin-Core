@@ -88,6 +88,10 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   patch_media_kit_video_ios_pip_bridge
   pod 'google-cast-sdk-no-bluetooth-xcframework', '~> 4.8.0'
+  # Native libretro game playback. The cores it embeds are provisioned into
+  # game_host/cores by build-ios.sh before pod install.
+  pod 'libretro_host', :path => '../native/libretro_host'
+  pod 'moonfin_game_host', :path => 'game_host'
   target 'RunnerTests' do
     inherit! :search_paths
   end

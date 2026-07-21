@@ -31,9 +31,10 @@ const Map<String, String> _libretroCores = {
   'nds': 'melonds',
 };
 
-/// The subset shipped inside the tvOS app. The App Store can't download
-/// executable code, so tvOS bundles a fixed set that also avoids JIT.
-const Set<String> tvosBundledCores = {
+/// The subset shipped inside the tvOS and iOS apps. The App Store can't
+/// download executable code, so these targets bundle a fixed set that also
+/// avoids JIT.
+const Set<String> appleBundledCores = {
   'fceumm',
   'snes9x',
   'gambatte',
@@ -93,10 +94,12 @@ const List<GameCore> downloadableCores = [
   GameCore(coreId: 'mednafen_vb', system: 'Virtual Boy', approxSizeMb: 2),
 ];
 
-/// Whether this platform has the native libretro backend at all (tvOS,
-/// Android, desktop). iOS only has the EmulatorJS WebView.
+/// Whether this platform has the native libretro backend at all (tvOS, iOS,
+/// Android, desktop). iOS bundles a fixed core set and falls back to the
+/// EmulatorJS WebView for systems it can't play natively.
 bool get nativeGameBackendSupported =>
     PlatformDetection.isAppleTV ||
+    PlatformDetection.isIOS ||
     PlatformDetection.isAndroid ||
     PlatformDetection.isDesktop;
 
@@ -126,10 +129,13 @@ bool get usesNativeGameBackend {
 }
 
 /// Whether this platform ships its cores inside the app and loads them from the
-/// bundle rather than downloading them. tvOS and macOS bundle (the Apple stores
-/// forbid downloading executable code), so neither shows the download manager.
+/// bundle rather than downloading them. tvOS, iOS, and macOS bundle (the Apple
+/// stores forbid downloading executable code), so none show the download
+/// manager.
 bool get bundlesGameCores =>
-    PlatformDetection.isAppleTV || PlatformDetection.isMacOS;
+    PlatformDetection.isAppleTV ||
+    PlatformDetection.isIOS ||
+    PlatformDetection.isMacOS;
 
 /// Whether this device can download and run cores, and so should offer the
 /// emulator cores manager. Bundled platforms (tvOS, macOS) and the WebView on
@@ -145,34 +151,47 @@ bool get supportsCoreDownloads =>
 /// without a controller.
 bool get usesKeyboardInput => PlatformDetection.isDesktop;
 
-/// Whether the player shows on-screen touch controls. Android phones and tablets
-/// have no physical buttons, so a virtual gamepad drives the RetroPad mask.
+/// Whether the player shows on-screen touch controls. Phones and tablets have
+/// no physical buttons, so a virtual gamepad drives the RetroPad mask. A
+/// connected controller is still read natively alongside it.
 bool get usesOnScreenControls =>
-    PlatformDetection.isAndroid && !PlatformDetection.isTV;
+    (PlatformDetection.isAndroid || PlatformDetection.isIOS) &&
+    !PlatformDetection.isTV;
 
 /// The save-state key for a game. Native libretro states are namespaced so they
-/// don't collide with an EmulatorJS state of the same game.
-String gameStateKey(String gameId) =>
-    usesNativeGameBackend ? 'lr-$gameId' : gameId;
+/// don't collide with an EmulatorJS state of the same game. Keyed on the core
+/// because a single device can route some systems to native and others to
+/// EmulatorJS.
+String gameStateKey(String gameId, String core) =>
+    usesNativeGameBackendFor(core) ? 'lr-$gameId' : gameId;
 
 /// The libretro core id for an EmulatorJS core name, or null if there's no
 /// mapping for it.
 String? libretroCoreId(String core) => _libretroCores[core];
 
-/// Whether the active backend can play the given EmulatorJS core.
-///
-/// tvOS only runs its bundled subset. The native backend elsewhere needs a
-/// libretro mapping for the system (macOS bundles every mapped core, Android
-/// and the other desktops download them on demand). EmulatorJS plays
-/// everything the plugin serves.
-bool gameCoreSupported(String core) {
-  if (PlatformDetection.isAppleTV) {
-    final id = _libretroCores[core];
-    return id != null && tvosBundledCores.contains(id);
+/// Whether the native backend on this platform can play the given system. The
+/// bundled Apple targets only run their fixed set. macOS bundles every mapped
+/// core, and Android and desktop download any mapped core on demand.
+bool nativeCanPlay(String core) {
+  final id = _libretroCores[core];
+  if (id == null) return false;
+  if (PlatformDetection.isAppleTV || PlatformDetection.isIOS) {
+    return appleBundledCores.contains(id);
   }
-  if (usesNativeGameBackend) return _libretroCores[core] != null;
   return true;
 }
+
+/// Whether a specific game plays through the native backend right now. Native
+/// is used when it's selected and can play the system. Where it can't but
+/// EmulatorJS exists, that one game falls back to the WebView.
+bool usesNativeGameBackendFor(String core) =>
+    usesNativeGameBackend && (nativeCanPlay(core) || !emulatorJsAvailable);
+
+/// Whether the game can be played at all here: natively, or through EmulatorJS
+/// where that backend exists. tvOS and Linux have no WebView, so only their
+/// bundled or mapped native cores are playable.
+bool gameCoreSupported(String core) =>
+    nativeCanPlay(core) || emulatorJsAvailable;
 
 /// The downloaded-core file name for a libretro core id on this platform.
 String coreFileName(String coreId) {

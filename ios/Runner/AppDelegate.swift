@@ -3,6 +3,7 @@ import UIKit
 import AVKit
 import GoogleCast
 import UserNotifications
+import moonfin_game_host
 
 private final class NativeCastEventStreamHandler: NSObject, FlutterStreamHandler {
   weak var appDelegate: AppDelegate?
@@ -142,12 +143,16 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   // so a storyboard-created implicit engine would never exist).
   let sharedEngine = FlutterEngine(name: "moonfin")
   private var engineStarted = false
+  private var gameChannel: NativeGameChannel?
 
   func startEngineIfNeeded() {
     guard !engineStarted else { return }
     engineStarted = true
     sharedEngine.run()
     GeneratedPluginRegistrant.register(with: sharedEngine)
+    if let registrar = sharedEngine.registrar(forPlugin: "moonfin_game_host") {
+      gameChannel = NativeGameChannel(registrar: registrar)
+    }
     setUpPlatformChannels(messenger: sharedEngine.binaryMessenger)
   }
 

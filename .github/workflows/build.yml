@@ -125,6 +125,16 @@ jobs:
           VERSION=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | cut -d'+' -f1 | tr -d '[:space:]')
           flutter clean
           flutter pub get
+
+          # Provision the bundled libretro cores before the build. pod install
+          # (run by flutter build ipa) resolves moonfin_game_host's
+          # vendored_frameworks glob then, so the frameworks must exist first,
+          # otherwise the IPA ships with no cores. The wrap step's no-JIT gate
+          # keeps the prebuilt cores App Store safe.
+          chmod +x ios/game_host/fetch_cores.sh ios/game_host/wrap_frameworks.sh
+          ./ios/game_host/fetch_cores.sh
+          ./ios/game_host/wrap_frameworks.sh
+
           flutter build ipa --release --no-codesign
 
           APP_PATH=$(find build/ios/archive -type d -path '*/Products/Applications/*.app' | head -1)

@@ -45,7 +45,9 @@ void registerGameCoreLicenses() {
 
 /// The core ids whose binaries are on this device.
 Set<String> _presentCoreIds() {
-  if (PlatformDetection.isAppleTV) return tvosBundledCores;
+  if (PlatformDetection.isAppleTV || PlatformDetection.isIOS) {
+    return appleBundledCores;
+  }
   // macOS ships every downloadable core inside the app bundle.
   if (bundlesGameCores) {
     return downloadableCores.map((core) => core.coreId).toSet();
