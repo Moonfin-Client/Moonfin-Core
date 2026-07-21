@@ -39,6 +39,8 @@ int? computeEffectiveAudioIndex({
   required bool preferDefaultAudioTrack,
   required bool preferAudioDescription,
   int? explicitAudioIndex,
+  int? lastExplicitAudioIndex,
+  String? lastExplicitAudioTitle,
 }) {
   final streams = audioStreams.where((s) => s['Type'] == 'Audio').toList();
   if (streams.isEmpty) return null;
@@ -69,26 +71,82 @@ int? computeEffectiveAudioIndex({
     }
   }
 
+  final normTitle = lastExplicitAudioTitle?.trim().toLowerCase();
+
   // 5. Match preferred language
   final preferredMatches = candidates.where((s) => matchLang(s['Language'], preferredAudioLanguage)).toList();
   if (preferredMatches.isNotEmpty) {
+    // 5a. Prefer exact same track index.
+    if (lastExplicitAudioIndex != null) {
+      final m = preferredMatches.firstWhere(
+        (s) => s['Index'] == lastExplicitAudioIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
+    // 5b. Prefer same track name (handles position shifts).
+    if (normTitle != null && normTitle.isNotEmpty) {
+      final m = preferredMatches.firstWhere(
+        (s) => _trackTitle(s)?.trim().toLowerCase() == normTitle,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
     return _rankAudioCandidates(preferredMatches, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
   }
 
   // 6. Match fallback language
   final fallbackMatches = candidates.where((s) => matchLang(s['Language'], fallbackAudioLanguage)).toList();
   if (fallbackMatches.isNotEmpty) {
+    // 6a. Prefer exact same track index.
+    if (lastExplicitAudioIndex != null) {
+      final m = fallbackMatches.firstWhere(
+        (s) => s['Index'] == lastExplicitAudioIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
+    // 6b. Prefer same track name.
+    if (normTitle != null && normTitle.isNotEmpty) {
+      final m = fallbackMatches.firstWhere(
+        (s) => _trackTitle(s)?.trim().toLowerCase() == normTitle,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
     return _rankAudioCandidates(fallbackMatches, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
   }
 
   // 7. Match English fallback
   final englishMatches = candidates.where((s) => matchLang(s['Language'], 'eng')).toList();
   if (englishMatches.isNotEmpty) {
+    // 7a. Prefer exact same track index.
+    if (lastExplicitAudioIndex != null) {
+      final m = englishMatches.firstWhere(
+        (s) => s['Index'] == lastExplicitAudioIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
+    // 7b. Prefer same track name.
+    if (normTitle != null && normTitle.isNotEmpty) {
+      final m = englishMatches.firstWhere(
+        (s) => _trackTitle(s)?.trim().toLowerCase() == normTitle,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (m.isNotEmpty) return m['Index'] as int?;
+    }
     return _rankAudioCandidates(englishMatches, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
   }
 
   // 8. Fall back to default track or first candidate
   return _rankAudioCandidates(candidates, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
+}
+
+String? _trackTitle(Map<String, dynamic> stream) {
+  final t = stream['Title']?.toString();
+  if (t != null && t.isNotEmpty) return t;
+  return stream['DisplayTitle']?.toString();
 }
 
 Map<String, dynamic> _rankAudioCandidates(

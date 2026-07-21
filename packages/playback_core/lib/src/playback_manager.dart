@@ -62,6 +62,8 @@ class PlaybackManager implements AudioOwnable {
   String? _pendingItemMediaSourceId;
   String? _lastItemId;
   String? _lastExplicitAudioLanguage;
+  int? _lastExplicitAudioIndex;
+  String? _lastExplicitAudioTitle;
   String? _lastExplicitSubtitleLanguage;
   bool? _lastExplicitSubtitleEnabled;
   Duration _lastKnownPosition = Duration.zero;
@@ -160,6 +162,8 @@ class PlaybackManager implements AudioOwnable {
   bool get audioSelectionExplicit => _audioSelectionExplicit;
   bool get subtitleSelectionExplicit => _subtitleSelectionExplicit;
   String? get lastExplicitAudioLanguage => _lastExplicitAudioLanguage;
+  int? get lastExplicitAudioIndex => _lastExplicitAudioIndex;
+  String? get lastExplicitAudioTitle => _lastExplicitAudioTitle;
   String? get lastExplicitSubtitleLanguage => _lastExplicitSubtitleLanguage;
   bool? get lastExplicitSubtitleEnabled => _lastExplicitSubtitleEnabled;
   bool get playbackDeferredToExternalPlayer => _deferPlaybackToExternalPlayer;
@@ -932,6 +936,8 @@ class PlaybackManager implements AudioOwnable {
     _clearPendingItemOverrides();
     _lastItemId = null;
     _lastExplicitAudioLanguage = null;
+    _lastExplicitAudioIndex = null;
+    _lastExplicitAudioTitle = null;
     _lastExplicitSubtitleLanguage = null;
     _lastExplicitSubtitleEnabled = null;
     _isAutoNexting = false;
@@ -1171,6 +1177,8 @@ class PlaybackManager implements AudioOwnable {
           resolution.mediaStreams,
           _lastExplicitAudioLanguage,
           'Audio',
+          preferredIndex: _lastExplicitAudioIndex,
+          preferredTitle: _lastExplicitAudioTitle,
         );
         if (matchedIdx != null && _audioStreamIndex != matchedIdx) {
           _audioStreamIndex = matchedIdx;
@@ -1246,6 +1254,8 @@ class PlaybackManager implements AudioOwnable {
       );
       if (stream.isNotEmpty) {
         _lastExplicitAudioLanguage = _extractLanguage(stream);
+        _lastExplicitAudioIndex = _audioStreamIndex;
+        _lastExplicitAudioTitle = _extractTrackTitle(stream);
       }
     }
 
@@ -1755,6 +1765,8 @@ class PlaybackManager implements AudioOwnable {
       );
       if (selectedStream.isNotEmpty) {
         _lastExplicitAudioLanguage = _extractLanguage(selectedStream);
+        _lastExplicitAudioIndex = streamIndex;
+        _lastExplicitAudioTitle = _extractTrackTitle(selectedStream);
       }
     }
 
@@ -2359,6 +2371,8 @@ class PlaybackManager implements AudioOwnable {
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;
     _lastExplicitAudioLanguage = null;
+    _lastExplicitAudioIndex = null;
+    _lastExplicitAudioTitle = null;
     _lastExplicitSubtitleLanguage = null;
     _lastExplicitSubtitleEnabled = null;
     _audioStreamIndex = null;
@@ -2549,6 +2563,8 @@ class PlaybackManager implements AudioOwnable {
         newStreams,
         _lastExplicitAudioLanguage,
         'Audio',
+        preferredIndex: _lastExplicitAudioIndex,
+        preferredTitle: _lastExplicitAudioTitle,
       );
     } else {
       _audioStreamIndex = null;
@@ -2673,8 +2689,32 @@ bool _languagesMatch(Map? stream, String? targetLanguage) {
   return iso3Candidate.isNotEmpty && iso3Candidate == iso3Target;
 }
 
-int? _matchStreamIndexByLanguage(List<Map<String, dynamic>> streams, String? lang, String type) {
+int? _matchStreamIndexByLanguage(
+  List<Map<String, dynamic>> streams,
+  String? lang,
+  String type, {
+  int? preferredIndex,
+  String? preferredTitle,
+}) {
   final candidates = streams.where((s) => s['Type'] == type).toList();
+  // Tier 1: exact index that also language-matches.
+  if (preferredIndex != null) {
+    final i = candidates.indexWhere(
+      (s) => s['Index'] == preferredIndex && _languagesMatch(s, lang),
+    );
+    if (i >= 0) return candidates[i]['Index'] as int?;
+  }
+  // Tier 2: same track name that language-matches (handles track-number shifts).
+  if (preferredTitle != null && preferredTitle.isNotEmpty) {
+    final normTitle = preferredTitle.trim().toLowerCase();
+    final i = candidates.indexWhere(
+      (s) =>
+          _languagesMatch(s, lang) &&
+          _extractTrackTitle(s)?.trim().toLowerCase() == normTitle,
+    );
+    if (i >= 0) return candidates[i]['Index'] as int?;
+  }
+  // Tier 3: first stream that language-matches.
   final i = candidates.indexWhere((s) => _languagesMatch(s, lang));
   return i >= 0 ? candidates[i]['Index'] as int? : null;
 }
@@ -2697,6 +2737,19 @@ String? _extractLanguage(Map? stream) {
     }
   }
   return lang;
+}
+
+/// Returns the most descriptive non-empty title for an audio stream,
+/// preferring [Title] over [DisplayTitle]. Used to match tracks that have
+/// shifted position between episodes (e.g. an alternate-dub track that moved
+/// from index 3 to index 4 because the server added another track).
+String? _extractTrackTitle(Map<dynamic, dynamic>? stream) {
+  if (stream == null) return null;
+  final title = stream['Title']?.toString();
+  if (title != null && title.isNotEmpty) return title;
+  final display = stream['DisplayTitle']?.toString();
+  if (display != null && display.isNotEmpty) return display;
+  return null;
 }
 
 const Map<String, String> _kLanguageKeywords = {

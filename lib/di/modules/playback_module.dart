@@ -538,6 +538,8 @@ void registerPlaybackModule() {
       preferDefaultAudioTrack: prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
       preferAudioDescription: prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false,
       explicitAudioIndex: explicitIndex,
+      lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
+      lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
     );
   };
 
@@ -550,6 +552,8 @@ void registerPlaybackModule() {
       preferDefaultAudioTrack: prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
       preferAudioDescription: prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false,
       explicitAudioIndex: manager.audioSelectionExplicit ? manager.audioStreamIndex : null,
+      lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
+      lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
     );
 
     final activeAudioStream = audioStreams.firstWhere(

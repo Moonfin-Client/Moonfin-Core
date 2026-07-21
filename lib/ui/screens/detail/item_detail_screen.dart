@@ -6761,15 +6761,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
+    final manager = GetIt.instance<PlaybackManager>();
     return computeEffectiveAudioIndex(
       audioStreams: audioStreams,
-      preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),
+      preferredAudioLanguage: manager.lastExplicitAudioLanguage ??
+          prefs.get(UserPreferences.defaultAudioLanguage),
       fallbackAudioLanguage: prefs.get(UserPreferences.fallbackAudioLanguage),
       preferDefaultAudioTrack: prefs.get(
         UserPreferences.preferDefaultAudioTrack,
       ),
       preferAudioDescription: prefs.get(UserPreferences.preferAudioDescription),
       explicitAudioIndex: null,
+      lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
+      lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
     );
   }
 
