@@ -196,8 +196,8 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
             horizontalPadding,
             32 * layoutScale,
           ),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: maximumCardWidth,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
             mainAxisExtent: cardHeight,
             mainAxisSpacing: spacing,
             crossAxisSpacing: spacing,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/ui/widgets/bounded_network_image.dart';
+import 'package:moonfin/ui/widgets/focus/focusable_wrapper.dart';
+import 'package:moonfin/ui/widgets/game/game_card_focus_frame.dart';
 import 'package:moonfin/ui/widgets/game/game_poster_card.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -79,6 +83,105 @@ void main() {
       find.text('A deliberately long two-line game title'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('can defer artwork without losing the fallback', (tester) async {
+    await tester.pumpWidget(
+      _TestApp(
+        child: GamePosterCard(
+          imageUrl: 'https://example.invalid/poster.jpg',
+          title: 'Deferred',
+          fileName: 'deferred.rom',
+          seed: 'deferred',
+          width: 110,
+          loadArtwork: false,
+          onTap: () {},
+        ),
+      ),
+    );
+
+    expect(find.byType(BoundedNetworkImage), findsNothing);
+    expect(find.byIcon(Icons.videogame_asset), findsOneWidget);
+  });
+
+  testWidgets('TV right traversal stops at the row edge', (tester) async {
+    final firstFocus = FocusNode();
+    final secondFocus = FocusNode();
+    final alphaFocus = FocusNode();
+    addTearDown(firstFocus.dispose);
+    addTearDown(secondFocus.dispose);
+    addTearDown(alphaFocus.dispose);
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GamePosterCard(
+              imageUrl: null,
+              title: 'First',
+              fileName: 'first.rom',
+              seed: 'first',
+              width: 110,
+              focusNode: firstFocus,
+              onTap: () {},
+            ),
+            GamePosterCard(
+              imageUrl: null,
+              title: 'Second',
+              fileName: 'second.rom',
+              seed: 'second',
+              width: 110,
+              focusNode: secondFocus,
+              stopRightTraversal: true,
+              onTap: () {},
+            ),
+            Focus(
+              focusNode: alphaFocus,
+              child: const SizedBox(width: 30, height: 30),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    firstFocus.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(secondFocus.hasFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(secondFocus.hasFocus, isTrue);
+    expect(alphaFocus.hasFocus, isFalse);
+  });
+
+  testWidgets('uses only the game focus frame around artwork', (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: GamePosterCard(
+          imageUrl: null,
+          title: 'Focused',
+          fileName: 'focused.rom',
+          seed: 'focused',
+          width: 110,
+          focusNode: focusNode,
+          onTap: () {},
+        ),
+      ),
+    );
+
+    focusNode.requestFocus();
+    await tester.pump();
+
+    // The card owns its focus visuals; there is a single border source (the
+    // game focus frame) and no FocusableWrapper to draw a second outline.
+    expect(find.byType(FocusableWrapper), findsNothing);
+    expect(find.byType(GameCardFocusFrame), findsOneWidget);
   });
 }
 

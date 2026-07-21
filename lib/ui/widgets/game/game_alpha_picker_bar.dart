@@ -18,12 +18,17 @@ class GameAlphaPickerBar extends StatelessWidget {
     super.key,
     required this.selected,
     required this.onChanged,
-    this.allFocusNode,
+    this.letterFocusNodes,
+    this.onNavigateUp,
   });
 
   final String selected;
   final ValueChanged<String> onChanged;
-  final FocusNode? allFocusNode;
+  final Map<String, FocusNode>? letterFocusNodes;
+
+  /// Called when the user presses up from any letter, so the screen can move
+  /// focus to the search field above instead of falling through to the grid.
+  final VoidCallback? onNavigateUp;
 
   static const letters = [
     '',
@@ -67,7 +72,8 @@ class GameAlphaPickerBar extends StatelessWidget {
             label: letter.isEmpty ? l10n.all : letter,
             isSelected: selected == letter,
             onTap: () => onChanged(letter),
-            focusNode: letter.isEmpty ? allFocusNode : null,
+            focusNode: letterFocusNodes?[letter],
+            onNavigateUp: onNavigateUp,
           );
         }).toList(),
       ),
@@ -81,12 +87,14 @@ class _GameAlphaLetterButton extends StatefulWidget {
     required this.isSelected,
     required this.onTap,
     this.focusNode,
+    this.onNavigateUp,
   });
 
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
   final FocusNode? focusNode;
+  final VoidCallback? onNavigateUp;
 
   @override
   State<_GameAlphaLetterButton> createState() => _GameAlphaLetterButtonState();
@@ -114,6 +122,14 @@ class _GameAlphaLetterButtonState extends State<_GameAlphaLetterButton>
           focusNode: widget.focusNode,
           onFocusChange: setFocused,
           onKeyEvent: (_, event) {
+            // Up moves to the search field above rather than falling through to
+            // the grid below, which would also scroll it back to the top.
+            if (widget.onNavigateUp != null &&
+                event.isActionable &&
+                event.logicalKey.isUpKey) {
+              widget.onNavigateUp!();
+              return KeyEventResult.handled;
+            }
             if (!event.logicalKey.isSelectKey) {
               return KeyEventResult.ignored;
             }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../util/game_library.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
-import '../focus/focusable_wrapper.dart';
 import 'game_card_focus_frame.dart';
 
 /// A focusable, artwork-backed platform tile used at the root of a retro-game
@@ -158,35 +159,84 @@ class _GameSystemCardState extends State<GameSystemCard> {
       ),
     );
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedScale(
-        scale: widget.cardFocusExpansion && active
-            ? (PlatformDetection.isAppleTV ? 1.12 : 1.05)
-            : 1,
-        duration: const Duration(milliseconds: 150),
-        curve: PlatformDetection.isAppleTV
-            ? Curves.easeOutCubic
-            : Curves.linear,
-        child: FocusableWrapper(
-          autofocus: widget.autofocus,
+    final semanticLabel = countLabel == null
+        ? widget.system.name
+        : '${widget.system.name}, $countLabel';
+
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: Focus(
           focusNode: widget.focusNode,
-          onKeyEvent: widget.onKeyEvent,
-          autoScroll: true,
-          useComfortableZone: true,
-          disableScale: true,
-          useBackgroundFocus: false,
-          suppressFocusGlow: true,
-          semanticLabel: countLabel == null
-              ? widget.system.name
-              : '${widget.system.name}, $countLabel',
-          onFocusChange: (focused) => setState(() => _focused = focused),
-          onSelect: widget.onTap,
-          child: card,
+          autofocus: widget.autofocus,
+          onKeyEvent: _handleKeyEvent,
+          onFocusChange: (focused) {
+            setState(() => _focused = focused);
+            if (focused) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _scrollIntoView(),
+              );
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onTap,
+            child: RepaintBoundary(
+              child: AnimatedScale(
+                scale: widget.cardFocusExpansion && active
+                    ? (PlatformDetection.isAppleTV ? 1.12 : 1.05)
+                    : 1,
+                duration: const Duration(milliseconds: 150),
+                curve: PlatformDetection.isAppleTV
+                    ? Curves.easeOutCubic
+                    : Curves.linear,
+                child: card,
+              ),
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    final override = widget.onKeyEvent?.call(node, event);
+    if (override != null && override != KeyEventResult.ignored) return override;
+    if (event is KeyDownEvent && event.logicalKey.isSelectKey) {
+      widget.onTap();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  // Mirrors FocusableWrapper's comfortable-zone auto-scroll: only recenter the
+  // tile when it drifts outside the middle 60% of the viewport.
+  void _scrollIntoView() {
+    if (!mounted) return;
+    final renderObject = context.findRenderObject();
+    final scrollable = Scrollable.maybeOf(context);
+    if (renderObject == null || scrollable == null) return;
+    final viewport = scrollable.context.findRenderObject();
+    if (viewport is RenderBox && renderObject is RenderBox) {
+      final viewportSize = viewport.size.height;
+      final itemTop = renderObject
+          .localToGlobal(Offset.zero, ancestor: viewport)
+          .dy;
+      final itemBottom = itemTop + renderObject.size.height;
+      if (itemTop >= viewportSize * 0.2 && itemBottom <= viewportSize * 0.8) {
+        return;
+      }
+    }
+    Scrollable.ensureVisible(
+      context,
+      alignment: 0.5,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
     );
   }
 }

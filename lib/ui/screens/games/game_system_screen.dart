@@ -23,6 +23,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/game/game_alpha_picker_bar.dart';
+import '../../widgets/game/game_artwork_load_scheduler.dart';
 import '../../widgets/game/game_poster_card.dart';
 
 /// Browses one retro-game platform using the same vertical grid and alphabet
@@ -50,29 +51,44 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   static const _desktopHorizontalPadding = 60.0;
   static const _gridTopPadding = 8.0;
   static const _gridBottomFocusPeek = 52.0;
+  static const _artworkPrefetchRows = 5;
+  static const _tvArtworkSettleDelay = Duration(milliseconds: 200);
+  static const _otherArtworkSettleDelay = Duration(milliseconds: 120);
+  static const _tvArtworkPrefetchDelay = Duration(milliseconds: 700);
+  static const _otherArtworkPrefetchDelay = Duration(milliseconds: 450);
 
   final UserPreferences _prefs = GetIt.instance<UserPreferences>();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
   final GlobalKey<CustomTVTextFieldState> _searchTvFieldKey = GlobalKey();
-  final FocusNode _allLetterFocus = FocusNode(
-    debugLabel: 'game_alpha_all_letter',
-  );
+  late final Map<String, FocusNode> _alphaLetterFocusNodes = {
+    for (final letter in GameAlphaPickerBar.letters)
+      letter: FocusNode(
+        debugLabel: 'game_alpha_${letter.isEmpty ? 'all' : letter}',
+      ),
+  };
   final ScrollController _gridScrollController = ScrollController();
+  late final GamesApi? _gamesApi;
+  late final GameArtworkLoadScheduler _artworkScheduler;
   late final GameSystemBrowseViewModel _browse;
   List<GameSummary>? _observedVisibleGames;
   Timer? _hoverScrollSettle;
   GameSummary? _hoveredGame;
   bool _suppressHoverEnrichment = false;
-  Timer? _backdropPreloadTimer;
-  int _backdropPreloadGeneration = 0;
-  String? _backdropPreloadTargetId;
+  Timer? _tvBackReplayGuardTimer;
+  Timer? _artworkSettleTimer;
+  Timer? _artworkPrefetchTimer;
+  bool _ignoreNextTvPop = false;
+  bool _allowTvPop = false;
 
   @override
   void initState() {
     super.initState();
+    _gamesApi = GetIt.instance<MediaServerClient>().gamesApi;
+    _artworkScheduler = GameArtworkLoadScheduler()
+      ..addListener(_onArtworkSchedulerChanged);
     _browse = GameSystemBrowseViewModel(
-      gamesApi: GetIt.instance<MediaServerClient>().gamesApi,
+      gamesApi: _gamesApi,
       libraryId: widget.libraryId,
       systemId: widget.systemId,
       systemName: widget.systemName,
@@ -86,14 +102,20 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   void dispose() {
     _browse.removeListener(_onBrowseChanged);
     _browse.dispose();
+    _artworkScheduler.removeListener(_onArtworkSchedulerChanged);
+    _artworkScheduler.dispose();
     _searchController.removeListener(_onSearchChanged);
     _searchFocus.removeListener(_onSearchFocusChanged);
     _searchController.dispose();
     _searchFocus.dispose();
-    _allLetterFocus.dispose();
+    for (final node in _alphaLetterFocusNodes.values) {
+      node.dispose();
+    }
     _gridScrollController.dispose();
     _hoverScrollSettle?.cancel();
-    _cancelBackdropPreload();
+    _tvBackReplayGuardTimer?.cancel();
+    _artworkSettleTimer?.cancel();
+    _artworkPrefetchTimer?.cancel();
     disposeGridFocusNodes();
     super.dispose();
   }
@@ -102,14 +124,28 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     _browse.updateSearch(_searchController.text);
   }
 
+  void _selectLetter(String letter) {
+    if (letter == _browse.selectedLetter) return;
+
+    // Reset the existing grid before replacing its contents. This keeps the
+    // new filtered viewport at index zero, which is also the initial artwork
+    // scheduler window. Focus remains on the alpha button that invoked this.
+    if (_gridScrollController.hasClients) {
+      _gridScrollController.jumpTo(
+        _gridScrollController.position.minScrollExtent,
+      );
+    }
+    _browse.selectLetter(letter);
+  }
+
   void _onBrowseChanged() {
     if (!mounted) return;
-    if (_browse.activeGame?.id != _backdropPreloadTargetId) {
-      _cancelBackdropPreload();
-    }
     final visibleGames = _browse.visibleGames;
     if (!identical(_observedVisibleGames, visibleGames)) {
       _observedVisibleGames = visibleGames;
+      _artworkSettleTimer?.cancel();
+      _artworkPrefetchTimer?.cancel();
+      _artworkScheduler.clearViewport();
       gridContentVersion++;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) cleanupGridFocusNodes(visibleGames.length);
@@ -122,7 +158,16 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     if (mounted) setState(() {});
   }
 
+  void _onArtworkSchedulerChanged() {
+    if (mounted) setState(() {});
+  }
+
   KeyEventResult _onTvSearchKey(FocusNode node, KeyEvent event) {
+    // Down returns to the alpha letter the user came up from, so it mirrors the
+    // up gesture instead of dropping onto the geometric default below.
+    if (event.isActionable && event.logicalKey.isDownKey) {
+      if (_restoreAlphaFocus()) return KeyEventResult.handled;
+    }
     if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
     if (event is KeyDownEvent) {
       if (!_searchFocus.hasFocus) _searchFocus.requestFocus();
@@ -130,6 +175,176 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     }
     return KeyEventResult.handled;
   }
+
+  bool get _gridHasFocus =>
+      gridItemFocusNodes.values.any((node) => node.hasFocus);
+
+  bool _restoreAlphaFocus() {
+    // Return to the letter that is actually selected (the active filter), so
+    // focus lands on the highlighted letter rather than the last one merely
+    // arrowed past.
+    final alphaFocus = _alphaLetterFocusNodes[_browse.selectedLetter];
+    if (alphaFocus?.context == null) return false;
+    alphaFocus!.requestFocus();
+    return true;
+  }
+
+  void _guardAgainstTvBackReplay() {
+    _ignoreNextTvPop = true;
+    _tvBackReplayGuardTimer?.cancel();
+    _tvBackReplayGuardTimer = Timer(const Duration(milliseconds: 300), () {
+      _ignoreNextTvPop = false;
+    });
+  }
+
+  void _handleTvPop(bool didPop) {
+    if (didPop) return;
+    if (_ignoreNextTvPop) {
+      _ignoreNextTvPop = false;
+      _tvBackReplayGuardTimer?.cancel();
+      return;
+    }
+    if (_gridHasFocus && _restoreAlphaFocus()) return;
+    if (_allowTvPop) return;
+
+    setState(() => _allowTvPop = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.popOrHome();
+    });
+  }
+
+  void _scheduleArtworkWindow({
+    required ScrollMetrics metrics,
+    required int crossAxisCount,
+    required double rowStride,
+    required List<GameSummary> games,
+  }) {
+    _artworkSettleTimer?.cancel();
+    _artworkPrefetchTimer?.cancel();
+    // Stop feeding the old viewport into flutter_cache_manager. Its requests
+    // cannot be cancelled once started, but clearing here caps stale work at
+    // the current four-request batch instead of the whole nearby-row queue.
+    _artworkScheduler.clearViewport();
+    final rowCount = (games.length / crossAxisCount).ceil();
+    if (rowCount == 0) return;
+    final firstVisibleRow = ((metrics.pixels - _gridTopPadding) / rowStride)
+        .floor()
+        .clamp(0, rowCount - 1)
+        .toInt();
+    final lastVisibleRowExclusive =
+        ((metrics.pixels + metrics.viewportDimension - _gridTopPadding) /
+                rowStride)
+            .ceil()
+            .clamp(firstVisibleRow + 1, rowCount)
+            .toInt();
+    final firstRow = (firstVisibleRow - _artworkPrefetchRows)
+        .clamp(0, rowCount - 1)
+        .toInt();
+    final lastRowExclusive = (lastVisibleRowExclusive + _artworkPrefetchRows)
+        .clamp(1, rowCount)
+        .toInt();
+    final visibleFirstIndex = firstVisibleRow * crossAxisCount;
+    final visibleLastIndexExclusive = (lastVisibleRowExclusive * crossAxisCount)
+        .clamp(0, games.length)
+        .toInt();
+
+    final settleDelay = PlatformDetection.isTV
+        ? _tvArtworkSettleDelay
+        : _otherArtworkSettleDelay;
+    _artworkSettleTimer = Timer(settleDelay, () {
+      if (!mounted || !identical(games, _browse.visibleGames)) return;
+      // Submit only the settled viewport first. Rapid intermediate d-pad or
+      // pointer positions never reach the cache manager's non-cancellable FIFO.
+      _showArtworkRange(
+        games,
+        firstIndex: visibleFirstIndex,
+        lastIndexExclusive: visibleLastIndexExclusive,
+        priorityFirstIndex: visibleFirstIndex,
+        priorityLastIndexExclusive: visibleLastIndexExclusive,
+        crossAxisCount: crossAxisCount,
+      );
+    });
+
+    final prefetchDelay = PlatformDetection.isTV
+        ? _tvArtworkPrefetchDelay
+        : _otherArtworkPrefetchDelay;
+    _artworkPrefetchTimer = Timer(prefetchDelay, () {
+      if (!mounted || !identical(games, _browse.visibleGames)) return;
+      // Add nearby rows only after the user remains on this viewport. Visible
+      // URLs stay first in the expanded queue.
+      _showArtworkRange(
+        games,
+        firstIndex: firstRow * crossAxisCount,
+        lastIndexExclusive: (lastRowExclusive * crossAxisCount)
+            .clamp(0, games.length)
+            .toInt(),
+        priorityFirstIndex: visibleFirstIndex,
+        priorityLastIndexExclusive: visibleLastIndexExclusive,
+        crossAxisCount: crossAxisCount,
+      );
+    });
+  }
+
+  void _showArtworkRange(
+    List<GameSummary> games, {
+    required int firstIndex,
+    required int lastIndexExclusive,
+    required int priorityFirstIndex,
+    required int priorityLastIndexExclusive,
+    required int crossAxisCount,
+  }) {
+    if (games.isEmpty || firstIndex >= lastIndexExclusive) return;
+    var priorityStart = priorityFirstIndex.clamp(
+      firstIndex,
+      lastIndexExclusive - 1,
+    );
+    var priorityEnd = priorityLastIndexExclusive.clamp(
+      priorityStart + 1,
+      lastIndexExclusive,
+    );
+
+    // Center the priority block on the focused row so the row the user is on
+    // fetches first and nearby rows expand outward from it, rather than always
+    // starting at the top row of the viewport (which may be partly scrolled
+    // off). Falls back to the passed viewport block when nothing is focused
+    // (e.g. touch scrolling), where there is no "current row".
+    final focusedIndex = _gridHasFocus ? lastFocusedGridIndex : null;
+    if (focusedIndex != null &&
+        focusedIndex >= firstIndex &&
+        focusedIndex < lastIndexExclusive) {
+      final focusedRowStart = focusedIndex - (focusedIndex % crossAxisCount);
+      priorityStart = focusedRowStart.clamp(firstIndex, lastIndexExclusive - 1);
+      priorityEnd = (focusedRowStart + crossAxisCount).clamp(
+        priorityStart + 1,
+        lastIndexExclusive,
+      );
+    }
+
+    final orderedIndexes = gameArtworkLoadOrder(
+      firstIndex: firstIndex,
+      lastIndexExclusive: lastIndexExclusive,
+      visibleFirstIndex: priorityStart,
+      visibleLastIndexExclusive: priorityEnd,
+      crossAxisCount: crossAxisCount,
+      surroundingRows: _artworkPrefetchRows,
+    );
+    final urls = <String>[
+      for (final index in orderedIndexes) ?_gameThumbUrl(games[index].id),
+    ];
+    final priorityIndex =
+        focusedIndex != null &&
+            focusedIndex >= priorityStart &&
+            focusedIndex < priorityEnd
+        ? focusedIndex
+        : priorityStart;
+    _artworkScheduler.showViewport(
+      urls,
+      priorityKey: _gameThumbUrl(games[priorityIndex].id),
+    );
+  }
+
+  String? _gameThumbUrl(String gameId) =>
+      _gamesApi?.thumbUrl(libraryId: widget.libraryId, gameId: gameId);
 
   @override
   Widget build(BuildContext context) {
@@ -188,8 +403,16 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     if (PlatformDetection.useMobileUi) return scaffold;
     final targetNode = PlatformDetection.isTV && _browse.visibleGames.isNotEmpty
         ? getGridItemFocusNode(0, prefix: 'game_grid')
-        : _allLetterFocus;
-    return RequestInitialFocus(targetNode: targetNode, child: scaffold);
+        : _alphaLetterFocusNodes['']!;
+    final content = RequestInitialFocus(
+      targetNode: targetNode,
+      child: scaffold,
+    );
+    return PopScope(
+      canPop: !PlatformDetection.isTV || _allowTvPop,
+      onPopInvokedWithResult: (didPop, _) => _handleTvPop(didPop),
+      child: content,
+    );
   }
 
   Widget _buildBody(
@@ -306,8 +529,9 @@ class _GameSystemScreenState extends State<GameSystemScreen>
               Expanded(
                 child: GameAlphaPickerBar(
                   selected: _browse.selectedLetter,
-                  allFocusNode: _allLetterFocus,
-                  onChanged: _browse.selectLetter,
+                  letterFocusNodes: _alphaLetterFocusNodes,
+                  onNavigateUp: () => _searchFocus.requestFocus(),
+                  onChanged: _selectLetter,
                 ),
               ),
             ],
@@ -484,7 +708,6 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       showBackdrop: showBackdrop,
       loadDetails: showDetails,
     );
-    _scheduleBackdropPreload(game, enabled: showBackdrop);
   }
 
   void _deactivateHoveredGame(GameSummary game) {
@@ -522,57 +745,6 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     });
   }
 
-  void _scheduleBackdropPreload(GameSummary game, {required bool enabled}) {
-    if (!enabled) {
-      _cancelBackdropPreload();
-      return;
-    }
-    if (_backdropPreloadTargetId == game.id) return;
-
-    _cancelBackdropPreload();
-    _backdropPreloadTargetId = game.id;
-    final generation = _backdropPreloadGeneration;
-    _backdropPreloadTimer = Timer(const Duration(milliseconds: 200), () {
-      unawaited(_preloadBackdrop(game, generation));
-    });
-  }
-
-  void _cancelBackdropPreload() {
-    _backdropPreloadTimer?.cancel();
-    _backdropPreloadTimer = null;
-    _backdropPreloadTargetId = null;
-    _backdropPreloadGeneration++;
-  }
-
-  Future<void> _preloadBackdrop(GameSummary game, int generation) async {
-    if (!mounted || generation != _backdropPreloadGeneration) return;
-    final blur = _prefs
-        .get(UserPreferences.browsingBackgroundBlurAmount)
-        .toDouble();
-    final urls = <String?>[
-      gameThumbUrl(widget.libraryId, game.id, kind: 'snap'),
-      gameThumbUrl(widget.libraryId, game.id, kind: 'title'),
-      gameThumbUrl(widget.libraryId, game.id),
-    ].nonNulls;
-
-    for (final url in urls) {
-      if (!mounted || generation != _backdropPreloadGeneration) return;
-      try {
-        await BoundedNetworkImage.precache(
-          context,
-          url,
-          layoutWidth: MediaQuery.sizeOf(context).width,
-          scale: blur > 0 ? 0.6 : 1,
-          maxWidth: blur > 0 ? 640 : 1920,
-        );
-        return;
-      } catch (_) {
-        // Try the same snap -> title -> box-art fallback order used by the
-        // visible backdrop, unless focus has already moved to another game.
-      }
-    }
-  }
-
   Widget _buildGrid(
     List<GameSummary> games, {
     required double desktopScale,
@@ -599,11 +771,42 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         final cardWidth =
             (availableWidth - spacing * (columnCount - 1)) / columnCount;
         final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
         final cardHeight =
             cardWidth * imageHeightRatio +
             captionGap +
             captionHeight * textScale;
         final childAspectRatio = cardWidth / cardHeight;
+        final rowStride = cardHeight + 14;
+        final initialVisibleRowCount = (constraints.maxHeight / rowStride)
+            .ceil();
+        final initialVisibleLastIndex = (initialVisibleRowCount * columnCount)
+            .clamp(0, games.length)
+            .toInt();
+        final initialArtworkLastIndex =
+            ((initialVisibleRowCount + _artworkPrefetchRows) * columnCount)
+                .clamp(0, games.length)
+                .toInt();
+        final scheduleArtwork = PlatformDetection.isTV;
+        if (scheduleArtwork &&
+            !_artworkScheduler.hasViewport &&
+            games.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted ||
+                _artworkScheduler.hasViewport ||
+                !identical(games, _browse.visibleGames)) {
+              return;
+            }
+            _showArtworkRange(
+              games,
+              firstIndex: 0,
+              lastIndexExclusive: initialArtworkLastIndex,
+              priorityFirstIndex: 0,
+              priorityLastIndexExclusive: initialVisibleLastIndex,
+              crossAxisCount: columnCount,
+            );
+          });
+        }
         final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
         final focusColor = isNeon
             ? ThemeRegistry.active.borders.focusBorder.color
@@ -611,86 +814,135 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         final cardFocusExpansion = _prefs.get(
           UserPreferences.cardFocusExpansion,
         );
-        return Listener(
-          onPointerSignal: (event) => _onGridPointerSignal(
-            event,
-            showBackdrop: showBackdrop,
-            showDetails: showDetails,
-          ),
-          child: GridView.builder(
-            controller: _gridScrollController,
-            // Build roughly one viewport ahead so browser artwork requests are
-            // already in flight before the next rows become visible.
-            scrollCacheExtent: const ScrollCacheExtent.viewport(1),
-            padding: EdgeInsets.fromLTRB(
-              horizontalPadding,
-              _gridTopPadding,
-              horizontalPadding,
-              32,
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            // TV navigation uses a small priority queue to keep d-pad focus
+            // ahead of the cache manager's non-cancellable request FIFO.
+            // Pointer-driven platforms use the same lazy image loading as the
+            // standard media grids, allowing incoming rows to paint artwork
+            // while a drag or fling is still in progress.
+            if (!scheduleArtwork) return false;
+            if (notification is ScrollStartNotification) {
+              // Cancel pending prefetch, but keep the current viewport enabled
+              // so already-loaded artwork stays visible while scrolling and the
+              // initial submission is not wiped by a programmatic scroll (e.g.
+              // the first focus). ScrollEnd re-submits the settled window.
+              _artworkSettleTimer?.cancel();
+              _artworkPrefetchTimer?.cancel();
+            } else if (notification is ScrollEndNotification) {
+              _scheduleArtworkWindow(
+                metrics: notification.metrics,
+                crossAxisCount: columnCount,
+                rowStride: rowStride,
+                games: games,
+              );
+            }
+            return false;
+          },
+          child: Listener(
+            onPointerSignal: (event) => _onGridPointerSignal(
+              event,
+              showBackdrop: showBackdrop,
+              showDetails: showDetails,
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columnCount,
-              mainAxisSpacing: 14,
-              crossAxisSpacing: spacing,
-              childAspectRatio: childAspectRatio,
-            ),
-            itemCount: games.length,
-            itemBuilder: (context, index) {
-              final game = games[index];
-              return GamePosterCard(
-                imageUrl: gameThumbUrl(widget.libraryId, game.id),
-                title: game.title,
-                fileName: game.fileName,
-                seed: game.id,
-                width: cardWidth,
-                focusNode: getGridItemFocusNode(index, prefix: 'game_grid'),
-                focusColor: focusColor,
-                cardFocusExpansion: cardFocusExpansion,
-                suppressFocusGlow: isNeon,
-                autoScroll: false,
-                onFocus: () {
-                  _activateBrowseGame(
+            child: GridView.builder(
+              controller: _gridScrollController,
+              // Pointer-driven platforms construct an extra viewport so their
+              // normal lazy image loading stays ahead of an active scroll. TV
+              // uses the explicit artwork scheduler instead.
+              scrollCacheExtent: scheduleArtwork
+                  ? null
+                  : const ScrollCacheExtent.viewport(1),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                _gridTopPadding,
+                horizontalPadding,
+                32,
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columnCount,
+                mainAxisSpacing: 14,
+                crossAxisSpacing: spacing,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemCount: games.length,
+              itemBuilder: (context, index) {
+                final game = games[index];
+                final imageUrl = _gameThumbUrl(game.id);
+                final artworkGeneration = !scheduleArtwork || imageUrl == null
+                    ? null
+                    : _artworkScheduler.generationFor(imageUrl);
+                final column = index % columnCount;
+                final atVisualRightEdge = isRtl
+                    ? column == 0
+                    : column == columnCount - 1 || index == games.length - 1;
+                return GamePosterCard(
+                  imageUrl: imageUrl,
+                  title: game.title,
+                  fileName: game.fileName,
+                  seed: game.id,
+                  width: cardWidth,
+                  focusNode: getGridItemFocusNode(index, prefix: 'game_grid'),
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardFocusExpansion,
+                  suppressFocusGlow: isNeon,
+                  autoScroll: false,
+                  onFocus: () {
+                    _activateBrowseGame(
+                      game,
+                      showBackdrop: showBackdrop,
+                      showDetails: showDetails,
+                    );
+                    _scrollToGridRow(
+                      index: index,
+                      crossAxisCount: columnCount,
+                      cellHeight: cardHeight,
+                      mainAxisSpacing: 14,
+                    );
+                  },
+                  onFocusLost: () => _browse.deactivateGame(game),
+                  onHoverStart: () => _activateHoveredGame(
                     game,
                     showBackdrop: showBackdrop,
                     showDetails: showDetails,
-                  );
-                  _scrollToGridRow(
-                    index: index,
-                    crossAxisCount: columnCount,
-                    cellHeight: cardHeight,
-                    mainAxisSpacing: 14,
-                  );
-                },
-                onFocusLost: () => _browse.deactivateGame(game),
-                onHoverStart: () => _activateHoveredGame(
-                  game,
-                  showBackdrop: showBackdrop,
-                  showDetails: showDetails,
-                ),
-                onHoverEnd: () => _deactivateHoveredGame(game),
-                onKeyEvent: (_, event) {
-                  if (PlatformDetection.isTV &&
-                      event.isActionable &&
-                      event.logicalKey.isBackKey &&
-                      _allLetterFocus.context != null) {
-                    _allLetterFocus.requestFocus();
-                    return KeyEventResult.handled;
-                  }
-                  if (event.isActionable && event.logicalKey.isRightKey) {
-                    final isLastColumn =
-                        (index % columnCount) == columnCount - 1;
-                    final isLastItem = index == games.length - 1;
-                    if (isLastColumn || isLastItem) {
+                  ),
+                  onHoverEnd: () => _deactivateHoveredGame(game),
+                  stopRightTraversal: atVisualRightEdge,
+                  loadArtwork:
+                      imageUrl != null &&
+                      (!scheduleArtwork ||
+                          _artworkScheduler.isEnabled(imageUrl)),
+                  onArtworkLoadFinished:
+                      artworkGeneration == null || imageUrl == null
+                      ? null
+                      : () {
+                          if (!mounted) return;
+                          _artworkScheduler.markFinished(
+                            imageUrl,
+                            artworkGeneration,
+                          );
+                        },
+                  onKeyEvent: (_, event) {
+                    if (PlatformDetection.isTV &&
+                        event.isActionable &&
+                        event.logicalKey.isBackKey &&
+                        _restoreAlphaFocus()) {
+                      if (event is KeyDownEvent) {
+                        _guardAgainstTvBackReplay();
+                      }
                       return KeyEventResult.handled;
                     }
-                  }
-                  return KeyEventResult.ignored;
-                },
-                onTap: () => context.push(
-                  Destinations.gameDetailOf(widget.libraryId, game.id),
-                ),
-              );
-            },
+                    // Right-edge traversal is stopped by [stopRightTraversal]
+                    // above (TV only), which the card honors in its own key
+                    // handler.
+                    return KeyEventResult.ignored;
+                  },
+                  onTap: () => context.push(
+                    Destinations.gameDetailOf(widget.libraryId, game.id),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
@@ -723,11 +975,11 @@ class _FocusedGameHud extends StatelessWidget {
       // focus content never relays out the alphabet bar or game grid.
       height: 105 * responsiveScale,
       child: ClipRect(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: activeGame == null
-              ? const SizedBox.shrink(key: ValueKey('empty'))
-              : Column(
+        child: activeGame == null
+            ? const SizedBox.shrink()
+            : AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Column(
                   key: ValueKey(activeGame.id),
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -763,7 +1015,7 @@ class _FocusedGameHud extends StatelessWidget {
                     ],
                   ],
                 ),
-        ),
+              ),
       ),
     );
   }
