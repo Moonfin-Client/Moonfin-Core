@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class JellyfinSessionApi implements SessionApi {
+import '../api/session_api.dart';
+import '../server_dialect.dart';
+
+/// Shared session implementation.
+class ServerSessionApi implements SessionApi {
   final Dio _dio;
+  final ServerDialect _dialect;
 
-  JellyfinSessionApi(this._dio);
+  ServerSessionApi(this._dio, this._dialect);
 
   @override
   Future<void> reportCapabilities(Map<String, dynamic> capabilities) async {
@@ -12,9 +16,11 @@ class JellyfinSessionApi implements SessionApi {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getSessions({String? controllableByUserId}) async {
+  Future<List<Map<String, dynamic>>> getSessions({
+    String? controllableByUserId,
+  }) async {
     final response = await _dio.get('/Sessions', queryParameters: {
-      'controllableByUserId': ?controllableByUserId,
+      _dialect.controllableByUserIdParam: ?controllableByUserId,
     });
     return (response.data as List).cast<Map<String, dynamic>>();
   }
@@ -52,9 +58,7 @@ class JellyfinSessionApi implements SessionApi {
   }) async {
     await _dio.post(
       '/Sessions/$sessionId/Playing/$command',
-      queryParameters: {
-        'seekPositionTicks': ?seekPositionTicks,
-      },
+      queryParameters: {'seekPositionTicks': ?seekPositionTicks},
     );
   }
 

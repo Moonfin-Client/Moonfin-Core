@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class EmbySystemApi implements SystemApi {
+import '../api/system_api.dart';
+
+/// Shared system implementation; the endpoints are identical on Jellyfin
+/// and Emby.
+class ServerSystemApi implements SystemApi {
   final Dio _dio;
 
-  EmbySystemApi(this._dio);
+  ServerSystemApi(this._dio);
 
   @override
   Future<Map<String, dynamic>> getPublicSystemInfo() async {

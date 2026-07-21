@@ -1,10 +1,21 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class JellyfinAuthApi implements AuthApi {
+import '../api/auth_api.dart';
+import '../server_dialect.dart';
+
+class ServerAuthApi implements AuthApi {
   final Dio _dio;
+  final ServerDialect _dialect;
 
-  JellyfinAuthApi(this._dio);
+  ServerAuthApi(this._dio, this._dialect);
+
+  void _requireQuickConnect() {
+    if (!_dialect.supportsQuickConnect) {
+      throw UnsupportedError(
+        'QuickConnect is not supported on this server',
+      );
+    }
+  }
 
   @override
   Future<Map<String, dynamic>> authenticateByName(
@@ -20,12 +31,14 @@ class JellyfinAuthApi implements AuthApi {
 
   @override
   Future<Map<String, dynamic>> initiateQuickConnect() async {
+    _requireQuickConnect();
     final response = await _dio.post('/QuickConnect/Initiate');
     return response.data as Map<String, dynamic>;
   }
 
   @override
   Future<Map<String, dynamic>> checkQuickConnect(String secret) async {
+    _requireQuickConnect();
     final response = await _dio.get(
       '/QuickConnect/Connect',
       queryParameters: {'Secret': secret},
@@ -35,6 +48,7 @@ class JellyfinAuthApi implements AuthApi {
 
   @override
   Future<bool> authorizeQuickConnect(String code, {String? userId}) async {
+    _requireQuickConnect();
     final response = await _dio.post(
       '/QuickConnect/Authorize',
       queryParameters: {
@@ -49,6 +63,7 @@ class JellyfinAuthApi implements AuthApi {
   Future<Map<String, dynamic>> authenticateWithQuickConnect(
     String secret,
   ) async {
+    _requireQuickConnect();
     final response = await _dio.post(
       '/Users/AuthenticateWithQuickConnect',
       data: {'Secret': secret},

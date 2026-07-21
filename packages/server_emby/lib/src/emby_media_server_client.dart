@@ -1,21 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
-import 'api/emby_auth_api.dart';
-import 'api/emby_items_api.dart';
-import 'api/emby_playback_api.dart';
-import 'api/emby_image_api.dart';
-import 'api/emby_session_api.dart';
-import 'api/emby_system_api.dart';
-import 'api/emby_user_library_api.dart';
-import 'api/emby_user_views_api.dart';
-import 'api/emby_live_tv_api.dart';
-import 'api/emby_instant_mix_api.dart';
-import 'api/emby_display_preferences_api.dart';
-import 'api/emby_users_api.dart';
-
 class EmbyMediaServerClient extends MediaServerClient {
   final Dio _dio;
+
+  static const _dialect = ServerDialect.emby;
 
   @override
   final DeviceInfo deviceInfo;
@@ -31,26 +20,17 @@ class EmbyMediaServerClient extends MediaServerClient {
        )) {
     _baseUrl = baseUrl;
     configureServerDio(_dio);
-    _setupInterceptors();
+    attachServerInterceptors(
+      _dio,
+      deviceInfo: deviceInfo,
+      authScheme: _dialect.authScheme,
+      getAccessToken: () => _accessToken,
+    );
   }
 
   late String _baseUrl;
   String? _accessToken;
   String? _userId;
-
-  void _setupInterceptors() {
-    _dio.interceptors.add(redirectInterceptor(_dio));
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        options.headers['Authorization'] = buildServerAuthorizationHeader(
-          scheme: 'Emby',
-          deviceInfo: deviceInfo,
-          accessToken: _accessToken,
-        );
-        handler.next(options);
-      },
-    ));
-  }
 
   String _requireUserId() {
     final id = _userId;
@@ -83,45 +63,44 @@ class EmbyMediaServerClient extends MediaServerClient {
   set userId(String? id) => _userId = id;
 
   @override
-  late final AuthApi authApi = EmbyAuthApi(_dio);
+  late final AuthApi authApi = ServerAuthApi(_dio, _dialect);
 
   @override
-  late final ItemsApi itemsApi = EmbyItemsApi(_dio, _requireUserId);
+  late final ItemsApi itemsApi = ServerItemsApi(_dio, _dialect, _requireUserId);
 
   @override
-  late final PlaybackApi playbackApi =
-      EmbyPlaybackApi(_dio, () => _baseUrl);
+  late final PlaybackApi playbackApi = ServerPlaybackApi(_dio, () => _baseUrl);
 
   @override
   late final ImageApi imageApi =
-      EmbyImageApi(() => _baseUrl, () => _accessToken);
+      ServerImageApi(() => _baseUrl, () => _accessToken, _dialect);
 
   @override
-  late final SessionApi sessionApi = EmbySessionApi(_dio);
+  late final SessionApi sessionApi = ServerSessionApi(_dio, _dialect);
 
   @override
-  late final SystemApi systemApi = EmbySystemApi(_dio);
+  late final SystemApi systemApi = ServerSystemApi(_dio);
 
   @override
   late final UserLibraryApi userLibraryApi =
-      EmbyUserLibraryApi(_dio, _requireUserId);
+      ServerUserLibraryApi(_dio, _dialect, _requireUserId);
 
   @override
-  late final EmbyUserViewsApi userViewsApi =
-      EmbyUserViewsApi(_dio, _requireUserId);
+  late final UserViewsApi userViewsApi =
+      ServerUserViewsApi(_dio, _dialect, _requireUserId);
 
   @override
-  late final LiveTvApi liveTvApi = EmbyLiveTvApi(_dio);
+  late final LiveTvApi liveTvApi = ServerLiveTvApi(_dio);
 
   @override
-  late final InstantMixApi instantMixApi = EmbyInstantMixApi(_dio);
+  late final InstantMixApi instantMixApi = ServerInstantMixApi(_dio);
 
   @override
-  late final EmbyDisplayPreferencesApi displayPreferencesApi =
-      EmbyDisplayPreferencesApi(_dio);
+  late final DisplayPreferencesApi displayPreferencesApi =
+      ServerDisplayPreferencesApi(_dio, _dialect);
 
   @override
-  late final UsersApi usersApi = EmbyUsersApi(_dio, _requireUserId);
+  late final UsersApi usersApi = ServerUsersApi(_dio, _dialect, _requireUserId);
 
   @override
   AdminSystemApi get adminSystemApi =>

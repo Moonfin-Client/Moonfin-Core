@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class EmbyPlaybackApi implements PlaybackApi {
+import '../api/playback_api.dart';
+
+class ServerPlaybackApi implements PlaybackApi {
   final Dio _dio;
   final String Function() _getBaseUrl;
 
-  EmbyPlaybackApi(this._dio, this._getBaseUrl);
+  ServerPlaybackApi(this._dio, this._getBaseUrl);
 
   @override
   Future<void> reportPlaybackStart(Map<String, dynamic> info) async {

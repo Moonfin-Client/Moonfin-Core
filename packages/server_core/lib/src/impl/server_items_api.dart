@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
-import 'jellyfin_item_fields.dart';
 
-class JellyfinItemsApi implements ItemsApi {
+import '../api/items_api.dart';
+import '../server_dialect.dart';
+
+class ServerItemsApi implements ItemsApi {
   final Dio _dio;
+  final ServerDialect _dialect;
   final String Function() _getUserId;
 
-  JellyfinItemsApi(this._dio, this._getUserId);
+  ServerItemsApi(this._dio, this._dialect, this._getUserId);
 
   bool _shouldRetryCollectionFallback(int statusCode) {
     return statusCode == 400 ||
@@ -126,11 +128,13 @@ class JellyfinItemsApi implements ItemsApi {
     String? fields,
   }) async {
     final userId = _getUserId();
+    final effectiveFields = fields ?? _dialect.defaultItemFields;
     final response = await _dio.get(
       '/Users/$userId/Items/$itemId',
       queryParameters: {
-        'Fields': fields ?? kItemFields,
-        if (mediaSourceId != null) 'mediaSourceId': mediaSourceId,
+        if (effectiveFields != null && effectiveFields.isNotEmpty)
+          'Fields': effectiveFields,
+        'mediaSourceId': ?mediaSourceId,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -138,11 +142,15 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<List<Map<String, dynamic>>> getAncestors(String itemId) async {
-    final response = await _dio.get('/Items/$itemId/Ancestors');
-    return ((response.data as List?) ?? const [])
-        .whereType<Map>()
-        .map((e) => e.cast<String, dynamic>())
-        .toList(growable: false);
+    try {
+      final response = await _dio.get('/Items/$itemId/Ancestors');
+      return ((response.data as List?) ?? const [])
+          .whereType<Map>()
+          .map((e) => e.cast<String, dynamic>())
+          .toList(growable: false);
+    } catch (_) {
+      return const [];
+    }
   }
 
   @override
@@ -194,7 +202,7 @@ class JellyfinItemsApi implements ItemsApi {
     int? imageTypeLimit,
   }) async {
     final response = await _dio.get(
-      '/UserItems/Resume',
+      _dialect.resumePath(_getUserId()),
       queryParameters: {
         'ParentId': ?parentId,
         if (includeItemTypes != null)
@@ -218,7 +226,7 @@ class JellyfinItemsApi implements ItemsApi {
     int? imageTypeLimit,
   }) async {
     final response = await _dio.get(
-      '/Items/Latest',
+      _dialect.latestPath(_getUserId()),
       queryParameters: {
         'ParentId': ?parentId,
         if (includeItemTypes != null)
@@ -229,6 +237,8 @@ class JellyfinItemsApi implements ItemsApi {
         'ImageTypeLimit': ?imageTypeLimit,
       },
     );
+    // /Items/Latest returns a bare array, so normalize it into the
+    // same shape as /Items so all callers stay unchanged.
     final data = response.data;
     if (data is List) return {'Items': data, 'TotalRecordCount': data.length};
     return data as Map<String, dynamic>;
@@ -243,9 +253,8 @@ class JellyfinItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
   }) async {
-    final userId = _getUserId();
     final response = await _dio.get(
-      '/Users/$userId/Items',
+      _dialect.recentlyReleasedPath(_getUserId()),
       queryParameters: {
         'ParentId': ?parentId,
         if (includeItemTypes != null)
@@ -256,7 +265,7 @@ class JellyfinItemsApi implements ItemsApi {
         'ImageTypeLimit': ?imageTypeLimit,
         'SortBy': 'PremiereDate',
         'SortOrder': 'Descending',
-         'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
+        'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
       },
     );
     final data = response.data;
@@ -290,7 +299,10 @@ class JellyfinItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.get(
       '/Items/$itemId/ThemeMedia',
-      queryParameters: {'InheritFromParent': inheritFromParent},
+      queryParameters: {
+        if (_dialect.themeMediaNeedsUserId) 'UserId': _getUserId(),
+        'InheritFromParent': inheritFromParent,
+      },
     );
     return response.data as Map<String, dynamic>;
   }
@@ -298,7 +310,7 @@ class JellyfinItemsApi implements ItemsApi {
   @override
   Future<Map<String, dynamic>> getPlaylists() async {
     final response = await _dio.get(
-      '/Items',
+      _dialect.playlistsPath(_getUserId()),
       queryParameters: {
         'IncludeItemTypes': 'Playlist',
         'Recursive': true,
@@ -411,8 +423,8 @@ class JellyfinItemsApi implements ItemsApi {
     final queryParameters = <String, dynamic>{
       'name': name,
       'Name': name,
-      if (ids != null) 'ids': ids,
-      if (ids != null) 'Ids': ids,
+      'ids': ?ids,
+      'Ids': ?ids,
     };
 
     Response<dynamic> response;
@@ -560,6 +572,7 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<Map<String, dynamic>> getLyrics(String itemId) async {
+    if (!_dialect.supportsLyrics) return const {'Lyrics': []};
     final response = await _dio.get('/Audio/$itemId/Lyrics');
     return response.data as Map<String, dynamic>;
   }
@@ -595,16 +608,21 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<List<Map<String, dynamic>>> getSpecialFeatures(String itemId) async {
-    final response = await _dio.get('/Items/$itemId/SpecialFeatures');
-    final data = response.data;
-    if (data is List) {
-      return data.cast<Map<String, dynamic>>();
+    try {
+      final response = await _dio.get('/Items/$itemId/SpecialFeatures');
+      final data = response.data;
+      if (data is List) {
+        return data.cast<Map<String, dynamic>>();
+      }
+      return const [];
+    } catch (_) {
+      return const [];
     }
-    return const [];
   }
 
   @override
   Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async {
+    if (!_dialect.supportsMediaSegments) return const [];
     final response = await _dio.get('/MediaSegments/$itemId');
     final data = response.data as Map<String, dynamic>;
     final items = data['Items'] as List? ?? [];
@@ -617,6 +635,11 @@ class JellyfinItemsApi implements ItemsApi {
     required String language,
     bool? isPerfectMatch,
   }) async {
+    if (!_dialect.supportsRemoteSubtitleSearch) {
+      throw UnsupportedError(
+        'Remote subtitle search is only supported for Jellyfin servers.',
+      );
+    }
     final response = await _dio.get(
       '/Items/$itemId/RemoteSearch/Subtitles/$language',
       queryParameters: {'IsPerfectMatch': ?isPerfectMatch},
@@ -629,6 +652,11 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<void> downloadRemoteSubtitle(String itemId, String subtitleId) async {
+    if (!_dialect.supportsRemoteSubtitleSearch) {
+      throw UnsupportedError(
+        'Remote subtitle download is only supported for Jellyfin servers.',
+      );
+    }
     await _dio.post('/Items/$itemId/RemoteSearch/Subtitles/$subtitleId');
   }
 }
