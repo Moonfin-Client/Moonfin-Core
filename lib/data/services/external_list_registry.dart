@@ -198,14 +198,18 @@ final List<BuiltinExternalList> kBuiltinExternalLists = [
   ),
 ];
 
+String externalListSelectionId(HomeSectionConfig config) {
+  return base64Url.encode(utf8.encode(config.stableId));
+}
+
 /// A selectable external list source with its display label and resolved config.
 class ExternalListOption {
-  final String stableId;
+  final String id;
   final String label;
   final HomeSectionConfig config;
 
   const ExternalListOption({
-    required this.stableId,
+    required this.id,
     required this.label,
     required this.config,
   });
@@ -234,7 +238,7 @@ List<ExternalListOption> externalListOptions(
   for (final config in _customExternalListConfigs(prefs)) {
     options.add(
       ExternalListOption(
-        stableId: config.stableId,
+        id: externalListSelectionId(config),
         label: config.pluginDisplayText?.isNotEmpty == true
             ? config.pluginDisplayText!
             : (config.pluginSection ?? 'List'),
@@ -248,7 +252,7 @@ List<ExternalListOption> externalListOptions(
     final config = chart.config(label);
     options.add(
       ExternalListOption(
-        stableId: config.stableId,
+        id: externalListSelectionId(config),
         label: label,
         config: config,
       ),
@@ -269,12 +273,12 @@ List<HomeSectionConfig> resolveExternalListConfigs(
 
   final byId = <String, HomeSectionConfig>{};
   for (final config in _customExternalListConfigs(prefs)) {
-    byId[config.stableId] = config;
+    byId[externalListSelectionId(config)] = config;
   }
   for (final chart in kBuiltinExternalLists) {
     // The title doesn't affect the stable id or the fetch, so an empty one is fine.
     final config = chart.config();
-    byId[config.stableId] = config;
+    byId[externalListSelectionId(config)] = config;
   }
 
   return [

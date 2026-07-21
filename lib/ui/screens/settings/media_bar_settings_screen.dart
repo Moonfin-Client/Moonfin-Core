@@ -169,7 +169,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
 
     try {
       final options = externalListOptions(prefs, l10n);
-      final availableIds = options.map((o) => o.stableId).toSet();
+      final availableIds = options.map((o) => o.id).toSet();
       final pruned = selected.intersection(availableIds);
       if (pruned.length != selected.length) {
         _saveCsv(UserPreferences.mediaBarExternalListIds, pruned.toList());
@@ -178,7 +178,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
       if (!mounted) return;
       final result = await _showMultiSelectDialog(
         title: l10n.externalMedia,
-        items: {for (final o in options) o.stableId: o.label},
+        items: {for (final o in options) o.id: o.label},
         selected: pruned,
       );
       if (result != null) {
