@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Schakel tussen Moonfin en Neon Pulse zonder de app opnieuw te starten",
+    "settingsAppearanceThemeSubtitle": "Pas een volledig aangepast thema toe en schakel tussen een op Apple of Material Design geïnspireerde gebruikersinterface.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -176,7 +176,7 @@
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Huidige Moonfin-look waar jullie allemaal van zijn gaan houden",
+    "themeMoonfinSubtitle": "De originele, schone Moonfin-standaard.",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
@@ -959,7 +959,7 @@
     "@episodes": {
         "description": "Section header for episodes"
     },
-    "nextUp": "Volgende omhoog",
+    "nextUp": "Volgende",
     "@nextUp": {
         "description": "Home section: next up"
     },
@@ -3520,7 +3520,7 @@
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "Toon in de nieuwste media",
+    "showInLatestMedia": "Toon in de recentelijke toegevoegd/vrijgegeven media",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
@@ -3641,11 +3641,11 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Schakel audio in voor previews van trailers en afleveringen",
+    "enablePreviewAudio": "Schakel audio in voor previews van media",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
-    "latestMedia": "Nieuwste media",
+    "latestMedia": "Recent toegevoegde media",
     "@latestMedia": {
         "description": "Home section: latest media"
     },
@@ -4223,7 +4223,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "Herschik de startrijen en schakel ze om",
+    "reorderToggleHomeRows": "Herschik de bibliotheek- en externgebaseerde thuisrijen en schakel ze om",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -6529,7 +6529,7 @@
     "settingsPrivacyAndSafetySection": "PRIVACY & VEILIGHEID",
     "settingsBlockedRatings": "Geblokkeerde beoordelingen",
     "settingsGeneralStyle": "Algemene stijl",
-    "settingsGeneralStyleSubtitle": "Thema-accenten, achtergronden, bekeken indicatoren en themamuziek",
+    "settingsGeneralStyleSubtitle": "Thema-accenten, achtergronden, en bekeken indicatoren",
     "settingsHomePage": "Startpagina",
     "settingsHomePageSubtitle": "Secties, afbeeldingstypen, overlays en mediavoorbeelden",
     "settingsLibrariesSubtitle": "Zichtbaarheid van de bibliotheek, mapweergave en gedrag op meerdere servers",
@@ -6668,7 +6668,7 @@
             }
         }
     },
-    "latestLibraryName": "Latest {libraryName}",
+    "latestLibraryName": "Recent toegevoegd {libraryName}",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
@@ -7665,7 +7665,7 @@
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
-    "settingsScrollWheelActionDescription": "Kies wat er tijdens het afspelen gebeurt als u met het muiswiel over de video scrolt.",
+    "settingsScrollWheelActionDescription": "Kies wat scrollen met het muiswiel over de video doet tijdens het afspelen.",
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
@@ -7673,7 +7673,7 @@
     "@scrollWheelActionOff": {
         "description": "Scroll wheel action option: do nothing"
     },
-    "scrollWheelActionSeek": "Spoelen (vooruit / terug)",
+    "scrollWheelActionSeek": "Spoelen (vooruit / achteruit)",
     "@scrollWheelActionSeek": {
         "description": "Scroll wheel action option: seek forward and back"
     },
@@ -9006,5 +9006,94 @@
     "imdbMostPopularMovies": "IMDb populairste films",
     "imdbMostPopularTvShows": "IMDb populairste series",
     "imdbLowestRatedMovies": "IMDb laagst beoordeelde films",
-    "imdbTopEnglishMovies": "IMDb best beoordeelde Engelstalige films"
+    "imdbTopEnglishMovies": "IMDb best beoordeelde Engelstalige films",
+    "castMembers": "Cast",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Afronden…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "failedToDeleteItemWithError": "De verwijdering is mislukt met de volgende foutmelding: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "detailsBackgroundOpacity": "Achtergronddoorzichtigheid Details",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "homeRowsPadding": "Thuisrij vulling",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Vulling tussen thuisrijen aanpassen",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
+    },
+    "useNativeEmulator": "Ingebouwde emulatie",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Speel spellen met ingebouwde kernen in plaats van de EmulatorJS webspeler",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Emulatorkernen",
+    "emulatorCoresSubtitle": "Download systemen om spellen ingebouwd te spelen",
+    "emulatorCoresDescription": "Kies welke systemen je wilt installeren. De cores worden geleverd door het libretro-project en zorgen ervoor dat games ingebouwd kunnen worden uitgevoerd in plaats van in een browserscherm.",
+    "emulatorCoreDownloading": "Downloaden",
+    "emulatorCoreUnavailable": "Niet beschikbaar voor dit apparaat",
+    "emulatorCoreDownloadFailed": "Het downloaden van de core is mislukt. Controleer uw internetverbinding en probeer het opnieuw.",
+    "downloadedGames": "Gedownloade spellen",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Maak ruimte vrij die door spelbestanden wordt gebruikt",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "De spellen worden naar dit apparaat gekopieerd voordat ze gespeeld kunnen worden. Verwijder de spellen die je hebt uitgespeeld om ruimte vrij te maken. Voortgangsbestanden worden op de server bewaard en niet verwijderd.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Er zijn nog geen spellen naar dit apparaat gedownload.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} spellen, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Alles verwijderen",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "{title} van dit apparaat verwijderen? De volgende keer dat u het speelt wordt het weer gedownloadt.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "Alle gedownloade spellen van dit apparaat verwijderen? Ze worden de volgende keer dat je ze speelt opnieuw gedownload.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
+    }
 }
