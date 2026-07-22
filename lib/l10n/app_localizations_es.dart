@@ -9881,9 +9881,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get audiobookTimelineEmpty => 'La cronología está vacía';
 
   @override
-  String get audiobookWholeBook => 'Todo el libro';
-
-  @override
   String get audiobookFocusedTimeline => 'Cronología centrada';
 
   @override

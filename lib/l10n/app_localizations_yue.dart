@@ -9380,9 +9380,6 @@ class AppLocalizationsYue extends AppLocalizations {
   String get audiobookTimelineEmpty => '時間軸係空嘅';
 
   @override
-  String get audiobookWholeBook => '成本書';
-
-  @override
   String get audiobookFocusedTimeline => '聚焦時間軸';
 
   @override

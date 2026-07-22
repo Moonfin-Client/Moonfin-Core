@@ -9875,9 +9875,6 @@ class AppLocalizationsBg extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Хронологията е празна';
 
   @override
-  String get audiobookWholeBook => 'Цялата книга';
-
-  @override
   String get audiobookFocusedTimeline => 'Фокусирана хронология';
 
   @override

@@ -9793,9 +9793,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Цагийн шугам хоосон байна';
 
   @override
-  String get audiobookWholeBook => 'Бүтэн ном';
-
-  @override
   String get audiobookFocusedTimeline => 'Төвлөрсөн цагийн шугам';
 
   @override

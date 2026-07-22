@@ -9818,9 +9818,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'De tijdlijn is leeg';
 
   @override
-  String get audiobookWholeBook => 'Hele boek';
-
-  @override
   String get audiobookFocusedTimeline => 'Gerichte tijdlijn';
 
   @override

@@ -7980,7 +7980,6 @@
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "audiobookWholeBook": "Livre entier",
     "audiobookSleepRemaining": "{remaining} restant",
     "@audiobookSleepRemaining": {
         "placeholders": {

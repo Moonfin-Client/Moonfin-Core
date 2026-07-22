@@ -9837,9 +9837,6 @@ class AppLocalizationsSl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Časovnica je prazna';
 
   @override
-  String get audiobookWholeBook => 'Celotna knjiga';
-
-  @override
   String get audiobookFocusedTimeline => 'Osredotočena časovnica';
 
   @override

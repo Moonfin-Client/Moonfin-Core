@@ -9849,9 +9849,6 @@ class AppLocalizationsSw extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Ratiba ya muda ni tupu';
 
   @override
-  String get audiobookWholeBook => 'Kitabu Kizima';
-
-  @override
   String get audiobookFocusedTimeline => 'Ratiba ya Muda Iliyolengwa';
 
   @override

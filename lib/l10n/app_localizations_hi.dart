@@ -9743,9 +9743,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get audiobookTimelineEmpty => 'टाइमलाइन खाली है';
 
   @override
-  String get audiobookWholeBook => 'पूरी किताब';
-
-  @override
   String get audiobookFocusedTimeline => 'केंद्रित टाइमलाइन';
 
   @override

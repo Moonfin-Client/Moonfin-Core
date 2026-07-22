@@ -17368,12 +17368,6 @@ abstract class AppLocalizations {
   /// **'Timeline is empty'**
   String get audiobookTimelineEmpty;
 
-  /// No description provided for @audiobookWholeBook.
-  ///
-  /// In en, this message translates to:
-  /// **'Whole Book'**
-  String get audiobookWholeBook;
-
   /// No description provided for @audiobookFocusedTimeline.
   ///
   /// In en, this message translates to:

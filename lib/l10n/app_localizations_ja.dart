@@ -9464,9 +9464,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'タイムラインは空です';
 
   @override
-  String get audiobookWholeBook => '本全体';
-
-  @override
   String get audiobookFocusedTimeline => '注目のタイムライン';
 
   @override

@@ -9921,9 +9921,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Zeitleiste ist leer';
 
   @override
-  String get audiobookWholeBook => 'Ganzes Buch';
-
-  @override
   String get audiobookFocusedTimeline => 'Fokussierte Zeitleiste';
 
   @override
