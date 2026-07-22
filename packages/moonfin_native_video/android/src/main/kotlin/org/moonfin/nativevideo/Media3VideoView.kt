@@ -1171,6 +1171,8 @@ class Media3VideoView(
 
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(120_000)
+            .setReadTimeoutMs(120_000)
         val bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
         val assHandler = AssHandler(AssRenderType.OVERLAY_CANVAS)
         registerAssFonts(assHandler)

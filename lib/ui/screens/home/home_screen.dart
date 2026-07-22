@@ -1640,7 +1640,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (platform is NativePlayer) {
       try {
         final dynamic native = platform;
-        native.setProperty('network-timeout', '30');
+        native.setProperty('network-timeout', '120');
       } catch (_) {}
     }
     _previewPlayer = player;

@@ -328,7 +328,7 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         setOpt("vid", "auto")
         setOpt("audio-display", "no")
         setOpt("cache", "yes")
-        setOpt("network-timeout", "30")
+        setOpt("network-timeout", "120")
         setOpt("keepaspect", "yes")
         if live {
             setOpt("cache-secs", "10")
