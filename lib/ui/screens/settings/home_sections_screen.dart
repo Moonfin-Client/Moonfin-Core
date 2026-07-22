@@ -439,6 +439,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   bool _isSeerrSectionType(HomeSectionType type) {
     return type == HomeSectionType.seerrRecentRequests ||
+        type == HomeSectionType.seerrWatchlist ||
         type == HomeSectionType.seerrRecentlyAdded ||
         type == HomeSectionType.seerrPopularMovies ||
         type == HomeSectionType.seerrUpcomingMovies ||
@@ -1627,6 +1628,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.genres => l10n.genres,
         HomeSectionType.liveTv => l10n.liveTV,
         HomeSectionType.seerrRecentRequests => l10n.recentRequests,
+        HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
         HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
         HomeSectionType.seerrPopularMovies => l10n.popularMovies,
         HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,

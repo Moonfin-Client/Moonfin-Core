@@ -137,6 +137,7 @@ class HomeViewModel extends ChangeNotifier {
 
   static bool _isSeerrSectionType(HomeSectionType type) {
     return type == HomeSectionType.seerrRecentRequests ||
+        type == HomeSectionType.seerrWatchlist ||
         type == HomeSectionType.seerrRecentlyAdded ||
         type == HomeSectionType.seerrPopularMovies ||
         type == HomeSectionType.seerrUpcomingMovies ||
@@ -669,6 +670,8 @@ class HomeViewModel extends ChangeNotifier {
         return row.rowType == HomeRowType.activeRecordings;
       case HomeSectionType.seerrRecentRequests:
         return row.id == 'seerr_recent_requests';
+      case HomeSectionType.seerrWatchlist:
+        return row.id == 'seerr_watchlist';
       case HomeSectionType.seerrRecentlyAdded:
         return row.id == 'seerr_recently_added';
       case HomeSectionType.seerrPopularMovies:
@@ -949,6 +952,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'activeRecordings'};
       case HomeSectionType.seerrRecentRequests:
         return const {'seerrRecentRequests'};
+      case HomeSectionType.seerrWatchlist:
+        return const {'seerrWatchlist'};
       case HomeSectionType.seerrRecentlyAdded:
         return const {'seerrRecentlyAdded'};
       case HomeSectionType.seerrPopularMovies:
@@ -1246,6 +1251,12 @@ class HomeViewModel extends ChangeNotifier {
           SeerrRowType.recentRequests,
           l10n.recentRequests,
           'seerr_recent_requests',
+        );
+      case HomeSectionType.seerrWatchlist:
+        return _loadSeerrRow(
+          SeerrRowType.yourWatchlist,
+          l10n.yourWatchlist,
+          'seerr_watchlist',
         );
       case HomeSectionType.seerrRecentlyAdded:
         return _loadSeerrRow(
@@ -1580,6 +1591,13 @@ class HomeViewModel extends ChangeNotifier {
         return HomeRow(
           id: 'seerr_recent_requests',
           title: l10n.recentRequests,
+          rowType: HomeRowType.pluginDynamic,
+          isLoading: true,
+        );
+      case HomeSectionType.seerrWatchlist:
+        return HomeRow(
+          id: 'seerr_watchlist',
+          title: l10n.yourWatchlist,
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );
@@ -2098,7 +2116,8 @@ class HomeViewModel extends ChangeNotifier {
 
       final filtered = rawItems.where((item) {
         if (type != SeerrRowType.recentlyAdded &&
-            type != SeerrRowType.recentRequests) {
+            type != SeerrRowType.recentRequests &&
+            type != SeerrRowType.yourWatchlist) {
           if (item.isAvailable || item.isBlacklisted) return false;
         }
         if (blockNsfw) {
@@ -2178,6 +2197,8 @@ class HomeViewModel extends ChangeNotifier {
     int limit,
   ) async {
     switch (type) {
+      case SeerrRowType.yourWatchlist:
+        return repo.getWatchlist(page: 1);
       case SeerrRowType.trending:
         return repo.getTrending(limit: limit, offset: 0);
       case SeerrRowType.popularMovies:
