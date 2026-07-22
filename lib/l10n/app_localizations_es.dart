@@ -3690,6 +3690,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get seerrDiscoveryRows => 'Filas de descubrimiento de Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults =>
       'Restablecer filas a valores predeterminados';
 
@@ -10256,6 +10259,12 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'Películas en inglés mejor valoradas de IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).

@@ -3677,6 +3677,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr Keşfet Satırları';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Satırları varsayılanlara sıfırla';
 
   @override
@@ -10151,4 +10154,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDB En Yüksek Puanlı İngilizce Filmler';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

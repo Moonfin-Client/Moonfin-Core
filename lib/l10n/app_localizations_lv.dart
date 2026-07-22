@@ -3680,6 +3680,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr atklāšanas rindas';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults =>
       'Atiestatīt rindas uz noklusējuma iestatījumiem';
 
@@ -10200,4 +10203,10 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'IMDb augstāk novērtētās filmas angļu valodā';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

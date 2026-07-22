@@ -3665,6 +3665,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerri avastamisread';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Lähtestage read vaikeseadetele';
 
   @override
@@ -10145,4 +10148,10 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb parimad ingliskeelsed filmid';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

@@ -3578,6 +3578,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr のディスカバリー行';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => '行をデフォルトにリセットする';
 
   @override
@@ -9821,4 +9824,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb 高評価の英語映画';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

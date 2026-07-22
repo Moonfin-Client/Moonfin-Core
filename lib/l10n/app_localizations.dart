@@ -17997,6 +17997,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'IMDb Top Rated English Movies'**
   String get imdbTopEnglishMovies;
+
+  /// Button label to add media to the user's Seerr watchlist
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Watchlist'**
+  String get addToWatchlist;
+
+  /// Button label to remove media from the user's Seerr watchlist
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Watchlist'**
+  String get removeFromWatchlist;
 }
 
 class _AppLocalizationsDelegate

@@ -3705,6 +3705,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get seerrDiscoveryRows => 'Σειρές ανακάλυψης Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Επαναφέρετε τις σειρές στις προεπιλογές';
 
   @override
@@ -10299,4 +10302,10 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb: Κορυφαίες αγγλόφωνες ταινίες';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

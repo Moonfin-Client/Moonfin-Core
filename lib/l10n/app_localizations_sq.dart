@@ -3697,6 +3697,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get seerrDiscoveryRows => 'Rreshtat e zbulimit Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Rivendosni rreshtat në parazgjedhje';
 
   @override
@@ -10237,4 +10240,10 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'Filmat anglisht më të vlerësuar në IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

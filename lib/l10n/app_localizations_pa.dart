@@ -3651,6 +3651,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr ਖੋਜ ਕਤਾਰਾਂ';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'ਕਤਾਰਾਂ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ \'ਤੇ ਰੀਸੈਟ ਕਰੋ';
 
   @override
@@ -10096,4 +10099,10 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'IMDb ਚੋਟੀ ਦੀਆਂ ਰੇਟਿੰਗ ਵਾਲੀਆਂ ਅੰਗਰੇਜ਼ੀ ਫਿਲਮਾਂ';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

@@ -3543,6 +3543,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 探索列表';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => '將行重設為預設值';
 
   @override
@@ -9733,6 +9736,12 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb 評分最高英語電影';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).

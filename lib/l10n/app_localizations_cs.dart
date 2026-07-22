@@ -3673,6 +3673,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get seerrDiscoveryRows => 'Objevovací řádky Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Resetovat řádky na výchozí hodnoty';
 
   @override
@@ -10179,4 +10182,10 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'Nejlépe hodnocené anglické filmy podle IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

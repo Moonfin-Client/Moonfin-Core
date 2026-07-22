@@ -3688,6 +3688,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get seerrDiscoveryRows => 'Rhesi Darganfod Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Ailosod rhesi i ragosodiadau';
 
   @override
@@ -10196,4 +10199,10 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'Ffilmiau Saesneg â\'r Sgôr Uchaf ar IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

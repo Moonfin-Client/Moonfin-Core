@@ -3570,6 +3570,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 둘러보기 행';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => '행을 기본값으로 재설정';
 
   @override
@@ -9814,4 +9817,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb 영어 영화 평점 순위';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

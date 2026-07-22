@@ -3635,6 +3635,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get seerrDiscoveryRows => 'แถวสำรวจของ Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'รีเซ็ตแถวเป็นค่าเริ่มต้น';
 
   @override
@@ -10059,4 +10062,10 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'ภาพยนตร์ภาษาอังกฤษคะแนนสูงสุดของ IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

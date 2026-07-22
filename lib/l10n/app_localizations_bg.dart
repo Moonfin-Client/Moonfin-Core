@@ -3683,6 +3683,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get seerrDiscoveryRows => 'Редове за откриване в Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults =>
       'Възстановяване на редовете по подразбиране';
 
@@ -10244,4 +10247,10 @@ class AppLocalizationsBg extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'IMDb Най-високо оценени филми на английски';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

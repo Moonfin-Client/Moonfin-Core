@@ -3680,6 +3680,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr ашу жолдары';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Жолдарды әдепкі мәндерге қайтарыңыз';
 
   @override
@@ -10183,4 +10186,10 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'IMDb ең жоғары бағаланған ағылшын фильмдері';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

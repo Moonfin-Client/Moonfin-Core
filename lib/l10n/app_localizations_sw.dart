@@ -3690,6 +3690,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get seerrDiscoveryRows => 'Safu za Ugunduzi za Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'Weka upya safu mlalo ziwe chaguomsingi';
 
   @override
@@ -10221,4 +10224,10 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'Filamu Bora za Kiingereza za IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

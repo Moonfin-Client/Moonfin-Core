@@ -3641,6 +3641,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get seerrDiscoveryRows => 'ردیف‌های کشف Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'سطرها را به حالت پیش فرض بازنشانی کنید';
 
   @override
@@ -10073,4 +10076,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'برترین فیلم‌های انگلیسی‌زبان IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

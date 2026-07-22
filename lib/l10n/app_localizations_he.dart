@@ -3627,6 +3627,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get seerrDiscoveryRows => 'שורות גילוי של Seerr';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => 'אפס שורות לברירות המחדל';
 
   @override
@@ -9994,4 +9997,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get imdbTopEnglishMovies =>
       'הסרטים באנגלית עם הדירוג הגבוה ביותר ב-IMDb';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }

@@ -3541,6 +3541,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 发现栏目';
 
   @override
+  String get yourWatchlist => 'Your Watchlist';
+
+  @override
   String get resetRowsToDefaults => '将栏目重置为默认值';
 
   @override
@@ -9729,6 +9732,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb 高分英语电影';
+
+  @override
+  String get addToWatchlist => 'Add to Watchlist';
+
+  @override
+  String get removeFromWatchlist => 'Remove from Watchlist';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
