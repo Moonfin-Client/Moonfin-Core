@@ -301,6 +301,16 @@ class SettingsListTypography extends StatelessWidget {
   }
 }
 
+PreferenceBinding<T> _rebindOnPreferenceChange<T>(
+  PreferenceBinding<T> current,
+  Preference<T> next,
+  Preference<T> previous,
+) {
+  if (next == previous) return current;
+  current.dispose();
+  return PreferenceBinding(GetIt.instance<PreferenceStore>(), next);
+}
+
 class SwitchPreferenceTile extends StatefulWidget {
   final Preference<bool> preference;
   final String title;
@@ -347,13 +357,11 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
   @override
   void didUpdateWidget(covariant SwitchPreferenceTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.preference != oldWidget.preference) {
-      _binding.dispose();
-      _binding = PreferenceBinding(
-        GetIt.instance<PreferenceStore>(),
-        widget.preference,
-      );
-    }
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
+    );
   }
 
   @override
@@ -461,13 +469,11 @@ class _EnumPreferenceTileState<T extends Enum>
   @override
   void didUpdateWidget(covariant EnumPreferenceTile<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.preference != oldWidget.preference) {
-      _binding.dispose();
-      _binding = PreferenceBinding(
-        GetIt.instance<PreferenceStore>(),
-        widget.preference,
-      );
-    }
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
+    );
   }
 
   @override
@@ -658,13 +664,11 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
   @override
   void didUpdateWidget(covariant SliderPreferenceTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.preference != oldWidget.preference) {
-      _binding.dispose();
-      _binding = PreferenceBinding(
-        GetIt.instance<PreferenceStore>(),
-        widget.preference,
-      );
-    }
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
+    );
   }
 
   @override
@@ -867,13 +871,11 @@ class _StringPickerPreferenceTileState
   @override
   void didUpdateWidget(covariant StringPickerPreferenceTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.preference != oldWidget.preference) {
-      _binding.dispose();
-      _binding = PreferenceBinding(
-        GetIt.instance<PreferenceStore>(),
-        widget.preference,
-      );
-    }
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
+    );
   }
 
   @override
@@ -999,13 +1001,11 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
   @override
   void didUpdateWidget(covariant IntPickerPreferenceTile oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.preference != oldWidget.preference) {
-      _binding.dispose();
-      _binding = PreferenceBinding(
-        GetIt.instance<PreferenceStore>(),
-        widget.preference,
-      );
-    }
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
+    );
   }
 
   @override
