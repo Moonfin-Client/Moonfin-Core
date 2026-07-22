@@ -1059,6 +1059,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                                             lib.id,
                                             lib.collectionType,
                                             lib.name,
+                                            serverId: lib.serverId,
                                           ),
                                         );
                                       }

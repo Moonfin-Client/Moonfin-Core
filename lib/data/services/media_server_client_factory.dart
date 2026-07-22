@@ -47,6 +47,14 @@ class MediaServerClientFactory {
     return null;
   }
 
+  /// The loaded client for [serverId], or the active client when it is empty or
+  /// that server is not loaded.
+  MediaServerClient clientForServerOrActive(String? serverId) {
+    final active = GetIt.instance<MediaServerClient>();
+    if (serverId == null || serverId.isEmpty) return active;
+    return getClientIfExists(serverId) ?? active;
+  }
+
   MediaServerClient getActiveClient() {
     if (_clients.isEmpty) throw StateError('No active server clients');
     return _clients.values.last;

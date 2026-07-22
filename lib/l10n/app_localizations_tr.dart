@@ -1071,7 +1071,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cast => 'Yayınla';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'Oyuncular';
 
   @override
   String get trailer => 'Fragman';
@@ -1092,7 +1092,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get downloaded => 'İndirildi';
 
   @override
-  String get finalizingDownload => 'Finalizing…';
+  String get finalizingDownload => 'Tamamlanıyor…';
 
   @override
   String get downloadAll => 'Tümünü İndir';
@@ -2315,7 +2315,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get detailsBackgroundBlur => 'Detay Arka Plan Bulanıklığı';
 
   @override
-  String get detailsBackgroundOpacity => 'Details Background Opacity';
+  String get detailsBackgroundOpacity => 'Detay Arka Plan Opaklığı';
 
   @override
   String pixelValue(int value) {
@@ -8362,62 +8362,63 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsOfflineDownloads => 'Çevrimdışı İndirmeler';
 
   @override
-  String get useNativeEmulator => 'Native Emulation';
+  String get useNativeEmulator => 'Yerel Emülasyon';
 
   @override
   String get useNativeEmulatorSubtitle =>
-      'Play games with native cores instead of the EmulatorJS web player';
+      'Oyunları EmulatorJS web oynatıcısı yerine yerel çekirdeklerle oynayın';
 
   @override
-  String get emulatorCores => 'Emulator Cores';
+  String get emulatorCores => 'Emülatör Çekirdekleri';
 
   @override
-  String get emulatorCoresSubtitle => 'Download systems to play games natively';
+  String get emulatorCoresSubtitle =>
+      'Oyunları yerel olarak oynamak için sistemleri indirin';
 
   @override
   String get emulatorCoresDescription =>
-      'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
+      'Yüklenecek sistemleri seçin. Çekirdekler Libretro projesi tarafından sağlanır ve oyunların bir tarayıcı görünümü yerine yerel olarak çalışmasını sağlar.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'İndiriliyor';
 
   @override
-  String get emulatorCoreUnavailable => 'Not available for this device';
+  String get emulatorCoreUnavailable => 'Bu cihaz için kullanılabilir değil';
 
   @override
   String get emulatorCoreDownloadFailed =>
-      'Could not download the core. Check your connection and try again.';
+      'Çekirdek indirilemedi. Bağlantınızı kontrol edip tekrar deneyin.';
 
   @override
-  String get downloadedGames => 'Downloaded Games';
+  String get downloadedGames => 'İndirilen Oyunlar';
 
   @override
-  String get downloadedGamesSubtitle => 'Free up space used by game files';
+  String get downloadedGamesSubtitle =>
+      'Oyun dosyaları tarafından kullanılan alanı boşaltın';
 
   @override
   String get downloadedGamesDescription =>
-      'Games are copied to this device before they play. Remove the ones you have finished to free up space. Saves are kept on the server and are not deleted.';
+      'Oyunlar oynatılmadan önce bu cihaza kopyalanır. Alan boşaltmak için bitirdiğiniz oyunları kaldırın. Kayıt dosyaları sunucuda saklanır ve silinmez.';
 
   @override
-  String get downloadedGamesEmpty =>
-      'No games have been downloaded to this device yet.';
+  String get downloadedGamesEmpty => 'Bu cihaza henüz hiç oyun indirilmedi.';
 
   @override
   String downloadedGamesTotal(int count, String size) {
-    return '$count games, $size';
+    return '$count oyun, $size';
   }
 
   @override
-  String get removeAllDownloadedGames => 'Remove All';
+  String get removeAllDownloadedGames => 'Hepsini Sil';
 
   @override
   String removeDownloadedGameConfirm(String title) {
-    return 'Remove $title from this device? It will download again the next time you play it.';
+    return '$title bu cihazdan kaldırılsın mı? Bir sonraki oynayışınızda tekrar indirilecektir.';
   }
 
   @override
   String get removeAllDownloadedGamesConfirm =>
-      'Remove all downloaded games from this device? They will download again the next time you play them.';
+      'İndirilen tüm oyunlar bu cihazdan kaldırılsın mı? Bir sonraki oynayışınızda tekrar indirileceklerdir.';
 
   @override
   String get settingsHigh => 'Yüksek';

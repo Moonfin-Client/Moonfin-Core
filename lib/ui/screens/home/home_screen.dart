@@ -5078,7 +5078,12 @@ class _ContentRowsState extends State<_ContentRows>
       default:
         // Game libraries route to the EmulatorJS browser; everything else to the
         // normal library view. Shared with the sidebar and bottom nav.
-        context.push(gameOrLibraryRoute(item.id, collectionType, item.name));
+        context.push(gameOrLibraryRoute(
+          item.id,
+          collectionType,
+          item.name,
+          serverId: item.serverId,
+        ));
         return;
     }
   }

@@ -223,7 +223,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get settingsAppearanceThemeSubtitle =>
-      'Schakel tussen Moonfin en Neon Pulse zonder de app opnieuw te starten';
+      'Pas een volledig aangepast thema toe en schakel tussen een op Apple of Material Design geïnspireerde gebruikersinterface.';
 
   @override
   String get customThemeTitle => 'Aangepast thema';
@@ -243,8 +243,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get themeMoonfin => 'Moonfin';
 
   @override
-  String get themeMoonfinSubtitle =>
-      'Huidige Moonfin-look waar jullie allemaal van zijn gaan houden';
+  String get themeMoonfinSubtitle => 'De originele, schone Moonfin-standaard.';
 
   @override
   String get themeNeonPulse => 'Neonpuls';
@@ -914,7 +913,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get episodes => 'Afleveringen';
 
   @override
-  String get nextUp => 'Volgende omhoog';
+  String get nextUp => 'Volgende';
 
   @override
   String get seasons => 'Seizoenen';
@@ -1096,7 +1095,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get downloaded => 'Gedownload';
 
   @override
-  String get finalizingDownload => 'Finalizing…';
+  String get finalizingDownload => 'Afronden…';
 
   @override
   String get downloadAll => 'Alles downloaden';
@@ -1140,7 +1139,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'De verwijdering is mislukt met de volgende foutmelding: $error';
   }
 
   @override
@@ -2326,7 +2325,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get detailsBackgroundBlur => 'Details Achtergrondvervaging';
 
   @override
-  String get detailsBackgroundOpacity => 'Details Background Opacity';
+  String get detailsBackgroundOpacity => 'Achtergronddoorzichtigheid Details';
 
   @override
   String pixelValue(int value) {
@@ -2351,13 +2350,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Kies wat er tijdens het afspelen gebeurt als u met het muiswiel over de video scrolt.';
+      'Kies wat scrollen met het muiswiel over de video doet tijdens het afspelen.';
 
   @override
   String get scrollWheelActionOff => 'Uit';
 
   @override
-  String get scrollWheelActionSeek => 'Spoelen (vooruit / terug)';
+  String get scrollWheelActionSeek => 'Spoelen (vooruit / achteruit)';
 
   @override
   String get scrollWheelActionVolume => 'Volume';
@@ -3207,7 +3206,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get showInNavigation => 'Toon in navigatie';
 
   @override
-  String get showInLatestMedia => 'Toon in de nieuwste media';
+  String get showInLatestMedia =>
+      'Toon in de recentelijke toegevoegd/vrijgegeven media';
 
   @override
   String get sourceLibraries => 'Bronbibliotheken';
@@ -3337,11 +3337,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get previewAudio => 'Voorbeeld van audio';
 
   @override
-  String get enablePreviewAudio =>
-      'Schakel audio in voor previews van trailers en afleveringen';
+  String get enablePreviewAudio => 'Schakel audio in voor previews van media';
 
   @override
-  String get latestMedia => 'Nieuwste media';
+  String get latestMedia => 'Recent toegevoegde media';
 
   @override
   String get recentlyReleased => 'Onlangs uitgebracht';
@@ -3401,11 +3400,11 @@ class AppLocalizationsNl extends AppLocalizations {
       'Beperk startrijen tot 1 rij per scherm';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Thuisrij vulling';
 
   @override
   String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+      'Vulling tussen thuisrijen aanpassen';
 
   @override
   String get perRowImageType => 'Per rij afbeeldingstype';
@@ -3843,7 +3842,8 @@ class AppLocalizationsNl extends AppLocalizations {
       'Navigatiebalkstijl, werkbalkknoppen, uiterlijk';
 
   @override
-  String get reorderToggleHomeRows => 'Herschik de startrijen en schakel ze om';
+  String get reorderToggleHomeRows =>
+      'Herschik de bibliotheek- en externgebaseerde thuisrijen en schakel ze om';
 
   @override
   String get featuredContentAppearance => 'Uitgelichte inhoud, uiterlijk';
@@ -8314,7 +8314,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get settingsGeneralStyleSubtitle =>
-      'Thema-accenten, achtergronden, bekeken indicatoren en themamuziek';
+      'Thema-accenten, achtergronden, en bekeken indicatoren';
 
   @override
   String get settingsDetailsScreen => 'Detailscherm';
@@ -8390,62 +8390,64 @@ class AppLocalizationsNl extends AppLocalizations {
   String get settingsOfflineDownloads => 'Offlinedownloads';
 
   @override
-  String get useNativeEmulator => 'Native Emulation';
+  String get useNativeEmulator => 'Ingebouwde emulatie';
 
   @override
   String get useNativeEmulatorSubtitle =>
-      'Play games with native cores instead of the EmulatorJS web player';
+      'Speel spellen met ingebouwde kernen in plaats van de EmulatorJS webspeler';
 
   @override
-  String get emulatorCores => 'Emulator Cores';
+  String get emulatorCores => 'Emulatorkernen';
 
   @override
-  String get emulatorCoresSubtitle => 'Download systems to play games natively';
+  String get emulatorCoresSubtitle =>
+      'Download systemen om spellen ingebouwd te spelen';
 
   @override
   String get emulatorCoresDescription =>
-      'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
+      'Kies welke systemen je wilt installeren. De cores worden geleverd door het libretro-project en zorgen ervoor dat games ingebouwd kunnen worden uitgevoerd in plaats van in een browserscherm.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Downloaden';
 
   @override
-  String get emulatorCoreUnavailable => 'Not available for this device';
+  String get emulatorCoreUnavailable => 'Niet beschikbaar voor dit apparaat';
 
   @override
   String get emulatorCoreDownloadFailed =>
-      'Could not download the core. Check your connection and try again.';
+      'Het downloaden van de core is mislukt. Controleer uw internetverbinding en probeer het opnieuw.';
 
   @override
-  String get downloadedGames => 'Downloaded Games';
+  String get downloadedGames => 'Gedownloade spellen';
 
   @override
-  String get downloadedGamesSubtitle => 'Free up space used by game files';
+  String get downloadedGamesSubtitle =>
+      'Maak ruimte vrij die door spelbestanden wordt gebruikt';
 
   @override
   String get downloadedGamesDescription =>
-      'Games are copied to this device before they play. Remove the ones you have finished to free up space. Saves are kept on the server and are not deleted.';
+      'De spellen worden naar dit apparaat gekopieerd voordat ze gespeeld kunnen worden. Verwijder de spellen die je hebt uitgespeeld om ruimte vrij te maken. Voortgangsbestanden worden op de server bewaard en niet verwijderd.';
 
   @override
   String get downloadedGamesEmpty =>
-      'No games have been downloaded to this device yet.';
+      'Er zijn nog geen spellen naar dit apparaat gedownload.';
 
   @override
   String downloadedGamesTotal(int count, String size) {
-    return '$count games, $size';
+    return '$count spellen, $size';
   }
 
   @override
-  String get removeAllDownloadedGames => 'Remove All';
+  String get removeAllDownloadedGames => 'Alles verwijderen';
 
   @override
   String removeDownloadedGameConfirm(String title) {
-    return 'Remove $title from this device? It will download again the next time you play it.';
+    return '$title van dit apparaat verwijderen? De volgende keer dat u het speelt wordt het weer gedownloadt.';
   }
 
   @override
   String get removeAllDownloadedGamesConfirm =>
-      'Remove all downloaded games from this device? They will download again the next time you play them.';
+      'Alle gedownloade spellen van dit apparaat verwijderen? Ze worden de volgende keer dat je ze speelt opnieuw gedownload.';
 
   @override
   String get settingsHigh => 'Hoog';
@@ -8810,7 +8812,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Recent toegevoegd $libraryName';
   }
 
   @override

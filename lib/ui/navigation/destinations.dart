@@ -154,6 +154,7 @@ class Destinations {
     String libraryId, {
     List<String>? includeItemTypes,
     bool favorites = false,
+    String? serverId,
   }) {
     final base = '/library/$libraryId';
     final params = <String>[];
@@ -162,6 +163,9 @@ class Destinations {
       params.add('types=$types');
     }
     if (favorites) params.add('favorites=1');
+    if (serverId != null && serverId.isNotEmpty) {
+      params.add('serverId=${Uri.encodeQueryComponent(serverId)}');
+    }
     if (params.isEmpty) return base;
     return '$base?${params.join('&')}';
   }

@@ -275,6 +275,7 @@ final appRouter = GoRouter(
             .toList();
         return LibraryBrowseScreen(
           libraryId: libraryId,
+          serverId: state.uri.queryParameters['serverId'],
           includeItemTypes: includeItemTypes,
           favoritesOnly: state.uri.queryParameters['favorites'] == '1',
         );

@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/painting.dart';
 import 'package:get_it/get_it.dart';
-import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
 import 'connectivity_service.dart';
+import 'media_server_client_factory.dart';
 
 enum BlurContext { details, browsing, none }
 
@@ -40,7 +40,8 @@ class BackgroundService {
     _blurContext = context;
     _blurContextController.add(context);
 
-    final client = GetIt.instance<MediaServerClient>();
+    final client = GetIt.instance<MediaServerClientFactory>()
+        .clientForServerOrActive(item.serverId);
     final urls = <String>[];
 
     final isOffline =
