@@ -7631,5 +7631,25 @@
     "currentUser": "Current User",
     "@currentUser": {
         "description": "Option: current user"
+    },
+    "detailScreenStyle": "Detail screen style",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "detailScreenStyleMoonfin": "Classic",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "detailScreenStyleModern": "Modern",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "expandedTabs": "Expanded Tabs",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
     }
 }
