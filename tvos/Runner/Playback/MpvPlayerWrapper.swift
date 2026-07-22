@@ -2276,8 +2276,13 @@ private final class MPVEngine {
         _ = setOptionString("network-timeout", value: "120", on: created)
         // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
         // through in seconds, so bursty networks stutter. A larger demuxer
-        // budget keeps a real runway.
-        _ = setOptionString("demuxer-max-bytes", value: "256MiB", on: created)
+        // budget keeps a real runway, but a filled 256MiB cache on a 2GB
+        // Apple TV HD risks a jetsam kill mid stream, so only boxes with the
+        // memory headroom get the bump.
+        let demuxerMaxBytes = ProcessInfo.processInfo.physicalMemory >= 3 * 1024 * 1024 * 1024
+            ? "256MiB"
+            : "150MiB"
+        _ = setOptionString("demuxer-max-bytes", value: demuxerMaxBytes, on: created)
         _ = setOptionString("user-agent", value: "Moonfin-tvOS/\(AppConstants.clientVersion)", on: created)
         _ = setOptionString("audio-channels", value: audioChannelsMode, on: created)
         initDiagnostics["audio_channels_mode"] = audioChannelsMode

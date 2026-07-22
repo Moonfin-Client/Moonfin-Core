@@ -25,33 +25,52 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
     final resolvedMediaSourceId =
         MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
 
-    final request = PlaybackInfoRequest(
-      itemId: itemId,
-      mediaSourceId: resolvedMediaSourceId,
-      deviceProfile: deviceProfile,
-      maxStreamingBitrate: maxStreamingBitrate,
-      audioStreamIndex: audioStreamIndex,
-      subtitleStreamIndex: subtitleStreamIndex,
-      startTimeTicks: startTimeTicks,
-      enableDirectPlay: enableDirectPlay,
-      enableDirectStream: enableDirectStream,
-      enableTranscoding: enableTranscoding,
-    );
-
-    final rawInfo = await _client.playbackApi.getPlaybackInfo(
-      itemId,
-      requestBody: request.toJson(),
-      userId: _client.userId,
-      startTimeTicks: startTimeTicks,
-    );
-    final info = PlaybackInfoResult.fromJson(rawInfo);
-
-    if (info.errorCode != null) {
-      throw Exception('Playback error: ${info.errorCode}');
+    Future<PlaybackInfoResult> fetchPlaybackInfo(String? sourceId) async {
+      final request = PlaybackInfoRequest(
+        itemId: itemId,
+        mediaSourceId: sourceId,
+        deviceProfile: deviceProfile,
+        maxStreamingBitrate: maxStreamingBitrate,
+        audioStreamIndex: audioStreamIndex,
+        subtitleStreamIndex: subtitleStreamIndex,
+        startTimeTicks: startTimeTicks,
+        enableDirectPlay: enableDirectPlay,
+        enableDirectStream: enableDirectStream,
+        enableTranscoding: enableTranscoding,
+      );
+      final rawInfo = await _client.playbackApi.getPlaybackInfo(
+        itemId,
+        requestBody: request.toJson(),
+        userId: _client.userId,
+        startTimeTicks: startTimeTicks,
+      );
+      final parsed = PlaybackInfoResult.fromJson(rawInfo);
+      if (parsed.errorCode != null) {
+        throw Exception('Playback error: ${parsed.errorCode}');
+      }
+      if (parsed.mediaSources.isEmpty) {
+        throw Exception('No media sources available for item $itemId');
+      }
+      return parsed;
     }
-    if (info.mediaSources.isEmpty) {
-      throw Exception('No media sources available for item $itemId');
+
+    // An id the item does not list passes through so the server can resolve
+    // drifted ids without discarding an explicit version pick. If the server
+    // cant resolve it either the id is just stale, so retry without it and
+    // play the server's default version instead of failing outright.
+    final staticIds = MediaStreamResolver.staticMediaSourceIds(mediaItem);
+    final isUnverifiedSourceId = resolvedMediaSourceId != null &&
+        resolvedMediaSourceId.isNotEmpty &&
+        staticIds.isNotEmpty &&
+        !staticIds.contains(resolvedMediaSourceId);
+
+    PlaybackInfoResult? info;
+    try {
+      info = await fetchPlaybackInfo(resolvedMediaSourceId);
+    } catch (_) {
+      if (!isUnverifiedSourceId) rethrow;
     }
+    info ??= await fetchPlaybackInfo(null);
 
     final source = _selectBestSource(info.mediaSources, preferredId: resolvedMediaSourceId);
     var (url, playMethod) = _resolveStreamUrl(

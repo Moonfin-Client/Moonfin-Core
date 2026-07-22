@@ -66,4 +66,19 @@ void main() {
       );
     });
   });
+
+  group('MediaStreamResolver.staticMediaSourceIds', () {
+    test('returns the cached source ids', () {
+      final item = _item([
+        {'Id': 'a'},
+        {'Id': 'b'},
+      ]);
+      expect(MediaStreamResolver.staticMediaSourceIds(item), {'a', 'b'});
+    });
+
+    test('returns empty when the item has no cached sources', () {
+      expect(MediaStreamResolver.staticMediaSourceIds(_item([])), isEmpty);
+      expect(MediaStreamResolver.staticMediaSourceIds({'Id': 'x'}), isEmpty);
+    });
+  });
 }

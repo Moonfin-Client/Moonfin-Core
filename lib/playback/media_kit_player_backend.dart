@@ -394,8 +394,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
       _nativeSetProperty(platform, 'network-timeout', '120');
       // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
       // through in seconds, so bursty networks stutter. A larger demuxer
-      // budget keeps a real runway.
-      _nativeSetProperty(platform, 'demuxer-max-bytes', '256MiB');
+      // budget keeps a real runway on desktop, but a filled 256MiB cache on
+      // top of decode buffers can get the app killed on phones and TV boxes,
+      // so those stay at the mpv default.
+      if (!PlatformDetection.isAndroid && !PlatformDetection.isIOS) {
+        _nativeSetProperty(platform, 'demuxer-max-bytes', '256MiB');
+      }
       _nativeSetProperty(
         platform,
         'stream-lavf-o',

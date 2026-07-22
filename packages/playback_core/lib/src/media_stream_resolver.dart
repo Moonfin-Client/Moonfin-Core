@@ -30,6 +30,15 @@ abstract class MediaStreamResolver {
     return mediaSourceId;
   }
 
+  /// The ids of the item's cached static media sources, empty when the item
+  /// carries none. Lets callers tell a verified id from one that only passed
+  /// through [resolveStaticMediaSourceId] for the server to resolve.
+  static Set<String> staticMediaSourceIds(dynamic mediaItem) {
+    final sources = _staticMediaSources(mediaItem);
+    if (sources == null || sources.isEmpty) return const <String>{};
+    return sources.map(_mediaSourceId).toSet();
+  }
+
   static List<dynamic>? _staticMediaSources(dynamic mediaItem) {
     if (mediaItem is Map) return mediaItem['MediaSources'] as List<dynamic>?;
     try {

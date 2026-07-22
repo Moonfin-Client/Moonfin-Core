@@ -59,21 +59,19 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     final resolvedMediaSourceId =
         MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
 
-    final request = PlaybackInfoRequest(
-      itemId: itemId,
-      mediaSourceId: resolvedMediaSourceId,
-      deviceProfile: deviceProfile,
-      maxStreamingBitrate: maxStreamingBitrate,
-      audioStreamIndex: audioStreamIndex,
-      subtitleStreamIndex: subtitleStreamIndex,
-      startTimeTicks: startTimeTicks,
-      enableDirectPlay: enableDirectPlay,
-      enableDirectStream: enableDirectStream,
-      enableTranscoding: enableTranscoding,
-    );
-
-    final PlaybackInfoResult info;
-    try {
+    Future<PlaybackInfoResult> fetchPlaybackInfo(String? sourceId) async {
+      final request = PlaybackInfoRequest(
+        itemId: itemId,
+        mediaSourceId: sourceId,
+        deviceProfile: deviceProfile,
+        maxStreamingBitrate: maxStreamingBitrate,
+        audioStreamIndex: audioStreamIndex,
+        subtitleStreamIndex: subtitleStreamIndex,
+        startTimeTicks: startTimeTicks,
+        enableDirectPlay: enableDirectPlay,
+        enableDirectStream: enableDirectStream,
+        enableTranscoding: enableTranscoding,
+      );
       final rawInfo = await _client.playbackApi.getPlaybackInfo(
         itemId,
         requestBody: request.toJson(),
@@ -87,7 +85,28 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       if (parsed.mediaSources.isEmpty) {
         throw Exception('No media sources available for item $itemId');
       }
-      info = parsed;
+      return parsed;
+    }
+
+    // An id the item does not list passes through so the server can resolve
+    // drifted ids without discarding an explicit version pick. If the server
+    // cant resolve it either the id is just stale, so retry without it and
+    // play the server's default version instead of failing outright.
+    final staticIds = MediaStreamResolver.staticMediaSourceIds(mediaItem);
+    final isUnverifiedSourceId = resolvedMediaSourceId != null &&
+        resolvedMediaSourceId.isNotEmpty &&
+        staticIds.isNotEmpty &&
+        !staticIds.contains(resolvedMediaSourceId);
+
+    final PlaybackInfoResult info;
+    try {
+      PlaybackInfoResult? result;
+      try {
+        result = await fetchPlaybackInfo(resolvedMediaSourceId);
+      } catch (_) {
+        if (!isUnverifiedSourceId) rethrow;
+      }
+      info = result ?? await fetchPlaybackInfo(null);
     } catch (e) {
       if (_isAudioMediaItem(mediaItem)) {
         return _buildAudioUniversalFallback(
