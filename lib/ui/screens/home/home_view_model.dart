@@ -2107,6 +2107,15 @@ class HomeViewModel extends ChangeNotifier {
           _seerrEnrichConcurrency,
           (item) => _enrichSeerrItem(repo, item),
         )).whereType<SeerrDiscoverItem>().toList();
+      } else if (type == SeerrRowType.yourWatchlist) {
+        final page = await _loadSeerrPage(repo, type, limit);
+        if (page != null) {
+          rawItems = (await mapBounded(
+            page.results,
+            _seerrEnrichConcurrency,
+            (item) => _enrichSeerrItem(repo, item),
+          )).whereType<SeerrDiscoverItem>().toList();
+        }
       } else {
         final page = await _loadSeerrPage(repo, type, limit);
         if (page != null) {
