@@ -3066,6 +3066,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pobrane multimedia zostaną zapisane w folderze Pobrane/Moonfin na Twoim urządzeniu. Pliki te będą widoczne dla innych aplikacji, takich jak galeria czy odtwarzacz muzyki.\n\nIstniejące pliki do pobrania pozostaną w bieżącej lokalizacji.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Włączać';
 
   @override

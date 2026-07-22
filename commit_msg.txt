@@ -1,5 +1,6 @@
-fix(playback): refine offline subtitle preservation and track discovery
+fix(downloads): prevent MediaStore 98% stall, preserve audio tracks, and add transcoding status text
 
-- Preserve embedded subtitle tracks within transcoded downloads by passing SubtitleMethod=Embed and SubtitleStreamIndex=-1 to stream requests.
-- Restrict separate sidecar downloads in _downloadExternalSubtitles to truly external streams (IsExternal == true), avoiding duplicate extraction of embedded tracks.
-- Ensure LocalFirstMediaStreamResolver exposes mediaStreams for both transcoded and original offline items so OSD player track selectors and Media Info pages can resolve embedded and external subtitle tracks during offline playback.
+- Fix MediaStore path preparation in MediaStoreHelper.kt to avoid pre-creating a locked 0-byte file entry before download start, resolving Scoped Storage 98% permission errors when saving to Downloads folder.
+- Add MediaStoreService.scanFile call upon download completion to index downloaded files into Android MediaStore.
+- Set AudioStreamIndex=-1 for transcoded downloads in DownloadService to map and preserve all audio tracks in output streams.
+- Add localized "Transcoding: Time Remaining Unavailable" notice in DownloadProgressBar and DownloadsPanel active downloads section for transcoded downloads.

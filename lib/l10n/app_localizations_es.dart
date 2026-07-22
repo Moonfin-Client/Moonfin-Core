@@ -3079,6 +3079,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'El contenido descargado se guardará en Descargas/Moonfin en tu dispositivo. Estos archivos serán visibles para otras apps como tu galería o reproductor de música.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Habilitar';
 
   @override

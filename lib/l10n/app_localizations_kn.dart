@@ -3077,6 +3077,10 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಮಾಧ್ಯಮವನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೌನ್‌ಲೋಡ್‌ಗಳು/Moonfin ಗೆ ಉಳಿಸಲಾಗುತ್ತದೆ. ಈ ಫೈಲ್‌ಗಳು ನಿಮ್ಮ ಗ್ಯಾಲರಿ ಅಥವಾ ಮ್ಯೂಸಿಕ್ ಪ್ಲೇಯರ್‌ನಂತಹ ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗೆ ಗೋಚರಿಸುತ್ತವೆ.\n\nಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಡೌನ್‌ಲೋಡ್‌ಗಳು ಅವುಗಳ ಪ್ರಸ್ತುತ ಸ್ಥಳದಲ್ಲಿಯೇ ಉಳಿಯುತ್ತವೆ.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'ಸಕ್ರಿಯಗೊಳಿಸಿ';
 
   @override

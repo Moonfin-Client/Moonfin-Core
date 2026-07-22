@@ -3092,6 +3092,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'Els mitjans descarregats es desaran a Descàrregues/Moonfin al vostre dispositiu. Aquests fitxers seran visibles per a altres aplicacions, com ara la galeria o el reproductor de música.\n\nLes baixades existents es mantindran a la seva ubicació actual.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Activa';
 
   @override

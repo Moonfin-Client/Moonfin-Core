@@ -3095,6 +3095,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Τα ληφθέντα πολυμέσα θα αποθηκευτούν στο Downloads/Moonfin στη συσκευή σας. Αυτά τα αρχεία θα είναι ορατά σε άλλες εφαρμογές, όπως η γκαλερί ή το πρόγραμμα αναπαραγωγής μουσικής.\n\nΟι υπάρχουσες λήψεις θα παραμείνουν στην τρέχουσα θέση τους.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Καθιστώ ικανό';
 
   @override

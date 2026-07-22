@@ -3063,6 +3063,10 @@ class AppLocalizationsAf extends AppLocalizations {
       'Afgelaaide media sal na Downloads/Moonfin op jou toestel gestoor word. Hierdie lêers sal sigbaar wees vir ander programme soos jou gallery of musiekspeler.\n\nBestaande aflaaie sal op hul huidige ligging bly.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktiveer';
 
   @override

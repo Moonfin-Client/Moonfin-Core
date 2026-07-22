@@ -3178,6 +3178,10 @@ class AppLocalizationsHr extends AppLocalizations {
       'Preuzeti mediji bit će spremljeni u Preuzimanja/Moonfin na vašem uređaju. Ove će datoteke biti vidljive drugim aplikacijama poput vaše galerije ili glazbenog playera.\n\nPostojeća preuzimanja ostat će na svojoj trenutnoj lokaciji.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Omogućiti';
 
   @override

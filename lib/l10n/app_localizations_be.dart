@@ -3077,6 +3077,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Спампаваныя мультымедыя будуць захаваны ў Downloads/Moonfin на вашай прыладзе. Гэтыя файлы будуць бачныя для іншых праграм, такіх як галерэя або музычны прайгравальнік.\n\nІснуючыя спампоўкі застануцца ў іх бягучым месцы.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Уключыць';
 
   @override

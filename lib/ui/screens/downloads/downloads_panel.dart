@@ -529,6 +529,19 @@ class _ActiveDownloadsSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (p.isTranscoded)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            l10n.transcodingTimeRemainingUnavailable,
+                            style: TextStyle(
+                              color: AppColorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       ClipRRect(
                         borderRadius: AppRadius.circular(2),
                         child: LinearProgressIndicator(

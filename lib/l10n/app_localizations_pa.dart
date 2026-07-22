@@ -3052,6 +3052,10 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਡਾਊਨਲੋਡ ਕੀਤਾ ਮੀਡੀਆ ਤੁਹਾਡੀ ਡਿਵਾਈਸ \'ਤੇ ਡਾਊਨਲੋਡ/Moonfin ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਇਹ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੀ ਗੈਲਰੀ ਜਾਂ ਸੰਗੀਤ ਪਲੇਅਰ ਵਰਗੀਆਂ ਹੋਰ ਐਪਾਂ ਲਈ ਦਿਖਾਈ ਦੇਣਗੀਆਂ।\n\nਮੌਜੂਦਾ ਡਾਊਨਲੋਡ ਆਪਣੇ ਮੌਜੂਦਾ ਟਿਕਾਣੇ \'ਤੇ ਹੀ ਰਹਿਣਗੇ।';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'ਯੋਗ ਕਰੋ';
 
   @override

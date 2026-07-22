@@ -3080,6 +3080,10 @@ class AppLocalizationsMl extends AppLocalizations {
       'ഡൗൺലോഡ് ചെയ്‌ത മീഡിയ നിങ്ങളുടെ ഉപകരണത്തിലെ ഡൗൺലോഡുകൾ/Moonfin എന്നതിലേക്ക് സംരക്ഷിക്കപ്പെടും. നിങ്ങളുടെ ഗാലറി അല്ലെങ്കിൽ മ്യൂസിക് പ്ലെയർ പോലുള്ള മറ്റ് ആപ്പുകൾക്ക് ഈ ഫയലുകൾ ദൃശ്യമാകും.\n\nനിലവിലുള്ള ഡൗൺലോഡുകൾ അവയുടെ നിലവിലെ ലൊക്കേഷനിൽ തന്നെ നിലനിൽക്കും.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'പ്രവർത്തനക്ഷമമാക്കുക';
 
   @override

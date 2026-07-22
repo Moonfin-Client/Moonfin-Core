@@ -3086,6 +3086,10 @@ class AppLocalizationsSq extends AppLocalizations {
       'Media e shkarkuar do të ruhet te Shkarkimet/Moonfin në pajisjen tuaj. Këta skedarë do të jenë të dukshëm për aplikacionet e tjera, si p.sh. galeria ose luajtësi muzikor.\n\nShkarkimet ekzistuese do të mbeten në vendndodhjen e tyre aktuale.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktivizo';
 
   @override

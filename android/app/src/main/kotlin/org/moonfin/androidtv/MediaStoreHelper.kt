@@ -2,6 +2,7 @@ package org.moonfin.androidtv
 
 import android.content.ContentValues
 import android.content.Context
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -37,6 +38,13 @@ class MediaStoreHelper(private val context: Context) : MethodChannel.MethodCallH
                 ).absolutePath + "/$SUBFOLDER"
                 result.success(base)
             }
+            "scanFile" -> {
+                val path = call.argument<String>("path") ?: ""
+                if (path.isNotEmpty()) {
+                    MediaScannerConnection.scanFile(context, arrayOf(path), null, null)
+                }
+                result.success(true)
+            }
             else -> result.notImplemented()
         }
     }
@@ -48,13 +56,24 @@ class MediaStoreHelper(private val context: Context) : MethodChannel.MethodCallH
             "${Environment.DIRECTORY_DOWNLOADS}/$SUBFOLDER/$relativePath"
         }
 
+        val externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val targetDir = if (relativePath.isEmpty()) {
+            java.io.File(externalDir, SUBFOLDER)
+        } else {
+            java.io.File(externalDir, "$SUBFOLDER/$relativePath")
+        }
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+
+        val targetFile = java.io.File(targetDir, fileName)
+
         val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
         } else {
             MediaStore.Files.getContentUri("external")
         }
 
-        // Check if entry already exists and delete it
         val selection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             "${MediaStore.Downloads.DISPLAY_NAME} = ? AND ${MediaStore.Downloads.RELATIVE_PATH} = ?"
         } else {
@@ -72,37 +91,16 @@ class MediaStoreHelper(private val context: Context) : MethodChannel.MethodCallH
             }
         } catch (_: Exception) { null }
 
-        context.contentResolver.delete(collection, selection, selectionArgs)
+        try {
+            context.contentResolver.delete(collection, selection, selectionArgs)
+        } catch (_: Exception) {}
 
-        existingPhysicalPath?.let { java.io.File(it).delete() }
-
-        val values = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-            put(MediaStore.Downloads.MIME_TYPE, guessMimeType(fileName))
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.Downloads.RELATIVE_PATH, fullRelativePath)
-                put(MediaStore.Downloads.IS_PENDING, 0)
-            }
+        existingPhysicalPath?.let { try { java.io.File(it).delete() } catch (_: Exception) {} }
+        if (targetFile.exists()) {
+            try { targetFile.delete() } catch (_: Exception) {}
         }
 
-        val uri = context.contentResolver.insert(collection, values)
-            ?: throw IllegalStateException("Failed to create MediaStore entry for $fileName")
-
-        // Resolve the real file path from the URI
-        context.contentResolver.query(uri, arrayOf(MediaStore.Downloads.DATA), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val pathIndex = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DATA)
-                return cursor.getString(pathIndex)
-            }
-        }
-
-        // Fallback: construct expected path
-        val externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        return if (relativePath.isEmpty()) {
-            "${externalDir.absolutePath}/$SUBFOLDER/$fileName"
-        } else {
-            "${externalDir.absolutePath}/$SUBFOLDER/$relativePath/$fileName"
-        }
+        return targetFile.absolutePath
     }
 
     private fun guessMimeType(fileName: String): String {

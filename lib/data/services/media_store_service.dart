@@ -20,4 +20,11 @@ class MediaStoreService {
     });
     return path!;
   }
+
+  /// Triggers Android MediaScanner to index the newly downloaded file into MediaStore.
+  static Future<void> scanFile(String path) async {
+    try {
+      await _channel.invokeMethod('scanFile', {'path': path});
+    } catch (_) {}
+  }
 }

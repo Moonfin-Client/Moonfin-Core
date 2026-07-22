@@ -3038,6 +3038,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'מדיה שהורדת תישמר להורדות/Moonfin במכשיר שלך. קבצים אלה יהיו גלויים לאפליקציות אחרות כגון הגלריה או נגן המוזיקה שלך.\n\nהורדות קיימות יישארו במיקומן הנוכחי.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'לְאַפשֵׁר';
 
   @override

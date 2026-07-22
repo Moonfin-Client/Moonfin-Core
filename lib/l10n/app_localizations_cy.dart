@@ -3087,6 +3087,10 @@ class AppLocalizationsCy extends AppLocalizations {
       'Bydd cyfryngau wedi\'u lawrlwytho yn cael eu cadw i Lawrlwythiadau / Moonfin ar eich dyfais. Bydd y ffeiliau hyn yn weladwy i apiau eraill fel eich oriel neu chwaraewr cerddoriaeth.\n\nBydd lawrlwythiadau presennol yn aros yn eu lleoliad presennol.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Galluogi';
 
   @override

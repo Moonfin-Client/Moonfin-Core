@@ -4210,6 +4210,10 @@
   "@saveToDownloadsFolderDescription": {
     "description": "Description for saving to downloads folder"
   },
+  "transcodingTimeRemainingUnavailable": "Transcoding: Time Remaining Unavailable",
+  "@transcodingTimeRemainingUnavailable": {
+    "description": "Notice shown below downloading text when downloading a transcoded stream"
+  },
   "enable": "Enable",
   "@enable": {
     "description": "Button to enable a feature"

@@ -3078,6 +3078,10 @@ class AppLocalizationsTe extends AppLocalizations {
       'డౌన్‌లోడ్ చేయబడిన మీడియా మీ పరికరంలో డౌన్‌లోడ్‌లు/Moonfinకి సేవ్ చేయబడుతుంది. ఈ ఫైల్‌లు మీ గ్యాలరీ లేదా మ్యూజిక్ ప్లేయర్ వంటి ఇతర యాప్‌లకు కనిపిస్తాయి.\n\nఇప్పటికే ఉన్న డౌన్‌లోడ్‌లు వాటి ప్రస్తుత స్థానంలోనే ఉంటాయి.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'ప్రారంభించు';
 
   @override

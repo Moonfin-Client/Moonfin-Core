@@ -3094,6 +3094,10 @@ class AppLocalizationsGl extends AppLocalizations {
       'Os medios descargados gardaranse en Descargas/Moonfin no teu dispositivo. Estes ficheiros serán visibles para outras aplicacións, como a túa galería ou reprodutor de música.\n\nAs descargas existentes permanecerán na súa localización actual.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Activar';
 
   @override

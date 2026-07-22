@@ -3064,6 +3064,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Phương tiện đã tải xuống sẽ được lưu vào Tải xuống/Moonfin trên thiết bị của bạn. Các tệp này sẽ hiển thị với các ứng dụng khác như thư viện hoặc trình phát nhạc của bạn.\n\nCác bản tải xuống hiện tại sẽ vẫn ở vị trí hiện tại của chúng.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Cho phép';
 
   @override

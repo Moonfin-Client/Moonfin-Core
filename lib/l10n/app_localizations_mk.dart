@@ -3077,6 +3077,10 @@ class AppLocalizationsMk extends AppLocalizations {
       'Преземените медиуми ќе се зачуваат во Downloads/Moonfin на вашиот уред. Овие датотеки ќе бидат видливи за други апликации како што се вашата галерија или музички плеер.\n\nПостојните преземања ќе останат на нивната моментална локација.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Овозможи';
 
   @override

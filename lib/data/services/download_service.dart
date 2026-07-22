@@ -36,6 +36,7 @@ class DownloadProgress {
   final int bytesReceived;
   final bool isComplete;
   final String? error;
+  final DownloadQuality quality;
 
   const DownloadProgress({
     required this.itemId,
@@ -44,7 +45,10 @@ class DownloadProgress {
     this.bytesReceived = 0,
     this.isComplete = false,
     this.error,
+    this.quality = DownloadQuality.original,
   });
+
+  bool get isTranscoded => quality.isTranscoded;
 
   /// True while the transfer has effectively finished but the file is still
   /// being moved to its final location and validated. Progress is clamped to
@@ -595,6 +599,13 @@ class DownloadService extends ChangeNotifier {
       await runBestEffort(
         IosStorage.excludeFromBackup(savePath),
         const Duration(seconds: 10),
+      );
+    }
+
+    if (PlatformDetection.isAndroid && _storagePath.isUsingMediaStore) {
+      await runBestEffort(
+        MediaStoreService.scanFile(savePath),
+        const Duration(seconds: 5),
       );
     }
 
@@ -1300,6 +1311,7 @@ class DownloadService extends ChangeNotifier {
     params['container'] = quality.container;
     params['SubtitleMethod'] = 'Embed';
     params['SubtitleStreamIndex'] = '-1';
+    params['AudioStreamIndex'] = '-1';
     if (quality.audioChannels != null) {
       params['audioChannels'] = quality.audioChannels.toString();
     }
@@ -1451,6 +1463,7 @@ class DownloadService extends ChangeNotifier {
         itemId: item.id,
         fileName: fileName,
         progress: initialProgress,
+        quality: quality,
       );
       if (!_usesPluginNotifications) {
         await _notificationService.showProgress(
@@ -1519,6 +1532,7 @@ class DownloadService extends ChangeNotifier {
           fileName: fileName,
           progress: progress,
           bytesReceived: received,
+          quality: quality,
         );
         if (_shouldPersistProgress(item.id, progress)) {
           unawaited(

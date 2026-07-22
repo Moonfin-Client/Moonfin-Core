@@ -3051,6 +3051,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'डाउनलोड किया गया मीडिया आपके डिवाइस पर डाउनलोड/Moonfin में सहेजा जाएगा। ये फ़ाइलें आपकी गैलरी या म्यूज़िक प्लेयर जैसे अन्य ऐप्स पर दिखाई देंगी।\n\nमौजूदा डाउनलोड अपने वर्तमान स्थान पर बने रहेंगे.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'सक्षम';
 
   @override

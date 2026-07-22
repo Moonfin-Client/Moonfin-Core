@@ -3082,6 +3082,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Stiahnuté médiá sa uložia do priečinka Downloads/Moonfin na vašom zariadení. Tieto súbory budú viditeľné pre iné aplikácie, ako je vaša galéria alebo hudobný prehrávač.\n\nExistujúce stiahnuté súbory zostanú na svojom aktuálnom mieste.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Povoliť';
 
   @override
