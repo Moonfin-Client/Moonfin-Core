@@ -1,4 +1,4 @@
-fix(downloads): ensure external sidecar subtitles download when MediaSources list is empty
+fix(downloads): fix external subtitle stream resolution from raw item metadata
 
-- Fall back to item.mediaStreams when item.mediaSources is empty in _downloadExternalSubtitles.
-- Add check for stream['IsTextSubtitleStream'] == true with path to robustly match external sidecar files (e.g. .en.srt) on the server.
+- Extract streams from item.mediaStreams or rawMediaSources in _downloadExternalSubtitles.
+- Ensure external sidecar .srt files are fetched and saved alongside media items during offline downloads.

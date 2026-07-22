@@ -2284,10 +2284,16 @@ class DownloadService extends ChangeNotifier {
     String fileNameBase,
   ) async {
     final mediaSourceId = _primaryMediaSourceId(item);
+    final rawMediaSources = (item.rawData['MediaSources'] as List?) ?? const [];
     final streams = item.mediaStreams.isNotEmpty
         ? item.mediaStreams
-        : (item.mediaSources.isNotEmpty
-            ? _toListOfMaps(item.mediaSources.first['MediaStreams'])
+        : (rawMediaSources.isNotEmpty &&
+                rawMediaSources.first is Map &&
+                (rawMediaSources.first as Map)['MediaStreams'] is List
+            ? ((rawMediaSources.first as Map)['MediaStreams'] as List)
+                .whereType<Map>()
+                .map((m) => m.cast<String, dynamic>())
+                .toList()
             : const <Map<String, dynamic>>[]);
     if (streams.isEmpty) return;
 
