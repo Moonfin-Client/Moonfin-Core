@@ -1,0 +1,5 @@
+fix(playback): refine offline subtitle preservation and track discovery
+
+- Preserve embedded subtitle tracks within transcoded downloads by passing SubtitleMethod=Embed and SubtitleStreamIndex=-1 to stream requests.
+- Restrict separate sidecar downloads in _downloadExternalSubtitles to truly external streams (IsExternal == true), avoiding duplicate extraction of embedded tracks.
+- Ensure LocalFirstMediaStreamResolver exposes mediaStreams for both transcoded and original offline items so OSD player track selectors and Media Info pages can resolve embedded and external subtitle tracks during offline playback.

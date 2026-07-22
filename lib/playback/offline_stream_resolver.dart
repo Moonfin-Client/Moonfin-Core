@@ -82,9 +82,6 @@ class OfflineStreamResolver {
     final externalSubs = <OfflineSubtitle>[];
     for (final stream in mediaStreams) {
       if (stream['Type'] != 'Subtitle') continue;
-      final isExternal = stream['IsExternal'] == true;
-      final supportsExternal = stream['SupportsExternalStream'] == true;
-      if (!isExternal && !supportsExternal) continue;
       final index = stream['Index'] as int? ?? 0;
       final subFile = subFilesByIndex[index];
       if (subFile == null) continue;

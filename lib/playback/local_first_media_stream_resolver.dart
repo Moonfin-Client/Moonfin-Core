@@ -71,12 +71,7 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
         return null;
       }
 
-      // A transcoded download has a different stream layout than the stored
-      // original-file metadata, so don't feed misleading track indices to the
-      // selectors. The player picks its own defaults from the file.
-      final mediaStreams = local.isTranscoded
-          ? const <Map<String, dynamic>>[]
-          : local.mediaStreams;
+      final mediaStreams = local.mediaStreams;
 
       return StreamResolutionResult(
         streamUrl: local.url,

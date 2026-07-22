@@ -1298,6 +1298,8 @@ class DownloadService extends ChangeNotifier {
       params['maxWidth'] = quality.maxWidth.toString();
     }
     params['container'] = quality.container;
+    params['SubtitleMethod'] = 'Embed';
+    params['SubtitleStreamIndex'] = '-1';
     if (quality.audioChannels != null) {
       params['audioChannels'] = quality.audioChannels.toString();
     }
@@ -2277,8 +2279,7 @@ class DownloadService extends ChangeNotifier {
       if (stream is! Map<String, dynamic>) continue;
       if (stream['Type'] != 'Subtitle') continue;
       final isExternal = stream['IsExternal'] == true;
-      final supportsExternal = stream['SupportsExternalStream'] == true;
-      if (!isExternal && !supportsExternal) continue;
+      if (!isExternal) continue;
       final index = stream['Index'] as int? ?? 0;
       final ext = canonicalSubtitleCodec(stream['Codec'] as String?);
       // DeliveryUrl is computed by the server during PlaybackInfo and is often
