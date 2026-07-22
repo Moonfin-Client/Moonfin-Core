@@ -9728,9 +9728,6 @@ class AppLocalizationsPa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'ਟਾਈਮਲਾਈਨ ਖਾਲੀ ਹੈ';
 
   @override
-  String get audiobookWholeBook => 'ਪੂਰੀ ਕਿਤਾਬ';
-
-  @override
   String get audiobookFocusedTimeline => 'ਕੇਂਦਰਿਤ ਟਾਈਮਲਾਈਨ';
 
   @override

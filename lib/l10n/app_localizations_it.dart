@@ -186,7 +186,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
-      'Limita i suggerimenti di Suggerimenti Moonfin in base alla classificazione per età del contenuto selezionato.';
+      'Limita i suggerimenti di Suggerimenti Moonfin in base alla classificazione per età del contenuto selezionato';
 
   @override
   String get interfaceStyle => 'Stile dell\'interfaccia';
@@ -222,7 +222,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsAppearanceThemeSubtitle =>
-      'Passa da Moonfin a Neon Pulse senza riavviare l\'app';
+      'Passa da Moonfin a Neon Pulse senza riavviare l\'app.';
 
   @override
   String get customThemeTitle => 'Tema personalizzato';
@@ -236,7 +236,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Utilizza la tastiera predefinita del dispositivo per l\'inserimento del testo.';
+      'Utilizza la tastiera predefinita del dispositivo per l\'inserimento del testo';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -1097,7 +1097,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get downloaded => 'Scaricato';
 
   @override
-  String get finalizingDownload => 'Finalizing…';
+  String get finalizingDownload => 'Finalizzazione…';
 
   @override
   String get downloadAll => 'Scarica Tutto';
@@ -1140,7 +1140,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'L’operazione di eliminazione non è riuscita con il seguente errore: $error';
   }
 
   @override
@@ -2255,7 +2255,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get seriesThumbnailsDescription =>
-      'Solo episodi: usa le immagini della serie corrispondenti al tipo di immagine di ogni riga';
+      'Solo episodi: usa le immagini della serie corrispondenti al tipo di immagine di ogni riga.';
 
   @override
   String get homeRowInfoOverlay => 'Overlay Info Righe Home';
@@ -2329,7 +2329,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get detailsBackgroundBlur => 'Sfocatura Sfondo Dettagli';
 
   @override
-  String get detailsBackgroundOpacity => 'Details Background Opacity';
+  String get detailsBackgroundOpacity => 'Opacità dello sfondo Dettagli';
 
   @override
   String pixelValue(int value) {
@@ -3214,7 +3214,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get showInNavigation => 'Mostra nella navigazione';
 
   @override
-  String get showInLatestMedia => 'Mostra negli ultimi media';
+  String get showInLatestMedia =>
+      'Mostra nei contenuti aggiunti/rilasciati di recente';
 
   @override
   String get sourceLibraries => 'Librerie Sorgente';
@@ -3338,17 +3339,17 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get mediaPreviewDescription =>
-      'Gioca un\'anteprima in linea di 30 secondi sulle carte focalizzate, posizionate con il mouse o premute a lungo';
+      'Riproduci un’anteprima integrata di 30 secondi sulle schede selezionate, al passaggio del mouse o dopo una pressione prolungata';
 
   @override
   String get previewAudio => 'Audio Anteprima';
 
   @override
   String get enablePreviewAudio =>
-      'Abilita audio per le anteprime trailer e episodi';
+      'Abilita l’audio per le anteprime dei contenuti multimediali';
 
   @override
-  String get latestMedia => 'Ultimi Media';
+  String get latestMedia => 'Media aggiunti di recente';
 
   @override
   String get recentlyReleased => 'Usciti di Recente';
@@ -3409,11 +3410,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Limita le righe home a 1 per schermata';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Margine interno della riga Home';
 
   @override
   String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+      'Personalizza il margine interno tra le righe della Home';
 
   @override
   String get perRowImageType => 'Tipo Immagine per Riga';
@@ -3849,7 +3850,8 @@ class AppLocalizationsIt extends AppLocalizations {
       'Stile barra navigazione, pulsanti barra strumenti, aspetto';
 
   @override
-  String get reorderToggleHomeRows => 'Riordina e attiva/disattiva righe home';
+  String get reorderToggleHomeRows =>
+      'Riordina e attiva/disattiva sia le righe Home delle librerie che quelle basate su fonti esterne';
 
   @override
   String get featuredContentAppearance => 'Contenuti in evidenza, aspetto';
@@ -5549,7 +5551,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'Manifesto: $name';
   }
 
   @override
@@ -8335,7 +8337,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsGeneralStyleSubtitle =>
-      'Accenti del tema, sfondi, indicatori osservati e musica a tema';
+      'Accenti del tema, sfondi e indicatori di visualizzazione già guardati';
 
   @override
   String get settingsDetailsScreen => 'Schermata Dettagli';
@@ -8411,62 +8413,65 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsOfflineDownloads => 'Download offline';
 
   @override
-  String get useNativeEmulator => 'Native Emulation';
+  String get useNativeEmulator => 'Emulazione nativa';
 
   @override
   String get useNativeEmulatorSubtitle =>
-      'Play games with native cores instead of the EmulatorJS web player';
+      'Riproduci i giochi con core nativi invece del lettore web EmulatorJS';
 
   @override
-  String get emulatorCores => 'Emulator Cores';
+  String get emulatorCores => 'Core dell’emulatore';
 
   @override
-  String get emulatorCoresSubtitle => 'Download systems to play games natively';
+  String get emulatorCoresSubtitle =>
+      'Scarica i sistemi per giocare ai giochi in modalità nativa';
 
   @override
   String get emulatorCoresDescription =>
-      'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
+      'Scegli quali sistemi installare. I core sono forniti dal progetto libretro e consentono di eseguire i giochi in modalità nativa invece che in una vista del browser.';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => 'Download in corso';
 
   @override
-  String get emulatorCoreUnavailable => 'Not available for this device';
+  String get emulatorCoreUnavailable =>
+      'Non disponibile per questo dispositivo';
 
   @override
   String get emulatorCoreDownloadFailed =>
-      'Could not download the core. Check your connection and try again.';
+      'Impossibile scaricare il core. Controlla la connessione e riprova.';
 
   @override
-  String get downloadedGames => 'Downloaded Games';
+  String get downloadedGames => 'Giochi scaricati';
 
   @override
-  String get downloadedGamesSubtitle => 'Free up space used by game files';
+  String get downloadedGamesSubtitle =>
+      'Libera lo spazio occupato dai file dei giochi';
 
   @override
   String get downloadedGamesDescription =>
-      'Games are copied to this device before they play. Remove the ones you have finished to free up space. Saves are kept on the server and are not deleted.';
+      'I giochi vengono copiati su questo dispositivo prima di essere riprodotti. Rimuovi quelli che hai finito per liberare spazio. I salvataggi vengono mantenuti sul server e non vengono eliminati.';
 
   @override
   String get downloadedGamesEmpty =>
-      'No games have been downloaded to this device yet.';
+      'Nessun gioco è stato ancora scaricato su questo dispositivo.';
 
   @override
   String downloadedGamesTotal(int count, String size) {
-    return '$count games, $size';
+    return '$count giochi, $size';
   }
 
   @override
-  String get removeAllDownloadedGames => 'Remove All';
+  String get removeAllDownloadedGames => 'Rimuovi tutto';
 
   @override
   String removeDownloadedGameConfirm(String title) {
-    return 'Remove $title from this device? It will download again the next time you play it.';
+    return 'Rimuovere $title da questo dispositivo? Verrà scaricato di nuovo la prossima volta che lo riproduci.';
   }
 
   @override
   String get removeAllDownloadedGamesConfirm =>
-      'Remove all downloaded games from this device? They will download again the next time you play them.';
+      'Rimuovere tutti i giochi scaricati da questo dispositivo? Verranno scaricati di nuovo la prossima volta che li riproduci.';
 
   @override
   String get settingsHigh => 'Alto';
@@ -8833,7 +8838,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return '$libraryName aggiunti di recente';
   }
 
   @override
@@ -9843,9 +9848,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get audiobookTimelineEmpty => 'La timeline è vuota';
-
-  @override
-  String get audiobookWholeBook => 'Tutto il Libro';
 
   @override
   String get audiobookFocusedTimeline => 'Timeline Focalizzata';

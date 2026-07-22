@@ -9909,9 +9909,6 @@ class AppLocalizationsGl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'A cronoloxía está baleira';
 
   @override
-  String get audiobookWholeBook => 'Todo o libro';
-
-  @override
   String get audiobookFocusedTimeline => 'Cronoloxía enfocada';
 
   @override

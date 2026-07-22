@@ -84,6 +84,7 @@ class Destinations {
 
   // Games
   static const gameLibrary = '/games/:libraryId';
+  static const gameSystem = '/games/:libraryId/system/:systemId';
   static const gameDetail = '/game/:libraryId/:gameId';
   static const gamePlayer = '/game-player/:libraryId/:gameId';
 
@@ -153,6 +154,7 @@ class Destinations {
     String libraryId, {
     List<String>? includeItemTypes,
     bool favorites = false,
+    String? serverId,
   }) {
     final base = '/library/$libraryId';
     final params = <String>[];
@@ -161,6 +163,9 @@ class Destinations {
       params.add('types=$types');
     }
     if (favorites) params.add('favorites=1');
+    if (serverId != null && serverId.isNotEmpty) {
+      params.add('serverId=${Uri.encodeQueryComponent(serverId)}');
+    }
     if (params.isEmpty) return base;
     return '$base?${params.join('&')}';
   }
@@ -186,6 +191,20 @@ class Destinations {
   // Games
   static String gamesLibrary(String libraryId) =>
       '/games/${Uri.encodeComponent(libraryId)}';
+  static String gameSystemOf(
+    String libraryId,
+    String systemId, {
+    String? systemName,
+  }) {
+    final base =
+        '/games/${Uri.encodeComponent(libraryId)}/system/${Uri.encodeComponent(systemId)}';
+    final params = <String>[
+      if (systemName != null && systemName.isNotEmpty)
+        'name=${Uri.encodeQueryComponent(systemName)}',
+    ];
+    return params.isEmpty ? base : '$base?${params.join('&')}';
+  }
+
   static String gameDetailOf(String libraryId, String gameId) =>
       '/game/${Uri.encodeComponent(libraryId)}/${Uri.encodeComponent(gameId)}';
   static String gamePlayerOf(

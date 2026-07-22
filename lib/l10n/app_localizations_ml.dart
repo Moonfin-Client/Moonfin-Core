@@ -9888,9 +9888,6 @@ class AppLocalizationsMl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'ടൈംലൈൻ ശൂന്യമാണ്';
 
   @override
-  String get audiobookWholeBook => 'മുഴുവൻ പുസ്തകം';
-
-  @override
   String get audiobookFocusedTimeline => 'കേന്ദ്രീകൃത ടൈംലൈൻ';
 
   @override

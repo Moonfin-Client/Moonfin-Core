@@ -9770,9 +9770,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Dòng thời gian trống';
 
   @override
-  String get audiobookWholeBook => 'Toàn bộ sách';
-
-  @override
   String get audiobookFocusedTimeline => 'Dòng thời gian thu hẹp';
 
   @override

@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Passa da Moonfin a Neon Pulse senza riavviare l'app",
+    "settingsAppearanceThemeSubtitle": "Passa da Moonfin a Neon Pulse senza riavviare l'app.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -2696,7 +2696,7 @@
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
     },
-    "seriesThumbnailsDescription": "Solo episodi: usa le immagini della serie corrispondenti al tipo di immagine di ogni riga",
+    "seriesThumbnailsDescription": "Solo episodi: usa le immagini della serie corrispondenti al tipo di immagine di ogni riga.",
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
@@ -3462,7 +3462,7 @@
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "Mostra negli ultimi media",
+    "showInLatestMedia": "Mostra nei contenuti aggiunti/rilasciati di recente",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
@@ -3583,11 +3583,11 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Abilita audio per le anteprime trailer e episodi",
+    "enablePreviewAudio": "Abilita l’audio per le anteprime dei contenuti multimediali",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
-    "latestMedia": "Ultimi Media",
+    "latestMedia": "Media aggiunti di recente",
     "@latestMedia": {
         "description": "Home section: latest media"
     },
@@ -4136,7 +4136,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "Riordina e attiva/disattiva righe home",
+    "reorderToggleHomeRows": "Riordina e attiva/disattiva sia le righe Home delle librerie che quelle basate su fonti esterne",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -4869,7 +4869,7 @@
         }
     },
     "adminBackupPathMissing": "Percorso backup mancante nella risposta del server",
-    "adminBackupManifest": "Manifest: {name}",
+    "adminBackupManifest": "Manifesto: {name}",
     "@adminBackupManifest": {
         "placeholders": {
             "name": {
@@ -6542,7 +6542,7 @@
     "settingsPrivacyAndSafetySection": "PRIVACY E SICUREZZA",
     "settingsBlockedRatings": "Valutazioni bloccate",
     "settingsGeneralStyle": "Stile generale",
-    "settingsGeneralStyleSubtitle": "Accenti del tema, sfondi, indicatori osservati e musica a tema",
+    "settingsGeneralStyleSubtitle": "Accenti del tema, sfondi e indicatori di visualizzazione già guardati",
     "settingsHomePage": "Pagina iniziale",
     "settingsHomePageSubtitle": "Sezioni, tipi di immagine, sovrapposizioni e anteprime multimediali",
     "settingsLibrariesSubtitle": "Visibilità della libreria, visualizzazione delle cartelle e comportamento multi-server",
@@ -6682,7 +6682,7 @@
             }
         }
     },
-    "latestLibraryName": "Latest {libraryName}",
+    "latestLibraryName": "{libraryName} aggiunti di recente",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
@@ -6747,7 +6747,7 @@
     "@mediaPreview": {
         "description": "Setting for media preview"
     },
-    "mediaPreviewDescription": "Gioca un'anteprima in linea di 30 secondi sulle carte focalizzate, posizionate con il mouse o premute a lungo",
+    "mediaPreviewDescription": "Riproduci un’anteprima integrata di 30 secondi sulle schede selezionate, al passaggio del mouse o dopo una pressione prolungata",
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
@@ -6755,7 +6755,7 @@
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
-    "keyboardPreferSystemImeDescription": "Utilizza la tastiera predefinita del dispositivo per l'inserimento del testo.",
+    "keyboardPreferSystemImeDescription": "Utilizza la tastiera predefinita del dispositivo per l'inserimento del testo",
     "@keyboardPreferSystemImeDescription": {
         "description": "Settings subtitle for the system keyboard preference"
     },
@@ -7589,7 +7589,7 @@
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Limita i suggerimenti di Suggerimenti Moonfin in base alla classificazione per età del contenuto selezionato.",
+    "recommendationsApplyParentalRatingCapSubtitle": "Limita i suggerimenti di Suggerimenti Moonfin in base alla classificazione per età del contenuto selezionato",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
@@ -8713,7 +8713,6 @@
     "audiobookQueue": "Coda",
     "audiobookTimeline": "Timeline",
     "audiobookTimelineEmpty": "La timeline è vuota",
-    "audiobookWholeBook": "Tutto il Libro",
     "audiobookFocusedTimeline": "Timeline Focalizzata",
     "audiobookExportBookmarks": "Esporta Segnalibri",
     "audiobookExportNotes": "Esporta Note",
@@ -9006,5 +9005,94 @@
     "imdbMostPopularMovies": "Film Più Popolari su IMDb",
     "imdbMostPopularTvShows": "Serie TV Più Popolari su IMDb",
     "imdbLowestRatedMovies": "Film con Voto Più Basso su IMDb",
-    "imdbTopEnglishMovies": "Migliori Film in Inglese su IMDb"
+    "imdbTopEnglishMovies": "Migliori Film in Inglese su IMDb",
+    "castMembers": "Cast",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Finalizzazione…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "failedToDeleteItemWithError": "L’operazione di eliminazione non è riuscita con il seguente errore: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "detailsBackgroundOpacity": "Opacità dello sfondo Dettagli",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "homeRowsPadding": "Margine interno della riga Home",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Personalizza il margine interno tra le righe della Home",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
+    },
+    "useNativeEmulator": "Emulazione nativa",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Riproduci i giochi con core nativi invece del lettore web EmulatorJS",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Core dell’emulatore",
+    "emulatorCoresSubtitle": "Scarica i sistemi per giocare ai giochi in modalità nativa",
+    "emulatorCoresDescription": "Scegli quali sistemi installare. I core sono forniti dal progetto libretro e consentono di eseguire i giochi in modalità nativa invece che in una vista del browser.",
+    "emulatorCoreDownloading": "Download in corso",
+    "emulatorCoreUnavailable": "Non disponibile per questo dispositivo",
+    "emulatorCoreDownloadFailed": "Impossibile scaricare il core. Controlla la connessione e riprova.",
+    "downloadedGames": "Giochi scaricati",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Libera lo spazio occupato dai file dei giochi",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "I giochi vengono copiati su questo dispositivo prima di essere riprodotti. Rimuovi quelli che hai finito per liberare spazio. I salvataggi vengono mantenuti sul server e non vengono eliminati.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Nessun gioco è stato ancora scaricato su questo dispositivo.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} giochi, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Rimuovi tutto",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "Rimuovere {title} da questo dispositivo? Verrà scaricato di nuovo la prossima volta che lo riproduci.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "Rimuovere tutti i giochi scaricati da questo dispositivo? Verranno scaricati di nuovo la prossima volta che li riproduci.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
+    }
 }

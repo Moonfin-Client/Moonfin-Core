@@ -668,6 +668,32 @@ class SeerrHttpClient {
     return response.data as List<dynamic>;
   }
 
+  Future<List<dynamic>> getRadarrCalendar({String? start, String? end}) async {
+    final response = await _dio.get(
+      _moonfinUrl('Radarr/Calendar'),
+      queryParameters: {
+        'start': ?start,
+        'end': ?end,
+      },
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getRadarrCalendar');
+    return response.data as List<dynamic>;
+  }
+
+  Future<List<dynamic>> getSonarrCalendar({String? start, String? end}) async {
+    final response = await _dio.get(
+      _moonfinUrl('Sonarr/Calendar'),
+      queryParameters: {
+        'start': ?start,
+        'end': ?end,
+      },
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getSonarrCalendar');
+    return response.data as List<dynamic>;
+  }
+
   Future<MoonfinStatusResponse> getMoonfinStatus() async {
     final response = await _dio.get(
       _moonfinUrl('Status'),

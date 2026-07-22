@@ -706,6 +706,23 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
         choices: opt.choices,
       );
     });
+    // Persist on every change so settings survive leaving by any route, not
+    // only the menu Exit. Leaving through the system Home button never reaches
+    // _exit.
+    unawaited(_persistOptions());
+  }
+
+  Future<void> _persistOptions() async {
+    final games = _client.gamesApi;
+    final coreId = libretroCoreId(widget.core);
+    if (games == null || coreId == null || _options.isEmpty) return;
+    final blob =
+        _options.map((o) => '${o.id}=${o.current}').join('\n').codeUnits;
+    try {
+      await games.putSave('moonfin-native-$coreId', blob, kind: 'settings');
+    } on Exception {
+      // A settings write is not worth interrupting the game for.
+    }
   }
 
   Future<void> _saveState() async {

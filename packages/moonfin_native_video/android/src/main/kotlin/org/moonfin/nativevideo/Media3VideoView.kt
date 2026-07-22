@@ -473,10 +473,7 @@ class Media3VideoView(
     private fun newVideoView(): View =
         if (useSurfaceView) {
             SurfaceView(context).apply {
-                // Legacy hybrid composition (older devices without Impeller) otherwise composites
-                // this platform-view SurfaceView behind Flutter and the video renders black; lift it
-                // as a media overlay so it stays visible. The Flutter controls still draw on top.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) setZOrderMediaOverlay(true)
+                setZOrderMediaOverlay(true)
             }
         } else {
             TextureView(context)

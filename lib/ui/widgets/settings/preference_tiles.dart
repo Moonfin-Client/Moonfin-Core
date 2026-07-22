@@ -301,6 +301,16 @@ class SettingsListTypography extends StatelessWidget {
   }
 }
 
+PreferenceBinding<T> _rebindOnPreferenceChange<T>(
+  PreferenceBinding<T> current,
+  Preference<T> next,
+  Preference<T> previous,
+) {
+  if (next == previous) return current;
+  current.dispose();
+  return PreferenceBinding(GetIt.instance<PreferenceStore>(), next);
+}
+
 class SwitchPreferenceTile extends StatefulWidget {
   final Preference<bool> preference;
   final String title;
@@ -333,7 +343,7 @@ class SwitchPreferenceTile extends StatefulWidget {
 }
 
 class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
-  late final PreferenceBinding<bool> _binding;
+  late PreferenceBinding<bool> _binding;
 
   @override
   void initState() {
@@ -341,6 +351,16 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant SwitchPreferenceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
     );
   }
 
@@ -434,7 +454,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
 
 class _EnumPreferenceTileState<T extends Enum>
     extends State<EnumPreferenceTile<T>> {
-  late final PreferenceBinding<T> _binding;
+  late PreferenceBinding<T> _binding;
   bool _pickerOpen = false;
 
   @override
@@ -443,6 +463,16 @@ class _EnumPreferenceTileState<T extends Enum>
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant EnumPreferenceTile<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
     );
   }
 
@@ -603,7 +633,7 @@ class SliderPreferenceTile extends StatefulWidget {
 }
 
 class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
-  late final PreferenceBinding<int> _binding;
+  late PreferenceBinding<int> _binding;
   late final FocusNode _outerFocusNode;
   late final FocusNode _sliderInternalNode;
   bool _outerFocused = false;
@@ -628,6 +658,16 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
       debugLabel: 'SliderPrefTileInner',
       canRequestFocus: false,
       skipTraversal: true,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant SliderPreferenceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
     );
   }
 
@@ -816,7 +856,7 @@ class StringPickerPreferenceTile extends StatefulWidget {
 
 class _StringPickerPreferenceTileState
     extends State<StringPickerPreferenceTile> {
-  late final PreferenceBinding<String> _binding;
+  late PreferenceBinding<String> _binding;
   bool _pickerOpen = false;
 
   @override
@@ -825,6 +865,16 @@ class _StringPickerPreferenceTileState
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant StringPickerPreferenceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
     );
   }
 
@@ -936,7 +986,7 @@ class IntPickerPreferenceTile extends StatefulWidget {
 }
 
 class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
-  late final PreferenceBinding<int> _binding;
+  late PreferenceBinding<int> _binding;
   bool _pickerOpen = false;
 
   @override
@@ -945,6 +995,16 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant IntPickerPreferenceTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _binding = _rebindOnPreferenceChange(
+      _binding,
+      widget.preference,
+      oldWidget.preference,
     );
   }
 

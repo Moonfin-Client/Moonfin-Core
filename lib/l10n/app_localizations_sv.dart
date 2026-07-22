@@ -9781,9 +9781,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Tidslinjen är tom';
 
   @override
-  String get audiobookWholeBook => 'Hela boken';
-
-  @override
   String get audiobookFocusedTimeline => 'Fokuserad tidslinje';
 
   @override

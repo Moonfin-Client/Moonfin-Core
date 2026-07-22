@@ -315,7 +315,12 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       context.navigateTopLevel(Destinations.liveTvGuide);
     } else {
       context.navigateTopLevel(
-        gameOrLibraryRoute(lib.id, lib.collectionType, lib.name),
+        gameOrLibraryRoute(
+          lib.id,
+          lib.collectionType,
+          lib.name,
+          serverId: lib.serverId,
+        ),
       );
     }
   }

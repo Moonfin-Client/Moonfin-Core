@@ -9758,9 +9758,6 @@ class AppLocalizationsEo extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Templinio estas malplena';
 
   @override
-  String get audiobookWholeBook => 'Tuta libro';
-
-  @override
   String get audiobookFocusedTimeline => 'Fokusita templinio';
 
   @override

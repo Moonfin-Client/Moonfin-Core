@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/services/background_service.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/viewmodels/library_browse_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -45,6 +45,7 @@ double _desktopUiScaleFactor() {
 
 class LibraryBrowseScreen extends StatefulWidget {
   final String libraryId;
+  final String? serverId;
   final String? genreId;
   final String? genreName;
   final String? studioName;
@@ -54,6 +55,7 @@ class LibraryBrowseScreen extends StatefulWidget {
   const LibraryBrowseScreen({
     super.key,
     required this.libraryId,
+    this.serverId,
     this.genreId,
     this.genreName,
     this.studioName,
@@ -80,9 +82,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   @override
   void initState() {
     super.initState();
+    final client = GetIt.instance<MediaServerClientFactory>()
+        .clientForServerOrActive(widget.serverId);
     _vm = LibraryBrowseViewModel(
       libraryId: widget.libraryId,
-      client: GetIt.instance<MediaServerClient>(),
+      client: client,
       prefs: _prefs,
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       genreId: widget.genreId,

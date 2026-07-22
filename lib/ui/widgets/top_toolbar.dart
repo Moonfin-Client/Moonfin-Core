@@ -1148,7 +1148,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
           context.navigateTopLevel(
-            gameOrLibraryRoute(lib.id, lib.collectionType, lib.name),
+            gameOrLibraryRoute(
+              lib.id,
+              lib.collectionType,
+              lib.name,
+              serverId: lib.serverId,
+            ),
           );
         }
       },
@@ -1181,7 +1186,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
           context.navigateTopLevel(
-            gameOrLibraryRoute(lib.id, lib.collectionType, lib.name),
+            gameOrLibraryRoute(
+              lib.id,
+              lib.collectionType,
+              lib.name,
+              serverId: lib.serverId,
+            ),
           );
         }
       },

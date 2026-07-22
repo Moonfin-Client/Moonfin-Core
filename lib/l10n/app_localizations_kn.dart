@@ -9839,9 +9839,6 @@ class AppLocalizationsKn extends AppLocalizations {
   String get audiobookTimelineEmpty => 'ಟೈಮ್‌ಲೈನ್ ಖಾಲಿಯಾಗಿದೆ';
 
   @override
-  String get audiobookWholeBook => 'ಸಂಪೂರ್ಣ ಪುಸ್ತಕ';
-
-  @override
   String get audiobookFocusedTimeline => 'ಕೇಂದ್ರೀಕೃತ ಟೈಮ್‌ಲೈನ್';
 
   @override

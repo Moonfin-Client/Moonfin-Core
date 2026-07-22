@@ -9851,9 +9851,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'காலவரிசை காலியாக உள்ளது';
 
   @override
-  String get audiobookWholeBook => 'முழுப் புத்தகம்';
-
-  @override
   String get audiobookFocusedTimeline => 'மையப்படுத்திய காலவரிசை';
 
   @override

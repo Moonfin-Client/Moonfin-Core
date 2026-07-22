@@ -9828,9 +9828,6 @@ class AppLocalizationsCy extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Mae\'r llinell amser yn wag';
 
   @override
-  String get audiobookWholeBook => 'Y Llyfr Cyfan';
-
-  @override
   String get audiobookFocusedTimeline => 'Llinell Amser â Ffocws';
 
   @override

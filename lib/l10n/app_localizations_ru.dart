@@ -9849,9 +9849,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Хронология пуста';
 
   @override
-  String get audiobookWholeBook => 'Вся книга';
-
-  @override
   String get audiobookFocusedTimeline => 'Текущий фрагмент';
 
   @override

@@ -94,6 +94,20 @@ if [ "$FETCH_CORES" = "1" ]; then
   "$REPO_ROOT/macos/game_host/fetch_cores.sh"
 fi
 
+UNSIGNED=0
+if [ -z "$APP_SIGN_ID" ] && [ -z "$TEAM_ID" ]; then
+  UNSIGNED=1
+  echo "No signing identity available, building unsigned so PR builds still run."
+  PBXPROJ="$REPO_ROOT/macos/Runner.xcodeproj/project.pbxproj"
+  cp "$PBXPROJ" "$PBXPROJ.signing.bak"
+  trap 'mv -f "$PBXPROJ.signing.bak" "$PBXPROJ" 2>/dev/null || true' EXIT
+  sed -i '' \
+    -e 's/DEVELOPMENT_TEAM = [A-Z0-9]*;/DEVELOPMENT_TEAM = "";/g' \
+    -e 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' \
+    -e 's/"CODE_SIGN_IDENTITY\[sdk=macosx\*\]" = "Apple Development";/"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";/g' \
+    "$PBXPROJ"
+fi
+
 echo "Preparing Flutter macOS generated files..."
 if [ "$BUILD_APPSTORE_PKG" = "1" ]; then
   flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_pkg
@@ -113,11 +127,15 @@ ARCHIVE_CMD=(
   -configuration "$CONFIGURATION"
   -destination "generic/platform=macOS"
   -archivePath "$ARCHIVE_PATH"
-  CODE_SIGN_STYLE=Automatic
   archive
 )
-if [ -n "$TEAM_ID" ]; then
-  ARCHIVE_CMD+=( DEVELOPMENT_TEAM="$TEAM_ID" )
+if [ "$UNSIGNED" = "1" ]; then
+  ARCHIVE_CMD+=( CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO )
+else
+  ARCHIVE_CMD+=( CODE_SIGN_STYLE=Automatic )
+  if [ -n "$TEAM_ID" ]; then
+    ARCHIVE_CMD+=( DEVELOPMENT_TEAM="$TEAM_ID" )
+  fi
 fi
 if [ "$ALLOW_PROVISIONING_UPDATES" = "1" ]; then
   ARCHIVE_CMD+=( -allowProvisioningUpdates )

@@ -8407,7 +8407,6 @@
         "description": "Setting to trust self-signed TLS certificates"
     },
     "settingsAlwaysExpandNavbarLabels": "Üst gezinti çubuğundaki metin etiketlerini her zaman göster",
-    "audiobookWholeBook": "Tüm Kitap",
     "adminRepoSortDateNewest": "Ekleme Tarihi (Önce En Yeni)",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
@@ -9024,5 +9023,76 @@
     "homeRowsPaddingDescription": "Ana sayfa satırları arasındaki boşluğu özelleştir",
     "@homeRowsPaddingDescription": {
         "description": "Description for home rows padding setting"
+    },
+    "castMembers": "Oyuncular",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Tamamlanıyor…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "detailsBackgroundOpacity": "Detay Arka Plan Opaklığı",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "useNativeEmulator": "Yerel Emülasyon",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Oyunları EmulatorJS web oynatıcısı yerine yerel çekirdeklerle oynayın",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Emülatör Çekirdekleri",
+    "emulatorCoresSubtitle": "Oyunları yerel olarak oynamak için sistemleri indirin",
+    "emulatorCoresDescription": "Yüklenecek sistemleri seçin. Çekirdekler Libretro projesi tarafından sağlanır ve oyunların bir tarayıcı görünümü yerine yerel olarak çalışmasını sağlar.",
+    "emulatorCoreDownloading": "İndiriliyor",
+    "emulatorCoreUnavailable": "Bu cihaz için kullanılabilir değil",
+    "emulatorCoreDownloadFailed": "Çekirdek indirilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "downloadedGames": "İndirilen Oyunlar",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Oyun dosyaları tarafından kullanılan alanı boşaltın",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "Oyunlar oynatılmadan önce bu cihaza kopyalanır. Alan boşaltmak için bitirdiğiniz oyunları kaldırın. Kayıt dosyaları sunucuda saklanır ve silinmez.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Bu cihaza henüz hiç oyun indirilmedi.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} oyun, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Hepsini Sil",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "{title} bu cihazdan kaldırılsın mı? Bir sonraki oynayışınızda tekrar indirilecektir.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "İndirilen tüm oyunlar bu cihazdan kaldırılsın mı? Bir sonraki oynayışınızda tekrar indirileceklerdir.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
     }
 }

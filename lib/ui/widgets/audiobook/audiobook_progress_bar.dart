@@ -80,10 +80,9 @@ class AudiobookBookOverview extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  l10n.audiobookWholeBook,
+                  formatAudiobookClock(position),
                   style: TextStyle(
                     fontSize: 11,
-                    fontStyle: FontStyle.italic,
                     color: AppColorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   textAlign: TextAlign.center,

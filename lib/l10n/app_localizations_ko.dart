@@ -9457,9 +9457,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audiobookTimelineEmpty => '타임라인이 비어 있습니다';
 
   @override
-  String get audiobookWholeBook => '전체 책';
-
-  @override
   String get audiobookFocusedTimeline => '집중 타임라인';
 
   @override

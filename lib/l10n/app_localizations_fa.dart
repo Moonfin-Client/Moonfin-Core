@@ -9708,9 +9708,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'خط زمانی خالی است';
 
   @override
-  String get audiobookWholeBook => 'کل کتاب';
-
-  @override
   String get audiobookFocusedTimeline => 'خط زمانی متمرکز';
 
   @override

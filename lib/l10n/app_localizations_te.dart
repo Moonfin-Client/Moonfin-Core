@@ -9842,9 +9842,6 @@ class AppLocalizationsTe extends AppLocalizations {
   String get audiobookTimelineEmpty => 'టైమ్‌లైన్ ఖాళీగా ఉంది';
 
   @override
-  String get audiobookWholeBook => 'మొత్తం పుస్తకం';
-
-  @override
   String get audiobookFocusedTimeline => 'కేంద్రీకృత టైమ్‌లైన్';
 
   @override

@@ -9686,9 +9686,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Whole Book';
-
-  @override
   String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override

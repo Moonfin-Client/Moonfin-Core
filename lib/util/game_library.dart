@@ -54,11 +54,16 @@ bool isGameLibrary(String id, String? collectionType, String? name) {
 
 /// The route a library tile should open: the games browser for game libraries,
 /// otherwise the normal library view.
-String gameOrLibraryRoute(String id, String? collectionType, String name) {
+String gameOrLibraryRoute(
+  String id,
+  String? collectionType,
+  String name, {
+  String? serverId,
+}) {
   if (isGameLibrary(id, collectionType, name)) {
     return '${Destinations.gamesLibrary(id)}?title=${Uri.encodeQueryComponent(name)}';
   }
-  return Destinations.library(id);
+  return Destinations.library(id, serverId: serverId);
 }
 
 const IconData gameLibraryIcon = Icons.sports_esports;

@@ -9629,9 +9629,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get audiobookTimelineEmpty => 'ציר הזמן ריק';
 
   @override
-  String get audiobookWholeBook => 'הספר כולו';
-
-  @override
   String get audiobookFocusedTimeline => 'ציר זמן ממוקד';
 
   @override
