@@ -1395,17 +1395,15 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       _previewStartScrollOffset = _scrollController.offset;
-      _activePreviewKey = previewKey;
-      _previewReady = false;
       await _startSharedPreview(item, previewKey);
     });
     _previewDelayTimer = thisTimer;
   }
 
-  bool _isPreviewRequestActive(int requestId, String previewKey) {
+  bool _isPreviewRequestActive(int requestId, String? previewKey) {
     return mounted &&
         requestId == _previewRequestId &&
-        _activePreviewKey == previewKey &&
+        (previewKey == null || _activePreviewKey == previewKey) &&
         _isHomeRouteActive();
   }
 
@@ -1499,7 +1497,7 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       final target = await _resolvePreviewTargetItem(client, item);
-      if (!_isPreviewRequestActive(requestId, previewKey) || target == null) {
+      if (!_isPreviewRequestActive(requestId, null) || target == null) {
         return;
       }
 
@@ -1519,6 +1517,11 @@ class _ContentRowsState extends State<_ContentRows>
       final previewVolume = kIsWeb ? 0.0 : (previewAudioEnabled ? 100.0 : 0.0);
       final useMedia3 = _useMedia3InlinePreview();
       await _audioArbiter.acquire(AudioProducer.inlinePreview);
+
+      // Set the key to trigger the video widget once arbiter finishes aquire.
+      _activePreviewKey = previewKey;
+      _previewReady = false;
+
       if (!_isPreviewRequestActive(requestId, previewKey)) {
         return;
       }
