@@ -1,6 +1,6 @@
 import 'dart:async';
 
-enum AudioProducer { mainPlayback, mediaBarTrailer, inlinePreview }
+enum AudioProducer { mainPlayback, mediaBarTrailer, inlinePreview, themeMusic }
 
 enum RevokeReason { exclusive, background }
 
@@ -45,5 +45,7 @@ class PlaybackArbiter {
   }
 
   static bool _isAmbient(AudioProducer p) =>
-      p == AudioProducer.mediaBarTrailer || p == AudioProducer.inlinePreview;
+      p == AudioProducer.mediaBarTrailer ||
+      p == AudioProducer.inlinePreview ||
+      p == AudioProducer.themeMusic;
 }
