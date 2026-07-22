@@ -94,6 +94,14 @@ Future<T?> showFocusRestoringDialog<T>({
       onKeyEvent: (node, event) {
         if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
         if (event is KeyDownEvent) {
+          // A focused text field owns backspace (it's editing, not "back");
+          // don't pop the dialog out from under it.
+          final focusContext = FocusManager.instance.primaryFocus?.context;
+          if (focusContext != null &&
+              focusContext.findAncestorWidgetOfExactType<EditableText>() !=
+                  null) {
+            return KeyEventResult.ignored;
+          }
           DialogBackSuppressor.markDismissed();
           Navigator.of(dialogContext).pop();
           return KeyEventResult.handled;

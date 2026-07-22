@@ -703,7 +703,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     try {
       await showFocusRestoringDialog<void>(
         context: context,
-        builder: (ctx) => _AddServerDialog(
+        builder: (ctx) => AddServerDialog(
           l10n: AppLocalizations.of(context),
           controller: _addressController,
           serverRepo: _serverRepo,
@@ -843,22 +843,23 @@ class _FocusableTileState extends State<_FocusableTile> {
   }
 }
 
-class _AddServerDialog extends StatefulWidget {
+class AddServerDialog extends StatefulWidget {
   final AppLocalizations l10n;
   final TextEditingController controller;
   final ServerRepository serverRepo;
 
-  const _AddServerDialog({
+  const AddServerDialog({
+    super.key,
     required this.l10n,
     required this.controller,
     required this.serverRepo,
   });
 
   @override
-  State<_AddServerDialog> createState() => _AddServerDialogState();
+  State<AddServerDialog> createState() => _AddServerDialogState();
 }
 
-class _AddServerDialogState extends State<_AddServerDialog> {
+class _AddServerDialogState extends State<AddServerDialog> {
   final _userPreferences = GetIt.instance<UserPreferences>();
   final _addressFocus = FocusNode(debugLabel: 'addServerAddress');
   final _connectFocus = FocusNode(debugLabel: 'addServerConnect');
@@ -966,6 +967,14 @@ class _AddServerDialogState extends State<_AddServerDialog> {
           _tvFieldKey.currentState?.closeKeyboard();
           _addressFocus.requestFocus();
           return KeyEventResult.handled;
+        }
+        // A focused text field owns backspace (editing the URL); only treat
+        // it as "close dialog" when no editable text has primary focus.
+        final focusContext = FocusManager.instance.primaryFocus?.context;
+        if (focusContext != null &&
+            focusContext.findAncestorWidgetOfExactType<EditableText>() !=
+                null) {
+          return KeyEventResult.ignored;
         }
         _dismissDialog(suppressNextPopRoute: true);
         return KeyEventResult.handled;
