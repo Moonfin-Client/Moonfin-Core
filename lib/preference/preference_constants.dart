@@ -493,6 +493,10 @@ enum SeerrRowType {
 extension SeerrRowTypeHomeSection on SeerrRowType {
   HomeSectionType get homeSectionType => switch (this) {
         SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
+        // Not (yet) represented in the generic home-section system; the
+        // watchlist row is toggled through the dedicated Seerr row settings
+        // screen instead.
+        SeerrRowType.yourWatchlist => HomeSectionType.none,
         SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
         SeerrRowType.trending => HomeSectionType.seerrTrending,
         SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
