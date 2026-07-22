@@ -15,6 +15,12 @@ class SeerrRepository {
   bool _initialized = false;
   String? _lastUserId;
 
+  // Serializes init so two callers cant tear down each other's HTTP client at
+  // once. A forced discover reload racing the nav badge used to close the
+  // client mid probe, so the discover screen saw a dropped request and showed
+  // Seerr as logged out.
+  Future<void> _initChain = Future<void>.value();
+
   bool _isAvailable = false;
   bool _isMoonfinMode = false;
 
@@ -52,7 +58,13 @@ class SeerrRepository {
     _lastSessionValid = false;
   }
 
-  Future<void> ensureInitialized({bool force = false}) async {
+  Future<void> ensureInitialized({bool force = false}) {
+    final next = _initChain.then((_) => _ensureInitialized(force: force));
+    _initChain = next.catchError((_) {});
+    return next;
+  }
+
+  Future<void> _ensureInitialized({bool force = false}) async {
     final currentUserId = _session.activeUserId;
 
     if (force) {

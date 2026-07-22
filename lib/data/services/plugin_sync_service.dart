@@ -575,24 +575,46 @@ class PluginSyncService extends ChangeNotifier {
     String? username,
     String? password,
   }) async {
-    if (!_pluginAvailable) return false;
-
     final token = client.accessToken;
     if (token == null || token.isEmpty) return false;
 
-    try {
-      final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
-      await seerrRepo.bootstrapMoonfinSso(
-        jellyfinBaseUrl: client.baseUrl,
-        jellyfinToken: token,
-        username: username,
-        password: password,
-      );
-      await _refreshAvailabilityStatus(client);
-      return seerrAvailable;
-    } catch (_) {
-      return false;
+    final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+
+    // A cold start can reach this before the server answers the plugin ping, or
+    // before the plugin's Seerr session comes up after the restored token is
+    // applied. Retry across that window so Seerr recovers on its own instead of
+    // staying unavailable until the user opens its settings screen.
+    const attemptDelays = [
+      Duration.zero,
+      Duration(seconds: 3),
+      Duration(seconds: 6),
+      Duration(seconds: 10),
+    ];
+    for (final delay in attemptDelays) {
+      if (delay > Duration.zero) await Future<void>.delayed(delay);
+
+      if (!_pluginAvailable) {
+        final status = await _refreshAvailabilityStatus(client);
+        if (status == _PluginAvailabilityStatus.unavailable) return false;
+        if (!_pluginAvailable) continue;
+      }
+
+      try {
+        await seerrRepo.bootstrapMoonfinSso(
+          jellyfinBaseUrl: client.baseUrl,
+          jellyfinToken: token,
+          username: username,
+          password: password,
+        );
+        await _refreshAvailabilityStatus(client);
+      } catch (_) {
+        continue;
+      }
+
+      if (seerrRepo.isAvailable) return true;
     }
+
+    return seerrRepo.isAvailable;
   }
 
   Future<void> pushSettings(MediaServerClient client) async {
