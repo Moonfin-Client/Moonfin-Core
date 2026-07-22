@@ -53,6 +53,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.decoder.av1.Dav1dLibrary
 import androidx.media3.decoder.av1.Libdav1dVideoRenderer
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.DecoderReuseEvaluation
@@ -375,6 +376,8 @@ class Media3VideoView(
         private const val TS_SEARCH_BYTES_LOW_RAM = TsExtractor.TS_PACKET_SIZE * 1800
         private const val TS_SEARCH_BYTES_DEFAULT = TsExtractor.DEFAULT_TIMESTAMP_SEARCH_BYTES
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
+        private const val STREAMING_MAX_BUFFER_MS = 120_000
+        private const val MAX_TARGET_BUFFER_BYTES = 384L * 1024 * 1024
         private const val ASS_FALLBACK_FONT_ASSET = "fonts/NotoSans-Regular.ttf"
         private const val ASS_FALLBACK_FONT_NAME = "Noto Sans"
         private val FONT_EXTENSIONS = setOf("ttf", "otf", "ttc")
@@ -1117,6 +1120,28 @@ class Media3VideoView(
         Media3Bridge.detachView(this)
     }
 
+    // The default load control stops buffering at a byte budget that a
+    // high bitrate remux burns through in seconds, so bursty networks
+    // underrun and stutter long before the time target is reached. Scale
+    // the byte budget to the app heap and stretch the streaming time
+    // ceiling so direct play keeps a real runway, leaving local playback
+    // durations at their defaults.
+    private fun buildLoadControl(): DefaultLoadControl {
+        val targetBufferBytes = (Runtime.getRuntime().maxMemory() / 3)
+            .coerceAtMost(MAX_TARGET_BUFFER_BYTES)
+            .coerceAtLeast(DefaultLoadControl.DEFAULT_MUXED_BUFFER_SIZE.toLong())
+            .toInt()
+        return DefaultLoadControl.Builder()
+            .setTargetBufferBytes(targetBufferBytes)
+            .setBufferDurationsMsForStreaming(
+                DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+                STREAMING_MAX_BUFFER_MS,
+                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
+            )
+            .build()
+    }
+
     private fun createPlayer(): ExoPlayer {
         emitFfmpegDecoderDiagnosticsOnce()
         // Fresh selector for every player; see the trackSelector field comment.
@@ -1156,6 +1181,7 @@ class Media3VideoView(
 
         return ExoPlayer.Builder(context, renderersFactory.withAssSupport(assHandler))
             .setTrackSelector(trackSelector)
+            .setLoadControl(buildLoadControl())
             .setMediaSourceFactory(bootMediaSourceFactory)
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_NETWORK)

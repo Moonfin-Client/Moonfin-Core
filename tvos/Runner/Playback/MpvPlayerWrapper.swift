@@ -2274,6 +2274,10 @@ private final class MPVEngine {
         }
 
         _ = setOptionString("network-timeout", value: "120", on: created)
+        // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
+        // through in seconds, so bursty networks stutter. A larger demuxer
+        // budget keeps a real runway.
+        _ = setOptionString("demuxer-max-bytes", value: "256MiB", on: created)
         _ = setOptionString("user-agent", value: "Moonfin-tvOS/\(AppConstants.clientVersion)", on: created)
         _ = setOptionString("audio-channels", value: audioChannelsMode, on: created)
         initDiagnostics["audio_channels_mode"] = audioChannelsMode

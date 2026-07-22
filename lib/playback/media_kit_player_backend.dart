@@ -392,6 +392,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
     final platform = player.platform;
     if (platform is NativePlayer) {
       _nativeSetProperty(platform, 'network-timeout', '120');
+      // mpv stops reading ahead at 150MiB, which a high bitrate remux burns
+      // through in seconds, so bursty networks stutter. A larger demuxer
+      // budget keeps a real runway.
+      _nativeSetProperty(platform, 'demuxer-max-bytes', '256MiB');
       _nativeSetProperty(
         platform,
         'stream-lavf-o',
