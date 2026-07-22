@@ -1,13 +1,20 @@
-import 'package:server_core/server_core.dart';
+import '../api/image_api.dart';
+import '../server_dialect.dart';
 
-class JellyfinImageApi implements ImageApi {
-  final String _baseUrl;
+class ServerImageApi implements ImageApi {
+  final String Function() _getBaseUrl;
+  final String? Function() _getApiKey;
+  final ServerDialect _dialect;
 
-  JellyfinImageApi(this._baseUrl);
+  ServerImageApi(this._getBaseUrl, this._getApiKey, this._dialect);
 
   String _buildQuery(Map<String, String> params) {
+    if (_dialect.includeApiKeyInImageUrls) {
+      final apiKey = _getApiKey();
+      if (apiKey != null) params['api_key'] = apiKey;
+    }
     if (params.isEmpty) return '';
-    return '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+    return '?${params.entries.map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}').join('&')}';
   }
 
   @override
@@ -22,7 +29,7 @@ class JellyfinImageApi implements ImageApi {
       if (maxHeight != null) 'maxHeight': maxHeight.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Primary$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Primary$query';
   }
 
   @override
@@ -37,7 +44,7 @@ class JellyfinImageApi implements ImageApi {
       if (maxWidth != null) 'maxWidth': maxWidth.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Backdrop/$idx$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Backdrop/$idx$query';
   }
 
   @override
@@ -50,7 +57,7 @@ class JellyfinImageApi implements ImageApi {
       if (maxWidth != null) 'maxWidth': maxWidth.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Logo$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Logo$query';
   }
 
   @override
@@ -63,7 +70,7 @@ class JellyfinImageApi implements ImageApi {
       if (maxWidth != null) 'maxWidth': maxWidth.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Banner$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Banner$query';
   }
 
   @override
@@ -76,7 +83,7 @@ class JellyfinImageApi implements ImageApi {
       if (maxWidth != null) 'maxWidth': maxWidth.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Thumb$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Thumb$query';
   }
 
   @override
@@ -90,12 +97,13 @@ class JellyfinImageApi implements ImageApi {
       if (maxWidth != null) 'maxWidth': maxWidth.toString(),
       'tag': ?tag,
     });
-    return '$_baseUrl/Items/$itemId/Images/Chapter/$index$query';
+    return '${_getBaseUrl()}/Items/$itemId/Images/Chapter/$index$query';
   }
 
   @override
   String getUserImageUrl(String userId) {
-    return '$_baseUrl/Users/$userId/Images/Primary';
+    final query = _buildQuery({});
+    return '${_getBaseUrl()}/Users/$userId/Images/Primary$query';
   }
 
   @override
@@ -108,6 +116,6 @@ class JellyfinImageApi implements ImageApi {
     final query = _buildQuery({
       'mediaSourceId': ?mediaSourceId,
     });
-    return '$_baseUrl/Videos/$itemId/Trickplay/$width/$index.jpg$query';
+    return '${_getBaseUrl()}/Videos/$itemId/Trickplay/$width/$index.jpg$query';
   }
 }

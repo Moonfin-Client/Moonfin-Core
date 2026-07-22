@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:server_jellyfin/src/api/jellyfin_playback_api.dart';
+import 'package:server_core/server_core.dart';
 import 'package:test/test.dart';
 
 /// Intercepts requests before they hit the network so we can assert on the
 /// exact body sent and reply with a chosen status, mimicking how a strict
-/// Jellyfin-compatible server (e.g. remux) responds.
+/// Jellyfin/Emby-compatible server (e.g. remux) responds.
 class _FakeServer extends Interceptor {
   _FakeServer(this.handle);
 
@@ -57,7 +57,7 @@ void main() {
             }),
           );
 
-        final api = JellyfinPlaybackApi(dio, 'http://remux.local');
+        final api = ServerPlaybackApi(dio, () => 'http://remux.local');
         final result = await api.getPlaybackInfo(
           'channel-1',
           userId: 'user-1',
@@ -98,7 +98,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = ServerPlaybackApi(dio, () => 'http://jellyfin.local');
 
       await expectLater(
         api.getPlaybackInfo(
@@ -127,7 +127,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = ServerPlaybackApi(dio, () => 'http://jellyfin.local');
       final result = await api.getPlaybackInfo(
         'item-1',
         userId: 'user-1',
@@ -154,7 +154,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = ServerPlaybackApi(dio, () => 'http://jellyfin.local');
       await api.stopActiveEncodings(
         deviceId: 'device-1',
         playSessionId: 'session-1',
@@ -178,7 +178,7 @@ void main() {
           }),
         );
 
-      final api = JellyfinPlaybackApi(dio, 'http://jellyfin.local');
+      final api = ServerPlaybackApi(dio, () => 'http://jellyfin.local');
       await api.stopActiveEncodings(deviceId: 'device-1');
       await api.stopActiveEncodings(deviceId: 'device-1', playSessionId: '');
 

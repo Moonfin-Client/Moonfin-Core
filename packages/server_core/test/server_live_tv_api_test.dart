@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:server_emby/src/api/emby_live_tv_api.dart';
+import 'package:server_core/server_core.dart';
 import 'package:test/test.dart';
 
 class _Capture extends Interceptor {
@@ -19,10 +19,10 @@ class _Capture extends Interceptor {
 }
 
 void main() {
-  group('EmbyLiveTvApi.getGuide /LiveTv/Programs transport', () {
+  group('ServerLiveTvApi.getGuide /LiveTv/Programs transport', () {
     test('small channel list → GET with comma-joined ChannelIds string', () async {
       final cap = _Capture();
-      final api = EmbyLiveTvApi(Dio()..interceptors.add(cap));
+      final api = ServerLiveTvApi(Dio()..interceptors.add(cap));
 
       await api.getGuide(channelIds: ['a', 'b', 'c']);
 
@@ -32,25 +32,27 @@ void main() {
     });
 
     test('large channel list → POST with ChannelIds as a JSON array', () async {
+      // >1800 chars of joined ids forces the POST path. 60 × 36-char ids ≈ 2.2k.
       final ids = List.generate(
         60,
         (i) => '0000000000000000000000000000${i.toString().padLeft(8, '0')}',
       );
       final cap = _Capture();
-      final api = EmbyLiveTvApi(Dio()..interceptors.add(cap));
+      final api = ServerLiveTvApi(Dio()..interceptors.add(cap));
 
       await api.getGuide(channelIds: ids);
 
       expect(cap.last!.method, 'POST');
       expect(cap.last!.path, '/LiveTv/Programs');
       final body = cap.last!.data as Map<String, dynamic>;
+      // Must be a real list (Vec<Uuid> on remux), NOT a comma-joined string.
       expect(body['ChannelIds'], isA<List<String>>());
       expect((body['ChannelIds'] as List).length, 60);
     });
 
     test('forwards EnableImages/EnableUserData to keep the payload small', () async {
       final cap = _Capture();
-      final api = EmbyLiveTvApi(Dio()..interceptors.add(cap));
+      final api = ServerLiveTvApi(Dio()..interceptors.add(cap));
 
       await api.getGuide(
         channelIds: ['a', 'b'],

@@ -1,19 +1,25 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class EmbyDisplayPreferencesApi implements DisplayPreferencesApi {
+import '../api/display_preferences_api.dart';
+import '../models/system_models.dart';
+import '../server_dialect.dart';
+
+class ServerDisplayPreferencesApi implements DisplayPreferencesApi {
   final Dio _dio;
+  final ServerDialect _dialect;
   final Map<String, _CacheEntry> _cache = {};
   static const _cacheDuration = Duration(minutes: 5);
 
-  EmbyDisplayPreferencesApi(this._dio);
+  ServerDisplayPreferencesApi(this._dio, this._dialect);
+
+  String _client(String? client) => client ?? _dialect.displayPrefsClient;
 
   @override
   Future<DisplayPreferences> getDisplayPreferences(
     String id, {
     String? client,
   }) async {
-    final cacheKey = '$id:${client ?? 'emby'}';
+    final cacheKey = '$id:${_client(client)}';
     final entry = _cache[cacheKey];
     if (entry != null &&
         DateTime.now().difference(entry.cachedAt) < _cacheDuration) {
@@ -22,9 +28,7 @@ class EmbyDisplayPreferencesApi implements DisplayPreferencesApi {
 
     final response = await _dio.get(
       '/DisplayPreferences/$id',
-      queryParameters: {
-        'client': client ?? 'emby',
-      },
+      queryParameters: {'client': _client(client)},
     );
     final prefs =
         DisplayPreferences.fromJson(response.data as Map<String, dynamic>);
@@ -41,12 +45,9 @@ class EmbyDisplayPreferencesApi implements DisplayPreferencesApi {
     await _dio.post(
       '/DisplayPreferences/$id',
       data: prefs.toJson(),
-      queryParameters: {
-        'client': client ?? 'emby',
-      },
+      queryParameters: {'client': _client(client)},
     );
-    final cacheKey = '$id:${client ?? 'emby'}';
-    _cache[cacheKey] = _CacheEntry(prefs, DateTime.now());
+    _cache['$id:${_client(client)}'] = _CacheEntry(prefs, DateTime.now());
   }
 
   void invalidateCache() => _cache.clear();

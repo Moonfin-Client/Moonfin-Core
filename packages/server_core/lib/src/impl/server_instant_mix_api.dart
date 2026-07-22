@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:server_core/server_core.dart';
 
-class JellyfinInstantMixApi implements InstantMixApi {
+import '../api/instant_mix_api.dart';
+
+/// Shared instant-mix implementation; the endpoint is identical on Jellyfin
+/// and Emby.
+class ServerInstantMixApi implements InstantMixApi {
   final Dio _dio;
 
-  JellyfinInstantMixApi(this._dio);
+  ServerInstantMixApi(this._dio);
 
   @override
   Future<Map<String, dynamic>> getInstantMix(
