@@ -3088,6 +3088,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Загруженные медиафайлы будут сохранены в папке «Загрузки/Moonfin» на вашем устройстве. Эти файлы будут видны другим приложениям, таким как ваша галерея или музыкальный проигрыватель.\n\nСуществующие загрузки останутся в своем текущем местоположении.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Давать возможность';
 
   @override

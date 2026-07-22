@@ -3057,6 +3057,10 @@ class AppLocalizationsNb extends AppLocalizations {
       'Nedlastede medier vil bli lagret i Nedlastinger/Moonfin på enheten din. Disse filene vil være synlige for andre apper som galleriet eller musikkspilleren.\n\nEksisterende nedlastinger forblir på deres nåværende plassering.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktiver';
 
   @override

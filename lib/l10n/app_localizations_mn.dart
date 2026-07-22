@@ -3063,6 +3063,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'Татаж авсан медиа таны төхөөрөмж дээрх Татаж авсан файлууд/Moonfin хэсэгт хадгалагдах болно. Эдгээр файлууд нь таны галерей эсвэл хөгжим тоглуулагч зэрэг бусад програмуудад харагдах болно.\n\nОдоо байгаа татан авалтууд одоогийн байршилдаа хэвээр үлдэнэ.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Идэвхжүүлэх';
 
   @override

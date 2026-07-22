@@ -3081,6 +3081,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Atsisiųsta medija bus išsaugota jūsų įrenginio aplanke „Atsisiuntimai/Moonfin“. Šiuos failus matys kitos programos, pvz., galerija ar muzikos grotuvas.\n\nEsami atsisiuntimai liks dabartinėje vietoje.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Įgalinti';
 
   @override

@@ -5548,6 +5548,12 @@ abstract class AppLocalizations {
   /// **'Downloaded media will be saved to Downloads/Moonfin on your device. These files will be visible to other apps such as your gallery or music player.\n\nExisting downloads will remain in their current location.'**
   String get saveToDownloadsFolderDescription;
 
+  /// Notice shown below downloading text when downloading a transcoded stream
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding: Time Remaining Unavailable'**
+  String get transcodingTimeRemainingUnavailable;
+
   /// Button to enable a feature
   ///
   /// In en, this message translates to:

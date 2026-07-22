@@ -3099,6 +3099,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les médias téléchargés seront enregistrés dans Téléchargements/Moonfin sur votre appareil. Ces fichiers seront visibles par d’autres applications, comme votre galerie ou votre lecteur de musique.\n\nLes téléchargements existants resteront à leur emplacement actuel.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Activer';
 
   @override

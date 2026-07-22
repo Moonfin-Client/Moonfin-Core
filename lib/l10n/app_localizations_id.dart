@@ -3062,6 +3062,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Media yang diunduh akan disimpan ke Downloads/Moonfin di perangkat Anda. File-file ini akan terlihat oleh aplikasi lain seperti galeri atau pemutar musik Anda.\n\nUnduhan yang sudah ada akan tetap berada di lokasi saat ini.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktifkan';
 
   @override

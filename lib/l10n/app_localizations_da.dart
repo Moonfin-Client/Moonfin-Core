@@ -3060,6 +3060,10 @@ class AppLocalizationsDa extends AppLocalizations {
       'Downloadede medier vil blive gemt i Downloads/Moonfin på din enhed. Disse filer vil være synlige for andre apps, såsom dit galleri eller din musikafspiller.\n\nEksisterende downloads forbliver på deres nuværende placering.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktiver';
 
   @override

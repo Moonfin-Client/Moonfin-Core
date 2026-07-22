@@ -2968,6 +2968,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '下载的媒体将保存到你设备上的 Downloads/Moonfin 中。这些文件将对其他应用可见，例如你的图库或音乐播放器。\n\n现有下载将保留在当前位置。';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => '启用';
 
   @override

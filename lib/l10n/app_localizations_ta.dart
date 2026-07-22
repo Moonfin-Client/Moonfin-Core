@@ -3082,6 +3082,10 @@ class AppLocalizationsTa extends AppLocalizations {
       'பதிவிறக்கம் செய்யப்பட்ட மீடியா உங்கள் சாதனத்தில் பதிவிறக்கங்கள்/Moonfin இல் சேமிக்கப்படும். இந்தக் கோப்புகள் உங்கள் கேலரி அல்லது மியூசிக் பிளேயர் போன்ற பிற பயன்பாடுகளுக்குத் தெரியும்.\n\nஏற்கனவே உள்ள பதிவிறக்கங்கள் அவற்றின் தற்போதைய இருப்பிடத்திலேயே இருக்கும்.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'இயக்கு';
 
   @override

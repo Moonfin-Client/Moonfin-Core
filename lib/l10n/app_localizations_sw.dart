@@ -3081,6 +3081,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Midia iliyopakuliwa itahifadhiwa kwenye Vipakuliwa/Moonfin kwenye kifaa chako. Faili hizi zitaonekana kwa programu zingine kama vile ghala yako au kicheza muziki.\n\nVipakuliwa vilivyopo vitasalia katika eneo vilipo sasa.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Wezesha';
 
   @override

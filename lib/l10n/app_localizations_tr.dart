@@ -3070,6 +3070,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'İndirilen medya cihazınızda İndirilenler/Moonfin klasörüne kaydedilecektir. Bu dosyalar galeriniz veya müzik çalarınız gibi diğer uygulamalar tarafından görülebilecektir.\n\nMevcut indirilenler mevcut konumlarında kalacaktır.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Etkinleştir';
 
   @override

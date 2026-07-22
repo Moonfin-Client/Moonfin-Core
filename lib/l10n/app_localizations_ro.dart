@@ -3080,6 +3080,10 @@ class AppLocalizationsRo extends AppLocalizations {
       'Media descărcate va fi salvat în Descărcări/Moonfin pe dispozitivul dvs. Aceste fișiere vor fi vizibile pentru alte aplicații, cum ar fi galeria sau playerul muzical.\n\nDescărcările existente vor rămâne în locația lor actuală.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Permite';
 
   @override

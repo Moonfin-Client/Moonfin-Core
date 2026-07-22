@@ -3077,6 +3077,10 @@ class AppLocalizationsBg extends AppLocalizations {
       'Изтеглените медии ще бъдат запазени в Downloads/Moonfin на вашето устройство. Тези файлове ще бъдат видими за други приложения, като вашата галерия или музикален плейър.\n\nСъществуващите изтегляния ще останат в текущото си местоположение.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Активиране';
 
   @override

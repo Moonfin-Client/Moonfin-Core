@@ -3085,6 +3085,10 @@ class AppLocalizationsSl extends AppLocalizations {
       'Prenesena predstavnost bo shranjena v Prenosi/Moonfin v vaši napravi. Te datoteke bodo vidne drugim aplikacijam, kot je vaša galerija ali predvajalnik glasbe.\n\nObstoječi prenosi bodo ostali na trenutni lokaciji.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Omogoči';
 
   @override

@@ -3074,6 +3074,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Ladattu media tallennetaan laitteesi Downloads/Moonfin-kansioon. Nämä tiedostot näkyvät muille sovelluksille, kuten galleriallesi tai musiikkisoittimellesi.\n\nNykyiset lataukset säilyvät nykyisessä paikassaan.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Ota käyttöön';
 
   @override

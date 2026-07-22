@@ -3078,6 +3078,10 @@ class AppLocalizationsLv extends AppLocalizations {
       'Lejupielādētie multivide tiks saglabāti jūsu ierīces mapē Lejupielādes/Moonfin. Šie faili būs redzami citām lietotnēm, piemēram, jūsu galerijai vai mūzikas atskaņotājam.\n\nEsošās lejupielādes paliks to pašreizējā atrašanās vietā.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Iespējot';
 
   @override

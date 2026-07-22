@@ -3084,6 +3084,10 @@ class AppLocalizationsTl extends AppLocalizations {
       'Ise-save ang na-download na media sa Downloads/Moonfin sa iyong device. Ang mga file na ito ay makikita ng ibang mga app gaya ng iyong gallery o music player.\n\nAng mga kasalukuyang pag-download ay mananatili sa kanilang kasalukuyang lokasyon.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Paganahin';
 
   @override

@@ -3058,6 +3058,10 @@ class AppLocalizationsSi extends AppLocalizations {
       'බාගත කළ මාධ්‍ය ඔබගේ උපාංගයේ බාගැනීම්/Moonfin වෙත සුරකිනු ඇත. මෙම ගොනු ඔබගේ ගැලරිය හෝ සංගීත වාදකය වැනි වෙනත් යෙදුම්වලට දෘශ්‍යමාන වනු ඇත.\n\nපවතින බාගැනීම් ඒවායේ වත්මන් ස්ථානයේ පවතිනු ඇත.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'සබල කරන්න';
 
   @override

@@ -3070,6 +3070,10 @@ class AppLocalizationsKk extends AppLocalizations {
       'Жүктеп алынған медиа құрылғыңыздағы Жүктеулер/Moonfin ішіне сақталады. Бұл файлдар галерея немесе музыка ойнатқышы сияқты басқа қолданбаларға көрінеді.\n\nБар жүктеп алынған файлдар ағымдағы орнында қалады.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Қосу';
 
   @override

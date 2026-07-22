@@ -3079,6 +3079,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'A letöltött médiát a rendszer a Letöltések/Moonfin mappába menti az eszközödön. Ezeket a fájlokat más alkalmazások is láthatják, például a galéria vagy a zenelejátszó.\n\nA meglévő letöltések a jelenlegi helyükön maradnak.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Engedélyezés';
 
   @override

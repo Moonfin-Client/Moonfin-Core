@@ -3072,6 +3072,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Gedownloade media worden opgeslagen in Downloads/Moonfin op uw apparaat. Deze bestanden zijn zichtbaar voor andere apps, zoals uw galerij of muziekspeler.\n\nBestaande downloads blijven op hun huidige locatie.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Inschakelen';
 
   @override

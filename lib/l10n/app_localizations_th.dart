@@ -3041,6 +3041,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'สื่อที่ดาวน์โหลดจะถูกบันทึกไว้ใน Downloads/Moonfin บนอุปกรณ์ของคุณ ไฟล์เหล่านี้จะปรากฏแก่แอปอื่นๆ เช่น แกลเลอรีหรือเครื่องเล่นเพลงของคุณ\n\nการดาวน์โหลดที่มีอยู่จะยังคงอยู่ในตำแหน่งปัจจุบัน';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'เปิดใช้งาน';
 
   @override

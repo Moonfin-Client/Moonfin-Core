@@ -3075,6 +3075,10 @@ class AppLocalizationsCs extends AppLocalizations {
       'Stažená média se uloží do složky Downloads/Moonfin na vašem zařízení. Tyto soubory budou viditelné pro ostatní aplikace, jako je vaše galerie nebo hudební přehrávač.\n\nStávající stažené soubory zůstanou na svém aktuálním místě.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Umožnit';
 
   @override

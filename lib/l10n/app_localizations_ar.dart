@@ -3073,6 +3073,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم حفظ الوسائط التي تم تنزيلها في التنزيلات/Moonfin على جهازك. ستكون هذه الملفات مرئية لتطبيقات أخرى مثل معرض الصور الخاص بك أو مشغل الموسيقى.\n\nستبقى التنزيلات الحالية في موقعها الحالي.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'يُمكَِن';
 
   @override

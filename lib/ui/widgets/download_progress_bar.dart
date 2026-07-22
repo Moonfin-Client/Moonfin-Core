@@ -91,6 +91,18 @@ class DownloadProgressBar extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        if (current.isTranscoded) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.transcodingTimeRemainingUnavailable,
+                            style: TextStyle(
+                              color: AppColorScheme.onAccent.withValues(alpha: 0.8),
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                         const SizedBox(height: 4),
                         ClipRRect(
                           borderRadius: AppRadius.circular(2),

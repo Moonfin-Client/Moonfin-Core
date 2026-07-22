@@ -3066,6 +3066,10 @@ class AppLocalizationsSv extends AppLocalizations {
       'Nedladdade media kommer att sparas till Downloads/Moonfin på din enhet. Dessa filer kommer att vara synliga för andra appar som ditt galleri eller din musikspelare.\n\nBefintliga nedladdningar kommer att finnas kvar på sin nuvarande plats.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Transcoding: Time Remaining Unavailable';
+
+  @override
   String get enable => 'Aktivera';
 
   @override
