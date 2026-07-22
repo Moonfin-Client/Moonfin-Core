@@ -82,12 +82,16 @@ class _MoonfinAppState extends State<MoonfinApp> {
     if (PlatformDetection.isAppleTV) {
       TopShelfService().startDeepLinkListener(navigateWhenReady);
       TvRemoteController.instance.init();
+      // Continuous-swipe auto-repeat latches on a touch-and-hold and runs the
+      // focus away, so the threshold is pushed out of reach to switch it off.
+      // Discrete swipes still move focus one step per gesture, and a held
+      // directional click still repeats at the calmer interval below.
       TvRemoteController.instance.config = const TvRemoteConfig(
         shortSwipeThreshold: 0.45,
         fastSwipeThreshold: 0.7,
-        continuousSwipeMoveThreshold: 4,
+        continuousSwipeMoveThreshold: 1000000,
         keyRepeatInitialDelay: Duration(milliseconds: 450),
-        keyRepeatInterval: Duration(milliseconds: 140),
+        keyRepeatInterval: Duration(milliseconds: 180),
       );
     }
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
