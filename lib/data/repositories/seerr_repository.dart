@@ -19,6 +19,7 @@ class SeerrRepository {
   bool _isMoonfinMode = false;
 
   int _lastSessionCheckMs = 0;
+  int _lastInitAttemptMs = 0;
   bool _lastSessionValid = false;
   static const _sessionCacheDurationMs = 5 * 60 * 1000;
 
@@ -51,8 +52,16 @@ class SeerrRepository {
     _lastSessionValid = false;
   }
 
-  Future<void> ensureInitialized() async {
+  Future<void> ensureInitialized({bool force = false}) async {
     final currentUserId = _session.activeUserId;
+
+    if (force) {
+      _initialized = false;
+      _httpClient?.close();
+      _httpClient = null;
+      _isAvailable = false;
+      _invalidateSessionCache();
+    }
 
     if (_initialized && currentUserId != null && currentUserId != _lastUserId) {
       _initialized = false;
@@ -66,11 +75,21 @@ class SeerrRepository {
       _initialized = false;
     }
 
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (_initialized && !_isAvailable) {
+      if (now - _lastInitAttemptMs > 30000) {
+        _initialized = false;
+        _httpClient?.close();
+        _httpClient = null;
+      }
+    }
+
     if (_initialized) return;
-    if (_httpClient != null) {
+    if (_httpClient != null && _isAvailable) {
       _initialized = true;
       return;
     }
+    _lastInitAttemptMs = now;
 
     try {
       if (currentUserId == null) {

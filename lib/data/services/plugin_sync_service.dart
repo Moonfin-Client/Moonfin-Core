@@ -44,6 +44,7 @@ class PluginSyncService extends ChangeNotifier {
   String? get pluginVersion => _pluginVersion;
 
   String? _selectedCustomizationProfile;
+  int _syncRetryCount = 0;
 
   String? _seerrUrl;
   String? get seerrUrl => _seerrUrl;
@@ -193,7 +194,6 @@ class PluginSyncService extends ChangeNotifier {
       final pingResult = await _ping(client);
       if (pingResult == null) {
         _stopSettingsStream();
-        _setLocalSeerrEnabled(false);
         notifyListeners();
         return _PluginAvailabilityStatus.unknown;
       }
@@ -250,7 +250,7 @@ class PluginSyncService extends ChangeNotifier {
       notifyListeners();
       return _PluginAvailabilityStatus.available;
     } catch (_) {
-      resetState();
+      resetState(notify: false);
       return _PluginAvailabilityStatus.unknown;
     }
   }
@@ -293,6 +293,9 @@ class PluginSyncService extends ChangeNotifier {
       await _hydrateCachedThemes(client, serverId: serverId);
 
       final availability = await _refreshAvailabilityStatus(client);
+      if (availability == _PluginAvailabilityStatus.available) {
+        _syncRetryCount = 0;
+      }
 
       final syncInitializedPref =
           UserPreferences.pluginSyncInitializedForServer(
@@ -310,10 +313,23 @@ class PluginSyncService extends ChangeNotifier {
 
           await _startSettingsStream(client);
         }
+
+        if (availability == _PluginAvailabilityStatus.unknown && _syncRetryCount < 3) {
+          _syncRetryCount++;
+          Timer(const Duration(seconds: 5), () {
+            syncOnLogin(client, serverId: serverId);
+          });
+        }
         return;
       }
 
       if (availability == _PluginAvailabilityStatus.unknown) {
+        if (_syncRetryCount < 3) {
+          _syncRetryCount++;
+          Timer(const Duration(seconds: 5), () {
+            syncOnLogin(client, serverId: serverId);
+          });
+        }
         return;
       }
 
