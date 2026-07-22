@@ -1,6 +1,4 @@
-fix(downloads): prevent MediaStore 98% stall, preserve audio tracks, and add transcoding status text
+fix(downloads): ensure external sidecar subtitles download when MediaSources list is empty
 
-- Fix MediaStore path preparation in MediaStoreHelper.kt to avoid pre-creating a locked 0-byte file entry before download start, resolving Scoped Storage 98% permission errors when saving to Downloads folder.
-- Add MediaStoreService.scanFile call upon download completion to index downloaded files into Android MediaStore.
-- Set AudioStreamIndex=-1 for transcoded downloads in DownloadService to map and preserve all audio tracks in output streams.
-- Add localized "Transcoding: Time Remaining Unavailable" notice in DownloadProgressBar and DownloadsPanel active downloads section for transcoded downloads.
+- Fall back to item.mediaStreams when item.mediaSources is empty in _downloadExternalSubtitles.
+- Add check for stream['IsTextSubtitleStream'] == true with path to robustly match external sidecar files (e.g. .en.srt) on the server.

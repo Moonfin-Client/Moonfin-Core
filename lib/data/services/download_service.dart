@@ -2283,16 +2283,20 @@ class DownloadService extends ChangeNotifier {
     Directory dir,
     String fileNameBase,
   ) async {
-    final mediaSources = item.mediaSources;
-    if (mediaSources.isEmpty) return;
-    final source = mediaSources.first;
-    final mediaSourceId = source['Id']?.toString() ?? item.id;
-    final streams = (source['MediaStreams'] as List?) ?? [];
+    final mediaSourceId = _primaryMediaSourceId(item);
+    final streams = item.mediaStreams.isNotEmpty
+        ? item.mediaStreams
+        : (item.mediaSources.isNotEmpty
+            ? _toListOfMaps(item.mediaSources.first['MediaStreams'])
+            : const <Map<String, dynamic>>[]);
+    if (streams.isEmpty) return;
+
     final authOptions = Options(headers: _buildAuthHeaders());
     for (final stream in streams) {
-      if (stream is! Map<String, dynamic>) continue;
       if (stream['Type'] != 'Subtitle') continue;
-      final isExternal = stream['IsExternal'] == true;
+      final isExternal = stream['IsExternal'] == true ||
+          stream['IsExternal']?.toString().toLowerCase() == 'true' ||
+          (stream['IsTextSubtitleStream'] == true && stream['Path'] != null);
       if (!isExternal) continue;
       final index = stream['Index'] as int? ?? 0;
       final ext = canonicalSubtitleCodec(stream['Codec'] as String?);
@@ -2535,6 +2539,7 @@ class DownloadService extends ChangeNotifier {
           fileName: fileName,
           progress: progress,
           bytesReceived: received,
+          quality: quality,
         );
         if (_shouldPersistProgress(itemId, progress)) {
           unawaited(
@@ -2563,6 +2568,7 @@ class DownloadService extends ChangeNotifier {
       progress: record.progress > 0 && record.progress <= 1
           ? record.progress
           : _initialProgressForQuality(quality),
+      quality: quality,
     );
     notifyListeners();
 
