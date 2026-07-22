@@ -191,6 +191,7 @@ void _registerUserScopedSingletons() {
       _getIt<MediaServerClient>(),
       _getIt<UserPreferences>(),
       _getIt<PlaybackManager>(),
+      _getIt<PlaybackArbiter>(),
     ),
   );
   _getIt.registerLazySingletonAsync<SeerrRepository>(
