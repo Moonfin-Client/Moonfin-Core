@@ -44,6 +44,8 @@ class PluginSyncService extends ChangeNotifier {
   String? get pluginVersion => _pluginVersion;
 
   String? _selectedCustomizationProfile;
+  int _syncRetryCount = 0;
+  Timer? _syncRetryTimer;
 
   String? _seerrUrl;
   String? get seerrUrl => _seerrUrl;
@@ -153,6 +155,7 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   void resetState({bool notify = true, bool stopStream = true}) {
+    _syncRetryTimer?.cancel();
     if (stopStream) {
       _stopSettingsStream();
     }
@@ -193,7 +196,6 @@ class PluginSyncService extends ChangeNotifier {
       final pingResult = await _ping(client);
       if (pingResult == null) {
         _stopSettingsStream();
-        _setLocalSeerrEnabled(false);
         notifyListeners();
         return _PluginAvailabilityStatus.unknown;
       }
@@ -250,7 +252,7 @@ class PluginSyncService extends ChangeNotifier {
       notifyListeners();
       return _PluginAvailabilityStatus.available;
     } catch (_) {
-      resetState();
+      resetState(notify: false);
       return _PluginAvailabilityStatus.unknown;
     }
   }
@@ -287,12 +289,26 @@ class PluginSyncService extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Retries the plugin check a few times after login so a slow cellular link has
+  // time to come up.
+  void _scheduleSyncRetry(MediaServerClient client, {String? serverId}) {
+    if (_syncRetryCount >= 3) return;
+    _syncRetryCount++;
+    _syncRetryTimer?.cancel();
+    _syncRetryTimer = Timer(const Duration(seconds: 5), () {
+      syncOnLogin(client, serverId: serverId);
+    });
+  }
+
   Future<void> syncOnLogin(MediaServerClient client, {String? serverId}) async {
     try {
       _activeThemeCacheServerId = serverId;
       await _hydrateCachedThemes(client, serverId: serverId);
 
       final availability = await _refreshAvailabilityStatus(client);
+      if (availability == _PluginAvailabilityStatus.available) {
+        _syncRetryCount = 0;
+      }
 
       final syncInitializedPref =
           UserPreferences.pluginSyncInitializedForServer(
@@ -310,10 +326,15 @@ class PluginSyncService extends ChangeNotifier {
 
           await _startSettingsStream(client);
         }
+
+        if (availability == _PluginAvailabilityStatus.unknown) {
+          _scheduleSyncRetry(client, serverId: serverId);
+        }
         return;
       }
 
       if (availability == _PluginAvailabilityStatus.unknown) {
+        _scheduleSyncRetry(client, serverId: serverId);
         return;
       }
 
@@ -1661,6 +1682,7 @@ class PluginSyncService extends ChangeNotifier {
   void dispose() {
     _prefs.removeListener(_onPrefsChanged);
     _pushDebounceTimer?.cancel();
+    _syncRetryTimer?.cancel();
     _stopSettingsStream();
     super.dispose();
   }

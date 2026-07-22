@@ -464,90 +464,91 @@ class HomeViewModel extends ChangeNotifier {
         }
       }
 
-      final completers = <Future<void>>[];
-      for (final cfg in nonResumeEffectiveConfigs) {
-        completers.add(() async {
-          List<HomeRow> sectionRows;
-          try {
-            sectionRows = await _loadConfig(cfg, forceRefresh: forceRefresh);
-          } catch (e) {
-            debugPrint('[Home] Failed to load section $cfg: $e');
-            // A thrown load is a transient failure, not a genuinely empty
-            // result. When we are refreshing and a populated row is already on
-            // screen, keep it instead of wiping it. Only fall through to
-            // clearing when there is nothing to preserve, so a cold load still
-            // drops its loading placeholder.
-            final hasVisibleRow = _rowsForConfig(
-              _rows,
-              cfg,
-            ).any((r) => !r.isLoading);
-            if (preserveExisting && hasVisibleRow) {
-              return;
-            }
-            sectionRows = const <HomeRow>[];
+      Future<void> loadConfigItem(HomeSectionConfig cfg) async {
+        List<HomeRow> sectionRows;
+        try {
+          sectionRows = await _loadConfig(cfg, forceRefresh: forceRefresh);
+        } catch (e) {
+          debugPrint('[Home] Failed to load section $cfg: $e');
+          // A thrown load is a transient failure, not a genuinely empty
+          // result. When we are refreshing and a populated row is already on
+          // screen, keep it instead of wiping it. Only fall through to
+          // clearing when there is nothing to preserve, so a cold load still
+          // drops its loading placeholder.
+          final hasVisibleRow = _rowsForConfig(
+            _rows,
+            cfg,
+          ).any((r) => !r.isLoading);
+          if (preserveExisting && hasVisibleRow) {
+            return;
           }
-          final currentConfigs = _prefs.activeHomeSectionConfigs;
-          final isStillActive = currentConfigs.any((c) => c.stableId == cfg.stableId);
-          if (!isStillActive) return;
-          // Cleanup runs even when the load failed, so the section's loading
-          // placeholder is cleared instead of spinning forever.
-          final loadedRows = sectionRows
-              .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
-              .where(
-                (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
-              )
-              .toList();
-          final placeholder = _placeholderForConfig(cfg);
-          final loadedIds = loadedRows.map((r) => r.id).toSet();
-          // Find the row that immediately follows this section's placeholder /
-          // existing rows, so we can re-anchor after removals.
+          sectionRows = const <HomeRow>[];
+        }
+        final currentConfigs = _prefs.activeHomeSectionConfigs;
+        final isStillActive = currentConfigs.any((c) => c.stableId == cfg.stableId);
+        if (!isStillActive) return;
+        // Cleanup runs even when the load failed, so the section's loading
+        // placeholder is cleared instead of spinning forever.
+        final loadedRows = sectionRows
+            .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+            .where(
+              (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
+            )
+            .toList();
+        final placeholder = _placeholderForConfig(cfg);
+        final loadedIds = loadedRows.map((r) => r.id).toSet();
+        // Find the row that immediately follows this section's placeholder /
+        // existing rows, so we can re-anchor after removals.
 
-          String? anchorId;
-          {
-            // Walk forward past the section's current rows to find the next
-            // sibling row that won't be removed.
-            bool pastSection = false;
-            for (final r in _rows) {
-              final willRemove =
-                  (placeholder != null && r.id == placeholder.id) ||
-                  loadedIds.contains(r.id) ||
-                  _rowBelongsToConfig(r, cfg);
-              if (willRemove) {
-                pastSection = true;
-              } else if (pastSection) {
-                anchorId = r.id;
-                break;
-              }
-            }
-          }
-          final newRows = List<HomeRow>.from(_rows);
-          newRows.removeWhere(
-            (r) =>
+        String? anchorId;
+        {
+          // Walk forward past the section's current rows to find the next
+          // sibling row that won't be removed.
+          bool pastSection = false;
+          for (final r in _rows) {
+            final willRemove =
                 (placeholder != null && r.id == placeholder.id) ||
                 loadedIds.contains(r.id) ||
-                // Also clear any stale rows that belonged to this section from a
-                // prior load but were not included in the fresh result. This
-                // prevents phantom rows when the section's row-set changes
-                // (e.g. library added/removed, latestItemsExcludes updated).
-                _rowBelongsToConfig(r, cfg),
-          );
-
-          if (loadedRows.isNotEmpty) {
-            final insertIndex = anchorId != null
-                ? newRows.indexWhere((r) => r.id == anchorId)
-                : -1;
-            if (insertIndex < 0) {
-              newRows.addAll(loadedRows);
-            } else {
-              newRows.insertAll(insertIndex, loadedRows);
+                _rowBelongsToConfig(r, cfg);
+            if (willRemove) {
+              pastSection = true;
+            } else if (pastSection) {
+              anchorId = r.id;
+              break;
             }
           }
-          _rows = newRows;
-          notifyListeners();
-        }());
+        }
+        final newRows = List<HomeRow>.from(_rows);
+        newRows.removeWhere(
+          (r) =>
+              (placeholder != null && r.id == placeholder.id) ||
+              loadedIds.contains(r.id) ||
+              // Also clear any stale rows that belonged to this section from a
+              // prior load but were not included in the fresh result. This
+              // prevents phantom rows when the section's row-set changes
+              // (e.g. library added/removed, latestItemsExcludes updated).
+              _rowBelongsToConfig(r, cfg),
+        );
+
+        if (loadedRows.isNotEmpty) {
+          final insertIndex = anchorId != null
+              ? newRows.indexWhere((r) => r.id == anchorId)
+              : -1;
+          if (insertIndex < 0) {
+            newRows.addAll(loadedRows);
+          } else {
+            newRows.insertAll(insertIndex, loadedRows);
+          }
+        }
+        _rows = newRows;
+        notifyListeners();
       }
 
-      await Future.wait(completers);
+      await mapBounded<HomeSectionConfig, void>(
+        nonResumeEffectiveConfigs,
+        3,
+        (cfg) => loadConfigItem(cfg),
+      );
 
       unawaited(_cacheStore.write(_homeCacheKey(), _rows));
       _topShelf.update(_rows);

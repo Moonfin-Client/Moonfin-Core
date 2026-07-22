@@ -6,6 +6,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../utils/bounded_concurrency.dart';
 
 class SeerrDiscoverRow {
   final SeerrRowType type;
@@ -133,7 +134,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repo.ensureInitialized();
+      await _repo.ensureInitialized(force: true);
       if (!_repo.isAvailable) {
         _isLoading = false;
         _error = 'Seerr is not configured or unavailable';
@@ -240,11 +241,8 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadAllRows() async {
-    final futures = <Future<void>>[];
-    for (var i = 0; i < _rows.length; i++) {
-      futures.add(_loadRow(i));
-    }
-    await Future.wait(futures);
+    final indices = List.generate(_rows.length, (i) => i);
+    await mapBounded<int, void>(indices, 2, (index) => _loadRow(index));
   }
 
   Future<void> _loadRow(int index) async {
