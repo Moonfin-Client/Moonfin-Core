@@ -113,6 +113,9 @@ class ThemeMusicService implements AudioOwnable {
         _fadeTimer?.cancel();
         _fadeTimer = null;
         _fadingOut = false;
+        if (_fadeCompleter != null && !_fadeCompleter!.isCompleted) {
+          _fadeCompleter!.complete();
+        }
         _fadeIn(_playGeneration);
       }
       return;
