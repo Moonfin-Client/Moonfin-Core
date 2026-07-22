@@ -9094,5 +9094,13 @@
     "removeAllDownloadedGamesConfirm": "Alle gedownloade spellen van dit apparaat verwijderen? Ze worden de volgende keer dat je ze speelt opnieuw gedownload.",
     "@removeAllDownloadedGamesConfirm": {
         "description": "Confirmation prompt before deleting every downloaded game"
+    },
+    "trailerCaptions": "Trailerondertitels",
+    "@trailerCaptions": {
+        "description": "Setting for YouTube trailer captions"
+    },
+    "trailerCaptionsDescription": "Laat ondertitels zien in de YouTube-trailers in de mediabalk",
+    "@trailerCaptionsDescription": {
+        "description": "Description for YouTube trailer captions"
     }
 }
