@@ -689,6 +689,12 @@ class SeerrRepository {
         .toList(),
   );
 
+  Future<List<dynamic>> getRadarrCalendar({String? start, String? end}) =>
+      _withClient((c) => c.getRadarrCalendar(start: start, end: end));
+
+  Future<List<dynamic>> getSonarrCalendar({String? start, String? end}) =>
+      _withClient((c) => c.getSonarrCalendar(start: start, end: end));
+
   Future<SeerrStatus> getStatus() => _withClient((c) => c.getStatus());
 
   Future<void> logout() => logoutMoonfin();

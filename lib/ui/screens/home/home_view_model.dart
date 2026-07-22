@@ -30,7 +30,6 @@ import '../../../data/utils/bounded_concurrency.dart';
 import '../../../util/platform_detection.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
-import 'package:dio/dio.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -2696,37 +2695,13 @@ class HomeViewModel extends ChangeNotifier {
   Future<List<AggregatedItem>?> _fetchRadarrCalendarFromApi() async {
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
-      final radarrServers = await repo.getRadarrSettings();
-      if (radarrServers.isEmpty) return null;
-      final server = radarrServers.first;
-
-      final protocol = server.useSsl ? 'https' : 'http';
-      final host = server.hostname;
-      final port = server.port;
-      final basePath = server.baseUrl ?? '';
-      final cleanBasePath = basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath;
-      final apiKey = server.apiKey;
-
       final now = DateTime.now();
       final start = now.toIso8601String().substring(0, 10);
       final end = now.add(const Duration(days: 90)).toIso8601String().substring(0, 10);
 
-      final dio = Dio();
-      final url = '$protocol://$host:$port$cleanBasePath/api/v3/calendar';
-      final response = await dio.get(
-        url,
-        queryParameters: {
-          'apikey': apiKey,
-          'start': start,
-          'end': end,
-        },
-      ).timeout(const Duration(seconds: 15));
-
-      if (response.statusCode != 200 || response.data == null) {
-        return null;
-      }
-
-      final results = response.data as List;
+      // The plugin fetches the Radarr calendar server side, so the API key stays on the server and
+      // this still works when a remote client cant reach a LAN only Radarr.
+      final results = await repo.getRadarrCalendar(start: start, end: end);
 
       final enrichCompleters = await mapBounded(
         results,
@@ -2773,14 +2748,13 @@ class HomeViewModel extends ChangeNotifier {
               if (img is! Map) continue;
               final type = img['coverType'] as String?;
               final remoteUrl = img['remoteUrl'] as String? ?? img['url'] as String?;
-              if (remoteUrl != null && remoteUrl.isNotEmpty) {
-                final fullUrl = remoteUrl.startsWith('http')
-                    ? remoteUrl
-                    : '$protocol://$host:$port$cleanBasePath$remoteUrl${remoteUrl.contains('?') ? '&' : '?'}apikey=$apiKey';
+              // Only external image URLs are used. A local arr image would need the API key and
+              // wouldnt be reachable from a remote client anyway.
+              if (remoteUrl != null && remoteUrl.startsWith('http')) {
                 if (type == 'poster') {
-                  posterPath = fullUrl;
+                  posterPath = remoteUrl;
                 } else if (type == 'fanart') {
-                  backdropPath = fullUrl;
+                  backdropPath = remoteUrl;
                 }
               }
             }
@@ -2831,38 +2805,13 @@ class HomeViewModel extends ChangeNotifier {
   Future<List<AggregatedItem>?> _fetchSonarrCalendarFromApi() async {
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
-      final sonarrServers = await repo.getSonarrSettings();
-      if (sonarrServers.isEmpty) return null;
-      final server = sonarrServers.first;
-
-      final protocol = server.useSsl ? 'https' : 'http';
-      final host = server.hostname;
-      final port = server.port;
-      final basePath = server.baseUrl ?? '';
-      final cleanBasePath = basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath;
-      final apiKey = server.apiKey;
-
       final now = DateTime.now();
       final start = now.toIso8601String().substring(0, 10);
       final end = now.add(const Duration(days: 90)).toIso8601String().substring(0, 10);
 
-      final dio = Dio();
-      final url = '$protocol://$host:$port$cleanBasePath/api/v3/calendar';
-      final response = await dio.get(
-        url,
-        queryParameters: {
-          'apikey': apiKey,
-          'start': start,
-          'end': end,
-          'includeSeries': 'true',
-        },
-      ).timeout(const Duration(seconds: 15));
-
-      if (response.statusCode != 200 || response.data == null) {
-        return null;
-      }
-
-      final results = response.data as List;
+      // The plugin fetches the Sonarr calendar server side, so the API key stays on the server and
+      // this still works when a remote client cant reach a LAN only Sonarr.
+      final results = await repo.getSonarrCalendar(start: start, end: end);
 
       final groupedEpisodes = <int, Map<String, dynamic>>{};
       for (final res in results) {
@@ -2927,14 +2876,13 @@ class HomeViewModel extends ChangeNotifier {
               if (img is! Map) continue;
               final type = img['coverType'] as String?;
               final remoteUrl = img['remoteUrl'] as String? ?? img['url'] as String?;
-              if (remoteUrl != null && remoteUrl.isNotEmpty) {
-                final fullUrl = remoteUrl.startsWith('http')
-                    ? remoteUrl
-                    : '$protocol://$host:$port$cleanBasePath$remoteUrl${remoteUrl.contains('?') ? '&' : '?'}apikey=$apiKey';
+              // Only external image URLs are used. A local arr image would need the API key and
+              // wouldnt be reachable from a remote client anyway.
+              if (remoteUrl != null && remoteUrl.startsWith('http')) {
                 if (type == 'poster') {
-                  posterPath = fullUrl;
+                  posterPath = remoteUrl;
                 } else if (type == 'fanart') {
-                  backdropPath = fullUrl;
+                  backdropPath = remoteUrl;
                 }
               }
             }
