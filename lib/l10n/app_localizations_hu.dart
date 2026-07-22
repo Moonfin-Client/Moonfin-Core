@@ -9865,9 +9865,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Az idővonal üres';
 
   @override
-  String get audiobookWholeBook => 'Teljes könyv';
-
-  @override
   String get audiobookFocusedTimeline => 'Fókuszált idővonal';
 
   @override

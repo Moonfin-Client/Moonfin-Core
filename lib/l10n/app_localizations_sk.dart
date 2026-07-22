@@ -9837,9 +9837,6 @@ class AppLocalizationsSk extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Časová os je prázdna';
 
   @override
-  String get audiobookWholeBook => 'Celá kniha';
-
-  @override
   String get audiobookFocusedTimeline => 'Zameraná časová os';
 
   @override

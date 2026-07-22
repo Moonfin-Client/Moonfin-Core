@@ -9836,9 +9836,6 @@ class AppLocalizationsBe extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Шкала часу пустая';
 
   @override
-  String get audiobookWholeBook => 'Уся кніга';
-
-  @override
   String get audiobookFocusedTimeline => 'Сфакусаваная шкала';
 
   @override

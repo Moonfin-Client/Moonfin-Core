@@ -9984,9 +9984,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Временска линија је празна';
 
   @override
-  String get audiobookWholeBook => 'Цела књига';
-
-  @override
   String get audiobookFocusedTimeline => 'Фокусирана временска линија';
 
   @override

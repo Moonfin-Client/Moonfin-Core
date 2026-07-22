@@ -9809,9 +9809,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Časová osa je prázdná';
 
   @override
-  String get audiobookWholeBook => 'Celá kniha';
-
-  @override
   String get audiobookFocusedTimeline => 'Přiblížená časová osa';
 
   @override

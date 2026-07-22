@@ -9863,9 +9863,6 @@ class AppLocalizationsSq extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Vija kohore është bosh';
 
   @override
-  String get audiobookWholeBook => 'I gjithë libri';
-
-  @override
   String get audiobookFocusedTimeline => 'Vija kohore e fokusuar';
 
   @override

@@ -9785,9 +9785,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Zaman Çizelgesi boş';
 
   @override
-  String get audiobookWholeBook => 'Tüm Kitap';
-
-  @override
   String get audiobookFocusedTimeline => 'Odaklanmış Zaman Çizelgesi';
 
   @override

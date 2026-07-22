@@ -9828,9 +9828,6 @@ class AppLocalizationsLv extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Laika josla ir tukša';
 
   @override
-  String get audiobookWholeBook => 'Visa grāmata';
-
-  @override
   String get audiobookFocusedTimeline => 'Fokusētā laika josla';
 
   @override

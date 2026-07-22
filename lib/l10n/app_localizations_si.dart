@@ -9761,9 +9761,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get audiobookTimelineEmpty => 'කාල රේඛාව හිස්ය';
 
   @override
-  String get audiobookWholeBook => 'සම්පූර්ණ පොත';
-
-  @override
   String get audiobookFocusedTimeline => 'නාභිගත කාල රේඛාව';
 
   @override

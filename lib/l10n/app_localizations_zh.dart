@@ -9376,9 +9376,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audiobookTimelineEmpty => '时间轴为空';
 
   @override
-  String get audiobookWholeBook => '整本书';
-
-  @override
   String get audiobookFocusedTimeline => '聚焦时间轴';
 
   @override
@@ -19018,9 +19015,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get audiobookTimelineEmpty => '時間軸是空的';
-
-  @override
-  String get audiobookWholeBook => '整本書';
 
   @override
   String get audiobookFocusedTimeline => '聚焦時間軸';

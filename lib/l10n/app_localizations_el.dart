@@ -9926,9 +9926,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Το χρονολόγιο είναι κενό';
 
   @override
-  String get audiobookWholeBook => 'Όλο το βιβλίο';
-
-  @override
   String get audiobookFocusedTimeline => 'Εστιασμένο χρονολόγιο';
 
   @override

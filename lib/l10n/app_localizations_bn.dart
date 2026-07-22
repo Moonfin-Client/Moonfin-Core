@@ -9751,9 +9751,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get audiobookTimelineEmpty => 'টাইমলাইন খালি';
 
   @override
-  String get audiobookWholeBook => 'সম্পূর্ণ বই';
-
-  @override
   String get audiobookFocusedTimeline => 'নির্দিষ্ট টাইমলাইন';
 
   @override

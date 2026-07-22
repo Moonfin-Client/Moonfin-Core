@@ -9693,9 +9693,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get audiobookTimelineEmpty => 'ไทม์ไลน์ว่างเปล่า';
 
   @override
-  String get audiobookWholeBook => 'ทั้งเล่ม';
-
-  @override
   String get audiobookFocusedTimeline => 'ไทม์ไลน์เฉพาะจุด';
 
   @override

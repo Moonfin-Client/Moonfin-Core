@@ -9748,9 +9748,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get audiobookTimelineEmpty => 'المخطط الزمني فارغ';
 
   @override
-  String get audiobookWholeBook => 'الكتاب كاملاً';
-
-  @override
   String get audiobookFocusedTimeline => 'المخطط الزمني المركّز';
 
   @override

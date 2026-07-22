@@ -9770,9 +9770,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Lini masa kosong';
 
   @override
-  String get audiobookWholeBook => 'Seluruh Buku';
-
-  @override
   String get audiobookFocusedTimeline => 'Lini Masa Terfokus';
 
   @override

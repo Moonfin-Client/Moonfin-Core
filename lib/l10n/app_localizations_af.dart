@@ -9772,9 +9772,6 @@ class AppLocalizationsAf extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Die tydlyn is leeg';
 
   @override
-  String get audiobookWholeBook => 'Hele boek';
-
-  @override
   String get audiobookFocusedTimeline => 'Gefokusde tydlyn';
 
   @override

@@ -9895,9 +9895,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get audiobookTimelineEmpty => 'La chronologie est vide';
 
   @override
-  String get audiobookWholeBook => 'Livre entier';
-
-  @override
   String get audiobookFocusedTimeline => 'Chronologie ciblée';
 
   @override

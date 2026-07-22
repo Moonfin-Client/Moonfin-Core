@@ -9921,9 +9921,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'La cronologia és buida';
 
   @override
-  String get audiobookWholeBook => 'Tot el llibre';
-
-  @override
   String get audiobookFocusedTimeline => 'Cronologia enfocada';
 
   @override

@@ -9854,9 +9854,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Cronologia este goală';
 
   @override
-  String get audiobookWholeBook => 'Toată cartea';
-
-  @override
   String get audiobookFocusedTimeline => 'Cronologie focalizată';
 
   @override

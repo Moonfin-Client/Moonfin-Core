@@ -9763,9 +9763,6 @@ class AppLocalizationsDa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Tidslinjen er tom';
 
   @override
-  String get audiobookWholeBook => 'Hele bogen';
-
-  @override
   String get audiobookFocusedTimeline => 'Fokuseret tidslinje';
 
   @override

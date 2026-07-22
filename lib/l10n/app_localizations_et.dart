@@ -9781,9 +9781,6 @@ class AppLocalizationsEt extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Ajajoon on tühi';
 
   @override
-  String get audiobookWholeBook => 'Kogu raamat';
-
-  @override
   String get audiobookFocusedTimeline => 'Kitsendatud ajajoon';
 
   @override

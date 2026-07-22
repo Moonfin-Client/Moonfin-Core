@@ -9799,9 +9799,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Aikajana on tyhjä';
 
   @override
-  String get audiobookWholeBook => 'Koko kirja';
-
-  @override
   String get audiobookFocusedTimeline => 'Rajattu aikajana';
 
   @override

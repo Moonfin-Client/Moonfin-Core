@@ -9848,9 +9848,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get audiobookTimelineEmpty => 'A linha do tempo está vazia';
 
   @override
-  String get audiobookWholeBook => 'Livro Inteiro';
-
-  @override
   String get audiobookFocusedTimeline => 'Linha do Tempo Focada';
 
   @override
@@ -19984,9 +19981,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get audiobookTimelineEmpty => 'A linha do tempo está vazia';
-
-  @override
-  String get audiobookWholeBook => 'Livro inteiro';
 
   @override
   String get audiobookFocusedTimeline => 'Linha do tempo focada';
@@ -30125,9 +30119,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get audiobookTimelineEmpty => 'A linha temporal está vazia';
-
-  @override
-  String get audiobookWholeBook => 'Livro completo';
 
   @override
   String get audiobookFocusedTimeline => 'Linha temporal focada';

@@ -9828,9 +9828,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Oś czasu jest pusta';
 
   @override
-  String get audiobookWholeBook => 'Cała książka';
-
-  @override
   String get audiobookFocusedTimeline => 'Wybrany fragment osi czasu';
 
   @override

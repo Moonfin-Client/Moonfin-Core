@@ -8407,7 +8407,6 @@
         "description": "Setting to trust self-signed TLS certificates"
     },
     "settingsAlwaysExpandNavbarLabels": "Üst gezinti çubuğundaki metin etiketlerini her zaman göster",
-    "audiobookWholeBook": "Tüm Kitap",
     "adminRepoSortDateNewest": "Ekleme Tarihi (Önce En Yeni)",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"

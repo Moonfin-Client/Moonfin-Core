@@ -9882,9 +9882,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Walang laman ang timeline';
 
   @override
-  String get audiobookWholeBook => 'Buong Aklat';
-
-  @override
   String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
