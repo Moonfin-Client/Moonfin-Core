@@ -1317,6 +1317,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shuffle => '随机播放';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => '随机播放所有音乐';
 
   @override

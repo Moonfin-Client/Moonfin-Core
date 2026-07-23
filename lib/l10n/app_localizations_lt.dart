@@ -1364,6 +1364,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get shuffle => 'Maišyti';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Maišyti visą muziką';
 
   @override

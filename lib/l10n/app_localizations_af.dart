@@ -1364,6 +1364,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get shuffle => 'Skommel';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Skommel alle musiek';
 
   @override

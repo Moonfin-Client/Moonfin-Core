@@ -1357,6 +1357,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get shuffle => 'Miksi';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Miksi la tutan muzikon';
 
   @override

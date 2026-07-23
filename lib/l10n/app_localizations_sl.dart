@@ -1372,6 +1372,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get shuffle => 'Naključno';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Naključno predvajaj vso glasbo';
 
   @override

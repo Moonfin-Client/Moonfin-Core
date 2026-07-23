@@ -1318,6 +1318,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get shuffle => '隨機播放';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => '隨機播放所有音樂';
 
   @override

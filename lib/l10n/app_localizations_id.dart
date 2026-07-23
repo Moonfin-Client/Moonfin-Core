@@ -1361,6 +1361,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get shuffle => 'Acak';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Acak semua musik';
 
   @override

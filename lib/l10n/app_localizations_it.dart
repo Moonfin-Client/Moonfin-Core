@@ -1361,6 +1361,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get shuffle => 'Casuale';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Riproduci tutta la musica in ordine casuale';
 
   @override

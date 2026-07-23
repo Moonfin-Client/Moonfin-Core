@@ -1371,6 +1371,9 @@ class AppLocalizationsGl extends AppLocalizations {
   String get shuffle => 'Aleatorio';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Reproducir toda a música en modo aleatorio';
 
   @override

@@ -1352,6 +1352,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get shuffle => 'කලවම් කරන්න';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'සියලු සංගීතය කලවම් කර වාදනය කරන්න';
 
   @override

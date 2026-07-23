@@ -1359,6 +1359,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get shuffle => 'ಷಫಲ್';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'ಎಲ್ಲಾ ಸಂಗೀತವನ್ನು ಷಫಲ್ ಮಾಡಿ';
 
   @override

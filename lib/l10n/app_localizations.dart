@@ -2542,6 +2542,12 @@ abstract class AppLocalizations {
   /// **'Shuffle'**
   String get shuffle;
 
+  /// Action button label for shuffling all tracks of an artist
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle All'**
+  String get shuffleAll;
+
   /// Car browse action that shuffles the whole music library
   ///
   /// In en, this message translates to:

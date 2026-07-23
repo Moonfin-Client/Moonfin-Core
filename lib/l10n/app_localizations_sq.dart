@@ -1365,6 +1365,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get shuffle => 'Përziej';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Luaj rastësisht të gjithë muzikën';
 
   @override

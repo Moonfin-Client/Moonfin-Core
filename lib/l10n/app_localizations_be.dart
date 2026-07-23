@@ -1367,6 +1367,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get shuffle => 'Перамяшаць';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Перамяшаць усю музыку';
 
   @override

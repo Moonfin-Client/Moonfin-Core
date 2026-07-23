@@ -1359,6 +1359,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get shuffle => 'Разбъркай';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Разбъркване на цялата музика';
 
   @override

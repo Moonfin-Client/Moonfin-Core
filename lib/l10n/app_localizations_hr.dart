@@ -1436,6 +1436,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get shuffle => 'Nasumično';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Nasumično pusti svu glazbu';
 
   @override

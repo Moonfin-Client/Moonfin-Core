@@ -1358,6 +1358,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get shuffle => 'Араластыру';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Барлық музыканы араластыру';
 
   @override

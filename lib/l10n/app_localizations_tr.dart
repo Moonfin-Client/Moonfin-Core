@@ -1358,6 +1358,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get shuffle => 'Karıştır';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Tüm müzikleri karıştır';
 
   @override

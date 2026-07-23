@@ -1327,6 +1327,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shuffle => '셔플';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => '전체 음악 셔플 재생';
 
   @override

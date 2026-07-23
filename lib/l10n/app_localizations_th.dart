@@ -1349,6 +1349,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get shuffle => 'สุ่มเล่น';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'สุ่มเล่นเพลงทั้งหมด';
 
   @override

@@ -1435,6 +1435,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get shuffle => 'Насумично';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Насумично пусти сву музику';
 
   @override

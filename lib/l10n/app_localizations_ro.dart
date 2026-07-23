@@ -1366,6 +1366,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get shuffle => 'Aleatoriu';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Redă aleatoriu toată muzica';
 
   @override

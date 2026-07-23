@@ -5968,7 +5968,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       ),
       if (_supportsShuffle(item))
         _DetailActionButton(
-          label: l10n.shuffle,
+          label: (item.type == 'MusicArtist' || item.type == 'AlbumArtist')
+              ? l10n.shuffleAll
+              : l10n.shuffle,
           icon: Icons.shuffle_rounded,
           onPressed: () => _shuffle(context, item),
         ),
@@ -7039,6 +7041,22 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           return childCount > 1;
         }
         return true;
+      case 'MusicArtist':
+      case 'AlbumArtist':
+        if (viewModel.tracks.isNotEmpty) return viewModel.tracks.length > 1;
+        if (viewModel.albums.isNotEmpty) return true;
+        final childCount = item.rawData['ChildCount'] ?? item.rawData['SongCount'];
+        if (childCount is num) return childCount > 1;
+        return true;
+      case 'MusicAlbum':
+      case 'Playlist':
+        if (viewModel.tracks.isNotEmpty) return viewModel.tracks.length > 1;
+        final childCount =
+            item.rawData['ChildCount'] ??
+            item.rawData['SongCount'] ??
+            item.rawData['RecursiveItemCount'];
+        if (childCount is num) return childCount > 1;
+        return true;
       default:
         return false;
     }
@@ -7136,6 +7154,39 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           item,
           fields: shuffleQueueFields,
         );
+      case 'MusicArtist':
+      case 'AlbumArtist':
+        if (viewModel.tracks.isNotEmpty) {
+          return viewModel.tracks;
+        }
+        final client = _clientForItem(item);
+        final data = await client.itemsApi.getItems(
+          artistIds: [item.id],
+          includeItemTypes: const ['Audio'],
+          sortBy: 'Album,ParentIndexNumber,IndexNumber,SortName',
+          recursive: true,
+          fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+        );
+        return _mapRawItemsForServer(data['Items'], item.serverId);
+      case 'MusicAlbum':
+        if (viewModel.tracks.isNotEmpty) {
+          return viewModel.tracks;
+        }
+        final client = _clientForItem(item);
+        final data = await client.itemsApi.getItems(
+          parentId: item.id,
+          includeItemTypes: const ['Audio'],
+          sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+          fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+        );
+        return _mapRawItemsForServer(data['Items'], item.serverId);
+      case 'Playlist':
+        if (viewModel.tracks.isNotEmpty) {
+          return viewModel.tracks;
+        }
+        final client = _clientForItem(item);
+        final data = await client.itemsApi.getPlaylistItems(item.id);
+        return _mapRawItemsForServer(data['Items'], item.serverId);
       default:
         return const [];
     }
@@ -7998,7 +8049,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final playableQueue = queue
         .where((e) => isEligibleNextEpisodeCandidate(e) || e.id == item.id)
         .toList();
-    if (playableQueue.length < 2) return;
+    if (playableQueue.isEmpty) return;
     if (!context.mounted) return;
 
     final shuffled = List<AggregatedItem>.from(playableQueue)..shuffle();
