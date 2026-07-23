@@ -41,6 +41,23 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     return false;
   }
 
+  /// True when the server marked the selected subtitle for external delivery,
+  /// meaning it belongs outside the transcode URL. A missing delivery method
+  /// falls through to false so the index is still sent, matching older servers.
+  bool _serverDeliversSubtitleExternally(
+    List<Map<String, dynamic>> mediaStreams,
+    int? subtitleStreamIndex,
+  ) {
+    if (subtitleStreamIndex == null || subtitleStreamIndex < 0) return false;
+    for (final stream in mediaStreams) {
+      if (stream['Type'] != 'Subtitle') continue;
+      if (stream['Index'] != subtitleStreamIndex) continue;
+      final method = (stream['DeliveryMethod'] as String?)?.toLowerCase();
+      return method == 'external';
+    }
+    return false;
+  }
+
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -147,7 +164,21 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     }
 
     if (playMethod == StreamPlayMethod.transcode || playMethod == StreamPlayMethod.directStream) {
-      url = MediaStreamResolver.applyStreamIndices(url, audioStreamIndex, subtitleStreamIndex);
+      // When the server chose to deliver the subtitle externally, it leaves the
+      // index off the transcode URL on purpose so the sub stays a separate
+      // track the player renders with its own styling. Adding it back here
+      // makes the server burn it into the video instead, so drop it for that
+      // one case. Encode, Embed, and Hls keep the index since the server needs
+      // it and none of them burn a text sub.
+      final urlSubtitleIndex =
+          playMethod == StreamPlayMethod.transcode &&
+              _serverDeliversSubtitleExternally(
+                source.mediaStreams,
+                subtitleStreamIndex,
+              )
+          ? null
+          : subtitleStreamIndex;
+      url = MediaStreamResolver.applyStreamIndices(url, audioStreamIndex, urlSubtitleIndex);
       url = url
           .replaceFirst(RegExp(r'\?StartTimeTicks=\d+&', caseSensitive: false), '?')
           .replaceFirst(RegExp(r'[&?]StartTimeTicks=\d+', caseSensitive: false), '');
