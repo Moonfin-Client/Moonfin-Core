@@ -1373,6 +1373,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get shuffle => 'Náhodne';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Prehrať všetku hudbu náhodne';
 
   @override

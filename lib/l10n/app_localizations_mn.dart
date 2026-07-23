@@ -1357,6 +1357,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get shuffle => 'Холих';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Бүх хөгжмийг холих';
 
   @override

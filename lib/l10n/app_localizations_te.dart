@@ -1361,6 +1361,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get shuffle => 'షఫుల్ చేయండి';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'మొత్తం సంగీతాన్ని షఫుల్ చేయండి';
 
   @override

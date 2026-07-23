@@ -1363,6 +1363,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get shuffle => 'Keverés';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Összes zene keverése';
 
   @override

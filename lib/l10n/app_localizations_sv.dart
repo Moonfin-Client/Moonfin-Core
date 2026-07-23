@@ -1357,6 +1357,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get shuffle => 'Blanda';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Blanda all musik';
 
   @override

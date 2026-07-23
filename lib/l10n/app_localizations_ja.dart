@@ -1325,6 +1325,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shuffle => 'シャッフル';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'すべての音楽をシャッフル';
 
   @override

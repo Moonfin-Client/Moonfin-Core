@@ -1352,6 +1352,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shuffle => 'Shuffle';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Shuffle all music';
 
   @override

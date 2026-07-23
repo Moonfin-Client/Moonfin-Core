@@ -1356,6 +1356,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get shuffle => 'Bland';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Bland al musik';
 
   @override

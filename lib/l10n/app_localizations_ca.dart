@@ -1367,6 +1367,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get shuffle => 'Aleatori';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Barreja tota la música';
 
   @override

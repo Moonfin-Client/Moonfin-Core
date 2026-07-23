@@ -1372,6 +1372,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get shuffle => 'Τυχαία αναπαραγωγή';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Τυχαία αναπαραγωγή όλης της μουσικής';
 
   @override

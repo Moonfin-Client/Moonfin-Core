@@ -1366,6 +1366,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get shuffle => 'ஷஃபிள்';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'எல்லா இசையையும் கலைத்து இயக்கு';
 
   @override

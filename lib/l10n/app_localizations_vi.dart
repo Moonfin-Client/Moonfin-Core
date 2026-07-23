@@ -1361,6 +1361,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shuffle => 'Phát ngẫu nhiên';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Phát ngẫu nhiên toàn bộ nhạc';
 
   @override

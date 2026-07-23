@@ -1358,6 +1358,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get shuffle => 'ਸ਼ਫਲ';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'ਸਾਰਾ ਸੰਗੀਤ ਸ਼ਫਲ ਕਰੋ';
 
   @override

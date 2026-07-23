@@ -1853,6 +1853,10 @@
   "@shuffle": {
     "description": "Action button label for shuffle playback"
   },
+  "shuffleAll": "Shuffle All",
+  "@shuffleAll": {
+    "description": "Action button label for shuffling all tracks of an artist"
+  },
   "shuffleAllMusic": "Shuffle all music",
   "@shuffleAllMusic": {
     "description": "Car browse action that shuffles the whole music library"

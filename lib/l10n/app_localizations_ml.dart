@@ -1365,6 +1365,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get shuffle => 'ഷഫിൾ';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'എല്ലാ സംഗീതവും ഷഫിൾ ചെയ്യുക';
 
   @override

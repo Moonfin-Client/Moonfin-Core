@@ -1356,6 +1356,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get shuffle => 'शफ़ल';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'सारा संगीत शफ़ल करें';
 
   @override

@@ -1369,6 +1369,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get shuffle => 'Náhodně';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Zamíchat veškerou hudbu';
 
   @override

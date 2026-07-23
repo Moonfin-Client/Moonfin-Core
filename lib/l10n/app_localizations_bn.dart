@@ -1353,6 +1353,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get shuffle => 'শাফেল';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'সব মিউজিক শাফল করুন';
 
   @override

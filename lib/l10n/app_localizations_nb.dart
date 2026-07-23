@@ -1357,6 +1357,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get shuffle => 'Tilfeldig';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Spill all musikk i tilfeldig rekkefølge';
 
   @override

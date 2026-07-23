@@ -1363,6 +1363,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get shuffle => 'Измешај';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Измешај ја целата музика';
 
   @override

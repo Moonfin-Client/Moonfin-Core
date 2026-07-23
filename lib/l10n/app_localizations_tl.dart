@@ -1367,6 +1367,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get shuffle => 'I-shuffle';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'I-shuffle ang lahat ng musika';
 
   @override

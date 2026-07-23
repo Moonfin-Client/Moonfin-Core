@@ -1373,6 +1373,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shuffle => 'تشغيل عشوائي';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'تشغيل كل الموسيقى عشوائيًا';
 
   @override

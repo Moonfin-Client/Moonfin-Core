@@ -1352,6 +1352,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get shuffle => 'پخش تصادفی';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'پخش تصادفی همه موسیقی‌ها';
 
   @override

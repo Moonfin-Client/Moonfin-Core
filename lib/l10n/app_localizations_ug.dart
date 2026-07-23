@@ -1357,6 +1357,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get shuffle => 'تەرتىپسىز قويۇش';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'بارلىق مۇزىكىنى تەرتىپسىز قويۇش';
 
   @override

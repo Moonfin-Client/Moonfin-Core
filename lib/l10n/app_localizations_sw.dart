@@ -1367,6 +1367,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get shuffle => 'Changanya';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Changanya muziki wote';
 
   @override

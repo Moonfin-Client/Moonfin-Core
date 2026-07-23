@@ -1376,6 +1376,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get shuffle => 'Cymysgu';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Hapchwarae\'r holl gerddoriaeth';
 
   @override

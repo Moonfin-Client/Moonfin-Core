@@ -1371,6 +1371,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get shuffle => 'Перемешать';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Перемешать всю музыку';
 
   @override

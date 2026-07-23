@@ -1363,6 +1363,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get shuffle => 'Sekoita';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Soita kaikki musiikki satunnaisesti';
 
   @override

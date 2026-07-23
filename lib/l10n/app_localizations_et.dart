@@ -1362,6 +1362,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get shuffle => 'Juhuesitus';
 
   @override
+  String get shuffleAll => 'Shuffle All';
+
+  @override
   String get shuffleAllMusic => 'Esita kogu muusika juhuslikus järjekorras';
 
   @override
