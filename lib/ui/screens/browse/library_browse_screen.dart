@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/mdblist_repository.dart';
@@ -26,6 +27,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/rating_display.dart';
+import '../detail/item_detail_screen.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -614,6 +616,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                       return AppLocalizations.of(context).albumArtists;
                     } else if (type == 'MusicArtist') {
                       return AppLocalizations.of(context).artists;
+                    } else if (type == 'Audio') {
+                      return AppLocalizations.of(context).songs;
                     }
                   }
                   return _vm.libraryName;
@@ -640,6 +644,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     : context.pop(),
                 onSort: () => _showFilterSortDialog(context),
                 onSettings: () => _showSettingsDialog(context),
+                onShuffle: _isSongsBrowse ? () => _shuffleSongsLibrary() : null,
                 onLetterChanged: (l) => _vm.setLetterFilter(l),
                 onPlayedFilterChanged: (status) => _vm.setPlayedFilter(status),
               ),
@@ -676,6 +681,46 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  bool get _isSongsBrowse =>
+      _vm.includeItemTypes != null &&
+      _vm.includeItemTypes!.contains('Audio');
+
+  Future<void> _playSongFromIndex(int index) async {
+    final manager = GetIt.instance<PlaybackManager>();
+    await manager.playItems(_vm.items, startIndex: index);
+    if (!mounted) return;
+    context.push(Destinations.audioPlayer);
+  }
+
+  Future<void> _shuffleSongsLibrary() async {
+    final client = GetIt.instance<MediaServerClientFactory>()
+        .clientForServerOrActive(widget.serverId);
+    try {
+      final response = await client.itemsApi.getItems(
+        parentId: widget.libraryId,
+        includeItemTypes: const ['Audio'],
+        recursive: true,
+        sortBy: 'Random',
+        limit: 300,
+        fields: 'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists',
+      );
+      final rawItems = (response['Items'] as List?) ?? [];
+      final mapped = rawItems
+          .whereType<Map>()
+          .map((raw) => AggregatedItem(
+                id: raw['Id']?.toString() ?? '',
+                serverId: client.baseUrl,
+                rawData: raw.cast<String, dynamic>(),
+              ))
+          .toList();
+      if (mapped.isEmpty) return;
+      final manager = GetIt.instance<PlaybackManager>();
+      await manager.playItems(mapped);
+      if (!mounted) return;
+      context.push(Destinations.audioPlayer);
+    } catch (_) {}
+  }
+
   Widget _buildBody() {
     return switch (_vm.state) {
       LibraryBrowseState.loading => Center(
@@ -698,8 +743,42 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           ],
         ),
       ),
-      LibraryBrowseState.ready => _buildGrid(),
+      LibraryBrowseState.ready => _isSongsBrowse ? _buildSongsList() : _buildGrid(),
     };
+  }
+
+  Widget _buildSongsList() {
+    if (_vm.items.isEmpty) {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context).noItemsFound,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+    final isMobile = _isCompact(context);
+    final hPad = isMobile ? 16.0 : _horizontalPadding;
+
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 32),
+          sliver: SliverToBoxAdapter(
+            child: DetailTrackList(
+              tracks: _vm.items,
+              showAlbum: true,
+              getFocusNode: (id) {
+                final index = _vm.items.indexWhere((item) => item.id == id);
+                return getGridItemFocusNode(index < 0 ? 0 : index);
+              },
+              onPlayTrack: (index) => _playSongFromIndex(index),
+              onTrackFocused: (item) => _onItemFocused(item),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildGrid() {
@@ -973,6 +1052,7 @@ class _LibraryHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onSort;
   final VoidCallback onSettings;
+  final VoidCallback? onShuffle;
   final ValueChanged<String> onLetterChanged;
   final ValueChanged<PlayedStatusFilter> onPlayedFilterChanged;
 
@@ -994,6 +1074,7 @@ class _LibraryHeader extends StatelessWidget {
     required this.onBack,
     required this.onSort,
     required this.onSettings,
+    this.onShuffle,
     required this.onLetterChanged,
     required this.onPlayedFilterChanged,
   });
@@ -1006,9 +1087,12 @@ class _LibraryHeader extends StatelessWidget {
     final isLandscape = size.width > size.height;
     final isCompactLandscape = isMobile && isLandscape;
     final isCompactPortrait = isMobile && !isLandscape;
-    final showInlineAlpha =
-        sortBy == LibrarySortBy.name && (!isMobile || isCompactLandscape);
-    final showBelowAlpha = sortBy == LibrarySortBy.name && isCompactPortrait;
+    final showAlpha = isMusicBrowse ||
+        sortBy == LibrarySortBy.name ||
+        sortBy == LibrarySortBy.albumArtist ||
+        sortBy == LibrarySortBy.album;
+    final showInlineAlpha = showAlpha && (!isMobile || isCompactLandscape);
+    final showBelowAlpha = showAlpha && isCompactPortrait;
     final topPad = (isMobile ? MediaQuery.of(context).padding.top : 0.0) + 8.0;
     final hPad = isMobile ? 16.0 : _horizontalPadding * desktopScale;
 
@@ -1082,6 +1166,16 @@ class _LibraryHeader extends StatelessWidget {
                 unfocusedIconAlpha: 128,
                 onTap: onSort,
               ),
+              if (onShuffle != null) ...[
+                SizedBox(width: 2 * desktopScale),
+                FocusableToolbarButton(
+                  icon: Icons.shuffle,
+                  size: 30 * desktopScale,
+                  iconSize: 20 * desktopScale,
+                  unfocusedIconAlpha: 128,
+                  onTap: onShuffle!,
+                ),
+              ],
               if (!isMusicBrowse) ...[
                 SizedBox(width: 2 * desktopScale),
                 FocusableToolbarButton(
@@ -1435,6 +1529,8 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   Widget build(BuildContext context) {
     final vm = widget.vm;
     final isBookBrowse = vm.isBookLibrary;
+    final isSongsBrowse =
+        vm.includeItemTypes != null && vm.includeItemTypes!.contains('Audio');
     final accent = _jellyfinBlue;
     final l10n = AppLocalizations.of(context);
     final surfaceColor = AppColorScheme.surface.withValues(alpha: 0.92);
@@ -1472,22 +1568,47 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             Divider(color: dividerColor),
             _sectionHeader(l10n.sortBy, sectionColor),
-            for (final option
-                in (vm.isHomeVideosLibrary || vm.isMixedContentLibrary)
-                    ? const [
-                        LibrarySortBy.name,
-                        LibrarySortBy.dateAdded,
-                        LibrarySortBy.random,
-                      ]
-                    : LibrarySortBy.values.where((o) => !vm.isMusicBrowse || (
-                        o != LibrarySortBy.rating &&
-                        o != LibrarySortBy.criticRating &&
-                        o != LibrarySortBy.communityRating
-                      )))
+            for (final option in () {
+              if (vm.isHomeVideosLibrary || vm.isMixedContentLibrary) {
+                return const [
+                  LibrarySortBy.name,
+                  LibrarySortBy.dateAdded,
+                  LibrarySortBy.random,
+                ];
+              }
+              if (isSongsBrowse) {
+                return const [
+                  LibrarySortBy.name,
+                  LibrarySortBy.dateAdded,
+                  LibrarySortBy.albumArtist,
+                  LibrarySortBy.album,
+                  LibrarySortBy.premiereDate,
+                  LibrarySortBy.runtime,
+                  LibrarySortBy.random,
+                ];
+              }
+              return LibrarySortBy.values.where((o) =>
+                  (!vm.isMusicBrowse ||
+                      (o != LibrarySortBy.rating &&
+                          o != LibrarySortBy.criticRating &&
+                          o != LibrarySortBy.communityRating)) &&
+                  (vm.isMusicBrowse ||
+                      (o != LibrarySortBy.albumArtist &&
+                          o != LibrarySortBy.album &&
+                          o != LibrarySortBy.genre)));
+            }())
               _DialogRadioTile(
-                label: (vm.isMusicBrowse && option == LibrarySortBy.premiereDate)
-                    ? 'Release Date'
-                    : option.displayName,
+                label: () {
+                  if (option == LibrarySortBy.runtime &&
+                      (vm.isMusicBrowse || isSongsBrowse)) {
+                    return 'Length';
+                  }
+                  if (option == LibrarySortBy.premiereDate &&
+                      (vm.isMusicBrowse || isSongsBrowse)) {
+                    return 'Release Date';
+                  }
+                  return option.displayName;
+                }(),
                 selected: vm.sortBy == option,
                 trailing: vm.sortBy == option
                     ? Padding(

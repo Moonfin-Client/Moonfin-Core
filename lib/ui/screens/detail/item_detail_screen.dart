@@ -13828,6 +13828,7 @@ class DetailTrackList extends StatelessWidget {
   final ValueChanged<int>? onMoveUp;
   final ValueChanged<int>? onMoveDown;
   final bool isPlaylist;
+  final bool showAlbum;
   final ImageApi? imageApi;
 
   const DetailTrackList({
@@ -13844,6 +13845,7 @@ class DetailTrackList extends StatelessWidget {
     this.onMoveUp,
     this.onMoveDown,
     this.isPlaylist = false,
+    this.showAlbum = false,
     this.imageApi,
   });
 
@@ -13878,6 +13880,7 @@ class DetailTrackList extends StatelessWidget {
             onMoveDown: onMoveDown,
             isAudiobook: isAudiobook,
             isPlaylist: isPlaylist,
+            showAlbum: showAlbum,
             imageApi: imageApi,
           );
         },
@@ -13929,6 +13932,7 @@ class DetailTrackList extends StatelessWidget {
           onMoveDown: onMoveDown,
           isAudiobook: isAudiobook,
           isPlaylist: isPlaylist,
+          showAlbum: showAlbum,
           imageApi: imageApi,
         ),
       );
@@ -13947,6 +13951,7 @@ class _TrackTile extends StatefulWidget {
   final VoidCallback? onArrowUp;
   final bool isAudiobook;
   final bool isPlaylist;
+  final bool showAlbum;
   final ImageApi? imageApi;
   final int index;
   final int currentIndex;
@@ -13966,6 +13971,7 @@ class _TrackTile extends StatefulWidget {
     this.onArrowUp,
     this.isAudiobook = false,
     this.isPlaylist = false,
+    this.showAlbum = false,
     this.imageApi,
     required this.index,
     required this.currentIndex,
@@ -14114,6 +14120,15 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
             final artistText = widget.track.artists.isNotEmpty
                 ? widget.track.artists.join(', ')
                 : widget.track.albumArtist ?? '';
+            if (widget.showAlbum) {
+              final albumText = widget.track.album ?? widget.track.rawData['Album'] as String?;
+              if (albumText != null && albumText.isNotEmpty) {
+                if (artistText.isNotEmpty) {
+                  return '$albumText • $artistText';
+                }
+                return albumText;
+              }
+            }
             return artistText.isNotEmpty ? artistText : null;
           }();
 

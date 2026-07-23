@@ -46,14 +46,19 @@ List<_MusicCategory> _musicCategories(BuildContext context, String libraryId) {
   final l10n = AppLocalizations.of(context);
   return [
     _MusicCategory(
+      Icons.person,
+      l10n.artists,
+      Destinations.library(libraryId, includeItemTypes: const ['AlbumArtist']),
+    ),
+    _MusicCategory(
       Icons.album,
       l10n.albums,
       Destinations.library(libraryId, includeItemTypes: const ['MusicAlbum']),
     ),
     _MusicCategory(
-      Icons.person,
-      l10n.artists,
-      Destinations.library(libraryId, includeItemTypes: const ['AlbumArtist']),
+      Icons.music_note,
+      l10n.songs,
+      Destinations.library(libraryId, includeItemTypes: const ['Audio']),
     ),
     _MusicCategory(
       Icons.queue_music,
@@ -1599,8 +1604,8 @@ Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async
 
     if (albumId != null && albumId.isNotEmpty) {
       final factory = GetIt.instance<MediaServerClientFactory>();
-      final client = item.serverId != null
-          ? factory.getClientIfExists(item.serverId!) ??
+      final client = item.serverId.isNotEmpty
+          ? factory.getClientIfExists(item.serverId) ??
                 GetIt.instance<MediaServerClient>()
           : GetIt.instance<MediaServerClient>();
 
