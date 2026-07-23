@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import '../data/models/home_row.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../data/services/row_data_source.dart';
+import '../data/services/tv_channels_service.dart';
 import '../data/services/watch_next_service.dart';
 import '../di/injection.dart';
 import '../playback/car_artwork.dart';
@@ -51,6 +52,18 @@ Future<void> watchNextBackgroundMain() async {
       } else {
         await channel.invokeMethod('publish', {'items': items});
       }
+
+      try {
+        final channels =
+            await TvChannelsService.buildChannels(client, serverId: serverId);
+        await CarArtwork.instance.persistHosts();
+        if (channels.isEmpty) {
+          await channel.invokeMethod('clearChannels');
+        } else {
+          await channel.invokeMethod('publishChannels', {'channels': channels});
+        }
+      } catch (_) {}
+
       ok = true;
     }
   } catch (_) {}

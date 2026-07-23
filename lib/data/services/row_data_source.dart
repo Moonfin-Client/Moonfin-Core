@@ -217,6 +217,41 @@ class RowDataSource {
     );
   }
 
+  /// Latest items of [includeItemTypes] across every library, used to feed the
+  /// Android TV launcher channel rows where a single per library row does not
+  /// make sense.
+  Future<List<AggregatedItem>> loadLatestByType(
+    String serverId,
+    List<String> includeItemTypes, {
+    int limit = _defaultLimit,
+  }) async {
+    final response = await _client.itemsApi.getLatestItems(
+      includeItemTypes: includeItemTypes,
+      limit: limit,
+      fields: _fields,
+      enableImageTypes: _imageTypes,
+      imageTypeLimit: _imageTypeLimit,
+    );
+    return _parseItems(response, serverId);
+  }
+
+  /// Recently released items of [includeItemTypes] across every library, the
+  /// "upcoming" companion to [loadLatestByType].
+  Future<List<AggregatedItem>> loadRecentlyReleasedByType(
+    String serverId,
+    List<String> includeItemTypes, {
+    int limit = _defaultLimit,
+  }) async {
+    final response = await _client.itemsApi.getRecentlyReleasedItems(
+      includeItemTypes: includeItemTypes,
+      limit: limit,
+      fields: _fields,
+      enableImageTypes: _imageTypes,
+      imageTypeLimit: _imageTypeLimit,
+    );
+    return _parseItems(response, serverId);
+  }
+
   Future<HomeRow> loadRecentlyReleased(
     String parentId,
     String libraryName,

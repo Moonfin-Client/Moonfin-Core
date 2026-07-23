@@ -105,7 +105,7 @@ class WatchNextService {
     )) {
       for (final item in row.items) {
         if (item.id.isEmpty || !seen.add(item.id)) continue;
-        final payload = _itemPayload(item, imageApi, items.length);
+        final payload = buildProgramPayload(item, imageApi, index: items.length);
         if (payload != null) items.add(payload);
         if (items.length >= _maxItems) break;
       }
@@ -114,11 +114,13 @@ class WatchNextService {
     return items;
   }
 
-  static Map<String, dynamic>? _itemPayload(
+  /// Shapes a movie or episode into the native program payload. Public so the
+  /// launcher channel rows reuse the same fields. Returns null for other types.
+  static Map<String, dynamic>? buildProgramPayload(
     AggregatedItem item,
-    ImageApi imageApi,
-    int index,
-  ) {
+    ImageApi imageApi, {
+    int index = 0,
+  }) {
     final id = item.id;
     final isMovie = item.type == 'Movie';
     final isEpisode = item.type == 'Episode';

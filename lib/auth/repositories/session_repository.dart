@@ -13,6 +13,7 @@ import 'package:server_core/server_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/carplay_service.dart';
 import '../../data/services/download_notification_service.dart';
+import '../../data/services/tv_channels_service.dart';
 import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/plugin_sync_service.dart';
@@ -368,10 +369,12 @@ class SessionRepository {
       GetIt.instance<MediaBrowseService>().clearCache();
       if (signedIn) {
         WatchNextService().schedulePeriodicRefresh();
+        unawaited(TvChannelsService().publish());
       } else {
         unawaited(GetIt.instance<LastPlaybackSessionStore>().clear());
         WatchNextService().clear();
         WatchNextService().cancelPeriodicRefresh();
+        TvChannelsService().clear();
       }
       if (GetIt.instance.isRegistered<MoonfinAudioHandler>()) {
         GetIt.instance<MoonfinAudioHandler>().notifyChildrenChanged();

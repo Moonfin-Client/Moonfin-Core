@@ -91,6 +91,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     private var libretroBridge: LibretroBridge? = null
     private var watchNextChannel: MethodChannel? = null
     private var watchNextPublisher: WatchNextPublisher? = null
+    private var previewChannelPublisher: PreviewChannelPublisher? = null
     private var pendingDeepLink: String? = null
     private var gameActive = false
     private var hatX = 0
@@ -548,6 +549,8 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
         val publisher = watchNextPublisher ?: WatchNextPublisher(applicationContext)
             .also { watchNextPublisher = it }
+        val channelPublisher = previewChannelPublisher
+            ?: PreviewChannelPublisher(applicationContext).also { previewChannelPublisher = it }
         watchNextChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             WATCH_NEXT_CHANNEL,
@@ -562,6 +565,17 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
                 }
                 "clear" -> {
                     publisher.clear()
+                    result.success(null)
+                }
+                "publishChannels" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val channels = call.argument<List<Map<String, Any?>>>("channels")
+                        ?: emptyList()
+                    channelPublisher.publishChannels(channels)
+                    result.success(null)
+                }
+                "clearChannels" -> {
+                    channelPublisher.clearChannels()
                     result.success(null)
                 }
                 "getInitialDeepLink" -> {

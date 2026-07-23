@@ -36,6 +36,7 @@ class WatchNextWorker(
 
         val done = CompletableDeferred<Boolean>()
         val publisher = WatchNextPublisher(applicationContext)
+        val channelPublisher = PreviewChannelPublisher(applicationContext)
         val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         var engine: FlutterEngine? = null
 
@@ -69,6 +70,21 @@ class WatchNextWorker(
                         "clear" -> {
                             ioScope.launch {
                                 publisher.clearNow()
+                                withContext(Dispatchers.Main) { result.success(null) }
+                            }
+                        }
+                        "publishChannels" -> {
+                            @Suppress("UNCHECKED_CAST")
+                            val channels = call.argument<List<Map<String, Any?>>>("channels")
+                                ?: emptyList()
+                            ioScope.launch {
+                                channelPublisher.publishChannelsNow(channels)
+                                withContext(Dispatchers.Main) { result.success(null) }
+                            }
+                        }
+                        "clearChannels" -> {
+                            ioScope.launch {
+                                channelPublisher.clearChannelsNow()
                                 withContext(Dispatchers.Main) { result.success(null) }
                             }
                         }
