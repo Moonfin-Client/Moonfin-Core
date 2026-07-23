@@ -360,7 +360,10 @@ enum LibrarySortBy {
   runtime('Runtime', 'Runtime'),
   random('Random', 'Random'),
   criticRating('CriticRating', 'Critic Rating'),
-  communityRating('CommunityRating', 'Community Rating');
+  communityRating('CommunityRating', 'Community Rating'),
+  albumArtist('AlbumArtist,Album,SortName', 'Album Artist'),
+  album('Album,SortName', 'Album'),
+  genre('Genre,SortName', 'Genre');
 
   const LibrarySortBy(this.apiValue, this.displayName);
   final String apiValue;

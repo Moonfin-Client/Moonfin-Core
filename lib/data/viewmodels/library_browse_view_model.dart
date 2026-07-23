@@ -33,7 +33,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   static const _libraryMetaFields = '';
 
   static const _browseFields =
-      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -201,7 +201,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     }
   }
 
-  String get _prefKey => genreId ?? studioName ?? libraryId;
+  String get _prefKey {
+    final baseKey = genreId ?? studioName ?? libraryId;
+    if (includeItemTypes != null && includeItemTypes!.isNotEmpty) {
+      return '${baseKey}_${includeItemTypes!.join("_")}';
+    }
+    return baseKey;
+  }
 
   String get _imagePrefKey {
     if (genreId != null && libraryId.isNotEmpty) {
@@ -403,10 +409,19 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'SortName';
     }
 
+    final isSongsBrowse =
+        includeItemTypes != null &&
+        includeItemTypes!.length == 1 &&
+        includeItemTypes!.first == 'Audio';
+
     final selectedLetter = _letterFilter.isEmpty ? null : _letterFilter;
     final isNumericBucket = selectedLetter == '#';
-    final nameStartsWith = isNumericBucket ? null : selectedLetter;
-    final nameLessThan = isNumericBucket ? 'A' : null;
+    final nameStartsWith =
+        (isSongsBrowse || isNumericBucket) ? null : selectedLetter;
+    final nameLessThan =
+        (isSongsBrowse || !isNumericBucket) ? null : 'A';
+    final fetchLimit =
+        (isSongsBrowse && selectedLetter != null) ? 500 : pageSize;
 
     final Map<String, dynamic> response;
     if (isAlbumArtistBrowse) {
@@ -454,7 +469,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
             ? 'Ascending'
             : 'Descending',
         startIndex: startIndex,
-        limit: pageSize,
+        limit: fetchLimit,
         recursive: recursive,
         fields: _browseFields,
         filters: filters.isEmpty ? null : filters,
@@ -466,7 +481,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     }
 
     final rawItems = (response['Items'] as List?) ?? [];
-    final mapped = rawItems
+    var mapped = rawItems
         .whereType<Map>()
         .map((raw) => raw.cast<String, dynamic>())
         .map((raw) {
@@ -480,6 +495,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         })
         .whereType<AggregatedItem>()
         .toList();
+
+    if (selectedLetter != null && selectedLetter.isNotEmpty) {
+      if (isNumericBucket) {
+        mapped = mapped.where((item) {
+          final name = (item.sortName ?? item.name).trim().toUpperCase();
+          return name.isNotEmpty && !RegExp(r'^[A-Z]').hasMatch(name);
+        }).toList();
+      } else {
+        final prefix = selectedLetter.toUpperCase();
+        mapped = mapped.where((item) {
+          final name = (item.sortName ?? item.name).trim().toUpperCase();
+          return name.startsWith(prefix);
+        }).toList();
+      }
+    }
 
     final filtered = await _filterLibraryItems(mapped);
 
