@@ -907,11 +907,22 @@ class DownloadService extends ChangeNotifier {
     final finalSize = await file.length();
     await _offlineRepo.setLocalFilePath(itemId, savePath, fileSize: finalSize);
     await _offlineRepo.updateDownloadStatus(itemId, 2);
-    if (PlatformDetection.isIOS) {
-      try {
-        await IosStorage.excludeFromBackup(savePath);
-      } catch (_) {}
-    }
+
+    final row = await _offlineRepo.getItem(itemId);
+    if (row == null) return;
+    final item = AggregatedItem(
+      id: itemId,
+      serverId: row.serverId,
+      rawData: _offlineRepo.rowToRawData(row),
+    );
+    unawaited(
+      _runPostCompletionTasks(
+        item: item,
+        savePath: savePath,
+        dir: file.parent,
+        fileName: file.uri.pathSegments.last,
+      ),
+    );
   }
 
   /// Finalizes a media download that completed without a live
