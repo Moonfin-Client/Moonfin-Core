@@ -102,24 +102,4 @@ class MediaStoreHelper(private val context: Context) : MethodChannel.MethodCallH
 
         return targetFile.absolutePath
     }
-
-    private fun guessMimeType(fileName: String): String {
-        val lower = fileName.lowercase()
-        return when {
-            lower.endsWith(".mkv") -> "video/x-matroska"
-            lower.endsWith(".mp4") || lower.endsWith(".m4v") -> "video/mp4"
-            lower.endsWith(".avi") -> "video/x-msvideo"
-            lower.endsWith(".webm") -> "video/webm"
-            lower.endsWith(".ts") -> "video/mp2t"
-            lower.endsWith(".flac") -> "audio/flac"
-            lower.endsWith(".mp3") -> "audio/mpeg"
-            lower.endsWith(".m4a") -> "audio/mp4"
-            lower.endsWith(".ogg") -> "audio/ogg"
-            lower.endsWith(".opus") -> "audio/opus"
-            lower.endsWith(".wav") -> "audio/wav"
-            lower.endsWith(".epub") -> "application/epub+zip"
-            lower.endsWith(".pdf") -> "application/pdf"
-            else -> "application/octet-stream"
-        }
-    }
 }

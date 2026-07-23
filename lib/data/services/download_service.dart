@@ -1309,9 +1309,6 @@ class DownloadService extends ChangeNotifier {
       params['maxWidth'] = quality.maxWidth.toString();
     }
     params['container'] = quality.container;
-    params['SubtitleMethod'] = 'Embed';
-    params['SubtitleStreamIndex'] = '-1';
-    params['AudioStreamIndex'] = '-1';
     if (quality.audioChannels != null) {
       params['audioChannels'] = quality.audioChannels.toString();
     }
@@ -1387,6 +1384,7 @@ class DownloadService extends ChangeNotifier {
         itemId: item.id,
         fileName: item.name,
         error: 'WiFi-only mode enabled. Connect to WiFi to download.',
+        quality: quality,
       );
       _emitError(
         '${item.name}: WiFi-only mode enabled. Connect to WiFi to download.',
@@ -1403,6 +1401,7 @@ class DownloadService extends ChangeNotifier {
           itemId: item.id,
           fileName: item.name,
           error: 'Storage limit reached. Free up space or increase the limit.',
+          quality: quality,
         );
         _emitError(
           '${item.name}: Storage limit reached. Free up space or increase the limit.',
@@ -1641,6 +1640,7 @@ class DownloadService extends ChangeNotifier {
         fileName: fileName,
         progress: 1.0,
         bytesReceived: bytesReceived,
+        quality: quality,
       );
       await _offlineRepo.updateDownloadStatus(item.id, 1, progress: 1.0);
       notifyListeners();
@@ -1674,6 +1674,7 @@ class DownloadService extends ChangeNotifier {
         fileName: fileName,
         progress: 1.0,
         isComplete: true,
+        quality: quality,
       );
       _completedCount++;
       notifyListeners();
@@ -1706,6 +1707,7 @@ class DownloadService extends ChangeNotifier {
           itemId: item.id,
           fileName: item.name,
           error: friendlyError,
+          quality: quality,
         );
         await _offlineRepo.updateDownloadStatus(
           item.id,
@@ -1729,6 +1731,7 @@ class DownloadService extends ChangeNotifier {
         itemId: item.id,
         fileName: item.name,
         error: friendlyError,
+        quality: quality,
       );
       await _offlineRepo.updateDownloadStatus(item.id, 3, error: friendlyError);
       if (!_usesPluginNotifications) {
@@ -1751,6 +1754,7 @@ class DownloadService extends ChangeNotifier {
         itemId: item.id,
         fileName: item.name,
         error: friendlyError,
+        quality: quality,
       );
       await _offlineRepo.updateDownloadStatus(item.id, 3, error: friendlyError);
       if (!_usesPluginNotifications) {
@@ -2300,10 +2304,12 @@ class DownloadService extends ChangeNotifier {
     final authOptions = Options(headers: _buildAuthHeaders());
     for (final stream in streams) {
       if (stream['Type'] != 'Subtitle') continue;
-      final isExternal = stream['IsExternal'] == true ||
-          stream['IsExternal']?.toString().toLowerCase() == 'true' ||
-          (stream['IsTextSubtitleStream'] == true && stream['Path'] != null);
-      if (!isExternal) continue;
+      // External files download as-is. Embedded text subs that the server can
+      // extract also get saved as sidecars, which is the only subtitle path a
+      // transcoded download has since the transcoded file carries none.
+      final isExternal = stream['IsExternal'] == true;
+      final supportsExternal = stream['SupportsExternalStream'] == true;
+      if (!isExternal && !supportsExternal) continue;
       final index = stream['Index'] as int? ?? 0;
       final ext = canonicalSubtitleCodec(stream['Codec'] as String?);
       // DeliveryUrl is computed by the server during PlaybackInfo and is often
@@ -2589,6 +2595,7 @@ class DownloadService extends ChangeNotifier {
               fileName: fileName,
               progress: 1.0,
               isComplete: true,
+              quality: quality,
             );
           } catch (e) {
             try {
@@ -2603,6 +2610,7 @@ class DownloadService extends ChangeNotifier {
               itemId: itemId,
               fileName: fileName,
               error: e.toString(),
+              quality: quality,
             );
           }
           notifyListeners();
@@ -2628,6 +2636,7 @@ class DownloadService extends ChangeNotifier {
               itemId: itemId,
               fileName: fileName,
               error: message,
+              quality: quality,
             );
             _emitError('${row.name}: $message');
           }

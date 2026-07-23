@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../data/models/download_quality.dart';
 import '../../../data/providers/offline_providers.dart';
@@ -427,6 +429,23 @@ class DownloadSettingsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
+
+    // Android 10 and below write to the public Downloads folder through raw
+    // file paths, which needs the storage permission at runtime. Android 11
+    // and up can contribute files without it, and the permission no longer
+    // exists there, so only ask on the old versions.
+    final sdkInt = (await DeviceInfoPlugin().androidInfo).version.sdkInt;
+    if (sdkInt <= 29) {
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.cannotWriteToFolder)));
+        }
+        return;
+      }
+    }
 
     await prefs.set(UserPreferences.customDownloadPath, 'mediastore');
     GetIt.instance<StoragePathService>().clearCache();

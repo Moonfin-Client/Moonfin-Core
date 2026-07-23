@@ -1,4 +1,0 @@
-fix(downloads): fix external subtitle stream resolution from raw item metadata
-
-- Extract streams from item.mediaStreams or rawMediaSources in _downloadExternalSubtitles.
-- Ensure external sidecar .srt files are fetched and saved alongside media items during offline downloads.
