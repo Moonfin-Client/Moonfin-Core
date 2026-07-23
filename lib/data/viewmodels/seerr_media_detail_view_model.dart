@@ -23,6 +23,7 @@ class SeerrMediaDetailState {
   final SeerrQuota? quota;
   final bool isTogglingWatchlist;
   final bool onUserWatchlist;
+  final String? watchlistError;
 
   const SeerrMediaDetailState({
     this.isLoading = false,
@@ -39,6 +40,7 @@ class SeerrMediaDetailState {
     this.quota,
     this.isTogglingWatchlist = false,
     this.onUserWatchlist = false,
+    this.watchlistError,
   });
 
   bool get isMovie => movie != null;
@@ -184,6 +186,7 @@ class SeerrMediaDetailState {
     SeerrQuota? quota,
     bool? isTogglingWatchlist,
     bool? onUserWatchlist,
+    String? watchlistError,
   }) =>
       SeerrMediaDetailState(
         isLoading: isLoading ?? this.isLoading,
@@ -200,6 +203,7 @@ class SeerrMediaDetailState {
         quota: quota ?? this.quota,
         isTogglingWatchlist: isTogglingWatchlist ?? this.isTogglingWatchlist,
         onUserWatchlist: onUserWatchlist ?? this.onUserWatchlist,
+        watchlistError: watchlistError,
       );
 }
 
@@ -257,7 +261,11 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   }
 
   void clearFeedback() {
-    _state = _state.copyWith(requestSuccess: null, requestError: null);
+    _state = _state.copyWith(
+      requestSuccess: null,
+      requestError: null,
+      watchlistError: null,
+    );
   }
 
   Future<void> load(String itemId, String mediaType, {String? title}) async {
@@ -564,6 +572,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     );
     notifyListeners();
 
+    var onWatchlist = !wasOnWatchlist;
+    String? error;
     try {
       if (wasOnWatchlist) {
         await _repo.removeFromWatchlist(tmdbId: tmdbId, mediaType: mediaType);
@@ -571,12 +581,16 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         await _repo.addToWatchlist(tmdbId: tmdbId, mediaType: mediaType);
       }
     } catch (e) {
-      _state = _state.copyWith(onUserWatchlist: wasOnWatchlist);
-      debugPrint('[SeerrDetail] Failed to toggle watchlist: $e');
-    } finally {
-      _state = _state.copyWith(isTogglingWatchlist: false);
-      notifyListeners();
+      onWatchlist = wasOnWatchlist;
+      error = e.toString();
     }
+
+    _state = _state.copyWith(
+      isTogglingWatchlist: false,
+      onUserWatchlist: onWatchlist,
+      watchlistError: error,
+    );
+    notifyListeners();
   }
 
   bool get canManageRequests => _state.canManageRequests;

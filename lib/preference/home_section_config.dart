@@ -348,10 +348,31 @@ class HomeSectionConfig {
           parsed.add(cfg);
         }
       }
-      return parsed;
+      return _appendMissingBuiltins(parsed);
     } catch (_) {
       return defaults();
     }
+  }
+
+  /// Adds any built-in sections missing from a user's saved config, like the
+  /// Seerr watchlist, so they show up without needing a reset. New sections
+  /// keep their default enabled state and go at the end to keep the user's
+  /// existing order.
+  static List<HomeSectionConfig> _appendMissingBuiltins(
+    List<HomeSectionConfig> parsed,
+  ) {
+    final presentTypes = parsed
+        .where((c) => c.isBuiltin)
+        .map((c) => c.type)
+        .toSet();
+    final merged = List<HomeSectionConfig>.of(parsed);
+    var order = parsed.fold<int>(-1, (m, c) => c.order > m ? c.order : m) + 1;
+    for (final def in defaults()) {
+      if (def.isBuiltin && !presentTypes.contains(def.type)) {
+        merged.add(def.copyWith(order: order++));
+      }
+    }
+    return merged;
   }
 
   static String toJsonString(List<HomeSectionConfig> configs) =>

@@ -18009,6 +18009,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from Watchlist'**
   String get removeFromWatchlist;
+
+  /// Snackbar shown when adding/removing a Seerr watchlist item fails
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update watchlist'**
+  String get watchlistUpdateFailed;
 }
 
 class _AppLocalizationsDelegate

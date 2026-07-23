@@ -58,12 +58,30 @@ class SeerrRowConfig {
     if (jsonString.isEmpty) return defaults();
     try {
       final list = jsonDecode(jsonString) as List;
-      return list
+      final parsed = list
           .map((e) => SeerrRowConfig.fromJson(e as Map<String, dynamic>))
           .toList();
+      return _appendMissingDefaults(parsed);
     } catch (_) {
       return defaults();
     }
+  }
+
+  /// Adds any default rows missing from a user's saved config, like the
+  /// watchlist row, so they show up without needing a reset. New rows go at
+  /// the end to keep the user's existing order.
+  static List<SeerrRowConfig> _appendMissingDefaults(
+    List<SeerrRowConfig> parsed,
+  ) {
+    final present = parsed.map((c) => c.type).toSet();
+    final merged = List<SeerrRowConfig>.of(parsed);
+    var order = parsed.fold<int>(-1, (m, c) => c.order > m ? c.order : m) + 1;
+    for (final def in defaults()) {
+      if (!present.contains(def.type)) {
+        merged.add(def.copyWith(order: order++));
+      }
+    }
+    return merged;
   }
 
   static String toJsonString(List<SeerrRowConfig> configs) =>

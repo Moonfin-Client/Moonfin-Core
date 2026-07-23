@@ -10231,6 +10231,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get removeFromWatchlist => 'Remove from Watchlist';
+
+  @override
+  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

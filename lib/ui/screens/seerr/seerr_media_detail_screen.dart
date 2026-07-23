@@ -113,6 +113,16 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ),
       );
       _vm?.clearFeedback();
+    } else if (s.watchlistError != null) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.watchlistUpdateFailed),
+          backgroundColor: Colors.red[700],
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      _vm?.clearFeedback();
     }
   }
 

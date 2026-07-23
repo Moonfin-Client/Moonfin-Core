@@ -8934,5 +8934,9 @@
   "removeFromWatchlist": "Remove from Watchlist",
   "@removeFromWatchlist": {
     "description": "Button label to remove media from the user's Seerr watchlist"
+  },
+  "watchlistUpdateFailed": "Couldn't update watchlist",
+  "@watchlistUpdateFailed": {
+    "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
   }
 }

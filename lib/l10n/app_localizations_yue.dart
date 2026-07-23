@@ -9742,6 +9742,9 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get removeFromWatchlist => 'Remove from Watchlist';
+
+  @override
+  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).

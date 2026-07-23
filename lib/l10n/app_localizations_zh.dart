@@ -9738,6 +9738,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeFromWatchlist => 'Remove from Watchlist';
+
+  @override
+  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
