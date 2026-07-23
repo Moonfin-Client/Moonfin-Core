@@ -9094,5 +9094,17 @@
     "removeAllDownloadedGamesConfirm": "İndirilen tüm oyunlar bu cihazdan kaldırılsın mı? Bir sonraki oynayışınızda tekrar indirileceklerdir.",
     "@removeAllDownloadedGamesConfirm": {
         "description": "Confirmation prompt before deleting every downloaded game"
+    },
+    "transcodingTimeRemainingUnavailable": "Kod Dönüştürme: Kalan Süre Bilinmiyor",
+    "@transcodingTimeRemainingUnavailable": {
+        "description": "Notice shown below downloading text when downloading a transcoded stream"
+    },
+    "trailerCaptions": "Fragman Altyazıları",
+    "@trailerCaptions": {
+        "description": "Setting for YouTube trailer captions"
+    },
+    "trailerCaptionsDescription": "YouTube fragmanlarında medya çubuğunda altyazıları göster",
+    "@trailerCaptionsDescription": {
+        "description": "Description for YouTube trailer captions"
     }
 }
