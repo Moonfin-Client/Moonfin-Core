@@ -496,7 +496,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         .whereType<AggregatedItem>()
         .toList();
 
-    if (selectedLetter != null && selectedLetter.isNotEmpty) {
+    if (isSongsBrowse && selectedLetter != null && selectedLetter.isNotEmpty) {
       if (isNumericBucket) {
         mapped = mapped.where((item) {
           final name = (item.sortName ?? item.name).trim().toUpperCase();
