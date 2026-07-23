@@ -7765,7 +7765,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 parentId: item.id,
                 includeItemTypes: const ['Audio'],
                 sortBy: 'ParentIndexNumber,IndexNumber,SortName',
-                fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+                fields: 'PrimaryImageAspectRatio,BasicSyncInfo,UserData,RunTimeTicks',
               );
               tracks = _mapRawItemsForServer(data['Items'], item.serverId);
             }
@@ -7779,7 +7779,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
-            await manager.playItems(tracks);
+            int albumStartIndex = 0;
+            Duration albumStartPos = Duration.zero;
+            if (resume) {
+              final resumeIdx = tracks.indexWhere(
+                (e) =>
+                    !e.isPlayed &&
+                    ((e.playbackPosition?.inMilliseconds ?? 0) > 0 ||
+                        (e.playedPercentage ?? 0) > 0),
+              );
+              if (resumeIdx >= 0) {
+                albumStartIndex = resumeIdx;
+                albumStartPos = tracks[resumeIdx].playbackPosition ?? Duration.zero;
+              }
+            }
+            await manager.playItems(
+              tracks,
+              startIndex: albumStartIndex,
+              startPosition: albumStartPos,
+            );
             break;
 
           case 'Playlist':
@@ -7800,15 +7818,30 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               throw PlaybackStartupRecoveryAbortedException();
             }
             if (!context.mounted) return;
-            // Playlists can contain video, so honor the Dolby Vision
-            // force-transcode check before allowing direct play/stream.
             final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
               tracks,
             );
             final directAllowed = !dvForceTranscode && !forceTranscode;
+            int playlistStartIndex = 0;
+            Duration playlistStartPos = Duration.zero;
+            if (resume) {
+              final resumeIdx = tracks.indexWhere(
+                (e) =>
+                    !e.isPlayed &&
+                    ((e.playbackPosition?.inMilliseconds ?? 0) > 0 ||
+                        (e.playedPercentage ?? 0) > 0),
+              );
+              if (resumeIdx >= 0) {
+                playlistStartIndex = resumeIdx;
+                playlistStartPos =
+                    tracks[resumeIdx].playbackPosition ?? Duration.zero;
+              }
+            }
             await manager.playItems(
               tracks,
+              startIndex: playlistStartIndex,
+              startPosition: playlistStartPos,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -7817,7 +7850,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           case 'AudioBook':
             final client = _clientForItem(item);
             const audioChildFields =
-                'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,MediaSources,MediaSourceCount,MediaType,IndexNumber,ParentIndexNumber,Artists,AlbumArtist,Genres,Chapters';
+                'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,MediaSources,MediaSourceCount,MediaType,IndexNumber,ParentIndexNumber,Artists,AlbumArtist,Genres,Chapters,UserData';
             bool isAudioChild(dynamic e) {
               final childType = e is Map ? e['Type']?.toString() : null;
               return childType == 'Audio' || childType == 'AudioBook';
@@ -7836,8 +7869,31 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final rawChildren = (data['Items'] as List?) ?? const [];
             final childItems = rawChildren.where(isAudioChild).toList();
             if (childItems.isNotEmpty) {
+              final children = _mapRawItemsForServer(childItems, item.serverId);
+              int startIndex = 0;
+              Duration startPos = Duration.zero;
+              if (resume) {
+                final resumeIdx = children.indexWhere(
+                  (e) =>
+                      !e.isPlayed &&
+                      ((e.playbackPosition?.inMilliseconds ?? 0) > 0 ||
+                          (e.playedPercentage ?? 0) > 0),
+                );
+                if (resumeIdx >= 0) {
+                  startIndex = resumeIdx;
+                  startPos =
+                      children[resumeIdx].playbackPosition ?? Duration.zero;
+                } else {
+                  final nextUnplayed = children.indexWhere((e) => !e.isPlayed);
+                  if (nextUnplayed >= 0) {
+                    startIndex = nextUnplayed;
+                  }
+                }
+              }
               await manager.playItems(
-                _mapRawItemsForServer(childItems, item.serverId),
+                children,
+                startIndex: startIndex,
+                startPosition: startPos,
               );
               break;
             }
@@ -7859,7 +7915,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               );
               final startIndex = siblings.indexWhere((t) => t.id == item.id);
               if (siblings.isNotEmpty && startIndex >= 0) {
-                await manager.playItems(siblings, startIndex: startIndex);
+                final targetSibling = siblings[startIndex];
+                final startPos = resume
+                    ? (targetSibling.playbackPosition ??
+                        item.playbackPosition ??
+                        Duration.zero)
+                    : Duration.zero;
+                await manager.playItems(
+                  siblings,
+                  startIndex: startIndex,
+                  startPosition: startPos,
+                );
                 break;
               }
             }

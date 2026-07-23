@@ -23,6 +23,7 @@ import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
+import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/rating_display.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
@@ -790,6 +791,35 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   bool _isAudiobook(AggregatedItem item) =>
       item.type == 'AudioBook' ||
       (item.type == 'Book' && item.rawData['MediaType'] == 'Audio');
+
+  String? _getAuthorName(AggregatedItem item) {
+    if (item.artists.isNotEmpty) {
+      return item.artists.join(', ');
+    }
+    if (item.albumArtist != null && item.albumArtist!.trim().isNotEmpty) {
+      return item.albumArtist!.trim();
+    }
+    if (item.albumArtists.isNotEmpty) {
+      final name = item.albumArtists.first['Name'] as String?;
+      if (name != null && name.trim().isNotEmpty) return name.trim();
+    }
+    if (item.seriesName != null && item.seriesName!.trim().isNotEmpty) {
+      return item.seriesName!.trim();
+    }
+    final rawAuthor =
+        item.rawData['Author'] as String? ?? item.rawData['Writer'] as String?;
+    if (rawAuthor != null && rawAuthor.trim().isNotEmpty) return rawAuthor.trim();
+
+    final people = item.people;
+    for (final p in people) {
+      final role = p['Type']?.toString() ?? p['Role']?.toString() ?? '';
+      if (role == 'Author' || role == 'Writer') {
+        final name = p['Name'] as String?;
+        if (name != null && name.trim().isNotEmpty) return name.trim();
+      }
+    }
+    return null;
+  }
 
   List<_ModernTab> _tabsFor(AggregatedItem item, AppLocalizations l10n) {
     final hasCast = _vm.actors.isNotEmpty;
@@ -3292,12 +3322,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
 
     final isMusicAlbumOrPlaylist = item.type == 'Playlist' || item.type == 'MusicAlbum';
-    if (isMusicAlbumOrPlaylist) {
+    final isAudiobookOrBook = item.type == 'AudioBook' ||
+        item.type == 'Book' ||
+        (item.type == 'Audio' && item.isAudioLike) ||
+        item.isAudiobook;
+
+    if (isMusicAlbumOrPlaylist || isAudiobookOrBook) {
       final l10n = AppLocalizations.of(context);
       final coverUrl = _imageUrl(item);
+      final isBookLayout = isAudiobookOrBook || item.type == 'Book';
       final coverImage = Container(
         width: 180,
-        height: 180,
+        height: isBookLayout ? 240 : 180,
         decoration: BoxDecoration(
           borderRadius: AppRadius.circular(12),
           border: Border.all(
@@ -3322,7 +3358,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               : Container(
                   color: Colors.white.withValues(alpha: 0.05),
                   child: Icon(
-                    item.type == 'MusicAlbum' ? Icons.album : Icons.playlist_play,
+                    isBookLayout
+                        ? Icons.menu_book
+                        : (item.type == 'MusicAlbum' ? Icons.album : Icons.playlist_play),
                     color: Colors.white24,
                     size: 64,
                   ),
@@ -3330,22 +3368,29 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ),
       );
 
-      final artistName = item.albumArtist;
+      final authorOrArtistName = isBookLayout
+          ? (_getAuthorName(item) ?? item.albumArtist)
+          : item.albumArtist;
 
       final playlistInfo = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            item.name,
-            style: textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              shadows: _neonTextGlow(12),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: _landscape ? 600 : (MediaQuery.sizeOf(context).width - 40),
+            ),
+            child: MarqueeText(
+              text: item.name,
+              style: textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                shadows: _neonTextGlow(12),
+              ) ?? const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
             ),
           ),
-          if (item.type == 'MusicAlbum' && artistName != null) ...[
-            const SizedBox(height: 4),
+          if (authorOrArtistName != null && authorOrArtistName.trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
             Focus(
               focusNode: _artistFocusNode,
               onKeyEvent: (node, event) {
@@ -3399,7 +3444,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             : null,
                       ),
                       child: Text(
-                        artistName,
+                        authorOrArtistName,
                         style: textTheme.titleMedium?.copyWith(
                           color: AppColorScheme.accent,
                           fontWeight: FontWeight.bold,
@@ -3415,15 +3460,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           const SizedBox(height: 8),
           Text(
             () {
-              final count = _vm.tracks.length;
-              final trackText = l10n.trackCount(count);
               final parts = <String>[];
-              if (item.type == 'MusicAlbum' && item.productionYear != null) {
+              if (item.productionYear != null) {
                 parts.add(item.productionYear.toString());
               }
-              parts.add(trackText);
+              final runtime = item.runtime;
+              if (runtime != null && runtime.inMinutes > 0) {
+                parts.add(_formatDuration(runtime));
+              } else if (!isBookLayout && _vm.tracks.isNotEmpty) {
+                final count = _vm.tracks.length;
+                parts.add(l10n.trackCount(count));
+              }
+              if (isAudiobookOrBook) {
+                parts.add(l10n.audiobooks);
+              }
               if (item.genres.isNotEmpty) {
-                final genresList = item.type == 'Playlist' ? item.genres : item.genres.take(2);
+                final genresList = item.genres.take(2);
                 parts.add(genresList.join(', '));
               }
               return parts.join(' • ');
@@ -3457,9 +3509,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               downTarget: _vm.tracks.isNotEmpty
                   ? _trackFocusNodes.putIfAbsent(_vm.tracks.first.id, () => FocusNode())
                   : null,
-              upTarget: item.type == 'MusicAlbum' && artistName != null
-                  ? _artistFocusNode
-                  : null,
+              upTarget: authorOrArtistName != null ? _artistFocusNode : null,
               autoPlay: widget.autoPlay,
               modernStyle: true,
               fullWidthPrimary: !_landscape,
