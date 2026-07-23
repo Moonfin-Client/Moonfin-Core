@@ -420,7 +420,6 @@ class UserPreferences extends ChangeNotifier {
     'showRatingBadges',
     'enableEpisodeRatings',
     'tmdbApiKey',
-    'seerrEnabled',
     'seerrBlockNsfw',
     'enabledRatings',
     'home_sections_config',

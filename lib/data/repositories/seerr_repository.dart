@@ -213,7 +213,11 @@ class SeerrRepository {
     _serverReportsEnabled = status.enabled;
 
     await _store.setBool(_moonfinModeKey, true);
-    await _store.setBool(_enabledKey, effectiveEnabled);
+    if (effectiveEnabled) {
+      await _store.setBool(_enabledKey, true);
+    } else if (!status.enabled) {
+      await _store.setBool(_enabledKey, false);
+    }
     await _store.setString(_authMethodKey, 'moonfin');
     _isMoonfinMode = true;
 

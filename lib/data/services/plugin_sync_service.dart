@@ -176,6 +176,7 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   void _setLocalSeerrEnabled(bool enabled) {
+    _seerrPrefs.setEnabled(enabled);
     if (_prefs.get(UserPreferences.seerrEnabled) == enabled) {
       return;
     }
@@ -183,7 +184,6 @@ class PluginSyncService extends ChangeNotifier {
       _prefs.getEffectivePreference(UserPreferences.seerrEnabled),
       enabled,
     );
-    _seerrPrefs.setEnabled(enabled);
     _prefs.notifyPreferenceChanged();
   }
 
@@ -606,6 +606,14 @@ class PluginSyncService extends ChangeNotifier {
           username: username,
           password: password,
         );
+        if (seerrRepo.isAvailable &&
+            !_prefs.get(UserPreferences.seerrEnabled)) {
+          _setLocalSeerrEnabled(true);
+          await pushSettingsForProfile(
+            client,
+            profile: selectedCustomizationProfile,
+          );
+        }
         await _refreshAvailabilityStatus(client);
       } catch (_) {
         continue;

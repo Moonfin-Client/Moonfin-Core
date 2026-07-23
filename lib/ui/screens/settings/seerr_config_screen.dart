@@ -219,10 +219,10 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.logoutMoonfin();
-      await _seerrPrefs.setEnabled(false);
+      await _seerrPrefs.setEnabled(true);
       await GetIt.instance<UserPreferences>().set(
         UserPreferences.seerrEnabled,
-        false,
+        true,
       );
       await _pushSync();
       await _loadSeerrStatus();
