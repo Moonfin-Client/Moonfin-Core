@@ -173,6 +173,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
+  static const Duration _longPauseVideoReviveThreshold = Duration(minutes: 2);
   final Player _player;
   final VideoController? _videoController;
   final UserPreferences _prefs;
@@ -185,6 +186,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
   bool _isDisposed = false;
+  DateTime? _pausedSince;
   String? _appliedCustomMpvConfPath;
   DateTime? _appliedCustomMpvConfMtime;
   static final Map<String, _ParsedMpvConfCacheEntry> _parsedMpvConfCache =
@@ -577,6 +579,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
     _currentUrl = url;
     _isStale = true;
+    _pausedSince = null;
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
@@ -1222,17 +1225,48 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Future<void> resume() async {
+    final pausedSince = _pausedSince;
+    _pausedSince = null;
     await _player.play();
+    if (pausedSince != null &&
+        DateTime.now().difference(pausedSince) >=
+            _longPauseVideoReviveThreshold) {
+      unawaited(_reviveVideoAfterLongPause());
+    }
   }
 
   @override
   Future<void> pause() async {
+    if (PlatformDetection.isDesktop) {
+      _pausedSince ??= DateTime.now();
+    }
     await _player.pause();
+  }
+
+  /// Desktop video can come back frozen after a long pause if the display
+  /// slept while we were paused. Audio resumes but the picture never updates
+  /// until the app is restarted, so cycle the video track and seek back to the
+  /// current position to restart the decoder and render chain.
+  Future<void> _reviveVideoAfterLongPause() async {
+    final platform = _player.platform;
+    if (platform is! NativePlayer || _isDisposed) return;
+    final vid = await _tryNativeGetProperty(platform, 'vid');
+    if (vid != null && vid.isNotEmpty && vid != 'no') {
+      await _tryNativeSetProperty(platform, 'vid', 'no');
+      await _tryNativeSetProperty(platform, 'vid', vid);
+    }
+    final position = _player.state.position;
+    await _tryNativeCommand(platform, [
+      'seek',
+      (position.inMilliseconds / 1000).toStringAsFixed(3),
+      'absolute+exact',
+    ]);
   }
 
   @override
   Future<void> stop() async {
     _isStale = true;
+    _pausedSince = null;
     await _player.stop();
   }
 
