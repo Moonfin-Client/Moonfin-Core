@@ -3419,6 +3419,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
+                    const Positioned.fill(
+                      child: ColoredBox(color: Colors.black),
+                    ),
                     _buildVideoSurface(),
                     _buildBringupOverlay(context),
                     if (_isRestoringPosition)
