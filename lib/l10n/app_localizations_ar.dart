@@ -10133,4 +10133,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
+
+  @override
+  String get adminSearchParameters => 'Search Parameters';
+
+  @override
+  String get adminCurrentMetadata => 'Current Metadata';
+
+  @override
+  String get adminLabelName => 'Name';
+
+  @override
+  String get adminLabelYear => 'Year';
+
+  @override
+  String get adminLabelImdbId => 'IMDb Id';
+
+  @override
+  String get adminLabelTmdbMovieId => 'TheMovieDb Movie Id';
+
+  @override
+  String get adminLabelTmdbBoxSetId => 'TheMovieDb Box Set Id';
+
+  @override
+  String get adminLabelTvdbBoxSetId => 'TheTVDB Box Set Id';
+
+  @override
+  String get adminLabelTvdbId => 'TheTVDB Numerical Id';
+
+  @override
+  String get adminLabelTvdbSlug => 'TheTVDB Slug Movie Id';
+
+  @override
+  String get adminReplaceImages => 'Replace existing images';
+
+  @override
+  String get adminBackToSearch => 'Back to Search Criteria';
 }

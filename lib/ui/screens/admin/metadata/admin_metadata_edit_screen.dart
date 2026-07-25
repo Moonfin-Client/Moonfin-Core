@@ -10,6 +10,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../util/image_mime.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
+import '../../../widgets/identify_dialog.dart';
 import '../../detail/modern/widgets/details_tab_bar.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -524,128 +525,26 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
   }
 
   Future<void> _searchAndApplyRemote() async {
-    final l10n = AppLocalizations.of(context);
     final searchType = (_raw['Type'] ?? '').toString();
-    if (searchType.isEmpty) return;
-
-    final queryController =
-        TextEditingController(text: (_raw['Name'] ?? '').toString());
-    final query = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog.adaptive(
-        title: Text(l10n.adminMetadataIdentify),
-        content: TextField(
-          controller: queryController,
-          autofocus: true,
-          decoration: adminInputDecoration(label: l10n.name),
-          onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
-        ),
-        actions: [
-          adaptiveDialogAction(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, queryController.text.trim()),
-            child: Text(l10n.search),
-          ),
-        ],
-      ),
-    );
-    queryController.dispose();
-
-    if (query == null || query.isEmpty || !mounted) return;
-
-    final searchInfo = <String, dynamic>{'Name': query};
+    final name = (_raw['Name'] ?? '').toString();
     final year = int.tryParse((_raw['ProductionYear'] ?? '').toString());
-    if (year != null) searchInfo['Year'] = year;
-    final providerIds = _raw['ProviderIds'];
-    if (providerIds is Map && providerIds.isNotEmpty) {
-      searchInfo['ProviderIds'] = Map<String, dynamic>.from(providerIds);
-    }
+    final path = _raw['Path']?.toString();
+    final providerIds = _raw['ProviderIds'] is Map
+        ? Map<String, dynamic>.from(_raw['ProviderIds'])
+        : null;
 
-    try {
-      final results = await _api.searchRemote(searchType, {
-        'SearchInfo': searchInfo,
-        'ItemId': widget.itemId,
-      });
+    final applied = await IdentifyDialog.show(
+      context,
+      itemId: widget.itemId,
+      itemType: searchType,
+      itemName: name,
+      itemYear: year,
+      itemPath: path,
+      providerIds: providerIds,
+    );
 
-      if (!mounted) return;
-      if (results.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminNoRemoteMatches)),
-        );
-        return;
-      }
-
-      final selected = await showDialog<Map<String, dynamic>>(
-        context: context,
-        builder: (ctx) => AlertDialog.adaptive(
-          title: Text(l10n.adminRemoteResults),
-          content: SizedBox(
-            width: (MediaQuery.sizeOf(ctx).width - 32).clamp(280.0, 560.0),
-            height: (MediaQuery.sizeOf(ctx).height * 0.6).clamp(240.0, 520.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                final item = results[index];
-                final name = (item['Name'] ?? l10n.unknown).toString();
-                final resultYear = item['ProductionYear']?.toString();
-                final overview = (item['Overview'] ?? '').toString();
-                final provider =
-                    (item['SearchProviderName'] ?? item['ProviderName'] ?? '')
-                        .toString();
-                final imageUrl = item['ImageUrl']?.toString();
-                final subtitle = overview.isNotEmpty ? overview : provider;
-                return ListTile(
-                  leading: imageUrl != null && imageUrl.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Image.network(
-                            imageUrl,
-                            width: 40,
-                            height: 60,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
-                                const Icon(Icons.movie_outlined),
-                          ),
-                        )
-                      : const Icon(Icons.movie_outlined),
-                  title: Text(resultYear != null && resultYear.isNotEmpty
-                      ? '$name ($resultYear)'
-                      : name),
-                  subtitle: subtitle.isEmpty
-                      ? null
-                      : Text(subtitle,
-                          maxLines: 2, overflow: TextOverflow.ellipsis),
-                  isThreeLine: overview.isNotEmpty,
-                  onTap: () => Navigator.pop(ctx, item),
-                );
-              },
-            ),
-          ),
-          actions: [
-            adaptiveDialogAction(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.cancel),
-            ),
-          ],
-        ),
-      );
-
-      if (selected == null || !mounted) return;
-      await _api.applyRemoteSearchResult(widget.itemId, selected);
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminRemoteMetadataApplied)));
+    if (applied == true && mounted) {
       await _load();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminRemoteSearchFailed(e.toString()))));
     }
   }
 

@@ -8945,5 +8945,18 @@
   "watchlistUpdateFailed": "Couldn't update watchlist",
   "@watchlistUpdateFailed": {
     "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
-  }
+  },
+  "adminSearchParameters": "Search Parameters",
+  "adminCurrentMetadata": "Current Metadata",
+  "adminLabelName": "Name",
+  "adminLabelYear": "Year",
+  "adminLabelImdbId": "IMDb Id",
+  "adminLabelTmdbMovieId": "TheMovieDb Movie Id",
+  "adminLabelTmdbBoxSetId": "TheMovieDb Box Set Id",
+  "adminLabelTvdbBoxSetId": "TheTVDB Box Set Id",
+  "adminLabelTvdbId": "TheTVDB Numerical Id",
+  "adminLabelTvdbSlug": "TheTVDB Slug Movie Id",
+  "adminReplaceImages": "Replace existing images",
+  "adminApply": "Apply",
+  "adminBackToSearch": "Back to Search Criteria"
 }

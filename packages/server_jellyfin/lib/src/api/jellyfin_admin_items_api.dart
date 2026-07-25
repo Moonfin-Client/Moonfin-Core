@@ -76,9 +76,18 @@ class JellyfinAdminItemsApi implements AdminItemsApi {
     String searchType,
     Map<String, dynamic> query,
   ) async {
+    final normalized = switch (searchType.toLowerCase()) {
+      'movie' => 'Movie',
+      'series' => 'Series',
+      'boxset' => 'BoxSet',
+      'person' => 'Person',
+      'musicalbum' => 'MusicAlbum',
+      'musicartist' => 'MusicArtist',
+      _ => searchType,
+    };
     return _requestWithFallback<List<Map<String, dynamic>>>(
       methods: const ['POST'],
-      paths: ['/Items/RemoteSearch/$searchType'],
+      paths: ['/Items/RemoteSearch/$normalized', '/Items/RemoteSearch/$searchType'],
       data: query,
       convert: _asList,
     );

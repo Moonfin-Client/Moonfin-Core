@@ -18021,6 +18021,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t update watchlist'**
   String get watchlistUpdateFailed;
+
+  /// No description provided for @adminSearchParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Parameters'**
+  String get adminSearchParameters;
+
+  /// No description provided for @adminCurrentMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Metadata'**
+  String get adminCurrentMetadata;
+
+  /// No description provided for @adminLabelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get adminLabelName;
+
+  /// No description provided for @adminLabelYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get adminLabelYear;
+
+  /// No description provided for @adminLabelImdbId.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Id'**
+  String get adminLabelImdbId;
+
+  /// No description provided for @adminLabelTmdbMovieId.
+  ///
+  /// In en, this message translates to:
+  /// **'TheMovieDb Movie Id'**
+  String get adminLabelTmdbMovieId;
+
+  /// No description provided for @adminLabelTmdbBoxSetId.
+  ///
+  /// In en, this message translates to:
+  /// **'TheMovieDb Box Set Id'**
+  String get adminLabelTmdbBoxSetId;
+
+  /// No description provided for @adminLabelTvdbBoxSetId.
+  ///
+  /// In en, this message translates to:
+  /// **'TheTVDB Box Set Id'**
+  String get adminLabelTvdbBoxSetId;
+
+  /// No description provided for @adminLabelTvdbId.
+  ///
+  /// In en, this message translates to:
+  /// **'TheTVDB Numerical Id'**
+  String get adminLabelTvdbId;
+
+  /// No description provided for @adminLabelTvdbSlug.
+  ///
+  /// In en, this message translates to:
+  /// **'TheTVDB Slug Movie Id'**
+  String get adminLabelTvdbSlug;
+
+  /// No description provided for @adminReplaceImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace existing images'**
+  String get adminReplaceImages;
+
+  /// No description provided for @adminBackToSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Search Criteria'**
+  String get adminBackToSearch;
 }
 
 class _AppLocalizationsDelegate

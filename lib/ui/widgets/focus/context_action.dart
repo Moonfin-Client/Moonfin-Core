@@ -13,6 +13,7 @@ import '../../navigation/destinations.dart';
 import '../add_to_collection_dialog.dart';
 import '../add_to_playlist_dialog.dart';
 import '../change_artwork_dialog.dart';
+import '../identify_dialog.dart';
 
 class ItemContextAction {
   final IconData icon;
@@ -199,6 +200,32 @@ List<ItemContextAction> contextActionsFor(
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(l10n.adminMetadataRefreshFailed('$e'))),
             );
+          }
+        },
+      ));
+
+      actions.add(ItemContextAction(
+        icon: Icons.search_outlined,
+        label: l10n.adminMetadataIdentify,
+        onSelect: () async {
+          if (!context.mounted) return;
+          final isTVChild = item.type == 'Episode' || item.type == 'Season';
+          final hasSeriesId = item.seriesId != null && item.seriesId!.isNotEmpty;
+          final targetItemId = (isTVChild && hasSeriesId) ? item.seriesId! : item.id;
+          final targetItemType = (isTVChild && hasSeriesId) ? 'Series' : item.type;
+          final targetItemName = (isTVChild && hasSeriesId)
+              ? (item.seriesName ?? item.name)
+              : item.name;
+
+          final applied = await IdentifyDialog.show(
+            context,
+            itemId: targetItemId,
+            itemType: targetItemType,
+            itemName: targetItemName,
+            itemYear: isTVChild ? null : item.productionYear,
+          );
+          if (applied == true) {
+            onChanged?.call();
           }
         },
       ));

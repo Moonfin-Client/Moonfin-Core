@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import '../../widgets/offline_aware_image.dart';
+import '../../widgets/identify_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6572,10 +6573,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 onKeyEvent: (_, event) {
                   if (isActivateKey(event)) {
                     Navigator.of(dialogCtx).pop();
-                    ChangeArtworkDialog.show(context, item: item).then((
-                      changed,
-                    ) {
-                      if (changed == true) {
+                    IdentifyDialog.show(
+                      context,
+                      itemId: item.id,
+                      itemType: item.type,
+                      itemName: item.name,
+                      itemYear: item.productionYear,
+                    ).then((applied) {
+                      if (applied == true) {
                         viewModel.load();
                       }
                     });
@@ -6589,11 +6594,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                     return InkWell(
                       onTap: () async {
                         Navigator.of(dialogCtx).pop();
-                        final changed = await ChangeArtworkDialog.show(
+                        final applied = await IdentifyDialog.show(
                           context,
-                          item: item,
+                          itemId: item.id,
+                          itemType: item.type,
+                          itemName: item.name,
+                          itemYear: item.productionYear,
                         );
-                        if (changed == true) {
+                        if (applied == true) {
                           viewModel.load();
                         }
                       },
@@ -6608,10 +6616,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.image, color: Colors.white70),
+                            const Icon(Icons.search, color: Colors.white70),
                             const SizedBox(width: 12),
                             Text(
-                              l10n.changeArtwork,
+                              l10n.adminMetadataIdentify,
                               style: const TextStyle(color: Colors.white),
                             ),
                           ],
@@ -6668,6 +6676,59 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                     },
                   ),
                 ),
+              Focus(
+                onKeyEvent: (_, event) {
+                  if (isActivateKey(event)) {
+                    Navigator.of(dialogCtx).pop();
+                    ChangeArtworkDialog.show(context, item: item).then((
+                      changed,
+                    ) {
+                      if (changed == true) {
+                        viewModel.load();
+                      }
+                    });
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: Builder(
+                  builder: (buttonCtx) {
+                    final hasFocus = Focus.of(buttonCtx).hasFocus;
+                    return InkWell(
+                      onTap: () async {
+                        Navigator.of(dialogCtx).pop();
+                        final changed = await ChangeArtworkDialog.show(
+                          context,
+                          item: item,
+                        );
+                        if (changed == true) {
+                          viewModel.load();
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: hasFocus ? Colors.white12 : Colors.transparent,
+                          borderRadius: AppRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.image, color: Colors.white70),
+                            const SizedBox(width: 12),
+                            Text(
+                              l10n.changeArtwork,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
               if (item.canDelete)
                 Focus(
                   onKeyEvent: (_, event) {
