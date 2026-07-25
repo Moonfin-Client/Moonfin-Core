@@ -130,7 +130,7 @@ ARCHIVE_CMD=(
   archive
 )
 if [ "$UNSIGNED" = "1" ]; then
-  ARCHIVE_CMD+=( CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO )
+  ARCHIVE_CMD+=( CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="-" )
 else
   ARCHIVE_CMD+=( CODE_SIGN_STYLE=Automatic )
   if [ -n "$TEAM_ID" ]; then
