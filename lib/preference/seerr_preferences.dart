@@ -134,7 +134,9 @@ class SeerrPreferences {
     final sections = HomeSectionConfig.fromJsonString(sectionsJson);
     return SeerrRowConfig.defaults().map((row) {
       final idx = sections.indexWhere((s) => s.type == row.type.homeSectionType);
-      return idx >= 0 ? row.copyWith(enabled: sections[idx].enabled) : row;
+      return idx >= 0
+          ? row.copyWith(enabled: sections[idx].enabled)
+          : row.copyWith(enabled: false);
     }).toList();
   }
 
@@ -143,7 +145,7 @@ class SeerrPreferences {
     if (seerrType == null || !enabled) return false;
     final config = homeRowsConfig.firstWhere(
       (c) => c.type == seerrType,
-      orElse: () => SeerrRowConfig(type: seerrType, enabled: true, order: 0),
+      orElse: () => SeerrRowConfig(type: seerrType, enabled: false, order: 0),
     );
     return config.enabled;
   }
