@@ -56,7 +56,7 @@ class UserViewsRepository extends ChangeNotifier {
       ).whenComplete(() => _inFlightViewsIncludingHidden = null);
 
   Future<List<AggregatedLibrary>> getUserViews() async {
-    final views = await getAllViews();
+    final views = await getAllViewsIncludingHidden();
     try {
       final config = await _getUserConfig();
       final excludes = config.myMediaExcludes.toSet();

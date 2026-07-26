@@ -679,7 +679,7 @@ class RowDataSource {
     String serverId, [
     HomeRowType rowType = HomeRowType.libraryTiles,
   ]) async {
-    final viewsFuture = _client.userViewsApi.getUserViews();
+    final viewsFuture = _client.userViewsApi.getUserViews(includeHidden: true);
     final configFuture = _client.usersApi
         .getUserConfiguration()
         .then<Set<String>>((config) => config.myMediaExcludes.toSet())

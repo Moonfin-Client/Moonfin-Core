@@ -165,7 +165,8 @@ class MultiServerRepository {
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
-          final viewsFuture = session.client.userViewsApi.getUserViews();
+          final viewsFuture =
+              session.client.userViewsApi.getUserViews(includeHidden: true);
           final configFuture = session.client.usersApi
               .getUserConfiguration()
               .then<Set<String>>((config) => config.myMediaExcludes.toSet())
