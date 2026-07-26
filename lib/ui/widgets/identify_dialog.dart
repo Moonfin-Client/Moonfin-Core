@@ -1,15 +1,16 @@
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../../util/platform_detection.dart';
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_button.dart';
+import 'overlay_sheet.dart';
 
 class IdentifyDialog extends StatefulWidget {
   final String itemId;
@@ -38,7 +39,7 @@ class IdentifyDialog extends StatefulWidget {
     String? itemPath,
     Map<String, dynamic>? providerIds,
   }) {
-    return showDialog<bool>(
+    return showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => IdentifyDialog(
         itemId: itemId,
@@ -56,11 +57,16 @@ class IdentifyDialog extends StatefulWidget {
 }
 
 class _IdentifyDialogState extends State<IdentifyDialog> {
+  /// Every focus node list and the d-pad wrap-around logic is sized off this.
+  static const int _fieldCount = 8;
+  static const int _lastFieldIndex = _fieldCount - 1;
+
   late final AdminItemsApi _adminApi;
   late final ItemsApi _itemsApi;
   late final UserPreferences _prefs;
 
   bool _loadingItem = false;
+  String? _loadError;
   bool _searching = false;
   bool _applying = false;
 
@@ -70,7 +76,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
 
   List<Map<String, dynamic>>? _searchResults;
 
-  // Reference Metadata Values (Current Item)
+  // What the item currently has, shown next to each search field.
   String? _refName;
   String? _refYear;
   String? _refImdb;
@@ -80,31 +86,32 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
   String? _refTvdbId;
   String? _refTvdbSlug;
 
-  // Editable Search Parameter Controllers (Blank by default)
-  late final TextEditingController _nameController;
-  late final TextEditingController _yearController;
-  late final TextEditingController _imdbController;
-  late final TextEditingController _tmdbMovieController;
-  late final TextEditingController _tmdbBoxSetController;
-  late final TextEditingController _tvdbBoxSetController;
-  late final TextEditingController _tvdbIdController;
-  late final TextEditingController _tvdbSlugController;
+  // The search fields start blank so a search only uses what the admin types.
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _yearController = TextEditingController();
+  final TextEditingController _imdbController = TextEditingController();
+  final TextEditingController _tmdbMovieController = TextEditingController();
+  final TextEditingController _tmdbBoxSetController = TextEditingController();
+  final TextEditingController _tvdbBoxSetController = TextEditingController();
+  final TextEditingController _tvdbIdController = TextEditingController();
+  final TextEditingController _tvdbSlugController = TextEditingController();
 
-  // FocusNodes and ScrollController for TV Navigation
   final ScrollController _scrollController = ScrollController();
 
   final FocusNode _closeButtonFocusNode = FocusNode(debugLabel: 'identify-close-btn');
   final FocusNode _cancelButtonFocusNode = FocusNode(debugLabel: 'identify-cancel-btn');
   final FocusNode _searchButtonFocusNode = FocusNode(debugLabel: 'identify-search-btn');
 
-  final List<FocusNode> _fieldFocusNodes =
-      List.generate(8, (i) => FocusNode(debugLabel: 'identify-field-$i'));
-  final List<FocusNode> _arrowFocusNodes =
-      List.generate(8, (i) => FocusNode(debugLabel: 'identify-arrow-$i'));
+  final List<FocusNode> _fieldFocusNodes = List.generate(
+      _fieldCount, (i) => FocusNode(debugLabel: 'identify-field-$i'));
+  final List<FocusNode> _arrowFocusNodes = List.generate(
+      _fieldCount, (i) => FocusNode(debugLabel: 'identify-arrow-$i'));
   final List<GlobalKey<CustomTVTextFieldState>> _tvFieldKeys =
-      List.generate(8, (_) => GlobalKey<CustomTVTextFieldState>());
+      List.generate(_fieldCount, (_) => GlobalKey<CustomTVTextFieldState>());
 
   List<FocusNode>? _resultFocusNodes;
+
+  bool get _isTV => PlatformDetection.isTV;
 
   @override
   void initState() {
@@ -115,8 +122,11 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     _prefs = GetIt.instance<UserPreferences>();
 
     _targetItemId = widget.itemId;
-    final isTVChild = widget.itemType == 'Episode' || widget.itemType == 'Season';
-    _searchType = isTVChild ? 'Series' : (widget.itemType ?? 'Movie');
+    final itemType = widget.itemType?.trim();
+    final isTVChild = itemType == 'Episode' || itemType == 'Season';
+    _searchType = isTVChild
+        ? 'Series'
+        : (itemType == null || itemType.isEmpty ? 'Movie' : itemType);
     _path = widget.itemPath;
 
     final initialProviders = widget.providerIds ?? const {};
@@ -132,18 +142,8 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       _refTvdbSlug = initialProviders['TvdbSlug']?.toString();
     }
 
-    // Search controllers start BLANK by default
-    _nameController = TextEditingController(text: '');
-    _yearController = TextEditingController(text: '');
-    _imdbController = TextEditingController(text: '');
-    _tmdbMovieController = TextEditingController(text: '');
-    _tmdbBoxSetController = TextEditingController(text: '');
-    _tvdbBoxSetController = TextEditingController(text: '');
-    _tvdbIdController = TextEditingController(text: '');
-    _tvdbSlugController = TextEditingController(text: '');
-
-    // Add listeners to auto-scroll focused rows into the visible viewport on TV
-    for (int i = 0; i < 8; i++) {
+    // Keep the focused row on screen while the d-pad walks down the form.
+    for (int i = 0; i < _fieldCount; i++) {
       final idx = i;
       _fieldFocusNodes[idx].addListener(() {
         if (_fieldFocusNodes[idx].hasFocus) {
@@ -157,14 +157,13 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       });
     }
 
-    _fetchItemDetailsIfNeeded();
+    _loadItemDetails();
   }
 
   void _closeDialog([bool? result]) {
+    if (!mounted) return;
     FocusScope.of(context).unfocus();
-    if (mounted) {
-      Navigator.of(context).pop(result);
-    }
+    Navigator.of(context).pop(result);
   }
 
   @override
@@ -197,22 +196,41 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       fn.unfocus();
       fn.dispose();
     }
-    _clearResultFocusNodes();
+    _disposeNodes(_resultFocusNodes);
+    _resultFocusNodes = null;
     super.dispose();
   }
 
-  void _clearResultFocusNodes() {
-    if (_resultFocusNodes != null) {
-      for (final fn in _resultFocusNodes!) {
-        fn.unfocus();
-        fn.dispose();
-      }
-      _resultFocusNodes = null;
+  static void _disposeNodes(List<FocusNode>? nodes) {
+    if (nodes == null) return;
+    for (final fn in nodes) {
+      fn.unfocus();
+      fn.dispose();
     }
   }
 
+  /// Disposes the result focus nodes only after the frame that takes the result
+  /// cards off screen. Disposing them inline would leave the still mounted
+  /// [Focus] widgets holding dead nodes, which throws on the next detach.
+  void _releaseResultFocusNodes() {
+    final stale = _resultFocusNodes;
+    _resultFocusNodes = null;
+    if (stale == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _disposeNodes(stale));
+  }
+
+  void _backToSearchForm() {
+    setState(() => _searchResults = null);
+    _releaseResultFocusNodes();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _isTV) {
+        _fieldFocusNodes.first.requestFocus();
+      }
+    });
+  }
+
   void _setupResultFocusNodes(int count) {
-    _clearResultFocusNodes();
+    _releaseResultFocusNodes();
     _resultFocusNodes =
         List.generate(count, (i) => FocusNode(debugLabel: 'identify-result-$i'));
     for (int i = 0; i < count; i++) {
@@ -258,19 +276,24 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     });
   }
 
-  Future<void> _fetchItemDetailsIfNeeded() async {
-    setState(() => _loadingItem = true);
+  Future<void> _loadItemDetails() async {
+    setState(() {
+      _loadingItem = true;
+      _loadError = null;
+    });
     try {
       var raw = await _itemsApi.getItem(widget.itemId);
 
       if ((raw['Type'] == 'Episode' || raw['Type'] == 'Season') &&
           raw['SeriesId'] != null &&
           raw['SeriesId'].toString().isNotEmpty) {
-        _targetItemId = raw['SeriesId'].toString();
-        _searchType = 'Series';
-        try {
-          raw = await _itemsApi.getItem(_targetItemId);
-        } catch (_) {}
+        final seriesId = raw['SeriesId'].toString();
+        // Episodes and seasons are identified through their series, but only
+        // switch targets once that series has actually loaded, otherwise the
+        // series id would end up paired with episode metadata.
+        final series = await _itemsApi.getItem(seriesId);
+        _targetItemId = seriesId;
+        raw = series;
       }
 
       if (!mounted) return;
@@ -293,12 +316,29 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
           _refTvdbSlug = pIds['TvdbSlug']?.toString();
         }
       });
-    } catch (_) {
+    } catch (e) {
+      // Searching by hand still works without reference values, so say what
+      // went wrong instead of leaving the current metadata column blank.
+      if (mounted) {
+        setState(() => _loadError = '$e');
+      }
     } finally {
       if (mounted) {
         setState(() => _loadingItem = false);
       }
     }
+  }
+
+  Future<List<Map<String, dynamic>>> _searchRemote(
+    Map<String, dynamic> searchInfo, {
+    String? providerName,
+  }) {
+    return _adminApi.searchRemote(_searchType, <String, dynamic>{
+      'SearchInfo': searchInfo,
+      'ItemId': _targetItemId,
+      'IncludeDisabledProviders': false,
+      'SearchProviderName': ?providerName,
+    });
   }
 
   Future<void> _performSearch() async {
@@ -311,6 +351,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     final nameVal = _nameController.text.trim();
     final yearVal = int.tryParse(_yearController.text.trim());
 
+    // Provider ids are matched case insensitively, so one casing each is enough.
     final providerIds = <String, String>{};
 
     var imdbVal = _imdbController.text.trim();
@@ -319,40 +360,31 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
         imdbVal = 'tt$imdbVal';
       }
       providerIds['Imdb'] = imdbVal;
-      providerIds['IMDb'] = imdbVal;
-      providerIds['imdb'] = imdbVal;
     }
 
     final tmdbVal = _tmdbMovieController.text.trim();
     if (tmdbVal.isNotEmpty) {
       providerIds['Tmdb'] = tmdbVal;
-      providerIds['TMDB'] = tmdbVal;
-      providerIds['tmdb'] = tmdbVal;
     }
 
     final tmdbBoxSetVal = _tmdbBoxSetController.text.trim();
     if (tmdbBoxSetVal.isNotEmpty) {
       providerIds['TmdbBoxSet'] = tmdbBoxSetVal;
-      providerIds['TMDBBoxSet'] = tmdbBoxSetVal;
     }
 
     final tvdbBoxSetVal = _tvdbBoxSetController.text.trim();
     if (tvdbBoxSetVal.isNotEmpty) {
       providerIds['TvdbBoxSet'] = tvdbBoxSetVal;
-      providerIds['TVDBBoxSet'] = tvdbBoxSetVal;
     }
 
     final tvdbVal = _tvdbIdController.text.trim();
     if (tvdbVal.isNotEmpty) {
       providerIds['Tvdb'] = tvdbVal;
-      providerIds['TVDB'] = tvdbVal;
-      providerIds['tvdb'] = tvdbVal;
     }
 
     final tvdbSlugVal = _tvdbSlugController.text.trim();
     if (tvdbSlugVal.isNotEmpty) {
       providerIds['TvdbSlug'] = tvdbSlugVal;
-      providerIds['TVDBSlug'] = tvdbSlugVal;
     }
 
     final searchInfo = <String, dynamic>{
@@ -361,60 +393,33 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       if (providerIds.isNotEmpty) 'ProviderIds': providerIds,
     };
 
-    debugPrint('--> [IdentifyRemoteSearch] Executing search for $_searchType | ItemId: $_targetItemId');
-    debugPrint('--> [IdentifyRemoteSearch] SearchInfo: $searchInfo');
-
     try {
-      List<Map<String, dynamic>> results = await _adminApi.searchRemote(_searchType, {
-        'SearchInfo': searchInfo,
-        'ItemId': _targetItemId,
-        'IncludeDisabledProviders': false,
-      });
+      List<Map<String, dynamic>> results = await _searchRemote(searchInfo);
 
-      // Fallback 1: If TMDB/IMDb is present, try setting explicit SearchProviderName
-      if (results.isEmpty && (providerIds.containsKey('Tmdb') || providerIds.containsKey('Imdb'))) {
-        final altInfoProvider = <String, dynamic>{
-          ...searchInfo,
-          'SearchProviderName': 'TheMovieDb',
-        };
-        debugPrint('--> [IdentifyRemoteSearch] Retry with SearchProviderName: TheMovieDb');
-        results = await _adminApi.searchRemote(_searchType, {
-          'SearchInfo': altInfoProvider,
-          'ItemId': _targetItemId,
-          'IncludeDisabledProviders': false,
-        });
+      // Pin the search to TheMovieDb when a TMDB or IMDb id was given. Note
+      // that SearchProviderName belongs on the query, not inside SearchInfo.
+      if (results.isEmpty &&
+          (providerIds.containsKey('Tmdb') || providerIds.containsKey('Imdb'))) {
+        results = await _searchRemote(searchInfo, providerName: 'TheMovieDb');
       }
 
-      // Fallback 2: Try ProviderIds alone without Name
+      // Retry on the ids alone, in case the typed name blocked the match.
       if (results.isEmpty && providerIds.isNotEmpty && nameVal.isNotEmpty) {
-        final altInfoA = <String, dynamic>{
+        results = await _searchRemote(<String, dynamic>{
           'Name': '',
           'Year': ?yearVal,
           'ProviderIds': providerIds,
-        };
-        debugPrint('--> [IdentifyRemoteSearch] Retry with ProviderIds alone (empty Name)');
-        results = await _adminApi.searchRemote(_searchType, {
-          'SearchInfo': altInfoA,
-          'ItemId': _targetItemId,
-          'IncludeDisabledProviders': false,
         });
       }
 
-      // Fallback 3: Try Name (+ Year) alone
+      // Last resort, drop the ids and search on name and year only.
       if (results.isEmpty && nameVal.isNotEmpty) {
-        final altInfoB = <String, dynamic>{
+        results = await _searchRemote(<String, dynamic>{
           'Name': nameVal,
           'Year': ?yearVal,
-        };
-        debugPrint('--> [IdentifyRemoteSearch] Retry with Name + Year alone');
-        results = await _adminApi.searchRemote(_searchType, {
-          'SearchInfo': altInfoB,
-          'ItemId': _targetItemId,
-          'IncludeDisabledProviders': false,
         });
       }
 
-      debugPrint('<-- [IdentifyRemoteSearch] Results received: ${results.length}');
       if (!mounted) return;
 
       if (results.isEmpty) {
@@ -446,10 +451,11 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
   }
 
   Future<void> _applyResult(Map<String, dynamic> result) async {
+    if (_applying) return;
     final l10n = AppLocalizations.of(context);
     bool replaceAllImages = true;
 
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog.adaptive(
@@ -507,11 +513,15 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       ),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted || _applying) return;
 
     setState(() => _applying = true);
     try {
-      await _adminApi.applyRemoteSearchResult(_targetItemId, result);
+      await _adminApi.applyRemoteSearchResult(
+        _targetItemId,
+        result,
+        replaceAllImages: replaceAllImages,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.adminRemoteMetadataApplied)),
@@ -549,16 +559,12 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Dialog Header
               Row(
                 children: [
                   if (_searchResults != null)
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        _clearResultFocusNodes();
-                        setState(() => _searchResults = null);
-                      },
+                      onPressed: _backToSearchForm,
                       tooltip: l10n.adminBackToSearch,
                     ),
                   Expanded(
@@ -569,72 +575,64 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                       style: theme.textTheme.headlineSmall,
                     ),
                   ),
-                  // Requirement 1 & 2: Pronounced X focus & Down navigation & Select/Enter pop
                   Focus(
                     focusNode: _closeButtonFocusNode,
                     onKeyEvent: (_, event) {
-                      if (event is KeyDownEvent) {
-                        final key = event.logicalKey;
-                        if (key == LogicalKeyboardKey.select ||
-                            key == LogicalKeyboardKey.enter ||
-                            key == LogicalKeyboardKey.gameButtonA ||
-                            key == LogicalKeyboardKey.space) {
-                          _closeDialog(false);
-                          return KeyEventResult.handled;
+                      if (!event.isActionable) return KeyEventResult.ignored;
+                      final key = event.logicalKey;
+                      if (key.isSelectKey) {
+                        _closeDialog(false);
+                        return KeyEventResult.handled;
+                      }
+                      if (_isTV && key.isDownKey) {
+                        if (_searchResults != null &&
+                            _resultFocusNodes != null &&
+                            _resultFocusNodes!.isNotEmpty) {
+                          _resultFocusNodes![0].requestFocus();
+                        } else {
+                          _fieldFocusNodes[0].requestFocus();
                         }
-                        if (key == LogicalKeyboardKey.arrowDown) {
-                          if (_searchResults != null &&
-                              _resultFocusNodes != null &&
-                              _resultFocusNodes!.isNotEmpty) {
-                            _resultFocusNodes![0].requestFocus();
-                          } else {
-                            _arrowFocusNodes[0].requestFocus();
-                          }
-                          return KeyEventResult.handled;
-                        }
+                        return KeyEventResult.handled;
                       }
                       return KeyEventResult.ignored;
                     },
                     child: Builder(
                       builder: (btnCtx) {
                         final hasFocus = Focus.of(btnCtx).hasFocus;
-                        return GestureDetector(
+                        return InkWell(
                           onTap: () => _closeDialog(false),
-                          child: InkWell(
-                            onTap: () => _closeDialog(false),
-                            borderRadius: AppRadius.circular(20),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 150),
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: hasFocus
-                                    ? theme.colorScheme.primary.withValues(alpha: 0.25)
-                                    : Colors.transparent,
-                                border: Border.all(
-                                  color: hasFocus
-                                      ? theme.colorScheme.primary
-                                      : Colors.transparent,
-                                  width: 2.5,
-                                ),
-                                boxShadow: hasFocus
-                                    ? [
-                                        BoxShadow(
-                                          color: theme.colorScheme.primary
-                                              .withValues(alpha: 0.6),
-                                          blurRadius: 10,
-                                          spreadRadius: 2,
-                                        )
-                                      ]
-                                    : null,
-                              ),
-                              child: Icon(
-                                Icons.close,
+                          borderRadius: AppRadius.circular(20),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: hasFocus
+                                  ? theme.colorScheme.primary.withValues(alpha: 0.25)
+                                  : Colors.transparent,
+                              border: Border.all(
                                 color: hasFocus
                                     ? theme.colorScheme.primary
-                                    : theme.colorScheme.onSurface,
-                                size: 20,
+                                    : Colors.transparent,
+                                width: 2.5,
                               ),
+                              boxShadow: hasFocus
+                                  ? [
+                                      BoxShadow(
+                                        color: theme.colorScheme.primary
+                                            .withValues(alpha: 0.6),
+                                        blurRadius: 10,
+                                        spreadRadius: 2,
+                                      )
+                                    ]
+                                  : null,
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              color: hasFocus
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface,
+                              size: 20,
                             ),
                           ),
                         );
@@ -645,7 +643,6 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
               ),
               const Divider(height: 12),
 
-              // Dialog Body
               Expanded(
                 child: _loadingItem || _applying
                     ? const Center(child: CircularProgressIndicator())
@@ -654,7 +651,6 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                         : _buildSearchForm(context),
               ),
 
-              // Requirement 5: Compact Button Bar
               if (_searchResults == null) ...[
                 Padding(
                   padding: const EdgeInsets.only(top: 4, bottom: 2),
@@ -664,23 +660,22 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                       Focus(
                         focusNode: _cancelButtonFocusNode,
                         onKeyEvent: (_, event) {
-                          if (event is KeyDownEvent) {
-                            final key = event.logicalKey;
-                            if (key == LogicalKeyboardKey.select ||
-                                key == LogicalKeyboardKey.enter ||
-                                key == LogicalKeyboardKey.gameButtonA ||
-                                key == LogicalKeyboardKey.space) {
-                              _closeDialog(false);
-                              return KeyEventResult.handled;
-                            }
-                            if (key == LogicalKeyboardKey.arrowUp) {
-                              _fieldFocusNodes[7].requestFocus();
-                              return KeyEventResult.handled;
-                            }
-                            if (key == LogicalKeyboardKey.arrowRight) {
-                              _searchButtonFocusNode.requestFocus();
-                              return KeyEventResult.handled;
-                            }
+                          if (!event.isActionable) {
+                            return KeyEventResult.ignored;
+                          }
+                          final key = event.logicalKey;
+                          if (key.isSelectKey) {
+                            _closeDialog(false);
+                            return KeyEventResult.handled;
+                          }
+                          if (!_isTV) return KeyEventResult.ignored;
+                          if (key.isUpKey) {
+                            _fieldFocusNodes[_lastFieldIndex].requestFocus();
+                            return KeyEventResult.handled;
+                          }
+                          if (key.isRightKey) {
+                            _searchButtonFocusNode.requestFocus();
+                            return KeyEventResult.handled;
                           }
                           return KeyEventResult.ignored;
                         },
@@ -709,23 +704,22 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                       Focus(
                         focusNode: _searchButtonFocusNode,
                         onKeyEvent: (_, event) {
-                          if (event is KeyDownEvent) {
-                            final key = event.logicalKey;
-                            if (key == LogicalKeyboardKey.select ||
-                                key == LogicalKeyboardKey.enter ||
-                                key == LogicalKeyboardKey.gameButtonA ||
-                                key == LogicalKeyboardKey.space) {
-                              if (!_searching) _performSearch();
-                              return KeyEventResult.handled;
-                            }
-                            if (key == LogicalKeyboardKey.arrowUp) {
-                              _arrowFocusNodes[7].requestFocus();
-                              return KeyEventResult.handled;
-                            }
-                            if (key == LogicalKeyboardKey.arrowLeft) {
-                              _cancelButtonFocusNode.requestFocus();
-                              return KeyEventResult.handled;
-                            }
+                          if (!event.isActionable) {
+                            return KeyEventResult.ignored;
+                          }
+                          final key = event.logicalKey;
+                          if (key.isSelectKey) {
+                            if (!_searching) _performSearch();
+                            return KeyEventResult.handled;
+                          }
+                          if (!_isTV) return KeyEventResult.ignored;
+                          if (key.isUpKey) {
+                            _arrowFocusNodes[_lastFieldIndex].requestFocus();
+                            return KeyEventResult.handled;
+                          }
+                          if (key.isLeftKey) {
+                            _cancelButtonFocusNode.requestFocus();
+                            return KeyEventResult.handled;
                           }
                           return KeyEventResult.ignored;
                         },
@@ -768,14 +762,54 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     );
   }
 
+  /// The form rows in d-pad order. Position matters because the focus nodes are
+  /// keyed off it.
+  List<_IdentifyField> _searchFields(AppLocalizations l10n) => [
+        _IdentifyField(l10n.name, _nameController, _refName),
+        _IdentifyField(l10n.adminLabelYear, _yearController, _refYear,
+            keyboardType: TextInputType.number),
+        _IdentifyField(l10n.adminLabelImdbId, _imdbController, _refImdb),
+        _IdentifyField(
+            l10n.adminLabelTmdbMovieId, _tmdbMovieController, _refTmdbMovie),
+        _IdentifyField(
+            l10n.adminLabelTmdbBoxSetId, _tmdbBoxSetController, _refTmdbBoxSet),
+        _IdentifyField(
+            l10n.adminLabelTvdbBoxSetId, _tvdbBoxSetController, _refTvdbBoxSet),
+        _IdentifyField(l10n.adminLabelTvdbId, _tvdbIdController, _refTvdbId),
+        _IdentifyField(
+            l10n.adminLabelTvdbSlug, _tvdbSlugController, _refTvdbSlug),
+      ];
+
   Widget _buildSearchForm(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final fields = _searchFields(l10n);
+    assert(fields.length == _fieldCount);
     return SingleChildScrollView(
       controller: _scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (_loadError != null) ...[
+            Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    size: 18, color: theme.colorScheme.error),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.adminMetadataLoadFailed(_loadError!),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
           if (_path != null && _path!.isNotEmpty) ...[
             Container(
               width: double.infinity,
@@ -785,7 +819,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                 borderRadius: AppRadius.circular(8),
               ),
               child: SelectableText(
-                'Path: $_path',
+                '${l10n.path}: $_path',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontFamily: 'monospace',
                   color: theme.colorScheme.onSurfaceVariant,
@@ -795,7 +829,6 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
             const SizedBox(height: 12),
           ],
 
-          // Column Headers
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(
@@ -810,7 +843,8 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 48), // Arrow button spacing
+                // Matches the arrow column: 6px gap + 30px button + 6px gap.
+                const SizedBox(width: 42),
                 Expanded(
                   flex: 2,
                   child: Text(
@@ -825,217 +859,166 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
             ),
           ),
 
-          _buildFieldRow(
-            index: 0,
-            label: l10n.adminLabelName,
-            controller: _nameController,
-            referenceValue: _refName,
-          ),
-          _buildFieldRow(
-            index: 1,
-            label: l10n.adminLabelYear,
-            controller: _yearController,
-            referenceValue: _refYear,
-            keyboardType: TextInputType.number,
-          ),
-          _buildFieldRow(
-            index: 2,
-            label: l10n.adminLabelImdbId,
-            controller: _imdbController,
-            referenceValue: _refImdb,
-          ),
-          _buildFieldRow(
-            index: 3,
-            label: l10n.adminLabelTmdbMovieId,
-            controller: _tmdbMovieController,
-            referenceValue: _refTmdbMovie,
-          ),
-          _buildFieldRow(
-            index: 4,
-            label: l10n.adminLabelTmdbBoxSetId,
-            controller: _tmdbBoxSetController,
-            referenceValue: _refTmdbBoxSet,
-          ),
-          _buildFieldRow(
-            index: 5,
-            label: l10n.adminLabelTvdbBoxSetId,
-            controller: _tvdbBoxSetController,
-            referenceValue: _refTvdbBoxSet,
-          ),
-          _buildFieldRow(
-            index: 6,
-            label: l10n.adminLabelTvdbId,
-            controller: _tvdbIdController,
-            referenceValue: _refTvdbId,
-          ),
-          _buildFieldRow(
-            index: 7,
-            label: l10n.adminLabelTvdbSlug,
-            controller: _tvdbSlugController,
-            referenceValue: _refTvdbSlug,
-          ),
+          for (var i = 0; i < fields.length; i++) _buildFieldRow(i, fields[i]),
         ],
       ),
     );
   }
 
-  Widget _buildFieldRow({
-    required int index,
-    required String label,
-    required TextEditingController controller,
-    required String? referenceValue,
-    TextInputType? keyboardType,
-  }) {
+  Widget _buildFieldRow(int index, _IdentifyField field) {
     final theme = Theme.of(context);
-    final hasReference = referenceValue != null && referenceValue.trim().isNotEmpty;
+    final label = field.label;
+    final controller = field.controller;
+    final keyboardType = field.keyboardType;
+    final reference = field.reference?.trim();
+    final hasReference = reference != null && reference.isNotEmpty;
     final fieldFocusNode = _fieldFocusNodes[index];
     final arrowFocusNode = _arrowFocusNodes[index];
     final tvFieldKey = _tvFieldKeys[index];
+    void pullReference() {
+      if (hasReference) setState(() => controller.text = reference);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Left Column: Search Input Field (Uses CustomTVTextField on TV)
+          // Only TV gets the d-pad wrapper. Anywhere else a handler that
+          // swallows space and the arrows would stop them reaching the text
+          // input, so the field would refuse spaces and the caret couldn't move.
           Expanded(
             flex: 3,
-            child: Focus(
-              focusNode: fieldFocusNode,
-              onKeyEvent: (_, event) {
-                if (event is KeyDownEvent) {
-                  final key = event.logicalKey;
-                  if (key == LogicalKeyboardKey.select ||
-                      key == LogicalKeyboardKey.enter ||
-                      key == LogicalKeyboardKey.gameButtonA ||
-                      key == LogicalKeyboardKey.space) {
-                    if (!fieldFocusNode.hasFocus) {
-                      fieldFocusNode.requestFocus();
-                    }
-                    tvFieldKey.currentState?.openKeyboard();
-                    return KeyEventResult.handled;
-                  }
-                  if (key == LogicalKeyboardKey.arrowRight) {
-                    arrowFocusNode.requestFocus();
-                    return KeyEventResult.handled;
-                  }
-                  if (key == LogicalKeyboardKey.arrowDown) {
-                    if (index < 7) {
-                      _fieldFocusNodes[index + 1].requestFocus();
-                    } else {
-                      _cancelButtonFocusNode.requestFocus();
-                    }
-                    return KeyEventResult.handled;
-                  }
-                  if (key == LogicalKeyboardKey.arrowUp) {
-                    if (index > 0) {
-                      _fieldFocusNodes[index - 1].requestFocus();
-                    } else {
-                      _closeButtonFocusNode.requestFocus();
-                    }
-                    return KeyEventResult.handled;
-                  }
-                }
-                return KeyEventResult.ignored;
-              },
-              child: ListenableBuilder(
-                listenable: fieldFocusNode,
-                builder: (ctx, _) {
-                  if (PlatformDetection.isTV) {
-                    final preferSystemIme =
-                        _prefs.get(UserPreferences.preferSystemImeKeyboard);
-                    return GestureDetector(
-                      onTap: () {
+            child: _isTV
+                ? Focus(
+                    focusNode: fieldFocusNode,
+                    onKeyEvent: (_, event) {
+                      if (!event.isActionable) return KeyEventResult.ignored;
+                      final key = event.logicalKey;
+                      if (key.isSelectKey) {
                         if (!fieldFocusNode.hasFocus) {
                           fieldFocusNode.requestFocus();
                         }
                         tvFieldKey.currentState?.openKeyboard();
+                        return KeyEventResult.handled;
+                      }
+                      if (key.isRightKey) {
+                        arrowFocusNode.requestFocus();
+                        return KeyEventResult.handled;
+                      }
+                      if (key.isDownKey) {
+                        if (index < _lastFieldIndex) {
+                          _fieldFocusNodes[index + 1].requestFocus();
+                        } else {
+                          _cancelButtonFocusNode.requestFocus();
+                        }
+                        return KeyEventResult.handled;
+                      }
+                      if (key.isUpKey) {
+                        if (index > 0) {
+                          _fieldFocusNodes[index - 1].requestFocus();
+                        } else {
+                          _closeButtonFocusNode.requestFocus();
+                        }
+                        return KeyEventResult.handled;
+                      }
+                      return KeyEventResult.ignored;
+                    },
+                    child: ListenableBuilder(
+                      listenable: fieldFocusNode,
+                      builder: (ctx, _) {
+                        final preferSystemIme =
+                            _prefs.get(UserPreferences.preferSystemImeKeyboard);
+                        return GestureDetector(
+                          onTap: () {
+                            if (!fieldFocusNode.hasFocus) {
+                              fieldFocusNode.requestFocus();
+                            }
+                            tvFieldKey.currentState?.openKeyboard();
+                          },
+                          child: CustomTVTextField(
+                            key: tvFieldKey,
+                            controller: controller,
+                            isFocused: fieldFocusNode.hasFocus,
+                            inputPurpose: InputPurpose.text,
+                            keyboardType: keyboardType == TextInputType.number
+                                ? KeyboardType.numeric
+                                : KeyboardType.alphabetic,
+                            preferSystemIme: preferSystemIme,
+                            hint: label,
+                            filled: true,
+                            fillColor: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.4),
+                            borderColor: theme.colorScheme.outlineVariant
+                                .withValues(alpha: 0.4),
+                            focusedBorderColor: theme.colorScheme.primary,
+                            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.6),
+                            ),
+                            textStyle: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            popParentOnKeyboardClose: false,
+                          ),
+                        );
                       },
-                      child: CustomTVTextField(
-                        key: tvFieldKey,
-                        controller: controller,
-                        isFocused: fieldFocusNode.hasFocus,
-                        inputPurpose: InputPurpose.text,
-                        keyboardType: keyboardType == TextInputType.number
-                            ? KeyboardType.numeric
-                            : KeyboardType.alphabetic,
-                        preferSystemIme: preferSystemIme,
-                        hint: label,
-                        filled: true,
-                        fillColor: theme.colorScheme.surfaceContainerHighest
-                            .withValues(alpha: 0.4),
-                        borderColor: theme.colorScheme.outlineVariant
-                            .withValues(alpha: 0.4),
-                        focusedBorderColor: theme.colorScheme.primary,
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant
-                              .withValues(alpha: 0.6),
-                        ),
-                        textStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                        ),
-                        popParentOnKeyboardClose: false,
-                      ),
-                    );
-                  }
-
-                  return TextField(
+                    ),
+                  )
+                : TextField(
                     controller: controller,
+                    focusNode: fieldFocusNode,
                     keyboardType: keyboardType,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) {
+                      if (!_searching) _performSearch();
+                    },
                     style: theme.textTheme.bodyMedium,
                     decoration: InputDecoration(
                       labelText: label,
                       border: const OutlineInputBorder(),
                       isDense: true,
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ),
           const SizedBox(width: 6),
 
-          // Pull Action Button with explicit Up/Down/Left/Right TV D-pad linking & Select/Enter activation
+          // Copies the current value on the right into the field on the left.
           Focus(
             focusNode: arrowFocusNode,
             onKeyEvent: (_, event) {
-              if (event is KeyDownEvent) {
-                final key = event.logicalKey;
-                if (key == LogicalKeyboardKey.select ||
-                    key == LogicalKeyboardKey.enter ||
-                    key == LogicalKeyboardKey.gameButtonA ||
-                    key == LogicalKeyboardKey.space) {
-                  if (hasReference) {
-                    setState(() {
-                      controller.text = referenceValue.trim();
-                    });
-                  }
-                  return KeyEventResult.handled;
+              if (!event.isActionable) return KeyEventResult.ignored;
+              final key = event.logicalKey;
+              if (key.isSelectKey) {
+                pullReference();
+                return KeyEventResult.handled;
+              }
+              // Normal traversal already reaches this button off TV, so the
+              // arrow keys are left alone there.
+              if (!_isTV) return KeyEventResult.ignored;
+              if (key.isUpKey) {
+                if (index == 0) {
+                  _closeButtonFocusNode.requestFocus();
+                } else {
+                  _arrowFocusNodes[index - 1].requestFocus();
                 }
-                if (key == LogicalKeyboardKey.arrowUp) {
-                  if (index == 0) {
-                    _closeButtonFocusNode.requestFocus();
-                  } else {
-                    _arrowFocusNodes[index - 1].requestFocus();
-                  }
-                  return KeyEventResult.handled;
-                }
-                if (key == LogicalKeyboardKey.arrowDown) {
-                  if (index < 7) {
-                    _arrowFocusNodes[index + 1].requestFocus();
-                  } else {
-                    _searchButtonFocusNode.requestFocus();
-                  }
-                  return KeyEventResult.handled;
-                }
-                if (key == LogicalKeyboardKey.arrowRight) {
+                return KeyEventResult.handled;
+              }
+              if (key.isDownKey) {
+                if (index < _lastFieldIndex) {
+                  _arrowFocusNodes[index + 1].requestFocus();
+                } else {
                   _searchButtonFocusNode.requestFocus();
-                  return KeyEventResult.handled;
                 }
-                if (key == LogicalKeyboardKey.arrowLeft) {
-                  fieldFocusNode.requestFocus();
-                  return KeyEventResult.handled;
-                }
+                return KeyEventResult.handled;
+              }
+              if (key.isRightKey) {
+                _searchButtonFocusNode.requestFocus();
+                return KeyEventResult.handled;
+              }
+              if (key.isLeftKey) {
+                fieldFocusNode.requestFocus();
+                return KeyEventResult.handled;
               }
               return KeyEventResult.ignored;
             },
@@ -1043,13 +1026,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
               builder: (btnCtx) {
                 final hasFocus = Focus.of(btnCtx).hasFocus;
                 return InkWell(
-                  onTap: hasReference
-                      ? () {
-                          setState(() {
-                            controller.text = referenceValue.trim();
-                          });
-                        }
-                      : null,
+                  onTap: hasReference ? pullReference : null,
                   borderRadius: AppRadius.circular(20),
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -1083,7 +1060,6 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
 
           const SizedBox(width: 6),
 
-          // Right Column: Non-editable reference text (Borderless reference badge)
           Expanded(
             flex: 2,
             child: Container(
@@ -1101,7 +1077,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                 ),
               ),
               child: Text(
-                hasReference ? referenceValue.trim() : '—',
+                hasReference ? reference : '-',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: hasReference
                       ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.85)
@@ -1142,29 +1118,27 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
           child: Focus(
             focusNode: resultFocusNode,
             onKeyEvent: (_, event) {
-              if (event is KeyDownEvent) {
-                final key = event.logicalKey;
-                if (key == LogicalKeyboardKey.select ||
-                    key == LogicalKeyboardKey.enter ||
-                    key == LogicalKeyboardKey.gameButtonA ||
-                    key == LogicalKeyboardKey.space) {
-                  _applyResult(item);
-                  return KeyEventResult.handled;
+              if (!event.isActionable) return KeyEventResult.ignored;
+              final key = event.logicalKey;
+              if (key.isSelectKey) {
+                _applyResult(item);
+                return KeyEventResult.handled;
+              }
+              if (!_isTV) return KeyEventResult.ignored;
+              if (key.isUpKey) {
+                if (index == 0) {
+                  _closeButtonFocusNode.requestFocus();
+                } else if (_resultFocusNodes != null && index > 0) {
+                  _resultFocusNodes![index - 1].requestFocus();
                 }
-                if (key == LogicalKeyboardKey.arrowUp) {
-                  if (index == 0) {
-                    _closeButtonFocusNode.requestFocus();
-                  } else if (_resultFocusNodes != null && index > 0) {
-                    _resultFocusNodes![index - 1].requestFocus();
-                  }
-                  return KeyEventResult.handled;
+                return KeyEventResult.handled;
+              }
+              if (key.isDownKey) {
+                if (_resultFocusNodes != null &&
+                    index < _resultFocusNodes!.length - 1) {
+                  _resultFocusNodes![index + 1].requestFocus();
                 }
-                if (key == LogicalKeyboardKey.arrowDown) {
-                  if (_resultFocusNodes != null && index < _resultFocusNodes!.length - 1) {
-                    _resultFocusNodes![index + 1].requestFocus();
-                  }
-                  return KeyEventResult.handled;
-                }
+                return KeyEventResult.handled;
               }
               return KeyEventResult.ignored;
             },
@@ -1271,4 +1245,20 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       },
     );
   }
+}
+
+/// One row of the search form, pairing an editable field with the value the
+/// item already carries.
+class _IdentifyField {
+  final String label;
+  final TextEditingController controller;
+  final String? reference;
+  final TextInputType? keyboardType;
+
+  const _IdentifyField(
+    this.label,
+    this.controller,
+    this.reference, {
+    this.keyboardType,
+  });
 }

@@ -10161,9 +10161,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminCurrentMetadata => 'Current Metadata';
 
   @override
-  String get adminLabelName => 'Name';
-
-  @override
   String get adminLabelYear => 'Year';
 
   @override

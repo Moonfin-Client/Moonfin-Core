@@ -536,7 +536,9 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
     final applied = await IdentifyDialog.show(
       context,
       itemId: widget.itemId,
-      itemType: searchType,
+      // An empty type means unknown, so let the dialog resolve it from the item
+      // rather than posting to /Items/RemoteSearch/ with no type at all.
+      itemType: searchType.isEmpty ? null : searchType,
       itemName: name,
       itemYear: year,
       itemPath: path,

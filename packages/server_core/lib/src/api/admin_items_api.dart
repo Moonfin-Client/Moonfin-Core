@@ -21,10 +21,14 @@ abstract class AdminItemsApi {
   Future<List<Map<String, dynamic>>> searchRemotePerson(
     Map<String, dynamic> query,
   );
+  /// Applies a result returned by [searchRemote] to [itemId]. When
+  /// [replaceAllImages] is false the item keeps its existing artwork and only
+  /// textual metadata is replaced.
   Future<void> applyRemoteSearchResult(
     String itemId,
-    Map<String, dynamic> result,
-  );
+    Map<String, dynamic> result, {
+    bool replaceAllImages = true,
+  });
   Future<Map<String, dynamic>> getRemoteImages(
     String itemId, {
     required ImageType imageType,

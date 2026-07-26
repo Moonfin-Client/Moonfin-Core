@@ -8947,16 +8947,47 @@
     "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
   },
   "adminSearchParameters": "Search Parameters",
+  "@adminSearchParameters": {
+    "description": "Column header above the editable fields used to search metadata providers in the Identify dialog"
+  },
   "adminCurrentMetadata": "Current Metadata",
-  "adminLabelName": "Name",
+  "@adminCurrentMetadata": {
+    "description": "Column header above the read-only values currently stored on the item in the Identify dialog"
+  },
   "adminLabelYear": "Year",
+  "@adminLabelYear": {
+    "description": "Label for the release year field in the Identify dialog"
+  },
   "adminLabelImdbId": "IMDb Id",
+  "@adminLabelImdbId": {
+    "description": "Label for the IMDb identifier field in the Identify dialog. IMDb is a brand name and is normally left untranslated"
+  },
   "adminLabelTmdbMovieId": "TheMovieDb Movie Id",
+  "@adminLabelTmdbMovieId": {
+    "description": "Label for the TheMovieDb movie identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+  },
   "adminLabelTmdbBoxSetId": "TheMovieDb Box Set Id",
+  "@adminLabelTmdbBoxSetId": {
+    "description": "Label for the TheMovieDb collection identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+  },
   "adminLabelTvdbBoxSetId": "TheTVDB Box Set Id",
+  "@adminLabelTvdbBoxSetId": {
+    "description": "Label for the TheTVDB collection identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+  },
   "adminLabelTvdbId": "TheTVDB Numerical Id",
+  "@adminLabelTvdbId": {
+    "description": "Label for the numeric TheTVDB identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+  },
   "adminLabelTvdbSlug": "TheTVDB Slug Movie Id",
+  "@adminLabelTvdbSlug": {
+    "description": "Label for the TheTVDB slug identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+  },
   "adminReplaceImages": "Replace existing images",
-  "adminApply": "Apply",
-  "adminBackToSearch": "Back to Search Criteria"
+  "@adminReplaceImages": {
+    "description": "Checkbox label in the confirmation dialog shown before applying an identified metadata match"
+  },
+  "adminBackToSearch": "Back to Search Criteria",
+  "@adminBackToSearch": {
+    "description": "Tooltip on the button that returns from the Identify results list to the search form"
+  }
 }

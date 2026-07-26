@@ -102,14 +102,16 @@ class JellyfinAdminItemsApi implements AdminItemsApi {
   @override
   Future<void> applyRemoteSearchResult(
     String itemId,
-    Map<String, dynamic> result,
-  ) async {
+    Map<String, dynamic> result, {
+    bool replaceAllImages = true,
+  }) async {
     await _requestWithFallback<void>(
       methods: const ['POST'],
       paths: [
         '/Items/RemoteSearch/Apply/$itemId',
         '/Items/$itemId/RemoteSearch/Apply',
       ],
+      queryParameters: {'replaceAllImages': replaceAllImages},
       data: result,
       convert: _ignoreResponse,
     );

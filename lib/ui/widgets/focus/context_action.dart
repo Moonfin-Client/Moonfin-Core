@@ -27,6 +27,25 @@ class ItemContextAction {
   });
 }
 
+/// Item types the server exposes a `/Items/RemoteSearch/{type}` endpoint for.
+/// Episodes and Seasons qualify because Identify redirects them to their
+/// parent series. Anything else would just 404 with a raw error toast.
+const _identifiableTypes = <String>{
+  'Movie',
+  'Series',
+  'Season',
+  'Episode',
+  'BoxSet',
+  'Person',
+  'MusicAlbum',
+  'MusicArtist',
+  'Book',
+  'Trailer',
+  'MusicVideo',
+};
+
+bool canIdentifyItemType(String? type) => _identifiableTypes.contains(type);
+
 List<ItemContextAction> contextActionsFor(
   BuildContext context,
   AggregatedItem item, {
@@ -204,31 +223,36 @@ List<ItemContextAction> contextActionsFor(
         },
       ));
 
-      actions.add(ItemContextAction(
-        icon: Icons.search_outlined,
-        label: l10n.adminMetadataIdentify,
-        onSelect: () async {
-          if (!context.mounted) return;
-          final isTVChild = item.type == 'Episode' || item.type == 'Season';
-          final hasSeriesId = item.seriesId != null && item.seriesId!.isNotEmpty;
-          final targetItemId = (isTVChild && hasSeriesId) ? item.seriesId! : item.id;
-          final targetItemType = (isTVChild && hasSeriesId) ? 'Series' : item.type;
-          final targetItemName = (isTVChild && hasSeriesId)
-              ? (item.seriesName ?? item.name)
-              : item.name;
+      if (canIdentifyItemType(type)) {
+        actions.add(ItemContextAction(
+          icon: Icons.search_outlined,
+          label: l10n.adminMetadataIdentify,
+          onSelect: () async {
+            if (!context.mounted) return;
+            final isTVChild = item.type == 'Episode' || item.type == 'Season';
+            final hasSeriesId =
+                item.seriesId != null && item.seriesId!.isNotEmpty;
+            final targetItemId =
+                (isTVChild && hasSeriesId) ? item.seriesId! : item.id;
+            final targetItemType =
+                (isTVChild && hasSeriesId) ? 'Series' : item.type;
+            final targetItemName = (isTVChild && hasSeriesId)
+                ? (item.seriesName ?? item.name)
+                : item.name;
 
-          final applied = await IdentifyDialog.show(
-            context,
-            itemId: targetItemId,
-            itemType: targetItemType,
-            itemName: targetItemName,
-            itemYear: isTVChild ? null : item.productionYear,
-          );
-          if (applied == true) {
-            onChanged?.call();
-          }
-        },
-      ));
+            final applied = await IdentifyDialog.show(
+              context,
+              itemId: targetItemId,
+              itemType: targetItemType,
+              itemName: targetItemName,
+              itemYear: isTVChild ? null : item.productionYear,
+            );
+            if (applied == true) {
+              onChanged?.call();
+            }
+          },
+        ));
+      }
     }
 
   }
