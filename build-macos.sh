@@ -97,7 +97,7 @@ fi
 UNSIGNED=0
 if [ -z "$APP_SIGN_ID" ] && [ -z "$TEAM_ID" ]; then
   UNSIGNED=1
-  echo "No signing identity available, building unsigned so PR builds still run."
+  echo "No signing identity available, ad-hoc signing so PR builds still run."
   PBXPROJ="$REPO_ROOT/macos/Runner.xcodeproj/project.pbxproj"
   cp "$PBXPROJ" "$PBXPROJ.signing.bak"
   trap 'mv -f "$PBXPROJ.signing.bak" "$PBXPROJ" 2>/dev/null || true' EXIT
@@ -130,6 +130,11 @@ ARCHIVE_CMD=(
   archive
 )
 if [ "$UNSIGNED" = "1" ]; then
+  # Ad-hoc sign rather than skipping signing. Don't add CODE_SIGNING_REQUIRED=NO
+  # here, because the CocoaPods framework script and the embedded emulator cores
+  # both check it and leave their bundles unsigned, which then fails the final
+  # CodeSign of the app. Arm64 binaries also need at least an ad-hoc signature
+  # to launch at all.
   ARCHIVE_CMD+=( CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="-" )
 else
   ARCHIVE_CMD+=( CODE_SIGN_STYLE=Automatic )

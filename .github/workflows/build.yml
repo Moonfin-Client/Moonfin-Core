@@ -168,11 +168,11 @@ jobs:
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
         run: |
-          # On PRs from forks the certificate secret is not available. Skip the
-          # signing setup; build-macos.sh produces an unsigned build when no
-          # identity is present.
+          # On PRs from forks the certificate secret isn't available, so skip
+          # the signing setup. build-macos.sh falls back to an ad-hoc signature
+          # when no identity is present.
           if [ -z "$MACOS_CERTIFICATE_BASE64" ]; then
-            echo "No macOS certificate secret; skipping signing setup (unsigned build)."
+            echo "No macOS certificate secret, skipping signing setup (ad-hoc signed build)."
             exit 0
           fi
 
