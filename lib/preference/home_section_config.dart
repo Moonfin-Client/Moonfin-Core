@@ -95,18 +95,25 @@ class HomeSectionConfig {
         ? HomeSectionKind.builtin
         : HomeSectionKind.fromSerialized(kindRaw);
     final typeName = json['type'] as String? ?? 'none';
+    final pluginSource = HomeSectionPluginSource.fromSerialized(
+      json['pluginSource'] as String?,
+    );
+    final rawServerId = json['serverId']?.toString();
+    final serverId = (rawServerId == null || rawServerId.isEmpty) &&
+            pluginSource == HomeSectionPluginSource.custom
+        ? 'custom'
+        : rawServerId;
+
     return HomeSectionConfig(
       kind: kind,
       type: HomeSectionType.fromSerialized(typeName),
       enabled: json['enabled'] as bool? ?? true,
       order: json['order'] as int? ?? 0,
-      serverId: json['serverId']?.toString(),
+      serverId: serverId,
       pluginSection: json['pluginSection'] as String?,
       pluginAdditionalData: json['pluginAdditionalData'] as String?,
       pluginDisplayText: json['pluginDisplayText'] as String?,
-      pluginSource: HomeSectionPluginSource.fromSerialized(
-        json['pluginSource'] as String?,
-      ),
+      pluginSource: pluginSource,
     );
   }
 
@@ -158,7 +165,11 @@ class HomeSectionConfig {
   /// data so multiple instances of the same section can coexist.
   String get stableId {
     if (kind == HomeSectionKind.pluginDynamic) {
-      return 'pluginDynamic:${pluginSource.serializedName}:${serverId ?? ''}:${pluginSection ?? ''}:${pluginAdditionalData ?? ''}';
+      final effectiveServerId = (serverId == null || serverId!.isEmpty) &&
+              pluginSource == HomeSectionPluginSource.custom
+          ? 'custom'
+          : (serverId ?? '');
+      return 'pluginDynamic:${pluginSource.serializedName}:$effectiveServerId:${pluginSection ?? ''}:${pluginAdditionalData ?? ''}';
     }
     return 'builtin:${type.serializedName}';
   }

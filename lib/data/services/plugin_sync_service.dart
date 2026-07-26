@@ -1124,6 +1124,14 @@ class PluginSyncService extends ChangeNotifier {
               _prefs.set(toggle, c.enabled);
             }
           }
+          final existingCustom = _prefs.homeSectionsConfig
+              .where((c) => c.isPluginDynamic && c.pluginSource == HomeSectionPluginSource.custom)
+              .toList();
+          for (final custom in existingCustom) {
+            if (!sections.any((s) => s.stableId == custom.stableId)) {
+              sections.add(custom.copyWith(enabled: false, order: order++));
+            }
+          }
           _appendDisabledBuiltinSections(sections, order);
           await _prefs.setHomeSectionsConfig(sections);
           appliedHomeSections = true;
