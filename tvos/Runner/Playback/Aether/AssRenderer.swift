@@ -19,7 +19,7 @@ final class AssRenderer {
     private var frameWidth: Int32 = 0
     private var frameHeight: Int32 = 0
 
-    func configure(header: Data?) -> Bool {
+    func configure(header: Data?, fontsDir: String? = nil) -> Bool {
         close()
         guard let library = ass_library_init() else { return false }
         self.library = library
@@ -28,7 +28,9 @@ final class AssRenderer {
             return false
         }
         self.renderer = renderer
-        if let fontsDir = SubtitleFontLocator.bundledFontsDirectory() {
+        // Falling back to bundledFontsDirectory() here would drop embedded fonts,
+        // mis-rendering any \fn-styled subtitle line with a substituted system font.
+        if let fontsDir = fontsDir ?? SubtitleFontLocator.bundledFontsDirectory() {
             ass_set_fonts_dir(library, fontsDir)
             ass_set_fonts(
                 renderer,
@@ -195,7 +197,7 @@ final class AssRenderer {
         }
     }
 #else
-    func configure(header: Data?) -> Bool { false }
+    func configure(header: Data?, fontsDir: String? = nil) -> Bool { false }
     func setFrameSize(width: Int32, height: Int32) {}
     func processEvent(_ assLine: String, startMs: Int64, durationMs: Int64) {}
     func render(atTimeMs ms: Int64) -> AssRenderResult { .unchanged }

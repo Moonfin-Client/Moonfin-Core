@@ -728,8 +728,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         private func configureAssIfNeeded(for track: TrackInfo, engine: AetherEngine) {
             guard assConfiguredForTrackID != track.id else { return }
             let attachments = engine.fontAttachments.map { ($0.filename, $0.data) }
-            _ = SubtitleFontLocator.materializeFontsDirectory(attachments: attachments)
-            if assRenderer.configure(header: track.assHeader.flatMap { $0.data(using: .utf8) }) {
+            let fontsDir = SubtitleFontLocator.materializeFontsDirectory(attachments: attachments)
+            if assRenderer.configure(
+                header: track.assHeader.flatMap { $0.data(using: .utf8) },
+                fontsDir: fontsDir
+            ) {
                 assConfiguredForTrackID = track.id
             }
         }
