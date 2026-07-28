@@ -21,8 +21,9 @@ enum SubtitleFontLocator {
     }
 
     /// Writes embedded font attachments to a session temp directory (seeded
-    /// with the bundled fallback font) and returns its path. Returns the
-    /// plain bundled directory when there are no attachments.
+    /// with the bundled fonts) and returns its path. Returns the plain bundled
+    /// directory when there are no attachments. An attachment sharing a name
+    /// with a bundled font is written last and wins.
     static func materializeFontsDirectory(attachments: [(filename: String, data: Data)])
         -> String?
     {
@@ -36,9 +37,19 @@ enum SubtitleFontLocator {
         } catch {
             return bundledFontsDirectory()
         }
-        if let bundled = bundledFontsDirectory() {
-            let src = URL(fileURLWithPath: bundled).appendingPathComponent("NotoSans-Regular.ttf")
-            try? fm.copyItem(at: src, to: dir.appendingPathComponent("NotoSans-Regular.ttf"))
+        // Every bundled font comes across, not just the default one. libass
+        // scans this directory and nothing else, so anything left behind stops
+        // being available as a fallback, and a line whose font the release
+        // forgot to attach would render as tofu instead of reaching NotoSansCJK.
+        if let bundled = bundledFontsDirectory(),
+            let names = try? fm.contentsOfDirectory(atPath: bundled)
+        {
+            let source = URL(fileURLWithPath: bundled)
+            for name in names {
+                try? fm.copyItem(
+                    at: source.appendingPathComponent(name),
+                    to: dir.appendingPathComponent(name))
+            }
         }
         for attachment in attachments {
             let name = URL(fileURLWithPath: attachment.filename).lastPathComponent
