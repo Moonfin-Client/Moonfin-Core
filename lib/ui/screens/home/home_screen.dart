@@ -4314,7 +4314,7 @@ class _ContentRowsState extends State<_ContentRows>
 
     final subtitle = _rowSubtitle(row, l10n);
     final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
-    return _buildTitledRow(
+    final rowWidget = _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
       subtitle: subtitle,
@@ -4711,6 +4711,21 @@ class _ContentRowsState extends State<_ContentRows>
         },
       ),
     );
+
+    if (row.id.startsWith('seerr_')) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollUpdateNotification &&
+              notification.metrics.extentAfter < 300) {
+            widget.viewModel.loadMoreSeerrRow(row.id);
+          }
+          return false;
+        },
+        child: rowWidget,
+      );
+    }
+
+    return rowWidget;
   }
 
   Widget _buildV2ExtendedSection(

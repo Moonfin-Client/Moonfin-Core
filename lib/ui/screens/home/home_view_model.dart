@@ -1973,6 +1973,9 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   static const _seerrEnrichConcurrency = 5;
+  final Map<String, int> _seerrRowPages = {};
+  final Map<String, bool> _seerrRowLoadingMore = {};
+  final Map<String, bool> _seerrRowHasMore = {};
 
   Future<List<HomeRow>> _loadSeerrRow(
     SeerrRowType type,
@@ -1986,6 +1989,9 @@ class HomeViewModel extends ChangeNotifier {
       if (!repo.isAvailable) {
         return [];
       }
+
+      _seerrRowPages[rowId] = 1;
+      _seerrRowHasMore[rowId] = true;
 
       final blockNsfw = seerrPrefs.blockNsfw;
       final limit = seerrPrefs.fetchLimit.limit;
@@ -2108,18 +2114,24 @@ class HomeViewModel extends ChangeNotifier {
           (item) => _enrichSeerrItem(repo, item),
         )).whereType<SeerrDiscoverItem>().toList();
       } else if (type == SeerrRowType.yourWatchlist) {
-        final page = await _loadSeerrPage(repo, type, limit);
+        final page = await _loadSeerrPage(repo, type, 1);
         if (page != null) {
           rawItems = (await mapBounded(
             page.results,
             _seerrEnrichConcurrency,
             (item) => _enrichSeerrItem(repo, item),
           )).whereType<SeerrDiscoverItem>().toList();
+          if (1 >= page.totalPages) {
+            _seerrRowHasMore[rowId] = false;
+          }
         }
       } else {
-        final page = await _loadSeerrPage(repo, type, limit);
+        final page = await _loadSeerrPage(repo, type, 1);
         if (page != null) {
           rawItems = page.results;
+          if (1 >= page.totalPages) {
+            _seerrRowHasMore[rowId] = false;
+          }
         }
       }
 
@@ -2167,6 +2179,193 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> loadMoreSeerrRow(String rowId) async {
+    if (_seerrRowLoadingMore[rowId] == true) return;
+    if (_seerrRowHasMore[rowId] == false) return;
+
+    final type = _seerrRowTypeForId(rowId);
+    if (type == null) return;
+    if (type == SeerrRowType.movieGenres ||
+        type == SeerrRowType.seriesGenres ||
+        type == SeerrRowType.networks ||
+        type == SeerrRowType.studios) {
+      return;
+    }
+
+    _seerrRowLoadingMore[rowId] = true;
+
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      final seerrPrefs = GetIt.instance<SeerrPreferences>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) {
+        _seerrRowLoadingMore[rowId] = false;
+        return;
+      }
+
+      final currentPage = _seerrRowPages[rowId] ?? 1;
+      final nextPage = currentPage + 1;
+      final limit = seerrPrefs.fetchLimit.limit;
+      final blockNsfw = seerrPrefs.blockNsfw;
+
+      List<SeerrDiscoverItem> rawItems = [];
+
+      if (type == SeerrRowType.recentRequests) {
+        final user = await repo.getCurrentUser();
+        final response = await repo.getRequests(
+          requestedBy: user.canViewAllRequests ? null : user.id,
+          limit: limit,
+          offset: (nextPage - 1) * limit,
+        );
+        final mapped = response.results.where((r) => r.media != null).map((r) {
+          final media = r.media!;
+          return SeerrDiscoverItem(
+            id: media.tmdbId ?? media.id,
+            title: media.title ?? media.name,
+            name: media.name ?? media.title,
+            overview: media.overview,
+            releaseDate: media.releaseDate,
+            firstAirDate: media.firstAirDate,
+            mediaType: r.type,
+            posterPath: media.posterPath,
+            backdropPath: media.backdropPath,
+            mediaInfo: SeerrMediaInfo(
+              id: media.id,
+              tmdbId: media.tmdbId,
+              status: media.status,
+            ),
+          );
+        }).toList();
+        rawItems = (await mapBounded(
+          mapped,
+          _seerrEnrichConcurrency,
+          (item) => _enrichSeerrItem(repo, item),
+        )).whereType<SeerrDiscoverItem>().toList();
+      } else if (type == SeerrRowType.recentlyAdded) {
+        _seerrRowHasMore[rowId] = false;
+        _seerrRowLoadingMore[rowId] = false;
+        return;
+      } else if (type == SeerrRowType.yourWatchlist) {
+        final page = await repo.getWatchlist(page: nextPage);
+        rawItems = (await mapBounded(
+          page.results,
+          _seerrEnrichConcurrency,
+          (item) => _enrichSeerrItem(repo, item),
+        )).whereType<SeerrDiscoverItem>().toList();
+        if (nextPage >= page.totalPages) {
+          _seerrRowHasMore[rowId] = false;
+        }
+      } else {
+        final page = await _loadSeerrPage(repo, type, nextPage);
+        if (page != null) {
+          rawItems = page.results;
+          if (nextPage >= page.totalPages) {
+            _seerrRowHasMore[rowId] = false;
+          }
+        } else {
+          _seerrRowHasMore[rowId] = false;
+        }
+      }
+
+      if (rawItems.isEmpty) {
+        _seerrRowHasMore[rowId] = false;
+        _seerrRowLoadingMore[rowId] = false;
+        return;
+      }
+
+      final filtered = rawItems.where((item) {
+        if (type != SeerrRowType.recentlyAdded &&
+            type != SeerrRowType.recentRequests &&
+            type != SeerrRowType.yourWatchlist) {
+          if (item.isAvailable || item.isBlacklisted) return false;
+        }
+        if (blockNsfw) {
+          if (item.adult) return false;
+          final text = '${item.displayTitle} ${item.overview ?? ''}';
+          if (SeerrDiscoverViewModel.nsfwPatterns.any(
+            (p) => p.hasMatch(text),
+          )) {
+            return false;
+          }
+        }
+        return true;
+      }).toList();
+
+      final newAggregated = filtered.map((item) {
+        return AggregatedItem(
+          id: item.id.toString(),
+          serverId: 'seerr',
+          rawData: {
+            'Name': item.displayTitle,
+            'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+            'Overview': item.overview ?? '',
+            'PosterPath': item.posterPath ?? '',
+            'BackdropPath': item.backdropPath ?? '',
+            'ProductionYear': _extractYear(
+              item.releaseDate ?? item.firstAirDate,
+            ),
+            'SeerrMediaType': item.mediaType,
+            'SeerrStatus': item.mediaInfo?.status,
+          },
+        );
+      }).toList();
+
+      if (newAggregated.isNotEmpty) {
+        final rowIndex = _rows.indexWhere((r) => r.id == rowId);
+        if (rowIndex != -1) {
+          final currentRow = _rows[rowIndex];
+          final existingIds = currentRow.items.map((i) => i.id).toSet();
+          final uniqueNew =
+              newAggregated.where((i) => !existingIds.contains(i.id)).toList();
+
+          if (uniqueNew.isNotEmpty) {
+            final updatedRow = currentRow.copyWith(
+              items: [...currentRow.items, ...uniqueNew],
+            );
+            _rows[rowIndex] = updatedRow;
+            _seerrRowPages[rowId] = nextPage;
+            notifyListeners();
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[SeerrHomeRow] Failed to load more for $rowId: $e');
+    } finally {
+      _seerrRowLoadingMore[rowId] = false;
+    }
+  }
+
+  SeerrRowType? _seerrRowTypeForId(String rowId) {
+    switch (rowId) {
+      case 'seerr_recent_requests':
+        return SeerrRowType.recentRequests;
+      case 'seerr_watchlist':
+        return SeerrRowType.yourWatchlist;
+      case 'seerr_recently_added':
+        return SeerrRowType.recentlyAdded;
+      case 'seerr_popular_movies':
+        return SeerrRowType.popularMovies;
+      case 'seerr_upcoming_movies':
+        return SeerrRowType.upcomingMovies;
+      case 'seerr_popular_series':
+        return SeerrRowType.popularSeries;
+      case 'seerr_upcoming_series':
+        return SeerrRowType.upcomingSeries;
+      case 'seerr_trending':
+        return SeerrRowType.trending;
+      case 'seerr_movie_genres':
+        return SeerrRowType.movieGenres;
+      case 'seerr_studios':
+        return SeerrRowType.studios;
+      case 'seerr_series_genres':
+        return SeerrRowType.seriesGenres;
+      case 'seerr_networks':
+        return SeerrRowType.networks;
+      default:
+        return null;
+    }
+  }
+
   HomeRow _seerrRow(String rowId, String title, List<AggregatedItem> items) {
     return HomeRow(
       id: rowId,
@@ -2203,17 +2402,20 @@ class HomeViewModel extends ChangeNotifier {
   Future<SeerrDiscoverPage?> _loadSeerrPage(
     SeerrRepository repo,
     SeerrRowType type,
-    int limit,
+    int page,
   ) async {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    final limit = seerrPrefs.fetchLimit.limit;
+    final offset = (page - 1) * limit;
     switch (type) {
       case SeerrRowType.yourWatchlist:
-        return repo.getWatchlist(page: 1);
+        return repo.getWatchlist(page: page);
       case SeerrRowType.trending:
-        return repo.getTrending(limit: limit, offset: 0);
+        return repo.getTrending(limit: limit, offset: offset);
       case SeerrRowType.popularMovies:
-        return repo.getTrendingMovies(limit: limit, offset: 0);
+        return repo.getTrendingMovies(limit: limit, offset: offset);
       case SeerrRowType.popularSeries:
-        return repo.getTrendingTv(limit: limit, offset: 0);
+        return repo.getTrendingTv(limit: limit, offset: offset);
       case SeerrRowType.upcomingMovies:
         return repo.getUpcomingMovies();
       case SeerrRowType.upcomingSeries:
