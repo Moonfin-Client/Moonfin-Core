@@ -393,36 +393,6 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       return (resolvedPath, method);
     }
 
-    final serverPlayMethod = source.defaultPlayMethod;
-    if (serverPlayMethod != null) {
-      if (serverPlayMethod == PlayMethod.directPlay && source.supportsDirectPlay) {
-        if (isAudio) {
-          return (
-            _buildDirectPlayAudioUrl(itemId, source),
-            StreamPlayMethod.directPlay,
-          );
-        }
-        return (
-          _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
-          StreamPlayMethod.directPlay,
-        );
-      }
-      if (serverPlayMethod == PlayMethod.directStream && source.supportsDirectStream && source.directStreamUrl != null) {
-        var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
-        if (source.liveStreamId != null) {
-          dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
-        }
-        return (dsUrl, StreamPlayMethod.directStream);
-      }
-      if (serverPlayMethod == PlayMethod.transcode && source.supportsTranscoding && source.transcodingUrl != null) {
-        var tcUrl = '${_client.baseUrl}${source.transcodingUrl}';
-        if (source.liveStreamId != null) {
-          tcUrl = '$tcUrl${tcUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
-        }
-        return (tcUrl, StreamPlayMethod.transcode);
-      }
-    }
-
     const videoReEncodeReasons = <String>{
       'videocodecnotsupported',
       'videoprofilenotsupported',
@@ -449,14 +419,46 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       requiresVideoTranscode = true;
     }
 
-    if (source.supportsDirectPlay && isAudio) {
+    final allowDirectPlay = enableDirectPlay && !requiresVideoTranscode;
+
+    final serverPlayMethod = source.defaultPlayMethod;
+    if (serverPlayMethod != null) {
+      if (allowDirectPlay && serverPlayMethod == PlayMethod.directPlay && source.supportsDirectPlay) {
+        if (isAudio) {
+          return (
+            _buildDirectPlayAudioUrl(itemId, source),
+            StreamPlayMethod.directPlay,
+          );
+        }
+        return (
+          _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
+          StreamPlayMethod.directPlay,
+        );
+      }
+      if (serverPlayMethod == PlayMethod.directStream && source.supportsDirectStream && source.directStreamUrl != null && !requiresVideoTranscode) {
+        var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
+        if (source.liveStreamId != null) {
+          dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
+        }
+        return (dsUrl, StreamPlayMethod.directStream);
+      }
+      if (serverPlayMethod == PlayMethod.transcode && source.supportsTranscoding && source.transcodingUrl != null) {
+        var tcUrl = '${_client.baseUrl}${source.transcodingUrl}';
+        if (source.liveStreamId != null) {
+          tcUrl = '$tcUrl${tcUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
+        }
+        return (tcUrl, StreamPlayMethod.transcode);
+      }
+    }
+
+    if (allowDirectPlay && source.supportsDirectPlay && isAudio) {
       return (
         _buildDirectPlayAudioUrl(itemId, source),
         StreamPlayMethod.directPlay,
       );
     }
 
-    if (source.supportsDirectPlay) {
+    if (allowDirectPlay && source.supportsDirectPlay) {
       return (
         _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
         StreamPlayMethod.directPlay,
