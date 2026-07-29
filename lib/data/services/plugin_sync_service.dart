@@ -1124,13 +1124,21 @@ class PluginSyncService extends ChangeNotifier {
               _prefs.set(toggle, c.enabled);
             }
           }
-          final existingCustom = _prefs.homeSectionsConfig
-              .where((c) => c.isPluginDynamic && c.pluginSource == HomeSectionPluginSource.custom)
-              .toList();
+          // Custom rows the profile doesn't mention haven't been pushed from here yet, so
+          // keep them instead of letting the incoming layout drop them. Matching is on
+          // pluginSection because an edit changes stableId and would leave a stale copy.
+          final incomingCustom = sections
+              .where((s) => s.isPluginDynamic && s.pluginSource == HomeSectionPluginSource.custom)
+              .map((s) => s.pluginSection)
+              .toSet();
+          final existingCustom = _prefs.homeSectionsConfig.where(
+            (c) =>
+                c.isPluginDynamic &&
+                c.pluginSource == HomeSectionPluginSource.custom &&
+                !incomingCustom.contains(c.pluginSection),
+          );
           for (final custom in existingCustom) {
-            if (!sections.any((s) => s.stableId == custom.stableId)) {
-              sections.add(custom.copyWith(enabled: false, order: order++));
-            }
+            sections.add(custom.copyWith(order: order++));
           }
           _appendDisabledBuiltinSections(sections, order);
           await _prefs.setHomeSectionsConfig(sections);

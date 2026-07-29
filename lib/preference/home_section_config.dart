@@ -98,18 +98,12 @@ class HomeSectionConfig {
     final pluginSource = HomeSectionPluginSource.fromSerialized(
       json['pluginSource'] as String?,
     );
-    final rawServerId = json['serverId']?.toString();
-    final serverId = (rawServerId == null || rawServerId.isEmpty) &&
-            pluginSource == HomeSectionPluginSource.custom
-        ? 'custom'
-        : rawServerId;
-
     return HomeSectionConfig(
       kind: kind,
       type: HomeSectionType.fromSerialized(typeName),
       enabled: json['enabled'] as bool? ?? true,
       order: json['order'] as int? ?? 0,
-      serverId: serverId,
+      serverId: _normalizedServerId(json['serverId']?.toString(), pluginSource),
       pluginSection: json['pluginSection'] as String?,
       pluginAdditionalData: json['pluginAdditionalData'] as String?,
       pluginDisplayText: json['pluginDisplayText'] as String?,
@@ -160,15 +154,24 @@ class HomeSectionConfig {
     pluginSource: pluginSource ?? this.pluginSource,
   );
 
+  /// Custom rows belong to no server, and an empty serverId coming back from a saved
+  /// layout would give the same row a second identity, so both ends use this placeholder.
+  static String? _normalizedServerId(
+    String? serverId,
+    HomeSectionPluginSource source,
+  ) =>
+      (serverId == null || serverId.isEmpty) &&
+              source == HomeSectionPluginSource.custom
+          ? 'custom'
+          : serverId;
+
   /// Stable identifier suitable for use as a row id / list key. Plugin
   /// entries combine the originating plugin, server, section and additional
   /// data so multiple instances of the same section can coexist.
   String get stableId {
     if (kind == HomeSectionKind.pluginDynamic) {
-      final effectiveServerId = (serverId == null || serverId!.isEmpty) &&
-              pluginSource == HomeSectionPluginSource.custom
-          ? 'custom'
-          : (serverId ?? '');
+      final effectiveServerId =
+          _normalizedServerId(serverId, pluginSource) ?? '';
       return 'pluginDynamic:${pluginSource.serializedName}:$effectiveServerId:${pluginSection ?? ''}:${pluginAdditionalData ?? ''}';
     }
     return 'builtin:${type.serializedName}';
