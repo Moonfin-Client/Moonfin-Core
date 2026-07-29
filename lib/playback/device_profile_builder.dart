@@ -943,7 +943,8 @@ class DeviceProfileBuilder {
         // A player without a TrueHD decoder has to let the server transcode.
         if (!capabilityProfile.canDecodeTrueHd) return false;
         if (losslessAudioRequiresPassthroughOnAvrRoutes &&
-            capabilityProfile.isAvReceiverRoute) {
+            capabilityProfile.isAvReceiverRoute &&
+            !capabilityProfile.canDecodeTrueHd) {
           // On HDMI/ARC/eARC this backend may bitstream TrueHD to the
           // receiver instead of decoding locally. Only advertise it when
           // the route can genuinely carry it and passthrough resolves
@@ -952,8 +953,9 @@ class DeviceProfileBuilder {
           return trueHdPassthroughEnabled &&
               capabilityProfile.canPassthroughTrueHd;
         }
-        // Speaker, headphones, bluetooth, and other routes decode locally
-        // through FFmpeg, so direct play is safe.
+        // Speaker, headphones, bluetooth, and other routes (or players with
+        // software FFmpeg decoding) decode locally through FFmpeg, so direct
+        // play is safe and preserves Dolby Vision EL metadata.
         return true;
       }
       return true;

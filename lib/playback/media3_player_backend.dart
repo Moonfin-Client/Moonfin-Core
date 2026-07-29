@@ -553,10 +553,19 @@ class Media3PlayerBackend extends PlayerBackend {
         _prefs.get(UserPreferences.tunnelingFallbackDisabled) ||
         tunnelingDisabledByUser;
 
-    await _ensureActivityStarted();
+    final selectedAudioCodec = payload['audioCodec']?.toString().toLowerCase();
+    final isLosslessAudio = selectedAudioCodec == 'truehd' ||
+        selectedAudioCodec == 'mlp' ||
+        selectedAudioCodec == 'dts-hd' ||
+        selectedAudioCodec == 'dtshd';
+    final hasActiveLosslessPassthrough =
+        _prefs.resolveTrueHdPassthroughEnabled() ||
+        _prefs.resolveTrueHdAtmosPassthroughEnabled();
+    final preferFfmpeg = _prefs.get(UserPreferences.preferExoPlayerFfmpeg) ||
+        (isLosslessAudio && !hasActiveLosslessPassthrough);
 
     await _invoke<void>('setDecoderPreferences', {
-      'preferFfmpeg': _prefs.get(UserPreferences.preferExoPlayerFfmpeg),
+      'preferFfmpeg': preferFfmpeg,
       'tunnelingDisabled': _sessionTunnelingDisabled,
       'mapDolbyVisionProfile7ToHevc': mapDolbyVisionProfile7ToHevc,
       'allowExternalAudioEffects': _prefs.get(
