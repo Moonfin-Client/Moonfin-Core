@@ -850,13 +850,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           int globalIndexOffset = 0;
           groupedMap.forEach((categoryKey, categoryItems) {
             final categoryTitle = switch (categoryKey) {
-              'Video' => 'Video Playlists',
-              'Audio' => 'Audio Playlists',
-              'AudioBook' => 'Audiobook Playlists',
-              'Book' => 'Book Playlists',
-              'Game' => 'Game Playlists',
-              'Photo' => 'Photo Playlists',
-              _ => 'Mixed Playlists',
+              'Video' => l10n.videoPlaylistsSection,
+              'Audio' => l10n.audioPlaylistsSection,
+              'AudioBook' => l10n.audiobookPlaylistsSection,
+              'Book' => l10n.bookPlaylistsSection,
+              'Photo' => l10n.photoPlaylistsSection,
+              _ => l10n.mixedPlaylistsSection,
             };
 
             slivers.add(
@@ -1025,8 +1024,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                       Scrollable.ensureVisible(
                         cardContext,
                         alignment: 0.15,
-                        alignmentPolicy:
-                            ScrollPositionAlignmentPolicy.keepVisible,
                         duration: const Duration(milliseconds: 160),
                         curve: Curves.easeOutCubic,
                       ),
@@ -2150,7 +2147,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
                 child: Text(
-                  'Grouping',
+                  l10n.grouping,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -2159,7 +2156,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                 ),
               ),
               _DialogCheckboxTile(
-                label: 'Group by Type',
+                label: l10n.groupByType,
                 checked: vm.groupByType,
                 onTap: () => vm.setGroupByType(!vm.groupByType),
                 accent: _jellyfinBlue,
@@ -2169,7 +2166,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
                 child: Text(
-                  'Playlist Types',
+                  l10n.playlistTypes,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -2177,13 +2174,13 @@ class _SettingsDialogState extends State<_SettingsDialog> {
                   ),
                 ),
               ),
-              for (final typeOption in const [
-                ('Video', 'Video'),
-                ('Audio', 'Audio (Music)'),
-                ('AudioBook', 'Audiobook'),
-                ('Book', 'Book'),
-                ('Photo', 'Photo'),
-                ('Mixed', 'Mixed'),
+              for (final typeOption in [
+                ('Video', l10n.playlistTypeVideo),
+                ('Audio', l10n.playlistTypeAudio),
+                ('AudioBook', l10n.playlistTypeAudiobook),
+                ('Book', l10n.playlistTypeBook),
+                ('Photo', l10n.playlistTypePhoto),
+                ('Mixed', l10n.playlistTypeMixed),
               ])
                 _DialogCheckboxTile(
                   label: typeOption.$2,

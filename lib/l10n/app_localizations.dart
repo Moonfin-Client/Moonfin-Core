@@ -18189,6 +18189,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Search Criteria'**
   String get adminBackToSearch;
+
+  /// Section header in the library display dialog for grouping options
+  ///
+  /// In en, this message translates to:
+  /// **'Grouping'**
+  String get grouping;
+
+  /// Checkbox label to group playlists by their media type category
+  ///
+  /// In en, this message translates to:
+  /// **'Group by Type'**
+  String get groupByType;
+
+  /// Section header in the library display dialog for filtering playlist categories
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Types'**
+  String get playlistTypes;
+
+  /// Filter checkbox label for video playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get playlistTypeVideo;
+
+  /// Filter checkbox label for audio/music playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Audio (Music)'**
+  String get playlistTypeAudio;
+
+  /// Filter checkbox label for audiobook playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Audiobook'**
+  String get playlistTypeAudiobook;
+
+  /// Filter checkbox label for book playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get playlistTypeBook;
+
+  /// Filter checkbox label for photo playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get playlistTypePhoto;
+
+  /// Filter checkbox label for mixed media playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get playlistTypeMixed;
+
+  /// Section header above video playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Video Playlists'**
+  String get videoPlaylistsSection;
+
+  /// Section header above audio playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Playlists'**
+  String get audioPlaylistsSection;
+
+  /// Section header above audiobook playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Audiobook Playlists'**
+  String get audiobookPlaylistsSection;
+
+  /// Section header above book playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Book Playlists'**
+  String get bookPlaylistsSection;
+
+  /// Section header above photo playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Playlists'**
+  String get photoPlaylistsSection;
+
+  /// Section header above mixed playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed Playlists'**
+  String get mixedPlaylistsSection;
 }
 
 class _AppLocalizationsDelegate

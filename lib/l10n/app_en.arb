@@ -9060,5 +9060,65 @@
   "adminBackToSearch": "Back to Search Criteria",
   "@adminBackToSearch": {
     "description": "Tooltip on the button that returns from the Identify results list to the search form"
+  },
+  "grouping": "Grouping",
+  "@grouping": {
+    "description": "Section header in the library display dialog for grouping options"
+  },
+  "groupByType": "Group by Type",
+  "@groupByType": {
+    "description": "Checkbox label to group playlists by their media type category"
+  },
+  "playlistTypes": "Playlist Types",
+  "@playlistTypes": {
+    "description": "Section header in the library display dialog for filtering playlist categories"
+  },
+  "playlistTypeVideo": "Video",
+  "@playlistTypeVideo": {
+    "description": "Filter checkbox label for video playlists"
+  },
+  "playlistTypeAudio": "Audio (Music)",
+  "@playlistTypeAudio": {
+    "description": "Filter checkbox label for audio/music playlists"
+  },
+  "playlistTypeAudiobook": "Audiobook",
+  "@playlistTypeAudiobook": {
+    "description": "Filter checkbox label for audiobook playlists"
+  },
+  "playlistTypeBook": "Book",
+  "@playlistTypeBook": {
+    "description": "Filter checkbox label for book playlists"
+  },
+  "playlistTypePhoto": "Photo",
+  "@playlistTypePhoto": {
+    "description": "Filter checkbox label for photo playlists"
+  },
+  "playlistTypeMixed": "Mixed",
+  "@playlistTypeMixed": {
+    "description": "Filter checkbox label for mixed media playlists"
+  },
+  "videoPlaylistsSection": "Video Playlists",
+  "@videoPlaylistsSection": {
+    "description": "Section header above video playlists when Group by Type is enabled"
+  },
+  "audioPlaylistsSection": "Audio Playlists",
+  "@audioPlaylistsSection": {
+    "description": "Section header above audio playlists when Group by Type is enabled"
+  },
+  "audiobookPlaylistsSection": "Audiobook Playlists",
+  "@audiobookPlaylistsSection": {
+    "description": "Section header above audiobook playlists when Group by Type is enabled"
+  },
+  "bookPlaylistsSection": "Book Playlists",
+  "@bookPlaylistsSection": {
+    "description": "Section header above book playlists when Group by Type is enabled"
+  },
+  "photoPlaylistsSection": "Photo Playlists",
+  "@photoPlaylistsSection": {
+    "description": "Section header above photo playlists when Group by Type is enabled"
+  },
+  "mixedPlaylistsSection": "Mixed Playlists",
+  "@mixedPlaylistsSection": {
+    "description": "Section header above mixed playlists when Group by Type is enabled"
   }
 }
