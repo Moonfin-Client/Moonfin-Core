@@ -989,80 +989,96 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required WatchedIndicatorBehavior watchedBehavior,
     required bool isMobile,
   }) {
-    return MediaCard(
-      title: item.name,
-      subtitle: _cardSubtitle(item),
-      imageUrl: _imageUrl(item),
-      width: double.infinity,
-      aspectRatio: itemAspectRatio,
-      isBanner: _vm.imageType == ImageType.banner,
-      focusColor: focusColor,
-      focusNode: getGridItemFocusNode(index),
-      cardFocusExpansion: _prefs.get(
-        UserPreferences.cardFocusExpansion,
-      ),
-      suppressFocusGlow: isNeon,
-      isPlayed: item.isPlayed,
-      isFavorite: item.isFavorite,
-      unplayedCount: item.unplayedItemCount,
-      playedPercentage: _displayPlayedPercentage(item),
-      watchedBehavior: watchedBehavior,
-      itemType: item.type,
-      onFocus: isMobile
-          ? null
-          : () {
-              _onItemFocused(item);
-              _scrollToGridRow(
-                index: index,
-                crossAxisCount: crossAxisCount,
-                cellHeight: cellWidth / childAspectRatio,
-                mainAxisSpacing: 8.0,
-              );
-            },
-      onHoverStart: isMobile ? null : () => _onItemFocused(item),
-      onHoverEnd: isMobile
-          ? null
-          : () => _vm.setFocusedItem(null),
-      onKeyEvent: (_, event) {
-        if (PlatformDetection.isTV &&
-            event.isActionable &&
-            event.logicalKey.isBackKey &&
-            _allLetterFocusNode.context != null) {
-          _allLetterFocusNode.requestFocus();
-          return KeyEventResult.handled;
-        }
-        if (event.isActionable && event.logicalKey.isRightKey) {
-          final isLastColumn =
-              (index % crossAxisCount) == crossAxisCount - 1;
-          final isLastItem = index == _vm.items.length - 1;
-          if (isLastColumn || isLastItem) {
+    return Builder(
+      builder: (cardContext) {
+        return MediaCard(
+          title: item.name,
+          subtitle: _cardSubtitle(item),
+          imageUrl: _imageUrl(item),
+          width: double.infinity,
+          aspectRatio: itemAspectRatio,
+          isBanner: _vm.imageType == ImageType.banner,
+          focusColor: focusColor,
+          focusNode: getGridItemFocusNode(index),
+          cardFocusExpansion: _prefs.get(
+            UserPreferences.cardFocusExpansion,
+          ),
+          suppressFocusGlow: isNeon,
+          isPlayed: item.isPlayed,
+          isFavorite: item.isFavorite,
+          unplayedCount: item.unplayedItemCount,
+          playedPercentage: _displayPlayedPercentage(item),
+          watchedBehavior: watchedBehavior,
+          itemType: item.type,
+          onFocus: isMobile
+              ? null
+              : () {
+                  _onItemFocused(item);
+                  _scrollToGridRow(
+                    index: index,
+                    crossAxisCount: crossAxisCount,
+                    cellHeight: cellWidth / childAspectRatio,
+                    mainAxisSpacing: 8.0,
+                  );
+                  if (cardContext.mounted) {
+                    unawaited(
+                      Scrollable.ensureVisible(
+                        cardContext,
+                        alignment: 0.15,
+                        alignmentPolicy:
+                            ScrollPositionAlignmentPolicy.keepVisible,
+                        duration: const Duration(milliseconds: 160),
+                        curve: Curves.easeOutCubic,
+                      ),
+                    );
+                  }
+                },
+          onHoverStart: isMobile ? null : () => _onItemFocused(item),
+          onHoverEnd: isMobile
+              ? null
+              : () => _vm.setFocusedItem(null),
+          onKeyEvent: (_, event) {
+            if (PlatformDetection.isTV &&
+                event.isActionable &&
+                event.logicalKey.isBackKey &&
+                _allLetterFocusNode.context != null) {
+              _allLetterFocusNode.requestFocus();
+              return KeyEventResult.handled;
+            }
+            if (event.isActionable && event.logicalKey.isRightKey) {
+              final isLastColumn =
+                  (index % crossAxisCount) == crossAxisCount - 1;
+              final isLastItem = index == _vm.items.length - 1;
+              if (isLastColumn || isLastItem) {
+                return KeyEventResult.handled;
+              }
+            }
+
+            if (!_vm.hasMore && !_vm.loadingMore) {
+              return KeyEventResult.ignored;
+            }
+            if (!event.isActionable || !event.logicalKey.isDownKey) {
+              return KeyEventResult.ignored;
+            }
+
+            final nextRowIndex = index + crossAxisCount;
+            final atBottomLoadedRow =
+                nextRowIndex >= _vm.items.length;
+            if (!atBottomLoadedRow) {
+              return KeyEventResult.ignored;
+            }
+
+            _vm.loadMore();
             return KeyEventResult.handled;
-          }
-        }
-
-        if (!_vm.hasMore && !_vm.loadingMore) {
-          return KeyEventResult.ignored;
-        }
-        if (!event.isActionable || !event.logicalKey.isDownKey) {
-          return KeyEventResult.ignored;
-        }
-
-        final nextRowIndex = index + crossAxisCount;
-        final atBottomLoadedRow =
-            nextRowIndex >= _vm.items.length;
-        if (!atBottomLoadedRow) {
-          return KeyEventResult.ignored;
-        }
-
-        _vm.loadMore();
-        return KeyEventResult.handled;
+          },
+          onLongPress: () => showContextMenu(
+            context,
+            item,
+            onChanged: () => setState(() {}),
+          ),
+          onTap: () => _onItemTap(item),
+        );
       },
-      onLongPress: () => showContextMenu(
-        context,
-        item,
-        onChanged: () => setState(() {}),
-      ),
-      onTap: () => _onItemTap(item),
     );
   }
 
@@ -1769,35 +1785,6 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 onSurface: onSurface,
               ),
             ],
-            if (vm.isPlaylistBrowse) ...[
-              Divider(color: dividerColor),
-              _sectionHeader('Grouping', sectionColor),
-              _DialogCheckboxTile(
-                label: 'Group by Type',
-                checked: vm.groupByType,
-                onTap: () => vm.setGroupByType(!vm.groupByType),
-                accent: accent,
-                onSurface: onSurface,
-              ),
-              Divider(color: dividerColor),
-              _sectionHeader('Playlist Types', sectionColor),
-              for (final typeOption in const [
-                ('Video', 'Video'),
-                ('Audio', 'Audio (Music)'),
-                ('AudioBook', 'Audiobook'),
-                ('Book', 'Book'),
-                ('Game', 'Game'),
-                ('Photo', 'Photo'),
-                ('Mixed', 'Mixed'),
-              ])
-                _DialogCheckboxTile(
-                  label: typeOption.$2,
-                  checked: vm.playlistTypeFilters.contains(typeOption.$1),
-                  onTap: () => vm.togglePlaylistTypeFilter(typeOption.$1),
-                  accent: accent,
-                  onSurface: onSurface,
-                ),
-            ],
             if (!vm.isMusicBrowse) ...[
               Divider(color: dividerColor),
               _sectionHeader(
@@ -2157,6 +2144,54 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               ),
               for (final size in PosterSize.values)
                 _posterSizeRadioTile(vm, size),
+            ],
+            if (vm.isPlaylistBrowse) ...[
+              Divider(color: dividerColor),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  'Grouping',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
+                ),
+              ),
+              _DialogCheckboxTile(
+                label: 'Group by Type',
+                checked: vm.groupByType,
+                onTap: () => vm.setGroupByType(!vm.groupByType),
+                accent: _jellyfinBlue,
+                onSurface: onSurface,
+              ),
+              Divider(color: dividerColor),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  'Playlist Types',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
+                ),
+              ),
+              for (final typeOption in const [
+                ('Video', 'Video'),
+                ('Audio', 'Audio (Music)'),
+                ('AudioBook', 'Audiobook'),
+                ('Book', 'Book'),
+                ('Photo', 'Photo'),
+                ('Mixed', 'Mixed'),
+              ])
+                _DialogCheckboxTile(
+                  label: typeOption.$2,
+                  checked: vm.playlistTypeFilters.contains(typeOption.$1),
+                  onTap: () => vm.togglePlaylistTypeFilter(typeOption.$1),
+                  accent: _jellyfinBlue,
+                  onSurface: onSurface,
+                ),
             ],
           ],
         ),

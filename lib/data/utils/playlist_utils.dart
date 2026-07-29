@@ -45,9 +45,6 @@ String resolveItemMediaType(Map<String, dynamic> raw) {
   if (itemType == 'Book') {
     return 'Book';
   }
-  if (itemType == 'Game') {
-    return 'Game';
-  }
   if (itemType == 'Photo') {
     return 'Photo';
   }
@@ -59,7 +56,6 @@ String resolveItemMediaType(Map<String, dynamic> raw) {
     if (summaryMediaType == 'Video') return 'Video';
     if (summaryMediaType == 'Audio') return 'Audio';
     if (summaryMediaType == 'Book') return 'Book';
-    if (summaryMediaType == 'Game') return 'Game';
     if (summaryMediaType == 'Photo') return 'Photo';
   }
 

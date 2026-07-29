@@ -131,7 +131,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     'Audio',
     'AudioBook',
     'Book',
-    'Game',
     'Photo',
     'Mixed',
   };
@@ -149,7 +148,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       'Audio': [],
       'AudioBook': [],
       'Book': [],
-      'Game': [],
       'Photo': [],
       'Mixed': [],
     };
