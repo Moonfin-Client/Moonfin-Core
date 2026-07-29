@@ -1064,8 +1064,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       ),
       onTap: () => _onItemTap(item),
     );
-      },
-    );
   }
 
   String? _cardSubtitle(AggregatedItem item) {
