@@ -805,6 +805,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
     }
 
+    final l10n = AppLocalizations.of(context);
     final cardWidth = _cardWidth();
     const spacing = 12.0;
     final watchedBehavior = _prefs.get(
