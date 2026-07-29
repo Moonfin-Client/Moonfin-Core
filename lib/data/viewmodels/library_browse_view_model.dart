@@ -6,6 +6,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
+import '../utils/bounded_concurrency.dart';
 import '../utils/playlist_utils.dart';
 
 enum LibraryBrowseState { loading, ready, error }
@@ -136,10 +137,25 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   };
   Set<String> get playlistTypeFilters => _playlistTypeFilters;
 
+  static const _playlistCategoryConcurrency = 6;
+
   final Map<String, String> _playlistCategoryMap = {};
 
   String categoryForPlaylist(AggregatedItem item) {
     return _playlistCategoryMap[item.id] ?? 'Mixed';
+  }
+
+  /// The loaded playlists the type checkboxes let through. Filtering here rather
+  /// than while paging keeps ticking a box a repaint instead of a fresh load.
+  List<AggregatedItem> get visiblePlaylists {
+    if (!isPlaylistBrowse) return _items;
+    return _items
+        .where(
+          (item) =>
+              item.type != 'Playlist' ||
+              _playlistTypeFilters.contains(categoryForPlaylist(item)),
+        )
+        .toList();
   }
 
   Map<String, List<AggregatedItem>> get groupedPlaylists {
@@ -151,9 +167,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       'Photo': [],
       'Mixed': [],
     };
-    for (final item in _items) {
-      final cat = categoryForPlaylist(item);
-      groups.putIfAbsent(cat, () => []).add(item);
+    for (final item in visiblePlaylists) {
+      groups.putIfAbsent(categoryForPlaylist(item), () => []).add(item);
     }
     groups.removeWhere((key, value) => value.isEmpty);
     return groups;
@@ -166,15 +181,15 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> togglePlaylistTypeFilter(String type) async {
+  void togglePlaylistTypeFilter(String type) {
     if (_playlistTypeFilters.contains(type)) {
-      if (_playlistTypeFilters.length > 1) {
-        _playlistTypeFilters.remove(type);
-      }
+      // Clearing the last one would leave the page blank with no way back.
+      if (_playlistTypeFilters.length == 1) return;
+      _playlistTypeFilters.remove(type);
     } else {
       _playlistTypeFilters.add(type);
     }
-    await load();
+    notifyListeners();
   }
 
   Future<List<AggregatedItem>> _filterLibraryItems(
@@ -182,19 +197,34 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   ) async {
     if (!isPlaylistBrowse) return items;
 
-    final resolved = await Future.wait(
-      items.map((item) async {
-        if (item.type != 'Playlist') return item;
-        final category = await resolvePlaylistCategory(_client, item);
-        _playlistCategoryMap[item.id] = category;
-        if (_playlistTypeFilters.contains(category)) {
-          return item;
-        }
-        return null;
-      }),
+    // A playlist the summary can't settle costs a request of its own, so keep a
+    // lid on how many are in flight at once.
+    final categories = await mapBounded<AggregatedItem, String>(
+      items,
+      _playlistCategoryConcurrency,
+      (item) => item.type != 'Playlist'
+          ? Future.value(null)
+          : resolvePlaylistCategory(
+              _client,
+              item,
+              assumeNonEmptyWhenUnknown: !isMusicBrowse,
+            ),
     );
 
-    return resolved.whereType<AggregatedItem>().toList();
+    final kept = <AggregatedItem>[];
+    for (var i = 0; i < items.length; i++) {
+      final item = items[i];
+      final category = categories[i];
+      if (category != null) {
+        _playlistCategoryMap[item.id] = category;
+        // A music library's playlist tab only ever listed audio.
+        if (isMusicBrowse && category != 'Audio' && category != 'AudioBook') {
+          continue;
+        }
+      }
+      kept.add(item);
+    }
+    return kept;
   }
 
   void setFocusedItem(AggregatedItem? item) {
@@ -282,6 +312,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _filteredOutCount = 0;
     _fetchedCount = 0;
     _renderedItemIds.clear();
+    _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
     notifyListeners();

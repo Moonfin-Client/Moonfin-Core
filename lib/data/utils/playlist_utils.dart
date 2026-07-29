@@ -23,50 +23,35 @@ bool hasPlaylistEntryId(AggregatedItem item) {
   return entryId != null && entryId.isNotEmpty;
 }
 
-/// Resolves the media type category of an individual item.
-/// Concrete `Type` (`Movie`, `Episode`, `MusicVideo`, `Video`, `AudioBook`, etc.)
-/// takes precedence over `MediaType` to handle Jellyfin metadata mismatches.
+/// The category an individual item belongs to. Its concrete `Type` wins over
+/// `MediaType`, which reports a music video as Audio and can't tell an audiobook
+/// from a song.
 String resolveItemMediaType(Map<String, dynamic> raw) {
-  final itemType = raw['Type'] as String?;
-  if (itemType == 'Movie' ||
-      itemType == 'Episode' ||
-      itemType == 'Video' ||
-      itemType == 'MusicVideo' ||
-      itemType == 'Trailer' ||
-      itemType == 'Clip') {
-    return 'Video';
-  }
-  if (itemType == 'AudioBook') {
-    return 'AudioBook';
-  }
-  if (itemType == 'Audio') {
-    return 'Audio';
-  }
-  if (itemType == 'Book') {
-    return 'Book';
-  }
-  if (itemType == 'Photo') {
-    return 'Photo';
-  }
-
-  final summaryMediaType = raw['MediaType'] as String?;
-  if (summaryMediaType != null &&
-      summaryMediaType.isNotEmpty &&
-      summaryMediaType != 'Unknown') {
-    if (summaryMediaType == 'Video') return 'Video';
-    if (summaryMediaType == 'Audio') return 'Audio';
-    if (summaryMediaType == 'Book') return 'Book';
-    if (summaryMediaType == 'Photo') return 'Photo';
-  }
-
-  return 'Unknown';
+  return switch (raw['Type'] as String?) {
+    'Movie' || 'Episode' || 'Video' || 'MusicVideo' || 'Trailer' || 'Clip' =>
+      'Video',
+    'AudioBook' => 'AudioBook',
+    'Audio' => 'Audio',
+    'Book' => 'Book',
+    'Photo' => 'Photo',
+    _ => _categoryForMediaType(raw['MediaType'] as String?),
+  };
 }
 
-bool playlistItemMatchesMediaType(Map<String, dynamic> raw, String mediaType) {
-  return resolveItemMediaType(raw) == mediaType;
+/// A server `MediaType` mapped onto the same categories [resolveItemMediaType]
+/// returns. The server only reports Video, Audio, Book or Photo here.
+String _categoryForMediaType(String? mediaType) {
+  return switch (mediaType) {
+    'Video' => 'Video',
+    'Audio' => 'Audio',
+    'Book' => 'Book',
+    'Photo' => 'Photo',
+    _ => 'Unknown',
+  };
 }
 
-/// Resolves the playlist category (`Video`, `Audio`, `AudioBook`, `Book`, `Game`, `Photo`, or `Mixed`).
+/// The category a playlist belongs to, one of Video, Audio, AudioBook, Book,
+/// Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
 Future<String> resolvePlaylistCategory(
   MediaServerClient client,
   AggregatedItem item, {
@@ -83,11 +68,14 @@ Future<String> resolvePlaylistCategory(
     return 'Mixed';
   }
 
-  final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null &&
-      summaryMediaType.isNotEmpty &&
-      summaryMediaType != 'Unknown') {
-    return summaryMediaType;
+  // Video, Book and Photo summaries are specific enough to take at face value.
+  // Audio isn't, since the server calls both music and audiobooks Audio, and
+  // tags a playlist of music videos Audio too.
+  final summaryCategory = _categoryForMediaType(
+    item.rawData['MediaType'] as String?,
+  );
+  if (summaryCategory != 'Audio' && summaryCategory != 'Unknown') {
+    return summaryCategory;
   }
 
   try {
@@ -122,16 +110,28 @@ Future<bool> playlistContainsOnlyMediaType(
   return category == mediaType;
 }
 
+/// Whether a playlist belongs in a video playlist row. Audio only playlists are
+/// left out because they have a row of their own, so counting them here would
+/// list the same playlist twice on the home screen.
 Future<bool> playlistHasBrowsableItems(
   MediaServerClient client,
   AggregatedItem item, {
   bool assumeNonEmptyWhenUnknown = false,
 }) async {
-  if (item.type != 'Playlist') return true;
-  return isPlaylistNonEmpty(
+  if (item.type != 'Playlist') return false;
+  if (!isPlaylistNonEmpty(
+    item,
+    assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
+  )) {
+    return false;
+  }
+
+  final category = await resolvePlaylistCategory(
+    client,
     item,
     assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
   );
+  return category != 'Audio' && category != 'AudioBook';
 }
 
 Future<List<AggregatedItem>> filterBrowsablePlaylists(
