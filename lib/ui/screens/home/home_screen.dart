@@ -5100,7 +5100,7 @@ class _ContentRowsState extends State<_ContentRows>
   void _fetchBackdropIfNeeded(AggregatedItem item) async {
     if (item.serverId != 'seerr') return;
     final backdrop = item.rawData['BackdropPath'] as String?;
-    if (backdrop != null && backdrop.startsWith('/')) return;
+    if (backdrop != null && (backdrop.startsWith('/') || backdrop.startsWith('http'))) return;
     if (_dynamicBackdrops.containsKey(item.id)) return;
     if (!_fetchingBackdrops.add(item.id)) return;
 
@@ -5172,6 +5172,9 @@ class _ContentRowsState extends State<_ContentRows>
       final backdrop = item.rawData['BackdropPath'] as String?;
       if (backdrop != null && backdrop.startsWith('/')) {
         return _seerrTmdbImageUrl(backdrop, 1280);
+      }
+      if (backdrop != null && backdrop.startsWith('http')) {
+        return backdrop;
       }
       return _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
     }

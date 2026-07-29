@@ -2651,9 +2651,12 @@ class HomeViewModel extends ChangeNotifier {
         final content = await file.readAsString();
         final list = jsonDecode(content) as List;
         final items = list.map((x) => _aggregatedItemFromJson(x as Map<String, dynamic>)).toList();
-        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || x.rawData['PosterPath'] == '' || !x.rawData.containsKey('CacheVerV2'));
+        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || !x.rawData.containsKey('PosterPath') || !x.rawData.containsKey('CacheVerV2'));
         if (hasOldCache) {
           debugPrint('[RadarrCalendarCache] Old cache detected, invalidating to force fresh fetch');
+          try {
+            await file.delete();
+          } catch (_) {}
           return const [];
         }
         return items;
@@ -2683,9 +2686,12 @@ class HomeViewModel extends ChangeNotifier {
         final content = await file.readAsString();
         final list = jsonDecode(content) as List;
         final items = list.map((x) => _aggregatedItemFromJson(x as Map<String, dynamic>)).toList();
-        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || x.rawData['PosterPath'] == '' || !x.rawData.containsKey('CacheVerV2'));
+        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || !x.rawData.containsKey('PosterPath') || !x.rawData.containsKey('CacheVerV2'));
         if (hasOldCache) {
           debugPrint('[SonarrCalendarCache] Old cache detected, invalidating to force fresh fetch');
+          try {
+            await file.delete();
+          } catch (_) {}
           return const [];
         }
         return items;
