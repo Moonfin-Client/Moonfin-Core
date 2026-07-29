@@ -915,6 +915,7 @@ class DownloadService extends ChangeNotifier {
       serverId: row.serverId,
       rawData: _offlineRepo.rowToRawData(row),
     );
+    unawaited(_notificationService.showComplete(itemName: item.name));
     unawaited(
       _runPostCompletionTasks(
         item: item,
@@ -1004,8 +1005,7 @@ class DownloadService extends ChangeNotifier {
     DownloadQuality quality,
     DioException error,
   ) {
-    final status = error.response?.statusCode;
-    if (status != 401 && status != 403 && status != 404) {
+    if (error.type == DioExceptionType.cancel) {
       return false;
     }
 

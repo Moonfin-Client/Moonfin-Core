@@ -66,7 +66,7 @@ class BackgroundDownloadCoordinator {
     FileDownloader().configureNotificationForGroup(
       mediaGroup,
       running: const TaskNotification('Downloading', '{displayName}'),
-      complete: const TaskNotification('Download complete', '{displayName}'),
+      complete: null,
       error: const TaskNotification('Download failed', '{displayName}'),
       progressBar: true,
       groupNotificationId: 'moonfinMediaDownloads',
