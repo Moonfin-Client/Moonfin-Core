@@ -921,11 +921,8 @@ class DeviceProfileBuilder {
     Set<AudioPassthroughToggle> explicitPassthroughToggles =
         const <AudioPassthroughToggle>{},
   }) {
-    if (audioOutputMode == AudioOutputMode.avrPassthrough &&
-        _isPassthroughControlledAudioCodec(codec) &&
-        (capabilityProfile.isAvReceiverRoute ||
-            _isPassthroughSetByHand(codec, explicitPassthroughToggles))) {
-      return _isAudioCodecPassthroughEnabled(
+    if (_isPassthroughControlledAudioCodec(codec)) {
+      final passthroughAllowed = _isAudioCodecPassthroughEnabled(
         codec: codec,
         ac3PassthroughEnabled: ac3PassthroughEnabled,
         eac3PassthroughEnabled: eac3PassthroughEnabled,
@@ -936,6 +933,12 @@ class DeviceProfileBuilder {
         trueHdPassthroughEnabled: trueHdPassthroughEnabled,
         trueHdAtmosPassthroughEnabled: trueHdAtmosPassthroughEnabled,
       );
+      if (!passthroughAllowed) {
+        // If passthrough for this codec was explicitly disabled by the user or
+        // route, do not advertise it as allowed, forcing the server to re-encode
+        // the audio stream to AAC/PCM during video transcoding.
+        return false;
+      }
     }
 
     if (universalAudioDecode) {
@@ -971,48 +974,6 @@ class DeviceProfileBuilder {
           trueHdPassthroughEnabled: trueHdPassthroughEnabled,
           trueHdAtmosPassthroughEnabled: trueHdAtmosPassthroughEnabled,
         );
-  }
-
-  /// Whether the user set any of the toggles this codec answers to by hand.
-  ///
-  /// A detected profile in AVR mode always reports an AV receiver route, so the
-  /// route side of the gate only ever fails when the hardware probe found
-  /// nothing. There is no detected capability left to follow in that state, and
-  /// falling through would hand the receiver a codec the user switched off, so
-  /// a hand-set toggle keeps governing. Reusing the enabled-check over which
-  /// toggles are set answers which ones the codec reads.
-  static bool _isPassthroughSetByHand(
-    String codec,
-    Set<AudioPassthroughToggle> explicitToggles,
-  ) {
-    if (explicitToggles.isEmpty) return false;
-    return _isAudioCodecPassthroughEnabled(
-      codec: codec,
-      ac3PassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.ac3,
-      ),
-      eac3PassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.eac3,
-      ),
-      eac3JocPassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.eac3Joc,
-      ),
-      dtsCorePassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.dtsCore,
-      ),
-      dtsHdPassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.dtsHd,
-      ),
-      dtsXPassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.dtsX,
-      ),
-      trueHdPassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.trueHd,
-      ),
-      trueHdAtmosPassthroughEnabled: explicitToggles.contains(
-        AudioPassthroughToggle.trueHdAtmos,
-      ),
-    );
   }
 
   static bool _isPassthroughControlledAudioCodec(String codec) {
