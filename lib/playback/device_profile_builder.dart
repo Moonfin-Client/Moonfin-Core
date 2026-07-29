@@ -1177,6 +1177,11 @@ class DeviceProfileBuilder {
               property: 'VideoProfile',
               value: 'high 10',
             ),
+            _condition(
+              condition: 'LessThanEqual',
+              property: 'VideoBitDepth',
+              value: '8',
+            ),
           ],
         ),
       );

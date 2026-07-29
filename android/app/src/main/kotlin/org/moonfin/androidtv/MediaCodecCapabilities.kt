@@ -147,12 +147,8 @@ object MediaCodecCapabilities {
         val supportsDvP8 = supportsDolbyVisionProfile(DolbyVisionProfiles.profile8, codecInfos)
 
         val supportsAvc = hasCodecForMime(MediaFormat.MIMETYPE_VIDEO_AVC, codecInfos)
-        val supportsAvcHigh10 = hasDecoder(
-            MediaFormat.MIMETYPE_VIDEO_AVC,
-            CodecProfileLevel.AVCProfileHigh10,
-            CodecProfileLevel.AVCLevel4,
-            codecInfos,
-        )
+        // Android TV hardware decoders do not support 10-bit H264 (AVC High 10) decoding.
+        val supportsAvcHigh10 = false
         val avcMainLevel = getAvcLevel(CodecProfileLevel.AVCProfileMain, codecInfos)
         val avcHigh10Level = getAvcLevel(CodecProfileLevel.AVCProfileHigh10, codecInfos)
 
