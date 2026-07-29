@@ -123,17 +123,80 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   ImageApi get imageApi => _client.imageApi;
 
+  late bool _groupByType;
+  bool get groupByType => _groupByType;
+
+  final Set<String> _playlistTypeFilters = {
+    'Video',
+    'Audio',
+    'AudioBook',
+    'Book',
+    'Game',
+    'Photo',
+    'Mixed',
+  };
+  Set<String> get playlistTypeFilters => _playlistTypeFilters;
+
+  final Map<String, String> _playlistCategoryMap = {};
+
+  String categoryForPlaylist(AggregatedItem item) {
+    return _playlistCategoryMap[item.id] ?? 'Mixed';
+  }
+
+  Map<String, List<AggregatedItem>> get groupedPlaylists {
+    final Map<String, List<AggregatedItem>> groups = {
+      'Video': [],
+      'Audio': [],
+      'AudioBook': [],
+      'Book': [],
+      'Game': [],
+      'Photo': [],
+      'Mixed': [],
+    };
+    for (final item in _items) {
+      final cat = categoryForPlaylist(item);
+      groups.putIfAbsent(cat, () => []).add(item);
+    }
+    groups.removeWhere((key, value) => value.isEmpty);
+    return groups;
+  }
+
+  Future<void> setGroupByType(bool value) async {
+    if (_groupByType == value) return;
+    _groupByType = value;
+    await _prefs.set(UserPreferences.playlistsGroupByType, value);
+    notifyListeners();
+  }
+
+  Future<void> togglePlaylistTypeFilter(String type) async {
+    if (_playlistTypeFilters.contains(type)) {
+      if (_playlistTypeFilters.length > 1) {
+        _playlistTypeFilters.remove(type);
+      }
+    } else {
+      _playlistTypeFilters.add(type);
+    }
+    await load();
+  }
+
   Future<List<AggregatedItem>> _filterLibraryItems(
     List<AggregatedItem> items,
   ) async {
     if (!isPlaylistBrowse) return items;
 
-    return filterBrowsablePlaylists(
-      _client,
-      items,
-      mediaType: isMusicBrowse ? 'Audio' : null,
-      assumeNonEmptyWhenUnknown: !isMusicBrowse,
+    final resolved = await Future.wait(
+      items.map((item) async {
+        if (item.type != 'Playlist') return item;
+        final category = await resolvePlaylistCategory(_client, item);
+        _playlistCategoryMap[item.id] = category;
+        if (_playlistTypeFilters.contains(category)) {
+          return item;
+        }
+        return null;
+      }),
     );
+
+    return resolved.whereType<AggregatedItem>().toList();
   }
 
   void setFocusedItem(AggregatedItem? item) {
@@ -176,6 +239,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         favoritesOnly ||
         _prefs.get(UserPreferences.libraryFavoriteFilter(_prefKey));
     _letterFilter = '';
+    _groupByType = _prefs.get(UserPreferences.playlistsGroupByType);
     _imageType = _prefs.get(UserPreferences.libraryImageType(_imagePrefKey));
     _posterSize = _readScopedPosterSize();
     _lastGroupCollectionsValue = _prefs.get(UserPreferences.groupItemsIntoCollections);
