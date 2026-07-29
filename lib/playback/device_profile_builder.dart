@@ -1448,12 +1448,13 @@ class DeviceProfileBuilder {
       // bitstream, so it only needs a transcode when the client can't render
       // HEVC HDR10.
       unsupportedRangeTypesHevc.add('DOVI_INVALID');
-      if (!supportsHevcHdr10Plus) {
-        unsupportedRangeTypesHevc.add('HDR10_PLUS');
-      }
     }
 
-    if (knownHevcDoviHdr10PlusBug) {
+    if (!supportsHevcHdr10Plus) {
+      unsupportedRangeTypesHevc.add('HDR10_PLUS');
+    }
+
+    if (knownHevcDoviHdr10PlusBug && !supportsDvProfile8) {
       unsupportedRangeTypesHevc.add('DOVI_WITH_HDR10_PLUS');
       unsupportedRangeTypesHevc.add('DOVI_WITH_ELHDR10_PLUS');
     }
