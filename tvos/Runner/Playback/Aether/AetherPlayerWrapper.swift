@@ -3,6 +3,7 @@ import AetherEngine
 import Combine
 import Foundation
 import MediaPlayer
+import QuartzCore
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
@@ -90,6 +91,18 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private let assRenderer = AssRenderer()
     private var assConfiguredForTrackID: Int?
     private var assSeenCueIDs = Set<Int>()
+
+    // ASS render cadence: engine.clock.$sourceTime is throttled to ~10 Hz
+    // (shared with tvOS menu/focus UI), so don't render on that tick alone
+    // or animated ASS (\move/\fad/\k) looks stepped. A display-rate ticker
+    // drives the actual renders instead; the engine tick just re-anchors it.
+    #if canImport(UIKit)
+        private var assDisplayLink: CADisplayLink?
+    #elseif canImport(AppKit)
+        private var assDisplayLink: Timer?
+    #endif
+    private var lastKnownSourceTime: Double = 0
+    private var lastKnownSourceTimeHostTime: CFTimeInterval = 0
 
     /// On iOS, `audio_service` (Flutter) owns MPRemoteCommandCenter and the
     /// Now Playing card, and the wrapper driving them too would
@@ -754,11 +767,25 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private func tickSubtitles(at sourceTime: Double) {
         subtitleOverlay.update(currentTime: sourceTime)
         #if canImport(Libass)
+            lastKnownSourceTime = sourceTime
+            lastKnownSourceTimeHostTime = CACurrentMediaTime()
             if assConfiguredForTrackID != nil {
-                renderAss(atSeconds: sourceTime - subtitleOverlay.delaySeconds)
+                renderAss(atSeconds: extrapolatedAssSeconds())
             }
         #endif
     }
+
+    #if canImport(Libass)
+        /// Extrapolates past the last engine tick using wall-clock elapsed
+        /// time. Frozen while not playing.
+        private func extrapolatedAssSeconds() -> Double {
+            let base = lastKnownSourceTime - subtitleOverlay.delaySeconds
+            guard isPlaying else { return base }
+            let elapsed = CACurrentMediaTime() - lastKnownSourceTimeHostTime
+            guard elapsed > 0 else { return base }
+            return base + elapsed
+        }
+    #endif
 
     #if canImport(Libass)
         private func configureAssIfNeeded(for track: TrackInfo, engine: AetherEngine) {
@@ -770,7 +797,34 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 fontsDir: fontsDir
             ) {
                 assConfiguredForTrackID = track.id
+                startAssDisplayLinkIfNeeded()
             }
+        }
+
+        /// Drives libass at display rate. See comment on `assDisplayLink`.
+        private func startAssDisplayLinkIfNeeded() {
+            guard assDisplayLink == nil else { return }
+            #if canImport(UIKit)
+                let link = CADisplayLink(target: self, selector: #selector(handleAssDisplayLinkTick))
+                link.add(to: .main, forMode: .common)
+                assDisplayLink = link
+            #elseif canImport(AppKit)
+                let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                    self?.handleAssDisplayLinkTick()
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                assDisplayLink = timer
+            #endif
+        }
+
+        private func stopAssDisplayLink() {
+            assDisplayLink?.invalidate()
+            assDisplayLink = nil
+        }
+
+        @objc private func handleAssDisplayLinkTick() {
+            guard assConfiguredForTrackID != nil else { return }
+            renderAss(atSeconds: extrapolatedAssSeconds())
         }
 
         private func renderAss(atSeconds seconds: Double) {
@@ -797,6 +851,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private func resetAssState() {
         #if canImport(Libass)
             assRenderer.reset()
+            stopAssDisplayLink()
         #endif
         assConfiguredForTrackID = nil
         assSeenCueIDs.removeAll()
