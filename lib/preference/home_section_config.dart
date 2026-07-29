@@ -326,6 +326,39 @@ class HomeSectionConfig {
       enabled: false,
       order: 39,
     ),
+    // These carry a toggle preference too, but they still need a section entry.
+    // Without one there was nowhere for turning the row off to persist, so the
+    // next sync kept bringing it back.
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched1,
+      enabled: false,
+      order: 40,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched2,
+      enabled: false,
+      order: 41,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched3,
+      enabled: false,
+      order: 42,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched4,
+      enabled: false,
+      order: 43,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched5,
+      enabled: false,
+      order: 44,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.rewatch,
+      enabled: false,
+      order: 45,
+    ),
   ];
 
   static bool isSupportedJson(Map<String, dynamic> json) {

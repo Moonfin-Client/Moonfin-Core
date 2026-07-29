@@ -1126,7 +1126,7 @@ class PluginSyncService extends ChangeNotifier {
           }
           _appendDisabledBuiltinSections(sections, order);
           await _prefs.setHomeSectionsConfig(sections);
-          _syncSeerrHomeRowsWithSections(sections);
+          await _syncSeerrHomeRowsWithSections(sections);
           appliedHomeSections = true;
         }
       }
@@ -1202,6 +1202,7 @@ class PluginSyncService extends ChangeNotifier {
               sections.add(entry.copyWith(order: order++));
             }
             await _prefs.setHomeSectionsConfig(sections);
+            await _syncSeerrHomeRowsWithSections(sections);
           }
         }
       }
@@ -1303,11 +1304,16 @@ class PluginSyncService extends ChangeNotifier {
     }
 
     await _prefs.setHomeSectionsConfig(sections);
-    _syncSeerrHomeRowsWithSections(sections);
+    await _syncSeerrHomeRowsWithSections(sections);
   }
 
   /// Appends a disabled entry for every built-in HomeSectionType not already in
   /// [sections] so the settings UI shows every toggle. Returns the next order.
+  ///
+  /// A section the profile doesn't mention carries no opinion, so it lands
+  /// disabled rather than being re-derived from a toggle preference that
+  /// defaults to on. The preferences stay untouched because the profile's own
+  /// synced fields already set them, and writing false would push that back.
   int _appendDisabledBuiltinSections(
     List<HomeSectionConfig> sections,
     int order,
@@ -1317,27 +1323,30 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-
       sections.add(
         HomeSectionConfig(type: type, enabled: false, order: order++),
       );
-      final toggle = _rowEnabledPreference(type);
-      if (toggle != null) {
-        _prefs.set(toggle, false);
-      }
     }
     return order;
   }
 
-  void _syncSeerrHomeRowsWithSections(List<HomeSectionConfig> sections) {
-    final currentHomeRows = _seerrPrefs.homeRowsConfig;
-    final updated = currentHomeRows.map((row) {
-      final idx = sections.indexWhere((s) => s.type == row.type.homeSectionType);
-      return idx >= 0
-          ? row.copyWith(enabled: sections[idx].enabled)
-          : row.copyWith(enabled: false);
-    }).toList();
-    _seerrPrefs.setHomeRowsConfig(updated);
+  /// Seerr home rows keep their own copy of the enabled state that the settings
+  /// screens write alongside the section layout, so mirror it here too. Without
+  /// this the home view gates Seerr rows on stale values after a sync.
+  Future<void> _syncSeerrHomeRowsWithSections(
+    List<HomeSectionConfig> sections,
+  ) async {
+    final enabledByType = {
+      for (final section in sections) section.type: section.enabled,
+    };
+    final updated = _seerrPrefs.homeRowsConfig
+        .map(
+          (row) => row.copyWith(
+            enabled: enabledByType[row.type.homeSectionType] ?? false,
+          ),
+        )
+        .toList();
+    await _seerrPrefs.setHomeRowsConfig(updated);
   }
 
   /// Applies one table-driven field from an incoming profile.
