@@ -7653,6 +7653,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 orElse: () => allEpisodes.first,
               );
               targetEpisode = s1e1;
+            } else if (viewModel.nextUp != null) {
+              targetEpisode = viewModel.nextUp!;
             } else {
               final firstUnwatched = allEpisodes.firstWhere(
                 (e) => !e.isPlayed,
@@ -7696,7 +7698,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               startIndex: idx,
             );
             final startPosition = resume
-                ? (selectedEpisode.playbackPosition ?? Duration.zero)
+                ? (selectedEpisode.playbackPosition ??
+                    targetEpisode.playbackPosition ??
+                    Duration.zero)
                 : Duration.zero;
 
             if (!context.mounted) return;
