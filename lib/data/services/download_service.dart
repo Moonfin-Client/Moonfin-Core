@@ -579,6 +579,9 @@ class DownloadService extends ChangeNotifier {
     required Directory dir,
     required String fileName,
   }) async {
+    // Both engines finish here, so this is the one place a batch can be counted.
+    _completedCount++;
+
     Future<void> runBestEffort(Future<void> task, Duration timeout) async {
       try {
         await task.timeout(timeout);
@@ -609,8 +612,9 @@ class DownloadService extends ChangeNotifier {
       );
     }
 
-    if (!_usesPluginNotifications &&
-        (_totalQueued <= 1 || _completedCount >= _totalQueued)) {
+    // The plugin no longer posts its own, so this is the completion notice on
+    // every platform. Held back to the last of a batch so a season reports once.
+    if (_totalQueued <= 1 || _completedCount >= _totalQueued) {
       await runBestEffort(
         _notificationService.showComplete(
           itemName: item.name,
@@ -915,7 +919,6 @@ class DownloadService extends ChangeNotifier {
       serverId: row.serverId,
       rawData: _offlineRepo.rowToRawData(row),
     );
-    unawaited(_notificationService.showComplete(itemName: item.name));
     unawaited(
       _runPostCompletionTasks(
         item: item,
@@ -1006,6 +1009,14 @@ class DownloadService extends ChangeNotifier {
     DioException error,
   ) {
     if (error.type == DioExceptionType.cancel) {
+      return false;
+    }
+
+    // A 5xx came from the server itself, so the alternate endpoint reaches the
+    // same failure a round trip later. The proxy trouble this fallback is for
+    // arrives with no status at all.
+    final status = error.response?.statusCode;
+    if (status != null && status >= 500) {
       return false;
     }
 
@@ -1687,7 +1698,6 @@ class DownloadService extends ChangeNotifier {
         isComplete: true,
         quality: quality,
       );
-      _completedCount++;
       notifyListeners();
 
       unawaited(
