@@ -92,10 +92,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var assConfiguredForTrackID: Int?
     private var assSeenCueIDs = Set<Int>()
 
-    // ASS render cadence: engine.clock.$sourceTime is throttled to ~10 Hz
-    // (shared with tvOS menu/focus UI), so don't render on that tick alone
-    // or animated ASS (\move/\fad/\k) looks stepped. A display-rate ticker
-    // drives the actual renders instead; the engine tick just re-anchors it.
+    // ASS render cadence: engine.clock.$sourceTime arrives on the engine's
+    // 100 ms AVPlayer time observer, which drives a scrub bar, so rendering on
+    // that tick alone leaves animated ASS (\move, \fad, \k) stepping. A
+    // display-rate ticker renders and the engine tick only re-anchors it.
     #if canImport(UIKit)
         private var assDisplayLink: CADisplayLink?
     #elseif canImport(AppKit)
@@ -777,13 +777,14 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     #if canImport(Libass)
         /// Extrapolates past the last engine tick using wall-clock elapsed
-        /// time. Frozen while not playing.
+        /// time, scaled by the rate so a second of wall clock is not taken for
+        /// a second of source. Frozen while not playing.
         private func extrapolatedAssSeconds() -> Double {
             let base = lastKnownSourceTime - subtitleOverlay.delaySeconds
             guard isPlaying else { return base }
             let elapsed = CACurrentMediaTime() - lastKnownSourceTimeHostTime
             guard elapsed > 0 else { return base }
-            return base + elapsed
+            return base + elapsed * Double(rate)
         }
     #endif
 
@@ -805,7 +806,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         private func startAssDisplayLinkIfNeeded() {
             guard assDisplayLink == nil else { return }
             #if canImport(UIKit)
-                let link = CADisplayLink(target: self, selector: #selector(handleAssDisplayLinkTick))
+                let link = CADisplayLink(
+                    target: AssTickProxy(owner: self),
+                    selector: #selector(AssTickProxy.tick))
                 link.add(to: .main, forMode: .common)
                 assDisplayLink = link
             #elseif canImport(AppKit)
@@ -822,8 +825,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             assDisplayLink = nil
         }
 
-        @objc private func handleAssDisplayLinkTick() {
+        fileprivate func handleAssDisplayLinkTick() {
             guard assConfiguredForTrackID != nil else { return }
+            // Paused, the extrapolation is frozen and the engine tick still
+            // draws, seeks included, so there is no gap left to fill.
+            guard isPlaying else { return }
             renderAss(atSeconds: extrapolatedAssSeconds())
         }
 
@@ -1007,3 +1013,22 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         return snapshot
     }
 }
+
+#if canImport(UIKit) && canImport(Libass)
+    /// CADisplayLink retains its target, so it gets a proxy instead of the
+    /// wrapper. A link outliving its stop would otherwise hold the wrapper
+    /// alive and rendering.
+    private final class AssTickProxy: NSObject {
+        private weak var owner: AetherPlayerWrapper?
+
+        init(owner: AetherPlayerWrapper) {
+            self.owner = owner
+        }
+
+        @objc func tick() {
+            MainActor.assumeIsolated {
+                owner?.handleAssDisplayLinkTick()
+            }
+        }
+    }
+#endif
