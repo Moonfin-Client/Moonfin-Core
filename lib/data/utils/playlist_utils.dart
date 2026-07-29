@@ -83,6 +83,13 @@ Future<String> resolvePlaylistCategory(
     return 'Mixed';
   }
 
+  final summaryMediaType = item.rawData['MediaType'] as String?;
+  if (summaryMediaType != null &&
+      summaryMediaType.isNotEmpty &&
+      summaryMediaType != 'Unknown') {
+    return summaryMediaType;
+  }
+
   try {
     final response = await client.itemsApi.getPlaylistItems(item.id);
     final rawItems = ((response['Items'] as List?) ?? const [])
@@ -97,12 +104,6 @@ Future<String> resolvePlaylistCategory(
     }
     return 'Mixed';
   } catch (_) {
-    final summaryMediaType = item.rawData['MediaType'] as String?;
-    if (summaryMediaType != null &&
-        summaryMediaType.isNotEmpty &&
-        summaryMediaType != 'Unknown') {
-      return summaryMediaType;
-    }
     return 'Mixed';
   }
 }
