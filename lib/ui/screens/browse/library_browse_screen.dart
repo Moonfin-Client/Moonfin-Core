@@ -244,10 +244,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     return null;
   }
 
-  /// Painted width of one grid cell, recorded during layout so image requests
-  /// can be sized against what is drawn rather than the nominal card width.
-  double _gridCellWidth = 0;
-
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
     if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) {
@@ -318,22 +314,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     return tags[imageType] as String?;
   }
 
-  /// Width to ask the server for, big enough to cover the cell at this display's
-  /// pixel density. Rounded into steps so servers keep reusing cached sizes
-  /// instead of transcoding a slightly different width per device.
-  int _requestWidthFor(int bucket) {
-    if (_gridCellWidth <= 0) return bucket;
-    final density = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
-    final needed = ((_gridCellWidth * density) / 60).ceil() * 60;
-    return needed > bucket ? needed : bucket;
-  }
-
   String? _imageUrl(AggregatedItem item) {
     final api = _vm.imageApi;
     final baseCardWidth = _cardWidth();
-    final posterMaxW = _requestWidthFor(
-      baseCardWidth < 260 ? 420 : (baseCardWidth < 340 ? 560 : 700),
-    );
+    final posterMaxW = baseCardWidth < 260
+        ? 420
+        : (baseCardWidth < 340 ? 560 : 700);
     final landscapeMaxW = baseCardWidth < 260
         ? 720
         : (baseCardWidth < 340 ? 960 : 1200);
@@ -829,7 +815,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 gridPadding * 2 -
                 (crossAxisCount - 1) * spacing) /
             crossAxisCount;
-        _gridCellWidth = cellWidth;
         final ar = _gridBaseAspectRatio();
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
