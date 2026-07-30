@@ -6115,7 +6115,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (canShowDownloadActions && shows(DetailButton.download))
         DetailButton.download: _DownloadButton(item: item, viewModel: viewModel),
-      if (canShowDownloadActions && shows(DetailButton.deleteFiles))
+      if (canShowDownloadActions && shows(DetailButton.deleteFiles) && _availableOffline)
         DetailButton.deleteFiles: _DeleteDownloadButton(item: item),
       if (item.type == 'Episode' &&
           item.seriesId != null &&
