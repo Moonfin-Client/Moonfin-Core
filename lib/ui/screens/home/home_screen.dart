@@ -5097,10 +5097,14 @@ class _ContentRowsState extends State<_ContentRows>
     return _resolvePrimaryImageUrl(item, imageApi, maxWidth: maxW);
   }
 
+  /// Whether a stored path already points at artwork. External rows hold either
+  /// a TMDB path or a full URL, and both mean there is nothing to look up.
+  static bool _hasSeerrBackdrop(String? path) =>
+      path != null && (path.startsWith('/') || path.startsWith('http'));
+
   void _fetchBackdropIfNeeded(AggregatedItem item) async {
     if (item.serverId != 'seerr') return;
-    final backdrop = item.rawData['BackdropPath'] as String?;
-    if (backdrop != null && (backdrop.startsWith('/') || backdrop.startsWith('http'))) return;
+    if (_hasSeerrBackdrop(item.rawData['BackdropPath'] as String?)) return;
     if (_dynamicBackdrops.containsKey(item.id)) return;
     if (!_fetchingBackdrops.add(item.id)) return;
 
@@ -5170,11 +5174,8 @@ class _ContentRowsState extends State<_ContentRows>
         return _seerrTmdbImageUrl(dynamicBackdrop, 1280);
       }
       final backdrop = item.rawData['BackdropPath'] as String?;
-      if (backdrop != null && backdrop.startsWith('/')) {
+      if (_hasSeerrBackdrop(backdrop)) {
         return _seerrTmdbImageUrl(backdrop, 1280);
-      }
-      if (backdrop != null && backdrop.startsWith('http')) {
-        return backdrop;
       }
       return _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
     }

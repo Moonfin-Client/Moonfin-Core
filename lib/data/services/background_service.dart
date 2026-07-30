@@ -87,7 +87,12 @@ class BackgroundService {
       }
     }
 
-    if (urls.isEmpty) {
+    // External rows carry artwork as a URL or a TMDB path rather than as
+    // Jellyfin image tags. Network and studio tiles are left out because their
+    // artwork is a duotone logo, which washes out behind the library.
+    final filterType = item.rawData['FilterType'];
+    final isLogoTile = filterType == 'network' || filterType == 'studio';
+    if (urls.isEmpty && !isLogoTile) {
       final backdropPath = item.rawData['BackdropPath'] as String?;
       if (backdropPath != null && backdropPath.isNotEmpty) {
         if (backdropPath.startsWith('http')) {

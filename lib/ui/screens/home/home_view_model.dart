@@ -2643,6 +2643,13 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  /// Entries written before CacheVerV2 have a different shape, so the marker on
+  /// its own decides staleness. Artwork fields are deliberately not checked,
+  /// because an entry whose poster is genuinely missing is still valid and
+  /// refetching it only writes the same empty value back.
+  static bool _isStaleCalendarCache(List<AggregatedItem> items) =>
+      items.any((x) => !x.rawData.containsKey('CacheVerV2'));
+
   Future<List<AggregatedItem>> _loadRadarrCalendarFromCache() async {
     try {
       final dir = await getApplicationSupportDirectory();
@@ -2651,8 +2658,7 @@ class HomeViewModel extends ChangeNotifier {
         final content = await file.readAsString();
         final list = jsonDecode(content) as List;
         final items = list.map((x) => _aggregatedItemFromJson(x as Map<String, dynamic>)).toList();
-        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || !x.rawData.containsKey('PosterPath') || !x.rawData.containsKey('CacheVerV2'));
-        if (hasOldCache) {
+        if (_isStaleCalendarCache(items)) {
           debugPrint('[RadarrCalendarCache] Old cache detected, invalidating to force fresh fetch');
           try {
             await file.delete();
@@ -2686,8 +2692,7 @@ class HomeViewModel extends ChangeNotifier {
         final content = await file.readAsString();
         final list = jsonDecode(content) as List;
         final items = list.map((x) => _aggregatedItemFromJson(x as Map<String, dynamic>)).toList();
-        final hasOldCache = items.any((x) => !x.rawData.containsKey('CalendarDate') || !x.rawData.containsKey('PosterPath') || !x.rawData.containsKey('CacheVerV2'));
-        if (hasOldCache) {
+        if (_isStaleCalendarCache(items)) {
           debugPrint('[SonarrCalendarCache] Old cache detected, invalidating to force fresh fetch');
           try {
             await file.delete();
