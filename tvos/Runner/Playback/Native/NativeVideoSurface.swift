@@ -149,21 +149,22 @@ final class NativeVideoSurface {
         from pixelBuffer: CVPixelBuffer,
         pts: CMTime,
         duration: CMTime,
-        formatDescription: CMVideoFormatDescription?
+        formatDescription _: CMVideoFormatDescription?
     ) -> CMSampleBuffer? {
-        let fmt: CMVideoFormatDescription
-        if let active = formatDescription {
-            fmt = active
-        } else {
-            var imageDesc: CMVideoFormatDescription?
-            let status = CMVideoFormatDescriptionCreateForImageBuffer(
-                allocator: kCFAllocatorDefault,
-                imageBuffer: pixelBuffer,
-                formatDescriptionOut: &imageDesc
-            )
-            guard status == noErr, let created = imageDesc else { return nil }
-            fmt = created
-        }
+        // This surface receives decoded image buffers, so its sample format must
+        // describe the CVPixelBuffer (for example, x420 video range), not the
+        // compressed hvc1/dvh1 stream fed into VideoToolbox. Reusing the decoder
+        // input description here can cause AVSampleBufferDisplayLayer to lose or
+        // misinterpret the decoded buffer's range and HDR attachments, producing
+        // elevated blacks. Keep the compressed description separately for
+        // AVDisplayCriteria and source dimensions only.
+        var imageDesc: CMVideoFormatDescription?
+        let status = CMVideoFormatDescriptionCreateForImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: pixelBuffer,
+            formatDescriptionOut: &imageDesc
+        )
+        guard status == noErr, let fmt = imageDesc else { return nil }
 
         var timing = CMSampleTimingInfo(
             duration: duration,
