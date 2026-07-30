@@ -411,12 +411,13 @@ class SeerrRepository {
         ),
       );
 
-  Future<SeerrDiscoverPage> getUpcomingMovies() => _withClient(
-    (c) async => SeerrDiscoverPage.fromJson(await c.getUpcomingMovies()),
+  Future<SeerrDiscoverPage> getUpcomingMovies({int page = 1}) => _withClient(
+    (c) async =>
+        SeerrDiscoverPage.fromJson(await c.getUpcomingMovies(page: page)),
   );
 
-  Future<SeerrDiscoverPage> getUpcomingTv() => _withClient(
-    (c) async => SeerrDiscoverPage.fromJson(await c.getUpcomingTv()),
+  Future<SeerrDiscoverPage> getUpcomingTv({int page = 1}) => _withClient(
+    (c) async => SeerrDiscoverPage.fromJson(await c.getUpcomingTv(page: page)),
   );
 
   Future<SeerrDiscoverPage> getWatchlist({int page = 1}) => _withClient(

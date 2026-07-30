@@ -471,9 +471,9 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       case SeerrRowType.popularSeries:
         return _repo.getTrendingTv(limit: limit, offset: offset);
       case SeerrRowType.upcomingMovies:
-        return _repo.getUpcomingMovies();
+        return _repo.getUpcomingMovies(page: page);
       case SeerrRowType.upcomingSeries:
-        return _repo.getUpcomingTv();
+        return _repo.getUpcomingTv(page: page);
       case SeerrRowType.yourWatchlist:
         return _repo.getWatchlist(page: page);
       default:

@@ -838,6 +838,12 @@ class HomeViewModel extends ChangeNotifier {
 
     _inFlightPagingRowIds.add(row.id);
     try {
+      final seerrType = _seerrRowTypeForId(row.id);
+      if (seerrType != null) {
+        await _loadMoreSeerrRow(rowIndex, seerrType);
+        return;
+      }
+
       final int currentOffset = _rowOffsets[row.id] ?? row.items.length;
       final (List<AggregatedItem> items, int totalCount) result;
       if (_multiServerEnabled && !row.id.startsWith('pluginDynamic:')) {
@@ -1973,9 +1979,11 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   static const _seerrEnrichConcurrency = 5;
+  static const _seerrRowIdPrefix = 'seerr_';
+
+  /// Last page fetched per Seerr row. Seerr counts in pages where the rest of
+  /// the home rows count in items, so this can't share `_rowOffsets`.
   final Map<String, int> _seerrRowPages = {};
-  final Map<String, bool> _seerrRowLoadingMore = {};
-  final Map<String, bool> _seerrRowHasMore = {};
 
   Future<List<HomeRow>> _loadSeerrRow(
     SeerrRowType type,
@@ -1990,13 +1998,11 @@ class HomeViewModel extends ChangeNotifier {
         return [];
       }
 
-      _seerrRowPages[rowId] = 1;
-      _seerrRowHasMore[rowId] = true;
-
       final blockNsfw = seerrPrefs.blockNsfw;
       final limit = seerrPrefs.fetchLimit.limit;
 
       List<SeerrDiscoverItem> rawItems = [];
+      var hasMorePages = false;
 
       if (type == SeerrRowType.movieGenres) {
         final genres = await repo.getGenreSliderMovies();
@@ -2062,30 +2068,11 @@ class HomeViewModel extends ChangeNotifier {
           requestedBy: user.canViewAllRequests ? null : user.id,
           limit: limit,
         );
-        final mapped = response.results.where((r) => r.media != null).map((r) {
-          final media = r.media!;
-          return SeerrDiscoverItem(
-            id: media.tmdbId ?? media.id,
-            title: media.title ?? media.name,
-            name: media.name ?? media.title,
-            overview: media.overview,
-            releaseDate: media.releaseDate,
-            firstAirDate: media.firstAirDate,
-            mediaType: r.type,
-            posterPath: media.posterPath,
-            backdropPath: media.backdropPath,
-            mediaInfo: SeerrMediaInfo(
-              id: media.id,
-              tmdbId: media.tmdbId,
-              status: media.status,
-            ),
-          );
-        }).toList();
-        rawItems = (await mapBounded(
-          mapped,
-          _seerrEnrichConcurrency,
-          (item) => _enrichSeerrItem(repo, item),
-        )).whereType<SeerrDiscoverItem>().toList();
+        rawItems = await _enrichSeerrItems(
+          repo,
+          _seerrItemsFromRequests(response.results),
+        );
+        hasMorePages = (response.pageInfo?.pages ?? 1) > 1;
       } else if (type == SeerrRowType.recentlyAdded) {
         final media = await repo.getRecentlyAdded(limit: limit);
         final mapped = media
@@ -2108,270 +2095,208 @@ class HomeViewModel extends ChangeNotifier {
               ),
             )
             .toList();
-        rawItems = (await mapBounded(
-          mapped,
-          _seerrEnrichConcurrency,
-          (item) => _enrichSeerrItem(repo, item),
-        )).whereType<SeerrDiscoverItem>().toList();
-      } else if (type == SeerrRowType.yourWatchlist) {
-        final page = await _loadSeerrPage(repo, type, 1);
-        if (page != null) {
-          rawItems = (await mapBounded(
-            page.results,
-            _seerrEnrichConcurrency,
-            (item) => _enrichSeerrItem(repo, item),
-          )).whereType<SeerrDiscoverItem>().toList();
-          if (1 >= page.totalPages) {
-            _seerrRowHasMore[rowId] = false;
-          }
-        }
+        rawItems = await _enrichSeerrItems(repo, mapped);
       } else {
-        final page = await _loadSeerrPage(repo, type, 1);
+        final page = await _loadSeerrPage(repo, type, page: 1, limit: limit);
         if (page != null) {
-          rawItems = page.results;
-          if (1 >= page.totalPages) {
-            _seerrRowHasMore[rowId] = false;
-          }
+          rawItems = type == SeerrRowType.yourWatchlist
+              ? await _enrichSeerrItems(repo, page.results)
+              : page.results;
+          hasMorePages = page.totalPages > 1;
         }
       }
 
-      final filtered = rawItems.where((item) {
-        if (type != SeerrRowType.recentlyAdded &&
-            type != SeerrRowType.recentRequests &&
-            type != SeerrRowType.yourWatchlist) {
-          if (item.isAvailable || item.isBlacklisted) return false;
-        }
-        if (blockNsfw) {
-          if (item.adult) return false;
-          final text = '${item.displayTitle} ${item.overview ?? ''}';
-          if (SeerrDiscoverViewModel.nsfwPatterns.any(
-            (p) => p.hasMatch(text),
-          )) {
-            return false;
-          }
-        }
-        return true;
-      }).toList();
+      final items = _seerrAggregatedItems(rawItems, type, blockNsfw);
+      _seerrRowPages[rowId] = 1;
 
-      final aggregatedItems = filtered.map((item) {
-        return AggregatedItem(
-          id: item.id.toString(),
-          serverId: 'seerr',
-          rawData: {
-            'Name': item.displayTitle,
-            'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-            'Overview': item.overview ?? '',
-            'PosterPath': item.posterPath ?? '',
-            'BackdropPath': item.backdropPath ?? '',
-            'ProductionYear': _extractYear(
-              item.releaseDate ?? item.firstAirDate,
-            ),
-            'SeerrMediaType': item.mediaType,
-            'SeerrStatus': item.mediaInfo?.status,
-          },
-        );
-      }).toList();
-
-      return [_seerrRow(rowId, title, aggregatedItems)];
+      // Paging keys off `hasMore`, so a row with further pages has to claim a
+      // total above what it holds. The real total is no help because the
+      // filtering above drops items the count still includes.
+      return [
+        _seerrRow(
+          rowId,
+          title,
+          items,
+          totalCount: hasMorePages ? items.length + 1 : items.length,
+        ),
+      ];
     } catch (e) {
       debugPrint('[SeerrHomeRow] Failed to load Seerr row $type: $e');
       return [];
     }
   }
 
-  Future<void> loadMoreSeerrRow(String rowId) async {
-    if (_seerrRowLoadingMore[rowId] == true) return;
-    if (_seerrRowHasMore[rowId] == false) return;
+  /// Appends the next Seerr page to [rowIndex]. Called from [loadMoreForRow],
+  /// which owns the in-flight guard and the `hasMore` check.
+  Future<void> _loadMoreSeerrRow(int rowIndex, SeerrRowType type) async {
+    final row = _rows[rowIndex];
+    final repo = await GetIt.instance.getAsync<SeerrRepository>();
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    await repo.ensureInitialized();
+    if (!repo.isAvailable) return;
 
-    final type = _seerrRowTypeForId(rowId);
-    if (type == null) return;
-    if (type == SeerrRowType.movieGenres ||
-        type == SeerrRowType.seriesGenres ||
-        type == SeerrRowType.networks ||
-        type == SeerrRowType.studios) {
-      return;
+    final limit = seerrPrefs.fetchLimit.limit;
+    final nextPage = (_seerrRowPages[row.id] ?? 1) + 1;
+
+    // Assume this is the last page until a response says otherwise, so a row
+    // without a paged endpoint stops asking rather than retrying forever.
+    var rawItems = const <SeerrDiscoverItem>[];
+    var exhausted = true;
+
+    if (type == SeerrRowType.recentRequests) {
+      final user = await repo.getCurrentUser();
+      final response = await repo.getRequests(
+        requestedBy: user.canViewAllRequests ? null : user.id,
+        limit: limit,
+        offset: (nextPage - 1) * limit,
+      );
+      rawItems = await _enrichSeerrItems(
+        repo,
+        _seerrItemsFromRequests(response.results),
+      );
+      exhausted = nextPage >= (response.pageInfo?.pages ?? nextPage);
+    } else {
+      final page = await _loadSeerrPage(
+        repo,
+        type,
+        page: nextPage,
+        limit: limit,
+      );
+      if (page != null) {
+        rawItems = type == SeerrRowType.yourWatchlist
+            ? await _enrichSeerrItems(repo, page.results)
+            : page.results;
+        exhausted = nextPage >= page.totalPages;
+      }
     }
 
-    _seerrRowLoadingMore[rowId] = true;
+    // Advance even when the page contributed nothing. Availability filtering can
+    // empty a whole page, and holding the pointer back would refetch that same
+    // page on every scroll instead of moving on.
+    _seerrRowPages[row.id] = nextPage;
 
-    try {
-      final repo = await GetIt.instance.getAsync<SeerrRepository>();
-      final seerrPrefs = GetIt.instance<SeerrPreferences>();
-      await repo.ensureInitialized();
-      if (!repo.isAvailable) {
-        _seerrRowLoadingMore[rowId] = false;
-        return;
-      }
+    final existingIds = row.items.map((item) => item.id).toSet();
+    final items = [
+      ...row.items,
+      ..._seerrAggregatedItems(
+        rawItems,
+        type,
+        seerrPrefs.blockNsfw,
+      ).where((item) => !existingIds.contains(item.id)),
+    ];
 
-      final currentPage = _seerrRowPages[rowId] ?? 1;
-      final nextPage = currentPage + 1;
-      final limit = seerrPrefs.fetchLimit.limit;
-      final blockNsfw = seerrPrefs.blockNsfw;
+    _rows = List.of(_rows);
+    _rows[rowIndex] = row.copyWith(
+      items: items,
+      totalCount: exhausted ? items.length : items.length + 1,
+    );
+    notifyListeners();
+  }
 
-      List<SeerrDiscoverItem> rawItems = [];
+  /// Row ids are the prefix followed by the type's serialized name, so deriving
+  /// the type keeps this in step as row types come and go.
+  SeerrRowType? _seerrRowTypeForId(String rowId) {
+    if (!rowId.startsWith(_seerrRowIdPrefix)) return null;
+    final name = rowId.substring(_seerrRowIdPrefix.length);
+    for (final type in SeerrRowType.values) {
+      if (type.serializedName == name) return type;
+    }
+    return null;
+  }
 
-      if (type == SeerrRowType.recentRequests) {
-        final user = await repo.getCurrentUser();
-        final response = await repo.getRequests(
-          requestedBy: user.canViewAllRequests ? null : user.id,
-          limit: limit,
-          offset: (nextPage - 1) * limit,
-        );
-        final mapped = response.results.where((r) => r.media != null).map((r) {
-          final media = r.media!;
-          return SeerrDiscoverItem(
-            id: media.tmdbId ?? media.id,
-            title: media.title ?? media.name,
-            name: media.name ?? media.title,
-            overview: media.overview,
-            releaseDate: media.releaseDate,
-            firstAirDate: media.firstAirDate,
-            mediaType: r.type,
-            posterPath: media.posterPath,
-            backdropPath: media.backdropPath,
-            mediaInfo: SeerrMediaInfo(
-              id: media.id,
-              tmdbId: media.tmdbId,
-              status: media.status,
-            ),
-          );
-        }).toList();
-        rawItems = (await mapBounded(
-          mapped,
-          _seerrEnrichConcurrency,
-          (item) => _enrichSeerrItem(repo, item),
-        )).whereType<SeerrDiscoverItem>().toList();
-      } else if (type == SeerrRowType.recentlyAdded) {
-        _seerrRowHasMore[rowId] = false;
-        _seerrRowLoadingMore[rowId] = false;
-        return;
-      } else if (type == SeerrRowType.yourWatchlist) {
-        final page = await repo.getWatchlist(page: nextPage);
-        rawItems = (await mapBounded(
-          page.results,
-          _seerrEnrichConcurrency,
-          (item) => _enrichSeerrItem(repo, item),
-        )).whereType<SeerrDiscoverItem>().toList();
-        if (nextPage >= page.totalPages) {
-          _seerrRowHasMore[rowId] = false;
-        }
-      } else {
-        final page = await _loadSeerrPage(repo, type, nextPage);
-        if (page != null) {
-          rawItems = page.results;
-          if (nextPage >= page.totalPages) {
-            _seerrRowHasMore[rowId] = false;
-          }
-        } else {
-          _seerrRowHasMore[rowId] = false;
-        }
-      }
+  Future<List<SeerrDiscoverItem>> _enrichSeerrItems(
+    SeerrRepository repo,
+    List<SeerrDiscoverItem> items,
+  ) async =>
+      (await mapBounded(
+        items,
+        _seerrEnrichConcurrency,
+        (item) => _enrichSeerrItem(repo, item),
+      )).whereType<SeerrDiscoverItem>().toList();
 
-      if (rawItems.isEmpty) {
-        _seerrRowHasMore[rowId] = false;
-        _seerrRowLoadingMore[rowId] = false;
-        return;
-      }
+  List<SeerrDiscoverItem> _seerrItemsFromRequests(List<SeerrRequest> requests) {
+    return requests.where((r) => r.media != null).map((r) {
+      final media = r.media!;
+      return SeerrDiscoverItem(
+        id: media.tmdbId ?? media.id,
+        title: media.title ?? media.name,
+        name: media.name ?? media.title,
+        overview: media.overview,
+        releaseDate: media.releaseDate,
+        firstAirDate: media.firstAirDate,
+        mediaType: r.type,
+        posterPath: media.posterPath,
+        backdropPath: media.backdropPath,
+        mediaInfo: SeerrMediaInfo(
+          id: media.id,
+          tmdbId: media.tmdbId,
+          status: media.status,
+        ),
+      );
+    }).toList();
+  }
 
-      final filtered = rawItems.where((item) {
-        if (type != SeerrRowType.recentlyAdded &&
-            type != SeerrRowType.recentRequests &&
-            type != SeerrRowType.yourWatchlist) {
-          if (item.isAvailable || item.isBlacklisted) return false;
-        }
-        if (blockNsfw) {
-          if (item.adult) return false;
-          final text = '${item.displayTitle} ${item.overview ?? ''}';
-          if (SeerrDiscoverViewModel.nsfwPatterns.any(
-            (p) => p.hasMatch(text),
-          )) {
+  List<AggregatedItem> _seerrAggregatedItems(
+    List<SeerrDiscoverItem> rawItems,
+    SeerrRowType type,
+    bool blockNsfw,
+  ) {
+    // The request, watchlist and recently added rows are meant to show media the
+    // user already has, so only the discovery rows hide what is available.
+    final hidesAvailable =
+        type != SeerrRowType.recentlyAdded &&
+        type != SeerrRowType.recentRequests &&
+        type != SeerrRowType.yourWatchlist;
+
+    return rawItems
+        .where((item) {
+          if (hidesAvailable && (item.isAvailable || item.isBlacklisted)) {
             return false;
           }
-        }
-        return true;
-      }).toList();
-
-      final newAggregated = filtered.map((item) {
-        return AggregatedItem(
-          id: item.id.toString(),
-          serverId: 'seerr',
-          rawData: {
-            'Name': item.displayTitle,
-            'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
-            'Overview': item.overview ?? '',
-            'PosterPath': item.posterPath ?? '',
-            'BackdropPath': item.backdropPath ?? '',
-            'ProductionYear': _extractYear(
-              item.releaseDate ?? item.firstAirDate,
-            ),
-            'SeerrMediaType': item.mediaType,
-            'SeerrStatus': item.mediaInfo?.status,
-          },
-        );
-      }).toList();
-
-      if (newAggregated.isNotEmpty) {
-        final rowIndex = _rows.indexWhere((r) => r.id == rowId);
-        if (rowIndex != -1) {
-          final currentRow = _rows[rowIndex];
-          final existingIds = currentRow.items.map((i) => i.id).toSet();
-          final uniqueNew =
-              newAggregated.where((i) => !existingIds.contains(i.id)).toList();
-
-          if (uniqueNew.isNotEmpty) {
-            final updatedRow = currentRow.copyWith(
-              items: [...currentRow.items, ...uniqueNew],
-            );
-            _rows[rowIndex] = updatedRow;
-            _seerrRowPages[rowId] = nextPage;
-            notifyListeners();
+          if (blockNsfw) {
+            if (item.adult) return false;
+            final text = '${item.displayTitle} ${item.overview ?? ''}';
+            if (SeerrDiscoverViewModel.nsfwPatterns.any(
+              (p) => p.hasMatch(text),
+            )) {
+              return false;
+            }
           }
-        }
-      }
-    } catch (e) {
-      debugPrint('[SeerrHomeRow] Failed to load more for $rowId: $e');
-    } finally {
-      _seerrRowLoadingMore[rowId] = false;
-    }
+          return true;
+        })
+        .map(
+          (item) => AggregatedItem(
+            id: item.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': item.displayTitle,
+              'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+              'Overview': item.overview ?? '',
+              'PosterPath': item.posterPath ?? '',
+              'BackdropPath': item.backdropPath ?? '',
+              'ProductionYear': _extractYear(
+                item.releaseDate ?? item.firstAirDate,
+              ),
+              'SeerrMediaType': item.mediaType,
+              'SeerrStatus': item.mediaInfo?.status,
+            },
+          ),
+        )
+        .toList();
   }
 
-  SeerrRowType? _seerrRowTypeForId(String rowId) {
-    switch (rowId) {
-      case 'seerr_recent_requests':
-        return SeerrRowType.recentRequests;
-      case 'seerr_watchlist':
-        return SeerrRowType.yourWatchlist;
-      case 'seerr_recently_added':
-        return SeerrRowType.recentlyAdded;
-      case 'seerr_popular_movies':
-        return SeerrRowType.popularMovies;
-      case 'seerr_upcoming_movies':
-        return SeerrRowType.upcomingMovies;
-      case 'seerr_popular_series':
-        return SeerrRowType.popularSeries;
-      case 'seerr_upcoming_series':
-        return SeerrRowType.upcomingSeries;
-      case 'seerr_trending':
-        return SeerrRowType.trending;
-      case 'seerr_movie_genres':
-        return SeerrRowType.movieGenres;
-      case 'seerr_studios':
-        return SeerrRowType.studios;
-      case 'seerr_series_genres':
-        return SeerrRowType.seriesGenres;
-      case 'seerr_networks':
-        return SeerrRowType.networks;
-      default:
-        return null;
-    }
-  }
-
-  HomeRow _seerrRow(String rowId, String title, List<AggregatedItem> items) {
+  HomeRow _seerrRow(
+    String rowId,
+    String title,
+    List<AggregatedItem> items, {
+    int totalCount = 0,
+  }) {
     return HomeRow(
       id: rowId,
       title: title,
       rowType: HomeRowType.pluginDynamic,
       items: items,
+      totalCount: totalCount,
     );
   }
 
@@ -2401,11 +2326,10 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<SeerrDiscoverPage?> _loadSeerrPage(
     SeerrRepository repo,
-    SeerrRowType type,
-    int page,
-  ) async {
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final limit = seerrPrefs.fetchLimit.limit;
+    SeerrRowType type, {
+    required int page,
+    required int limit,
+  }) async {
     final offset = (page - 1) * limit;
     switch (type) {
       case SeerrRowType.yourWatchlist:
@@ -2417,9 +2341,9 @@ class HomeViewModel extends ChangeNotifier {
       case SeerrRowType.popularSeries:
         return repo.getTrendingTv(limit: limit, offset: offset);
       case SeerrRowType.upcomingMovies:
-        return repo.getUpcomingMovies();
+        return repo.getUpcomingMovies(page: page);
       case SeerrRowType.upcomingSeries:
-        return repo.getUpcomingTv();
+        return repo.getUpcomingTv(page: page);
       default:
         return null;
     }

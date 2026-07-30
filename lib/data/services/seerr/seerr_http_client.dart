@@ -402,18 +402,20 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
-  Future<Map<String, dynamic>> getUpcomingMovies() async {
+  Future<Map<String, dynamic>> getUpcomingMovies({int page = 1}) async {
     final response = await _dio.get(
       _apiUrl('discover/movies/upcoming'),
+      queryParameters: {'page': page},
       options: _authOptions(),
     );
     _requireSuccess(response, 'getUpcomingMovies');
     return response.data as Map<String, dynamic>;
   }
 
-  Future<Map<String, dynamic>> getUpcomingTv() async {
+  Future<Map<String, dynamic>> getUpcomingTv({int page = 1}) async {
     final response = await _dio.get(
       _apiUrl('discover/tv/upcoming'),
+      queryParameters: {'page': page},
       options: _authOptions(),
     );
     _requireSuccess(response, 'getUpcomingTv');
