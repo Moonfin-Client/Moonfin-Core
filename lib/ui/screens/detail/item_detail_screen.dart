@@ -7648,17 +7648,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
             AggregatedItem targetEpisode;
             if (isFullyWatched || isFullyUnwatched) {
-              final s1e1 = allEpisodes.firstWhere(
+              targetEpisode = allEpisodes.firstWhere(
                 (e) => e.parentIndexNumber == 1 && e.indexNumber == 1,
                 orElse: () => allEpisodes.first,
               );
-              targetEpisode = s1e1;
             } else {
-              final firstUnwatched = allEpisodes.firstWhere(
-                (e) => !e.isPlayed,
-                orElse: () => allEpisodes.first,
-              );
-              targetEpisode = firstUnwatched;
+              // Next Up arrives on its own future, so fall back to whatever is part
+              // way through. First unwatched can sit behind the user, since a
+              // skipped episode or a special counts as unwatched.
+              targetEpisode =
+                  viewModel.nextUp ??
+                  allEpisodes.firstWhere(
+                    (e) => !e.isPlayed && (e.playedPercentage ?? 0) > 0,
+                    orElse: () => allEpisodes.firstWhere(
+                      (e) => !e.isPlayed,
+                      orElse: () => allEpisodes.first,
+                    ),
+                  );
             }
 
             final targetSeasonId = targetEpisode.seasonId;

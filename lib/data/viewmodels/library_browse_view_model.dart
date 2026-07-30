@@ -6,6 +6,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
+import '../utils/bounded_concurrency.dart';
 import '../utils/playlist_utils.dart';
 
 enum LibraryBrowseState { loading, ready, error }
@@ -123,17 +124,107 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   ImageApi get imageApi => _client.imageApi;
 
+  late bool _groupByType;
+  bool get groupByType => _groupByType;
+
+  final Set<String> _playlistTypeFilters = {
+    'Video',
+    'Audio',
+    'AudioBook',
+    'Book',
+    'Photo',
+    'Mixed',
+  };
+  Set<String> get playlistTypeFilters => _playlistTypeFilters;
+
+  static const _playlistCategoryConcurrency = 6;
+
+  final Map<String, String> _playlistCategoryMap = {};
+
+  String categoryForPlaylist(AggregatedItem item) {
+    return _playlistCategoryMap[item.id] ?? 'Mixed';
+  }
+
+  /// The loaded playlists the type checkboxes let through. Filtering here rather
+  /// than while paging keeps ticking a box a repaint instead of a fresh load.
+  List<AggregatedItem> get visiblePlaylists {
+    if (!isPlaylistBrowse) return _items;
+    return _items
+        .where(
+          (item) =>
+              item.type != 'Playlist' ||
+              _playlistTypeFilters.contains(categoryForPlaylist(item)),
+        )
+        .toList();
+  }
+
+  Map<String, List<AggregatedItem>> get groupedPlaylists {
+    final Map<String, List<AggregatedItem>> groups = {
+      'Video': [],
+      'Audio': [],
+      'AudioBook': [],
+      'Book': [],
+      'Photo': [],
+      'Mixed': [],
+    };
+    for (final item in visiblePlaylists) {
+      groups.putIfAbsent(categoryForPlaylist(item), () => []).add(item);
+    }
+    groups.removeWhere((key, value) => value.isEmpty);
+    return groups;
+  }
+
+  Future<void> setGroupByType(bool value) async {
+    if (_groupByType == value) return;
+    _groupByType = value;
+    await _prefs.set(UserPreferences.playlistsGroupByType, value);
+    notifyListeners();
+  }
+
+  void togglePlaylistTypeFilter(String type) {
+    if (_playlistTypeFilters.contains(type)) {
+      // Clearing the last one would leave the page blank with no way back.
+      if (_playlistTypeFilters.length == 1) return;
+      _playlistTypeFilters.remove(type);
+    } else {
+      _playlistTypeFilters.add(type);
+    }
+    notifyListeners();
+  }
+
   Future<List<AggregatedItem>> _filterLibraryItems(
     List<AggregatedItem> items,
   ) async {
     if (!isPlaylistBrowse) return items;
 
-    return filterBrowsablePlaylists(
-      _client,
+    // A playlist the summary can't settle costs a request of its own, so keep a
+    // lid on how many are in flight at once.
+    final categories = await mapBounded<AggregatedItem, String>(
       items,
-      mediaType: isMusicBrowse ? 'Audio' : null,
-      assumeNonEmptyWhenUnknown: !isMusicBrowse,
+      _playlistCategoryConcurrency,
+      (item) => item.type != 'Playlist'
+          ? Future.value(null)
+          : resolvePlaylistCategory(
+              _client,
+              item,
+              assumeNonEmptyWhenUnknown: !isMusicBrowse,
+            ),
     );
+
+    final kept = <AggregatedItem>[];
+    for (var i = 0; i < items.length; i++) {
+      final item = items[i];
+      final category = categories[i];
+      if (category != null) {
+        _playlistCategoryMap[item.id] = category;
+        // A music library's playlist tab only ever listed audio.
+        if (isMusicBrowse && category != 'Audio' && category != 'AudioBook') {
+          continue;
+        }
+      }
+      kept.add(item);
+    }
+    return kept;
   }
 
   void setFocusedItem(AggregatedItem? item) {
@@ -176,6 +267,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         favoritesOnly ||
         _prefs.get(UserPreferences.libraryFavoriteFilter(_prefKey));
     _letterFilter = '';
+    _groupByType = _prefs.get(UserPreferences.playlistsGroupByType);
     _imageType = _prefs.get(UserPreferences.libraryImageType(_imagePrefKey));
     _posterSize = _readScopedPosterSize();
     _lastGroupCollectionsValue = _prefs.get(UserPreferences.groupItemsIntoCollections);
@@ -220,6 +312,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _filteredOutCount = 0;
     _fetchedCount = 0;
     _renderedItemIds.clear();
+    _playlistCategoryMap.clear();
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
     notifyListeners();

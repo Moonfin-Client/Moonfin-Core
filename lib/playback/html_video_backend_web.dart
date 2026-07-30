@@ -69,6 +69,9 @@ class HtmlVideoBackend extends PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+  final _tracksChangedStream = StreamController<void>.broadcast();
+
+  int _knownTextTrackCount = 0;
 
   web.HTMLVideoElement _createVideoElement() {
     final element = web.HTMLVideoElement()
@@ -143,6 +146,34 @@ class HtmlVideoBackend extends PlayerBackend {
       _tracksReadyCompleter?.complete();
       _tracksReadyCompleter = null;
     }
+
+    // Captions carried inside the video only turn up once enough of the stream
+    // has been read, which on a live channel can be well after playback began.
+    final textTrackCount = _videoElement.textTracks.length;
+    if (textTrackCount != _knownTextTrackCount) {
+      _knownTextTrackCount = textTrackCount;
+      if (!_tracksChangedStream.isClosed) {
+        _tracksChangedStream.add(null);
+      }
+    }
+  }
+
+  /// The caption tracks the browser found in the stream itself.
+  ///
+  /// Only Safari reports these, from the CEA-608 data an HLS live channel
+  /// carries inside its video. Tracks this backend added are always kind
+  /// `subtitles`, so the kind alone tells the two apart.
+  List<web.TextTrack> _inBandCaptionTracks() {
+    final found = <web.TextTrack>[];
+    try {
+      final tracks = _videoElement.textTracks;
+      for (var i = 0; i < tracks.length; i++) {
+        final track = tracks[i];
+        if (track.kind != 'captions') continue;
+        found.add(track);
+      }
+    } catch (_) {}
+    return found;
   }
 
   Duration _readBufferedDuration() {
@@ -324,6 +355,7 @@ class HtmlVideoBackend extends PlayerBackend {
 
     _tracksKnown = false;
     _tracksReadyCompleter = null;
+    _knownTextTrackCount = 0;
     _completed = false;
     _completedStream.add(false);
 
@@ -380,6 +412,7 @@ class HtmlVideoBackend extends PlayerBackend {
     _clearExternalTracks();
     _tracksKnown = false;
     _tracksReadyCompleter = null;
+    _knownTextTrackCount = 0;
     _setPlaying(false);
     _setBuffering(false);
     _setPosition(Duration.zero);
@@ -507,6 +540,32 @@ class HtmlVideoBackend extends PlayerBackend {
         }
       }
     } catch (_) {}
+  }
+
+  @override
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks {
+    final tracks = _inBandCaptionTracks();
+    return List.unmodifiable([
+      for (var i = 0; i < tracks.length; i++)
+        EmbeddedCaptionTrack(
+          id: i + 1,
+          label: tracks[i].label.isEmpty ? 'CC${i + 1}' : tracks[i].label,
+          language: tracks[i].language.isEmpty ? null : tracks[i].language,
+        ),
+    ]);
+  }
+
+  @override
+  Stream<void> get tracksChangedStream => _tracksChangedStream.stream;
+
+  @override
+  Future<void> setEmbeddedCaptionTrack(int id) async {
+    if (_disposed) return;
+    final tracks = _inBandCaptionTracks();
+    if (id <= 0 || id > tracks.length) return;
+
+    _showTrackAt(-1);
+    tracks[id - 1].mode = 'showing';
   }
 
   @override
@@ -656,5 +715,6 @@ class HtmlVideoBackend extends PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _tracksChangedStream.close();
   }
 }

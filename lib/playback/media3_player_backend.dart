@@ -61,6 +61,9 @@ class Media3PlayerBackend extends PlayerBackend {
   int _textTrackCount = 0;
   bool _tracksKnown = false;
   Completer<void>? _tracksReadyCompleter;
+  List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
+  final StreamController<void> _tracksChangedController =
+      StreamController<void>.broadcast();
 
   bool _disposed = false;
   bool _activityStarted = false;
@@ -165,12 +168,18 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
+        _embeddedCaptionTracks = EmbeddedCaptionTrack.listFromWire(
+          map['closedCaptionTracks'],
+        );
         _requestedSubtitleRendererMode = _modeFromWire(
           map['subtitleRendererModeRequested'],
         );
         if (_tracksReadyCompleter != null &&
             !_tracksReadyCompleter!.isCompleted) {
           _tracksReadyCompleter!.complete();
+        }
+        if (!_tracksChangedController.isClosed) {
+          _tracksChangedController.add(null);
         }
       case 'completed':
         _completed = _toBool(map['completed']);
@@ -505,6 +514,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _completed = false;
     _tracksKnown = false;
     _textTrackCount = 0;
+    _embeddedCaptionTracks = const [];
     _tracksReadyCompleter = null;
     _discontinuityTimestamps.clear();
     _audioSinkErrorTimestamps.clear();
@@ -564,6 +574,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'container': container,
       'videoRangeType': videoRangeType,
       'mediaType': mediaType,
+      'isLive': payload['isLive'] == true,
       'normalizationGainDb': normalizationGainDb,
       'skipSilenceEnabled': _skipSilenceEnabled,
       'preferredAudioLanguage': preferredAudioLanguage,
@@ -820,6 +831,17 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   @override
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks => _embeddedCaptionTracks;
+
+  @override
+  Stream<void> get tracksChangedStream => _tracksChangedController.stream;
+
+  @override
+  Future<void> setEmbeddedCaptionTrack(int id) async {
+    await _invoke<void>('setClosedCaptionTrack', {'id': id});
+  }
+
+  @override
   Future<void> disableSubtitleTrack() async {
     await _invoke<void>('disableSubtitleTrack');
   }
@@ -987,5 +1009,6 @@ class Media3PlayerBackend extends PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _tracksChangedController.close();
   }
 }

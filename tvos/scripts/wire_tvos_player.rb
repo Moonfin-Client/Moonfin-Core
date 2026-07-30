@@ -67,7 +67,7 @@ end
 # AETHER_LOCAL=1 wires the sibling checkout (../../AetherEngine) for
 # development, otherwise the pinned remote release is used.
 aether_remote_url = 'https://github.com/superuser404notfound/AetherEngine'
-aether_version = '5.20.7'
+aether_version = '6.0.2'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 
@@ -150,11 +150,11 @@ end
 
 target.build_configurations.each do |config|
   config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] ||= 'Runner/Runner-Bridging-Header.h'
-  config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '16.0'
+  config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '17.0'
 end
 
 project.build_configurations.each do |config|
-  config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '16.0'
+  config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '17.0'
 end
 
 project.save

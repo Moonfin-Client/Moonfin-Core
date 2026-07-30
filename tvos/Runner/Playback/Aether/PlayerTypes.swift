@@ -35,6 +35,59 @@ enum PlayerState: Equatable {
     case error
 }
 
+/// Reduces a libass event line to readable text. ASS markup is preserved on
+/// load so libass can render it, but a track that arrives without a style
+/// header falls back to the plain label, and showing the line as it stands
+/// puts the raw `ReadOrder,Layer,Style,...` fields and `{\override}` blocks
+/// on screen.
+func plainTextFromAssMarkup(_ raw: String) -> String {
+    var text = raw
+
+    // A libass chunk carries nine leading fields before the dialogue itself.
+    // Only the first two are numeric, which keeps ordinary subtitle lines that
+    // happen to contain commas from being mistaken for one.
+    let fields = text.split(
+        separator: ",", maxSplits: 8, omittingEmptySubsequences: false)
+    if fields.count == 9,
+        Int(fields[0].trimmingCharacters(in: .whitespaces)) != nil,
+        Int(fields[1].trimmingCharacters(in: .whitespaces)) != nil
+    {
+        text = String(fields[8])
+    }
+
+    var stripped = ""
+    var depth = 0
+    for character in text {
+        switch character {
+        case "{":
+            depth += 1
+        case "}":
+            depth = max(0, depth - 1)
+        default:
+            if depth == 0 { stripped.append(character) }
+        }
+    }
+
+    return stripped
+        .replacingOccurrences(of: "\\N", with: "\n")
+        .replacingOccurrences(of: "\\n", with: "\n")
+        .replacingOccurrences(of: "\\h", with: " ")
+}
+
+/// Whether the engine has opened the media, and so knows its tracks. Track
+/// reporting waits on this, since Dart treats the first report as tracks being
+/// ready and applies the startup audio and subtitle selection against it. An
+/// empty list announced during loading matches nothing, which leaves subtitles
+/// switched on but not rendering until the user picks them again.
+func mediaIsOpen(_ state: PlayerState) -> Bool {
+    switch state {
+    case .idle, .opening:
+        return false
+    case .buffering, .playing, .paused, .stopped, .ended, .error:
+        return true
+    }
+}
+
 enum ZoomMode: String, StringRepresentableEnum, CaseIterable {
     case fit = "Fit"
     case autoCrop = "Auto Crop"

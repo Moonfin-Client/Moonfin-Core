@@ -1628,6 +1628,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final overrideMbps = _manager.maxBitrateOverrideMbps;
 
     String effectiveBitrateText() {
+      // The override is the user's cap rather than what the server settled on,
+      // so it only stands in when the stream URL is silent.
+      final delivered = _manager.currentResolution?.deliveredBitrate;
+      if (delivered != null) {
+        return _formatBitrate(delivered);
+      }
       if (overrideMbps != null) {
         return l10n.bitrateValueMbps(overrideMbps);
       }

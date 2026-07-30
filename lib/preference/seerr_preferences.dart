@@ -150,7 +150,7 @@ class SeerrPreferences {
     if (seerrType == null || !enabled) return false;
     final config = homeRowsConfig.firstWhere(
       (c) => c.type == seerrType,
-      orElse: () => SeerrRowConfig(type: seerrType, enabled: true, order: 0),
+      orElse: () => SeerrRowConfig(type: seerrType, enabled: false, order: 0),
     );
     return config.enabled;
   }

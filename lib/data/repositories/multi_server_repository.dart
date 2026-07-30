@@ -166,23 +166,10 @@ class MultiServerRepository {
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
-          final viewsFuture = session.client.userViewsApi.getUserViews();
-          final configFuture = session.client.usersApi
-              .getUserConfiguration()
-              .then<Set<String>>((config) => config.myMediaExcludes.toSet())
-              .catchError((_) => const <String>{});
-
-          final response = await viewsFuture;
-          final Set<String> excludes = await configFuture;
+          final response = await loadVisibleUserViews(session.client);
           final items = response['Items'] as List? ?? [];
 
-          final filteredItems = items.where((item) {
-            final data = item as Map<String, dynamic>;
-            final id = data['Id']?.toString() ?? '';
-            return !excludes.contains(id);
-          });
-
-          return filteredItems.map((item) {
+          return items.map((item) {
             final data = item as Map<String, dynamic>;
             final name = data['Name'] as String? ?? '';
             return AggregatedLibrary(

@@ -1306,6 +1306,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final playlistsGroupByType = Preference(
+    key: 'pref_playlists_group_by_type',
+    defaultValue: true,
+  );
+
   static final showMediaDetailsOnLibraryPage = Preference(
     key: 'pref_show_media_details_on_library_page',
     defaultValue: true,

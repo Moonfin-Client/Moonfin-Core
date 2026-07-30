@@ -3,6 +3,7 @@ import AetherEngine
 import Combine
 import Foundation
 import MediaPlayer
+import QuartzCore
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
@@ -30,6 +31,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     @Published var bufferProgress: Float = 0
     @Published var audioTracks: [PlayerTrack] = []
     @Published var subtitleTracks: [PlayerTrack] = []
+    /// Broadcast captions the engine found inside the video, offered
+    /// separately from the server-declared subtitle streams. A PlayerTrack id
+    /// here is a 1-based position in this list, not a subtitle ordinal.
+    @Published var closedCaptionTracks: [PlayerTrack] = []
     @Published var currentAudioTrackIndex: Int32 = -1
     @Published var currentSubtitleTrackIndex: Int32 = -1
     @Published var rate: Float = 1.0
@@ -79,12 +84,25 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     // externals).
     private var audioTable: [TrackInfo] = []
     private var subtitleTable: [TrackInfo] = []
+    private var closedCaptionTable: [TrackInfo] = []
     private var externalSubIDsByURL: [String: Int] = [:]
 
     // ASS rendering (only active when a libass build is linked).
     private let assRenderer = AssRenderer()
     private var assConfiguredForTrackID: Int?
     private var assSeenCueIDs = Set<Int>()
+
+    // ASS render cadence: engine.clock.$sourceTime arrives on the engine's
+    // 100 ms AVPlayer time observer, which drives a scrub bar, so rendering on
+    // that tick alone leaves animated ASS (\move, \fad, \k) stepping. A
+    // display-rate ticker renders and the engine tick only re-anchors it.
+    #if canImport(UIKit)
+        private var assDisplayLink: CADisplayLink?
+    #elseif canImport(AppKit)
+        private var assDisplayLink: Timer?
+    #endif
+    private var lastKnownSourceTime: Double = 0
+    private var lastKnownSourceTimeHostTime: CFTimeInterval = 0
 
     /// On iOS, `audio_service` (Flutter) owns MPRemoteCommandCenter and the
     /// Now Playing card, and the wrapper driving them too would
@@ -322,10 +340,41 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             subtitleOverlay.autoresizingMask = [.width, .height]
             view.addSubview(subtitleOverlay, positioned: .above, relativeTo: playerView)
         #endif
+        subtitleOverlay.videoRectProvider = { [weak self] in
+            self?.currentVideoRect() ?? .zero
+        }
         Self.sharedEngine()?.bind(view: playerView)
         if view.window != nil {
             resumeSurfaceWaiters()
         }
+    }
+
+    /// The video rect AVPlayerLayer measures, letterbox included. Empty before
+    /// the first frame and on the software path, which has no equivalent.
+    private func currentVideoRect() -> CGRect {
+        let root: CALayer? = playerView.layer
+        guard let root, let rect = Self.firstPlayerLayer(in: root)?.videoRect,
+            !rect.isEmpty
+        else { return .zero }
+        #if canImport(UIKit)
+            return rect
+        #else
+            // The overlay measures from the top while a layer-backed NSView
+            // measures from the bottom, so the box has to be flipped to line up.
+            return CGRect(
+                x: rect.minX, y: playerView.bounds.height - rect.maxY,
+                width: rect.width, height: rect.height)
+        #endif
+    }
+
+    /// Searched for rather than read off a known sublayer, so moving where the
+    /// engine hosts it cannot quietly stop finding it.
+    private static func firstPlayerLayer(in layer: CALayer) -> AVPlayerLayer? {
+        if let playerLayer = layer as? AVPlayerLayer { return playerLayer }
+        for sublayer in layer.sublayers ?? [] {
+            if let found = firstPlayerLayer(in: sublayer) { return found }
+        }
+        return nil
     }
 
     func notifySurfaceReady() {
@@ -340,6 +389,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         guard videoView === view else { return }
         playerView.removeFromSuperview()
         subtitleOverlay.removeFromSuperview()
+        subtitleOverlay.videoRectProvider = nil
         videoView = nil
     }
 
@@ -354,8 +404,21 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         surfaceAttachedContinuations.removeAll()
     }
 
+    /// Seconds to wait for a hosted render surface before loading anyway.
+    private static let surfaceWaitTimeout: Double = 2
+
+    /// Waits for the render view to be in a window so the first frame has
+    /// somewhere to land. Bounded, because the surface only signals again on a
+    /// fresh attach: a view briefly out of its window with no re-attach coming
+    /// would park the load forever on a black screen. Loading without it is
+    /// recoverable, since the engine binds the view whenever it turns up.
     private func waitForSurface() async {
         if videoView?.window != nil { return }
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(
+                nanoseconds: UInt64(Self.surfaceWaitTimeout * 1_000_000_000))
+            self?.resumeSurfaceWaiters()
+        }
         await withCheckedContinuation { continuation in
             if videoView?.window != nil {
                 continuation.resume()
@@ -585,7 +648,27 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
     }
 
-    private func rebuildSubtitleTable(_ tracks: [TrackInfo]) {
+    /// True for the in-band CEA-608/708 caption tracks the engine discovers
+    /// inside the video. The engine has the same check but doesn't expose it.
+    private static func isClosedCaptionCodec(_ codec: String?) -> Bool {
+        guard let c = codec?.lowercased() else { return false }
+        return c == "eia_608" || c == "eia_708" || c == "cea708" || c == "cea_708"
+    }
+
+    private func rebuildSubtitleTable(_ allTracks: [TrackInfo]) {
+        // The engine reports broadcast captions in the same list as the
+        // demuxed subtitle streams. They have no place in the server's stream
+        // list, so they are kept out of the positions that list is matched
+        // against and offered separately through closedCaptionTracks.
+        let tracks = allTracks.filter { !Self.isClosedCaptionCodec($0.codec) }
+        closedCaptionTable = allTracks.filter { Self.isClosedCaptionCodec($0.codec) }
+        closedCaptionTracks = closedCaptionTable.enumerated().map { index, info in
+            PlayerTrack(
+                id: Int32(index + 1),
+                name: info.name.isEmpty ? "CC\(index + 1)" : info.name,
+                language: info.language,
+                codec: info.codec)
+        }
         subtitleTable = tracks
         subtitleTracks = tracks.enumerated().map { index, info in
             PlayerTrack(
@@ -652,6 +735,17 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         engine.selectSubtitleTrack(index: subtitleTable[index].id)
     }
 
+    /// Turns on one of `closedCaptionTracks` by its 1-based position. Turning
+    /// captions back off goes through `disableSubtitles`, the same as any
+    /// other subtitle.
+    func setClosedCaptionTrack(_ id: Int32) {
+        guard let engine = Self.sharedEngine() else { return }
+        let index = Int(id) - 1
+        guard index >= 0, index < closedCaptionTable.count else { return }
+        resetAssState()
+        engine.selectSubtitleTrack(index: closedCaptionTable[index].id)
+    }
+
     func disableSubtitles() {
         Self.sharedEngine()?.clearSubtitle()
         subtitleOverlay.clear()
@@ -696,12 +790,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             switch cue.body {
             case .text(let text):
                 return SubtitleEvent(
-                    startTime: cue.startTime, endTime: cue.endTime, text: text,
+                    startTime: cue.startTime, endTime: cue.endTime,
+                    text: plainTextFromAssMarkup(text),
                     bitmap: nil, bitmapWidth: 0, bitmapHeight: 0)
             case .richText(let runs):
                 return SubtitleEvent(
                     startTime: cue.startTime, endTime: cue.endTime,
-                    text: runs.map(\.text).joined(),
+                    text: plainTextFromAssMarkup(runs.map(\.text).joined()),
                     bitmap: nil, bitmapWidth: 0, bitmapHeight: 0)
             case .image(let image):
                 return SubtitleEvent(
@@ -718,11 +813,26 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private func tickSubtitles(at sourceTime: Double) {
         subtitleOverlay.update(currentTime: sourceTime)
         #if canImport(Libass)
+            lastKnownSourceTime = sourceTime
+            lastKnownSourceTimeHostTime = CACurrentMediaTime()
             if assConfiguredForTrackID != nil {
-                renderAss(atSeconds: sourceTime - subtitleOverlay.delaySeconds)
+                renderAss(atSeconds: extrapolatedAssSeconds())
             }
         #endif
     }
+
+    #if canImport(Libass)
+        /// Extrapolates past the last engine tick using wall-clock elapsed
+        /// time, scaled by the rate so a second of wall clock is not taken for
+        /// a second of source. Frozen while not playing.
+        private func extrapolatedAssSeconds() -> Double {
+            let base = lastKnownSourceTime - subtitleOverlay.delaySeconds
+            guard isPlaying else { return base }
+            let elapsed = CACurrentMediaTime() - lastKnownSourceTimeHostTime
+            guard elapsed > 0 else { return base }
+            return base + elapsed * Double(rate)
+        }
+    #endif
 
     #if canImport(Libass)
         private func configureAssIfNeeded(for track: TrackInfo, engine: AetherEngine) {
@@ -734,7 +844,39 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 fontsDir: fontsDir
             ) {
                 assConfiguredForTrackID = track.id
+                startAssDisplayLinkIfNeeded()
             }
+        }
+
+        /// Drives libass at display rate. See comment on `assDisplayLink`.
+        private func startAssDisplayLinkIfNeeded() {
+            guard assDisplayLink == nil else { return }
+            #if canImport(UIKit)
+                let link = CADisplayLink(
+                    target: AssTickProxy(owner: self),
+                    selector: #selector(AssTickProxy.tick))
+                link.add(to: .main, forMode: .common)
+                assDisplayLink = link
+            #elseif canImport(AppKit)
+                let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                    self?.handleAssDisplayLinkTick()
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                assDisplayLink = timer
+            #endif
+        }
+
+        private func stopAssDisplayLink() {
+            assDisplayLink?.invalidate()
+            assDisplayLink = nil
+        }
+
+        fileprivate func handleAssDisplayLinkTick() {
+            guard assConfiguredForTrackID != nil else { return }
+            // Paused, the extrapolation is frozen and the engine tick still
+            // draws, seeks included, so there is no gap left to fill.
+            guard isPlaying else { return }
+            renderAss(atSeconds: extrapolatedAssSeconds())
         }
 
         private func renderAss(atSeconds seconds: Double) {
@@ -761,6 +903,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private func resetAssState() {
         #if canImport(Libass)
             assRenderer.reset()
+            stopAssDisplayLink()
         #endif
         assConfiguredForTrackID = nil
         assSeenCueIDs.removeAll()
@@ -916,3 +1059,22 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         return snapshot
     }
 }
+
+#if canImport(UIKit) && canImport(Libass)
+    /// CADisplayLink retains its target, so it gets a proxy instead of the
+    /// wrapper. A link outliving its stop would otherwise hold the wrapper
+    /// alive and rendering.
+    private final class AssTickProxy: NSObject {
+        private weak var owner: AetherPlayerWrapper?
+
+        init(owner: AetherPlayerWrapper) {
+            self.owner = owner
+        }
+
+        @objc func tick() {
+            MainActor.assumeIsolated {
+                owner?.handleAssDisplayLinkTick()
+            }
+        }
+    }
+#endif

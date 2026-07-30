@@ -61,4 +61,34 @@ class StreamResolutionResult {
     this.hybridAudioUrl,
     this.isLocalMedia = false,
   });
+
+  /// Bits per second actually being delivered, when that differs from the
+  /// source. A transcode carries its target in the stream URL, so reporting
+  /// the source bitrate would name a figure that is not on the wire. Null for
+  /// direct play, and null when the URL says nothing, which leaves callers on
+  /// the source value.
+  int? get deliveredBitrate {
+    if (playMethod != StreamPlayMethod.transcode) return null;
+
+    final query = Uri.tryParse(streamUrl)?.queryParameters;
+    if (query == null || query.isEmpty) return null;
+
+    // Servers differ on the casing of these, so match on a lowered key.
+    final lowered = <String, String>{
+      for (final entry in query.entries) entry.key.toLowerCase(): entry.value,
+    };
+    int? value(String key) {
+      final parsed = int.tryParse(lowered[key] ?? '');
+      return (parsed != null && parsed > 0) ? parsed : null;
+    }
+
+    // The server states the video and audio targets separately, so the pair
+    // adds up to what it sends. Older URLs carry only the overall cap.
+    final video = value('videobitrate');
+    final audio = value('audiobitrate');
+    if (video != null || audio != null) {
+      return (video ?? 0) + (audio ?? 0);
+    }
+    return value('maxstreamingbitrate');
+  }
 }

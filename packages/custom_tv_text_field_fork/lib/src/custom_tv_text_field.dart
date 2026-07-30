@@ -413,6 +413,13 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
           _systemInputFocusNode.requestFocus();
         }
         SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+        Future.delayed(const Duration(milliseconds: 48), () {
+          if (!mounted || !_useSystemImeSession) return;
+          if (!_systemInputFocusNode.hasFocus) {
+            _systemInputFocusNode.requestFocus();
+          }
+          SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+        });
       });
     });
   }

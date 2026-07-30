@@ -14,7 +14,8 @@ bool isPlaylistNonEmpty(
 }
 
 bool isAudioPlaylistSummary(AggregatedItem item) {
-  return (item.rawData['MediaType'] as String?) == 'Audio';
+  final resolved = resolveItemMediaType(item.rawData);
+  return resolved == 'Audio';
 }
 
 bool hasPlaylistEntryId(AggregatedItem item) {
@@ -22,24 +23,77 @@ bool hasPlaylistEntryId(AggregatedItem item) {
   return entryId != null && entryId.isNotEmpty;
 }
 
-bool playlistItemMatchesMediaType(Map<String, dynamic> raw, String mediaType) {
-  final itemMediaType = raw['MediaType'] as String?;
-  if (itemMediaType != null) {
-    return itemMediaType == mediaType;
+/// The category an individual item belongs to. Its concrete `Type` wins over
+/// `MediaType`, which reports a music video as Audio and can't tell an audiobook
+/// from a song.
+String resolveItemMediaType(Map<String, dynamic> raw) {
+  return switch (raw['Type'] as String?) {
+    'Movie' || 'Episode' || 'Video' || 'MusicVideo' || 'Trailer' || 'Clip' =>
+      'Video',
+    'AudioBook' => 'AudioBook',
+    'Audio' => 'Audio',
+    'Book' => 'Book',
+    'Photo' => 'Photo',
+    _ => _categoryForMediaType(raw['MediaType'] as String?),
+  };
+}
+
+/// A server `MediaType` mapped onto the same categories [resolveItemMediaType]
+/// returns. The server only reports Video, Audio, Book or Photo here.
+String _categoryForMediaType(String? mediaType) {
+  return switch (mediaType) {
+    'Video' => 'Video',
+    'Audio' => 'Audio',
+    'Book' => 'Book',
+    'Photo' => 'Photo',
+    _ => 'Unknown',
+  };
+}
+
+/// The category a playlist belongs to, one of Video, Audio, AudioBook, Book,
+/// Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
+Future<String> resolvePlaylistCategory(
+  MediaServerClient client,
+  AggregatedItem item, {
+  bool assumeNonEmptyWhenUnknown = false,
+}) async {
+  if (item.type != 'Playlist') {
+    return resolveItemMediaType(item.rawData);
   }
 
-  final itemType = raw['Type'] as String?;
-  return switch (mediaType) {
-    'Audio' => itemType == 'Audio',
-    'Video' =>
-      itemType == 'Video' ||
-          itemType == 'Movie' ||
-          itemType == 'Episode' ||
-          itemType == 'MusicVideo' ||
-          itemType == 'Trailer' ||
-          itemType == 'Clip',
-    _ => false,
-  };
+  if (!isPlaylistNonEmpty(
+    item,
+    assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
+  )) {
+    return 'Mixed';
+  }
+
+  // Video, Book and Photo summaries are specific enough to take at face value.
+  // Audio isn't, since the server calls both music and audiobooks Audio, and
+  // tags a playlist of music videos Audio too.
+  final summaryCategory = _categoryForMediaType(
+    item.rawData['MediaType'] as String?,
+  );
+  if (summaryCategory != 'Audio' && summaryCategory != 'Unknown') {
+    return summaryCategory;
+  }
+
+  try {
+    final response = await client.itemsApi.getPlaylistItems(item.id);
+    final rawItems = ((response['Items'] as List?) ?? const [])
+        .cast<Map<String, dynamic>>();
+    if (rawItems.isEmpty) {
+      return 'Mixed';
+    }
+
+    final categories = rawItems.map(resolveItemMediaType).toSet();
+    if (categories.length == 1) {
+      return categories.first != 'Unknown' ? categories.first : 'Mixed';
+    }
+    return 'Mixed';
+  } catch (_) {
+    return 'Mixed';
+  }
 }
 
 Future<bool> playlistContainsOnlyMediaType(
@@ -48,75 +102,36 @@ Future<bool> playlistContainsOnlyMediaType(
   String mediaType, {
   bool assumeNonEmptyWhenUnknown = false,
 }) async {
-  if (item.type != 'Playlist') {
-    return false;
-  }
-
-  final count = item.childCount ?? item.recursiveItemCount;
-  if (count == 0) {
-    return false;
-  }
-
-  final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null && summaryMediaType != mediaType) {
-    return false;
-  }
-
-  try {
-    final response = await client.itemsApi.getPlaylistItems(item.id);
-    final rawItems = ((response['Items'] as List?) ?? const [])
-        .cast<Map<String, dynamic>>();
-    if (rawItems.isEmpty) {
-      return false;
-    }
-    return rawItems.every(
-      (raw) => playlistItemMatchesMediaType(raw, mediaType),
-    );
-  } catch (_) {
-    if (count == null) {
-      return assumeNonEmptyWhenUnknown && summaryMediaType == mediaType;
-    }
-    return summaryMediaType == mediaType;
-  }
+  final category = await resolvePlaylistCategory(
+    client,
+    item,
+    assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
+  );
+  return category == mediaType;
 }
 
+/// Whether a playlist belongs in a video playlist row. Audio only playlists are
+/// left out because they have a row of their own, so counting them here would
+/// list the same playlist twice on the home screen.
 Future<bool> playlistHasBrowsableItems(
   MediaServerClient client,
   AggregatedItem item, {
   bool assumeNonEmptyWhenUnknown = false,
 }) async {
-  if (item.type != 'Playlist' ||
-      !isPlaylistNonEmpty(
-        item,
-        assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
-      )) {
+  if (item.type != 'Playlist') return false;
+  if (!isPlaylistNonEmpty(
+    item,
+    assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
+  )) {
     return false;
   }
 
-  final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null &&
-      summaryMediaType != 'Audio' &&
-      summaryMediaType != 'Unknown') {
-    return true;
-  }
-
-  try {
-    final response = await client.itemsApi.getPlaylistItems(item.id);
-    final rawItems = ((response['Items'] as List?) ?? const [])
-        .cast<Map<String, dynamic>>();
-    if (rawItems.isEmpty) {
-      return false;
-    }
-    return rawItems.any((raw) => !playlistItemMatchesMediaType(raw, 'Audio'));
-  } catch (_) {
-    if (summaryMediaType != null) {
-      return summaryMediaType != 'Audio' && summaryMediaType != 'Unknown';
-    }
-    return isPlaylistNonEmpty(
-      item,
-      assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
-    );
-  }
+  final category = await resolvePlaylistCategory(
+    client,
+    item,
+    assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
+  );
+  return category != 'Audio' && category != 'AudioBook';
 }
 
 Future<List<AggregatedItem>> filterBrowsablePlaylists(

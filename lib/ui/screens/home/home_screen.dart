@@ -1896,14 +1896,12 @@ class _ContentRowsState extends State<_ContentRows>
     );
     if (url == null || url.isEmpty) return;
     if (!_v2FocusPrefetchedUrls.add(url)) return;
-    // These bounds have to match the ones MediaCard draws with. The decode width
-    // is part of the cache key, so a mismatch warms an entry the card never asks
-    // for and the image is decoded twice.
     unawaited(
       BoundedNetworkImage.precache(
         context,
         url,
         layoutWidth: v2FocusedWidth,
+        scale: 0.9,
         maxWidth: 960,
       ).catchError((_) {
         _v2FocusPrefetchedUrls.remove(url);

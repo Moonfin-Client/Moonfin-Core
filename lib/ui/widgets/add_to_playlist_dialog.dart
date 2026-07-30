@@ -1,3 +1,4 @@
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -5,6 +6,9 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/user_preferences.dart';
+import '../../util/focus/dpad_keys.dart';
+import '../../util/platform_detection.dart';
 import 'focusable_dialog_row.dart';
 import 'overlay_sheet.dart';
 
@@ -34,6 +38,12 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
   List<_PlaylistEntry>? _playlists;
   final _nameController = TextEditingController();
 
+  // A remote has no way out of a plain text field, so on TV the name field
+  // owns its focus and passes it to the buttons on a press down.
+  final _nameFocusNode = FocusNode();
+  final _createFocusNode = FocusNode();
+  final _tvNameKey = GlobalKey<CustomTVTextFieldState>();
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +58,8 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
   @override
   void dispose() {
     _nameController.dispose();
+    _nameFocusNode.dispose();
+    _createFocusNode.dispose();
     super.dispose();
   }
 
@@ -112,6 +124,14 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
       useRootNavigator: false,
       builder: (ctx) {
         final insets = MediaQuery.of(ctx).viewInsets;
+        final hint = AppLocalizations.of(ctx).playlistName;
+        final fillColor = AppColorScheme.onSurface.withValues(alpha: 0.08);
+        final hintStyle = TextStyle(
+          color: AppColorScheme.onSurface.withValues(alpha: 0.4),
+        );
+        final preferSystemIme = GetIt.instance<UserPreferences>().get(
+          UserPreferences.preferSystemImeKeyboard,
+        );
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(
@@ -145,31 +165,65 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _nameController,
-                      autofocus: true,
-                      style: TextStyle(color: AppColorScheme.onSurface),
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(ctx).playlistName,
-                        hintStyle: TextStyle(
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.4,
+                    if (PlatformDetection.isTV)
+                      Focus(
+                        focusNode: _nameFocusNode,
+                        autofocus: true,
+                        onKeyEvent: (_, event) {
+                          if (!event.isActionable) {
+                            return KeyEventResult.ignored;
+                          }
+                          final key = event.logicalKey;
+                          if (key.isSelectKey) {
+                            _tvNameKey.currentState?.openKeyboard();
+                            return KeyEventResult.handled;
+                          }
+                          if (key.isDownKey) {
+                            _createFocusNode.requestFocus();
+                            return KeyEventResult.handled;
+                          }
+                          return KeyEventResult.ignored;
+                        },
+                        child: ListenableBuilder(
+                          listenable: _nameFocusNode,
+                          builder: (_, _) => CustomTVTextField(
+                            key: _tvNameKey,
+                            controller: _nameController,
+                            isFocused: _nameFocusNode.hasFocus,
+                            inputPurpose: InputPurpose.text,
+                            keyboardType: KeyboardType.alphabetic,
+                            preferSystemIme: preferSystemIme,
+                            hint: hint,
+                            filled: true,
+                            fillColor: fillColor,
+                            hintStyle: hintStyle,
+                            textStyle: TextStyle(
+                              color: AppColorScheme.onSurface,
+                            ),
+                            popParentOnKeyboardClose: false,
                           ),
                         ),
-                        filled: true,
-                        fillColor: AppColorScheme.onSurface.withValues(
-                          alpha: 0.08,
+                      )
+                    else
+                      TextField(
+                        controller: _nameController,
+                        autofocus: true,
+                        style: TextStyle(color: AppColorScheme.onSurface),
+                        decoration: InputDecoration(
+                          hintText: hint,
+                          hintStyle: hintStyle,
+                          filled: true,
+                          fillColor: fillColor,
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: AppRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
+                        onSubmitted: (_) {
+                          Navigator.pop(ctx);
+                          _createAndAdd();
+                        },
                       ),
-                      onSubmitted: (_) {
-                        Navigator.pop(ctx);
-                        _createAndAdd();
-                      },
-                    ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -187,6 +241,7 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
                         ),
                         const SizedBox(width: 8),
                         FilledButton(
+                          focusNode: _createFocusNode,
                           onPressed: () {
                             Navigator.pop(ctx);
                             _createAndAdd();

@@ -45,6 +45,8 @@ class AetherBackend implements PlayerBackend {
   bool _tracksKnown = false;
   int? _activeSubtitleTrackIndex;
   Completer<void>? _tracksReadyCompleter;
+  List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
+  final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
   Timer? _audioDelayDebounce;
@@ -90,9 +92,15 @@ class AetherBackend implements PlayerBackend {
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
+        _embeddedCaptionTracks = EmbeddedCaptionTrack.listFromWire(
+          map['closedCaptionTracks'],
+        );
         if (_tracksReadyCompleter != null &&
             !_tracksReadyCompleter!.isCompleted) {
           _tracksReadyCompleter!.complete();
+        }
+        if (!_tracksChangedController.isClosed) {
+          _tracksChangedController.add(null);
         }
       case 'completed':
         _completed = _toBool(map['completed']);
@@ -144,6 +152,7 @@ class AetherBackend implements PlayerBackend {
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;
     _tracksReadyCompleter = null;
+    _embeddedCaptionTracks = const [];
 
     await _invoke<void>('setSource', {
       'url': url,
@@ -442,6 +451,18 @@ class AetherBackend implements PlayerBackend {
   bool get demuxesEmbeddedSubtitles => true;
 
   @override
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks =>
+      _embeddedCaptionTracks;
+
+  @override
+  Future<void> setEmbeddedCaptionTrack(int id) async {
+    await _invoke<void>('setClosedCaptionTrack', {'id': id});
+  }
+
+  @override
+  Stream<void> get tracksChangedStream => _tracksChangedController.stream;
+
+  @override
   void dispose() {
     _disposed = true;
     _audioDelayDebounce?.cancel();
@@ -453,5 +474,6 @@ class AetherBackend implements PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _tracksChangedController.close();
   }
 }

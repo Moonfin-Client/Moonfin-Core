@@ -442,7 +442,12 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         rowEntry('Transcode Reasons', res.transcodingReasons.join(', ')),
       rowEntry('Player', 'AetherEngine'),
       rowEntry('Container', container),
-      rowEntry('Bitrate', _formatBitrate(mediaSource?['Bitrate'] as int?)),
+      rowEntry(
+        'Bitrate',
+        _formatBitrate(
+          res?.deliveredBitrate ?? mediaSource?['Bitrate'] as int?,
+        ),
+      ),
       rowEntry(
         'Max Bitrate',
         overrideMbps != null ? '$overrideMbps Mbps' : 'Auto',

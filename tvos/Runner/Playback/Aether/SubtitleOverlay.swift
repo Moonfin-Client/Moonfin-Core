@@ -30,6 +30,17 @@ final class SubtitleOverlay: PlatformView {
     private var lastUpdateTime: TimeInterval = 0
     var delaySeconds: TimeInterval = 0
 
+    /// Where the picture sits inside the overlay. A TV gives the video the
+    /// whole surface, but a phone letterboxes anything shaped differently, and
+    /// bitmap cues are authored against the picture. An empty rect falls back
+    /// to the full bounds.
+    var videoRectProvider: (() -> CGRect)?
+
+    private var videoBox: CGRect {
+        guard let rect = videoRectProvider?(), !rect.isEmpty else { return bounds }
+        return rect
+    }
+
     /// The user facing size on the 24 based scale, and the 40 to 100 position.
     /// Both stay raw and become points at layout time, as a fraction of the
     /// view height, so a phone in landscape and a 1080pt TV canvas end up
@@ -298,22 +309,25 @@ final class SubtitleOverlay: PlatformView {
 
     private func layoutBitmapView() {
         guard !bitmapView.isHidden, let event = activeEvent else { return }
+        let box = videoBox
         if let rect = event.normalizedRect, let canvas = event.canvasSize,
             canvas.width > 0, canvas.height > 0
         {
-            // Map the authored composition canvas onto the view width-aligned
-            // and center-anchored (the canvas may be taller than the coded
-            // video for cropped rips), then place the cue inside it.
-            let scale = bounds.width / canvas.width
+            // Map the authored composition canvas onto the picture
+            // width-aligned and center-anchored (the canvas may be taller than
+            // the coded video for cropped rips), then place the cue inside it.
+            let scale = box.width / canvas.width
             let canvasHeight = canvas.height * scale
-            let yOrigin = (bounds.height - canvasHeight) / 2
+            let yOrigin = box.midY - canvasHeight / 2
             bitmapView.frame = CGRect(
-                x: rect.origin.x * bounds.width,
+                x: box.minX + rect.origin.x * box.width,
                 y: yOrigin + rect.origin.y * canvasHeight,
-                width: rect.size.width * bounds.width,
+                width: rect.size.width * box.width,
                 height: rect.size.height * canvasHeight
             )
         } else if event.bitmapWidth > 0 {
+            // No canvas means nothing ties the cue to the picture, so it keeps
+            // measuring from the surface.
             let scale = min(bounds.width / CGFloat(event.bitmapWidth), 1.0)
             let w = CGFloat(event.bitmapWidth) * scale
             let h = CGFloat(event.bitmapHeight) * scale

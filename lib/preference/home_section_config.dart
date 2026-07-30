@@ -95,18 +95,19 @@ class HomeSectionConfig {
         ? HomeSectionKind.builtin
         : HomeSectionKind.fromSerialized(kindRaw);
     final typeName = json['type'] as String? ?? 'none';
+    final pluginSource = HomeSectionPluginSource.fromSerialized(
+      json['pluginSource'] as String?,
+    );
     return HomeSectionConfig(
       kind: kind,
       type: HomeSectionType.fromSerialized(typeName),
       enabled: json['enabled'] as bool? ?? true,
       order: json['order'] as int? ?? 0,
-      serverId: json['serverId']?.toString(),
+      serverId: _normalizedServerId(json['serverId']?.toString(), pluginSource),
       pluginSection: json['pluginSection'] as String?,
       pluginAdditionalData: json['pluginAdditionalData'] as String?,
       pluginDisplayText: json['pluginDisplayText'] as String?,
-      pluginSource: HomeSectionPluginSource.fromSerialized(
-        json['pluginSource'] as String?,
-      ),
+      pluginSource: pluginSource,
     );
   }
 
@@ -153,12 +154,25 @@ class HomeSectionConfig {
     pluginSource: pluginSource ?? this.pluginSource,
   );
 
+  /// Custom rows belong to no server, and an empty serverId coming back from a saved
+  /// layout would give the same row a second identity, so both ends use this placeholder.
+  static String? _normalizedServerId(
+    String? serverId,
+    HomeSectionPluginSource source,
+  ) =>
+      (serverId == null || serverId.isEmpty) &&
+              source == HomeSectionPluginSource.custom
+          ? 'custom'
+          : serverId;
+
   /// Stable identifier suitable for use as a row id / list key. Plugin
   /// entries combine the originating plugin, server, section and additional
   /// data so multiple instances of the same section can coexist.
   String get stableId {
     if (kind == HomeSectionKind.pluginDynamic) {
-      return 'pluginDynamic:${pluginSource.serializedName}:${serverId ?? ''}:${pluginSection ?? ''}:${pluginAdditionalData ?? ''}';
+      final effectiveServerId =
+          _normalizedServerId(serverId, pluginSource) ?? '';
+      return 'pluginDynamic:${pluginSource.serializedName}:$effectiveServerId:${pluginSection ?? ''}:${pluginAdditionalData ?? ''}';
     }
     return 'builtin:${type.serializedName}';
   }
@@ -325,6 +339,39 @@ class HomeSectionConfig {
       type: HomeSectionType.sonarrCalendar,
       enabled: false,
       order: 39,
+    ),
+    // These carry a toggle preference too, but they still need a section entry.
+    // Without one there was nowhere for turning the row off to persist, so the
+    // next sync kept bringing it back.
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched1,
+      enabled: false,
+      order: 40,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched2,
+      enabled: false,
+      order: 41,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched3,
+      enabled: false,
+      order: 42,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched4,
+      enabled: false,
+      order: 43,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.sinceYouWatched5,
+      enabled: false,
+      order: 44,
+    ),
+    HomeSectionConfig(
+      type: HomeSectionType.rewatch,
+      enabled: false,
+      order: 45,
     ),
   ];
 

@@ -1135,8 +1135,25 @@ class PluginSyncService extends ChangeNotifier {
               _prefs.set(toggle, c.enabled);
             }
           }
+          // Custom rows the profile doesn't mention haven't been pushed from here yet, so
+          // keep them instead of letting the incoming layout drop them. Matching is on
+          // pluginSection because an edit changes stableId and would leave a stale copy.
+          final incomingCustom = sections
+              .where((s) => s.isPluginDynamic && s.pluginSource == HomeSectionPluginSource.custom)
+              .map((s) => s.pluginSection)
+              .toSet();
+          final existingCustom = _prefs.homeSectionsConfig.where(
+            (c) =>
+                c.isPluginDynamic &&
+                c.pluginSource == HomeSectionPluginSource.custom &&
+                !incomingCustom.contains(c.pluginSection),
+          );
+          for (final custom in existingCustom) {
+            sections.add(custom.copyWith(order: order++));
+          }
           _appendDisabledBuiltinSections(sections, order);
           await _prefs.setHomeSectionsConfig(sections);
+          await _syncSeerrHomeRowsWithSections(sections);
           appliedHomeSections = true;
         }
       }
@@ -1212,6 +1229,7 @@ class PluginSyncService extends ChangeNotifier {
               sections.add(entry.copyWith(order: order++));
             }
             await _prefs.setHomeSectionsConfig(sections);
+            await _syncSeerrHomeRowsWithSections(sections);
           }
         }
       }
@@ -1313,10 +1331,16 @@ class PluginSyncService extends ChangeNotifier {
     }
 
     await _prefs.setHomeSectionsConfig(sections);
+    await _syncSeerrHomeRowsWithSections(sections);
   }
 
   /// Appends a disabled entry for every built-in HomeSectionType not already in
   /// [sections] so the settings UI shows every toggle. Returns the next order.
+  ///
+  /// A section the profile doesn't mention carries no opinion, so it lands
+  /// disabled rather than being re-derived from a toggle preference that
+  /// defaults to on. The preferences stay untouched because the profile's own
+  /// synced fields already set them, and writing false would push that back.
   int _appendDisabledBuiltinSections(
     List<HomeSectionConfig> sections,
     int order,
@@ -1326,31 +1350,30 @@ class PluginSyncService extends ChangeNotifier {
       if (type == prefs.HomeSectionType.none || present.contains(type)) {
         continue;
       }
-      
-      var isEnabled = false;
-      if (type == prefs.HomeSectionType.rewatch) {
-        isEnabled = _prefs.get(UserPreferences.displayRewatchRow);
-      } else if (type == prefs.HomeSectionType.sinceYouWatched1 ||
-          type == prefs.HomeSectionType.sinceYouWatched2 ||
-          type == prefs.HomeSectionType.sinceYouWatched3 ||
-          type == prefs.HomeSectionType.sinceYouWatched4 ||
-          type == prefs.HomeSectionType.sinceYouWatched5) {
-        final localPref = switch (type) {
-          prefs.HomeSectionType.sinceYouWatched1 => UserPreferences.sinceYouWatched1Enabled,
-          prefs.HomeSectionType.sinceYouWatched2 => UserPreferences.sinceYouWatched2Enabled,
-          prefs.HomeSectionType.sinceYouWatched3 => UserPreferences.sinceYouWatched3Enabled,
-          prefs.HomeSectionType.sinceYouWatched4 => UserPreferences.sinceYouWatched4Enabled,
-          prefs.HomeSectionType.sinceYouWatched5 => UserPreferences.sinceYouWatched5Enabled,
-          _ => throw StateError('Invalid type'),
-        };
-        isEnabled = _prefs.get(localPref);
-      }
-      
       sections.add(
-        HomeSectionConfig(type: type, enabled: isEnabled, order: order++),
+        HomeSectionConfig(type: type, enabled: false, order: order++),
       );
     }
     return order;
+  }
+
+  /// Seerr home rows keep their own copy of the enabled state that the settings
+  /// screens write alongside the section layout, so mirror it here too. Without
+  /// this the home view gates Seerr rows on stale values after a sync.
+  Future<void> _syncSeerrHomeRowsWithSections(
+    List<HomeSectionConfig> sections,
+  ) async {
+    final enabledByType = {
+      for (final section in sections) section.type: section.enabled,
+    };
+    final updated = _seerrPrefs.homeRowsConfig
+        .map(
+          (row) => row.copyWith(
+            enabled: enabledByType[row.type.homeSectionType] ?? false,
+          ),
+        )
+        .toList();
+    await _seerrPrefs.setHomeRowsConfig(updated);
   }
 
   /// Applies one table-driven field from an incoming profile.
@@ -1735,6 +1758,16 @@ class PluginSyncService extends ChangeNotifier {
       prefs.HomeSectionType.sonarrCalendar =>
         UserPreferences.enableSonarrCalendar,
       prefs.HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
+      prefs.HomeSectionType.sinceYouWatched1 =>
+        UserPreferences.sinceYouWatched1Enabled,
+      prefs.HomeSectionType.sinceYouWatched2 =>
+        UserPreferences.sinceYouWatched2Enabled,
+      prefs.HomeSectionType.sinceYouWatched3 =>
+        UserPreferences.sinceYouWatched3Enabled,
+      prefs.HomeSectionType.sinceYouWatched4 =>
+        UserPreferences.sinceYouWatched4Enabled,
+      prefs.HomeSectionType.sinceYouWatched5 =>
+        UserPreferences.sinceYouWatched5Enabled,
       _ => null,
     };
   }

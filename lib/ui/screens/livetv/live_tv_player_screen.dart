@@ -120,6 +120,14 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   StreamSubscription<bool>? _pipPlayingSub;
   bool _wasPlayingBeforeScreenLock = false;
 
+  // Captions the player found inside the video, which the server never lists
+  // as subtitle streams. Held here rather than in the manager because they have
+  // no stream index to hang off, and the id only means anything to the backend
+  // that reported it.
+  int? _captionTrackId;
+  bool _captionTrackApplied = false;
+  StreamSubscription<void>? _tracksChangedSub;
+
   final _overlayFocus = FocusNode();
   final _tvPlayPauseFocus = FocusNode(debugLabel: 'LiveTvPlayPause');
   final _tvChannelsFocus = FocusNode(debugLabel: 'LiveTvChannels');
@@ -145,8 +153,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _applySubtitleStyle();
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (!mounted) return;
+      _listenForPlayerTrackChanges();
       setState(() {});
     });
+    _listenForPlayerTrackChanges();
     _tvPlayPauseFocus.addListener(_onControlFocusChanged);
     _tvChannelsFocus.addListener(_onControlFocusChanged);
     _tvAudioFocus.addListener(_onControlFocusChanged);
@@ -180,6 +190,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
+    _tracksChangedSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _volumeOverlayTimer?.cancel();
     _brightnessOverlayTimer?.cancel();
@@ -599,6 +610,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   GuideChannel get _currentChannel => widget.channels[_currentIndex];
 
   Future<void> _playCurrentChannel() async {
+    // A channel change starts a new stream, so whatever caption choice is
+    // remembered has to be put back once this one reports its own captions.
+    _captionTrackApplied = false;
     final channel = _currentChannel;
     final item = AggregatedItem(
       id: channel.id,
@@ -745,7 +759,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         _tvPlayPauseFocus,
         _tvChannelsFocus,
         if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
-        if (_streamsOfType('Subtitle').isNotEmpty) _tvSubtitleFocus,
+        if (_hasSubtitleChoices) _tvSubtitleFocus,
         _tvBitrateFocus,
         _tvPlaybackInfoFocus,
       ];
@@ -854,6 +868,35 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _showInfo();
   }
 
+  bool get _hasSubtitleChoices =>
+      _streamsOfType('Subtitle').isNotEmpty || _captionTracks.isNotEmpty;
+
+  List<EmbeddedCaptionTrack> get _captionTracks =>
+      _manager.backend?.embeddedCaptionTracks ?? const [];
+
+  void _listenForPlayerTrackChanges() {
+    _tracksChangedSub?.cancel();
+    _tracksChangedSub = _manager.backend?.tracksChangedStream.listen(
+      (_) => _onPlayerTracksChanged(),
+    );
+  }
+
+  /// Rebuilds the controls once the player reports what it found, and puts a
+  /// caption choice back after a channel change, which starts a new stream and
+  /// drops every track selection with it.
+  void _onPlayerTracksChanged() {
+    if (!mounted) return;
+    final tracks = _captionTracks;
+    if (tracks.isEmpty) {
+      _captionTrackApplied = false;
+    } else if (!_captionTrackApplied &&
+        tracks.any((track) => track.id == _captionTrackId)) {
+      _captionTrackApplied = true;
+      unawaited(_manager.backend?.setEmbeddedCaptionTrack(_captionTrackId!));
+    }
+    setState(() {});
+  }
+
   List<Map<String, dynamic>> _streamsOfType(String type) =>
       (_manager.currentResolution?.mediaStreams ??
               const <Map<String, dynamic>>[])
@@ -913,11 +956,15 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _showSubtitleSelector() {
     final l10n = AppLocalizations.of(context);
     final streams = _streamsOfType('Subtitle');
+    final captions = _captionTracks;
 
     final current = _manager.subtitleStreamIndex;
     final selectedStream = current == null || current < 0
         ? -1
         : streams.indexWhere((s) => s['Index'] == current);
+    final selectedCaption = captions.indexWhere(
+      (track) => track.id == _captionTrackId,
+    );
 
     final options = <TrackOption>[TrackOption(label: l10n.off)];
     for (var i = 0; i < streams.length; i++) {
@@ -927,21 +974,50 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         subtitle: codec.isEmpty ? null : codec,
       ));
     }
+    for (final track in captions) {
+      options.add(TrackOption(
+        label: track.label,
+        subtitle: track.language ?? l10n.embedded,
+      ));
+    }
 
     unawaited(() async {
       final result = await TrackSelectorDialog.show(
         context,
         title: l10n.subtitleTrack,
         options: options,
-        selectedIndex: selectedStream >= 0 ? selectedStream + 1 : 0,
+        selectedIndex: subtitleMenuSelectedRow(
+          streamPosition: selectedStream,
+          captionPosition: selectedCaption,
+          streamCount: streams.length,
+        ),
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
-      if (result == 0) {
+
+      final target = subtitleMenuRowTarget(
+        row: result,
+        streamCount: streams.length,
+        captionCount: captions.length,
+      );
+      _captionTrackId = null;
+      _captionTrackApplied = false;
+
+      final captionPosition = target.captionPosition;
+      if (captionPosition != null) {
+        final track = captions[captionPosition];
+        _captionTrackId = track.id;
+        _captionTrackApplied = true;
+        unawaited(_manager.backend?.setEmbeddedCaptionTrack(track.id));
+        return;
+      }
+
+      final streamPosition = target.streamPosition;
+      if (streamPosition == null) {
         unawaited(_manager.disableSubtitles());
         return;
       }
-      final index = streams[result - 1]['Index'] as int?;
+      final index = streams[streamPosition]['Index'] as int?;
       if (index != null) unawaited(_manager.changeSubtitleTrack(index));
     }());
     _showInfo();
@@ -1715,7 +1791,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   Widget _buildPlaybackControlsRow() {
     final l10n = AppLocalizations.of(context);
     final hasAudioChoices = _streamsOfType('Audio').length > 1;
-    final hasSubtitles = _streamsOfType('Subtitle').isNotEmpty;
+    final hasSubtitles = _hasSubtitleChoices;
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.spaceSm),

@@ -20,6 +20,7 @@ import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
 import 'package:flutter/foundation.dart';
 import '../repositories/seerr_repository.dart';
+import '../repositories/user_views_repository.dart';
 import '../../preference/seerr_preferences.dart';
 import '../viewmodels/seerr_discover_view_model.dart';
 import 'custom_external_lists_service.dart';
@@ -680,28 +681,14 @@ class RowDataSource {
     String serverId, [
     HomeRowType rowType = HomeRowType.libraryTiles,
   ]) async {
-    final viewsFuture = _client.userViewsApi.getUserViews();
-    final configFuture = _client.usersApi
-        .getUserConfiguration()
-        .then<Set<String>>((config) => config.myMediaExcludes.toSet())
-        .catchError((_) => const <String>{});
-
-    final response = await viewsFuture;
-    final Set<String> excludes = await configFuture;
-    final items = response['Items'] as List? ?? [];
-
-    final filteredItems = items.where((item) {
-      final data = item as Map<String, dynamic>;
-      final id = data['Id']?.toString() ?? '';
-      return !excludes.contains(id);
-    }).toList();
+    final response = await loadVisibleUserViews(_client);
 
     return _buildRow(
       id: rowType == HomeRowType.libraryTilesSmall
           ? 'libraryTilesSmall'
           : 'libraryTiles',
       title: _l10n.myMedia,
-      response: {...response, 'Items': filteredItems},
+      response: response,
       serverId: serverId,
       rowType: rowType,
     );

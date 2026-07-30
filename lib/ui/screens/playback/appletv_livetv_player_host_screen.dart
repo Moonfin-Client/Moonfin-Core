@@ -50,6 +50,15 @@ class _AppleTvLiveTvPlayerHostScreenState
   AppleTvPreviewPlayer? _pipPlayer;
   Timer? _programRefreshTimer;
 
+  // Captions the player found inside the video, which the server never lists
+  // as subtitle streams. The native subtitle menu round-trips a plain index
+  // int, so caption rows ride above _ccMenuIndexBase to stay clear of every
+  // real server stream index.
+  static const _ccMenuIndexBase = 100000;
+  int? _captionTrackId;
+  bool _captionTrackApplied = false;
+  StreamSubscription<void>? _tracksChangedSub;
+
   GuideProgram? _currentProgram;
   final Map<String, String> _nowPlayingByChannel = {};
   List<Map<String, dynamic>>? _channelListCache;
@@ -72,6 +81,9 @@ class _AppleTvLiveTvPlayerHostScreenState
     _currentIndex = widget.startIndex;
     _exitSub = _backend?.userExitStream.listen((_) => _handleExit());
     _actionSub = _backend?.uiActionStream.listen(_handleUiAction);
+    _tracksChangedSub = _backend?.tracksChangedStream.listen(
+      (_) => _onPlayerTracksChanged(),
+    );
     _bringupSub = _manager.bringupStateStream.listen((_) => _pushMetadata());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushSubtitleStyle();
@@ -120,6 +132,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _exitSub?.cancel();
     _actionSub?.cancel();
     _bringupSub?.cancel();
+    _tracksChangedSub?.cancel();
     _programRefreshTimer?.cancel();
     _themeController?.removeListener(_onThemeChanged);
     unawaited(_pipPlayer?.dispose());
@@ -146,6 +159,9 @@ class _AppleTvLiveTvPlayerHostScreenState
   }
 
   Future<void> _playCurrentChannel() async {
+    // A channel change starts a new stream, so whatever caption choice is
+    // remembered has to be put back once this one reports its own captions.
+    _captionTrackApplied = false;
     final channel = _currentChannel;
     final item = AggregatedItem(
       id: channel.id,
@@ -609,10 +625,15 @@ class _AppleTvLiveTvPlayerHostScreenState
       skipForwardMs: 0,
       skipBackMs: 0,
       audioTracks: _trackOptions(audioStreams, _manager.audioStreamIndex),
-      subtitleTracks: _trackOptions(
-        subtitleStreams,
-        _manager.subtitleStreamIndex,
-      ),
+      subtitleTracks: [
+        ..._trackOptions(
+          subtitleStreams,
+          // A caption choice turns the server-stream selection off, so its
+          // row must not stay marked as the active one.
+          _captionTrackId == null ? _manager.subtitleStreamIndex : null,
+        ),
+        ..._captionTrackOptions(),
+      ],
       streamInfoSections: _liveStreamInfoSections(),
       isLive: true,
       liveProgram: _liveProgramPayload(),
@@ -645,6 +666,42 @@ class _AppleTvLiveTvPlayerHostScreenState
     return options;
   }
 
+  /// Caption rows follow the server streams in the native menu, carrying a
+  /// sentinel index the selection handler maps back to the backend's own
+  /// caption id.
+  List<Map<String, dynamic>> _captionTrackOptions() {
+    final l10n = AppLocalizations.of(context);
+    return [
+      for (final track in _backend?.embeddedCaptionTracks ??
+          const <EmbeddedCaptionTrack>[])
+        {
+          'index': _ccMenuIndexBase + track.id,
+          'label': track.label,
+          'subtitle': track.language ?? l10n.embedded,
+          'selected': track.id == _captionTrackId,
+        },
+    ];
+  }
+
+  /// Refreshes the native menu once the player reports what it found, and
+  /// puts a caption choice back after a channel change, which starts a new
+  /// stream and drops every track selection with it.
+  void _onPlayerTracksChanged() {
+    if (!mounted) return;
+    final tracks = _backend?.embeddedCaptionTracks ?? const [];
+    if (tracks.isEmpty) {
+      _captionTrackApplied = false;
+    } else if (!_captionTrackApplied &&
+        tracks.any((track) => track.id == _captionTrackId)) {
+      _captionTrackApplied = true;
+      unawaited(
+        _backend?.setEmbeddedCaptionTrack(_captionTrackId!) ??
+            Future<void>.value(),
+      );
+    }
+    _pushMetadata();
+  }
+
   void _handleUiAction(Map<String, dynamic> action) {
     switch (action['event']?.toString()) {
       case 'play':
@@ -667,7 +724,16 @@ class _AppleTvLiveTvPlayerHostScreenState
       case 'selectSubtitle':
         final index = (action['index'] as num?)?.toInt();
         if (index == null) break;
-        if (index < 0) {
+        _captionTrackId = null;
+        _captionTrackApplied = false;
+        if (index >= _ccMenuIndexBase) {
+          _captionTrackId = index - _ccMenuIndexBase;
+          _captionTrackApplied = true;
+          unawaited(
+            _backend?.setEmbeddedCaptionTrack(index - _ccMenuIndexBase) ??
+                Future<void>.value(),
+          );
+        } else if (index < 0) {
           unawaited(_manager.disableSubtitles());
         } else {
           unawaited(_manager.changeSubtitleTrack(index));

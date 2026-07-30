@@ -43,6 +43,8 @@ class AppleTvMpvBackend implements PlayerBackend {
   bool _tracksKnown = false;
   int? _activeSubtitleTrackIndex;
   Completer<void>? _tracksReadyCompleter;
+  List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
+  final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
   bool _playerPresented = false;
@@ -150,9 +152,15 @@ class AppleTvMpvBackend implements PlayerBackend {
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
+        _embeddedCaptionTracks = EmbeddedCaptionTrack.listFromWire(
+          map['closedCaptionTracks'],
+        );
         if (_tracksReadyCompleter != null &&
             !_tracksReadyCompleter!.isCompleted) {
           _tracksReadyCompleter!.complete();
+        }
+        if (!_tracksChangedController.isClosed) {
+          _tracksChangedController.add(null);
         }
       case 'completed':
         _completed = _toBool(map['completed']);
@@ -215,6 +223,7 @@ class AppleTvMpvBackend implements PlayerBackend {
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;
     _tracksReadyCompleter = null;
+    _embeddedCaptionTracks = const [];
 
     final audioOnly =
         (payload['mediaType']?.toString() ?? 'video') == 'audio';
@@ -680,6 +689,18 @@ class AppleTvMpvBackend implements PlayerBackend {
   bool get demuxesEmbeddedSubtitles => true;
 
   @override
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks =>
+      _embeddedCaptionTracks;
+
+  @override
+  Future<void> setEmbeddedCaptionTrack(int id) async {
+    await _invoke<void>('setClosedCaptionTrack', {'id': id});
+  }
+
+  @override
+  Stream<void> get tracksChangedStream => _tracksChangedController.stream;
+
+  @override
   void dispose() {
     if (_disposed) return;
     _disposed = true;
@@ -696,5 +717,6 @@ class AppleTvMpvBackend implements PlayerBackend {
     _errorStream.close();
     _userExitStream.close();
     _uiActionStream.close();
+    _tracksChangedController.close();
   }
 }

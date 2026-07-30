@@ -222,6 +222,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool _isStale = false;
   String? _currentUrl;
 
+  // Captions mpv found inside the video, cached from the async track-list
+  // property so the sync getter can serve them. An EmbeddedCaptionTrack id is
+  // a 1-based position into [_ccTrackSids], which holds the real mpv sids.
+  List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
+  List<int> _ccTrackSids = const [];
+  StreamSubscription<dynamic>? _ccTracksSub;
+  final _tracksChangedController = StreamController<void>.broadcast();
+
   late final Stream<bool> _playingStream = _mergeWithStale<bool>(
     _player.stream.playing,
     () => _isStale ? false : _player.state.playing,
@@ -258,13 +266,27 @@ class MediaKitPlayerBackend extends PlayerBackend {
   /// A track entry from mpv's `track-list` property, in list order.
   /// [externalFilename] is the URL/path a sub-added external track was
   /// loaded from (null for demuxed embedded tracks).
-  static List<({int id, bool external, String? externalFilename})>
-      _extractTrackEntries(String? trackListRaw, {required String type}) {
+  static List<
+      ({
+        int id,
+        bool external,
+        String? externalFilename,
+        String codec,
+        String? title,
+        String? lang,
+      })> _extractTrackEntries(String? trackListRaw, {required String type}) {
     if (trackListRaw == null || trackListRaw.isEmpty) return const [];
     try {
       final decoded = jsonDecode(trackListRaw);
       if (decoded is! List) return const [];
-      final entries = <({int id, bool external, String? externalFilename})>[];
+      final entries = <({
+        int id,
+        bool external,
+        String? externalFilename,
+        String codec,
+        String? title,
+        String? lang,
+      })>[];
       for (final item in decoded) {
         if (item is! Map) continue;
         if (item['type']?.toString() != type) continue;
@@ -277,12 +299,24 @@ class MediaKitPlayerBackend extends PlayerBackend {
           id: parsed,
           external: item['external'] == true,
           externalFilename: item['external-filename']?.toString(),
+          codec: item['codec']?.toString() ?? '',
+          title: item['title']?.toString(),
+          lang: item['lang']?.toString(),
         ));
       }
       return entries;
     } catch (_) {
       return const [];
     }
+  }
+
+  /// True for the subtitle track mpv creates from the CEA-608/708 captions a
+  /// broadcaster carries inside the video (see `sub-create-cc-track`). These
+  /// have no server stream to map to, so every place that lines mpv's track
+  /// list up against the server's must skip them.
+  static bool _isClosedCaptionCodec(String codec) {
+    final c = codec.toLowerCase();
+    return c == 'eia_608' || c == 'eia_708' || c == 'cea708' || c == 'cea_708';
   }
 
   // Whether an mpv external track was sub-added from the requested URL. mpv can
@@ -365,6 +399,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
     this._hwDecodingEnabled,
   ) {
     _prefs.addListener(_onPreferencesChanged);
+    _ccTracksSub = _player.stream.tracks.listen(
+      (_) => unawaited(_refreshEmbeddedCaptionTracks()),
+    );
   }
 
   factory MediaKitPlayerBackend(
@@ -406,6 +443,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
         'stream-lavf-o',
         'reconnect=1,reconnect_on_network_error=1,reconnect_streamed=1,reconnect_delay_max=5',
       );
+      // Surface the CEA-608/708 captions broadcasters carry inside the video
+      // as an mpv subtitle track. It only appears once caption data is seen,
+      // and every server-index mapping in this file skips it by codec.
+      _nativeSetProperty(platform, 'sub-create-cc-track', 'yes');
 
       final maxChannels = prefs.get(UserPreferences.maxAudioChannels);
       final audioChannelsLayout = (maxChannels == 0 || _passthroughActive(prefs))
@@ -578,6 +619,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
     _currentUrl = url;
     _isStale = true;
+    _embeddedCaptionTracks = const [];
+    _ccTrackSids = const [];
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
@@ -1414,9 +1457,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
       if (active.id == 'auto') {
         return null;
       }
+      // An active CC track isn't a server-stream selection, so the server
+      // menu shows nothing selected, the same as the other backends.
+      if (_isCcSid(active.id)) {
+        return -1;
+      }
       final subtitleTracks = _player.state.tracks.subtitle;
       final playableSubtitleTracks = subtitleTracks
-          .where((t) => t.id != 'auto' && t.id != 'no')
+          .where((t) => t.id != 'auto' && t.id != 'no' && !_isCcSid(t.id))
           .toList();
       final idx = playableSubtitleTracks.indexWhere((t) => t.id == active.id);
       if (idx >= 0) {
@@ -1448,7 +1496,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
     try {
       final native = _player.platform as NativePlayer;
       final trackListBefore = await _tryNativeGetProperty(native, 'track-list');
-      final subEntries = _extractTrackEntries(trackListBefore, type: 'sub');
+      // The CC track mpv creates from in-video captions has no server stream,
+      // so it must not shift the positions this mapping hands out.
+      final subEntries = _extractTrackEntries(trackListBefore, type: 'sub')
+          .where((e) => !_isClosedCaptionCodec(e.codec))
+          .toList();
       final subtitleIds = subEntries.map((e) => e.id).toList();
 
       // Resolve the 1-based position to a real mpv sid. External tracks are
@@ -1489,7 +1541,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
               : mpvTrackId.toString());
       final subtitleTracks = _player.state.tracks.subtitle;
       final playableSubtitleTracks = subtitleTracks
-          .where((t) => t.id != 'auto' && t.id != 'no')
+          .where((t) => t.id != 'auto' && t.id != 'no' && !_isCcSid(t.id))
           .toList();
 
       var sidAfter = await _tryNativeGetProperty(native, 'sid');
@@ -1537,6 +1589,57 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
   }
 
+  /// Re-reads mpv's track list for the CC track it creates once caption data
+  /// is seen, which on a live channel can be well after playback began.
+  Future<void> _refreshEmbeddedCaptionTracks() async {
+    if (_isDisposed) return;
+    final platform = _player.platform;
+    if (platform is! NativePlayer) return;
+    final raw = await _tryNativeGetProperty(platform, 'track-list');
+    if (_isDisposed) return;
+    final ccEntries = _extractTrackEntries(raw, type: 'sub')
+        .where((e) => _isClosedCaptionCodec(e.codec))
+        .toList();
+
+    final sids = [for (final e in ccEntries) e.id];
+    final changed = !listEquals(sids, _ccTrackSids);
+    _ccTrackSids = sids;
+    _embeddedCaptionTracks = List.unmodifiable([
+      for (var i = 0; i < ccEntries.length; i++)
+        EmbeddedCaptionTrack(
+          id: i + 1,
+          label: (ccEntries[i].title?.isNotEmpty ?? false)
+              ? ccEntries[i].title!
+              : 'CC${i + 1}',
+          language: (ccEntries[i].lang?.isNotEmpty ?? false)
+              ? ccEntries[i].lang
+              : null,
+        ),
+    ]);
+    if (changed && !_tracksChangedController.isClosed) {
+      _tracksChangedController.add(null);
+    }
+  }
+
+  @override
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks =>
+      _embeddedCaptionTracks;
+
+  @override
+  Stream<void> get tracksChangedStream => _tracksChangedController.stream;
+
+  @override
+  Future<void> setEmbeddedCaptionTrack(int id) async {
+    if (id <= 0 || id > _ccTrackSids.length) return;
+    final platform = _player.platform;
+    if (platform is! NativePlayer) return;
+    final sid = _ccTrackSids[id - 1].toString();
+    await _nativeSetProperty(platform, 'sid', sid);
+    await _nativeSetProperty(platform, 'secondary-sid', 'no');
+    await _nativeSetProperty(platform, 'sub-visibility', 'yes');
+    await _nativeSetProperty(platform, 'sub-ass', 'yes');
+  }
+
   @override
   Future<void> disableSubtitleTrack() async {
     await _player.setSubtitleTrack(SubtitleTrack.no());
@@ -1565,11 +1668,17 @@ class MediaKitPlayerBackend extends PlayerBackend {
     } catch (_) {}
   }
 
+  /// Whether an mpv track id (a sid rendered as a string) is the CC track
+  /// created from in-video captions.
+  bool _isCcSid(String id) => _ccTrackSids.contains(int.tryParse(id));
+
   // media_kit's track list includes the 'auto' and 'no' pseudo-tracks.
   // Counting them lets waits finish early, so external sub-adds can race
-  // the embedded track demux and scramble the sid order.
-  static int _realSubtitleTrackCount(List<SubtitleTrack> tracks) =>
-      tracks.where((t) => t.id != 'auto' && t.id != 'no').length;
+  // the embedded track demux and scramble the sid order. The CC track isn't
+  // a server stream either, so it must not satisfy a server-count wait.
+  int _realSubtitleTrackCount(List<SubtitleTrack> tracks) => tracks
+      .where((t) => t.id != 'auto' && t.id != 'no' && !_isCcSid(t.id))
+      .length;
 
   @override
   Future<void> waitForEmbeddedSubtitleCount(int count) async {
@@ -1733,6 +1842,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
   void dispose() {
     _isDisposed = true;
     _prefs.removeListener(_onPreferencesChanged);
+    _ccTracksSub?.cancel();
+    _tracksChangedController.close();
     _player.dispose();
   }
 }

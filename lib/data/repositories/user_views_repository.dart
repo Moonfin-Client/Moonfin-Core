@@ -4,8 +4,8 @@ import 'package:server_core/server_core.dart';
 import '../models/aggregated_library.dart';
 
 /// The user's own views. Anything hidden from My Media is left out unless
-/// [includeHidden] is set, which the rows that should stay independent of that
-/// toggle use to see every library the user can reach.
+/// [includeHidden] is set, which callers that apply their own exclude
+/// filtering pass so the list isn't filtered twice.
 Future<List<AggregatedLibrary>> loadUserViews(
   MediaServerClient client, {
   bool includeHidden = false,
@@ -33,6 +33,39 @@ Future<List<AggregatedLibrary>> loadUserViews(
   }).toList();
 }
 
+/// The My Media exclude list, or null when it can't be read.
+Future<Set<String>?> _excludesFrom(Future<UserConfiguration> config) async {
+  try {
+    return (await config).myMediaExcludes.toSet();
+  } catch (_) {
+    return null;
+  }
+}
+
+/// The views response with anything hidden from My Media removed. The server
+/// filters by the exclude list itself, so ask for the full list and apply it
+/// here instead. If the list can't be read, let the server filter so hidden
+/// libraries don't leak through.
+Future<Map<String, dynamic>> loadVisibleUserViews(
+  MediaServerClient client,
+) async {
+  final viewsFuture = client.userViewsApi.getUserViews(includeHidden: true);
+  final excludes = await _excludesFrom(client.usersApi.getUserConfiguration());
+  final response = await viewsFuture;
+
+  if (excludes == null) return client.userViewsApi.getUserViews();
+  if (excludes.isEmpty) return response;
+
+  final items = (response['Items'] as List? ?? [])
+      .where(
+        (item) => !excludes.contains(
+          (item as Map<String, dynamic>)['Id']?.toString() ?? '',
+        ),
+      )
+      .toList();
+  return {...response, 'Items': items};
+}
+
 class UserViewsRepository extends ChangeNotifier {
   final MediaServerClient _client;
   UserConfiguration? _cachedConfig;
@@ -56,15 +89,12 @@ class UserViewsRepository extends ChangeNotifier {
       ).whenComplete(() => _inFlightViewsIncludingHidden = null);
 
   Future<List<AggregatedLibrary>> getUserViews() async {
-    final views = await getAllViews();
-    try {
-      final config = await _getUserConfig();
-      final excludes = config.myMediaExcludes.toSet();
-      if (excludes.isEmpty) return views;
-      return views.where((v) => !excludes.contains(v.id)).toList();
-    } catch (_) {
-      return views;
-    }
+    final excludes = await _excludesFrom(_getUserConfig());
+    if (excludes == null) return getAllViews();
+
+    final views = await getAllViewsIncludingHidden();
+    if (excludes.isEmpty) return views;
+    return views.where((v) => !excludes.contains(v.id)).toList();
   }
 
   Future<UserConfiguration> _getUserConfig() async {

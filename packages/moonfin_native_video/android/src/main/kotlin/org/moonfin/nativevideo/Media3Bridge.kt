@@ -263,6 +263,7 @@ object Media3Bridge {
             "setZoomMode",
             "setAudioTrack",
             "setSubtitleTrack",
+            "setClosedCaptionTrack",
             "disableSubtitleTrack",
             "setAudioDelay",
             "setSubtitleDelay",

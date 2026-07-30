@@ -12,6 +12,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var playerVC: AppleTvPlayerViewController?
     private var stateTimer: Timer?
     private var lastTextTrackCount = -1
+    private var lastClosedCaptionCount = -1
     private var didComplete = false
     private var lastMetadata: [String: Any]?
     private var lastSubtitleStyle: [String: Any]?
@@ -125,6 +126,8 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             )
         case "addExternalSubtitle":
             addExternalSubtitle(args["url"])
+        case "setClosedCaptionTrack":
+            player?.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
             player?.disableSubtitles()
         case "setVolume":
@@ -278,6 +281,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         playerVC = nil
         player = nil
         lastTextTrackCount = -1
+        lastClosedCaptionCount = -1
         didComplete = false
         if let vc {
             vc.dismiss(animated: false) { [weak self] in
@@ -292,6 +296,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         guard let player = player, let url = args["url"] as? String else { return }
         didComplete = false
         lastTextTrackCount = -1
+        lastClosedCaptionCount = -1
         let startMs = (args["startPositionMs"] as? NSNumber)?.doubleValue ?? 0
         let audioOnly = (args["mediaType"] as? String) == "audio"
         let autoPlay = (args["autoPlay"] as? Bool) ?? true
@@ -356,10 +361,26 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             "isBuffering": isBuffering,
         ])
 
+        // Captions can turn up part way through a live stream, so a change in
+        // either list re-emits tracksChanged.
         let textCount = p.subtitleTracks.count
-        if textCount != lastTextTrackCount {
+        let ccCount = p.closedCaptionTracks.count
+        if mediaIsOpen(p.state),
+            textCount != lastTextTrackCount || ccCount != lastClosedCaptionCount
+        {
             lastTextTrackCount = textCount
-            send(["event": "tracksChanged", "textTrackCount": textCount])
+            lastClosedCaptionCount = ccCount
+            send([
+                "event": "tracksChanged",
+                "textTrackCount": textCount,
+                "closedCaptionTracks": p.closedCaptionTracks.map { track in
+                    [
+                        "id": Int(track.id),
+                        "label": track.name,
+                        "language": track.language ?? "",
+                    ]
+                },
+            ])
         }
 
         if p.state == .ended, !didComplete {

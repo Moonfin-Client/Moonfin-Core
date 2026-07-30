@@ -32,7 +32,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => '快速连接';
 
   @override
   String get password => '密码';
@@ -1098,7 +1098,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return '删除操作失败，错误信息如下：$error';
   }
 
   @override
@@ -1317,7 +1317,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shuffle => '随机播放';
 
   @override
-  String get shuffleAll => 'Shuffle All';
+  String get shuffleAll => '随机播放全部';
 
   @override
   String get shuffleAllMusic => '随机播放所有音乐';
@@ -2076,7 +2076,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings => '设置';
 
   @override
-  String get settingsSearchHint => 'Search settings';
+  String get settingsSearchHint => '搜索设置项';
 
   @override
   String get authentication => '身份验证';
@@ -2263,7 +2263,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailsBackgroundBlur => '详情页背景模糊';
 
   @override
-  String get detailsBackgroundOpacity => 'Details Background Opacity';
+  String get detailsBackgroundOpacity => '详情页背景不透明度';
 
   @override
   String pixelValue(int value) {
@@ -2340,41 +2340,39 @@ class AppLocalizationsZh extends AppLocalizations {
   String get osdLockButtonDescription => '显示锁定按钮，长按解锁前会阻止触摸输入';
 
   @override
-  String get osdButtons => 'Player Buttons';
+  String get osdButtons => '播放器按钮';
 
   @override
-  String get osdButtonsDescription => 'Choose which buttons the player shows';
+  String get osdButtonsDescription => '选择播放器显示的按钮';
 
   @override
   String get osdButtonsSectionDescription =>
-      'Playback controls are always shown. Everything below is up to you, and each kind of device keeps its own list.';
+      '播放控制按钮始终显示。其余项目可自定义，不同设备类型拥有独立配置。';
 
   @override
-  String get detailButtons => 'Action Buttons';
+  String get detailButtons => '操作按钮';
 
   @override
-  String get detailButtonsDescription =>
-      'Choose which buttons the details screen shows';
+  String get detailButtonsDescription => '选择详情页面显示的按钮';
 
   @override
   String get detailButtonsSectionDescription =>
-      'Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.';
+      '播放按钮固定置顶，锁定按钮始终可见。其余项目可自定义，不同设备类型拥有独立配置。';
 
   @override
-  String get moveUp => 'Move Up';
+  String get moveUp => '上移';
 
   @override
-  String get moveDown => 'Move Down';
+  String get moveDown => '下移';
 
   @override
-  String get buttonOrderHint =>
-      'Use the arrows to change the order. On a remote, left and right move the highlighted button. Switching one off drops it below the rest.';
+  String get buttonOrderHint => '使用箭头调整顺序。遥控器可通过左右方向键移动选中按钮；关闭按钮将自动后置。';
 
   @override
-  String get orientationLock => 'Orientation Lock';
+  String get orientationLock => '方向锁定';
 
   @override
-  String get fullscreen => 'Fullscreen';
+  String get fullscreen => '全屏';
 
   @override
   String get audioBehavior => '音频行为';
@@ -3011,8 +3009,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '下载的媒体将保存到你设备上的 Downloads/Moonfin 中。这些文件将对其他应用可见，例如你的图库或音乐播放器。\n\n现有下载将保留在当前位置。';
 
   @override
-  String get transcodingTimeRemainingUnavailable =>
-      'Transcoding: Time Remaining Unavailable';
+  String get transcodingTimeRemainingUnavailable => '转码中：剩余时间未知';
 
   @override
   String get enable => '启用';
@@ -3243,11 +3240,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enableTrailerAudio => '媒体栏预告片开启音效';
 
   @override
-  String get trailerCaptions => 'Trailer Captions';
+  String get trailerCaptions => '预告片字幕';
 
   @override
-  String get trailerCaptionsDescription =>
-      'Show captions on YouTube trailers in the media bar';
+  String get trailerCaptionsDescription => '在媒体栏的 YouTube 预告片中显示字幕';
 
   @override
   String get episodePreview => '剧集预览';
@@ -3337,11 +3333,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fullScreenRowsDescription => '将首页行限制为每屏 1 行';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => '首页行内边距';
 
   @override
-  String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+  String get homeRowsPaddingDescription => '自定义首页各行之间的内边距';
 
   @override
   String get perRowImageType => '每行图片类型';
@@ -3600,7 +3595,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 发现栏目';
 
   @override
-  String get yourWatchlist => 'Your Watchlist';
+  String get yourWatchlist => '我的观看清单';
 
   @override
   String get resetRowsToDefaults => '将栏目重置为默认值';
@@ -8113,62 +8108,58 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsOfflineDownloads => '离线下载';
 
   @override
-  String get useNativeEmulator => 'Native Emulation';
+  String get useNativeEmulator => '原生模拟';
 
   @override
-  String get useNativeEmulatorSubtitle =>
-      'Play games with native cores instead of the EmulatorJS web player';
+  String get useNativeEmulatorSubtitle => '使用原生内核运行游戏，而非 EmulatorJS 网页播放器';
 
   @override
-  String get emulatorCores => 'Emulator Cores';
+  String get emulatorCores => '模拟器内核';
 
   @override
-  String get emulatorCoresSubtitle => 'Download systems to play games natively';
+  String get emulatorCoresSubtitle => '下载游戏系统以原生方式运行游戏';
 
   @override
   String get emulatorCoresDescription =>
-      'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
+      '选择需要安装的游戏系统。内核由 libretro 项目提供，可脱离浏览器，以原生模式运行游戏。';
 
   @override
-  String get emulatorCoreDownloading => 'Downloading';
+  String get emulatorCoreDownloading => '正在下载';
 
   @override
-  String get emulatorCoreUnavailable => 'Not available for this device';
+  String get emulatorCoreUnavailable => '当前设备不支持';
 
   @override
-  String get emulatorCoreDownloadFailed =>
-      'Could not download the core. Check your connection and try again.';
+  String get emulatorCoreDownloadFailed => '内核下载失败，请检查网络连接后重试。';
 
   @override
-  String get downloadedGames => 'Downloaded Games';
+  String get downloadedGames => '已下载游戏';
 
   @override
-  String get downloadedGamesSubtitle => 'Free up space used by game files';
+  String get downloadedGamesSubtitle => '释放游戏文件占用的存储空间';
 
   @override
   String get downloadedGamesDescription =>
-      'Games are copied to this device before they play. Remove the ones you have finished to free up space. Saves are kept on the server and are not deleted.';
+      '游戏运行前会复制至本机。可删除已通关游戏释放空间，存档保存在服务器，不会被清除。';
 
   @override
-  String get downloadedGamesEmpty =>
-      'No games have been downloaded to this device yet.';
+  String get downloadedGamesEmpty => '暂未在本机下载任何游戏。';
 
   @override
   String downloadedGamesTotal(int count, String size) {
-    return '$count games, $size';
+    return '$count 款游戏，占用 $size';
   }
 
   @override
-  String get removeAllDownloadedGames => 'Remove All';
+  String get removeAllDownloadedGames => '全部移除';
 
   @override
   String removeDownloadedGameConfirm(String title) {
-    return 'Remove $title from this device? It will download again the next time you play it.';
+    return '是否从本机移除 $title？下次游玩时将会重新下载。';
   }
 
   @override
-  String get removeAllDownloadedGamesConfirm =>
-      'Remove all downloaded games from this device? They will download again the next time you play them.';
+  String get removeAllDownloadedGamesConfirm => '是否移除本机所有已下载游戏？下次游玩时将会重新下载。';
 
   @override
   String get settingsHigh => '高';
@@ -9797,46 +9788,91 @@ class AppLocalizationsZh extends AppLocalizations {
   String get imdbTopEnglishMovies => 'IMDb 高分英语电影';
 
   @override
-  String get addToWatchlist => 'Add to Watchlist';
+  String get addToWatchlist => '加入观看清单';
 
   @override
-  String get removeFromWatchlist => 'Remove from Watchlist';
+  String get removeFromWatchlist => '从观看清单移除';
 
   @override
-  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
+  String get watchlistUpdateFailed => '观看清单更新失败';
 
   @override
-  String get adminSearchParameters => 'Search Parameters';
+  String get adminSearchParameters => '搜索参数';
 
   @override
-  String get adminCurrentMetadata => 'Current Metadata';
+  String get adminCurrentMetadata => '当前元数据';
 
   @override
-  String get adminLabelYear => 'Year';
+  String get adminLabelYear => '年份';
 
   @override
-  String get adminLabelImdbId => 'IMDb Id';
+  String get adminLabelImdbId => 'IMDb编号';
 
   @override
-  String get adminLabelTmdbMovieId => 'TheMovieDb Movie Id';
+  String get adminLabelTmdbMovieId => 'TheMovieDb 影片编号';
 
   @override
-  String get adminLabelTmdbBoxSetId => 'TheMovieDb Box Set Id';
+  String get adminLabelTmdbBoxSetId => 'TheMovieDb 合集编号';
 
   @override
-  String get adminLabelTvdbBoxSetId => 'TheTVDB Box Set Id';
+  String get adminLabelTvdbBoxSetId => 'TheTVDB 合集编号';
 
   @override
-  String get adminLabelTvdbId => 'TheTVDB Numerical Id';
+  String get adminLabelTvdbId => 'TheTVDB 数字编号';
 
   @override
-  String get adminLabelTvdbSlug => 'TheTVDB Slug Movie Id';
+  String get adminLabelTvdbSlug => 'TheTVDB 别名标识';
 
   @override
-  String get adminReplaceImages => 'Replace existing images';
+  String get adminReplaceImages => '替换现有图片';
 
   @override
-  String get adminBackToSearch => 'Back to Search Criteria';
+  String get adminBackToSearch => '返回搜索条件';
+
+  @override
+  String get grouping => 'Grouping';
+
+  @override
+  String get groupByType => 'Group by Type';
+
+  @override
+  String get playlistTypes => 'Playlist Types';
+
+  @override
+  String get playlistTypeVideo => 'Video';
+
+  @override
+  String get playlistTypeAudio => 'Audio (Music)';
+
+  @override
+  String get playlistTypeAudiobook => 'Audiobook';
+
+  @override
+  String get playlistTypeBook => 'Book';
+
+  @override
+  String get playlistTypePhoto => 'Photo';
+
+  @override
+  String get playlistTypeMixed => 'Mixed';
+
+  @override
+  String get videoPlaylistsSection => 'Video Playlists';
+
+  @override
+  String get audioPlaylistsSection => 'Audio Playlists';
+
+  @override
+  String get audiobookPlaylistsSection => 'Audiobook Playlists';
+
+  @override
+  String get bookPlaylistsSection => 'Book Playlists';
+
+  @override
+  String get photoPlaylistsSection => 'Photo Playlists';
+
+  @override
+  String get mixedPlaylistsSection => 'Mixed Playlists';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

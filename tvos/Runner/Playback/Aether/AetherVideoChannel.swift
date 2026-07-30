@@ -35,6 +35,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
 
     private var stateTimer: Timer?
     private var lastTextTrackCount = -1
+    private var lastClosedCaptionCount = -1
     private var didComplete = false
 
     init(messenger: FlutterBinaryMessenger) {
@@ -104,6 +105,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                     title: args["title"] as? String,
                     language: args["language"] as? String)
             }
+        case "setClosedCaptionTrack":
+            player.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
             player.disableSubtitles()
         case "setAudioDelay":
@@ -138,6 +141,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
         guard let url = args["url"] as? String else { return }
         didComplete = false
         lastTextTrackCount = -1
+        lastClosedCaptionCount = -1
 
         var headers: [String: String] = [:]
         if let raw = args["headers"] as? [String: Any] {
@@ -202,10 +206,26 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             "isBuffering": isBuffering,
         ])
 
+        // Captions can turn up part way through a live stream, so a change in
+        // either list re-emits tracksChanged.
         let textCount = p.subtitleTracks.count
-        if textCount != lastTextTrackCount {
+        let ccCount = p.closedCaptionTracks.count
+        if mediaIsOpen(p.state),
+            textCount != lastTextTrackCount || ccCount != lastClosedCaptionCount
+        {
             lastTextTrackCount = textCount
-            send(["event": "tracksChanged", "textTrackCount": textCount])
+            lastClosedCaptionCount = ccCount
+            send([
+                "event": "tracksChanged",
+                "textTrackCount": textCount,
+                "closedCaptionTracks": p.closedCaptionTracks.map { track in
+                    [
+                        "id": Int(track.id),
+                        "label": track.name,
+                        "language": track.language ?? "",
+                    ]
+                },
+            ])
         }
 
         if p.state == .ended, !didComplete {

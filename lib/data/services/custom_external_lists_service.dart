@@ -148,7 +148,13 @@ class CustomExternalListsService {
           if (forceRefresh) 'refresh': 'true',
         },
         options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
+          headers: {
+            'Authorization': buildServerAuthorizationHeader(
+              scheme: 'MediaBrowser',
+              deviceInfo: client.deviceInfo,
+              accessToken: token,
+            ),
+          },
         ),
       );
 

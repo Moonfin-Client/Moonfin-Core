@@ -244,10 +244,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     return null;
   }
 
-  /// Painted width of one grid cell, recorded during layout so image requests
-  /// can be sized against what is drawn rather than the nominal card width.
-  double _gridCellWidth = 0;
-
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
     if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) {
@@ -318,22 +314,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     return tags[imageType] as String?;
   }
 
-  /// Width to ask the server for, big enough to cover the cell at this display's
-  /// pixel density. Rounded into steps so servers keep reusing cached sizes
-  /// instead of transcoding a slightly different width per device.
-  int _requestWidthFor(int bucket) {
-    if (_gridCellWidth <= 0) return bucket;
-    final density = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
-    final needed = ((_gridCellWidth * density) / 60).ceil() * 60;
-    return needed > bucket ? needed : bucket;
-  }
-
   String? _imageUrl(AggregatedItem item) {
     final api = _vm.imageApi;
     final baseCardWidth = _cardWidth();
-    final posterMaxW = _requestWidthFor(
-      baseCardWidth < 260 ? 420 : (baseCardWidth < 340 ? 560 : 700),
-    );
+    final posterMaxW = baseCardWidth < 260
+        ? 420
+        : (baseCardWidth < 340 ? 560 : 700);
     final landscapeMaxW = baseCardWidth < 260
         ? 720
         : (baseCardWidth < 340 ? 960 : 1200);
@@ -805,6 +791,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
     }
 
+    final l10n = AppLocalizations.of(context);
     final cardWidth = _cardWidth();
     const spacing = 12.0;
     final watchedBehavior = _prefs.get(
@@ -829,11 +816,112 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 gridPadding * 2 -
                 (crossAxisCount - 1) * spacing) /
             crossAxisCount;
-        _gridCellWidth = cellWidth;
         final ar = _gridBaseAspectRatio();
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
         final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+
+        final focusColor = _vm.isFilterBrowse
+            ? ThemeRegistry.active.borders.focusBorder.color
+            : Color(
+                _prefs.get(UserPreferences.focusColor).colorValue,
+              );
+        final isNeon =
+            ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+
+        // Grouping and the type checkboxes both move cards around, so focus
+        // nodes key on a card's place in the full list to stay with it.
+        final gridItems = _vm.visiblePlaylists;
+        final indexInItems = _vm.isPlaylistBrowse
+            ? <String, int>{
+                for (var i = 0; i < _vm.items.length; i++) _vm.items[i].id: i,
+              }
+            : const <String, int>{};
+
+        if (_vm.isPlaylistBrowse && _vm.groupByType) {
+          final groupedMap = _vm.groupedPlaylists;
+          final slivers = <Widget>[];
+
+          groupedMap.forEach((categoryKey, categoryItems) {
+            final categoryTitle = switch (categoryKey) {
+              'Video' => l10n.videoPlaylistsSection,
+              'Audio' => l10n.audioPlaylistsSection,
+              'AudioBook' => l10n.audiobookPlaylistsSection,
+              'Book' => l10n.bookPlaylistsSection,
+              'Photo' => l10n.photoPlaylistsSection,
+              _ => l10n.mixedPlaylistsSection,
+            };
+
+            slivers.add(
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(gridPadding, 16, gridPadding, 8),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    categoryTitle,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            slivers.add(
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(gridPadding, 0, gridPadding, 16),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: spacing,
+                    childAspectRatio: childAspectRatio,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = categoryItems[index];
+                      final itemAspectRatio = _itemAspectRatio(item);
+                      return _buildGridCard(
+                        item: item,
+                        index: indexInItems[item.id] ?? index,
+                        positionInSection: index,
+                        sectionCount: categoryItems.length,
+                        crossAxisCount: crossAxisCount,
+                        cellWidth: cellWidth,
+                        childAspectRatio: childAspectRatio,
+                        itemAspectRatio: itemAspectRatio,
+                        focusColor: focusColor,
+                        isNeon: isNeon,
+                        watchedBehavior: watchedBehavior,
+                        isMobile: isMobile,
+                      );
+                    },
+                    childCount: categoryItems.length,
+                  ),
+                ),
+              ),
+            );
+          });
+
+          if (_vm.loadingMore) {
+            slivers.add(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: CircularProgressIndicator(color: _jellyfinBlue),
+                  ),
+                ),
+              ),
+            );
+          }
+
+          return CustomScrollView(
+            controller: _scrollController,
+            slivers: slivers,
+          );
+        }
 
         return CustomScrollView(
           controller: _scrollController,
@@ -848,96 +936,23 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   childAspectRatio: childAspectRatio,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  final item = _vm.items[index];
+                  final item = gridItems[index];
                   final itemAspectRatio = _itemAspectRatio(item);
-                  final focusColor = _vm.isFilterBrowse
-                      ? ThemeRegistry.active.borders.focusBorder.color
-                      : Color(
-                          _prefs.get(UserPreferences.focusColor).colorValue,
-                        );
-                  final isNeon =
-                      ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-                  Widget card = MediaCard(
-                    title: item.name,
-                    subtitle: _cardSubtitle(item),
-                    imageUrl: _imageUrl(item),
-                    width: double.infinity,
-                    aspectRatio: itemAspectRatio,
-                    isBanner: _vm.imageType == ImageType.banner,
+                  return _buildGridCard(
+                    item: item,
+                    index: indexInItems[item.id] ?? index,
+                    positionInSection: index,
+                    sectionCount: gridItems.length,
+                    crossAxisCount: crossAxisCount,
+                    cellWidth: cellWidth,
+                    childAspectRatio: childAspectRatio,
+                    itemAspectRatio: itemAspectRatio,
                     focusColor: focusColor,
-                    focusNode: getGridItemFocusNode(index),
-                    cardFocusExpansion: _prefs.get(
-                      UserPreferences.cardFocusExpansion,
-                    ),
-                    suppressFocusGlow: isNeon,
-                    isPlayed: item.isPlayed,
-                    isFavorite: item.isFavorite,
-                    unplayedCount: item.unplayedItemCount,
-                    playedPercentage: _displayPlayedPercentage(item),
+                    isNeon: isNeon,
                     watchedBehavior: watchedBehavior,
-                    itemType: item.type,
-                    onFocus: isMobile
-                        ? null
-                        : () {
-                            _onItemFocused(item);
-                            _scrollToGridRow(
-                              index: index,
-                              crossAxisCount: crossAxisCount,
-                              cellHeight: cellWidth / childAspectRatio,
-                              mainAxisSpacing: 8.0,
-                            );
-                          },
-                    onHoverStart: isMobile ? null : () => _onItemFocused(item),
-                    onHoverEnd: isMobile
-                        ? null
-                        : () => _vm.setFocusedItem(null),
-                    onKeyEvent: (_, event) {
-                      // On TV, Back on a grid card sends focus up to the alpha
-                      // bar's All chip when it's shown. The next Back, now on
-                      // the bar, leaves the library as usual.
-                      if (PlatformDetection.isTV &&
-                          event.isActionable &&
-                          event.logicalKey.isBackKey &&
-                          _allLetterFocusNode.context != null) {
-                        _allLetterFocusNode.requestFocus();
-                        return KeyEventResult.handled;
-                      }
-                      if (event.isActionable && event.logicalKey.isRightKey) {
-                        final isLastColumn =
-                            (index % crossAxisCount) == crossAxisCount - 1;
-                        final isLastItem = index == _vm.items.length - 1;
-                        if (isLastColumn || isLastItem) {
-                          // Keep focus in the current grid row at the right edge.
-                          return KeyEventResult.handled;
-                        }
-                      }
-
-                      if (!_vm.hasMore && !_vm.loadingMore) {
-                        return KeyEventResult.ignored;
-                      }
-                      if (!event.isActionable || !event.logicalKey.isDownKey) {
-                        return KeyEventResult.ignored;
-                      }
-
-                      final nextRowIndex = index + crossAxisCount;
-                      final atBottomLoadedRow =
-                          nextRowIndex >= _vm.items.length;
-                      if (!atBottomLoadedRow) {
-                        return KeyEventResult.ignored;
-                      }
-
-                      _vm.loadMore();
-                      return KeyEventResult.handled;
-                    },
-                    onLongPress: () => showContextMenu(
-                      context,
-                      item,
-                      onChanged: () => setState(() {}),
-                    ),
-                    onTap: () => _onItemTap(item),
+                    isMobile: isMobile,
                   );
-                  return card;
-                }, childCount: _vm.items.length),
+                }, childCount: gridItems.length),
               ),
             ),
             if (_vm.loadingMore)
@@ -953,6 +968,116 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         );
       },
     );
+  }
+
+  /// [index] keys the focus node and is the card's place in the full item list,
+  /// so it stays put as more pages arrive. [positionInSection] and
+  /// [sectionCount] describe the grid it's drawn in, which is one category once
+  /// the playlists page groups by type.
+  Widget _buildGridCard({
+    required AggregatedItem item,
+    required int index,
+    required int positionInSection,
+    required int sectionCount,
+    required int crossAxisCount,
+    required double cellWidth,
+    required double childAspectRatio,
+    required double itemAspectRatio,
+    required Color focusColor,
+    required bool isNeon,
+    required WatchedIndicatorBehavior watchedBehavior,
+    required bool isMobile,
+  }) {
+    // Section headers throw off the uniform row maths in _scrollToGridRow, so a
+    // grouped card asks the viewport to reveal it and needs its own context.
+    // Every other grid keeps the row scrolling and skips the extra element.
+    final isGrouped = _vm.isPlaylistBrowse && _vm.groupByType;
+
+    Widget card(BuildContext? revealContext) {
+      return MediaCard(
+        title: item.name,
+        subtitle: _cardSubtitle(item),
+        imageUrl: _imageUrl(item),
+        width: double.infinity,
+        aspectRatio: itemAspectRatio,
+        isBanner: _vm.imageType == ImageType.banner,
+        focusColor: focusColor,
+        focusNode: getGridItemFocusNode(index),
+        cardFocusExpansion: _prefs.get(UserPreferences.cardFocusExpansion),
+        suppressFocusGlow: isNeon,
+        isPlayed: item.isPlayed,
+        isFavorite: item.isFavorite,
+        unplayedCount: item.unplayedItemCount,
+        playedPercentage: _displayPlayedPercentage(item),
+        watchedBehavior: watchedBehavior,
+        itemType: item.type,
+        onFocus: isMobile
+            ? null
+            : () {
+                _onItemFocused(item);
+                if (revealContext == null) {
+                  _scrollToGridRow(
+                    index: positionInSection,
+                    crossAxisCount: crossAxisCount,
+                    cellHeight: cellWidth / childAspectRatio,
+                    mainAxisSpacing: 8.0,
+                  );
+                } else if (revealContext.mounted) {
+                  unawaited(
+                    Scrollable.ensureVisible(
+                      revealContext,
+                      alignment: 0.15,
+                      duration: const Duration(milliseconds: 160),
+                      curve: Curves.easeOutCubic,
+                    ),
+                  );
+                }
+              },
+        onHoverStart: isMobile ? null : () => _onItemFocused(item),
+        onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
+        onKeyEvent: (_, event) {
+          if (PlatformDetection.isTV &&
+              event.isActionable &&
+              event.logicalKey.isBackKey &&
+              _allLetterFocusNode.context != null) {
+            _allLetterFocusNode.requestFocus();
+            return KeyEventResult.handled;
+          }
+          if (event.isActionable && event.logicalKey.isRightKey) {
+            // Measured against the section the card sits in, so the end of a
+            // ragged last row holds focus instead of jumping to the next
+            // category's first card.
+            final isLastColumn =
+                (positionInSection % crossAxisCount) == crossAxisCount - 1;
+            final isLastInSection = positionInSection == sectionCount - 1;
+            if (isLastColumn || isLastInSection) {
+              return KeyEventResult.handled;
+            }
+          }
+
+          if (!_vm.hasMore && !_vm.loadingMore) {
+            return KeyEventResult.ignored;
+          }
+          if (!event.isActionable || !event.logicalKey.isDownKey) {
+            return KeyEventResult.ignored;
+          }
+
+          final nextRowIndex = index + crossAxisCount;
+          final atBottomLoadedRow = nextRowIndex >= _vm.items.length;
+          if (!atBottomLoadedRow) {
+            return KeyEventResult.ignored;
+          }
+
+          _vm.loadMore();
+          return KeyEventResult.handled;
+        },
+        onLongPress: () =>
+            showContextMenu(context, item, onChanged: () => setState(() {})),
+        onTap: () => _onItemTap(item),
+      );
+    }
+
+    return isGrouped ? Builder(builder: card) : card(null);
   }
 
   String? _cardSubtitle(AggregatedItem item) {
@@ -2017,6 +2142,54 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               ),
               for (final size in PosterSize.values)
                 _posterSizeRadioTile(vm, size),
+            ],
+            if (vm.isPlaylistBrowse) ...[
+              Divider(color: dividerColor),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  l10n.grouping,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
+                ),
+              ),
+              _DialogCheckboxTile(
+                label: l10n.groupByType,
+                checked: vm.groupByType,
+                onTap: () => vm.setGroupByType(!vm.groupByType),
+                accent: _jellyfinBlue,
+                onSurface: onSurface,
+              ),
+              Divider(color: dividerColor),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+                child: Text(
+                  l10n.playlistTypes,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: sectionColor,
+                  ),
+                ),
+              ),
+              for (final typeOption in [
+                ('Video', l10n.playlistTypeVideo),
+                ('Audio', l10n.playlistTypeAudio),
+                ('AudioBook', l10n.playlistTypeAudiobook),
+                ('Book', l10n.playlistTypeBook),
+                ('Photo', l10n.playlistTypePhoto),
+                ('Mixed', l10n.playlistTypeMixed),
+              ])
+                _DialogCheckboxTile(
+                  label: typeOption.$2,
+                  checked: vm.playlistTypeFilters.contains(typeOption.$1),
+                  onTap: () => vm.togglePlaylistTypeFilter(typeOption.$1),
+                  accent: _jellyfinBlue,
+                  onSurface: onSurface,
+                ),
             ],
           ],
         ),

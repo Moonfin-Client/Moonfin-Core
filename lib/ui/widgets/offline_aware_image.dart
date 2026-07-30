@@ -56,7 +56,7 @@ class OfflineAwareImage extends StatelessWidget {
     this.matchTextDirection = false,
     this.useOldImageOnUrlChange = false,
     this.color,
-    this.filterQuality = FilterQuality.medium,
+    this.filterQuality = FilterQuality.low,
     this.colorBlendMode,
     this.memCacheWidth,
     this.memCacheHeight,
