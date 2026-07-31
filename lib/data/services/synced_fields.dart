@@ -216,7 +216,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('liveTvDirectPlayEnabled', UserPreferences.liveTvDirectPlayEnabled, SyncCodec.boolean),
   SyncedField('maxBitrate', UserPreferences.maxBitrate, SyncCodec.text),
   SyncedField('maxVideoResolution', UserPreferences.maxVideoResolution, SyncCodec.enumName, enumValues: prefs.MaxVideoResolution.values),
-  SyncedField('mediaSegmentActions', UserPreferences.mediaSegmentActions, SyncCodec.enumName, enumValues: prefs.MediaSegmentActions.values),
+  SyncedField('mediaSegmentActions', UserPreferences.mediaSegmentActions, SyncCodec.enumName, enumValues: prefs.MediaSegmentAction.values),
   SyncedField('mediaQueuingEnabled', UserPreferences.mediaQueuingEnabled, SyncCodec.boolean),
   SyncedField('mediaSegmentCountdown', UserPreferences.mediaSegmentCountdown, SyncCodec.enumName, enumValues: prefs.MediaSegmentCountdown.values),
   SyncedField('mergeRadarrSonarrCalendars', UserPreferences.mergeRadarrSonarrCalendars, SyncCodec.boolean),
