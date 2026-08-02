@@ -131,7 +131,11 @@ abstract class ItemsApi {
     bool? isFavorite,
   });
 
-  Future<Map<String, dynamic>> getPlaylistItems(String playlistId);
+  Future<Map<String, dynamic>> getPlaylistItems(
+    String playlistId, {
+    int? startIndex,
+    int? limit,
+  });
 
   Future<Map<String, dynamic>> createPlaylist({
     required String name,

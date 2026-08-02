@@ -398,7 +398,11 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getPlaylistItems(String playlistId) async {
+  Future<Map<String, dynamic>> getPlaylistItems(
+    String playlistId, {
+    int? startIndex,
+    int? limit,
+  }) async {
     final response = await _dio.get(
       '/Playlists/$playlistId/Items',
       queryParameters: {
@@ -406,6 +410,8 @@ class EmbyItemsApi implements ItemsApi {
             'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,Artists,AlbumArtist,IndexNumber,MediaType,PlaylistItemId,BackdropImageTags,ParentBackdropImageTags,ParentBackdropItemId,SeriesName,ParentIndexNumber,Genres,Chapters,Overview,UserData,MediaStreams',
         'EnableImageTypes': 'Primary,Backdrop,Logo,Thumb',
         'ImageTypeLimit': 1,
+        'StartIndex': ?startIndex,
+        'Limit': ?limit,
       },
     );
     return response.data as Map<String, dynamic>;

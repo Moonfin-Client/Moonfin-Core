@@ -367,6 +367,7 @@ enum HomeSectionType {
 }
 
 enum LibrarySortBy {
+  playlistOrder('', 'Playlist Order'),
   name('SortName', 'Name'),
   dateAdded('DateCreated', 'Date Added'),
   premiereDate('PremiereDate', 'Premiere Date'),
