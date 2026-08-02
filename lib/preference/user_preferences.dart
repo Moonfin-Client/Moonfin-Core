@@ -1089,6 +1089,11 @@ class UserPreferences extends ChangeNotifier {
     values: LibrarySortBy.values,
   );
 
+  static final playlistsRowShowEpisodes = Preference(
+    key: 'pref_playlists_row_show_episodes',
+    defaultValue: false,
+  );
+
   static final audioRowsSortBy = EnumPreference(
     key: 'pref_audio_rows_sort_by',
     defaultValue: LibrarySortBy.name,
