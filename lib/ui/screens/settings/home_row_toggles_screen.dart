@@ -100,6 +100,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     _reloadHomeRows();
   }
 
+  void _onCollectionsEpisodesChanged() {
+    _pushPersonalizationSync();
+    _reloadHomeRows();
+  }
+
   void _onGenresSortChanged() {
     _pushPersonalizationSync();
     _reloadHomeRows();
@@ -395,6 +400,15 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       icon: Icons.sort,
                       labelOf: (v) => v.displayName,
                       onChanged: _onCollectionsSortChanged,
+                    ),
+                  if (showCollectionsRows)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.collectionsRowShowEpisodes,
+                      title: 'Show Individual Episodes',
+                      subtitle:
+                          'Expand TV shows to display each episode separately.',
+                      icon: Icons.video_library_outlined,
+                      onChanged: (_) => _onCollectionsEpisodesChanged(),
                     ),
                 ],
               ),

@@ -575,6 +575,7 @@ class RowDataSource {
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
     bool usePlaylistOrder = false,
+    bool showEpisodes = false,
     int startIndex = 0,
     int limit = _defaultLimit,
   }) async {
@@ -589,7 +590,7 @@ class RowDataSource {
       startIndex: startIndex,
       limit: limit,
     );
-    final row = _buildRow(
+    var row = _buildRow(
       id: rowId,
       title: title,
       response: response,
@@ -597,31 +598,35 @@ class RowDataSource {
       rowType: HomeRowType.collections,
     );
 
-    if (!usePlaylistOrder) return row;
-
-    // Apply Moonbase plugin custom order (same logic as item_detail_view_model).
-    try {
-      final syncService = GetIt.instance<PluginSyncService>();
-      if (!syncService.pluginAvailable) return row;
-      final customOrder =
-          await syncService.fetchCustomCollectionOrder(_client, collectionId);
-      if (customOrder == null || customOrder.isEmpty) return row;
-      final orderMap = {
-        for (var i = 0; i < customOrder.length; i++) customOrder[i]: i,
-      };
-      final sorted = List<AggregatedItem>.from(row.items)
-        ..sort((a, b) {
-          final ai = orderMap[a.id];
-          final bi = orderMap[b.id];
-          if (ai == null && bi == null) return 0;
-          if (ai == null) return 1;
-          if (bi == null) return -1;
-          return ai.compareTo(bi);
-        });
-      return row.copyWith(items: sorted);
-    } catch (_) {
-      return row;
+    if (usePlaylistOrder) {
+      // Apply Moonbase plugin custom order (same logic as item_detail_view_model).
+      try {
+        final syncService = GetIt.instance<PluginSyncService>();
+        if (syncService.pluginAvailable) {
+          final customOrder =
+              await syncService.fetchCustomCollectionOrder(_client, collectionId);
+          if (customOrder != null && customOrder.isNotEmpty) {
+            final orderMap = {
+              for (var i = 0; i < customOrder.length; i++) customOrder[i]: i,
+            };
+            final sorted = List<AggregatedItem>.from(row.items)
+              ..sort((a, b) {
+                final ai = orderMap[a.id];
+                final bi = orderMap[b.id];
+                if (ai == null && bi == null) return 0;
+                if (ai == null) return 1;
+                if (bi == null) return -1;
+                return ai.compareTo(bi);
+              });
+            row = row.copyWith(items: sorted);
+          }
+        }
+      } catch (_) {}
     }
+
+    if (!showEpisodes) return row;
+    final expanded = await _expandSeriesItems(row.items, serverId);
+    return row.copyWith(items: expanded);
   }
 
   Future<HomeRow> loadPlaylistRow(
@@ -1648,11 +1653,14 @@ class RowDataSource {
           );
         }
         try {
-          final sortPref = GetIt.instance.isRegistered<UserPreferences>()
+          final prefs = GetIt.instance.isRegistered<UserPreferences>()
               ? GetIt.instance<UserPreferences>()
-                  .get(UserPreferences.collectionsRowSortBy)
-              : LibrarySortBy.playlistOrder;
+              : null;
+          final sortPref = prefs?.get(UserPreferences.collectionsRowSortBy) ??
+              LibrarySortBy.playlistOrder;
           final usePlaylistOrder = sortPref == LibrarySortBy.playlistOrder;
+          final showEpisodes =
+              prefs?.get(UserPreferences.collectionsRowShowEpisodes) ?? false;
           final row = await loadCollectionRow(
             serverId,
             collectionId: collectionId,
@@ -1661,6 +1669,7 @@ class RowDataSource {
             sortBy: usePlaylistOrder ? _defaultSortBy : sortPref.apiValue,
             sortOrder: _defaultSortOrder,
             usePlaylistOrder: usePlaylistOrder,
+            showEpisodes: showEpisodes,
           );
           return row;
         } catch (_) {
@@ -1815,6 +1824,54 @@ class RowDataSource {
       if (rating == null || rating.isEmpty) return true;
       return !blocked.contains(rating);
     }).toList();
+  }
+
+  /// Expands any [AggregatedItem] of type 'Series' in [items] by fetching its
+  /// episodes and inserting them in season/episode order at the series'
+  /// position. Non-series items (Movies, Episodes already in the list, etc.)
+  /// are kept as-is. Falls back to the series card on any fetch error.
+  Future<List<AggregatedItem>> _expandSeriesItems(
+    List<AggregatedItem> items,
+    String serverId,
+  ) async {
+    final result = <AggregatedItem>[];
+    for (final item in items) {
+      if (item.type != 'Series') {
+        result.add(item);
+        continue;
+      }
+      try {
+        final episodeData = await _client.itemsApi.getEpisodes(item.id);
+        final rawEpisodes = (episodeData['Items'] as List?) ?? [];
+        if (rawEpisodes.isEmpty) {
+          result.add(item);
+          continue;
+        }
+        final episodes = rawEpisodes
+            .whereType<Map<String, dynamic>>()
+            .map((data) => AggregatedItem(
+                  id: data['Id']?.toString() ?? '',
+                  serverId: serverId,
+                  rawData: data,
+                ))
+            .toList()
+          ..sort((a, b) {
+            // Season 0 = Specials — sort after all regular seasons.
+            int seasonKey(int s) => s == 0 ? 0x7FFFFFFF : s;
+            final aSeason = seasonKey(a.rawData['ParentIndexNumber'] as int? ?? 0);
+            final bSeason = seasonKey(b.rawData['ParentIndexNumber'] as int? ?? 0);
+            if (aSeason != bSeason) return aSeason.compareTo(bSeason);
+            final aEp = a.rawData['IndexNumber'] as int? ?? 0;
+            final bEp = b.rawData['IndexNumber'] as int? ?? 0;
+            return aEp.compareTo(bEp);
+          });
+        result.addAll(episodes);
+      } catch (_) {
+        // Fall back to series poster if episode fetch fails.
+        result.add(item);
+      }
+    }
+    return result;
   }
 
   Set<String> _blockedParentalRatings() {
