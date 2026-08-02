@@ -1073,7 +1073,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final collectionsRowSortBy = EnumPreference(
     key: 'pref_collections_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.playlistOrder,
     values: LibrarySortBy.values,
   );
 

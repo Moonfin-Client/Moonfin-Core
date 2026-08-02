@@ -531,7 +531,7 @@ class MultiServerRepository {
               final targetStartIndex = pageCount * _defaultLimit;
               _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
               final sortBy =
-                  prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
+                  prefs?.get(UserPreferences.playlistsRowSortBy).itemsApiSortValue ??
                   _defaultSortBy;
 
               final response = await session.client.itemsApi.getItems(
@@ -646,7 +646,7 @@ class MultiServerRepository {
               return items;
             case HomeRowType.collections:
               final sortBy =
-                  prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
+                  prefs?.get(UserPreferences.collectionsRowSortBy).itemsApiSortValue ??
                   _defaultSortBy;
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
 
@@ -777,7 +777,7 @@ class MultiServerRepository {
           row.rowType == HomeRowType.audioPlaylists) {
         final sortBy = row.rowType == HomeRowType.audioPlaylists
             ? (prefs?.get(UserPreferences.audioRowsSortBy).apiValue ?? _defaultSortBy)
-            : (prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy);
+            : (prefs?.get(UserPreferences.playlistsRowSortBy).itemsApiSortValue ?? _defaultSortBy);
         if (sortBy == 'SortName') {
           uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
         } else {
@@ -790,28 +790,40 @@ class MultiServerRepository {
       }
       sortedCombined = uniqueCombined;
     } else {
-      final sortBy = switch (row.rowType) {
-        HomeRowType.favorites =>
-          prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
-              _defaultSortBy,
-        HomeRowType.collections =>
-          prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
-              _defaultSortBy,
-        HomeRowType.genres =>
-          prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
-              _defaultSortBy,
-        HomeRowType.audioArtists ||
-        HomeRowType.audioAlbums =>
-          prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
-              _defaultSortBy,
-        _ => _defaultSortBy,
-      };
+      final collectionsSort = prefs?.get(UserPreferences.collectionsRowSortBy);
+      // For a specific pinned collection row using Playlist Order, preserve the
+      // server-returned insertion order — don't re-sort on the client side.
+      // The generic 'collections' all-BoxSets row (row.id == 'collections') has
+      // no parentId, so playlistOrder is never active for it.
+      final collectionsUsePlaylistOrder =
+          row.rowType == HomeRowType.collections &&
+          collectionsSort == LibrarySortBy.playlistOrder &&
+          row.id != 'collections';
+      if (collectionsUsePlaylistOrder) {
+        sortedCombined = uniqueCombined;
+      } else {
+        final sortBy = switch (row.rowType) {
+          HomeRowType.favorites =>
+            prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
+                _defaultSortBy,
+          HomeRowType.collections =>
+            collectionsSort?.itemsApiSortValue ?? _defaultSortBy,
+          HomeRowType.genres =>
+            prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
+                _defaultSortBy,
+          HomeRowType.audioArtists ||
+          HomeRowType.audioAlbums =>
+            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+                _defaultSortBy,
+          _ => _defaultSortBy,
+        };
 
-      sortedCombined = _sortAggregatedItems(
-        uniqueCombined,
-        sortBy: sortBy,
-        sortOrder: 'Ascending',
-      );
+        sortedCombined = _sortAggregatedItems(
+          uniqueCombined,
+          sortBy: sortBy,
+          sortOrder: 'Ascending',
+        );
+      }
     }
 
     final totalCount = sessions.fold<int>(0, (sum, session) {

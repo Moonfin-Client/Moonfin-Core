@@ -24,6 +24,7 @@ import '../repositories/user_views_repository.dart';
 import '../../preference/seerr_preferences.dart';
 import '../viewmodels/seerr_discover_view_model.dart';
 import 'custom_external_lists_service.dart';
+import 'plugin_sync_service.dart';
 
 class RowDataSource {
   final MediaServerClient _client;
@@ -573,24 +574,54 @@ class RowDataSource {
     required String rowId,
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
+    bool usePlaylistOrder = false,
     int startIndex = 0,
     int limit = _defaultLimit,
   }) async {
+    // Fetch items without a forced sort when playlist order is requested so the
+    // server returns them in native linked-children order before we apply the
+    // plugin-stored custom ordering on top.
     final response = await _getItemsWithFallback(
       parentId: collectionId,
-      sortBy: sortBy,
+      sortBy: usePlaylistOrder ? null : sortBy,
       sortOrder: sortOrder,
       recursive: false,
       startIndex: startIndex,
       limit: limit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: rowId,
       title: title,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.collections,
     );
+
+    if (!usePlaylistOrder) return row;
+
+    // Apply Moonbase plugin custom order (same logic as item_detail_view_model).
+    try {
+      final syncService = GetIt.instance<PluginSyncService>();
+      if (!syncService.pluginAvailable) return row;
+      final customOrder =
+          await syncService.fetchCustomCollectionOrder(_client, collectionId);
+      if (customOrder == null || customOrder.isEmpty) return row;
+      final orderMap = {
+        for (var i = 0; i < customOrder.length; i++) customOrder[i]: i,
+      };
+      final sorted = List<AggregatedItem>.from(row.items)
+        ..sort((a, b) {
+          final ai = orderMap[a.id];
+          final bi = orderMap[b.id];
+          if (ai == null && bi == null) return 0;
+          if (ai == null) return 1;
+          if (bi == null) return -1;
+          return ai.compareTo(bi);
+        });
+      return row.copyWith(items: sorted);
+    } catch (_) {
+      return row;
+    }
   }
 
   Future<HomeRow> loadPlaylistRow(
@@ -1017,9 +1048,8 @@ class RowDataSource {
           isFavorite: true,
         );
       case HomeRowType.collections:
-        final sortBy =
-            prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
-            _defaultSortBy;
+        final sortPref = prefs?.get(UserPreferences.collectionsRowSortBy) ??
+            LibrarySortBy.playlistOrder;
         final parsed = _parseStableId(row.id);
         final parentId =
             (parsed != null &&
@@ -1029,10 +1059,17 @@ class RowDataSource {
         final includeItemTypes = row.id == 'collections'
             ? const ['BoxSet']
             : null;
+        // Playlist Order for a specific pinned collection: fetch without a
+        // server sort so the Items API returns items in native linked-children
+        // order. The custom plugin order is only applied at the initial load
+        // (loadCollectionRow); lazy-load pages simply append in server order.
+        final effectiveSortBy = (sortPref == LibrarySortBy.playlistOrder && parentId != null)
+            ? null
+            : sortPref.itemsApiSortValue;
         response = await _getItemsWithFallback(
           parentId: parentId,
           includeItemTypes: includeItemTypes,
-          sortBy: sortBy,
+          sortBy: effectiveSortBy,
           sortOrder: 'Ascending',
           recursive: true,
           startIndex: currentOffset,
@@ -1611,19 +1648,19 @@ class RowDataSource {
           );
         }
         try {
-          var sortBy = _defaultSortBy;
-          if (GetIt.instance.isRegistered<UserPreferences>()) {
-            sortBy = GetIt.instance<UserPreferences>()
-                .get(UserPreferences.collectionsRowSortBy)
-                .apiValue;
-          }
+          final sortPref = GetIt.instance.isRegistered<UserPreferences>()
+              ? GetIt.instance<UserPreferences>()
+                  .get(UserPreferences.collectionsRowSortBy)
+              : LibrarySortBy.playlistOrder;
+          final usePlaylistOrder = sortPref == LibrarySortBy.playlistOrder;
           final row = await loadCollectionRow(
             serverId,
             collectionId: collectionId,
             title: title,
             rowId: rowId,
-            sortBy: sortBy,
+            sortBy: usePlaylistOrder ? _defaultSortBy : sortPref.apiValue,
             sortOrder: _defaultSortOrder,
+            usePlaylistOrder: usePlaylistOrder,
           );
           return row;
         } catch (_) {
