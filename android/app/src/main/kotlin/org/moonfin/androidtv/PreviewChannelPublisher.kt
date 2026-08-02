@@ -53,17 +53,21 @@ class PreviewChannelPublisher(private val context: Context) {
         // reinserting keeps each row current without touching other apps.
         deleteAllPrograms()
 
+        val incomingKeys = channels.mapNotNull { it["key"] as? String }.toSet()
+        cleanUpObsoleteChannels(incomingKeys)
+
         channels.forEachIndexed { index, channel ->
             val key = channel["key"] as? String ?: return@forEachIndexed
             val title = channel["title"] as? String ?: key
             @Suppress("UNCHECKED_CAST")
             val items = channel["items"] as? List<Map<String, Any?>> ?: emptyList()
-            if (items.isEmpty()) return@forEachIndexed
 
             // The launcher only lets an app auto add one row, so the first
             // channel is requested browsable and the rest are opt in.
             val channelId = getChannelId(key, title, default = index == 0)
                 ?: return@forEachIndexed
+
+            if (items.isEmpty()) return@forEachIndexed
 
             val values = items.mapNotNull { buildProgram(channelId, it)?.toContentValues() }
             if (values.isNotEmpty()) {
@@ -81,6 +85,52 @@ class PreviewChannelPublisher(private val context: Context) {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun cleanUpObsoleteChannels(incomingKeys: Set<String>) {
+        val store = context.getSharedPreferences("moonfin_tv_channels", Context.MODE_PRIVATE)
+        val projection = arrayOf(
+            TvContractCompat.Channels._ID,
+            TvContractCompat.Channels.COLUMN_INTERNAL_PROVIDER_ID,
+            TvContractCompat.Channels.COLUMN_DISPLAY_NAME,
+        )
+
+        runCatching {
+            context.contentResolver.query(
+                TvContractCompat.Channels.CONTENT_URI, projection, null, null, null,
+            )?.use { cursor ->
+                val idIndex = cursor.getColumnIndex(TvContractCompat.Channels._ID)
+                val keyIndex = cursor.getColumnIndex(TvContractCompat.Channels.COLUMN_INTERNAL_PROVIDER_ID)
+                val titleIndex = cursor.getColumnIndex(TvContractCompat.Channels.COLUMN_DISPLAY_NAME)
+
+                while (cursor.moveToNext()) {
+                    val id = if (idIndex != -1) cursor.getLong(idIndex) else -1L
+                    val key = if (keyIndex != -1) cursor.getString(keyIndex) else null
+                    val title = if (titleIndex != -1) cursor.getString(titleIndex) else null
+
+                    val isObsoleteKey = key != null && key !in incomingKeys
+                    val isOldUpcoming = key == "upcoming" || (title != null && title.contains("&"))
+
+                    if (id != -1L && (isObsoleteKey || isOldUpcoming)) {
+                        val channelUri = TvContractCompat.buildChannelUri(id)
+                        context.contentResolver.delete(channelUri, null, null)
+                        if (key != null) store.edit().remove(key).apply()
+                    }
+                }
+            }
+        }
+
+        val storedKeys = store.all.keys.toSet()
+        for (oldKey in storedKeys - incomingKeys) {
+            val oldUriStr = store.getString(oldKey, null)
+            if (oldUriStr != null) {
+                runCatching {
+                    context.contentResolver.delete(Uri.parse(oldUriStr), null, null)
+                }
+            }
+            store.edit().remove(oldKey).apply()
+        }
+    }
+
     /**
      * Returns the id of the channel stored under [key], creating it when it does
      * not exist yet. The uri is cached so a channel the user placed on the home
@@ -89,10 +139,15 @@ class PreviewChannelPublisher(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getChannelId(key: String, title: String, default: Boolean): Long? {
         val store = context.getSharedPreferences("moonfin_tv_channels", Context.MODE_PRIVATE)
+        val appLinkIntent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
         val settings = Channel.Builder()
             .setType(TvContractCompat.Channels.TYPE_PREVIEW)
             .setDisplayName(title)
-            .setAppLinkIntent(Intent(context, MainActivity::class.java))
+            .setInternalProviderId(key)
+            .setAppLinkIntent(appLinkIntent)
             .build()
 
         var uri: Uri? = null
@@ -126,9 +181,13 @@ class PreviewChannelPublisher(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun buildProgram(channelId: Long, item: Map<String, Any?>): PreviewProgram? {
         val id = item["id"] as? String ?: return null
+        val posterUriStr = item["posterUri"] as? String
+        if (posterUriStr.isNullOrEmpty()) return null
         val isMovie = (item["kind"] as? String) == "movie"
 
         val intent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(WatchNextPublisher.EXTRA_ITEM_ID, id)
             (item["serverId"] as? String)?.takeIf { it.isNotEmpty() }
                 ?.let { putExtra(WatchNextPublisher.EXTRA_SERVER_ID, it) }

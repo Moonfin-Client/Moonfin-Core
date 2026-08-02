@@ -250,6 +250,7 @@ class JellyfinItemsApi implements ItemsApi {
       '/Users/$userId/Items',
       queryParameters: {
         'ParentId': ?parentId,
+        'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
         'Limit': ?limit,

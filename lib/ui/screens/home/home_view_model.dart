@@ -16,6 +16,7 @@ import '../../../data/services/connectivity_service.dart';
 import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/services/topshelf_service.dart';
+import '../../../data/services/tv_channels_service.dart';
 import '../../../data/services/watch_next_service.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -45,6 +46,7 @@ class HomeViewModel extends ChangeNotifier {
 
   final TopShelfService _topShelf = TopShelfService();
   final WatchNextService _watchNext = WatchNextService();
+  final TvChannelsService _tvChannels = TvChannelsService();
 
   List<HomeRow> _rows = [];
   List<HomeRow> get rows => _rows;
@@ -554,6 +556,7 @@ class HomeViewModel extends ChangeNotifier {
       unawaited(_cacheStore.write(_homeCacheKey(), _rows));
       _topShelf.update(_rows);
       _watchNext.update(_rows);
+      _tvChannels.update();
 
       if (showMergedResume) {
         unawaited(_loadResumeAndNextUpInBackground());
@@ -801,6 +804,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     _topShelf.update(_rows);
     _watchNext.update(_rows);
+    _tvChannels.update();
   }
 
   /// Refetches the row with [rowId] and replaces it in place, or removes it when
@@ -1976,6 +1980,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     notifyListeners();
     _watchNext.update(_rows);
+    _tvChannels.update();
   }
 
   static const _seerrEnrichConcurrency = 5;

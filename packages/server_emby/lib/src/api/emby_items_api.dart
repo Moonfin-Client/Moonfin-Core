@@ -260,6 +260,7 @@ class EmbyItemsApi implements ItemsApi {
       '/Items',
       queryParameters: {
         if (parentId != null) 'ParentId': parentId,
+        'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
         if (limit != null) 'Limit': limit,

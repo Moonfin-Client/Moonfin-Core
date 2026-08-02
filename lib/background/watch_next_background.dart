@@ -48,7 +48,7 @@ Future<void> watchNextBackgroundMain() async {
       } catch (_) {}
 
       await CarArtwork.instance.ensureReady();
-      final items = WatchNextService.buildItems(rows, client.imageApi);
+      final items = WatchNextService.buildItems(rows, client);
       await CarArtwork.instance.persistHosts();
 
       if (items.isEmpty) {
