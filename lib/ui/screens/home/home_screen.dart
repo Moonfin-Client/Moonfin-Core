@@ -2453,14 +2453,14 @@ class _ContentRowsState extends State<_ContentRows>
     if (!fullScreenRows) {
       if (isRowsV2) {
         final customHeight = prefs.get(UserPreferences.modernHomeRowsPadding).toDouble();
-        if (!_isLibraryRow(row)) {
-          // Rows are pinned to this extent below, so a chosen height under
-          // the natural one clips the cards instead of tightening the gap.
-          totalHeight = customHeight > totalHeight ? customHeight : totalHeight;
-        } else {
-          final offset = (customHeight - 440.0).clamp(0.0, 120.0);
-          totalHeight += offset;
+        var offset = (customHeight - 400.0).clamp(-40.0, 200.0);
+        if (PlatformDetection.useMobileUi) {
+          totalHeight += 20.0;
+          offset = offset / 2.0;
+        } else if (_isLibraryRow(row)) {
+          totalHeight += 100.0;
         }
+        totalHeight += offset;
       } else if (_isLibraryRow(row)) {
         final classicPadding = prefs
             .get(UserPreferences.classicHomeRowsPadding)
