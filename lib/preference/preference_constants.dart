@@ -367,6 +367,7 @@ enum HomeSectionType {
 }
 
 enum LibrarySortBy {
+  playlistOrder('', 'Playlist Order'),
   name('SortName', 'Name'),
   dateAdded('DateCreated', 'Date Added'),
   premiereDate('PremiereDate', 'Premiere Date'),
@@ -382,6 +383,14 @@ enum LibrarySortBy {
   const LibrarySortBy(this.apiValue, this.displayName);
   final String apiValue;
   final String displayName;
+
+  /// The sort value to pass to the Jellyfin/Emby /Items API.
+  ///
+  /// Some options (e.g. [playlistOrder]) use a dedicated endpoint and carry
+  /// an empty [apiValue]. Passing an empty string to the Items API produces
+  /// a malformed request, so this getter substitutes 'SortName' as a safe
+  /// fallback for any context that must use the Items API regardless.
+  String get itemsApiSortValue => apiValue.isEmpty ? 'SortName' : apiValue;
 }
 
 enum ChannelSortBy {

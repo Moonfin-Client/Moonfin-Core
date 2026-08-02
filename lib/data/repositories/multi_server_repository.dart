@@ -531,7 +531,7 @@ class MultiServerRepository {
               final targetStartIndex = pageCount * _defaultLimit;
               _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
               final sortBy =
-                  prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
+                  prefs?.get(UserPreferences.playlistsRowSortBy).itemsApiSortValue ??
                   _defaultSortBy;
 
               final response = await session.client.itemsApi.getItems(
@@ -777,7 +777,7 @@ class MultiServerRepository {
           row.rowType == HomeRowType.audioPlaylists) {
         final sortBy = row.rowType == HomeRowType.audioPlaylists
             ? (prefs?.get(UserPreferences.audioRowsSortBy).apiValue ?? _defaultSortBy)
-            : (prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy);
+            : (prefs?.get(UserPreferences.playlistsRowSortBy).itemsApiSortValue ?? _defaultSortBy);
         if (sortBy == 'SortName') {
           uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
         } else {

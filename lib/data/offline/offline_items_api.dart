@@ -814,7 +814,11 @@ class OfflineItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getPlaylistItems(String playlistId) async =>
+  Future<Map<String, dynamic>> getPlaylistItems(
+    String playlistId, {
+    int? startIndex,
+    int? limit,
+  }) async =>
       _envelope(const []);
 
   @override

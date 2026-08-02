@@ -600,17 +600,24 @@ class RowDataSource {
     required String rowId,
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
+    bool usePlaylistOrder = false,
     int startIndex = 0,
     int limit = _defaultLimit,
   }) async {
-    final response = await _getItemsWithFallback(
-      parentId: playlistId,
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-      recursive: false,
-      startIndex: startIndex,
-      limit: limit,
-    );
+    final response = usePlaylistOrder
+        ? await _client.itemsApi.getPlaylistItems(
+            playlistId,
+            startIndex: startIndex,
+            limit: limit,
+          )
+        : await _getItemsWithFallback(
+            parentId: playlistId,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            recursive: false,
+            startIndex: startIndex,
+            limit: limit,
+          );
     return _buildRow(
       id: rowId,
       title: title,
@@ -959,18 +966,25 @@ class RowDataSource {
         if (parsed != null &&
             parsed.source == HomeSectionPluginSource.playlists) {
           final playlistId = parsed.additionalData;
-          var sortBy = _defaultSortBy;
-          if (prefs != null) {
-            sortBy = prefs.get(UserPreferences.playlistsRowSortBy).apiValue;
+          final sortPref = prefs?.get(UserPreferences.playlistsRowSortBy) ??
+              LibrarySortBy.playlistOrder;
+          final usePlaylistOrder = sortPref == LibrarySortBy.playlistOrder;
+          if (usePlaylistOrder) {
+            response = await _client.itemsApi.getPlaylistItems(
+              playlistId,
+              startIndex: currentOffset,
+              limit: _defaultLimit,
+            );
+          } else {
+            response = await _getItemsWithFallback(
+              parentId: playlistId,
+              sortBy: sortPref.apiValue,
+              sortOrder: 'Ascending',
+              recursive: false,
+              startIndex: currentOffset,
+              limit: _defaultLimit,
+            );
           }
-          response = await _getItemsWithFallback(
-            parentId: playlistId,
-            sortBy: sortBy,
-            sortOrder: 'Ascending',
-            recursive: false,
-            startIndex: currentOffset,
-            limit: _defaultLimit,
-          );
         } else {
           final pageCount = (currentOffset / _defaultLimit).ceil();
           final startIndex = pageCount * _defaultLimit;
@@ -1657,19 +1671,19 @@ class RowDataSource {
           );
         }
         try {
-          var sortBy = _defaultSortBy;
-          if (GetIt.instance.isRegistered<UserPreferences>()) {
-            sortBy = GetIt.instance<UserPreferences>()
-                .get(UserPreferences.playlistsRowSortBy)
-                .apiValue;
-          }
+          final sortPref = GetIt.instance.isRegistered<UserPreferences>()
+              ? GetIt.instance<UserPreferences>()
+                  .get(UserPreferences.playlistsRowSortBy)
+              : LibrarySortBy.playlistOrder;
+          final usePlaylistOrder = sortPref == LibrarySortBy.playlistOrder;
           final row = await loadPlaylistRow(
             serverId,
             playlistId: playlistId,
             title: title,
             rowId: rowId,
-            sortBy: sortBy,
+            sortBy: usePlaylistOrder ? _defaultSortBy : sortPref.apiValue,
             sortOrder: _defaultSortOrder,
+            usePlaylistOrder: usePlaylistOrder,
           );
           return row;
         } catch (_) {
