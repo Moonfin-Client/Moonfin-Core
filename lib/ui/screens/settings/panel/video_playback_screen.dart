@@ -33,6 +33,18 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   ZoomMode.stretch => l10n.stretch,
                 },
               ),
+              EnumPreferenceTile<PlaybackTimeDisplay>(
+                preference: UserPreferences.playbackTimeDisplay,
+                title: l10n.playbackTimeDisplay,
+                description: l10n.settingsPlaybackTimeDisplayDescription,
+                icon: Icons.timer_outlined,
+                labelOf: (v) => switch (v) {
+                  PlaybackTimeDisplay.totalDuration => l10n.playbackTimeTotal,
+                  PlaybackTimeDisplay.timeRemaining =>
+                    l10n.playbackTimeRemaining,
+                  PlaybackTimeDisplay.endsAt => l10n.playbackTimeEndsAt,
+                },
+              ),
               SwitchPreferenceTile(
                 preference: UserPreferences.trickPlayEnabled,
                 title: l10n.trickPlay,

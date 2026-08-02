@@ -10353,4 +10353,20 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => 'Mixed Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Fortschrittsbalken
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Zeigt die aktuelle Wiedergabezeit, die Gesamtzeit und die verbleibende Zeit an.';
+
+  @override
+  String get playbackTimeTotal => 'Gesamtdauer';
+
+  @override
+  String get playbackTimeRemaining => 'Verbleibende Zeit';
+
+  @override
+  String get playbackTimeEndsAt => 'Endet um';
 }

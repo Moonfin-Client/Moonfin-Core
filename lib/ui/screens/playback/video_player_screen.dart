@@ -46,11 +46,11 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/auto_hdr_switcher.dart';
-import '../../../util/clock_format.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/subtitle_preview.dart';
@@ -4084,20 +4084,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     required Duration position,
     required Duration duration,
   }) {
-    if (duration <= Duration.zero) return '';
-    final remainingMedia = duration - position;
-    if (remainingMedia <= Duration.zero) return '';
-    final speed = _state.playbackSpeed > 0 ? _state.playbackSpeed : 1.0;
-    final remainingWall = Duration(
-      milliseconds: (remainingMedia.inMilliseconds / speed).round(),
-    );
-    if (remainingWall <= Duration.zero) return '';
-    final end = DateTime.now().add(remainingWall);
-    final time = formatClockTime(
-      end,
+    return formatPlaybackEndsAt(
+      context,
+      position: position,
+      duration: duration,
       use24Hour: _prefs.get(UserPreferences.use24HourClock),
+      playbackSpeed: _state.playbackSpeed,
     );
-    return AppLocalizations.of(context).endsAt(time);
   }
 
   String? _logoUrlForQueueItem(dynamic item) {
@@ -4288,10 +4281,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     .toDouble();
                 final seekPosition = Duration(milliseconds: positionMs.round());
                 final livePosition = _isSeeking ? seekPosition : position;
-                final endsAt = _endsAtLabel(
-                  position: livePosition,
-                  duration: duration,
+                final timeDisplay = _prefs.get(
+                  UserPreferences.playbackTimeDisplay,
                 );
+                // Trailing laberl hase it, no need to render twice
+                final endsAt = timeDisplay == PlaybackTimeDisplay.endsAt
+                    ? ''
+                    : _endsAtLabel(position: livePosition, duration: duration);
                 final trickplayTile = _isSeeking
                     ? _getTrickplayTile(seekPosition)
                     : null;
@@ -4449,7 +4445,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             ),
                           ),
                           Text(
-                            _formatDuration(duration),
+                            formatPlaybackTrailingTime(
+                              context,
+                              position: livePosition,
+                              duration: duration,
+                              mode: timeDisplay,
+                              use24Hour: _prefs.get(
+                                UserPreferences.use24HourClock,
+                              ),
+                              playbackSpeed: _state.playbackSpeed,
+                            ),
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: AppTypography.fontSizeXs,

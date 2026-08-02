@@ -2,11 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import 'package:get_it/get_it.dart';
+
 import 'audiobook_time.dart';
 import '../../../data/services/audiobook_bookmarks_service.dart';
 import '../../../data/services/audiobook_notes_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/preference_constants.dart';
+import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import 'chapter.dart';
 
 class AudiobookBookOverview extends StatelessWidget {
@@ -33,6 +38,18 @@ class AudiobookBookOverview extends StatelessWidget {
         maxMs > 0 ? (position.inMilliseconds / maxMs).clamp(0.0, 1.0) : 0.0;
     final percent = (fraction * 100).round();
     final remaining = duration - position;
+    final prefs = GetIt.instance<UserPreferences>();
+    final timeDisplay = prefs.get(UserPreferences.playbackTimeDisplay);
+    // Trailing laberl hase it, no need to render twice
+    final trailingLabel = timeDisplay == PlaybackTimeDisplay.timeRemaining
+        ? l10n.audiobookSleepRemaining(formatAudiobookClock(remaining))
+        : formatPlaybackTrailingTime(
+            context,
+            position: position,
+            duration: duration,
+            mode: timeDisplay,
+            use24Hour: prefs.get(UserPreferences.use24HourClock),
+          );
     final noteColor = AppColorScheme.navColorCycle.length >= 2
         ? AppColorScheme.navColorCycle[1]
         : Theme.of(context).colorScheme.secondary;
@@ -90,7 +107,7 @@ class AudiobookBookOverview extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  l10n.audiobookSleepRemaining(formatAudiobookClock(remaining)),
+                  trailingLabel,
                   style: captionStyle,
                   textAlign: TextAlign.right,
                 ),

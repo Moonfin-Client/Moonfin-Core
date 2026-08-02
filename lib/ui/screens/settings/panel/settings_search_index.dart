@@ -1001,6 +1001,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'stretch',
     ]),
     video.leaf(
+      'playback_time_display',
+      l10n.playbackTimeDisplay,
+      subtitle: l10n.settingsPlaybackTimeDisplayDescription,
+      keywords: ['time left', 'time remaining', 'ends at', 'duration'],
+    ),
+    video.leaf(
       'trick_play_enabled',
       l10n.trickPlay,
       subtitle: l10n.showPreviewThumbnailsWhenSeeking,

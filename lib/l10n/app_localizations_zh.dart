@@ -9924,6 +9924,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => '混合播放列表';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose what is shown at the end of the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -19565,4 +19581,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get imdbTopEnglishMovies => 'IMDb 評分最高英語電影';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose what is shown at the end of the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
 }

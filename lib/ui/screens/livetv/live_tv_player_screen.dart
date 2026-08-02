@@ -26,6 +26,7 @@ import '../../../util/clock_format.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -1896,7 +1897,14 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                       1.0,
                     );
                 leftLabel = _formatDurationLabel(position);
-                rightLabel = _formatDurationLabel(duration);
+                rightLabel = formatPlaybackTrailingTime(
+                  context,
+                  position: position,
+                  duration: duration,
+                  mode: _prefs.get(UserPreferences.playbackTimeDisplay),
+                  use24Hour: _prefs.get(UserPreferences.use24HourClock),
+                  playbackSpeed: _state.playbackSpeed,
+                );
               } else {
                 progress = null;
                 leftLabel = _formatTime(DateTime.now());

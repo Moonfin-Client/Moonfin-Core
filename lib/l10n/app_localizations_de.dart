@@ -10412,22 +10412,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get imdbTopEnglishMovies => 'IMDb Bestbewertete englische Filme';
 
   @override
-  String get addToWatchlist => 'Add to Watchlist';
+  String get addToWatchlist => 'Zu Merkliste hinzufügen';
 
   @override
-  String get removeFromWatchlist => 'Remove from Watchlist';
+  String get removeFromWatchlist => 'Von Merkliste entfernen';
 
   @override
-  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
+  String get watchlistUpdateFailed => 'Konnte Merkliste nicht aktualisieren';
 
   @override
-  String get adminSearchParameters => 'Search Parameters';
+  String get adminSearchParameters => 'Suchkriterien';
 
   @override
-  String get adminCurrentMetadata => 'Current Metadata';
+  String get adminCurrentMetadata => 'Aktuelle Metadaten';
 
   @override
-  String get adminLabelYear => 'Year';
+  String get adminLabelYear => 'Jahr';
 
   @override
   String get adminLabelImdbId => 'IMDb Id';
@@ -10448,19 +10448,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get adminLabelTvdbSlug => 'TheTVDB Slug Movie Id';
 
   @override
-  String get adminReplaceImages => 'Replace existing images';
+  String get adminReplaceImages => 'Ersetzen bestehender Bilder';
 
   @override
-  String get adminBackToSearch => 'Back to Search Criteria';
+  String get adminBackToSearch => 'Zurück zu Suchkriterien';
 
   @override
   String get grouping => 'Grouping';
 
   @override
-  String get groupByType => 'Group by Type';
+  String get groupByType => 'Gruppiert nach Typ';
 
   @override
-  String get playlistTypes => 'Playlist Types';
+  String get playlistTypes => 'Playlist Typen';
 
   @override
   String get playlistTypeVideo => 'Video';
@@ -10469,16 +10469,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'Audiobuch';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Buch';
 
   @override
-  String get playlistTypePhoto => 'Photo';
+  String get playlistTypePhoto => 'Foto';
 
   @override
-  String get playlistTypeMixed => 'Mixed';
+  String get playlistTypeMixed => 'Gemischte';
 
   @override
   String get videoPlaylistsSection => 'Video Playlists';
@@ -10487,14 +10487,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get audioPlaylistsSection => 'Audio Playlists';
 
   @override
-  String get audiobookPlaylistsSection => 'Audiobook Playlists';
+  String get audiobookPlaylistsSection => 'Audiobuch Playlists';
 
   @override
-  String get bookPlaylistsSection => 'Book Playlists';
+  String get bookPlaylistsSection => 'Buch Playlists';
 
   @override
-  String get photoPlaylistsSection => 'Photo Playlists';
+  String get photoPlaylistsSection => 'Foto Playlists';
 
   @override
-  String get mixedPlaylistsSection => 'Mixed Playlists';
+  String get mixedPlaylistsSection => 'Gemischte Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose what is shown at the end of the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
 }

@@ -1480,6 +1480,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final playbackTimeDisplay = EnumPreference(
+    key: 'playback_time_display',
+    defaultValue: PlaybackTimeDisplay.totalDuration,
+    values: PlaybackTimeDisplay.values,
+  );
+
   static final pgsDirectPlay = Preference(
     key: 'pgs_enabled',
     defaultValue: true,

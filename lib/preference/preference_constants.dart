@@ -168,6 +168,18 @@ enum ZoomMode {
   stretch,
 }
 
+/// What is shown on the trailing side of the playback progress bar.
+enum PlaybackTimeDisplay {
+  /// Total runtime of the item, e.g. `1:58:33`.
+  totalDuration,
+
+  /// Time left until the item ends, e.g. `-1:16:23`.
+  timeRemaining,
+
+  /// Wall-clock time the item will finish at, e.g. `Ends at 21:45`.
+  endsAt,
+}
+
 enum DesktopScrollWheelAction {
   off,
   seek,

@@ -9201,5 +9201,25 @@
   "mixedPlaylistsSection": "Mixed Playlists",
   "@mixedPlaylistsSection": {
     "description": "Section header above mixed playlists when Group by Type is enabled"
+  },
+  "playbackTimeDisplay": "Progress Bar Time",
+  "@playbackTimeDisplay": {
+    "description": "Setting title for what is shown next to the playback progress bar"
+  },
+  "settingsPlaybackTimeDisplayDescription": "Choose what is shown at the end of the playback progress bar.",
+  "@settingsPlaybackTimeDisplayDescription": {
+    "description": "Setting description for the progress bar time option"
+  },
+  "playbackTimeTotal": "Total duration",
+  "@playbackTimeTotal": {
+    "description": "Progress bar time option showing the full runtime"
+  },
+  "playbackTimeRemaining": "Time remaining",
+  "@playbackTimeRemaining": {
+    "description": "Progress bar time option showing how much is left to play"
+  },
+  "playbackTimeEndsAt": "Ends at",
+  "@playbackTimeEndsAt": {
+    "description": "Progress bar time option showing the clock time playback finishes"
   }
 }
