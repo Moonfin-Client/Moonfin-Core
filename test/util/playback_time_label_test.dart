@@ -158,4 +158,80 @@ void main() {
       }
     });
   });
+
+  group('formatPlaybackTimeSlot', () {
+    const duration = Duration(hours: 1, minutes: 58, seconds: 33);
+    const position = Duration(minutes: 42, seconds: 10);
+
+    String slot(BuildContext context, PlaybackTimeSlot value) {
+      return formatPlaybackTimeSlot(
+        context,
+        slot: value,
+        position: position,
+        duration: duration,
+        use24Hour: true,
+      );
+    }
+
+    testWidgets('none collapses to an empty label', (tester) async {
+      final context = await _localizedContext(tester);
+      expect(slot(context, PlaybackTimeSlot.none), isEmpty);
+    });
+
+    testWidgets('elapsed shows how far into the item playback is', (
+      tester,
+    ) async {
+      final context = await _localizedContext(tester);
+      expect(slot(context, PlaybackTimeSlot.elapsed), '42:10');
+    });
+
+    testWidgets('the remaining modes match the trailing labels', (tester) async {
+      final context = await _localizedContext(tester);
+      expect(slot(context, PlaybackTimeSlot.totalDuration), '1:58:33');
+      expect(slot(context, PlaybackTimeSlot.timeRemaining), '-1:16:23');
+      expect(
+        slot(context, PlaybackTimeSlot.endsAt),
+        matches(RegExp(r'^Ends at \d{2}:\d{2}$')),
+      );
+    });
+
+    testWidgets('only none renders nothing', (tester) async {
+      final context = await _localizedContext(tester);
+      for (final value in PlaybackTimeSlot.values) {
+        expect(
+          slot(context, value).isEmpty,
+          value == PlaybackTimeSlot.none,
+          reason: 'slot $value',
+        );
+      }
+    });
+  });
+
+  group('playbackTimeDisplayForSlot', () {
+    test('maps the three trailing modes through unchanged', () {
+      expect(
+        playbackTimeDisplayForSlot(PlaybackTimeSlot.timeRemaining),
+        PlaybackTimeDisplay.timeRemaining,
+      );
+      expect(
+        playbackTimeDisplayForSlot(PlaybackTimeSlot.endsAt),
+        PlaybackTimeDisplay.endsAt,
+      );
+      expect(
+        playbackTimeDisplayForSlot(PlaybackTimeSlot.totalDuration),
+        PlaybackTimeDisplay.totalDuration,
+      );
+    });
+
+    test('falls back to the total duration for slot-only modes', () {
+      expect(
+        playbackTimeDisplayForSlot(PlaybackTimeSlot.none),
+        PlaybackTimeDisplay.totalDuration,
+      );
+      expect(
+        playbackTimeDisplayForSlot(PlaybackTimeSlot.elapsed),
+        PlaybackTimeDisplay.totalDuration,
+      );
+    });
+  });
 }

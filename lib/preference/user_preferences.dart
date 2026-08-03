@@ -1480,8 +1480,48 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  static final playbackTimeDisplay = EnumPreference(
-    key: 'playback_time_display',
+  // Six customizable slots
+  // Default layout is: elapsed on the bottom left, total runtime on the bottom right and
+  // the "Ends at" above the bar on the right.
+  static final playbackTimeAboveLeft = EnumPreference(
+    key: 'playback_time_above_left',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeAboveCenter = EnumPreference(
+    key: 'playback_time_above_center',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeAboveRight = EnumPreference(
+    key: 'playback_time_above_right',
+    defaultValue: PlaybackTimeSlot.endsAt,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowLeft = EnumPreference(
+    key: 'playback_time_below_left',
+    defaultValue: PlaybackTimeSlot.elapsed,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowCenter = EnumPreference(
+    key: 'playback_time_below_center',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowRight = EnumPreference(
+    key: 'playback_time_below_right',
+    defaultValue: PlaybackTimeSlot.totalDuration,
+    values: PlaybackTimeSlot.values,
+  );
+
+  /// Music player gets just the right variable
+  static final musicPlaybackTimeDisplay = EnumPreference(
+    key: 'music_playback_time_display',
     defaultValue: PlaybackTimeDisplay.totalDuration,
     values: PlaybackTimeDisplay.values,
   );

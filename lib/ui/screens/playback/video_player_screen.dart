@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
@@ -4080,16 +4081,52 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  String _endsAtLabel({
+  /// Text label for the customizable slots
+  String _timeSlotLabel(
+    EnumPreference<PlaybackTimeSlot> preference, {
     required Duration position,
     required Duration duration,
   }) {
-    return formatPlaybackEndsAt(
+    return formatPlaybackTimeSlot(
       context,
+      slot: _prefs.get(preference),
       position: position,
       duration: duration,
       use24Hour: _prefs.get(UserPreferences.use24HourClock),
       playbackSpeed: _state.playbackSpeed,
+    );
+  }
+
+  /// Row of three time slots, left, center, right
+  Widget _buildTimeSlotRow({
+    required String left,
+    required String center,
+    required String right,
+    bool bold = false,
+  }) {
+    final style = TextStyle(
+      color: Colors.white70,
+      fontSize: AppTypography.fontSizeXs,
+      fontWeight: bold ? FontWeight.w600 : null,
+    );
+    Widget cell(String text, TextAlign align) => Expanded(
+      child: Text(
+        text,
+        style: style,
+        textAlign: align,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+      child: Row(
+        children: [
+          cell(left, TextAlign.left),
+          cell(center, TextAlign.center),
+          cell(right, TextAlign.right),
+        ],
+      ),
     );
   }
 
@@ -4281,13 +4318,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     .toDouble();
                 final seekPosition = Duration(milliseconds: positionMs.round());
                 final livePosition = _isSeeking ? seekPosition : position;
-                final timeDisplay = _prefs.get(
-                  UserPreferences.playbackTimeDisplay,
+                final aboveLeft = _timeSlotLabel(
+                  UserPreferences.playbackTimeAboveLeft,
+                  position: livePosition,
+                  duration: duration,
                 );
-                // Trailing laberl hase it, no need to render twice
-                final endsAt = timeDisplay == PlaybackTimeDisplay.endsAt
-                    ? ''
-                    : _endsAtLabel(position: livePosition, duration: duration);
+                final aboveCenter = _timeSlotLabel(
+                  UserPreferences.playbackTimeAboveCenter,
+                  position: livePosition,
+                  duration: duration,
+                );
+                final aboveRight = _timeSlotLabel(
+                  UserPreferences.playbackTimeAboveRight,
+                  position: livePosition,
+                  duration: duration,
+                );
+                final hasAboveRow =
+                    aboveLeft.isNotEmpty ||
+                    aboveCenter.isNotEmpty ||
+                    aboveRight.isNotEmpty;
                 final trickplayTile = _isSeeking
                     ? _getTrickplayTile(seekPosition)
                     : null;
@@ -4311,22 +4360,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           tileHeight: trickplayTile.tileHeight,
                         ),
                       ),
-                    if (endsAt.isNotEmpty)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            right: AppSpacing.spaceLg,
-                            bottom: AppSpacing.spaceXs,
-                          ),
-                          child: Text(
-                            endsAt,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                    if (hasAboveRow)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: AppSpacing.spaceXs,
+                        ),
+                        child: _buildTimeSlotRow(
+                          left: aboveLeft,
+                          center: aboveCenter,
+                          right: aboveRight,
+                          bold: true,
                         ),
                       ),
                     Focus(
@@ -4426,41 +4469,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.spaceLg,
+                    _buildTimeSlotRow(
+                      left: _timeSlotLabel(
+                        UserPreferences.playbackTimeBelowLeft,
+                        position: livePosition,
+                        duration: duration,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _formatDuration(
-                              _isSeeking
-                                  ? Duration(milliseconds: _seekValue.round())
-                                  : position,
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                            ),
-                          ),
-                          Text(
-                            formatPlaybackTrailingTime(
-                              context,
-                              position: livePosition,
-                              duration: duration,
-                              mode: timeDisplay,
-                              use24Hour: _prefs.get(
-                                UserPreferences.use24HourClock,
-                              ),
-                              playbackSpeed: _state.playbackSpeed,
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                            ),
-                          ),
-                        ],
+                      center: _timeSlotLabel(
+                        UserPreferences.playbackTimeBelowCenter,
+                        position: livePosition,
+                        duration: duration,
+                      ),
+                      right: _timeSlotLabel(
+                        UserPreferences.playbackTimeBelowRight,
+                        position: livePosition,
+                        duration: duration,
                       ),
                     ),
                   ],

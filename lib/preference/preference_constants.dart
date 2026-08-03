@@ -168,8 +168,27 @@ enum ZoomMode {
   stretch,
 }
 
-/// What is shown on the trailing side of the playback progress bar.
+/// Musik trailing end
 enum PlaybackTimeDisplay {
+  /// Total runtime of the item, e.g. `1:58:33`.
+  totalDuration,
+
+  /// Time left until the item ends, e.g. `-1:16:23`.
+  timeRemaining,
+
+  /// Wall-clock time the item will finish at, e.g. `Ends at 21:45`.
+  endsAt,
+}
+
+/// Made all Time variables dynamic
+/// Allowes user now with the 6 added options to customize the player how he wants
+enum PlaybackTimeSlot {
+  /// Nothing is rendered and the slot collapses.
+  none,
+
+  /// How far into the item playback is, e.g. `42:10`.
+  elapsed,
+
   /// Total runtime of the item, e.g. `1:58:33`.
   totalDuration,
 

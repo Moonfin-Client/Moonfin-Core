@@ -9206,7 +9206,7 @@
   "@playbackTimeDisplay": {
     "description": "Setting title for what is shown next to the playback progress bar"
   },
-  "settingsPlaybackTimeDisplayDescription": "Choose what is shown at the end of the playback progress bar.",
+  "settingsPlaybackTimeDisplayDescription": "Choose which time labels appear around the playback progress bar.",
   "@settingsPlaybackTimeDisplayDescription": {
     "description": "Setting description for the progress bar time option"
   },
@@ -9221,5 +9221,49 @@
   "playbackTimeEndsAt": "Ends at",
   "@playbackTimeEndsAt": {
     "description": "Progress bar time option showing the clock time playback finishes"
+  },
+  "playbackTimeElapsed": "Time elapsed",
+  "@playbackTimeElapsed": {
+    "description": "Progress bar time option showing how far into the item playback is"
+  },
+  "playbackTimeVideoSection": "Video Player",
+  "@playbackTimeVideoSection": {
+    "description": "Section header above the video progress bar time slots"
+  },
+  "playbackTimeMusicSection": "Music Player",
+  "@playbackTimeMusicSection": {
+    "description": "Section header above the music progress bar time option"
+  },
+  "playbackTimeSlotDescription": "Choose what is shown here, or hide it.",
+  "@playbackTimeSlotDescription": {
+    "description": "Setting description for a single progress bar time slot"
+  },
+  "playbackTimeAboveBarLeft": "Above bar, left",
+  "@playbackTimeAboveBarLeft": {
+    "description": "Progress bar time slot above the bar on the left"
+  },
+  "playbackTimeAboveBarCenter": "Above bar, center",
+  "@playbackTimeAboveBarCenter": {
+    "description": "Progress bar time slot above the bar in the center"
+  },
+  "playbackTimeAboveBarRight": "Above bar, right",
+  "@playbackTimeAboveBarRight": {
+    "description": "Progress bar time slot above the bar on the right"
+  },
+  "playbackTimeBelowBarLeft": "Below bar, left",
+  "@playbackTimeBelowBarLeft": {
+    "description": "Progress bar time slot below the bar on the left"
+  },
+  "playbackTimeBelowBarCenter": "Below bar, center",
+  "@playbackTimeBelowBarCenter": {
+    "description": "Progress bar time slot below the bar in the center"
+  },
+  "playbackTimeBelowBarRight": "Below bar, right",
+  "@playbackTimeBelowBarRight": {
+    "description": "Progress bar time slot below the bar on the right"
+  },
+  "settingsMusicPlaybackTimeDescription": "Choose what is shown on the right side of the music progress bar.",
+  "@settingsMusicPlaybackTimeDescription": {
+    "description": "Setting description for the music progress bar time option"
   }
 }

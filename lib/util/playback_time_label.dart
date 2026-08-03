@@ -41,6 +41,57 @@ String formatPlaybackEndsAt(
   return AppLocalizations.of(context).endsAt(time);
 }
 
+/// Formats a [PlaybackTimeSlot] into a string for display in the UI.
+String formatPlaybackTimeSlot(
+  BuildContext context, {
+  required PlaybackTimeSlot slot,
+  required Duration position,
+  required Duration duration,
+  required bool use24Hour,
+  double playbackSpeed = 1.0,
+}) {
+  switch (slot) {
+    case PlaybackTimeSlot.none:
+      return '';
+    case PlaybackTimeSlot.elapsed:
+      return formatPlaybackDuration(position);
+    case PlaybackTimeSlot.totalDuration:
+      return formatPlaybackDuration(duration);
+    case PlaybackTimeSlot.timeRemaining:
+      return formatPlaybackTrailingTime(
+        context,
+        position: position,
+        duration: duration,
+        mode: PlaybackTimeDisplay.timeRemaining,
+        use24Hour: use24Hour,
+        playbackSpeed: playbackSpeed,
+      );
+    case PlaybackTimeSlot.endsAt:
+      return formatPlaybackTrailingTime(
+        context,
+        position: position,
+        duration: duration,
+        mode: PlaybackTimeDisplay.endsAt,
+        use24Hour: use24Hour,
+        playbackSpeed: playbackSpeed,
+      );
+  }
+}
+
+/// Determines the display mode for a given playback time slot.
+///
+/// [PlaybackTimeSlot.none] and [PlaybackTimeSlot.elapsed] have no trailing
+/// equivalent, so both resolve to the total duration.
+PlaybackTimeDisplay playbackTimeDisplayForSlot(PlaybackTimeSlot slot) {
+  return switch (slot) {
+    PlaybackTimeSlot.timeRemaining => PlaybackTimeDisplay.timeRemaining,
+    PlaybackTimeSlot.endsAt => PlaybackTimeDisplay.endsAt,
+    PlaybackTimeSlot.none ||
+    PlaybackTimeSlot.elapsed ||
+    PlaybackTimeSlot.totalDuration => PlaybackTimeDisplay.totalDuration,
+  };
+}
+
 /// Keep Users [PlaybackTimeDisplay] preference.
 ///
 /// Falls back to the total duration whenever the selected mode cannot be

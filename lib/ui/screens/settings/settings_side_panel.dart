@@ -28,6 +28,7 @@ import '../../../util/locale_names.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../../util/tv_image_cache_stub.dart'
     if (dart.library.io) '../../../util/tv_image_cache_io.dart';
 import '../../../util/app_distribution.dart';
@@ -105,6 +106,7 @@ part 'panel/about_category_screen.dart';
 part 'panel/licenses_screen.dart';
 part 'panel/playback_category_screen.dart';
 part 'panel/video_playback_screen.dart';
+part 'panel/playback_time_layout_screen.dart';
 part 'panel/osd_buttons_screen.dart';
 part 'panel/detail_buttons_screen.dart';
 part 'panel/audio_preferences_screen.dart';

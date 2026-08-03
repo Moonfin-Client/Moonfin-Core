@@ -9946,7 +9946,7 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose what is shown at the end of the playback progress bar.';
+      'Choose which time labels appear around the playback progress bar.';
 
   @override
   String get playbackTimeTotal => 'Total duration';
@@ -9956,6 +9956,39 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription => 'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription => 'Choose what is shown on the right side of the music progress bar.';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).
@@ -17458,7 +17491,7 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose what is shown at the end of the playback progress bar.';
+      'Choose which time labels appear around the playback progress bar.';
 
   @override
   String get playbackTimeTotal => 'Total duration';
@@ -17468,6 +17501,39 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription => 'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription => 'Choose what is shown on the right side of the music progress bar.';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in Hong Kong (`yue_HK`).
@@ -24970,7 +25036,7 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose what is shown at the end of the playback progress bar.';
+      'Choose which time labels appear around the playback progress bar.';
 
   @override
   String get playbackTimeTotal => 'Total duration';
@@ -24980,4 +25046,37 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription => 'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription => 'Choose what is shown on the right side of the music progress bar.';
 }

@@ -10499,18 +10499,51 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mixedPlaylistsSection => 'Gemischte Playlists';
 
   @override
-  String get playbackTimeDisplay => 'Progress Bar Time';
+  String get playbackTimeDisplay => 'Wiedergabezeit anzeigen';
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Choose what is shown at the end of the playback progress bar.';
+      'Wählen Sie aus, was auf der rechten Seite des Musik-Players angezeigt wird.';
 
   @override
-  String get playbackTimeTotal => 'Total duration';
+  String get playbackTimeTotal => 'Gesamtdauer';
 
   @override
-  String get playbackTimeRemaining => 'Time remaining';
+  String get playbackTimeRemaining => 'Verbleibende Zeit';
 
   @override
-  String get playbackTimeEndsAt => 'Ends at';
+  String get playbackTimeEndsAt => 'Endet um';
+
+  @override
+  String get playbackTimeElapsed => 'Verstrichene Zeit';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Musik Player';
+
+  @override
+  String get playbackTimeSlotDescription => 'Wählen aus, was hier angezeigt wird, oder entfernen es.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Über der Leiste, links';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Über der Leiste, Mitte';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Über der Leiste, rechts';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Unter der Leiste, links';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Unter der Leiste, Mitte';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Unter der Leiste, rechts';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription => 'Wähle aus, was auf der rechten Seite der Musik-Players angezeigt wird.';
 }

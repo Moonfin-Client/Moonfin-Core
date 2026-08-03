@@ -1772,7 +1772,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                     context,
                     position: pos,
                     duration: dur,
-                    mode: _prefs.get(UserPreferences.playbackTimeDisplay),
+                    mode: _prefs.get(UserPreferences.musicPlaybackTimeDisplay),
                     use24Hour: _prefs.get(UserPreferences.use24HourClock),
                     playbackSpeed: _state.playbackSpeed,
                   ),
