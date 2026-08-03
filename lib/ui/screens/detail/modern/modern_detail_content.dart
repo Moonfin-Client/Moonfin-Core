@@ -4659,6 +4659,7 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
                   return KeyEventResult.handled;
                 }
               }
+              widget.onNavigateUp?.call();
               return KeyEventResult.handled;
             } else if (focused == widget.audioButtonFocusNode) {
               widget.focusNode?.requestFocus();
