@@ -93,12 +93,16 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
   void _ensureVisible() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_focusNode.hasFocus) return;
-      Scrollable.ensureVisible(
-        context,
-        alignment: 0.5,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+      final renderObject = context.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.attached || !renderObject.hasSize) return;
+      try {
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      } catch (_) {}
     });
   }
 

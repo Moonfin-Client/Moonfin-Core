@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
+import '../repositories/user_views_repository.dart';
 import '../utils/playlist_utils.dart';
 
 class BreadcrumbEntry {
@@ -21,7 +23,7 @@ class FolderBrowseViewModel extends ChangeNotifier {
 
   static const _pageSize = 100;
   static const _fields =
-      'Type,ProductionYear,ImageTags,BackdropImageTags,ChildCount,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+      'Path,FileName,Type,ProductionYear,ImageTags,BackdropImageTags,ChildCount,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -38,11 +40,12 @@ class FolderBrowseViewModel extends ChangeNotifier {
   List<AggregatedItem> get items => _items;
 
   int _totalCount = 0;
+  int _rawItemsFetched = 0;
   bool _totalCountKnown = true;
   bool _hasMoreFromPageSize = false;
 
   bool get hasMore =>
-      _totalCountKnown ? _items.length < _totalCount : _hasMoreFromPageSize;
+      _totalCountKnown ? _rawItemsFetched < _totalCount : _hasMoreFromPageSize;
 
   bool _loadingMore = false;
 
@@ -66,20 +69,90 @@ class FolderBrowseViewModel extends ChangeNotifier {
     _state = FolderBrowseState.loading;
     _items = const [];
     _totalCount = 0;
+    _rawItemsFetched = 0;
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
     _notify();
 
-    try {
-      if (!_breadcrumbs.any((b) => b.id == folderId)) {
-        final folderData = await _client.itemsApi.getItem(folderId);
+    if (folderId == 'root' || folderId.isEmpty) {
+      try {
+        _breadcrumbs.clear();
+        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
+        final userViews =
+            await GetIt.instance<UserViewsRepository>().getUserViews();
         if (_disposed) return;
-        final folderName = folderData['Name'] as String? ?? '';
-        if (_breadcrumbs.isEmpty) {
-          _rootCollectionType = (folderData['CollectionType'] as String?)
-              ?.toLowerCase();
+        _items = userViews.map((lib) {
+          return AggregatedItem(
+            id: lib.id,
+            serverId: lib.serverId,
+            rawData: {
+              'Id': lib.id,
+              'Name': lib.name,
+              'Type': 'CollectionFolder',
+              'CollectionType': lib.collectionType,
+              'IsFolder': true,
+              'ImageTags': lib.imageTags ?? {},
+              'BackdropImageTags': lib.backdropImageTags ?? [],
+            },
+          );
+        }).toList();
+        _totalCount = _items.length;
+        _rawItemsFetched = _items.length;
+        _totalCountKnown = true;
+        _hasMoreFromPageSize = false;
+        _state = FolderBrowseState.ready;
+      } catch (e) {
+        if (_disposed) return;
+        _errorMessage = e.toString();
+        _state = FolderBrowseState.error;
+      }
+      _notify();
+      return;
+    }
+
+    try {
+      final chain = <BreadcrumbEntry>[];
+      var currentId = folderId;
+      final visited = <String>{};
+
+      while (currentId.isNotEmpty && visited.add(currentId)) {
+        try {
+          final data = await _client.itemsApi.getItem(currentId);
+          if (_disposed) return;
+          final name = data['Name'] as String? ?? '';
+          final type = (data['Type'] as String?) ?? '';
+          chain.insert(0, BreadcrumbEntry(id: currentId, name: name));
+
+          final collectionType = data['CollectionType'] as String?;
+          if (collectionType != null && collectionType.isNotEmpty) {
+            _rootCollectionType = collectionType.toLowerCase();
+          }
+
+          final parentId = data['ParentId'] as String?;
+          if (parentId == null || parentId.isEmpty || type == 'UserView') {
+            break;
+          }
+          currentId = parentId;
+        } catch (_) {
+          break;
         }
-        _breadcrumbs.add(BreadcrumbEntry(id: folderId, name: folderName));
+      }
+
+      if (_disposed) return;
+      if (chain.isNotEmpty) {
+        _breadcrumbs.clear();
+        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
+        for (final entry in chain) {
+          final isRootDuplicate = entry.id == 'root' ||
+              entry.name.toLowerCase() == 'root' ||
+              entry.name.toLowerCase() == 'media folders';
+          if (!isRootDuplicate) {
+            _breadcrumbs.add(entry);
+          }
+        }
+      } else if (!_breadcrumbs.any((b) => b.id == folderId)) {
+        _breadcrumbs.add(const BreadcrumbEntry(id: 'root', name: 'Folders'));
+        _breadcrumbs.add(BreadcrumbEntry(id: folderId, name: ''));
       }
 
       await _fetchPage(folderId, 0);
@@ -109,10 +182,10 @@ class FolderBrowseViewModel extends ChangeNotifier {
     _loadingMore = true;
     _notify();
 
-    final prevLength = _items.length;
+    final prevRawFetched = _rawItemsFetched;
     try {
-      await _fetchPage(currentFolderId, _items.length);
-      if (!_disposed && _items.length <= prevLength) {
+      await _fetchPage(currentFolderId, _rawItemsFetched);
+      if (!_disposed && _rawItemsFetched <= prevRawFetched) {
         _totalCount = _items.length;
         _hasMoreFromPageSize = false;
       }
@@ -143,11 +216,12 @@ class FolderBrowseViewModel extends ChangeNotifier {
     );
 
     final rawItems = (response['Items'] as List?) ?? [];
+    _rawItemsFetched += rawItems.length;
     final totalFromServer = response['TotalRecordCount'] as int?;
     _totalCountKnown = totalFromServer != null;
     if (_totalCountKnown) {
       _totalCount = totalFromServer!;
-      _hasMoreFromPageSize = _items.length + rawItems.length < _totalCount;
+      _hasMoreFromPageSize = _rawItemsFetched < _totalCount;
     } else {
       _hasMoreFromPageSize = rawItems.length == _pageSize;
       final loadedCount = startIndex + rawItems.length;
@@ -166,10 +240,31 @@ class FolderBrowseViewModel extends ChangeNotifier {
 
     final filtered = await _filterItemsForFolder(mapped);
 
+    final folders = <AggregatedItem>[];
+    final files = <AggregatedItem>[];
+    for (final item in filtered) {
+      if (isNavigableFolder(item)) {
+        folders.add(item);
+      } else {
+        files.add(item);
+      }
+    }
+    folders.sort(
+      (a, b) => getItemDisplayName(a)
+          .toLowerCase()
+          .compareTo(getItemDisplayName(b).toLowerCase()),
+    );
+    files.sort(
+      (a, b) => getItemDisplayName(a)
+          .toLowerCase()
+          .compareTo(getItemDisplayName(b).toLowerCase()),
+    );
+    final sorted = [...folders, ...files];
+
     if (startIndex == 0) {
-      _items = filtered;
+      _items = sorted;
     } else {
-      _items = [..._items, ...filtered];
+      _items = [..._items, ...sorted];
     }
   }
 
@@ -181,7 +276,7 @@ class FolderBrowseViewModel extends ChangeNotifier {
       return await _client.itemsApi.getItems(
         parentId: parentId,
         recursive: false,
-        sortBy: 'IsFolder,SortName',
+        sortBy: 'SortName',
         sortOrder: 'Ascending',
         startIndex: startIndex,
         limit: _pageSize,
@@ -190,13 +285,8 @@ class FolderBrowseViewModel extends ChangeNotifier {
         imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: true,
       );
-    } on DioException catch (e) {
-      final statusCode = e.response?.statusCode ?? 0;
-      if (statusCode < 500) {
-        rethrow;
-      }
-
-      return _client.itemsApi.getItems(
+    } catch (_) {
+      return await _client.itemsApi.getItems(
         parentId: parentId,
         recursive: false,
         sortBy: 'SortName',
@@ -212,24 +302,39 @@ class FolderBrowseViewModel extends ChangeNotifier {
   }
 
   bool isNavigableFolder(AggregatedItem item) {
-    final type = item.type;
-    if (type == 'Series' ||
-        type == 'Season' ||
-        type == 'BoxSet' ||
-        type == 'Playlist' ||
-        type == 'MusicArtist' ||
-        type == 'MusicAlbum' ||
-        type == 'AlbumArtist') {
-      return false;
-    }
-
     final isFolder = item.rawData['IsFolder'] as bool? ?? false;
     if (isFolder) return true;
 
+    final type = item.type;
     return type == 'Folder' ||
         type == 'CollectionFolder' ||
         type == 'UserView' ||
-        type == 'PhotoAlbum';
+        type == 'PhotoAlbum' ||
+        type == 'Series' ||
+        type == 'Season' ||
+        type == 'BoxSet' ||
+        type == 'MusicArtist' ||
+        type == 'MusicAlbum' ||
+        type == 'AlbumArtist' ||
+        type == 'BookSeries';
+  }
+
+  String getItemDisplayName(AggregatedItem item) {
+    final isFolder = isNavigableFolder(item);
+    final rawPath = item.rawData['Path'] as String?;
+    if (isFolder && rawPath != null && rawPath.isNotEmpty) {
+      final normalized = rawPath.replaceAll('\\', '/');
+      final segments =
+          normalized.split('/').where((s) => s.isNotEmpty).toList();
+      if (segments.isNotEmpty) {
+        return segments.last;
+      }
+    }
+    final fileName = item.rawData['FileName'] as String?;
+    if (isFolder && fileName != null && fileName.isNotEmpty) {
+      return fileName;
+    }
+    return item.name;
   }
 
   @override

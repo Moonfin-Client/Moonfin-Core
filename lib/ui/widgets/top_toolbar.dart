@@ -427,20 +427,26 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
   void _moveFocusDown({int attempt = 0}) {
     if (!mounted) return;
     final scope = FocusScope.of(context);
-    if (scope.focusInDirection(TraversalDirection.down)) {
-      final primary = FocusManager.instance.primaryFocus;
-      if (_isUsableOutsideToolbar(primary)) return;
-    }
+    try {
+      if (scope.focusInDirection(TraversalDirection.down)) {
+        final primary = FocusManager.instance.primaryFocus;
+        if (_isUsableOutsideToolbar(primary)) return;
+      }
+    } catch (_) {}
     final firstBelow = _findFirstFocusableBelowToolbar(scope);
     if (firstBelow != null) {
-      firstBelow.requestFocus();
-      return;
+      try {
+        firstBelow.requestFocus();
+        return;
+      } catch (_) {}
     }
     final fallback = widget.contentFocusNode;
     if (fallback != null && fallback.context != null) {
       final firstContent = _firstFocusableDescendant(fallback);
       if (firstContent != null) {
-        firstContent.requestFocus();
+        try {
+          firstContent.requestFocus();
+        } catch (_) {}
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           final primary = FocusManager.instance.primaryFocus;
