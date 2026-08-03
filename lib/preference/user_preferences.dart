@@ -6,6 +6,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../data/models/aggregated_item.dart';
+import '../data/models/series_track_preference.dart';
 import '../playback/audio_capability_profile.dart';
 import '../util/idiom/app_ui_idiom.dart';
 import '../util/insecure_certificates.dart';
@@ -2507,21 +2508,48 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  String getSeriesSubtitleLanguage(String seriesId) {
+  SeriesTrackPreference getSeriesSubtitlePreference(String seriesId) {
     final pref = Preference(
       key: 'pref_series_subtitle_lang_$seriesId',
       defaultValue: '',
     );
-    return _store.get(pref);
+    final raw = _store.get(pref);
+    return SeriesTrackPreference.fromRawString(raw);
+  }
+
+  Future<void> setSeriesSubtitlePreference(String seriesId, SeriesTrackPreference pref) async {
+    final key = Preference(
+      key: 'pref_series_subtitle_lang_$seriesId',
+      defaultValue: '',
+    );
+    await _store.set(key, pref.toRawString());
+    notifyListeners();
+  }
+
+  SeriesTrackPreference getSeriesAudioPreference(String seriesId) {
+    final pref = Preference(
+      key: 'pref_series_audio_lang_$seriesId',
+      defaultValue: '',
+    );
+    final raw = _store.get(pref);
+    return SeriesTrackPreference.fromRawString(raw);
+  }
+
+  Future<void> setSeriesAudioPreference(String seriesId, SeriesTrackPreference pref) async {
+    final key = Preference(
+      key: 'pref_series_audio_lang_$seriesId',
+      defaultValue: '',
+    );
+    await _store.set(key, pref.toRawString());
+    notifyListeners();
+  }
+
+  String getSeriesSubtitleLanguage(String seriesId) {
+    return getSeriesSubtitlePreference(seriesId).language;
   }
 
   Future<void> setSeriesSubtitleLanguage(String seriesId, String language) async {
-    final pref = Preference(
-      key: 'pref_series_subtitle_lang_$seriesId',
-      defaultValue: '',
-    );
-    await _store.set(pref, language);
-    notifyListeners();
+    await setSeriesSubtitlePreference(seriesId, SeriesTrackPreference(language: language));
   }
 
   int getItemSubtitleStreamIndex(String itemId) {

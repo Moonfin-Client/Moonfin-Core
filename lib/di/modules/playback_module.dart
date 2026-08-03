@@ -5,7 +5,9 @@ import 'package:playback_emby/playback_emby.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
+import '../../data/models/series_track_preference.dart';
 import '../../data/repositories/offline_repository.dart';
+import '../../util/subtitle_track_logic.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/audiobook_resume_service.dart';
@@ -400,9 +402,41 @@ void registerPlaybackModule() {
   final manager = PlaybackManager();
   manager.onSubtitleTrackChanged = (itemId, index) {
     _getIt<UserPreferences>().setItemSubtitleStreamIndex(itemId, index);
+    final currentItem = manager.queueService.currentItem;
+    if (currentItem is AggregatedItem &&
+        currentItem.seriesId != null &&
+        currentItem.seriesId!.isNotEmpty) {
+      final rawStreams = currentItem.rawData['MediaStreams'] as List? ?? [];
+      final maps = rawStreams
+          .whereType<Map>()
+          .map((e) => e.cast<String, dynamic>())
+          .where((s) => (s['Type'] as String?)?.toLowerCase() == 'subtitle')
+          .toList();
+      final pref = createSeriesTrackPreferenceFromStream(
+        streams: maps,
+        selectedIndex: index,
+      );
+      _getIt<UserPreferences>().setSeriesSubtitlePreference(currentItem.seriesId!, pref);
+    }
   };
   manager.onAudioTrackChanged = (itemId, index) {
     _getIt<UserPreferences>().setItemAudioStreamIndex(itemId, index);
+    final currentItem = manager.queueService.currentItem;
+    if (currentItem is AggregatedItem &&
+        currentItem.seriesId != null &&
+        currentItem.seriesId!.isNotEmpty) {
+      final rawStreams = currentItem.rawData['MediaStreams'] as List? ?? [];
+      final maps = rawStreams
+          .whereType<Map>()
+          .map((e) => e.cast<String, dynamic>())
+          .where((s) => (s['Type'] as String?)?.toLowerCase() == 'audio')
+          .toList();
+      final pref = createSeriesTrackPreferenceFromStream(
+        streams: maps,
+        selectedIndex: index,
+      );
+      _getIt<UserPreferences>().setSeriesAudioPreference(currentItem.seriesId!, pref);
+    }
   };
 
   manager.setBackend(initialBackend);
@@ -540,6 +574,22 @@ void registerPlaybackModule() {
   _getIt.registerSingleton<PlaybackArbiter>(audioArbiter);
   manager.setAudioArbiter(audioArbiter);
   manager.audioTrackSelector = (audioStreams, explicitIndex) {
+    if (explicitIndex != null) return explicitIndex;
+
+    final currentItem = manager.queueService.currentItem;
+    if (currentItem is AggregatedItem &&
+        currentItem.seriesId != null &&
+        currentItem.seriesId!.isNotEmpty) {
+      final seriesAudioPref = prefs.getSeriesAudioPreference(currentItem.seriesId!);
+      if (seriesAudioPref.isNotEmpty) {
+        final matchedIndex = matchSeriesTrackIndex(
+          streams: audioStreams,
+          pref: seriesAudioPref,
+        );
+        if (matchedIndex != null) return matchedIndex;
+      }
+    }
+
     final preferredAudioLanguage = manager.lastExplicitAudioLanguage ??
         (prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto');
 
@@ -556,6 +606,27 @@ void registerPlaybackModule() {
   };
 
   manager.subtitleTrackSelector = (subtitleStreams, audioStreams, explicitIndex) {
+    if (explicitIndex != null) return explicitIndex;
+
+    final currentItem = manager.queueService.currentItem;
+    String? seriesId;
+    if (currentItem is AggregatedItem) {
+      seriesId = currentItem.seriesId;
+    }
+
+    if (seriesId != null && seriesId.isNotEmpty) {
+      final seriesSubPref = prefs.getSeriesSubtitlePreference(seriesId);
+      if (seriesSubPref.isNone) {
+        return -1;
+      } else if (seriesSubPref.isNotEmpty) {
+        final matchedIndex = matchSeriesTrackIndex(
+          streams: subtitleStreams,
+          pref: seriesSubPref,
+        );
+        if (matchedIndex != null) return matchedIndex;
+      }
+    }
+
     final effectiveAudioIndex = computeEffectiveAudioIndex(
       audioStreams: audioStreams,
       preferredAudioLanguage: manager.lastExplicitAudioLanguage ??
@@ -573,12 +644,6 @@ void registerPlaybackModule() {
       orElse: () => const <String, dynamic>{},
     );
     final activeAudioLanguage = activeAudioStream.isNotEmpty ? activeAudioStream['Language'] as String? : null;
-
-    final currentItem = manager.queueService.currentItem;
-    String? seriesId;
-    if (currentItem is AggregatedItem) {
-      seriesId = currentItem.seriesId;
-    }
 
     var subtitleMode = manager.lastExplicitSubtitleEnabled == false
         ? SubtitleMode.none

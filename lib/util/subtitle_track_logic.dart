@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import '../data/models/series_track_preference.dart';
 import '../preference/preference_constants.dart';
 import 'language_matching.dart';
 
@@ -319,4 +320,101 @@ int? mapSubtitleResultToStreamIndex(
     return displayStreams[streamPosition]['Index'] as int?;
   }
   return null;
+}
+
+int? matchSeriesTrackIndex({
+  required List<Map<String, dynamic>> streams,
+  required SeriesTrackPreference pref,
+}) {
+  if (pref.isEmpty) return null;
+  if (pref.isNone) return -1;
+
+  final matchingStreams = <Map<String, dynamic>>[];
+  for (final stream in streams) {
+    if (stream['Index'] == null) continue;
+    final lang = stream['Language'] as String? ?? '';
+    final normPref = normalizeLanguage(pref.language);
+    final iso3Pref = toIso3Language(normPref);
+
+    if (languageMatchesPreferred(lang, normPref, iso3Pref)) {
+      matchingStreams.add(stream);
+    }
+  }
+
+  if (matchingStreams.isEmpty) return null;
+
+  // 1. Try exact title match first (e.g., "Signs & Songs" or "SDH")
+  if (pref.title.trim().isNotEmpty) {
+    final targetTitle = pref.title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim().toLowerCase();
+    for (final stream in matchingStreams) {
+      final streamTitle = ((stream['Title'] ?? stream['DisplayTitle'] ?? stream['Name']) as String? ?? '')
+          .replaceAll(RegExp(r'^\d+\s*-\s*'), '')
+          .trim()
+          .toLowerCase();
+      if (streamTitle.isNotEmpty && streamTitle == targetTitle) {
+        return stream['Index'] as int?;
+      }
+    }
+  }
+
+  // 2. Try relative index match (N-th track of that language in container order)
+  if (pref.relativeIndex >= 0 && pref.relativeIndex < matchingStreams.length) {
+    return matchingStreams[pref.relativeIndex]['Index'] as int?;
+  }
+
+  // 3. Fallback to substring title match
+  if (pref.title.trim().isNotEmpty) {
+    final targetTitle = pref.title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim().toLowerCase();
+    for (final stream in matchingStreams) {
+      final streamTitle = ((stream['Title'] ?? stream['DisplayTitle'] ?? stream['Name']) as String? ?? '')
+          .replaceAll(RegExp(r'^\d+\s*-\s*'), '')
+          .trim()
+          .toLowerCase();
+      if (streamTitle.isNotEmpty &&
+          (streamTitle.contains(targetTitle) || targetTitle.contains(streamTitle))) {
+        return stream['Index'] as int?;
+      }
+    }
+  }
+
+  // 4. Fallback to first matching stream of that language
+  return matchingStreams.first['Index'] as int?;
+}
+
+SeriesTrackPreference createSeriesTrackPreferenceFromStream({
+  required List<Map<String, dynamic>> streams,
+  required int? selectedIndex,
+}) {
+  if (selectedIndex == null) return SeriesTrackPreference.empty;
+  if (selectedIndex == -1) return SeriesTrackPreference.none;
+
+  final selectedStream = streams.firstWhere(
+    (s) => s['Index'] == selectedIndex,
+    orElse: () => <String, dynamic>{},
+  );
+
+  if (selectedStream.isEmpty) return SeriesTrackPreference.empty;
+
+  final language = selectedStream['Language'] as String? ?? '';
+  String title = ((selectedStream['Title'] ?? selectedStream['DisplayTitle'] ?? selectedStream['Name']) as String? ?? '').trim();
+  title = title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim();
+
+  int relativeIndex = 0;
+  final normLang = normalizeLanguage(language);
+  final iso3Lang = toIso3Language(normLang);
+
+  for (final stream in streams) {
+    if (stream['Index'] == selectedIndex) break;
+    final l = stream['Language'] as String? ?? '';
+    if (languageMatchesPreferred(l, normLang, iso3Lang)) {
+      relativeIndex++;
+    }
+  }
+
+  return SeriesTrackPreference(
+    language: language,
+    title: title,
+    relativeIndex: relativeIndex,
+    streamIndex: selectedIndex,
+  );
 }
