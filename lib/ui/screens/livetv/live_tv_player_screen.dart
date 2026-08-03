@@ -1901,7 +1901,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                   context,
                   position: position,
                   duration: duration,
-                  mode: _prefs.get(UserPreferences.playbackTimeDisplay),
+                  // Modify duplicate logic
+                  mode: playbackTimeDisplayForSlot(
+                    _prefs.get(UserPreferences.playbackTimeBelowRight),
+                  ),
                   use24Hour: _prefs.get(UserPreferences.use24HourClock),
                   playbackSpeed: _state.playbackSpeed,
                 );
