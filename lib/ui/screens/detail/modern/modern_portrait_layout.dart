@@ -10,6 +10,7 @@ class ModernPortraitLayout extends StatelessWidget {
   final Widget tabBar;
   final Widget tabContent;
   final double topInset;
+  final ScrollController? scrollController;
 
   const ModernPortraitLayout({
     super.key,
@@ -19,6 +20,7 @@ class ModernPortraitLayout extends StatelessWidget {
     required this.tabContent,
     required this.topInset,
     this.upNext,
+    this.scrollController,
   });
 
   @override
@@ -36,6 +38,7 @@ class ModernPortraitLayout extends StatelessWidget {
         ),
         SafeArea(
           child: SingleChildScrollView(
+            controller: scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -159,6 +159,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
   late final ScrollController _scrollController = ScrollController();
+
+  // Tracks the maxScrollExtent at which we last triggered a BoxSet page load.
+  // Each unique extent can only fire one load; programmatic scroll events from
+  // content reflow after a page lands won't re-trigger until the user has
+  // actually scrolled into a new extent region.
+  double _boxSetLastTriggerMaxExtent = -1;
   String? _seriesLogoTag;
   String? _seriesLogoId;
   bool _showNavbarState = true;
@@ -546,6 +552,21 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onScroll() {
     if (!mounted) return;
+
+    // Lazy-load more grid and playlist items when scrolled near the bottom of
+    // a BoxSet.  The maxScrollExtent guard prevents layout-reflow events from
+    // chaining loads without user-initiated scrolling.
+    if (_vm.item?.type == 'BoxSet' && _scrollController.hasClients) {
+      final pos = _scrollController.position;
+      final maxExtent = pos.maxScrollExtent;
+      if (pos.pixels > maxExtent - 400 &&
+          maxExtent > _boxSetLastTriggerMaxExtent) {
+        _boxSetLastTriggerMaxExtent = maxExtent;
+        _vm.loadMoreCollectionItems();
+        _vm.loadMorePlaylistItems();
+      }
+    }
+
     if (PlatformDetection.isTV) return;
     final scrolledDown = _scrollController.offset > 50.0;
     if (scrolledDown && _showNavbarState) {
@@ -559,6 +580,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onViewModelChanged() {
     if (mounted) {
+      if (_vm.state == ItemDetailState.loading || _vm.playlistItems.isEmpty) {
+        _boxSetLastTriggerMaxExtent = -1;
+      }
       setState(() {});
       _loadSeriesLogo();
       _loadStudioLogos();
@@ -946,10 +970,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         });
 
         return [
-          if (_vm.playlistItems.isNotEmpty)
+          if (moviesList.isNotEmpty)
+            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
+          if (seriesList.isNotEmpty)
+            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
+          if (hasCast) _ModernTab(l10n.castMembers, _boxSetCastTab),
+          if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
+          if (hasStudios) studios,
+          // Show the Playlist tab while the index is building (spinner) OR
+          // once items are available (the list). Placed last so simple
+          // movie-only collections land on Movies by default.
+          if (_vm.playlistItems.isNotEmpty || _vm.playlistIndexBuilding)
             _ModernTab(
               l10n.playlist,
               (context, item) {
+                // Phase 1: flat ID index still building — show full spinner.
+                if (_vm.playlistIndexBuilding) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
                 final listWidget = DetailTrackList(
                   tracks: _vm.playlistItems,
                   imageApi: _vm.imageApi,
@@ -1012,6 +1051,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             ),
                           ),
                           listWidget,
+                          // Phase 3: page loading footer spinner.
+                          if (_vm.playlistLoadingMore)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
                         ],
                       ),
                     ),
@@ -1019,14 +1064,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 );
               },
             ),
-          if (moviesList.isNotEmpty)
-            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
-          if (seriesList.isNotEmpty)
-            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
-          if (hasCast) _ModernTab(l10n.castMembers, _boxSetCastTab),
-          if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
-          if (hasStudios) studios,
         ];
+
       default:
         return [
           if (hasCast) cast,
@@ -4495,6 +4534,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             tabBar: tabBarWidget,
             tabContent: tabContent,
             topInset: topInset,
+            scrollController: _scrollController,
           );
   }
 }
