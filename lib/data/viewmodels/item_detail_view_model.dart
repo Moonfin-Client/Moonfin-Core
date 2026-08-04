@@ -162,28 +162,32 @@ class ItemDetailViewModel extends ChangeNotifier {
   bool _collectionHasMore = false;
   bool _collectionLoadingMore = false;
 
-  // --- Playlist flat-ID index (Phase 1) ---
-  //
-  // Phase 1 fetches all BoxSet top-level items + episode IDs with minimal
-  // fields to build a lightweight ordered list of IDs.  Full item data is
-  // fetched lazily in Phase 3.
+  // --- Playlist index ---
 
-  /// True while the flat ID index is being built.  The Playlist area shows a
-  /// spinner during this phase.
+  /// How much of a collection the index scan will walk. Past this the playlist
+  /// tab covers the head rather than the whole thing.
+  static const _indexScanLimit = 2000;
+
+  /// How many series are asked for their episodes at once during the scan.
+  static const _indexScanBatchSize = 8;
+
+  /// True while the index is being built. The playlist area shows a spinner.
   bool _playlistIndexBuilding = false;
   bool get playlistIndexBuilding => _playlistIndexBuilding;
 
-  /// Lightweight metadata entries used for re-sorting index without fetching full items.
+  /// The id and sort keys of every playable item, kept so the order can change
+  /// without fetching anything again. Null until the collection is scanned.
   List<_PlaylistItemIndexEntry>? _playlistIndexEntries;
 
-  /// Flat ordered list of movie/episode IDs for the play queue.
-  /// Null until Phase 1 completes.  After that, Phase 3 pages through it.
-  /// When a plugin-saved custom order exists (Strategy B), this is
-  /// initialised directly from that order.  Otherwise built by sorting all
-  /// movies + episodes by release date (Strategy A).
+  /// Ids in the order the playlist currently shows, which pages are read from.
   List<String>? _flattenedIds;
 
-  // --- Playlist page loading (Phase 3) ---
+  /// Ids in the order the user arranged them, either dragged here or saved on
+  /// the server. Kept apart from [_flattenedIds] so switching to another sort
+  /// and back doesn't lose it.
+  List<String>? _customOrderIds;
+
+  // --- Playlist page loading ---
   static const _playlistPageSize = 50;
   int _playlistFetchedCount = 0;
   bool _playlistHasMore = false;
@@ -249,8 +253,6 @@ class ItemDetailViewModel extends ChangeNotifier {
   CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
   CollectionSortOption get collectionSort => _collectionSort;
 
-  List<AggregatedItem> _customPlaylistItems = const [];
-
   String? _parentCollectionName;
   String? get parentCollectionName => _parentCollectionName;
 
@@ -300,6 +302,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _parentCollectionName = null;
     _parentCollections = const [];
     _flattenedIds = null;
+    _customOrderIds = null;
     _playlistIndexEntries = null;
     _collectionFetchedCount = 0;
     _collectionTotalCount = 0;
@@ -310,7 +313,6 @@ class ItemDetailViewModel extends ChangeNotifier {
     _playlistHasMore = false;
     _playlistLoadingMore = false;
     _playlistItems = const [];
-    _customPlaylistItems = const [];
     notifyListeners();
 
     try {
@@ -696,13 +698,33 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  void setCollectionSort(CollectionSortOption option) {
+  /// Reorders the whole index and starts the list again from the top.
+  ///
+  /// Only a slice of the collection is loaded, so re-sorting what is on screen
+  /// would leave it holding one ordering while later pages arrive in another.
+  Future<void> setCollectionSort(CollectionSortOption option) async {
+    if (_collectionSort == option) return;
     _collectionSort = option;
-    _sortPlaylistIndex();
-    _applyCollectionSort();
+    // A saved order arrives ready to use, so the scan is only worth paying for
+    // when the sort actually needs the keys.
+    if (option != CollectionSortOption.custom) {
+      await _ensurePlaylistIndexEntries();
+    }
+    _rebuildFlattenedIds();
+    _resetPlaylistPaging();
+    notifyListeners();
+    await loadMorePlaylistItems();
   }
 
-  void _sortPlaylistIndex() {
+  /// Points [_flattenedIds] at the active sort. Every option lands here, so the
+  /// index and the pages fetched from it can never describe different orders.
+  void _rebuildFlattenedIds() {
+    if (_collectionSort == CollectionSortOption.custom) {
+      final custom = _customOrderIds;
+      // Copied, so a later drag can't edit the saved order underneath itself.
+      if (custom != null) _flattenedIds = List<String>.from(custom);
+      return;
+    }
     final entries = _playlistIndexEntries;
     if (entries == null || entries.isEmpty) return;
     switch (_collectionSort) {
@@ -710,42 +732,23 @@ class ItemDetailViewModel extends ChangeNotifier {
         entries.sort(
           (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
-        _flattenedIds = entries.map((e) => e.id).toList();
-        break;
       case CollectionSortOption.releaseAscending:
         entries.sort(_PlaylistItemIndexEntry.compareReleaseAscending);
-        _flattenedIds = entries.map((e) => e.id).toList();
-        break;
       case CollectionSortOption.releaseDescending:
         entries.sort(
           (a, b) => _PlaylistItemIndexEntry.compareReleaseAscending(b, a),
         );
-        _flattenedIds = entries.map((e) => e.id).toList();
-        break;
       case CollectionSortOption.custom:
-        break;
+        return;
     }
+    _flattenedIds = entries.map((e) => e.id).toList();
   }
 
-  void _applyCollectionSort() {
-    switch (_collectionSort) {
-      case CollectionSortOption.alphabetical:
-        _playlistItems = List<AggregatedItem>.from(_playlistItems)
-          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-        break;
-      case CollectionSortOption.releaseAscending:
-        _playlistItems = List<AggregatedItem>.from(_playlistItems)
-          ..sort(_releaseSortAscending);
-        break;
-      case CollectionSortOption.releaseDescending:
-        _playlistItems = List<AggregatedItem>.from(_playlistItems)
-          ..sort((a, b) => _releaseSortAscending(b, a));
-        break;
-      case CollectionSortOption.custom:
-        _playlistItems = List<AggregatedItem>.from(_customPlaylistItems);
-        break;
-    }
-    notifyListeners();
+  /// Drops the loaded pages so the next fetch starts at the head of the index.
+  void _resetPlaylistPaging() {
+    _playlistItems = const [];
+    _playlistFetchedCount = 0;
+    _playlistHasMore = _flattenedIds?.isNotEmpty ?? false;
   }
 
   Future<void> reorderCollectionPlaylistItem(int oldIndex, int newIndex) async {
@@ -756,27 +759,29 @@ class ItemDetailViewModel extends ChangeNotifier {
     final item = reordered.removeAt(oldIndex);
     reordered.insert(newIndex, item);
     _playlistItems = reordered;
-    _customPlaylistItems = reordered;
     _collectionSort = CollectionSortOption.custom;
 
-    // Keep the flat ID index in sync so that any subsequent lazy-load pages
-    // respect the new order.  If not all items are loaded yet, unloaded IDs
-    // remain at the end in their previous order.
-    if (_flattenedIds != null) {
-      final reorderedIds = reordered.map((i) => i.id).toList();
-      final unloaded = _flattenedIds!.length > reorderedIds.length
-          ? _flattenedIds!.sublist(reorderedIds.length)
-          : const <String>[];
-      _flattenedIds = [...reorderedIds, ...unloaded];
+    // The loaded items take the head of the index in their new order and the
+    // rest keep theirs. Matching on id rather than position holds up even when
+    // a page came back short because the server had dropped one of them.
+    final ids = _flattenedIds;
+    if (ids != null) {
+      final loadedIds = reordered.map((i) => i.id).toList();
+      final loaded = loadedIds.toSet();
+      final merged = [...loadedIds, ...ids.where((id) => !loaded.contains(id))];
+      _flattenedIds = merged;
+      _customOrderIds = List<String>.from(merged);
     }
 
     notifyListeners();
 
     try {
       final syncService = GetIt.instance<PluginSyncService>();
-      if (syncService.pluginAvailable && _flattenedIds != null) {
-        // Send the complete _flattenedIds list so server custom order is NOT truncated!
-        await syncService.saveCustomCollectionOrder(_client, itemId, _flattenedIds!);
+      final order = _customOrderIds;
+      if (syncService.pluginAvailable && order != null) {
+        // The whole order goes up, otherwise the server forgets where the items
+        // that haven't been paged in yet belong.
+        await syncService.saveCustomCollectionOrder(_client, itemId, order);
       }
     } catch (_) {}
   }
@@ -804,29 +809,25 @@ class ItemDetailViewModel extends ChangeNotifier {
     final total = data['TotalRecordCount'] as int?;
     if (total != null) _collectionTotalCount = total;
     _collectionFetchedCount += newItems.length;
-    _collectionHasMore = _collectionFetchedCount < _collectionTotalCount;
+    // A server that leaves the total out would otherwise strand the grid on its
+    // first page, so a full page is taken to mean there is more behind it.
+    _collectionHasMore = total != null
+        ? _collectionFetchedCount < _collectionTotalCount
+        : newItems.length == _collectionPageSize;
     _collectionItems = [..._collectionItems, ...newItems];
     notifyListeners();
   }
 
-  // ---------------------------------------------------------------------------
-  // Phase 1 — flat ID index build
-  // ---------------------------------------------------------------------------
-
-  /// Builds [_flattenedIds]: a lightweight ordered list of every playable item
-  /// ID in the BoxSet (movies + individual episodes in release-date order, or
-  /// the plugin's saved custom order when Strategy B is active).
-  ///
-  /// Only IDs are retained after this phase; the full [AggregatedItem] objects
-  /// used for sorting are discarded immediately, keeping memory usage minimal
-  /// even for collections with thousands of episodes.
+  /// Puts [_flattenedIds] in place, either from a saved order or by scanning
+  /// the collection, then starts the first page.
   Future<void> _buildPlaylistIndex() async {
     _playlistIndexBuilding = true;
     notifyListeners();
 
     try {
-      // Strategy B: plugin has a saved custom order — use it directly as the
-      // flat ID list (it already stores movie + episode IDs in story order).
+      // A saved order already lists movie and episode ids in story order, so it
+      // can stand in for the index and skip enumerating the collection. The
+      // entries only get built if the user later picks a different sort.
       final syncService = GetIt.instance<PluginSyncService>();
       if (syncService.pluginAvailable) {
         try {
@@ -835,37 +836,64 @@ class ItemDetailViewModel extends ChangeNotifier {
             itemId,
           );
           if (customOrder != null && customOrder.isNotEmpty) {
-            _flattenedIds = customOrder;
+            _customOrderIds = customOrder;
+            _flattenedIds = List<String>.from(customOrder);
             _collectionSort = CollectionSortOption.custom;
           }
         } catch (_) {}
       }
 
-      // Strategy A: no custom order — build by release date.
       if (_flattenedIds == null) {
-        // Fetch ALL top-level BoxSet items with minimal fields (just IDs +
-        // dates needed for sorting).  No limit; we only keep IDs.
-        final allData = await _client.itemsApi.getItems(
-          parentId: itemId,
-          fields: 'BasicSyncInfo',
+        await _ensurePlaylistIndexEntries();
+        _collectionSort = CollectionSortOption.releaseAscending;
+        _rebuildFlattenedIds();
+      }
+
+      _resetPlaylistPaging();
+    } catch (_) {}
+
+    _playlistIndexBuilding = false;
+    notifyListeners();
+
+    await loadMorePlaylistItems();
+  }
+
+  /// Walks the collection once to build [_playlistIndexEntries], the id and
+  /// sort key of every playable item in it. Does nothing if they already exist.
+  ///
+  /// Only the keys are kept. The items themselves are read a page at a time by
+  /// [_fetchPlaylistPage], so a collection of any size settles at a few KB.
+  Future<void> _ensurePlaylistIndexEntries() async {
+    if (_playlistIndexEntries != null) return;
+    try {
+      final allData = await _client.itemsApi.getItems(
+        parentId: itemId,
+        limit: _indexScanLimit,
+        fields: 'BasicSyncInfo',
+      );
+      final allTopLevel = _mapItems((allData['Items'] as List?) ?? []);
+
+      final seriesItems = allTopLevel.where((i) => i.type == 'Series').toList();
+      final flat = allTopLevel
+          .where(
+            (i) =>
+                i.type == 'Movie' ||
+                i.type == 'Audio' ||
+                i.type == 'Video' ||
+                i.type == 'MusicVideo',
+          )
+          .toList();
+
+      // A batch at a time. One request per series all at once would open as
+      // many sockets as the collection has shows.
+      for (var i = 0; i < seriesItems.length; i += _indexScanBatchSize) {
+        final end = i + _indexScanBatchSize;
+        final batch = seriesItems.sublist(
+          i,
+          end < seriesItems.length ? end : seriesItems.length,
         );
-        final allTopLevel = _mapItems((allData['Items'] as List?) ?? []);
-
-        final seriesItems =
-            allTopLevel.where((i) => i.type == 'Series').toList();
-        final nonSeriesItems = allTopLevel
-            .where(
-              (i) =>
-                  i.type == 'Movie' ||
-                  i.type == 'Audio' ||
-                  i.type == 'Video' ||
-                  i.type == 'MusicVideo',
-            )
-            .toList();
-
-        // Expand every series to its individual episodes.  Run in parallel.
         final episodeLists = await Future.wait(
-          seriesItems.map((series) async {
+          batch.map((series) async {
             try {
               final epData = await _client.itemsApi.getEpisodes(series.id);
               return _mapItems((epData['Items'] as List?) ?? []);
@@ -874,50 +902,28 @@ class ItemDetailViewModel extends ChangeNotifier {
             }
           }),
         );
-
-        final flat = <AggregatedItem>[...nonSeriesItems];
         for (final episodes in episodeLists) {
           flat.addAll(episodes);
         }
-        // Build lightweight index entries for memory-efficient re-sorting.
-        final entries = flat
-            .map(
-              (i) => _PlaylistItemIndexEntry(
-                id: i.id,
-                name: i.name,
-                premiereDate: i.premiereDate,
-                productionYear: i.productionYear,
-              ),
-            )
-            .toList();
-
-        // Sort movies + episodes together by release date (ascending).
-        entries.sort(_PlaylistItemIndexEntry.compareReleaseAscending);
-
-        _playlistIndexEntries = entries;
-        _flattenedIds = entries.map((e) => e.id).toList();
-        _collectionSort = CollectionSortOption.releaseAscending;
       }
 
-      _playlistHasMore = (_flattenedIds?.isNotEmpty) ?? false;
+      _playlistIndexEntries = flat
+          .map(
+            (i) => _PlaylistItemIndexEntry(
+              id: i.id,
+              name: i.name,
+              premiereDate: i.premiereDate,
+              productionYear: i.productionYear,
+            ),
+          )
+          .toList();
     } catch (_) {}
-
-    _playlistIndexBuilding = false;
-    notifyListeners();
-
-    // Kick off the first playlist page now that the index is ready.
-    if ((_flattenedIds?.isNotEmpty) ?? false) {
-      await _fetchPlaylistPage();
-    }
   }
 
-  // ---------------------------------------------------------------------------
-  // Phase 3 — playlist page loading
-  // ---------------------------------------------------------------------------
-
-  /// Fetches the next batch of full item data from [_flattenedIds] and appends
-  /// it to [_playlistItems].  Re-sorts each batch to match the index order
-  /// (the server returns items by-ID in arbitrary order).
+  /// Reads the next run of ids into [_playlistItems].
+  ///
+  /// Progress is counted in index positions rather than items returned, so an
+  /// id the server no longer knows about can't stall the list.
   Future<void> _fetchPlaylistPage() async {
     final ids = _flattenedIds;
     if (ids == null || _playlistFetchedCount >= ids.length) return;
@@ -934,60 +940,41 @@ class ItemDetailViewModel extends ChangeNotifier {
     );
     final items = _mapItems((data['Items'] as List?) ?? []);
 
-    // Re-sort to match the flattenedIds order.
-    final orderMap = {
-      for (var i = 0; i < batch.length; i++) batch[i]: i,
-    };
+    // The by-id endpoint answers in whatever order it likes.
+    final orderMap = {for (var i = 0; i < batch.length; i++) batch[i]: i};
     items.sort(
-      (a, b) => (orderMap[a.id] ?? 0).compareTo(orderMap[b.id] ?? 0),
+      (a, b) => (orderMap[a.id] ?? batch.length)
+          .compareTo(orderMap[b.id] ?? batch.length),
     );
 
     _playlistFetchedCount += batch.length;
     _playlistHasMore = _playlistFetchedCount < ids.length;
 
-    final combined = [..._playlistItems, ...items];
-    _playlistItems = combined;
-    _customPlaylistItems = List<AggregatedItem>.from(combined);
+    _playlistItems = [..._playlistItems, ...items];
 
     _resolveNextUp();
     notifyListeners();
   }
 
-  /// Resolves the Next Up item from the current [_playlistItems].
+  /// Picks the first unwatched item, or the first item once the whole
+  /// collection has been watched.
+  ///
+  /// Only the loaded head is visible here, so a watched head with pages still
+  /// to come is left alone. Wrapping to the start then would point at item one
+  /// while the next unseen one is further down.
   void _resolveNextUp() {
     if (_playlistItems.isEmpty) {
       _nextUp = null;
       return;
     }
-    final playedAll = _playlistItems.every(
-      (item) => item.rawData['UserData']?['Played'] == true,
-    );
-    if (playedAll) {
+    final unwatched = _playlistItems
+        .where((item) => item.rawData['UserData']?['Played'] != true)
+        .firstOrNull;
+    if (unwatched != null) {
+      _nextUp = unwatched;
+    } else if (!_playlistHasMore) {
       _nextUp = _playlistItems.first;
-    } else {
-      _nextUp = _playlistItems.firstWhere(
-        (item) => item.rawData['UserData']?['Played'] != true,
-        orElse: () => _playlistItems.first,
-      );
     }
-  }
-
-  /// Release-ascending sort comparator used for Strategy A playlist ordering.
-  static int _releaseSortAscending(AggregatedItem a, AggregatedItem b) {
-    final aDate =
-        a.premiereDate ??
-        (a.productionYear != null ? DateTime(a.productionYear!) : null);
-    final bDate =
-        b.premiereDate ??
-        (b.productionYear != null ? DateTime(b.productionYear!) : null);
-    if (aDate == null && bDate == null) {
-      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-    }
-    if (aDate == null) return 1;
-    if (bDate == null) return -1;
-    final byDate = aDate.compareTo(bDate);
-    if (byDate != 0) return byDate;
-    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
   }
 
   /// Called by the UI scroll listener to load the next grid page.

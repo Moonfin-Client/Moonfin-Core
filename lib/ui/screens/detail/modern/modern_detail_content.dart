@@ -160,10 +160,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
   late final ScrollController _scrollController = ScrollController();
 
-  // Tracks the maxScrollExtent at which we last triggered a BoxSet page load.
-  // Each unique extent can only fire one load; programmatic scroll events from
-  // content reflow after a page lands won't re-trigger until the user has
-  // actually scrolled into a new extent region.
+  // The scroll extent the last collection page was asked for at. A page landing
+  // grows the extent, so holding the previous one stops the notifications that
+  // arrive during that reflow from asking for the same page again.
   double _boxSetLastTriggerMaxExtent = -1;
   String? _seriesLogoTag;
   String? _seriesLogoId;
@@ -553,9 +552,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   void _onScroll() {
     if (!mounted) return;
 
-    // Lazy-load more grid and playlist items when scrolled near the bottom of
-    // a BoxSet.  The maxScrollExtent guard prevents layout-reflow events from
-    // chaining loads without user-initiated scrolling.
+    // Ahead of the isTV return below, so a D-pad walk down a collection pulls
+    // the next page the same way a touch scroll does.
     if (_vm.item?.type == 'BoxSet' && _scrollController.hasClients) {
       final pos = _scrollController.position;
       final maxExtent = pos.maxScrollExtent;
@@ -580,7 +578,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onViewModelChanged() {
     if (mounted) {
-      if (_vm.state == ItemDetailState.loading || _vm.playlistItems.isEmpty) {
+      // A new collection, or one whose list restarted after a sort change,
+      // needs the trigger to fire again from wherever the scroll now sits.
+      if (_vm.item?.type == 'BoxSet' &&
+          (_vm.state == ItemDetailState.loading || _vm.playlistItems.isEmpty)) {
         _boxSetLastTriggerMaxExtent = -1;
       }
       setState(() {});
