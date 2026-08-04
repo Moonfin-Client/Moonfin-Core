@@ -10,15 +10,41 @@ import '../../playback/car_artwork.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import '../models/aggregated_item.dart';
+import '../models/aggregated_library.dart';
 import '../repositories/user_views_repository.dart';
 import 'media_server_client_factory.dart';
 import 'row_data_source.dart';
 import 'watch_next_service.dart';
 
-/// Publishes the Android TV launcher channel rows (Next Up, Recent Films, New Episodes,
-/// Recently Added Media). It reuses the watch next method channel, artwork wrapping, and
-/// deep link plumbing, so the only new surface is the channel data itself.
+/// The two library kinds that get their own recently released launcher row.
+enum _ReleaseCollection {
+  movies(collectionTypes: ['movies'], itemTypes: ['Movie']),
+  tvShows(collectionTypes: ['tvshows', 'shows'], itemTypes: ['Series']);
+
+  const _ReleaseCollection({
+    required this.collectionTypes,
+    required this.itemTypes,
+  });
+
+  /// Library collection types that feed this row.
+  final List<String> collectionTypes;
+
+  /// Item types to ask for when the row can't be scoped to a library.
+  final List<String> itemTypes;
+}
+
+/// Publishes the Android TV launcher channel rows (Next Up, Recently Added
+/// Movies, Recently Added TV Shows, Recently Released Movies, Recently
+/// Released TV Shows). It reuses the watch next method channel, artwork
+/// wrapping, and deep link plumbing, so the only new surface is the channel
+/// data itself.
 class TvChannelsService {
+  // One instance app wide so signing out cancels the debounce the home screen
+  // scheduled, rather than leaving a publish to fire against a torn down client.
+  factory TvChannelsService() => _instance;
+  TvChannelsService._();
+  static final TvChannelsService _instance = TvChannelsService._();
+
   static const _channel = MethodChannel('org.moonfin.androidtv/watch_next');
   static const _maxItems = 20;
   static const _debounceDelay = Duration(seconds: 5);
@@ -87,46 +113,67 @@ class TvChannelsService {
     return buffer.toString();
   }
 
-  static Future<List<AggregatedItem>> _loadRecentlyReleasedForCollection(
+  /// Builds a recently released row for [collection] out of every library of
+  /// that kind. Falls back to the unscoped query when the libraries can't be
+  /// listed, which is what happens in the background isolate where the views
+  /// repository is not registered.
+  static Future<List<AggregatedItem>> _loadRecentlyReleased(
     RowDataSource dataSource,
     String serverId,
-    List<String> targetTypes,
+    _ReleaseCollection collection,
   ) async {
-    try {
-      final repo = GetIt.instance<UserViewsRepository>();
-      final views = await repo.getAllViewsIncludingHidden();
-      final matchingViews = views.where((v) {
-        final type = v.collectionType.toLowerCase();
-        if (targetTypes.contains('movies')) {
-          return type == 'movies';
-        }
-        if (targetTypes.contains('tvshows')) {
-          return type == 'tvshows' || type == 'shows';
-        }
-        return false;
-      }).toList();
-
-      if (matchingViews.isEmpty) {
+    final views = await _viewsFor(collection);
+    if (views.isEmpty) {
+      try {
         return await dataSource.loadRecentlyReleasedByType(
           serverId,
-          targetTypes.contains('movies') ? const ['Movie'] : const ['Series', 'Episode'],
+          collection.itemTypes,
           limit: _maxItems,
         );
+      } catch (_) {
+        return const [];
       }
+    }
 
-      final items = <AggregatedItem>[];
-      for (final view in matchingViews) {
-        final row = await dataSource.loadRecentlyReleased(
-          view.id,
-          view.name,
-          serverId,
-          view.collectionType.toLowerCase(),
+    final rows = await Future.wait([
+      for (final view in views)
+        dataSource
+            .loadRecentlyReleased(
+              view.id,
+              view.name,
+              serverId,
+              view.collectionType.toLowerCase(),
+            )
+            .then((row) => row.items)
+            .catchError((_) => <AggregatedItem>[]),
+    ]);
+
+    // Each library sorts on its own, so they are merged on release date before
+    // the row gets capped. Concatenating would let the first library fill the
+    // row and crowd the rest out.
+    final merged = rows.expand((items) => items).toList();
+    merged.sort((a, b) {
+      final left = a.premiereDate;
+      final right = b.premiereDate;
+      if (left == null) return right == null ? 0 : 1;
+      if (right == null) return -1;
+      return right.compareTo(left);
+    });
+    return merged;
+  }
+
+  static Future<List<AggregatedLibrary>> _viewsFor(
+    _ReleaseCollection collection,
+  ) async {
+    try {
+      final views = await GetIt.instance<UserViewsRepository>().getUserViews();
+      return views.where((v) {
+        return collection.collectionTypes.contains(
+          v.collectionType.toLowerCase(),
         );
-        items.addAll(row.items);
-      }
-      return items;
+      }).toList();
     } catch (_) {
-      return <AggregatedItem>[];
+      return const [];
     }
   }
 
@@ -154,8 +201,8 @@ class TvChannelsService {
       dataSource
           .loadLatestByType(serverId, const ['Series', 'Episode'], limit: _maxItems)
           .catchError((_) => <AggregatedItem>[]),
-      _loadRecentlyReleasedForCollection(dataSource, serverId, const ['movies']),
-      _loadRecentlyReleasedForCollection(dataSource, serverId, const ['tvshows']),
+      _loadRecentlyReleased(dataSource, serverId, _ReleaseCollection.movies),
+      _loadRecentlyReleased(dataSource, serverId, _ReleaseCollection.tvShows),
     ]);
     await CarArtwork.instance.ensureReady();
     final results = await fetches;

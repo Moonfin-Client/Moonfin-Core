@@ -244,13 +244,14 @@ class JellyfinItemsApi implements ItemsApi {
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
+    bool recursive = false,
   }) async {
     final userId = _getUserId();
     final response = await _dio.get(
       '/Users/$userId/Items',
       queryParameters: {
         'ParentId': ?parentId,
-        'Recursive': true,
+        if (recursive) 'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
         'Limit': ?limit,

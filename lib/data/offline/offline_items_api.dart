@@ -612,6 +612,8 @@ class OfflineItemsApi implements ItemsApi {
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
+    // The downloaded catalog is flat, so there is nothing to recurse into.
+    bool recursive = false,
   }) async {
     var scope = _scope(parentId, includeItemTypes: includeItemTypes);
     if (includeItemTypes != null && includeItemTypes.isNotEmpty) {

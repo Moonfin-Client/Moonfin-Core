@@ -79,6 +79,9 @@ abstract class ItemsApi {
     int? imageTypeLimit,
   });
 
+  /// Set [recursive] when there is no [parentId], or when [includeItemTypes]
+  /// narrows what comes back. A recursive parent query without a type filter
+  /// returns seasons and episodes alongside the series.
   Future<Map<String, dynamic>> getRecentlyReleasedItems({
     String? parentId,
     List<String>? includeItemTypes,
@@ -86,6 +89,7 @@ abstract class ItemsApi {
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
+    bool recursive = false,
   });
 
   Future<Map<String, dynamic>> getSeasons(String seriesId);

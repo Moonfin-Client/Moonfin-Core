@@ -114,8 +114,9 @@ class WatchNextService {
     return items;
   }
 
-  /// Shapes a movie or episode into the native program payload. Public so the
-  /// launcher channel rows reuse the same fields. Returns null for other types.
+  /// Shapes a movie, series or episode into the native program payload. Public
+  /// so the launcher channel rows reuse the same fields. Returns null for other
+  /// types.
   static Map<String, dynamic>? buildProgramPayload(
     AggregatedItem item,
     MediaServerClient client, {
@@ -148,7 +149,7 @@ class WatchNextService {
     return {
       'id': id,
       'serverId': serverId,
-      'kind': isEpisode ? 'episode' : 'movie',
+      'kind': isEpisode ? 'episode' : (isSeries ? 'series' : 'movie'),
       'title': isEpisode ? (item.seriesName ?? item.name) : item.name,
       if (isEpisode) 'episodeTitle': item.name,
       if (isEpisode && item.parentIndexNumber != null)

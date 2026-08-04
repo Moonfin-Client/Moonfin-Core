@@ -251,6 +251,9 @@ class RowDataSource {
       fields: _fields,
       enableImageTypes: _imageTypes,
       imageTypeLimit: _imageTypeLimit,
+      // No parent to scope to, so without recursion the server only offers
+      // the library folders themselves.
+      recursive: true,
     );
     return _parseItems(response, serverId);
   }
