@@ -4,7 +4,7 @@ import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/util/playback_time_label.dart';
 
-/// Ends at time will be localized. Get context for that.
+/// The ends at label is localized, so these tests need a real context.
 Future<BuildContext> _localizedContext(WidgetTester tester) async {
   late BuildContext captured;
   await tester.pumpWidget(
@@ -204,34 +204,6 @@ void main() {
           reason: 'slot $value',
         );
       }
-    });
-  });
-
-  group('playbackTimeDisplayForSlot', () {
-    test('maps the three trailing modes through unchanged', () {
-      expect(
-        playbackTimeDisplayForSlot(PlaybackTimeSlot.timeRemaining),
-        PlaybackTimeDisplay.timeRemaining,
-      );
-      expect(
-        playbackTimeDisplayForSlot(PlaybackTimeSlot.endsAt),
-        PlaybackTimeDisplay.endsAt,
-      );
-      expect(
-        playbackTimeDisplayForSlot(PlaybackTimeSlot.totalDuration),
-        PlaybackTimeDisplay.totalDuration,
-      );
-    });
-
-    test('falls back to the total duration for slot-only modes', () {
-      expect(
-        playbackTimeDisplayForSlot(PlaybackTimeSlot.none),
-        PlaybackTimeDisplay.totalDuration,
-      );
-      expect(
-        playbackTimeDisplayForSlot(PlaybackTimeSlot.elapsed),
-        PlaybackTimeDisplay.totalDuration,
-      );
     });
   });
 }

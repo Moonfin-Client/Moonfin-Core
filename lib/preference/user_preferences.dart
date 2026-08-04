@@ -260,11 +260,18 @@ class UserPreferences extends ChangeNotifier {
     'imdb_top_250_tv_shows_enabled',
     'imdb_top_english_movies_enabled',
     'live_tv_channel_sort_by',
+    'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
     'osdButtonOrderTv',
     'osdLockEnabled',
     'pgs_enabled',
+    'playback_time_above_center',
+    'playback_time_above_left',
+    'playback_time_above_right',
+    'playback_time_below_center',
+    'playback_time_below_left',
+    'playback_time_below_right',
     'player_zoom_mode',
     'pref_audio_rows_sort_by',
     'pref_diagnostic_logging_enabled',
@@ -1480,9 +1487,8 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  // Six customizable slots
-  // Default layout is: elapsed on the bottom left, total runtime on the bottom right and
-  // the "Ends at" above the bar on the right.
+  // Defaults chosen so the overlay looks unchanged for anyone who never opens
+  // the setting.
   static final playbackTimeAboveLeft = EnumPreference(
     key: 'playback_time_above_left',
     defaultValue: PlaybackTimeSlot.none,
@@ -1519,7 +1525,7 @@ class UserPreferences extends ChangeNotifier {
     values: PlaybackTimeSlot.values,
   );
 
-  /// Music player gets just the right variable
+  /// The music player has one label rather than six slots, so it picks a mode.
   static final musicPlaybackTimeDisplay = EnumPreference(
     key: 'music_playback_time_display',
     defaultValue: PlaybackTimeDisplay.totalDuration,

@@ -10412,22 +10412,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get imdbTopEnglishMovies => 'IMDb Bestbewertete englische Filme';
 
   @override
-  String get addToWatchlist => 'Zu Merkliste hinzufügen';
+  String get addToWatchlist => 'Add to Watchlist';
 
   @override
-  String get removeFromWatchlist => 'Von Merkliste entfernen';
+  String get removeFromWatchlist => 'Remove from Watchlist';
 
   @override
-  String get watchlistUpdateFailed => 'Konnte Merkliste nicht aktualisieren';
+  String get watchlistUpdateFailed => 'Couldn\'t update watchlist';
 
   @override
-  String get adminSearchParameters => 'Suchkriterien';
+  String get adminSearchParameters => 'Search Parameters';
 
   @override
-  String get adminCurrentMetadata => 'Aktuelle Metadaten';
+  String get adminCurrentMetadata => 'Current Metadata';
 
   @override
-  String get adminLabelYear => 'Jahr';
+  String get adminLabelYear => 'Year';
 
   @override
   String get adminLabelImdbId => 'IMDb Id';
@@ -10448,19 +10448,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get adminLabelTvdbSlug => 'TheTVDB Slug Movie Id';
 
   @override
-  String get adminReplaceImages => 'Ersetzen bestehender Bilder';
+  String get adminReplaceImages => 'Replace existing images';
 
   @override
-  String get adminBackToSearch => 'Zurück zu Suchkriterien';
+  String get adminBackToSearch => 'Back to Search Criteria';
 
   @override
   String get grouping => 'Grouping';
 
   @override
-  String get groupByType => 'Gruppiert nach Typ';
+  String get groupByType => 'Group by Type';
 
   @override
-  String get playlistTypes => 'Playlist Typen';
+  String get playlistTypes => 'Playlist Types';
 
   @override
   String get playlistTypeVideo => 'Video';
@@ -10469,16 +10469,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playlistTypeAudio => 'Audio (Music)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobuch';
+  String get playlistTypeAudiobook => 'Audiobook';
 
   @override
-  String get playlistTypeBook => 'Buch';
+  String get playlistTypeBook => 'Book';
 
   @override
-  String get playlistTypePhoto => 'Foto';
+  String get playlistTypePhoto => 'Photo';
 
   @override
-  String get playlistTypeMixed => 'Gemischte';
+  String get playlistTypeMixed => 'Mixed';
 
   @override
   String get videoPlaylistsSection => 'Video Playlists';
@@ -10487,63 +10487,63 @@ class AppLocalizationsDe extends AppLocalizations {
   String get audioPlaylistsSection => 'Audio Playlists';
 
   @override
-  String get audiobookPlaylistsSection => 'Audiobuch Playlists';
+  String get audiobookPlaylistsSection => 'Audiobook Playlists';
 
   @override
-  String get bookPlaylistsSection => 'Buch Playlists';
+  String get bookPlaylistsSection => 'Book Playlists';
 
   @override
-  String get photoPlaylistsSection => 'Foto Playlists';
+  String get photoPlaylistsSection => 'Photo Playlists';
 
   @override
-  String get mixedPlaylistsSection => 'Gemischte Playlists';
+  String get mixedPlaylistsSection => 'Mixed Playlists';
 
   @override
-  String get playbackTimeDisplay => 'Wiedergabezeit anzeigen';
+  String get playbackTimeDisplay => 'Progress Bar Time';
 
   @override
   String get settingsPlaybackTimeDisplayDescription =>
-      'Wählen Sie aus, was auf der rechten Seite des Musik-Players angezeigt wird.';
+      'Choose which time labels appear around the playback progress bar.';
 
   @override
-  String get playbackTimeTotal => 'Gesamtdauer';
+  String get playbackTimeTotal => 'Total duration';
 
   @override
-  String get playbackTimeRemaining => 'Verbleibende Zeit';
+  String get playbackTimeRemaining => 'Time remaining';
 
   @override
-  String get playbackTimeEndsAt => 'Endet um';
+  String get playbackTimeEndsAt => 'Ends at';
 
   @override
-  String get playbackTimeElapsed => 'Verstrichene Zeit';
+  String get playbackTimeElapsed => 'Time elapsed';
 
   @override
   String get playbackTimeVideoSection => 'Video Player';
 
   @override
-  String get playbackTimeMusicSection => 'Musik Player';
+  String get playbackTimeMusicSection => 'Music Player';
 
   @override
-  String get playbackTimeSlotDescription => 'Wählen aus, was hier angezeigt wird, oder entfernen es.';
+  String get playbackTimeSlotDescription => 'Choose what is shown here, or hide it.';
 
   @override
-  String get playbackTimeAboveBarLeft => 'Über der Leiste, links';
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
 
   @override
-  String get playbackTimeAboveBarCenter => 'Über der Leiste, Mitte';
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
 
   @override
-  String get playbackTimeAboveBarRight => 'Über der Leiste, rechts';
+  String get playbackTimeAboveBarRight => 'Above bar, right';
 
   @override
-  String get playbackTimeBelowBarLeft => 'Unter der Leiste, links';
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
 
   @override
-  String get playbackTimeBelowBarCenter => 'Unter der Leiste, Mitte';
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
 
   @override
-  String get playbackTimeBelowBarRight => 'Unter der Leiste, rechts';
+  String get playbackTimeBelowBarRight => 'Below bar, right';
 
   @override
-  String get settingsMusicPlaybackTimeDescription => 'Wähle aus, was auf der rechten Seite der Musik-Players angezeigt wird.';
+  String get settingsMusicPlaybackTimeDescription => 'Choose what is shown on the right side of the music progress bar.';
 }

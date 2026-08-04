@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
@@ -18,6 +17,7 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../util/fullscreen_helper.dart';
+import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/seek_icons.dart';
 import '../../widgets/playback/trickplay_tile_image.dart';
 
@@ -1859,7 +1859,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_remotePositionTicks <= 0) {
       return base;
     }
-    return '$base · ${_formatDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}';
+    return '$base · ${formatPlaybackDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}';
   }
 
   Future<List<Map<String, dynamic>>> _resolveCastPeopleForMetadata(
@@ -2921,16 +2921,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _resetSeekAcceleration() {
     _seekDirection = null;
     _seekRepeatCount = 0;
-  }
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60);
-    final s = d.inSeconds.remainder(60);
-    if (h > 0) {
-      return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-    }
-    return '$m:${s.toString().padLeft(2, '0')}';
   }
 
   String _formatDelay(double seconds) {
@@ -4081,51 +4071,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  /// Text label for the customizable slots
   String _timeSlotLabel(
-    EnumPreference<PlaybackTimeSlot> preference, {
+    PlaybackTimeSlot slot, {
     required Duration position,
     required Duration duration,
+    required bool use24Hour,
   }) {
     return formatPlaybackTimeSlot(
       context,
-      slot: _prefs.get(preference),
+      slot: slot,
       position: position,
       duration: duration,
-      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+      use24Hour: use24Hour,
       playbackSpeed: _state.playbackSpeed,
     );
   }
 
-  /// Row of three time slots, left, center, right
   Widget _buildTimeSlotRow({
     required String left,
     required String center,
     required String right,
     bool bold = false,
   }) {
-    final style = TextStyle(
-      color: Colors.white70,
-      fontSize: AppTypography.fontSizeXs,
-      fontWeight: bold ? FontWeight.w600 : null,
-    );
-    Widget cell(String text, TextAlign align) => Expanded(
-      child: Text(
-        text,
-        style: style,
-        textAlign: align,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
-      child: Row(
-        children: [
-          cell(left, TextAlign.left),
-          cell(center, TextAlign.center),
-          cell(right, TextAlign.right),
-        ],
+      child: PlaybackTimeRow(
+        left: left,
+        center: center,
+        right: right,
+        bold: bold,
       ),
     );
   }
@@ -4290,6 +4264,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget _buildSeekbar() {
+    // The slot layout only changes from the settings screen, so resolve it
+    // here instead of on every position tick inside the stream builders.
+    final aboveLeftSlot = _prefs.get(UserPreferences.playbackTimeAboveLeft);
+    final aboveCenterSlot = _prefs.get(UserPreferences.playbackTimeAboveCenter);
+    final aboveRightSlot = _prefs.get(UserPreferences.playbackTimeAboveRight);
+    final belowLeftSlot = _prefs.get(UserPreferences.playbackTimeBelowLeft);
+    final belowCenterSlot = _prefs.get(UserPreferences.playbackTimeBelowCenter);
+    final belowRightSlot = _prefs.get(UserPreferences.playbackTimeBelowRight);
+    final use24Hour = _prefs.get(UserPreferences.use24HourClock);
     return StreamBuilder<Duration>(
       stream: _state.positionStream,
       initialData: _state.position,
@@ -4319,19 +4302,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 final seekPosition = Duration(milliseconds: positionMs.round());
                 final livePosition = _isSeeking ? seekPosition : position;
                 final aboveLeft = _timeSlotLabel(
-                  UserPreferences.playbackTimeAboveLeft,
+                  aboveLeftSlot,
                   position: livePosition,
                   duration: duration,
+                  use24Hour: use24Hour,
                 );
                 final aboveCenter = _timeSlotLabel(
-                  UserPreferences.playbackTimeAboveCenter,
+                  aboveCenterSlot,
                   position: livePosition,
                   duration: duration,
+                  use24Hour: use24Hour,
                 );
                 final aboveRight = _timeSlotLabel(
-                  UserPreferences.playbackTimeAboveRight,
+                  aboveRightSlot,
                   position: livePosition,
                   duration: duration,
+                  use24Hour: use24Hour,
                 );
                 final hasAboveRow =
                     aboveLeft.isNotEmpty ||
@@ -4471,19 +4457,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     ),
                     _buildTimeSlotRow(
                       left: _timeSlotLabel(
-                        UserPreferences.playbackTimeBelowLeft,
+                        belowLeftSlot,
                         position: livePosition,
                         duration: duration,
+                        use24Hour: use24Hour,
                       ),
                       center: _timeSlotLabel(
-                        UserPreferences.playbackTimeBelowCenter,
+                        belowCenterSlot,
                         position: livePosition,
                         duration: duration,
+                        use24Hour: use24Hour,
                       ),
                       right: _timeSlotLabel(
-                        UserPreferences.playbackTimeBelowRight,
+                        belowRightSlot,
                         position: livePosition,
                         duration: duration,
+                        use24Hour: use24Hour,
                       ),
                     ),
                   ],
@@ -4539,7 +4528,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ),
         const SizedBox(height: AppSpacing.spaceXs),
         Text(
-          _formatDuration(position),
+          formatPlaybackDuration(position),
           style: const TextStyle(
             color: Colors.white,
             fontSize: AppTypography.fontSizeXs,
@@ -6387,7 +6376,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       final ticks = ch['StartPositionTicks'] as int? ?? 0;
       return TrackOption(
         label: name,
-        subtitle: _formatDuration(Duration(microseconds: ticks ~/ 10)),
+        subtitle: formatPlaybackDuration(Duration(microseconds: ticks ~/ 10)),
       );
     });
     unawaited(() async {
@@ -6565,7 +6554,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final playbackSubtitle = _remotePlaybackState != null
         ? '${_remotePlaybackState![0].toUpperCase()}${_remotePlaybackState!.substring(1)}'
-              ' · ${_formatDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}'
+              ' · ${formatPlaybackDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}'
         : null;
 
     unawaited(() async {

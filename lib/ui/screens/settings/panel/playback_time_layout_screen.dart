@@ -1,6 +1,6 @@
 part of '../settings_side_panel.dart';
 
-/// User can decide what to show in the six slots or none.
+/// Lets the user pick what each of the six video time slots shows, or hide it.
 class _PlaybackTimeLayoutScreen extends StatefulWidget {
   const _PlaybackTimeLayoutScreen();
 
@@ -10,8 +10,7 @@ class _PlaybackTimeLayoutScreen extends StatefulWidget {
 }
 
 class _PlaybackTimeLayoutScreenState extends State<_PlaybackTimeLayoutScreen> {
-  // Preview values for the progress bar and time slots. These are not real playback values, just a demonstration.
-  static const _previewPosition = Duration(hours: 0, minutes: 42, seconds: 10);
+  static const _previewPosition = Duration(minutes: 42, seconds: 10);
   static const _previewDuration = Duration(hours: 1, minutes: 58, seconds: 33);
 
   late final UserPreferences _prefs;
@@ -54,42 +53,17 @@ class _PlaybackTimeLayoutScreenState extends State<_PlaybackTimeLayoutScreen> {
     );
   }
 
-  Widget _previewRow(String left, String center, String right, bool bold) {
-    final style = TextStyle(
-      color: Colors.white70,
-      fontSize: AppTypography.fontSizeXs,
-      fontWeight: bold ? FontWeight.w600 : null,
-    );
-    Widget cell(String text, TextAlign align) => Expanded(
-      child: Text(
-        text,
-        style: style,
-        textAlign: align,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-    return Row(
-      children: [
-        cell(left, TextAlign.left),
-        cell(center, TextAlign.center),
-        cell(right, TextAlign.right),
-      ],
-    );
-  }
-
   Widget _buildPreview() {
-    final above = _previewRow(
-      _preview(UserPreferences.playbackTimeAboveLeft),
-      _preview(UserPreferences.playbackTimeAboveCenter),
-      _preview(UserPreferences.playbackTimeAboveRight),
-      true,
+    final above = PlaybackTimeRow(
+      left: _preview(UserPreferences.playbackTimeAboveLeft),
+      center: _preview(UserPreferences.playbackTimeAboveCenter),
+      right: _preview(UserPreferences.playbackTimeAboveRight),
+      bold: true,
     );
-    final below = _previewRow(
-      _preview(UserPreferences.playbackTimeBelowLeft),
-      _preview(UserPreferences.playbackTimeBelowCenter),
-      _preview(UserPreferences.playbackTimeBelowRight),
-      false,
+    final below = PlaybackTimeRow(
+      left: _preview(UserPreferences.playbackTimeBelowLeft),
+      center: _preview(UserPreferences.playbackTimeBelowCenter),
+      right: _preview(UserPreferences.playbackTimeBelowRight),
     );
     return Padding(
       padding: const EdgeInsets.symmetric(

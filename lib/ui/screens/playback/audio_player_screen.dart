@@ -834,17 +834,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     return null;
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:'
-          '${seconds.toString().padLeft(2, '0')}';
-    }
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
-  }
-
   bool _shouldUseSplitLyricsLayout(BuildContext context) {
     if (_showQueue || _lyrics == null || _lyrics!.isEmpty) {
       return false;
@@ -1314,7 +1303,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                     subtitle: stateVal != null
                         ? Text(
                             '${stateVal[0].toUpperCase()}${stateVal.substring(1)}'
-                            ' · ${_formatDuration(Duration(microseconds: ticks ~/ 10))}',
+                            ' · ${formatPlaybackDuration(Duration(microseconds: ticks ~/ 10))}',
                             style: TextStyle(
                               color: AppColorScheme.onSurface.withValues(
                                 alpha: 0.54,
@@ -1761,7 +1750,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _formatDuration(pos),
+                  formatPlaybackDuration(pos),
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColorScheme.onSurface.withValues(alpha: 0.6),

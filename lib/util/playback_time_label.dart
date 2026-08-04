@@ -18,7 +18,8 @@ String formatPlaybackDuration(Duration value) {
 
 /// Wall-clock time the item finishes at, e.g. `Ends at 21:45`.
 ///
-/// Needs also to check [playbackSpeed] so that the multiplier is applied.
+/// A faster [playbackSpeed] brings that time forward, so it feeds into the
+/// wait rather than only the media time left.
 String formatPlaybackEndsAt(
   BuildContext context, {
   required Duration position,
@@ -41,7 +42,7 @@ String formatPlaybackEndsAt(
   return AppLocalizations.of(context).endsAt(time);
 }
 
-/// Formats a [PlaybackTimeSlot] into a string for display in the UI.
+/// Formats a [PlaybackTimeSlot] into its label.
 String formatPlaybackTimeSlot(
   BuildContext context, {
   required PlaybackTimeSlot slot,
@@ -58,44 +59,24 @@ String formatPlaybackTimeSlot(
     case PlaybackTimeSlot.totalDuration:
       return formatPlaybackDuration(duration);
     case PlaybackTimeSlot.timeRemaining:
-      return formatPlaybackTrailingTime(
-        context,
-        position: position,
-        duration: duration,
-        mode: PlaybackTimeDisplay.timeRemaining,
-        use24Hour: use24Hour,
-        playbackSpeed: playbackSpeed,
-      );
     case PlaybackTimeSlot.endsAt:
       return formatPlaybackTrailingTime(
         context,
         position: position,
         duration: duration,
-        mode: PlaybackTimeDisplay.endsAt,
+        mode: slot == PlaybackTimeSlot.timeRemaining
+            ? PlaybackTimeDisplay.timeRemaining
+            : PlaybackTimeDisplay.endsAt,
         use24Hour: use24Hour,
         playbackSpeed: playbackSpeed,
       );
   }
 }
 
-/// Determines the display mode for a given playback time slot.
+/// Formats the trailing time label for a [PlaybackTimeDisplay] mode.
 ///
-/// [PlaybackTimeSlot.none] and [PlaybackTimeSlot.elapsed] have no trailing
-/// equivalent, so both resolve to the total duration.
-PlaybackTimeDisplay playbackTimeDisplayForSlot(PlaybackTimeSlot slot) {
-  return switch (slot) {
-    PlaybackTimeSlot.timeRemaining => PlaybackTimeDisplay.timeRemaining,
-    PlaybackTimeSlot.endsAt => PlaybackTimeDisplay.endsAt,
-    PlaybackTimeSlot.none ||
-    PlaybackTimeSlot.elapsed ||
-    PlaybackTimeSlot.totalDuration => PlaybackTimeDisplay.totalDuration,
-  };
-}
-
-/// Keep Users [PlaybackTimeDisplay] preference.
-///
-/// Falls back to the total duration whenever the selected mode cannot be
-/// rendered (for example an unknown duration on a live stream).
+/// Falls back to the total duration whenever the selected mode can't be
+/// rendered, for example an unknown duration on a live stream.
 String formatPlaybackTrailingTime(
   BuildContext context, {
   required Duration position,
