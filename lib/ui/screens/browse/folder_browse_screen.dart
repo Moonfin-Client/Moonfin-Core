@@ -1,4 +1,3 @@
-import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +31,10 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
   final Map<int, FocusNode> _gridItemFocusNodes = {};
   DateTime? _lastItemTapAt;
   String? _lastTappedItemId;
+
+  List<AggregatedItem>? _metricsSource;
+  double _minAspectRatio = 16 / 9;
+  bool _anySubtitles = false;
 
   @override
   void initState() {
@@ -311,17 +314,23 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     }
   }
 
-  double _gridAspectRatio() {
-    if (_vm.items.isEmpty) return 16 / 9;
-    var minAr = 16 / 9;
+  /// Rows are one height, so they are cut for the tallest card in the folder
+  /// and shorter ones leave a gap. Walking every item to find it is only worth
+  /// doing when the list itself changes, not on each rebuild.
+  void _ensureGridMetrics() {
+    if (identical(_metricsSource, _vm.items)) return;
+    _metricsSource = _vm.items;
+
+    var minAspectRatio = 16 / 9;
+    var anySubtitles = false;
     for (final item in _vm.items) {
       final isFolder = _vm.isNavigableFolder(item);
-      final itemAr = isFolder ? 16 / 9 : MediaCard.aspectRatioForType(item.type);
-      if (itemAr < minAr) {
-        minAr = itemAr;
-      }
+      final ratio = isFolder ? 16 / 9 : MediaCard.aspectRatioForType(item.type);
+      if (ratio < minAspectRatio) minAspectRatio = ratio;
+      anySubtitles = anySubtitles || _subtitleText(item, isFolder) != null;
     }
-    return minAr;
+    _minAspectRatio = minAspectRatio;
+    _anySubtitles = anySubtitles;
   }
 
   Widget _buildGrid() {
@@ -342,15 +351,25 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
                 horizontalPadding * 2 -
                 (crossAxisCount - 1) * spacing) /
             crossAxisCount;
-        final ar = _gridAspectRatio();
+        _ensureGridMetrics();
         final textScale = MediaQuery.textScalerOf(context).scale(1.0);
-        final hasSubtitles = _vm.items.any(
-          (i) => _subtitleText(i, _vm.isNavigableFolder(i)) != null,
-        );
-        final textHeight = (hasSubtitles ? 46.0 : 26.0) * textScale;
-        final childAspectRatio = cardWidth / (cardWidth / ar + textHeight);
+        final textHeight = (_anySubtitles ? 46.0 : 26.0) * textScale;
+        final childAspectRatio =
+            cardWidth / (cardWidth / _minAspectRatio + textHeight);
 
         final totalCount = _vm.items.length + (_vm.hasMore ? 1 : 0);
+
+        // Read once for the whole grid rather than per card on every rebuild.
+        final prefs = GetIt.instance<UserPreferences>();
+        final focusColor = Color(
+          prefs.get(UserPreferences.focusColor).colorValue,
+        );
+        final watchedBehavior = prefs.get(
+          UserPreferences.watchedIndicatorBehavior,
+        );
+        final cardFocusExpansion = prefs.get(
+          UserPreferences.cardFocusExpansion,
+        );
 
         return GridView.builder(
           controller: _scrollController,
@@ -378,15 +397,9 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
             }
             final item = _vm.items[index];
             final isFolder = _vm.isNavigableFolder(item);
-            final itemAr = isFolder ? 16 / 9 : MediaCard.aspectRatioForType(item.type);
-            final focusColor = Color(
-              GetIt.instance<UserPreferences>()
-                  .get(UserPreferences.focusColor)
-                  .colorValue,
-            );
-            final watchedBehavior = GetIt.instance<UserPreferences>().get(
-              UserPreferences.watchedIndicatorBehavior,
-            );
+            final itemAr = isFolder
+                ? 16 / 9
+                : MediaCard.aspectRatioForType(item.type);
 
             return MediaCard(
               title: _vm.getItemDisplayName(item),
@@ -397,9 +410,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
               itemType: isFolder ? 'Folder' : item.type,
               focusColor: focusColor,
               focusNode: _getGridItemFocusNode(index),
-              cardFocusExpansion: GetIt.instance<UserPreferences>().get(
-                UserPreferences.cardFocusExpansion,
-              ),
+              cardFocusExpansion: cardFocusExpansion,
               isPlayed: item.isPlayed,
               isFavorite: item.isFavorite,
               unplayedCount: item.unplayedItemCount,

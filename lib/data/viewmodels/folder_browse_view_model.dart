@@ -166,17 +166,6 @@ class FolderBrowseViewModel extends ChangeNotifier {
     _notify();
   }
 
-  Future<void> navigateTo(int breadcrumbIndex) async {
-    if (breadcrumbIndex < 0 || breadcrumbIndex >= _breadcrumbs.length) return;
-    final target = _breadcrumbs[breadcrumbIndex];
-    _breadcrumbs.removeRange(breadcrumbIndex + 1, _breadcrumbs.length);
-    await loadFolder(target.id);
-  }
-
-  Future<void> enterFolder(AggregatedItem item) async {
-    await loadFolder(item.id);
-  }
-
   Future<void> loadMore() async {
     if (_loadingMore || !hasMore) return;
     _loadingMore = true;
@@ -240,31 +229,12 @@ class FolderBrowseViewModel extends ChangeNotifier {
 
     final filtered = await _filterItemsForFolder(mapped);
 
-    final folders = <AggregatedItem>[];
-    final files = <AggregatedItem>[];
-    for (final item in filtered) {
-      if (isNavigableFolder(item)) {
-        folders.add(item);
-      } else {
-        files.add(item);
-      }
-    }
-    folders.sort(
-      (a, b) => getItemDisplayName(a)
-          .toLowerCase()
-          .compareTo(getItemDisplayName(b).toLowerCase()),
-    );
-    files.sort(
-      (a, b) => getItemDisplayName(a)
-          .toLowerCase()
-          .compareTo(getItemDisplayName(b).toLowerCase()),
-    );
-    final sorted = [...folders, ...files];
-
+    // The server orders directories first and each group by name, across the
+    // whole folder rather than a page at a time, so pages only ever append.
     if (startIndex == 0) {
-      _items = sorted;
+      _items = filtered;
     } else {
-      _items = [..._items, ...sorted];
+      _items = [..._items, ...filtered];
     }
   }
 
@@ -276,7 +246,7 @@ class FolderBrowseViewModel extends ChangeNotifier {
       return await _client.itemsApi.getItems(
         parentId: parentId,
         recursive: false,
-        sortBy: 'SortName',
+        sortBy: 'IsFolder,SortName',
         sortOrder: 'Ascending',
         startIndex: startIndex,
         limit: _pageSize,
@@ -285,7 +255,10 @@ class FolderBrowseViewModel extends ChangeNotifier {
         imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: true,
       );
-    } catch (_) {
+    } on DioException catch (e) {
+      // The retry only drops the total count, which some servers fault on, so
+      // a request the server rejected outright would just be rejected again.
+      if ((e.response?.statusCode ?? 0) < 500) rethrow;
       return await _client.itemsApi.getItems(
         parentId: parentId,
         recursive: false,
@@ -319,22 +292,34 @@ class FolderBrowseViewModel extends ChangeNotifier {
         type == 'BookSeries';
   }
 
+  /// The server's name for [item], except where that name was scraped for
+  /// something the folder isn't, in which case the folder on disk is closer.
   String getItemDisplayName(AggregatedItem item) {
-    final isFolder = isNavigableFolder(item);
+    if (!_isMisidentifiedDirectory(item)) return item.name;
+
     final rawPath = item.rawData['Path'] as String?;
-    if (isFolder && rawPath != null && rawPath.isNotEmpty) {
-      final normalized = rawPath.replaceAll('\\', '/');
-      final segments =
-          normalized.split('/').where((s) => s.isNotEmpty).toList();
-      if (segments.isNotEmpty) {
-        return segments.last;
-      }
+    if (rawPath != null && rawPath.isNotEmpty) {
+      final segments = rawPath
+          .replaceAll('\\', '/')
+          .split('/')
+          .where((s) => s.isNotEmpty);
+      if (segments.isNotEmpty) return segments.last;
     }
+
     final fileName = item.rawData['FileName'] as String?;
-    if (isFolder && fileName != null && fileName.isNotEmpty) {
-      return fileName;
-    }
+    if (fileName != null && fileName.isNotEmpty) return fileName;
+
     return item.name;
+  }
+
+  /// A scraped show carries a year and artwork. One that matched nothing but
+  /// still got typed as a show is almost always just a directory.
+  bool _isMisidentifiedDirectory(AggregatedItem item) {
+    const scrapedTypes = {'Series', 'Season', 'BoxSet', 'BookSeries'};
+    if (!scrapedTypes.contains(item.type)) return false;
+    if (item.productionYear != null) return false;
+    final imageTags = item.rawData['ImageTags'];
+    return imageTags is! Map || imageTags.isEmpty;
   }
 
   @override

@@ -424,29 +424,38 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     _moveFocusDown();
   }
 
+  /// A node can only take focus once its box exists and has been laid out.
+  /// Asking earlier throws out of the focus machinery.
+  bool _isReadyForFocus(FocusNode node) {
+    final render = node.context?.findRenderObject();
+    return render is RenderBox && render.attached && render.hasSize;
+  }
+
   void _moveFocusDown({int attempt = 0}) {
     if (!mounted) return;
     final scope = FocusScope.of(context);
+    // Directional traversal measures every candidate it walks, so one node
+    // still waiting on layout takes the whole call down. The manual paths below
+    // cover the same ground, so a failure here isn't worth surfacing.
     try {
       if (scope.focusInDirection(TraversalDirection.down)) {
         final primary = FocusManager.instance.primaryFocus;
         if (_isUsableOutsideToolbar(primary)) return;
       }
     } catch (_) {}
+
     final firstBelow = _findFirstFocusableBelowToolbar(scope);
-    if (firstBelow != null) {
-      try {
-        firstBelow.requestFocus();
-        return;
-      } catch (_) {}
+    if (firstBelow != null && _isReadyForFocus(firstBelow)) {
+      firstBelow.requestFocus();
+      return;
     }
     final fallback = widget.contentFocusNode;
     if (fallback != null && fallback.context != null) {
       final firstContent = _firstFocusableDescendant(fallback);
       if (firstContent != null) {
-        try {
+        if (_isReadyForFocus(firstContent)) {
           firstContent.requestFocus();
-        } catch (_) {}
+        }
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           final primary = FocusManager.instance.primaryFocus;
