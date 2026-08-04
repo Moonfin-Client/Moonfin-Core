@@ -7,7 +7,6 @@ import 'package:server_core/server_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/models/series_track_preference.dart';
 import '../../data/repositories/offline_repository.dart';
-import '../../util/subtitle_track_logic.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/audiobook_resume_service.dart';
@@ -400,43 +399,57 @@ void registerPlaybackModule() {
   _getIt.registerSingleton<PlayerBackend>(initialBackend);
 
   final manager = PlaybackManager();
-  manager.onSubtitleTrackChanged = (itemId, index) {
-    _getIt<UserPreferences>().setItemSubtitleStreamIndex(itemId, index);
-    final currentItem = manager.queueService.currentItem;
-    if (currentItem is AggregatedItem &&
-        currentItem.seriesId != null &&
-        currentItem.seriesId!.isNotEmpty) {
-      final rawStreams = currentItem.rawData['MediaStreams'] as List? ?? [];
-      final maps = rawStreams
+
+  // The streams of one kind belonging to whatever is playing, or null when
+  // that isn't an episode and so has no series to remember a choice for.
+  ({String seriesId, List<Map<String, dynamic>> streams})? seriesStreams(
+    String kind,
+  ) {
+    final item = manager.queueService.currentItem;
+    if (item is! AggregatedItem) return null;
+    final seriesId = item.seriesId;
+    if (seriesId == null || seriesId.isEmpty) return null;
+    final raw = item.rawData['MediaStreams'] as List? ?? const [];
+    return (
+      seriesId: seriesId,
+      streams: raw
           .whereType<Map>()
           .map((e) => e.cast<String, dynamic>())
-          .where((s) => (s['Type'] as String?)?.toLowerCase() == 'subtitle')
-          .toList();
-      final pref = createSeriesTrackPreferenceFromStream(
-        streams: maps,
-        selectedIndex: index,
-      );
-      _getIt<UserPreferences>().setSeriesSubtitlePreference(currentItem.seriesId!, pref);
-    }
+          .where((s) => (s['Type'] as String?)?.toLowerCase() == kind)
+          .toList(),
+    );
+  }
+
+  manager.onSubtitleTrackChanged = (itemId, index) {
+    _getIt<UserPreferences>().setItemSubtitleStreamIndex(itemId, index);
   };
   manager.onAudioTrackChanged = (itemId, index) {
     _getIt<UserPreferences>().setItemAudioStreamIndex(itemId, index);
-    final currentItem = manager.queueService.currentItem;
-    if (currentItem is AggregatedItem &&
-        currentItem.seriesId != null &&
-        currentItem.seriesId!.isNotEmpty) {
-      final rawStreams = currentItem.rawData['MediaStreams'] as List? ?? [];
-      final maps = rawStreams
-          .whereType<Map>()
-          .map((e) => e.cast<String, dynamic>())
-          .where((s) => (s['Type'] as String?)?.toLowerCase() == 'audio')
-          .toList();
-      final pref = createSeriesTrackPreferenceFromStream(
-        streams: maps,
-        selectedIndex: index,
-      );
-      _getIt<UserPreferences>().setSeriesAudioPreference(currentItem.seriesId!, pref);
-    }
+  };
+
+  // This choice carries to the next episode, so it takes the selected signal
+  // rather than the changed ones above, which also fire without the viewer.
+  manager.onSubtitleTrackSelected = (itemId, index) {
+    final series = seriesStreams('subtitle');
+    if (series == null) return;
+    final pref = createSeriesTrackPreferenceFromStream(
+      streams: series.streams,
+      selectedIndex: index,
+    );
+    // A track the item doesn't list, an external one added mid playback say,
+    // leaves nothing to recognise it by later, so the last choice stays.
+    if (pref.isEmpty) return;
+    _getIt<UserPreferences>().setSeriesSubtitlePreference(series.seriesId, pref);
+  };
+  manager.onAudioTrackSelected = (itemId, index) {
+    final series = seriesStreams('audio');
+    if (series == null) return;
+    final pref = createSeriesTrackPreferenceFromStream(
+      streams: series.streams,
+      selectedIndex: index,
+    );
+    if (pref.isEmpty) return;
+    _getIt<UserPreferences>().setSeriesAudioPreference(series.seriesId, pref);
   };
 
   manager.setBackend(initialBackend);
@@ -614,17 +627,16 @@ void registerPlaybackModule() {
       seriesId = currentItem.seriesId;
     }
 
-    if (seriesId != null && seriesId.isNotEmpty) {
-      final seriesSubPref = prefs.getSeriesSubtitlePreference(seriesId);
-      if (seriesSubPref.isNone) {
-        return -1;
-      } else if (seriesSubPref.isNotEmpty) {
-        final matchedIndex = matchSeriesTrackIndex(
-          streams: subtitleStreams,
-          pref: seriesSubPref,
-        );
-        if (matchedIndex != null) return matchedIndex;
-      }
+    final seriesSubPref = seriesId != null && seriesId.isNotEmpty
+        ? prefs.getSeriesSubtitlePreference(seriesId)
+        : SeriesTrackPreference.empty;
+    if (seriesSubPref.isNone) return -1;
+    if (seriesSubPref.isNotEmpty) {
+      final matchedIndex = matchSeriesTrackIndex(
+        streams: subtitleStreams,
+        pref: seriesSubPref,
+      );
+      if (matchedIndex != null) return matchedIndex;
     }
 
     final effectiveAudioIndex = computeEffectiveAudioIndex(
@@ -650,15 +662,13 @@ void registerPlaybackModule() {
         : prefs.get(UserPreferences.subtitleMode);
 
     var preferredLanguage = manager.lastExplicitSubtitleLanguage;
-    if (preferredLanguage == null && seriesId != null && seriesId.isNotEmpty) {
-      final seriesLanguage = prefs.getSeriesSubtitleLanguage(seriesId);
-      if (seriesLanguage == 'none') {
-        return -1;
-      } else if (seriesLanguage.isNotEmpty) {
-        preferredLanguage = seriesLanguage;
-        if (subtitleMode == SubtitleMode.none) {
-          subtitleMode = SubtitleMode.always;
-        }
+    // No track in this episode carries the remembered one, so fall back to its
+    // language and make sure subtitles are on to show it. A remembered track
+    // with no language tag has nothing to fall back to.
+    if (preferredLanguage == null && seriesSubPref.language.isNotEmpty) {
+      preferredLanguage = seriesSubPref.language;
+      if (subtitleMode == SubtitleMode.none) {
+        subtitleMode = SubtitleMode.always;
       }
     }
 
@@ -667,7 +677,7 @@ void registerPlaybackModule() {
 
     return computeEffectiveSubtitleIndex(
       subtitleStreams: subtitleStreams,
-      selectedSubtitleIndex: explicitIndex,
+      selectedSubtitleIndex: null,
       activePlaybackSubtitleIndex: null,
       subtitleMode: subtitleMode,
       preferredLanguage: preferredLanguage,

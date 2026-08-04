@@ -3590,7 +3590,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!mounted || !_subtitleActive) return;
     final idx = _manager.subtitleStreamIndex;
     if (idx == null || idx < 0) return;
-    unawaited(_manager.changeSubtitleTrack(idx));
+    unawaited(_manager.changeSubtitleTrack(idx, userInitiated: false));
     if (_subtitleReapplyRetryScheduled || _state.duration > Duration.zero) {
       return;
     }
@@ -3603,7 +3603,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
         final retryIdx = _manager.subtitleStreamIndex;
         if (retryIdx == null || retryIdx < 0) return;
-        await _manager.changeSubtitleTrack(retryIdx);
+        await _manager.changeSubtitleTrack(retryIdx, userInitiated: false);
       }),
     );
   }

@@ -123,6 +123,13 @@ class PlaybackManager implements AudioOwnable {
   void Function(String itemId, int? subtitleStreamIndex)? onSubtitleTrackChanged;
   void Function(String itemId, int? audioStreamIndex)? onAudioTrackChanged;
 
+  /// Fired only when the viewer picks a track, unlike the changed callbacks
+  /// above which also report the automatic pick for a new item and the reset
+  /// when one finishes. The index arrives raw, so -1 still reads as subtitles
+  /// off rather than as no choice at all.
+  void Function(String itemId, int subtitleStreamIndex)? onSubtitleTrackSelected;
+  void Function(String itemId, int audioStreamIndex)? onAudioTrackSelected;
+
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
@@ -1770,7 +1777,10 @@ class PlaybackManager implements AudioOwnable {
     }
   }
 
-  Future<void> changeAudioTrack(int streamIndex) => _withProgressPaused(() async {
+  Future<void> changeAudioTrack(
+    int streamIndex, {
+    bool userInitiated = true,
+  }) => _withProgressPaused(() async {
     _audioStreamIndex = streamIndex;
     _audioSelectionExplicit = true;
 
@@ -1778,6 +1788,7 @@ class PlaybackManager implements AudioOwnable {
     if (currentItem != null) {
       final itemId = MediaStreamResolver.extractItemId(currentItem);
       onAudioTrackChanged?.call(itemId, streamIndex >= 0 ? streamIndex : null);
+      if (userInitiated) onAudioTrackSelected?.call(itemId, streamIndex);
     }
 
     final streams = _currentMediaStreams;
@@ -1953,10 +1964,19 @@ class PlaybackManager implements AudioOwnable {
     _subtitleRendererMode = SubtitleRendererMode.native;
   }
 
-  Future<void> changeSubtitleTrack(int streamIndex) =>
-      _withProgressPaused(() => _changeSubtitleTrackInner(streamIndex));
+  /// Pass `userInitiated: false` when reapplying the track already playing, so
+  /// it isn't mistaken for the viewer choosing it.
+  Future<void> changeSubtitleTrack(
+    int streamIndex, {
+    bool userInitiated = true,
+  }) => _withProgressPaused(
+    () => _changeSubtitleTrackInner(streamIndex, userInitiated: userInitiated),
+  );
 
-  Future<void> _changeSubtitleTrackInner(int streamIndex) async {
+  Future<void> _changeSubtitleTrackInner(
+    int streamIndex, {
+    bool userInitiated = true,
+  }) async {
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
@@ -1965,6 +1985,7 @@ class PlaybackManager implements AudioOwnable {
     if (currentItem != null) {
       final itemId = MediaStreamResolver.extractItemId(currentItem);
       onSubtitleTrackChanged?.call(itemId, streamIndex >= 0 ? streamIndex : null);
+      if (userInitiated) onSubtitleTrackSelected?.call(itemId, streamIndex);
     }
 
     _subtitleSelectionExplicit = streamIndex >= 0;
@@ -2069,6 +2090,15 @@ class PlaybackManager implements AudioOwnable {
     _subtitleStreamIndex = -1;
     _lastExplicitSubtitleEnabled = false;
     _lastExplicitSubtitleLanguage = null;
+
+    final currentItem = queueService.currentItem;
+    if (currentItem != null) {
+      onSubtitleTrackSelected?.call(
+        MediaStreamResolver.extractItemId(currentItem),
+        -1,
+      );
+    }
+
     await _resetSubtitleRendererMode();
     if (previousWasBurned || (!_isOfflinePlayback &&
         !(_backend?.supportsRuntimeTrackSelection ?? true))) {

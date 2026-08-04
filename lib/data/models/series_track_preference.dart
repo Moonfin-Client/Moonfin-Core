@@ -4,27 +4,27 @@ class SeriesTrackPreference {
   final String language;
   final String title;
   final int relativeIndex;
-  final int? streamIndex;
 
   const SeriesTrackPreference({
     required this.language,
     this.title = '',
     this.relativeIndex = 0,
-    this.streamIndex,
   });
 
   static const empty = SeriesTrackPreference(language: '');
   static const none = SeriesTrackPreference(language: 'none');
 
   bool get isNone => language.toLowerCase() == 'none';
-  bool get isEmpty => language.isEmpty;
-  bool get isNotEmpty => language.isNotEmpty;
+
+  /// Nothing to match a track on. Plenty of tracks carry no language tag,
+  /// forced and SDH ones especially, so a title alone still counts.
+  bool get isEmpty => language.isEmpty && title.isEmpty;
+  bool get isNotEmpty => !isEmpty;
 
   Map<String, dynamic> toJson() => {
         'language': language,
         'title': title,
         'relativeIndex': relativeIndex,
-        if (streamIndex != null) 'streamIndex': streamIndex,
       };
 
   factory SeriesTrackPreference.fromJson(Map<String, dynamic> json) {
@@ -32,7 +32,6 @@ class SeriesTrackPreference {
       language: json['language'] as String? ?? '',
       title: json['title'] as String? ?? '',
       relativeIndex: json['relativeIndex'] as int? ?? 0,
-      streamIndex: json['streamIndex'] as int?,
     );
   }
 
@@ -57,5 +56,6 @@ class SeriesTrackPreference {
 
   @override
   String toString() =>
-      'SeriesTrackPreference(language: $language, title: $title, relativeIndex: $relativeIndex, streamIndex: $streamIndex)';
+      'SeriesTrackPreference(language: $language, title: $title, '
+      'relativeIndex: $relativeIndex)';
 }

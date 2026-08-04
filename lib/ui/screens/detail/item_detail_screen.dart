@@ -38,7 +38,6 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
-import '../../../util/subtitle_track_logic.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
@@ -6929,7 +6928,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       activeAudioLanguage = activeAudioStream['Language'] as String?;
     }
 
-    if (_selectedSubtitleIndex != null) return _selectedSubtitleIndex;
+    // Only for the item on screen. Callers naming a different episode want it
+    // resolved against that episode's own streams, where an index picked here
+    // means nothing.
+    if (item == null && _selectedSubtitleIndex != null) {
+      return _selectedSubtitleIndex;
+    }
 
     final targetItem = item ?? widget.viewModel.item;
     var preferredLanguage = prefs.get(UserPreferences.defaultSubtitleLanguage);

@@ -2544,14 +2544,6 @@ class UserPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getSeriesSubtitleLanguage(String seriesId) {
-    return getSeriesSubtitlePreference(seriesId).language;
-  }
-
-  Future<void> setSeriesSubtitleLanguage(String seriesId, String language) async {
-    await setSeriesSubtitlePreference(seriesId, SeriesTrackPreference(language: language));
-  }
-
   int getItemSubtitleStreamIndex(String itemId) {
     final pref = Preference<int>(
       key: 'pref_item_subtitle_index_$itemId',

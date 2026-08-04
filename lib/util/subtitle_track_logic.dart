@@ -322,6 +322,23 @@ int? mapSubtitleResultToStreamIndex(
   return null;
 }
 
+/// Leading track numbers vary between files, so they are dropped before two
+/// titles are compared.
+final _trackNumberPrefix = RegExp(r'^\d+\s*-\s*');
+
+String _normalizedTitle(String raw) =>
+    raw.replaceAll(_trackNumberPrefix, '').trim().toLowerCase();
+
+String _normalizedStreamTitle(Map<String, dynamic> stream) => _normalizedTitle(
+  (stream['Title'] ?? stream['DisplayTitle'] ?? stream['Name']) as String? ?? '',
+);
+
+/// The stream in [streams] that best answers a remembered choice, or null when
+/// none of them can be it.
+///
+/// The title comes first because it survives files listing their tracks in a
+/// different order, then the position among same-language tracks, then a looser
+/// title match for releases that word the same track slightly differently.
 int? matchSeriesTrackIndex({
   required List<Map<String, dynamic>> streams,
   required SeriesTrackPreference pref,
@@ -329,56 +346,59 @@ int? matchSeriesTrackIndex({
   if (pref.isEmpty) return null;
   if (pref.isNone) return -1;
 
-  final matchingStreams = <Map<String, dynamic>>[];
-  for (final stream in streams) {
-    if (stream['Index'] == null) continue;
-    final lang = stream['Language'] as String? ?? '';
-    final normPref = normalizeLanguage(pref.language);
-    final iso3Pref = toIso3Language(normPref);
+  final targetTitle = _normalizedTitle(pref.title);
 
-    if (languageMatchesPreferred(lang, normPref, iso3Pref)) {
-      matchingStreams.add(stream);
-    }
+  // An untagged track leaves only its title to go on. Falling back to position
+  // there would hand back some unrelated track, so it matches or it doesn't.
+  if (pref.language.isEmpty) {
+    final candidates = streams.where((s) => s['Index'] != null);
+    return _titleMatch(candidates, targetTitle, loose: false) ??
+        _titleMatch(candidates, targetTitle);
   }
 
+  final normPref = normalizeLanguage(pref.language);
+  final iso3Pref = toIso3Language(normPref);
+  final matchingStreams = streams
+      .where((s) => s['Index'] != null)
+      .where(
+        (s) => languageMatchesPreferred(
+          s['Language'] as String? ?? '',
+          normPref,
+          iso3Pref,
+        ),
+      )
+      .toList();
   if (matchingStreams.isEmpty) return null;
 
-  // 1. Try exact title match first (e.g., "Signs & Songs" or "SDH")
-  if (pref.title.trim().isNotEmpty) {
-    final targetTitle = pref.title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim().toLowerCase();
-    for (final stream in matchingStreams) {
-      final streamTitle = ((stream['Title'] ?? stream['DisplayTitle'] ?? stream['Name']) as String? ?? '')
-          .replaceAll(RegExp(r'^\d+\s*-\s*'), '')
-          .trim()
-          .toLowerCase();
-      if (streamTitle.isNotEmpty && streamTitle == targetTitle) {
-        return stream['Index'] as int?;
-      }
-    }
-  }
+  final exact = _titleMatch(matchingStreams, targetTitle, loose: false);
+  if (exact != null) return exact;
 
-  // 2. Try relative index match (N-th track of that language in container order)
   if (pref.relativeIndex >= 0 && pref.relativeIndex < matchingStreams.length) {
     return matchingStreams[pref.relativeIndex]['Index'] as int?;
   }
 
-  // 3. Fallback to substring title match
-  if (pref.title.trim().isNotEmpty) {
-    final targetTitle = pref.title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim().toLowerCase();
-    for (final stream in matchingStreams) {
-      final streamTitle = ((stream['Title'] ?? stream['DisplayTitle'] ?? stream['Name']) as String? ?? '')
-          .replaceAll(RegExp(r'^\d+\s*-\s*'), '')
-          .trim()
-          .toLowerCase();
-      if (streamTitle.isNotEmpty &&
-          (streamTitle.contains(targetTitle) || targetTitle.contains(streamTitle))) {
-        return stream['Index'] as int?;
-      }
-    }
-  }
+  return _titleMatch(matchingStreams, targetTitle) ??
+      matchingStreams.first['Index'] as int?;
+}
 
-  // 4. Fallback to first matching stream of that language
-  return matchingStreams.first['Index'] as int?;
+/// The first stream whose title reads as [targetTitle], or null. A [loose]
+/// match also accepts one title containing the other, for releases that word
+/// the same track slightly differently.
+int? _titleMatch(
+  Iterable<Map<String, dynamic>> streams,
+  String targetTitle, {
+  bool loose = true,
+}) {
+  if (targetTitle.isEmpty) return null;
+  for (final stream in streams) {
+    final streamTitle = _normalizedStreamTitle(stream);
+    if (streamTitle.isEmpty) continue;
+    final hit = loose
+        ? streamTitle.contains(targetTitle) || targetTitle.contains(streamTitle)
+        : streamTitle == targetTitle;
+    if (hit) return stream['Index'] as int?;
+  }
+  return null;
 }
 
 SeriesTrackPreference createSeriesTrackPreferenceFromStream({
@@ -396,8 +416,7 @@ SeriesTrackPreference createSeriesTrackPreferenceFromStream({
   if (selectedStream.isEmpty) return SeriesTrackPreference.empty;
 
   final language = selectedStream['Language'] as String? ?? '';
-  String title = ((selectedStream['Title'] ?? selectedStream['DisplayTitle'] ?? selectedStream['Name']) as String? ?? '').trim();
-  title = title.replaceAll(RegExp(r'^\d+\s*-\s*'), '').trim();
+  final title = _normalizedStreamTitle(selectedStream);
 
   int relativeIndex = 0;
   final normLang = normalizeLanguage(language);
@@ -415,6 +434,5 @@ SeriesTrackPreference createSeriesTrackPreferenceFromStream({
     language: language,
     title: title,
     relativeIndex: relativeIndex,
-    streamIndex: selectedIndex,
   );
 }
