@@ -260,6 +260,32 @@ void main() {
       },
     );
 
+    test('a device with neither DoVi nor HDR10 excludes both profile 8 range '
+        'types, since their base layers render as HDR10', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        supportsHevcMain10: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'hevc');
+
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10'));
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+    });
+
+    test('an HDR10 device without DoVi keeps DoVi HDR10+ direct-playable via '
+        'the base layer', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        supportsHevcMain10: true,
+        supportsHevcHdr10: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'hevc');
+
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+    });
+
     test('excludes DoVi HDR10+ when known buggy model flag is set', () {
       final profile = DeviceProfileBuilder.build(
         supportsHevc: true,
@@ -887,9 +913,11 @@ void main() {
   });
 
   group('KnownDefects model mapping', () {
-    test('matches additional Fire TV models for DoVi HDR10+ bug', () {
+    test('matches the known MediaTek Fire TV models for the DoVi HDR10+ bug '
+        'regardless of case', () {
       expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('AFTKRT'), isTrue);
-      expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('aftmm'), isFalse);
+      expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('aftmm'), isTrue);
+      expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('AFTSSS'), isFalse);
     });
   });
 

@@ -1299,7 +1299,11 @@ class DeviceProfileBuilder {
         unsupportedRangeTypesHevc.add('DOVI_WITH_SDR');
         unsupportedRangeTypesHevc.add('DOVI_WITH_HLG');
         if (!supportsHevcHdr10) {
+          // Without Dolby Vision the base layer is what renders, and these
+          // profile 8 base layers are HDR10 (the HDR10+ metadata degrades to
+          // HDR10 on its own), so both need HDR10 rendering to direct play.
           unsupportedRangeTypesHevc.add('DOVI_WITH_HDR10');
+          unsupportedRangeTypesHevc.add('DOVI_WITH_HDR10_PLUS');
         }
       }
     }

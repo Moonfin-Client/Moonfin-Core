@@ -5,9 +5,10 @@ class KnownDefects {
   const KnownDefects._();
 
   static const Set<String> modelsWithDoViHdr10PlusBug = <String>{
-    'AFTKA',
-    'AFTKM',
-    'AFTKRT',
+    'AFTKA', // Amazon Fire TV 4K Max (1st Gen)
+    'AFTKM', // Amazon Fire TV 4K (2nd Gen)
+    'AFTKRT', // Amazon Fire TV 4K Max (2nd Gen)
+    'AFTMM', // Amazon Fire TV 4K (1st Gen)
     'BRAVIA 4K VH22',
   };
 

@@ -8671,13 +8671,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Controls whether Dolby Vision profile 7 enhancement-layer streams should direct play.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'Auto (AFTKRT enabled)';
+  String get settingsAutoAftkrtEnabled => 'Auto';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Enabled on this device';
+  String get settingsEnabledOnThisDevice => 'Enabled';
 
   @override
-  String get settingsDisabledPreferTranscode => 'Disabled (prefer transcode)';
+  String get settingsDisabledPreferTranscode => 'Off';
 
   @override
   String get settingsResumeRewindDescription =>

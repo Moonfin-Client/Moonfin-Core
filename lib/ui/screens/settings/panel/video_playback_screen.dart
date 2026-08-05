@@ -189,7 +189,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                     DolbyVisionProfile7DirectPlayBehavior.auto =>
                       l10n.settingsAutoAftkrtEnabled,
                     DolbyVisionProfile7DirectPlayBehavior.enabled =>
-                      l10n.supportedOnThisDevice,
+                      l10n.settingsEnabledOnThisDevice,
                     DolbyVisionProfile7DirectPlayBehavior.disabled =>
                       l10n.settingsDisabledPreferTranscode,
                   },

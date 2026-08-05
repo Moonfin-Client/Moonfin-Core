@@ -15565,19 +15565,19 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAutoAftkrtEnabled.
   ///
   /// In en, this message translates to:
-  /// **'Auto (AFTKRT enabled)'**
+  /// **'Auto'**
   String get settingsAutoAftkrtEnabled;
 
   /// No description provided for @settingsEnabledOnThisDevice.
   ///
   /// In en, this message translates to:
-  /// **'Enabled on this device'**
+  /// **'Enabled'**
   String get settingsEnabledOnThisDevice;
 
   /// No description provided for @settingsDisabledPreferTranscode.
   ///
   /// In en, this message translates to:
-  /// **'Disabled (prefer transcode)'**
+  /// **'Off'**
   String get settingsDisabledPreferTranscode;
 
   /// No description provided for @settingsResumeRewindDescription.
