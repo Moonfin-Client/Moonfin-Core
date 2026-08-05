@@ -43,6 +43,11 @@ data class DoviCompatReport(
     val blockAdditionsRead: Int,
     /** Every NAL type the walker found, as "32x1,33x1,62x4,63x18". */
     val nalCensus: String,
+    /**
+     * How the container framed the samples: "wrapped" or "plain", or
+     * "unknown" before the first sample.
+     */
+    val sampleLayout: String,
     val bytesIn: Long,
     val bytesOut: Long,
     /** The track format before and after the rewrite. */
@@ -248,6 +253,7 @@ private class DoviCompatTrackOutput(
     private var bytesIn = 0L
     private var bytesOut = 0L
     private val nalCounts = IntArray(64)
+    private var sampleLayout = "unknown"
     private var emittedFormat: Format? = null
     private var nextProgressReport = 10
 
@@ -271,6 +277,7 @@ private class DoviCompatTrackOutput(
                 enhancementUnitsDropped = enhancementUnitsDropped,
                 blockAdditionsRead = blockAdditionsRead,
                 nalCensus = describeNalCensus(),
+                sampleLayout = sampleLayout,
                 bytesIn = bytesIn,
                 bytesOut = bytesOut,
                 formatSummary = describeFormats(),
@@ -305,6 +312,7 @@ private class DoviCompatTrackOutput(
     private var pendingRpu = ByteArray(0)
     private var pendingRpuLength = 0
     private var scratch = ByteArray(SCRATCH_BYTES)
+    private val lengthPrefix = ByteArray(4)
     private var filtered = ByteArray(INITIAL_BUFFER_BYTES)
     private val forwardArray = ParsableByteArray()
 
@@ -498,7 +506,27 @@ private class DoviCompatTrackOutput(
             return
         }
 
-        var filteredLength = filterSample(pending, start, end)
+        // A Matroska track that declares a block addition mapping, which every
+        // Dolby Vision track does, wraps each sample as a four byte length,
+        // then the coded sample, then anything the block additions carried.
+        // Only the middle holds NAL units, and the length has to be restated
+        // once the filter has shortened it.
+        val wrapped = (flags and C.BUFFER_FLAG_HAS_SUPPLEMENTAL_DATA) != 0
+        sampleLayout = if (wrapped) "wrapped" else "plain"
+        var dataStart = start
+        var dataEnd = end
+        if (wrapped) {
+            val declared = if (end - start >= 4) readWrappedLength(pending, start) else -1
+            if (declared < 0 || start + 4 + declared > end) {
+                disarm("the wrapped sample length did not fit (declared $declared of $size)")
+                super.sampleMetadata(timeUs, flags, size, offset, cryptoData)
+                return
+            }
+            dataStart = start + 4
+            dataEnd = dataStart + declared
+        }
+
+        var filteredLength = filterSample(pending, dataStart, dataEnd)
 
         // A dual layer MKV carries its RPU in a block addition rather than in
         // band, so when the sample itself had none the converted one joins at
@@ -519,7 +547,7 @@ private class DoviCompatTrackOutput(
         }
         pendingRpuLength = 0
         samplesFiltered++
-        bytesIn += (end - start).toLong()
+        bytesIn += (dataEnd - dataStart).toLong()
         bytesOut += filteredLength.toLong()
 
         if (!formatDecided) {
@@ -538,18 +566,49 @@ private class DoviCompatTrackOutput(
             report(reason = "progress")
         }
 
+        var forwardedLength = filteredLength
+        if (wrapped) {
+            // Restate the length so it matches the filtered sample, otherwise
+            // the reader works out a negative supplemental size from it.
+            writeWrappedLength(lengthPrefix, filteredLength)
+            forwardArray.reset(lengthPrefix, 4)
+            super.sampleData(forwardArray, 4, TrackOutput.SAMPLE_DATA_PART_SUPPLEMENTAL)
+            forwardedLength += 4
+        }
+        forwardArray.reset(filtered, filteredLength)
+        super.sampleData(forwardArray, filteredLength, 0)
+        val trailing = end - dataEnd
+        if (trailing > 0) {
+            forwardArray.reset(pending, end)
+            forwardArray.setPosition(dataEnd)
+            super.sampleData(forwardArray, trailing, TrackOutput.SAMPLE_DATA_PART_SUPPLEMENTAL)
+            forwardedLength += trailing
+        }
+
         // Offsets count back from the write head, so dropping everything up to
         // the just-consumed slice keeps later slices addressable while the
-        // buffer stays bounded.
+        // buffer stays bounded. This has to wait until the slice has been
+        // forwarded, since the copy slides later bytes down over it.
         val remaining = pendingLength - end
         if (remaining > 0) {
             System.arraycopy(pending, end, pending, 0, remaining)
         }
         pendingLength = remaining
 
-        forwardArray.reset(filtered, filteredLength)
-        super.sampleData(forwardArray, filteredLength, 0)
-        super.sampleMetadata(timeUs, flags, filteredLength, 0, null)
+        super.sampleMetadata(timeUs, flags, forwardedLength, 0, null)
+    }
+
+    private fun readWrappedLength(data: ByteArray, position: Int): Int =
+        ((data[position].toInt() and 0xFF) shl 24) or
+            ((data[position + 1].toInt() and 0xFF) shl 16) or
+            ((data[position + 2].toInt() and 0xFF) shl 8) or
+            (data[position + 3].toInt() and 0xFF)
+
+    private fun writeWrappedLength(target: ByteArray, value: Int) {
+        target[0] = (value shr 24).toByte()
+        target[1] = (value shr 16).toByte()
+        target[2] = (value shr 8).toByte()
+        target[3] = value.toByte()
     }
 
     fun resetSampleState() {

@@ -1495,6 +1495,7 @@ class Media3VideoView(
                 "enhancementUnitsDropped" to report.enhancementUnitsDropped,
                 "blockAdditionsRead" to report.blockAdditionsRead,
                 "nalCensus" to report.nalCensus,
+                "sampleLayout" to report.sampleLayout,
                 "bytesIn" to report.bytesIn,
                 "bytesOut" to report.bytesOut,
                 "formatSummary" to report.formatSummary,

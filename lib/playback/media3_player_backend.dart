@@ -436,7 +436,8 @@ class Media3PlayerBackend extends PlayerBackend {
       'Media3: $headline${detail == null ? '' : ' ($detail)'}. '
       'Codecs ${map['codecs']}, RPU source ${map['rpuSource']}, '
       'converter ${map['converterStatus']}. $counts. '
-      'NAL types ${map['nalCensus']}. Format ${map['formatSummary']}',
+      'NAL types ${map['nalCensus']}, layout ${map['sampleLayout']}. '
+      'Format ${map['formatSummary']}',
       level: reason == 'converterFailed' || reason == 'disarmed'
           ? LogLevel.warning
           : LogLevel.info,
