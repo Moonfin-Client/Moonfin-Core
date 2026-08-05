@@ -788,6 +788,7 @@ class Media3VideoView(
     private var originalPreferredDisplayModeId: Int? = null
     private var activePreferredDisplayModeId: Int? = null
     private var detectedFrameRate: Float? = null
+    private var sourceFrameRateHint: Float? = null
     private var audioOffloadDisabled = false
     private var audioOffloadRetryAttemptedForCurrentSource = false
     private var sessionTunnelingDisabled = Media3Bridge.sessionTunnelingDisabledEnabled()
@@ -2106,6 +2107,12 @@ class Media3VideoView(
 
         restorePreferredDisplayMode()
         detectedFrameRate = null
+        // Most containers, mkv and ts among them, come out of the extractor
+        // with no frame rate on the Format, so the rate the server reported
+        // rides along as the answer of last resort.
+        sourceFrameRateHint = (args["videoFrameRate"] as? Number)
+            ?.toFloat()
+            ?.takeIf { it.isFinite() && it > 0f }
 
         val nextMediaType = args["mediaType"]?.toString()?.lowercase() ?: "video"
         val isAudio = nextMediaType == "audio"
@@ -2435,10 +2442,21 @@ class Media3VideoView(
         }
 
         runCatching {
-            targetSurface.setFrameRate(
-                frameRate,
-                Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE,
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Without this the hint means switch only when seamless, and a
+                // television mode change rarely is, so the system quietly drops
+                // it. Saying always lets the non seamless switch happen.
+                targetSurface.setFrameRate(
+                    frameRate,
+                    Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE,
+                    Surface.CHANGE_FRAME_RATE_ALWAYS,
+                )
+            } else {
+                targetSurface.setFrameRate(
+                    frameRate,
+                    Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE,
+                )
+            }
         }
     }
 
@@ -2475,7 +2493,7 @@ class Media3VideoView(
                 }
             }
         }
-        return null
+        return sourceFrameRateHint
     }
 
     private fun emitFrameRateState(

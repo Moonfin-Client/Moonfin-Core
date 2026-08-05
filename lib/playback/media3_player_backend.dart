@@ -768,6 +768,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'container': container,
       'videoRangeType': videoRangeType,
       'mediaType': mediaType,
+      'videoFrameRate': (payload['videoFrameRate'] as num?)?.toDouble(),
       'isLive': payload['isLive'] == true,
       'normalizationGainDb': normalizationGainDb,
       'skipSilenceEnabled': _skipSilenceEnabled,

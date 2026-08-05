@@ -318,6 +318,16 @@ class PlaybackManager implements AudioOwnable {
         .where((s) => s['Type'] == 'Video')
         .firstOrNull;
 
+    // Some servers report only the average, so it stands in when the real
+    // rate is missing.
+    final realRate = videoStream?['RealFrameRate'];
+    final averageRate = videoStream?['AverageFrameRate'];
+    final videoFrameRate = realRate is num
+        ? realRate.toDouble()
+        : averageRate is num
+        ? averageRate.toDouble()
+        : null;
+
     final audioStreamLang = _extractLanguage(audioStream);
     final subtitleStreamLang = _extractLanguage(subtitleStream);
 
@@ -354,8 +364,7 @@ class PlaybackManager implements AudioOwnable {
         'preferredTextLanguage': subtitleStreamLang,
       if (videoStream != null && videoStream['DvProfile'] is int)
         'videoDvProfile': videoStream['DvProfile'],
-      if (videoStream != null && videoStream['RealFrameRate'] is num)
-        'videoFrameRate': (videoStream['RealFrameRate'] as num).toDouble(),
+      if (videoFrameRate != null) 'videoFrameRate': videoFrameRate,
       if (videoStream != null && videoStream['Width'] is int)
         'videoWidth': videoStream['Width'],
       if (videoStream != null && videoStream['Height'] is int)
