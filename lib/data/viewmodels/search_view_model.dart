@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/current_app_localizations.dart';
+import '../utils/media_deduplication_utils.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
@@ -232,9 +233,11 @@ class SearchViewModel extends ChangeNotifier {
       }
       final matched = allItems
           .where((item) => group.itemTypes.contains(item.type))
+          .toList();
+      final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(matched)
           .take(_resultLimit)
           .toList();
-      grouped.add(group.copyWith(items: matched));
+      grouped.add(group.copyWith(items: deduplicated));
     }
 
     return grouped;

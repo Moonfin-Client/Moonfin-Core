@@ -24,6 +24,8 @@ import '../../../data/models/download_quality.dart';
 import '../../../data/database/offline_database.dart';
 import '../../../data/models/lyrics.dart';
 import '../../../data/repositories/offline_repository.dart';
+import '../../../data/repositories/user_views_repository.dart';
+import '../../../data/utils/media_deduplication_utils.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
@@ -8878,17 +8880,45 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     BuildContext context,
     List<Map<String, dynamic>> sources,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final currentIdx = widget.selectedMediaSourceId != null
         ? sources.indexWhere((s) => s['Id'] == widget.selectedMediaSourceId)
         : 0;
+
+    bool hasMultipleLibs = false;
+    final item = viewModel.item;
+    if (GetIt.instance.isRegistered<UserViewsRepository>() && item != null) {
+      final viewsRepo = GetIt.instance<UserViewsRepository>();
+      final views = await viewsRepo.getUserViews();
+      final type = item.type;
+      final targetCollectionType = switch (type) {
+        'Movie' => 'movies',
+        'Series' || 'Season' || 'Episode' => 'tvshows',
+        'Audio' || 'MusicAlbum' => 'music',
+        'Book' || 'AudioBook' => 'books',
+        _ => null,
+      };
+      if (targetCollectionType != null) {
+        hasMultipleLibs =
+            views.where((v) => v.collectionType == targetCollectionType).length > 1;
+      }
+    }
+    final libraryName = item?.rawData['LibraryName'] as String? ??
+        item?.rawData['CollectionName'] as String?;
+
+    if (!mounted) return;
+
     final result = await TrackSelectorDialog.show(
       context,
-      title: AppLocalizations.of(context).selectVersion,
+      title: l10n.selectVersion,
       options: sources.asMap().entries.map((entry) {
         final s = entry.value;
-        final name =
-            s['Name'] as String? ??
-            AppLocalizations.of(context).versionNumber(entry.key + 1);
+        final rawName = s['Name'] as String? ?? l10n.versionNumber(entry.key + 1);
+        final name = MediaDeduplicationUtils.formatVersionLabel(
+          libraryName: libraryName,
+          versionLabel: rawName,
+          hasMultipleLibrariesForType: hasMultipleLibs,
+        );
         final bitrate = s['Bitrate'] as int?;
         final container = s['Container'] as String?;
         final subtitle = [

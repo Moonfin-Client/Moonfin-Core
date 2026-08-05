@@ -17,6 +17,7 @@ import '../services/media_server_client_factory.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import '../utils/media_deduplication_utils.dart';
 import '../utils/next_up_cutoff.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
@@ -216,11 +217,12 @@ class MultiServerRepository {
     );
 
     final all = results.expand((e) => e).toList()..sort(_compareByLastPlayed);
+    final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
 
     return HomeRow(
       id: 'resume',
       title: _l10n.continueWatching,
-      items: all.take(limit).toList(),
+      items: deduplicated.take(limit).toList(),
       rowType: HomeRowType.resume,
     );
   }
@@ -279,11 +281,12 @@ class MultiServerRepository {
     );
 
     final all = results.expand((e) => e).toList()..sort(_compareByLastPlayed);
+    final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
 
     return HomeRow(
       id: 'nextUp',
       title: _l10n.nextUp,
-      items: all.take(limit).toList(),
+      items: deduplicated.take(limit).toList(),
       rowType: HomeRowType.nextUp,
     );
   }
@@ -337,7 +340,8 @@ class MultiServerRepository {
       _sortAggregatedItems(all, sortBy: sortBy, sortOrder: sortOrder);
     }
 
-    final takenItems = all.take(limit).toList();
+    final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
+    final takenItems = deduplicated.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
       return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
     });
@@ -875,7 +879,8 @@ class MultiServerRepository {
       sortOrder: sortOrder,
     );
 
-    final takenItems = all.take(limit).toList();
+    final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
+    final takenItems = deduplicated.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
       return sum + (_rowTotals['${id}_${session.server.id}'] ?? 0);
     });
