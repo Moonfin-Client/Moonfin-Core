@@ -8949,6 +8949,8 @@ List<Map<String, dynamic>> mediaStreamsForItem(
 bool _allowDolbyVisionProfile7ElDirectPlay(UserPreferences prefs) {
   return KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
     behavior: prefs.get(UserPreferences.dolbyVisionProfile7DirectPlayBehavior),
+    hasHardwareDolbyVisionDecoder: PlatformDetection.supportsHevcDolbyVision,
+    hasDoviCompat: PlatformDetection.isAndroid,
   );
 }
 
