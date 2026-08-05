@@ -15904,16 +15904,16 @@ abstract class AppLocalizations {
   /// **'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.'**
   String get enableTunnelingSubtitle;
 
-  /// Setting title: play DV P7 as HDR10 HEVC on non-DV devices
+  /// Setting title: force DV P7 streams to the HDR10 strip path
   ///
   /// In en, this message translates to:
-  /// **'Map Dolby Vision profile 7 to HEVC'**
+  /// **'Always play Dolby Vision profile 7 as HDR10'**
   String get mapDolbyVisionP7Title;
 
-  /// Setting subtitle for DV P7 to HEVC mapping
+  /// Setting subtitle for forcing the DV P7 strip path
   ///
   /// In en, this message translates to:
-  /// **'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.'**
+  /// **'Skip the profile 8 conversion and strip Dolby Vision profile 7 streams to HDR10-compatible HEVC. Use this if converted streams look wrong.'**
   String get mapDolbyVisionP7Subtitle;
 
   /// Setting title: apply colours/positioning from the subtitle track

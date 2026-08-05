@@ -88,4 +88,115 @@ void main() {
       expect(payload['downmixToStereo'], isTrue);
     });
   });
+
+  group('Media3 DoVi compat mode', () {
+    test(
+      'disabled behavior turns the chain off regardless of hardware',
+      () async {
+        final prefs = await _prefs();
+        await prefs.set(
+          UserPreferences.dolbyVisionProfile7DirectPlayBehavior,
+          DolbyVisionProfile7DirectPlayBehavior.disabled,
+        );
+
+        expect(
+          Media3PlayerBackend.doviCompatMode(
+            prefs,
+            supportsP7: true,
+            supportsP8: true,
+            displaySupportsDolbyVision: true,
+          ),
+          Media3DoviCompatMode.off,
+        );
+      },
+    );
+
+    test('a profile 7 decoder plays natively, untouched', () async {
+      final prefs = await _prefs();
+
+      expect(
+        Media3PlayerBackend.doviCompatMode(
+          prefs,
+          supportsP7: true,
+          supportsP8: true,
+          displaySupportsDolbyVision: true,
+        ),
+        Media3DoviCompatMode.native,
+      );
+    });
+
+    test('a profile 8 decoder with a DoVi display converts', () async {
+      final prefs = await _prefs();
+
+      expect(
+        Media3PlayerBackend.doviCompatMode(
+          prefs,
+          supportsP7: false,
+          supportsP8: true,
+          displaySupportsDolbyVision: true,
+        ),
+        Media3DoviCompatMode.convert,
+      );
+    });
+
+    test('no DoVi display strips to HDR10 even with a P8 decoder', () async {
+      final prefs = await _prefs();
+
+      expect(
+        Media3PlayerBackend.doviCompatMode(
+          prefs,
+          supportsP7: false,
+          supportsP8: true,
+          displaySupportsDolbyVision: false,
+        ),
+        Media3DoviCompatMode.strip,
+      );
+    });
+
+    test(
+      'the strip pref forces strip over an available convert path',
+      () async {
+        final prefs = await _prefs();
+        await prefs.set(
+          UserPreferences.media3MapDolbyVisionProfile7ToHevc,
+          true,
+        );
+
+        expect(
+          Media3PlayerBackend.doviCompatMode(
+            prefs,
+            supportsP7: false,
+            supportsP8: true,
+            displaySupportsDolbyVision: true,
+          ),
+          Media3DoviCompatMode.strip,
+        );
+      },
+    );
+
+    test('wire names match the Kotlin enum values', () {
+      expect(Media3DoviCompatMode.values.map((m) => m.name).toList(), [
+        'native',
+        'convert',
+        'strip',
+        'off',
+      ]);
+    });
+  });
+
+  group('Media3 direct play containers', () {
+    test('drops the containers media3 has no demuxer for', () {
+      final containers = media3DirectPlayVideoContainers.split(',');
+
+      expect(containers, isNot(contains('asf')));
+      expect(containers, isNot(contains('wmv')));
+      expect(containers, isNot(contains('ogm')));
+      expect(containers, isNot(contains('ogv')));
+      expect(containers, contains('avi'));
+      expect(containers, contains('flv'));
+      expect(containers, contains('mkv'));
+      expect(containers, contains('mp4'));
+      expect(containers, contains('ts'));
+    });
+  });
 }

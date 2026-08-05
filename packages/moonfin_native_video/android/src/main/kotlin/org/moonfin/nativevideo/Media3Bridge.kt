@@ -57,7 +57,7 @@ object Media3Bridge {
     private var sessionTunnelingDisabled = false
 
     @Volatile
-    private var mapDolbyVisionProfile7ToHevc = false
+    private var doviCompatMode = "off"
 
     @Volatile
     private var allowExternalAudioEffects = true
@@ -182,7 +182,7 @@ object Media3Bridge {
 
     fun sessionTunnelingDisabledEnabled(): Boolean = sessionTunnelingDisabled
 
-    fun mapDolbyVisionProfile7ToHevcEnabled(): Boolean = mapDolbyVisionProfile7ToHevc
+    fun doviCompatMode(): String = doviCompatMode
 
     fun allowExternalAudioEffectsEnabled(): Boolean = allowExternalAudioEffects
 
@@ -227,8 +227,8 @@ object Media3Bridge {
             (args?.get("tunnelingDisabled") as? Boolean)?.let {
                 sessionTunnelingDisabled = it
             }
-            (args?.get("mapDolbyVisionProfile7ToHevc") as? Boolean)?.let {
-                mapDolbyVisionProfile7ToHevc = it
+            (args?.get("doviCompatMode") as? String)?.let {
+                doviCompatMode = it
             }
             (args?.get("allowExternalAudioEffects") as? Boolean)?.let {
                 allowExternalAudioEffects = it

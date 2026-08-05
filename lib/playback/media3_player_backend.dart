@@ -62,6 +62,34 @@ class Media3PlayerBackend extends PlayerBackend {
     };
   }
 
+  /// How the native side should treat a Dolby Vision profile 7 stream.
+  @visibleForTesting
+  static Media3DoviCompatMode doviCompatMode(
+    UserPreferences prefs, {
+    bool? supportsP7,
+    bool? supportsP8,
+    bool? displaySupportsDolbyVision,
+  }) {
+    final behavior = prefs.get(
+      UserPreferences.dolbyVisionProfile7DirectPlayBehavior,
+    );
+    if (behavior == DolbyVisionProfile7DirectPlayBehavior.disabled) {
+      return Media3DoviCompatMode.off;
+    }
+    if (supportsP7 ?? PlatformDetection.supportsDoViProfile7) {
+      return Media3DoviCompatMode.native;
+    }
+    if (prefs.get(UserPreferences.media3MapDolbyVisionProfile7ToHevc)) {
+      return Media3DoviCompatMode.strip;
+    }
+    final canShowDolbyVision =
+        (supportsP8 ?? PlatformDetection.supportsDoViProfile8) &&
+        (displaySupportsDolbyVision ?? PlatformDetection.supportsDolbyVision);
+    return canShowDolbyVision
+        ? Media3DoviCompatMode.convert
+        : Media3DoviCompatMode.strip;
+  }
+
   final UserPreferences _prefs;
 
   StreamSubscription<dynamic>? _eventSub;
@@ -308,6 +336,8 @@ class Media3PlayerBackend extends PlayerBackend {
         _onAudioTrackInitialized(map);
       case 'audioTrackMapping':
         _onAudioTrackMapping(map);
+      case 'doviCompat':
+        _onDoviCompat(map);
       case 'videoSizeChanged':
         _diag(
           'Media3: video size ${_toInt(map['width'])}x${_toInt(map['height'])}',
@@ -365,6 +395,43 @@ class Media3PlayerBackend extends PlayerBackend {
       'Media3: audio tracks $rendered'
       '${split ? ' (split across renderers)' : ''}',
       level: split ? LogLevel.warning : LogLevel.info,
+    );
+  }
+
+  /// Records what the Dolby Vision profile 7 chain did with a track. A P7
+  /// stream that plays wrong is otherwise indistinguishable from a bad file,
+  /// so the report carries the decision, where the RPU came from, and the
+  /// running counts behind it.
+  void _onDoviCompat(Map<String, dynamic> map) {
+    final reason = map['reason']?.toString() ?? 'decided';
+    final applied = map['mode']?.toString() ?? 'none';
+    final requested = map['requestedMode']?.toString() ?? 'none';
+    final detail = map['detail']?.toString();
+
+    final headline = switch (reason) {
+      'untouched' => 'DoVi P7 left untouched',
+      'converterFailed' => 'DoVi P7 conversion stopped working',
+      'disarmed' => 'DoVi P7 rewriting stood down',
+      _ =>
+        applied == requested
+            ? 'DoVi P7 handled as $applied'
+            : 'DoVi P7 asked for $requested, settled on $applied',
+    };
+
+    final counts =
+        'samples ${_toInt(map['samplesFiltered'])}, '
+        'RPUs converted ${_toInt(map['rpusConverted'])}, '
+        'failed ${_toInt(map['rpusFailed'])}, '
+        'EL units dropped ${_toInt(map['enhancementUnitsDropped'])}, '
+        'block additions ${_toInt(map['blockAdditionsRead'])}';
+
+    _diag(
+      'Media3: $headline${detail == null ? '' : ' ($detail)'}. '
+      'Codecs ${map['codecs']}, RPU source ${map['rpuSource']}, '
+      'converter ${map['converterStatus']}. $counts',
+      level: reason == 'decided' || reason == 'untouched'
+          ? LogLevel.info
+          : LogLevel.warning,
     );
   }
 
@@ -628,23 +695,26 @@ class Media3PlayerBackend extends PlayerBackend {
     final tunnelingDisabledByUser = _prefs.get(
       UserPreferences.media3TunnelingDisabled,
     );
-    final dvFallbackBehavior = _prefs.get(
-      UserPreferences.dolbyVisionFallbackBehavior,
-    );
-    final mapDolbyVisionProfile7ToHevc =
-        _prefs.get(UserPreferences.media3MapDolbyVisionProfile7ToHevc) ||
-        (!PlatformDetection.supportsDoViProfile7 &&
-            dvFallbackBehavior != DolbyVisionFallbackBehavior.transcode);
     _sessionTunnelingDisabled =
         _prefs.get(UserPreferences.tunnelingFallbackDisabled) ||
         tunnelingDisabledByUser;
 
     await _ensureActivityStarted();
 
+    // The probes behind this only exist on the device, so a report has to say
+    // what they resolved to or the handling of a P7 file can't be explained.
+    final doviMode = doviCompatMode(_prefs);
+    _diag(
+      'Media3: DoVi P7 policy ${doviMode.name} '
+      '(P7 decoder ${PlatformDetection.supportsDoViProfile7}, '
+      'P8 decoder ${PlatformDetection.supportsDoViProfile8}, '
+      'DoVi display ${PlatformDetection.supportsDolbyVision})',
+    );
+
     await _invoke<void>('setDecoderPreferences', {
       'preferFfmpeg': _prefs.get(UserPreferences.preferExoPlayerFfmpeg),
       'tunnelingDisabled': _sessionTunnelingDisabled,
-      'mapDolbyVisionProfile7ToHevc': mapDolbyVisionProfile7ToHevc,
+      'doviCompatMode': doviMode.name,
       'allowExternalAudioEffects': _prefs.get(
         UserPreferences.media3AllowExternalAudioEffects,
       ),
@@ -832,7 +902,9 @@ class Media3PlayerBackend extends PlayerBackend {
             ),
             hasHardwareDolbyVisionDecoder:
                 PlatformDetection.supportsHevcDolbyVision,
+            hasDoviCompat: true,
           ),
+      directPlayVideoContainers: media3DirectPlayVideoContainers,
     );
   }
 
@@ -1094,3 +1166,14 @@ class Media3PlayerBackend extends PlayerBackend {
     _tracksChangedController.close();
   }
 }
+
+/// What the native side does with a Dolby Vision profile 7 stream. Names
+/// travel over the wire and match the Kotlin enum.
+enum Media3DoviCompatMode { native, convert, strip, off }
+
+/// Containers media3 can actually demux. The shared default list carries
+/// asf, wmv, ogm, and ogv for the mpv backends, none of which media3 reads
+/// (its Ogg support is audio only), so those route to a server remux here.
+/// AVI and FLV extractors exist in media3 and join in their place.
+const String media3DirectPlayVideoContainers =
+    'avi,dash,flv,hls,m4v,mkv,mov,mp4,ts,vob,webm,xvid';

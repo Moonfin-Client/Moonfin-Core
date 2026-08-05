@@ -86,7 +86,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 import io.github.peerless2012.ass.media.AssHandler
-import io.github.peerless2012.ass.media.kt.withAssMkvSupport
 import io.github.peerless2012.ass.media.kt.withAssSupport
 import io.github.peerless2012.ass.media.parser.AssSubtitleParserFactory
 import io.github.peerless2012.ass.media.type.AssRenderType
@@ -697,7 +696,8 @@ class Media3VideoView(
     private val audioPipeline = ExoPlayerAudioPipeline()
     private val audioAttributeState = AudioAttributeState()
     private var preferFfmpegDecoder = Media3Bridge.preferFfmpegDecoderEnabled()
-    private var mapDolbyVisionProfile7ToHevc = Media3Bridge.mapDolbyVisionProfile7ToHevcEnabled()
+    @Volatile
+    private var doviCompatMode = DoviCompatMode.fromWire(Media3Bridge.doviCompatMode())
     private var allowExternalAudioEffects = Media3Bridge.allowExternalAudioEffectsEnabled()
     private var frameRateSwitchingBehavior = Media3Bridge.frameRateSwitchingBehavior()
     private var passthroughMode = Media3Bridge.passthroughMode()
@@ -1447,6 +1447,28 @@ class Media3VideoView(
         }
     }
 
+    // Called from the extractor's loader thread whenever profile 7 handling
+    // settles or changes. emitEvent posts to the main thread itself.
+    private fun onDoviCompatReport(report: DoviCompatReport) {
+        Media3Bridge.emitEvent(
+            mapOf(
+                "event" to "doviCompat",
+                "reason" to report.reason,
+                "requestedMode" to report.requestedMode.wireValue,
+                "mode" to (report.appliedMode?.wireValue ?: "none"),
+                "codecs" to report.sourceCodecs,
+                "rpuSource" to report.rpuSource,
+                "samplesFiltered" to report.samplesFiltered,
+                "rpusConverted" to report.rpusConverted,
+                "rpusFailed" to report.rpusFailed,
+                "enhancementUnitsDropped" to report.enhancementUnitsDropped,
+                "blockAdditionsRead" to report.blockAdditionsRead,
+                "converterStatus" to DoviRpu.statusText(),
+                "detail" to report.detail,
+            ),
+        )
+    }
+
     private fun createPlayer(): ExoPlayer {
         emitFfmpegDecoderDiagnosticsOnce()
         // Fresh selector for every player; see the trackSelector field comment.
@@ -1488,9 +1510,16 @@ class Media3VideoView(
         val assParserFactory = AssSubtitleParserFactory(assHandler)
         val bootMediaSourceFactory = DefaultMediaSourceFactory(
             bootDataSourceFactory,
-            LiveFmp4ExtractorsFactory(
-                extractorsFactory.withAssMkvSupport(assParserFactory, assHandler),
-                assParserFactory,
+            // The DoVi wrapper sits outermost so it sees the extractors every
+            // inner layer ends up producing.
+            DoviCompatExtractorsFactory(
+                LiveFmp4ExtractorsFactory(
+                    extractorsFactory.withMoonfinMkvSupport(assParserFactory, assHandler),
+                    assParserFactory,
+                ),
+                mode = { doviCompatMode },
+                convertNal62 = DoviRpu::convertP7NalToP8,
+                onReport = ::onDoviCompatReport,
             ),
         ).apply {
             setSubtitleParserFactory(assParserFactory)
@@ -2457,12 +2486,6 @@ class Media3VideoView(
             .setTunnelingEnabled(shouldEnableTunneling)
             .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitleTrackEnabled)
 
-        if (mapDolbyVisionProfile7ToHevc) {
-            parametersBuilder.setPreferredVideoMimeType(MimeTypes.VIDEO_H265)
-        } else {
-            parametersBuilder.setPreferredVideoMimeType(null)
-        }
-
         trackSelector.setParameters(parametersBuilder)
     }
 
@@ -2509,10 +2532,9 @@ class Media3VideoView(
             applyStereoDownmix(effectiveStereoDownmix())
         }
 
-        val nextMapDv = args["mapDolbyVisionProfile7ToHevc"] as? Boolean
-        if (nextMapDv != null && mapDolbyVisionProfile7ToHevc != nextMapDv) {
-            mapDolbyVisionProfile7ToHevc = nextMapDv
-            decoderPreferenceDirty = true
+        // Applies at the next source load, when the extractors are recreated.
+        (args["doviCompatMode"] as? String)?.let {
+            doviCompatMode = DoviCompatMode.fromWire(it)
         }
 
         val nextTunnelingDisabled = args["tunnelingDisabled"] as? Boolean

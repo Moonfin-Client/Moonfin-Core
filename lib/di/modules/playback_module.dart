@@ -76,6 +76,9 @@ bool _hasUnsupportedDolbyVisionProfile(StreamResolutionResult resolution) {
         behavior: prefs.get(
           UserPreferences.dolbyVisionProfile7DirectPlayBehavior,
         ),
+        // The media3 backend carries the DoVi compat chain, so P7 renders
+        // through conversion or stripping wherever it plays.
+        hasDoviCompat: PlatformDetection.isAndroid,
       );
   for (final stream in resolution.mediaStreams) {
     if (HdrStreamCapability.streamNeedsDolbyVisionProfileTranscode(

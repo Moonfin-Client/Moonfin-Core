@@ -952,5 +952,53 @@ void main() {
         isTrue,
       );
     });
+
+    test('auto allows direct play when the DoVi compat chain is present', () {
+      expect(
+        KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
+          behavior: DolbyVisionProfile7DirectPlayBehavior.auto,
+          model: 'not-in-allowlist',
+          hasHardwareDolbyVisionDecoder: false,
+          hasDoviCompat: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('disabled still blocks direct play with the compat chain present', () {
+      expect(
+        KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
+          behavior: DolbyVisionProfile7DirectPlayBehavior.disabled,
+          hasHardwareDolbyVisionDecoder: true,
+          hasDoviCompat: true,
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  group('DeviceProfileBuilder direct play containers', () {
+    Map<String, dynamic> videoDirectPlayProfile(Map<String, dynamic> profile) {
+      final directPlay = (profile['DirectPlayProfiles'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+      return directPlay.firstWhere((p) => p['Type'] == 'Video');
+    }
+
+    test('the default list matches the shared mpv-capable containers', () {
+      final profile = DeviceProfileBuilder.build();
+
+      expect(
+        videoDirectPlayProfile(profile)['Container'],
+        DeviceProfileBuilder.defaultDirectPlayVideoContainers,
+      );
+    });
+
+    test('a caller-supplied list replaces the default', () {
+      final profile = DeviceProfileBuilder.build(
+        directPlayVideoContainers: 'mkv,mp4',
+      );
+
+      expect(videoDirectPlayProfile(profile)['Container'], 'mkv,mp4');
+    });
   });
 }

@@ -103,6 +103,9 @@ class DeviceProfileBuilder {
     'wma',
   ];
 
+  static const String defaultDirectPlayVideoContainers =
+      'asf,dash,hls,m4v,mkv,mov,mp4,ogm,ogv,ts,vob,webm,wmv,xvid';
+
   static Map<String, dynamic> build({
     int? maxBitrateMbps,
     AudioCapabilityProfile? audioCapabilityProfile,
@@ -172,6 +175,10 @@ class DeviceProfileBuilder {
     bool supportsDvProfile8 = false,
     bool knownHevcDoviHdr10PlusBug = false,
     bool allowDolbyVisionProfile7ElDirectPlay = false,
+    // Which containers the Video direct-play profile advertises. The default
+    // matches what the mpv backends demux. Players with a narrower demuxer
+    // pass their own list so unreadable containers route to a server remux.
+    String directPlayVideoContainers = defaultDirectPlayVideoContainers,
     // Known-defect exclusions protect this app's own decoders. A profile
     // built for an external player must skip them, since the external app
     // decodes with its own pipeline and a needless exclusion downgrades an
@@ -329,8 +336,7 @@ class DeviceProfileBuilder {
         ? <Map<String, dynamic>>[
             <String, dynamic>{
               'Type': 'Video',
-              'Container':
-                  'asf,dash,hls,m4v,mkv,mov,mp4,ogm,ogv,ts,vob,webm,wmv,xvid',
+              'Container': directPlayVideoContainers,
               'VideoCodec': 'av1,h264,hevc,mpeg,mpeg2video,vc1,vp8,vp9',
               'AudioCodec': effectiveAllowedAudioCodecs.join(','),
             },

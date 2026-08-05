@@ -8357,13 +8357,13 @@
     "description": "Setting subtitle for enable tunneling"
   },
 
-  "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+  "mapDolbyVisionP7Title": "Always play Dolby Vision profile 7 as HDR10",
   "@mapDolbyVisionP7Title": {
-    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+    "description": "Setting title: force DV P7 streams to the HDR10 strip path"
   },
-  "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+  "mapDolbyVisionP7Subtitle": "Skip the profile 8 conversion and strip Dolby Vision profile 7 streams to HDR10-compatible HEVC. Use this if converted streams look wrong.",
   "@mapDolbyVisionP7Subtitle": {
-    "description": "Setting subtitle for DV P7 to HEVC mapping"
+    "description": "Setting subtitle for forcing the DV P7 strip path"
   },
 
   "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
