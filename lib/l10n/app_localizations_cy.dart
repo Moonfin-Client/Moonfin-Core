@@ -208,6 +208,19 @@ class AppLocalizationsCy extends AppLocalizations {
   String get glassQuality => 'Ansawdd y Gwydr';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Mae Awto yn dewis yr effaith wydr orau ar gyfer y ddyfais hon. Mae Llawn yn gorfodi pylu go iawn; mae Gostyngedig yn defnyddio gwydr ysgafn sy\'n arbed pŵer y GPU.';
 

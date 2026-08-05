@@ -203,6 +203,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get glassQuality => '玻璃质感';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '自动为该设备选择最佳玻璃效果。完整会强制使用真实模糊；简化使用轻量级玻璃效果以节省 GPU 资源。';
 

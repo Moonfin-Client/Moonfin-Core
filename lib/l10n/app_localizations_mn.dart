@@ -208,6 +208,19 @@ class AppLocalizationsMn extends AppLocalizations {
   String get glassQuality => 'Шилэн эффектийн чанар';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Авто нь энэ төхөөрөмжид тохирох шилэн эффектийг сонгоно. Бүрэн нь жинхэнэ бүдгэрүүлэлтийг албадана; Багасгасан нь GPU-ийн хүчийг хэмнэх хөнгөн шил ашиглана.';
 

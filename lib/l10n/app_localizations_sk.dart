@@ -209,6 +209,19 @@ class AppLocalizationsSk extends AppLocalizations {
   String get glassQuality => 'Kvalita skla';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Automatická vyberie najlepší efekt skla pre toto zariadenie. Plná vynúti skutočné rozostrenie, Znížená použije odľahčené sklo, ktoré šetrí výkon GPU.';
 

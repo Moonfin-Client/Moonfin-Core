@@ -208,6 +208,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get glassQuality => 'Üveghatás minősége';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Az Automatikus opció kiválasztja a legjobb üveghatást ehhez az eszközhöz. A Teljes opció valódi elmosódást kényszerít ki, a Csökkentett pedig egy könnyű üveget használ, amivel GPU-teljesítményt takaríthatsz meg.';
 

@@ -208,6 +208,19 @@ class AppLocalizationsAf extends AppLocalizations {
   String get glassQuality => 'Glaskwaliteit';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Outo kies die beste glaseffek vir hierdie toestel. Vol dwing werklike vervaging af; Verminderd gebruik \'n ligte glas wat GPU-krag spaar.';
 

@@ -1,3 +1,5 @@
+import 'oled_derivation.dart';
+import 'oled_tuning.dart';
 import 'theme_spec.dart';
 import 'themes/moonfin_theme_spec.dart';
 import 'themes/neon_pulse_theme_spec.dart';
@@ -41,12 +43,29 @@ class ThemeRegistry {
         ..._custom,
       };
 
+  /// The theme the user picked, before OLED Mode is layered on.
+  static ThemeSpec _base = moonfinThemeSpec;
+  static OledTuning _oled = OledTuning.off;
+
+  /// [_base] with [_oled] applied. Memoized rather than derived per read:
+  /// `AppColorScheme` proxies this getter on every colour lookup, so deriving
+  /// lazily would allocate `Color`s in the paint path.
   static ThemeSpec _active = moonfinThemeSpec;
+
   static ThemeSpec get active => _active;
 
   static void setActiveById(String id) {
-    _active = availableThemes[id] ?? moonfinThemeSpec;
+    _base = availableThemes[id] ?? moonfinThemeSpec;
+    _recompute();
   }
+
+  static void setOledTuning(OledTuning tuning) {
+    if (identical(tuning, _oled)) return;
+    _oled = tuning;
+    _recompute();
+  }
+
+  static void _recompute() => _active = applyOled(_base, _oled);
 
   static ThemeSpec resolveById(String id) {
     return availableThemes[id] ?? moonfinThemeSpec;

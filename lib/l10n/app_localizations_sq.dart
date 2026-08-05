@@ -209,6 +209,19 @@ class AppLocalizationsSq extends AppLocalizations {
   String get glassQuality => 'Cilësia e xhamit';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Auto zgjedh efektin më të mirë të xhamit për këtë pajisje. I plotë imponon turbullim real; I reduktuar përdor një xham të lehtë që kursen energjinë e GPU-së.';
 

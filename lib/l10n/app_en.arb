@@ -268,6 +268,22 @@
   "@glassQuality": {
     "description": "Label for the glass rendering quality setting"
   },
+  "oledMode": "OLED Mode",
+  "@oledMode": {
+    "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+  },
+  "oledModeSubtitle": "Deepen blacks and enrich artwork. Best on OLED displays.",
+  "@oledModeSubtitle": {
+    "description": "Explanation under the OLED Mode setting"
+  },
+  "oledModeSubtle": "Subtle",
+  "@oledModeSubtle": {
+    "description": "OLED Mode level that darkens surfaces gently and lightly enriches artwork"
+  },
+  "oledModeVivid": "Vivid",
+  "@oledModeVivid": {
+    "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
+  },
   "glassQualitySubtitle": "Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.",
   "@glassQualitySubtitle": {
     "description": "Explanation under the glass quality setting"

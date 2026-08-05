@@ -385,6 +385,7 @@ class UserPreferences extends ChangeNotifier {
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
+    'pref_oled_mode',
     'pref_navbar_position',
     'focus_color',
     'pref_watched_indicator_behavior',
@@ -1100,6 +1101,14 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_glass_quality',
     defaultValue: GlassQualityMode.auto,
     values: GlassQualityMode.values,
+  );
+
+  /// Deepens chrome toward pure black and enriches artwork, on top of the
+  /// selected theme. Off by default so no existing install changes look.
+  static final oledMode = EnumPreference(
+    key: 'pref_oled_mode',
+    defaultValue: OledMode.off,
+    values: OledMode.values,
   );
 
   /// Settled quality of the adaptive glass renderer from the last session.

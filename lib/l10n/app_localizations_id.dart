@@ -208,6 +208,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get glassQuality => 'Kualitas Efek Kaca';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Otomatis memilih efek kaca terbaik untuk perangkat ini. Penuh memaksa blur asli; Ringan menggunakan efek kaca sederhana yang menghemat daya GPU.';
 

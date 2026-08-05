@@ -204,6 +204,19 @@ class AppLocalizationsYue extends AppLocalizations {
   String get glassQuality => '玻璃效果品質';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '「自動」會為呢部裝置揀最啱嘅玻璃效果。「完整」會強制用真實模糊；「精簡」用輕量玻璃，慳返 GPU 電力。';
 

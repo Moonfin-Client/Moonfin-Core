@@ -580,6 +580,30 @@ abstract class AppLocalizations {
   /// **'Glass Quality'**
   String get glassQuality;
 
+  /// Label for the setting that deepens blacks and enriches artwork on OLED displays
+  ///
+  /// In en, this message translates to:
+  /// **'OLED Mode'**
+  String get oledMode;
+
+  /// Explanation under the OLED Mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'Deepen blacks and enrich artwork. Best on OLED displays.'**
+  String get oledModeSubtitle;
+
+  /// OLED Mode level that darkens surfaces gently and lightly enriches artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Subtle'**
+  String get oledModeSubtle;
+
+  /// OLED Mode level that uses pure black surfaces and the strongest artwork enrichment
+  ///
+  /// In en, this message translates to:
+  /// **'Vivid'**
+  String get oledModeVivid;
+
   /// Explanation under the glass quality setting
   ///
   /// In en, this message translates to:

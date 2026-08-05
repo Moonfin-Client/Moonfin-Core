@@ -208,6 +208,19 @@ class AppLocalizationsLt extends AppLocalizations {
   String get glassQuality => 'Stiklo kokybė';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Automatinis parenka geriausią stiklo efektą šiam įrenginiui. Visas įjungia tikrą suliejimą; Sumažintas naudoja lengvą stiklą, taupantį GPU energiją.';
 

@@ -208,6 +208,19 @@ class AppLocalizationsKk extends AppLocalizations {
   String get glassQuality => 'Шыны сапасы';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '«Авто» осы құрылғыға ең қолайлы шыны әсерін таңдайды. «Толық» нақты бұлдырлатуды қосады, «Азайтылған» GPU қуатын үнемдейтін жеңіл шыныны пайдаланады.';
 

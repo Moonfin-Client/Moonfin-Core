@@ -8,6 +8,29 @@ APP_ICON="$REPO_ROOT/assets/icons/moonfin.png"
 BUILD_DIR="$REPO_ROOT/build/linux/release/bundle"
 TEMP_DIR="$REPO_ROOT/build/linux/temp"
 
+# Artifact names carry the architecture, except on x86_64 which keeps the plain
+# "Linux" name. An installed AppImage updates itself from a zsync file named
+# after the artifact, and the AUR package and the README point at those same
+# names, so renaming the x86_64 files would break all three.
+get_artifact_platform() {
+  case "$(uname -m)" in
+    x86_64) printf '%s\n' "Linux" ;;
+    aarch64|arm64) printf '%s\n' "LinuxARM64" ;;
+    *) printf '%s\n' "Linux_$(uname -m)" ;;
+  esac
+}
+
+PLATFORM_TAG="$(get_artifact_platform)"
+
+# Snap stage-packages land under the host's multiarch directory, so the snap's
+# library path has to name the architecture it is being built for.
+get_multiarch_triplet() {
+  case "$(uname -m)" in
+    aarch64|arm64) printf '%s\n' "aarch64-linux-gnu" ;;
+    *) printf '%s\n' "x86_64-linux-gnu" ;;
+  esac
+}
+
 get_deb_architecture() {
   local machine
   machine="$(uname -m)"
@@ -634,7 +657,7 @@ build_appimage() {
 
   local appimage_dir="$TEMP_DIR/appimage"
   local version="$(get_app_version)"
-  local appimage_name="${APP_NAME}_Linux_v${version}.AppImage"
+  local appimage_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.AppImage"
 
   rm -rf "$appimage_dir"
   mkdir -p "$appimage_dir"
@@ -711,7 +734,7 @@ EOF
   # Update information lets AppImage updaters fetch only the changed blocks from
   # the .zsync published with each release. The wildcard matches whichever
   # version the current release carries.
-  local update_info="${APPIMAGE_UPDATE_INFO:-gh-releases-zsync|Moonfin-Client|Moonfin-Core|latest|${APP_NAME}_Linux_v*.AppImage.zsync}"
+  local update_info="${APPIMAGE_UPDATE_INFO:-gh-releases-zsync|Moonfin-Client|Moonfin-Core|latest|${APP_NAME}_${PLATFORM_TAG}_v*.AppImage.zsync}"
   local appimagetool_args=()
   if command -v zsyncmake >/dev/null 2>&1; then
     appimagetool_args+=( -u "$update_info" )
@@ -742,7 +765,7 @@ build_tarball() {
   echo "=== Building Tarball ==="
 
   local version="$(get_app_version)"
-  local tarball_name="${APP_NAME}_Linux_v${version}.tar.gz"
+  local tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.tar.gz"
   local tar_dir="$TEMP_DIR/tarball/moonfin-${version}"
 
   rm -rf "$TEMP_DIR/tarball"
@@ -823,6 +846,24 @@ EOF
   echo "✓ Created: $REPO_ROOT/$tarball_name"
 }
 
+# The newest glibc anything in the installed tree asks for, which is the oldest
+# glibc that can load it, since symbol versions are forward compatible only.
+# Only undefined symbols count, because a library that defines a version lists
+# every version it ever published rather than the one it needs.
+required_glibc_version() {
+  local tree="$1" file
+
+  command -v readelf >/dev/null 2>&1 || return 0
+
+  for file in "$tree"/* "$tree"/lib/*.so*; do
+    [ -f "$file" ] || continue
+    [ -L "$file" ] && continue
+    readelf --dyn-syms -W "$file" 2>/dev/null |
+      awk '$7 == "UND"' |
+      grep -o 'GLIBC_[0-9][0-9.]*' || true
+  done | sed 's/^GLIBC_//' | sort -uV | tail -n1
+}
+
 build_deb() {
   echo "=== Building Debian Package (.deb) ==="
   if ! command -v dpkg-deb >/dev/null 2>&1; then
@@ -831,7 +872,7 @@ build_deb() {
   fi
 
   local version="$(get_app_version)"
-  local deb_name="${APP_NAME}_Linux_v${version}.deb"
+  local deb_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.deb"
   local pkg_root="$TEMP_DIR/deb/moonfin-${version}"
   local deb_arch
   deb_arch="$(get_deb_architecture)"
@@ -857,13 +898,24 @@ EOF
   mkdir -p "$pkg_root/usr/share/metainfo"
   create_metainfo_file "$pkg_root/usr/share/metainfo" "$version"
 
+  # glibc is deliberately not bundled, so the build host's version is the oldest
+  # one the package can run on. Declaring it turns a wall of loader errors at
+  # launch into a refused install that names the glibc the machine needs.
+  local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0"
+  local glibc
+  glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
+  if [ -n "$glibc" ]; then
+    depends="$depends, libc6 (>= $glibc)"
+  fi
+  echo "Depends: $depends"
+
   cat > "$pkg_root/DEBIAN/control" << EOF
 Package: moonfin
 Version: ${version}
 Architecture: ${deb_arch}
 Maintainer: Moonfin Team <support@moonfin.dev>
 Installed-Size: $(du -sk "$pkg_root/usr" | cut -f1)
-Depends: libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0
+Depends: ${depends}
 Description: Jellyfin & Emby media client
  Moonfin is a media client for Jellyfin and Emby servers,
  available on mobile, TV, and desktop platforms.
@@ -905,7 +957,7 @@ build_rpm() {
   fi
 
   local version="$(get_app_version)"
-  local rpm_name="${APP_NAME}_Linux_v${version}.rpm"
+  local rpm_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.rpm"
   local rpm_dir="$TEMP_DIR/rpm"
   local spec_file="$rpm_dir/moonfin.spec"
 
@@ -1022,6 +1074,8 @@ build_snap() {
   local version="$(get_app_version)"
   local snap_mpv_package
   snap_mpv_package="$(resolve_mpv_package_name)"
+  local snap_triplet
+  snap_triplet="$(get_multiarch_triplet)"
 
   rm -rf "$snap_dir"
   mkdir -p "$snap_dir"
@@ -1050,7 +1104,7 @@ apps:
       - opengl
       - pulseaudio
     environment:
-      LD_LIBRARY_PATH: \$SNAP/lib:\$SNAP/lib/x86_64-linux-gnu:\$SNAP/usr/lib/x86_64-linux-gnu
+      LD_LIBRARY_PATH: \$SNAP/lib:\$SNAP/lib/${snap_triplet}:\$SNAP/usr/lib/${snap_triplet}
 
 parts:
   moonfin:
@@ -1095,8 +1149,8 @@ EOF
   local snap_file
   snap_file=$(find "$snap_dir" -maxdepth 1 -name "*.snap" 2>/dev/null | head -1)
   if [ -n "$snap_file" ]; then
-    mv "$snap_file" "$REPO_ROOT/${APP_NAME}_Linux_v${version}.snap"
-    echo "✓ Created: $REPO_ROOT/${APP_NAME}_Linux_v${version}.snap"
+    mv "$snap_file" "$REPO_ROOT/${APP_NAME}_${PLATFORM_TAG}_v${version}.snap"
+    echo "✓ Created: $REPO_ROOT/${APP_NAME}_${PLATFORM_TAG}_v${version}.snap"
   else
     echo "Snap build did not produce a .snap file"
     return 1
@@ -1119,7 +1173,7 @@ build_flatpak() {
 
   local flatpak_build_dir="$TEMP_DIR/flatpak-build"
   local flatpak_repo_dir="$TEMP_DIR/flatpak-repo"
-  local flatpak_name="${APP_NAME}_Linux_v${version}.flatpak"
+  local flatpak_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.flatpak"
   local flatpak_src="$flatpak_dir/src"
 
   rm -rf "$flatpak_build_dir" "$flatpak_repo_dir"

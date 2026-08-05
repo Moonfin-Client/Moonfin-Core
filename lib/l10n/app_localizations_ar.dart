@@ -208,6 +208,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get glassQuality => 'جودة الزجاج';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'يختار الوضع التلقائي أفضل تأثير زجاجي لهذا الجهاز. يفرض الوضع الكامل ضبابية حقيقية، بينما يستخدم الوضع المخفّض زجاجًا خفيفًا يوفّر طاقة GPU.';
 

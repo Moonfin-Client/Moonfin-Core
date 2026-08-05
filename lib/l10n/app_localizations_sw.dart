@@ -208,6 +208,19 @@ class AppLocalizationsSw extends AppLocalizations {
   String get glassQuality => 'Ubora wa Glass';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Otomatiki huchagua athari bora ya glass kwa kifaa hiki. Kamili hulazimisha ukungu halisi; Iliyopunguzwa hutumia glass nyepesi inayookoa nguvu ya GPU.';
 

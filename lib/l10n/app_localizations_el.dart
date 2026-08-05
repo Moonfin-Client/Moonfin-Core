@@ -210,6 +210,19 @@ class AppLocalizationsEl extends AppLocalizations {
   String get glassQuality => 'Ποιότητα γυαλιού';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Το Αυτόματο επιλέγει το καλύτερο εφέ γυαλιού για αυτήν τη συσκευή. Το Πλήρες επιβάλλει πραγματικό θόλωμα· το Μειωμένο χρησιμοποιεί ένα ελαφρύ γυαλί που εξοικονομεί ενέργεια GPU.';
 

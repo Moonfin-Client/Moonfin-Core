@@ -208,6 +208,19 @@ class AppLocalizationsKn extends AppLocalizations {
   String get glassQuality => 'ಗ್ಲಾಸ್ ಗುಣಮಟ್ಟ';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'ಆಟೋ ಈ ಸಾಧನಕ್ಕೆ ಅತ್ಯುತ್ತಮ ಗ್ಲಾಸ್ ಪರಿಣಾಮವನ್ನು ಆಯ್ಕೆಮಾಡುತ್ತದೆ. ಫುಲ್ ನಿಜವಾದ ಬ್ಲರ್ ಅನ್ನು ಒತ್ತಾಯಿಸುತ್ತದೆ; ರಿಡ್ಯೂಸ್ಡ್ GPU ಶಕ್ತಿಯನ್ನು ಉಳಿಸುವ ಹಗುರವಾದ ಗ್ಲಾಸ್ ಅನ್ನು ಬಳಸುತ್ತದೆ.';
 

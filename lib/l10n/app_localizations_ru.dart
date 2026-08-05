@@ -208,6 +208,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get glassQuality => 'Качество стекла';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '«Авто» подбирает лучший эффект стекла для этого устройства. «Полное» включает настоящее размытие, «Упрощённое» — облегчённое стекло, экономящее ресурсы GPU.';
 

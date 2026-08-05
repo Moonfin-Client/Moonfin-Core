@@ -158,6 +158,18 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                     icon: Icons.photo,
                     onChanged: _pushPersonalizationSync,
                   ),
+                  EnumPreferenceTile<OledMode>(
+                    preference: UserPreferences.oledMode,
+                    title: l10n.oledMode,
+                    description: l10n.oledModeSubtitle,
+                    icon: Icons.contrast,
+                    labelOf: (v) => switch (v) {
+                      OledMode.off => l10n.off,
+                      OledMode.subtle => l10n.oledModeSubtle,
+                      OledMode.vivid => l10n.oledModeVivid,
+                    },
+                    onChanged: _pushPersonalizationSync,
+                  ),
                   SliderPreferenceTile(
                     preference: UserPreferences.browsingBackgroundBlurAmount,
                     title: l10n.browsingBackgroundBlur,

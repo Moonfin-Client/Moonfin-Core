@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/vibrance.dart';
 import 'image_source.dart';
 
 /// A [CachedNetworkImage] whose decoded pixel width is bounded to the
@@ -89,6 +90,10 @@ class BoundedNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
+    return Vibrance.wrap(_buildImage(context, dpr));
+  }
+
+  Widget _buildImage(BuildContext context, double dpr) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final cacheW = _cacheWidthFor(

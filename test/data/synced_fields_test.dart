@@ -130,6 +130,7 @@ void main() {
     'nextUpBehavior',
     'nextUpMaxDays',
     'nextUpTimeout',
+    'oledMode',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
     'osdButtonOrderTv',

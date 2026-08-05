@@ -208,6 +208,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get glassQuality => 'Glass-Qualität';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '„Automatisch“ wählt den besten Glass-Effekt für dieses Gerät. „Voll“ erzwingt echte Unschärfe, „Reduziert“ nutzt ein leichtgewichtiges Glass, das GPU-Leistung spart.';
 

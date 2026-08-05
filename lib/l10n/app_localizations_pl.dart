@@ -208,6 +208,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get glassQuality => 'Jakość efektu szkła/rozmycia';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Automatycznie dobiera najlepszy efekt dla tego urządzenia. Pełny wymusza prawdziwe rozmycie. Zmniejszony korzysta z uproszczonego efektu, oszczędzając GPU.';
 

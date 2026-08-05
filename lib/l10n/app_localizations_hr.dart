@@ -208,6 +208,19 @@ class AppLocalizationsHr extends AppLocalizations {
   String get glassQuality => 'Kvaliteta stakla';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Automatski odabire najbolji efekt stakla za ovaj uređaj. Puna nameće stvarno zamućenje, a Smanjena koristi lagano staklo koje štedi GPU.';
 

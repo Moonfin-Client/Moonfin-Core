@@ -572,6 +572,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['background images'],
     ),
     style.leaf(
+      'pref_oled_mode',
+      l10n.oledMode,
+      subtitle: l10n.oledModeSubtitle,
+      keywords: [
+        'oled',
+        'amoled',
+        'true black',
+        'pure black',
+        'vibrance',
+        'saturation',
+        'contrast',
+      ],
+    ),
+    style.leaf(
       'browsingBackgroundBlurAmount',
       l10n.browsingBackgroundBlur,
       keywords: ['backdrop'],

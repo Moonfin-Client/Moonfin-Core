@@ -209,6 +209,11 @@ enum GlassQualityMode { auto, full, reduced }
 /// liquid_glass_widgets.
 enum GlassSettledQuality { unset, minimal, standard, premium }
 
+/// Layered on top of whichever theme is active. `subtle` and `vivid` crush
+/// chrome toward pure black so OLED pixels switch off, and boost artwork
+/// saturation/contrast. `off` leaves every theme exactly as authored.
+enum OledMode { off, subtle, vivid }
+
 enum AppTheme {
   white(0xFFFFFFFF),
   black(0xFF000000),
