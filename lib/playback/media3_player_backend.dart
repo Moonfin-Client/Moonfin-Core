@@ -259,8 +259,11 @@ class Media3PlayerBackend extends PlayerBackend {
         );
         _errorStream.add(map.cast<String, dynamic>());
       case 'error':
+        final cause = map['cause']?.toString();
         _diag(
-          'Media3 error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}',
+          'Media3 error: ${map['errorCode'] ?? ''} '
+          '${map['errorCodeName'] ?? ''} ${map['message'] ?? ''}'
+          '${cause == null || cause.isEmpty ? '' : ' caused by $cause'}',
           level: LogLevel.error,
         );
         _errorStream.add(map.cast<String, dynamic>());
@@ -410,6 +413,7 @@ class Media3PlayerBackend extends PlayerBackend {
 
     final headline = switch (reason) {
       'untouched' => 'DoVi P7 left untouched',
+      'progress' => 'DoVi P7 still handled as $applied',
       'converterFailed' => 'DoVi P7 conversion stopped working',
       'disarmed' => 'DoVi P7 rewriting stood down',
       _ =>
@@ -420,18 +424,22 @@ class Media3PlayerBackend extends PlayerBackend {
 
     final counts =
         'samples ${_toInt(map['samplesFiltered'])}, '
-        'RPUs converted ${_toInt(map['rpusConverted'])}, '
-        'failed ${_toInt(map['rpusFailed'])}, '
+        'RPUs seen ${_toInt(map['rpusSeen'])} '
+        '(converted ${_toInt(map['rpusConverted'])}, '
+        'dropped ${_toInt(map['rpusDropped'])}, '
+        'failed ${_toInt(map['rpusFailed'])}), '
         'EL units dropped ${_toInt(map['enhancementUnitsDropped'])}, '
-        'block additions ${_toInt(map['blockAdditionsRead'])}';
+        'block additions ${_toInt(map['blockAdditionsRead'])}, '
+        'bytes ${_toInt(map['bytesIn'])} in ${_toInt(map['bytesOut'])} out';
 
     _diag(
       'Media3: $headline${detail == null ? '' : ' ($detail)'}. '
       'Codecs ${map['codecs']}, RPU source ${map['rpuSource']}, '
-      'converter ${map['converterStatus']}. $counts',
-      level: reason == 'decided' || reason == 'untouched'
-          ? LogLevel.info
-          : LogLevel.warning,
+      'converter ${map['converterStatus']}. $counts. '
+      'NAL types ${map['nalCensus']}. Format ${map['formatSummary']}',
+      level: reason == 'converterFailed' || reason == 'disarmed'
+          ? LogLevel.warning
+          : LogLevel.info,
     );
   }
 

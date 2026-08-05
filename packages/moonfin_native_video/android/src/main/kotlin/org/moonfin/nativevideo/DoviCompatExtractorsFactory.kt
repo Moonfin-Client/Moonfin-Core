@@ -24,7 +24,10 @@ import java.io.IOException
  * it, so a report shows both the decision and how it held up.
  */
 data class DoviCompatReport(
-    /** Why this went out: "decided", "converterFailed", or "disarmed". */
+    /**
+     * Why this went out: "decided", "progress", "converterFailed", "disarmed",
+     * or "untouched".
+     */
     val reason: String,
     val requestedMode: DoviCompatMode,
     val appliedMode: DoviCompatMode?,
@@ -32,10 +35,18 @@ data class DoviCompatReport(
     /** Where the RPU came from: "inBand", "blockAdditional", or "none". */
     val rpuSource: String,
     val samplesFiltered: Int,
+    val rpusSeen: Int,
     val rpusConverted: Int,
+    val rpusDropped: Int,
     val rpusFailed: Int,
     val enhancementUnitsDropped: Int,
     val blockAdditionsRead: Int,
+    /** Every NAL type the walker found, as "32x1,33x1,62x4,63x18". */
+    val nalCensus: String,
+    val bytesIn: Long,
+    val bytesOut: Long,
+    /** The track format before and after the rewrite. */
+    val formatSummary: String,
     val detail: String?,
 )
 
@@ -228,10 +239,17 @@ private class DoviCompatTrackOutput(
     private var reportedUntouched = false
     private var rpuSource = "none"
     private var samplesFiltered = 0
+    private var rpusSeen = 0
     private var rpusConverted = 0
+    private var rpusDropped = 0
     private var rpusFailed = 0
     private var enhancementUnitsDropped = 0
     private var blockAdditionsRead = 0
+    private var bytesIn = 0L
+    private var bytesOut = 0L
+    private val nalCounts = IntArray(64)
+    private var emittedFormat: Format? = null
+    private var nextProgressReport = 10
 
     /** What samples are filtered as, before and after the format settles. */
     private val effectiveMode: DoviCompatMode?
@@ -246,14 +264,41 @@ private class DoviCompatTrackOutput(
                 sourceCodecs = sourceFormat?.codecs.orEmpty(),
                 rpuSource = rpuSource,
                 samplesFiltered = samplesFiltered,
+                rpusSeen = rpusSeen,
                 rpusConverted = rpusConverted,
+                rpusDropped = rpusDropped,
                 rpusFailed = rpusFailed,
                 enhancementUnitsDropped = enhancementUnitsDropped,
                 blockAdditionsRead = blockAdditionsRead,
+                nalCensus = describeNalCensus(),
+                bytesIn = bytesIn,
+                bytesOut = bytesOut,
+                formatSummary = describeFormats(),
                 detail = detail,
             ),
         )
     }
+
+    private fun describeNalCensus(): String = buildString {
+        for (type in nalCounts.indices) {
+            if (nalCounts[type] == 0) continue
+            if (isNotEmpty()) append(',')
+            append(type).append('x').append(nalCounts[type])
+        }
+        if (isEmpty()) append("none")
+    }
+
+    // The csd matters here because a stripped track keeps the configuration
+    // the Dolby Vision track shipped with.
+    private fun describeFormat(format: Format?, label: String): String {
+        if (format == null) return "$label none"
+        val csd = format.initializationData.joinToString("+") { it.size.toString() }
+        return "$label ${format.sampleMimeType} ${format.codecs} " +
+            "${format.width}x${format.height} csd[${csd.ifEmpty { "none" }}]"
+    }
+
+    private fun describeFormats(): String =
+        describeFormat(sourceFormat, "in") + ", " + describeFormat(emittedFormat, "out")
 
     private var pending = ByteArray(INITIAL_BUFFER_BYTES)
     private var pendingLength = 0
@@ -322,6 +367,7 @@ private class DoviCompatTrackOutput(
                     .build()
             else -> format
         }
+        emittedFormat = rewritten
         super.format(rewritten)
     }
 
@@ -473,6 +519,8 @@ private class DoviCompatTrackOutput(
         }
         pendingRpuLength = 0
         samplesFiltered++
+        bytesIn += (end - start).toLong()
+        bytesOut += filteredLength.toLong()
 
         if (!formatDecided) {
             decide(wroteRpu)
@@ -483,6 +531,11 @@ private class DoviCompatTrackOutput(
                 detail = "the converter stopped accepting RPUs, the rest of " +
                     "this stream plays without them",
             )
+        } else if (samplesFiltered >= nextProgressReport) {
+            // Backs off by powers of ten, so an early failure is captured in
+            // detail while a whole film still only reports a handful of times.
+            nextProgressReport *= 10
+            report(reason = "progress")
         }
 
         // Offsets count back from the write head, so dropping everything up to
@@ -566,10 +619,12 @@ private class DoviCompatTrackOutput(
             if (payloadStart >= end) break
 
             val nalType = (data[payloadStart].toInt() shr 1) and 0x3F
+            nalCounts[nalType]++
+            if (nalType == NAL_UNSPEC62) rpusSeen++
             val mode = effectiveMode
             when {
                 nalType == NAL_UNSPEC63 -> enhancementUnitsDropped++
-                nalType == NAL_UNSPEC62 && mode == DoviCompatMode.STRIP -> Unit
+                nalType == NAL_UNSPEC62 && mode == DoviCompatMode.STRIP -> rpusDropped++
                 nalType == NAL_UNSPEC62 && mode == DoviCompatMode.CONVERT -> {
                     val converted = if (convertBroken) {
                         null

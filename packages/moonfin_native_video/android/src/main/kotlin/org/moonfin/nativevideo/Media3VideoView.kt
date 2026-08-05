@@ -960,6 +960,10 @@ class Media3VideoView(
                 mapOf(
                     "event" to "error",
                     "message" to (error.localizedMessage ?: "Unknown Media3 playback error"),
+                    "errorCodeName" to error.errorCodeName,
+                    // The top level message is often empty, so a report needs
+                    // the cause chain and the frame the failure came from.
+                    "cause" to describeCauseChain(error),
                 ),
             )
             emitState()
@@ -1447,6 +1451,31 @@ class Media3VideoView(
         }
     }
 
+    // Walks a failure back to its root, naming the type and the first frame
+    // of our own or media3's code that it came through.
+    private fun describeCauseChain(error: Throwable): String {
+        val parts = mutableListOf<String>()
+        var cause: Throwable? = error
+        var depth = 0
+        while (cause != null && depth < 6) {
+            val frame = cause.stackTrace.firstOrNull {
+                it.className.startsWith("org.moonfin") ||
+                    it.className.startsWith("androidx.media3")
+            }
+            parts += buildString {
+                append(cause!!.javaClass.simpleName)
+                cause!!.message?.let { append(": ").append(it) }
+                frame?.let {
+                    append(" at ").append(it.className.substringAfterLast('.'))
+                    append('.').append(it.methodName).append(':').append(it.lineNumber)
+                }
+            }
+            cause = cause.cause
+            depth++
+        }
+        return parts.joinToString(" <- ")
+    }
+
     // Called from the extractor's loader thread whenever profile 7 handling
     // settles or changes. emitEvent posts to the main thread itself.
     private fun onDoviCompatReport(report: DoviCompatReport) {
@@ -1459,10 +1488,16 @@ class Media3VideoView(
                 "codecs" to report.sourceCodecs,
                 "rpuSource" to report.rpuSource,
                 "samplesFiltered" to report.samplesFiltered,
+                "rpusSeen" to report.rpusSeen,
                 "rpusConverted" to report.rpusConverted,
+                "rpusDropped" to report.rpusDropped,
                 "rpusFailed" to report.rpusFailed,
                 "enhancementUnitsDropped" to report.enhancementUnitsDropped,
                 "blockAdditionsRead" to report.blockAdditionsRead,
+                "nalCensus" to report.nalCensus,
+                "bytesIn" to report.bytesIn,
+                "bytesOut" to report.bytesOut,
+                "formatSummary" to report.formatSummary,
                 "converterStatus" to DoviRpu.statusText(),
                 "detail" to report.detail,
             ),
