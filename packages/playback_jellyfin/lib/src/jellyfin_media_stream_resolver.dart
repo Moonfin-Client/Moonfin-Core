@@ -149,19 +149,16 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       maxStreamingBitrate: maxStreamingBitrate,
     );
 
-    final reasons = List<String>.from(source.transcodingReasons);
-    if (playMethod == StreamPlayMethod.transcode) {
-      final mediaBitrate = source.bitrate;
-      if (maxStreamingBitrate != null &&
-          mediaBitrate != null &&
-          mediaBitrate > maxStreamingBitrate) {
-        final lowerReasons = reasons.map((r) => r.toLowerCase()).toSet();
-        if (!lowerReasons.contains('videobitratenotsupported') &&
-            !lowerReasons.contains('containerbitrateexceedslimit')) {
-          reasons.add('VideoBitrateNotSupported');
-        }
-      }
-    }
+    final reasons = mergeTranscodeReasons(
+      playMethod: playMethod,
+      serverReasons: source.transcodingReasons,
+      mediaStreams: source.mediaStreams,
+      container: source.container,
+      sourceBitrate: source.bitrate,
+      maxStreamingBitrate: maxStreamingBitrate,
+      audioStreamIndex: audioStreamIndex ?? source.defaultAudioStreamIndex,
+      deviceProfile: deviceProfile,
+    );
 
     if (playMethod == StreamPlayMethod.transcode || playMethod == StreamPlayMethod.directStream) {
       // When the server chose to deliver the subtitle externally, it leaves the

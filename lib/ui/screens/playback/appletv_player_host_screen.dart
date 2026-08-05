@@ -15,7 +15,7 @@ import '../../../data/services/media_segment_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../auth/repositories/user_repository.dart';
-import '../../../playback/appletv_mpv_backend.dart';
+import '../../../playback/appletv_backend.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
@@ -55,9 +55,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   ScreensaverController? _screensaverController;
   StreamSubscription<bool>? _screensaverPlayingSub;
 
-  AppleTvMpvBackend? get _backend {
+  AppleTvBackend? get _backend {
     try {
-      return GetIt.instance<AppleTvMpvBackend>();
+      return GetIt.instance<AppleTvBackend>();
     } catch (_) {
       return null;
     }

@@ -108,7 +108,7 @@ class EmbyMediaServerClient extends MediaServerClient {
 
   @override
   late final EmbyUserViewsApi userViewsApi =
-      EmbyUserViewsApi(_dio, _requireUserId);
+      EmbyUserViewsApi(_dio, _requireUserId, () => usersApi);
 
   @override
   late final LiveTvApi liveTvApi = EmbyLiveTvApi(_dio);

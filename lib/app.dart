@@ -375,7 +375,10 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   final FocusNode _focusNode = FocusNode(debugLabel: 'GlobalShortcutScope');
   final ScreensaverController _screensaverController =
       GetIt.instance<ScreensaverController>();
-  final bool _trackMouseThumbHistory = PlatformDetection.isDesktop || kIsWeb;
+  // Not on web. The browser maps the thumb buttons to its own history, which
+  // pops the router too, so handling them here as well moves back twice for a
+  // single click.
+  final bool _trackMouseThumbHistory = PlatformDetection.isDesktop;
   final List<String> _routeHistory = [];
   late final KeyEventCallback _hardwareKeyHandler;
   Timer? _geometrySaveTimer;

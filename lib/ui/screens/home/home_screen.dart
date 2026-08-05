@@ -2992,6 +2992,10 @@ class _ContentRowsState extends State<_ContentRows>
         _finishSharedPreview();
       }
       _activeFocusedRowIndex = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _onGlobalFocusChanged();
+      });
     }
   }
 
@@ -3063,6 +3067,7 @@ class _ContentRowsState extends State<_ContentRows>
 
       if (closestRowIndex != _activeFocusedRowIndex) {
         _activeFocusedRowIndex = closestRowIndex;
+        _onGlobalFocusChanged();
       }
     }
 

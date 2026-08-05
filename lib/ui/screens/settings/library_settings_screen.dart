@@ -28,6 +28,7 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
   List<AggregatedLibrary>? _libraries;
   UserConfiguration? _config;
   bool _isLoading = true;
+  bool _loadFailed = false;
   Future<void> _saveQueue = Future.value();
   int _lastQueuedOpId = 0;
 
@@ -43,6 +44,14 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
   void dispose() {
     _firstLibraryFocusNode?.dispose();
     super.dispose();
+  }
+
+  void _retry() {
+    setState(() {
+      _isLoading = true;
+      _loadFailed = false;
+    });
+    _load();
   }
 
   Future<void> _load() async {
@@ -64,7 +73,12 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+      // Saying nothing here reads as a server with no libraries, which is the
+      // one thing it never means.
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
     }
   }
 
@@ -129,13 +143,33 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               )
-            else if (_libraries != null && _config != null)
+            else if (_loadFailed)
+              _buildMessage(l10n.failedToLoadLibraries, onRetry: _retry)
+            else if (_libraries != null && _config != null) ...[
+              if (_libraries!.isEmpty) _buildMessage(l10n.noLibrariesFound),
               ..._buildLibraryVisibilityTiles(),
+            ],
           ],
         ),
       ),
     );
   }
+
+  Widget _buildMessage(String text, {VoidCallback? onRetry}) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+    child: Column(
+      children: [
+        Text(text, textAlign: TextAlign.center),
+        if (onRetry != null) ...[
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context).retry),
+          ),
+        ],
+      ],
+    ),
+  );
 
   List<Widget> _buildLibraryVisibilityTiles() {
     final l10n = AppLocalizations.of(context);

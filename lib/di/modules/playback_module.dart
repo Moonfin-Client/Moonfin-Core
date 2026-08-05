@@ -23,7 +23,7 @@ import '../../playback/media_browse_service.dart';
 import '../../playback/html_video_backend.dart';
 import '../../playback/known_defects.dart';
 import '../../playback/external_player_policy.dart';
-import '../../playback/appletv_mpv_backend.dart';
+import '../../playback/appletv_backend.dart';
 import '../../playback/auto_bitrate_service.dart';
 import '../../playback/aether_backend.dart';
 import '../../playback/media_kit_player_backend.dart';
@@ -333,15 +333,15 @@ void registerPlaybackModule() {
   MediaKitPlayerBackend? backend;
   Media3PlayerBackend? media3Backend;
   TizenPlayerBackend? tizenBackend;
-  AppleTvMpvBackend? appleTvBackend;
+  AppleTvBackend? appleTvBackend;
   AetherBackend? iosBackend;
 
   if (PlatformDetection.isTizen) {
     tizenBackend = TizenPlayerBackend(prefs);
     _getIt.registerSingleton<TizenPlayerBackend>(tizenBackend);
   } else if (PlatformDetection.isAppleTV) {
-    appleTvBackend = AppleTvMpvBackend(prefs);
-    _getIt.registerSingleton<AppleTvMpvBackend>(appleTvBackend);
+    appleTvBackend = AppleTvBackend(prefs);
+    _getIt.registerSingleton<AppleTvBackend>(appleTvBackend);
   } else if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
     // AetherEngine serves main playback on iOS and macOS: video, live TV,
     // music, audiobooks and offline. The media_kit backend isn't constructed,
@@ -442,8 +442,8 @@ void registerPlaybackModule() {
     }
 
     if (PlatformDetection.isAppleTV) {
-      if (currentBackend is AppleTvMpvBackend) return currentBackend;
-      return _getIt<AppleTvMpvBackend>();
+      if (currentBackend is AppleTvBackend) return currentBackend;
+      return _getIt<AppleTvBackend>();
     }
 
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {

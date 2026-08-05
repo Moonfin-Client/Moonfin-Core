@@ -13,8 +13,8 @@ import 'device_profile_builder.dart';
 import 'known_defects.dart';
 import 'server_transcode_capabilities.dart';
 
-class AppleTvMpvBackend implements PlayerBackend {
-  AppleTvMpvBackend(this._prefs) {
+class AppleTvBackend implements PlayerBackend {
+  AppleTvBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
       onError: (_) {},

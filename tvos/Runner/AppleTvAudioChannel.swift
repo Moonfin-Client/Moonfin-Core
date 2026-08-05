@@ -46,7 +46,8 @@ final class AppleTvAudioChannel: NSObject {
             "maxPcmChannels": maxChannels,
             "activeRouteType": resolveRouteType(session),
             "routeSupportsHdAudio": false,
-            // mpv decodes locally; tvOS never bitstreams, so passthrough is off.
+            // Decoding happens locally and tvOS never bitstreams, so
+            // passthrough is off.
             "canDecodeAc3": true,
             "canDecodeEac3": true,
             "canDecodeDts": true,

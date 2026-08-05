@@ -14,11 +14,11 @@ Future<List<AggregatedLibrary>> loadUserViews(
       await client.userViewsApi.getUserViews(includeHidden: includeHidden);
   final items = response['Items'] as List? ?? [];
 
-  return items.map((item) {
-    final data = item as Map<String, dynamic>;
+  return items.whereType<Map>().map((item) {
+    final data = item.cast<String, dynamic>();
     return AggregatedLibrary(
       id: data['Id']?.toString() ?? '',
-      name: data['Name'] as String,
+      name: data['Name']?.toString() ?? '',
       collectionType: data['CollectionType'] as String? ?? '',
       serverId: data['ServerId']?.toString() ?? '',
       primaryImageAspectRatio: (data['PrimaryImageAspectRatio'] as num?)
@@ -101,6 +101,12 @@ class UserViewsRepository extends ChangeNotifier {
     _cachedConfig ??= await _client.usersApi.getUserConfiguration();
     return _cachedConfig!;
   }
+
+  /// What the user hid from My Media, read from the cached configuration so a
+  /// caller can ask on every row without a round trip each time. Empty when
+  /// nothing is hidden or the list cant be read.
+  Future<Set<String>> getMyMediaExcludes() async =>
+      await _excludesFrom(_getUserConfig()) ?? const {};
 
   Future<UserConfiguration> getUserConfiguration() async {
     _cachedConfig = await _client.usersApi.getUserConfiguration();

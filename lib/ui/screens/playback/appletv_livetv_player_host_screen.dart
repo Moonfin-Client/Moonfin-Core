@@ -10,7 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
-import '../../../playback/appletv_mpv_backend.dart';
+import '../../../playback/appletv_backend.dart';
 import '../../../playback/appletv_preview_player.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
@@ -65,9 +65,9 @@ class _AppleTvLiveTvPlayerHostScreenState
   bool _sweepInFlight = false;
   AppThemeController? _themeController;
 
-  AppleTvMpvBackend? get _backend {
+  AppleTvBackend? get _backend {
     try {
-      return GetIt.instance<AppleTvMpvBackend>();
+      return GetIt.instance<AppleTvBackend>();
     } catch (_) {
       return null;
     }

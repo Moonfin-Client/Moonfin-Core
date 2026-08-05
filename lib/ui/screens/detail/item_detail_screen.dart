@@ -12936,7 +12936,9 @@ class ExpandableBiography extends StatefulWidget {
 class _ExpandableBiographyState extends State<ExpandableBiography> {
   bool _expanded = false;
   bool _focused = false;
-  static const double _contentHorizontalPadding = 8;
+  // Tracks the padding the toggle container puts around the text, so the
+  // measurement runs against the width the text actually gets.
+  static const double _contentHorizontalPadding = 12;
   final ScrollController _scrollbarController = ScrollController();
 
   @override
@@ -12997,6 +12999,10 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
       text: TextSpan(text: widget.text, style: style),
       maxLines: limit,
       textDirection: TextDirection.ltr,
+      // UI scaling arrives as a text scaler, so measuring without it reads
+      // short at the larger sizes and the text ends up clipped with no way to
+      // expand it.
+      textScaler: MediaQuery.textScalerOf(context),
     )..layout(maxWidth: maxWidth);
     return tp.didExceedMaxLines;
   }

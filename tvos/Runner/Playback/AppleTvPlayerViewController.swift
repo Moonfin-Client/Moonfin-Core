@@ -38,6 +38,7 @@ final class AppleTvPlayerViewController: UIViewController {
     var onSkipSegmentSelect: (() -> Void)?
     var onUserSeek: (() -> Void)?
     var onSearchSubtitles: (() -> Void)?
+    var onSubtitleDelayChanged: ((Int) -> Void)?
     var onDownloadSubtitle: ((String) -> Void)?
     var onSyncplayLeave: (() -> Void)?
     var onSyncplayIgnoreWait: ((Bool) -> Void)?
@@ -1979,6 +1980,13 @@ final class AppleTvPlayerViewController: UIViewController {
                     self?.onSelectSubtitle?(track.index)
                 })
         }
+        if anySelected {
+            sheet.addAction(
+                UIAlertAction(title: "Subtitle Offset\u{2026}", style: .default) {
+                    [weak self] _ in
+                    self?.presentSubtitleDelayMenu()
+                })
+        }
         if canDownloadSubtitles {
             sheet.addAction(
                 UIAlertAction(title: "Download Subtitles\u{2026}", style: .default) {
@@ -1988,6 +1996,38 @@ final class AppleTvPlayerViewController: UIViewController {
         }
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
+    }
+
+    /// Alerts have no slider on tvOS, so the offset is stepped through a sheet
+    /// that reopens after each adjustment until the user is done.
+    private func presentSubtitleDelayMenu() {
+        let current = player.subtitleOverlay.delaySeconds
+        let sheet = UIAlertController(
+            title: "Subtitle Offset",
+            message: String(format: "%+.1f s", current),
+            preferredStyle: .actionSheet)
+        for step in [-0.5, -0.1, 0.1, 0.5] {
+            sheet.addAction(
+                UIAlertAction(title: String(format: "%+.1f s", step), style: .default) {
+                    [weak self] _ in
+                    self?.applySubtitleDelay(current + step)
+                })
+        }
+        if current != 0 {
+            sheet.addAction(
+                UIAlertAction(title: "Reset", style: .default) { [weak self] _ in
+                    self?.applySubtitleDelay(0)
+                })
+        }
+        sheet.addAction(UIAlertAction(title: "Done", style: .cancel))
+        present(sheet, animated: true)
+    }
+
+    private func applySubtitleDelay(_ seconds: TimeInterval) {
+        let rounded = (seconds * 10).rounded() / 10
+        player.setSubtitleDelay(rounded)
+        onSubtitleDelayChanged?(Int((rounded * 1000).rounded()))
+        presentSubtitleDelayMenu()
     }
 
     private func beginSubtitleSearch() {

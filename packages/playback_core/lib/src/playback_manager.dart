@@ -1597,7 +1597,7 @@ class PlaybackManager implements AudioOwnable {
         final isBurnedIn =
             (_isSubtitleBitmap(_subtitleStreamIndex!) &&
              !(_backend?.canRenderBitmapSubtitles ?? false)) ||
-            resolution.streamUrl.toLowerCase().contains('subtitlemethod=encode');
+            _isSubtitleBurnedIn(_subtitleStreamIndex);
         if (isBurnedIn) {
           _waitAndDisableSubtitles(sessionToken, force: true);
         } else if (_subtitleRendererModeForStream(_subtitleStreamIndex!) ==
@@ -1883,6 +1883,32 @@ class PlaybackManager implements AudioOwnable {
     return _bitmapSubCodecs.contains(codec);
   }
 
+  /// Whether the server is painting [streamIndex] into the video itself.
+  ///
+  /// Not every server says so in the stream URL, so the delivery method the
+  /// media source reports is asked as well. Missing it leaves the client
+  /// drawing its own copy over the one already in the picture. Only a
+  /// transcode can burn anything in, so that second answer is not worth
+  /// reading on any other play method, where a stream can carry a delivery
+  /// method describing what a transcode would have done.
+  bool _isSubtitleBurnedIn(int? streamIndex) {
+    if (streamIndex != null &&
+        streamIndex >= 0 &&
+        _currentResolution?.playMethod == StreamPlayMethod.transcode) {
+      for (final s in _currentMediaStreams) {
+        if (s['Type'] != 'Subtitle') continue;
+        if (s['Index'] != streamIndex) continue;
+        final method = (s['DeliveryMethod'] as String?)?.trim().toLowerCase();
+        if (method == 'encode') return true;
+        break;
+      }
+    }
+    return _currentResolution?.streamUrl.toLowerCase().contains(
+          'subtitlemethod=encode',
+        ) ??
+        false;
+  }
+
   bool _isSubtitleExternal(int streamIndex) {
     final streams = _currentMediaStreams;
     if (streams.isEmpty) return false;
@@ -2091,7 +2117,7 @@ class PlaybackManager implements AudioOwnable {
            previousSubtitleStreamIndex >= 0 &&
            _isSubtitleBitmap(previousSubtitleStreamIndex) &&
            !(_backend?.canRenderBitmapSubtitles ?? false)) ||
-          (_currentResolution?.streamUrl.toLowerCase().contains('subtitlemethod=encode') ?? false);
+          _isSubtitleBurnedIn(previousSubtitleStreamIndex);
       if (previousWasBurned && !isBitmap) {
         await _backend?.disableSubtitleTrack();
         await _reResolveAtCurrentPosition();
@@ -2127,8 +2153,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> disableSubtitles() => _withProgressPaused(() async {
-    final previousWasBurned =
-        _currentResolution?.streamUrl.toLowerCase().contains('subtitlemethod=encode') ?? false;
+    final previousWasBurned = _isSubtitleBurnedIn(_subtitleStreamIndex);
     _subtitleStreamIndex = -1;
     _lastExplicitSubtitleEnabled = false;
     _lastExplicitSubtitleLanguage = null;
@@ -2257,7 +2282,7 @@ class PlaybackManager implements AudioOwnable {
         if (sessionToken != _playbackSessionToken) return;
       }
     }
-    final isBurnedIn = _currentResolution?.streamUrl.toLowerCase().contains('subtitlemethod=encode') ?? false;
+    final isBurnedIn = _isSubtitleBurnedIn(_subtitleStreamIndex);
     if (isBurnedIn) {
       await _resetSubtitleRendererMode();
       await _backend?.disableSubtitleTrack();

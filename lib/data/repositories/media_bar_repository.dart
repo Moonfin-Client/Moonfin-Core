@@ -326,7 +326,10 @@ class MediaBarRepository {
             includeItemTypes: itemTypes,
             sortBy: 'SortName',
             sortOrder: 'Ascending',
-            recursive: parentId == null,
+            // A library the user has grouped with others holds those libraries
+            // rather than the titles, so only a recursive walk reaches anything.
+            // The type filter keeps the walk to movies and series either way.
+            recursive: true,
             parentId: parentId,
             limit: 1,
             enableTotalRecordCount: true,
@@ -353,7 +356,7 @@ class MediaBarRepository {
             includeItemTypes: itemTypes,
             sortBy: 'SortName',
             sortOrder: 'Ascending',
-            recursive: parentId == null,
+            recursive: true,
             parentId: parentId,
             startIndex: startIndex,
             limit: windowSize,

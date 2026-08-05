@@ -28,7 +28,8 @@ import 'util/webview_environment.dart';
 import 'data/services/theme_store_service.dart';
 import 'di/injection.dart';
 import 'playback/appletv_audio_now_playing_feeder.dart';
-import 'playback/appletv_mpv_backend.dart';
+import 'playback/appletv_backend.dart';
+import 'playback/audio_capability_profile.dart';
 import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
 import 'playback/media_browse_service.dart';
@@ -50,8 +51,8 @@ DateTime? _lastIosRouteResync;
 /// iOS-only audio route handling: observe output route changes to (a) pause when
 /// the current output device disappears (AirPods removed, cable unplugged) and
 /// (b) re-sync A/V when the output switches mid-playback (a new device connects,
-/// or AirPlay/HomePod is selected), which otherwise leaves libmpv writing to a
-/// stale clock and drifts audio out of sync.
+/// or AirPlay/HomePod is selected), which otherwise leaves the player writing
+/// to a stale clock and drifts audio out of sync.
 void _attachIosAudioRouteHandling() {
   final session = AVAudioSession();
   session.routeChangeStream.listen((change) async {
@@ -70,8 +71,8 @@ void _attachIosAudioRouteHandling() {
           return;
         }
         _lastIosRouteResync = now;
-        // A same-position seek re-primes libmpv's audio/video clock without an
-        // audible pause, realigning A/V after the output switch.
+        // A same-position seek re-primes the player's audio/video clock without
+        // an audible pause, realigning A/V after the output switch.
         await manager.seekTo(manager.state.position);
         break;
       default:
@@ -539,7 +540,7 @@ void main() async {
       final feeder = AppleTvAudioNowPlayingFeeder(
         manager: GetIt.instance<PlaybackManager>(),
         clientFactory: GetIt.instance<MediaServerClientFactory>(),
-        backend: GetIt.instance<AppleTvMpvBackend>(),
+        backend: GetIt.instance<AppleTvBackend>(),
       )..start();
       GetIt.instance.registerSingleton<AppleTvAudioNowPlayingFeeder>(feeder);
     } catch (_) {}

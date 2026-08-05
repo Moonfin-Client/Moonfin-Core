@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
-import '../../l10n/app_localizations.dart';
+import '../../l10n/current_app_localizations.dart';
 import '../../playback/car_artwork.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
@@ -184,7 +183,7 @@ class TvChannelsService {
     MediaServerClient client, {
     required String serverId,
   }) async {
-    final l10n = _localizations();
+    final l10n = currentAppLocalizations();
     final dataSource = RowDataSource(client);
     final prefs = GetIt.instance<UserPreferences>();
 
@@ -240,33 +239,5 @@ class TvChannelsService {
       channels.add({'key': key, 'title': title, 'items': items});
     }
     return channels;
-  }
-
-  /// Resolves localized channel titles without a [BuildContext], matching how
-  /// the app picks its locale from the language override preference.
-  static AppLocalizations _localizations() {
-    ui.Locale? resolved;
-    try {
-      final override =
-          GetIt.instance<UserPreferences>().get(UserPreferences.languageOverride);
-      if (override != 'system') {
-        for (final locale in AppLocalizations.supportedLocales) {
-          if (locale.toLanguageTag() == override ||
-              locale.toString() == override) {
-            resolved = locale;
-            break;
-          }
-        }
-      }
-    } catch (_) {}
-    resolved ??= _matchSupported(ui.PlatformDispatcher.instance.locale);
-    return lookupAppLocalizations(resolved ?? const ui.Locale('en'));
-  }
-
-  static ui.Locale? _matchSupported(ui.Locale system) {
-    for (final locale in AppLocalizations.supportedLocales) {
-      if (locale.languageCode == system.languageCode) return locale;
-    }
-    return null;
   }
 }

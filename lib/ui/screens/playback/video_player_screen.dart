@@ -6222,23 +6222,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       if (!mounted) return;
 
+      final delayLimits = _delayLimits(audio: audio);
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        // Delay controls are only wired for the MPV/MediaKit backend.
-        // ExoPlayer (Media3) backend does not play/sync nicely with offsets,
-        // so the footer is hidden on other backends to avoid a confusing unresponsive control.
-        footer: _activeMediaKitBackend != null
-            ? _DelayFooter(
+        footer: delayLimits == null
+            ? null
+            : _DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
+                minDelay: delayLimits.$1,
+                maxDelay: delayLimits.$2,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
-              )
-            : null,
+              ),
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -6739,6 +6739,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  /// The range the active backend honors, or null when it cant offset this
+  /// track at all. Either bound being null means it takes anything.
+  ///
+  /// Media3 clamps audio to two seconds either way, and it can only hold a cue
+  /// back once ExoPlayer surfaces it, never show one early, so its subtitle
+  /// offset starts at zero. Aether has its own subtitle overlay to shift but no
+  /// say over AVFoundation audio timing.
+  (double?, double?)? _delayLimits({required bool audio}) {
+    final backend = _activeBackend;
+    if (backend is MediaKitPlayerBackend) return (null, null);
+    if (backend is Media3PlayerBackend) {
+      return audio ? (-2.0, 2.0) : (0.0, 5.0);
+    }
+    if (backend is AetherBackend) return audio ? null : (null, null);
+    return null;
+  }
+
   void _applyDelay({required bool audio, required double delay}) {
     if (audio) {
       _audioDelay = delay;
@@ -7134,12 +7151,16 @@ class _CastPersonTileState extends State<_CastPersonTile> {
 class _DelayFooter extends StatefulWidget {
   final double initialDelay;
   final String label;
+  final double? minDelay;
+  final double? maxDelay;
   final void Function(double delay) onDelayChanged;
   final String Function(double seconds) formatDelay;
 
   const _DelayFooter({
     required this.initialDelay,
     required this.label,
+    this.minDelay,
+    this.maxDelay,
     required this.onDelayChanged,
     required this.formatDelay,
   });
@@ -7158,8 +7179,14 @@ class _DelayFooterState extends State<_DelayFooter> {
   }
 
   void _adjust(double delta) {
-    setState(() => _delay = ((_delay + delta) * 10).roundToDouble() / 10);
-    widget.onDelayChanged(_delay);
+    var next = ((_delay + delta) * 10).roundToDouble() / 10;
+    final min = widget.minDelay;
+    final max = widget.maxDelay;
+    if (min != null && next < min) next = min;
+    if (max != null && next > max) next = max;
+    if (next == _delay) return;
+    setState(() => _delay = next);
+    widget.onDelayChanged(next);
   }
 
   @override

@@ -132,7 +132,11 @@ class _StartupScreenState extends State<StartupScreen>
 
     if (!mounted) return;
 
-    if (credentialStore.consumeSecureStorageUnavailable()) {
+    // Read the flag either way so a one-off failure doesn't carry over to the
+    // next launch, but only warn when it cost the user something. A session
+    // that came back has the token it needs and the warning is just noise.
+    final storageFailed = credentialStore.consumeSecureStorageUnavailable();
+    if (storageFailed && !(restored && session.activeUserId != null)) {
       await _showSecureStorageWarning();
       if (!mounted) return;
     }

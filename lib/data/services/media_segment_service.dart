@@ -45,8 +45,12 @@ class MediaSegmentService {
     for (final part in raw.split(',')) {
       final kv = part.split(':');
       if (kv.length != 2) continue;
+      final name = kv[0].trim();
+      // Reaching for the first letter of a nameless entry throws, and this runs
+      // on every position tick, so one bad entry would take the prompt with it.
+      if (name.isEmpty) continue;
       final type = MediaSegmentType.fromServerString(
-          kv[0].trim().substring(0, 1).toUpperCase() + kv[0].trim().substring(1));
+          name[0].toUpperCase() + name.substring(1));
       final action = switch (kv[1].trim()) {
         'skip' => MediaSegmentAction.skip,
         'askToSkip' => MediaSegmentAction.askToSkip,
