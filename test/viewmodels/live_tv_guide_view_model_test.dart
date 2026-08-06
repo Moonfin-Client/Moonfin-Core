@@ -9,6 +9,13 @@ class _MockLiveTvApi extends Mock implements LiveTvApi {}
 
 Map<String, dynamic> _channel(String id) => {'Id': id, 'Name': 'Ch $id'};
 
+GuideProgram _program(Map<String, dynamic> raw) => GuideProgram.fromRawItem(
+      raw,
+      channelId: 'c1',
+      startDate: DateTime(2026, 8, 5, 20),
+      endDate: DateTime(2026, 8, 5, 21),
+    );
+
 void main() {
   late _MockClient client;
   late _MockLiveTvApi liveTv;
@@ -81,4 +88,76 @@ void main() {
       expect(vm.programsHighWater, 120);
     },
   );
+
+  // Guide providers are patchy about which of ParentIndexNumber and
+  // IndexNumber they fill in, so every combination has to read well.
+  group('episodeLabel', () {
+    test('puts the season and episode ahead of the title', () {
+      final program = _program({
+        'Name': 'Blue Bloods',
+        'EpisodeTitle': 'The Poor Door',
+        'ParentIndexNumber': 5,
+        'IndexNumber': 9,
+      });
+
+      expect(program.seasonNumber, 5);
+      expect(program.episodeNumber, 9);
+      expect(program.episodeLabel, 'S5:E9 - The Poor Door');
+    });
+
+    test('numbers the episode on its own when the season is missing', () {
+      expect(
+        _program({'EpisodeTitle': 'The Poor Door', 'IndexNumber': 9})
+            .episodeLabel,
+        '9. The Poor Door',
+      );
+    });
+
+    test('spans a listing that runs several episodes', () {
+      expect(
+        _program({
+          'EpisodeTitle': 'Marathon',
+          'ParentIndexNumber': 5,
+          'IndexNumber': 9,
+          'IndexNumberEnd': 12,
+        }).episodeLabel,
+        'S5:E9-12 - Marathon',
+      );
+    });
+
+    test('drops to the numbers alone when the listing has no title', () {
+      expect(
+        _program({
+          'Name': 'Blue Bloods',
+          'ParentIndexNumber': 5,
+          'IndexNumber': 9,
+        }).episodeLabel,
+        'S5:E9',
+      );
+    });
+
+    test('leaves a titled listing with no numbers as it was', () {
+      expect(
+        _program({'Name': 'Blue Bloods', 'EpisodeTitle': 'The Poor Door'})
+            .episodeLabel,
+        'The Poor Door',
+      );
+    });
+
+    test('has no line at all for a listing with neither', () {
+      expect(_program({'Name': 'The Six O Clock News'}).episodeLabel, isNull);
+      expect(_program({'EpisodeTitle': '  '}).episodeLabel, isNull);
+    });
+
+    test('reads numbers a server sent as decimals', () {
+      expect(
+        _program({
+          'EpisodeTitle': 'The Poor Door',
+          'ParentIndexNumber': 5.0,
+          'IndexNumber': 9.0,
+        }).episodeLabel,
+        'S5:E9 - The Poor Door',
+      );
+    });
+  });
 }

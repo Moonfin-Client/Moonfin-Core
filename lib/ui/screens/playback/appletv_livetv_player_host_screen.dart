@@ -326,22 +326,11 @@ class _AppleTvLiveTvPlayerHostScreenState
       }
       if (_currentChannel.id != channelId) return;
 
-      _currentProgram = GuideProgram(
-        id: selected['Id']?.toString() ?? '',
+      _currentProgram = GuideProgram.fromRawItem(
+        selected,
         channelId: channelId,
-        name: selected['Name']?.toString() ?? '',
         startDate: selectedStart,
         endDate: selectedEnd,
-        overview: selected['Overview'] as String?,
-        episodeTitle: selected['EpisodeTitle'] as String?,
-        isMovie: selected['IsMovie'] == true,
-        isSeries: selected['IsSeries'] == true,
-        isSports: selected['IsSports'] == true,
-        isNews: selected['IsNews'] == true,
-        isKids: selected['IsKids'] == true,
-        isPremiere: selected['IsPremiere'] == true,
-        hasTimer: selected['TimerId'] != null,
-        rawData: selected,
       );
       _pushMetadata();
     } catch (_) {}
@@ -430,7 +419,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     if (program == null) return null;
     return {
       'name': program.name,
-      'episodeTitle': program.episodeTitle ?? '',
+      'episodeTitle': program.episodeLabel ?? '',
       'startMs': program.startDate.millisecondsSinceEpoch,
       'endMs': program.endDate.millisecondsSinceEpoch,
       'hasTimer': program.hasTimer,

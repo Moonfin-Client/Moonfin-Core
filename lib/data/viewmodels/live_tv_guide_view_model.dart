@@ -41,6 +41,16 @@ class GuideProgram {
   final DateTime endDate;
   final String? overview;
   final String? episodeTitle;
+
+  /// Where the episode sits in its series, from the program's
+  /// ParentIndexNumber and IndexNumber. A guide provider can fill in one, both
+  /// or neither.
+  final int? seasonNumber;
+  final int? episodeNumber;
+
+  /// Set when one listing runs several episodes back to back.
+  final int? episodeNumberEnd;
+
   final bool isMovie;
   final bool isSeries;
   final bool isSports;
@@ -58,6 +68,9 @@ class GuideProgram {
     required this.endDate,
     this.overview,
     this.episodeTitle,
+    this.seasonNumber,
+    this.episodeNumber,
+    this.episodeNumberEnd,
     this.isMovie = false,
     this.isSeries = false,
     this.isSports = false,
@@ -68,7 +81,51 @@ class GuideProgram {
     required this.rawData,
   });
 
+  factory GuideProgram.fromRawItem(
+    Map<String, dynamic> raw, {
+    required String channelId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) =>
+      GuideProgram(
+        id: raw['Id']?.toString() ?? '',
+        channelId: channelId,
+        name: raw['Name']?.toString() ?? '',
+        startDate: startDate,
+        endDate: endDate,
+        overview: raw['Overview'] as String?,
+        episodeTitle: raw['EpisodeTitle'] as String?,
+        seasonNumber: _index(raw['ParentIndexNumber']),
+        episodeNumber: _index(raw['IndexNumber']),
+        episodeNumberEnd: _index(raw['IndexNumberEnd']),
+        isMovie: raw['IsMovie'] == true,
+        isSeries: raw['IsSeries'] == true,
+        isSports: raw['IsSports'] == true,
+        isNews: raw['IsNews'] == true,
+        isKids: raw['IsKids'] == true,
+        isPremiere: raw['IsPremiere'] == true,
+        hasTimer: raw['TimerId'] != null,
+        rawData: raw,
+      );
+
+  static int? _index(Object? value) => value is num ? value.toInt() : null;
+
   Duration get duration => endDate.difference(startDate);
+
+  /// The episode line as Jellyfin and Emby write it, "S5:E9 - The Poor Door".
+  /// A listing with no season falls back to "9. The Poor Door", and one with
+  /// no numbers is left as the title on its own.
+  String? get episodeLabel {
+    final title = episodeTitle?.trim();
+    final hasTitle = title != null && title.isNotEmpty;
+    final episode = episodeNumber;
+    if (episode == null) return hasTitle ? title : null;
+
+    var number = seasonNumber == null ? '$episode' : 'S$seasonNumber:E$episode';
+    if (episodeNumberEnd != null) number = '$number-$episodeNumberEnd';
+    if (!hasTitle) return number;
+    return seasonNumber == null ? '$number. $title' : '$number - $title';
+  }
 
   bool get isLive {
     final now = DateTime.now();
@@ -517,22 +574,11 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       final endStr = raw['EndDate'] as String?;
       if (startStr == null || endStr == null) continue;
 
-      final program = GuideProgram(
-        id: raw['Id']?.toString() ?? '',
+      final program = GuideProgram.fromRawItem(
+        raw,
         channelId: channelId,
-        name: raw['Name'] as String? ?? '',
         startDate: DateTime.parse(startStr).toLocal(),
         endDate: DateTime.parse(endStr).toLocal(),
-        overview: raw['Overview'] as String?,
-        episodeTitle: raw['EpisodeTitle'] as String?,
-        isMovie: raw['IsMovie'] == true,
-        isSeries: raw['IsSeries'] == true,
-        isSports: raw['IsSports'] == true,
-        isNews: raw['IsNews'] == true,
-        isKids: raw['IsKids'] == true,
-        isPremiere: raw['IsPremiere'] == true,
-        hasTimer: raw['TimerId'] != null,
-        rawData: raw,
       );
 
       (_programsByChannel[channelId] ??= <GuideProgram>[]).add(program);

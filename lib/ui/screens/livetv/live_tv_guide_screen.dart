@@ -751,7 +751,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   }) {
     final l10n = AppLocalizations.of(context);
     final title = program?.name ?? channel?.name ?? l10n.guideTimeline;
-    final episodeTitle = program?.episodeTitle;
+    final episodeLabel = program?.episodeLabel;
     final timeRange = program == null
         ? null
         : '${_formatTime(program.startDate)} - ${_formatTime(program.endDate)}';
@@ -807,10 +807,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                if (episodeTitle != null && episodeTitle.isNotEmpty) ...[
+                if (episodeLabel != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    episodeTitle,
+                    episodeLabel,
                     style: const TextStyle(
                       color: Colors.white70,
                       fontSize: AppTypography.fontSizeSm,
@@ -1198,6 +1198,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     final channel = _vm.channelForId(program.channelId);
     final isFavoriteChannel = channel?.isFavorite ?? false;
     final hasTimer = program.hasTimer;
+    final episodeLabel = program.episodeLabel;
     final l10n = AppLocalizations.of(context);
     var dialogActionInProgress = false;
 
@@ -1215,9 +1216,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
                 '${_formatTime(program.startDate)} – ${_formatTime(program.endDate)}',
                 style: const TextStyle(color: Colors.white70),
               ),
-              if (program.episodeTitle != null) ...[
+              if (episodeLabel != null) ...[
                 const SizedBox(height: 8),
-                Text(program.episodeTitle!, style: const TextStyle(color: Colors.white70)),
+                Text(episodeLabel, style: const TextStyle(color: Colors.white70)),
               ],
               if (program.overview != null && program.overview!.isNotEmpty) ...[
                 const SizedBox(height: 12),

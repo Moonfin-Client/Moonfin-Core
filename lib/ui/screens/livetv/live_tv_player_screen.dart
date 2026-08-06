@@ -708,22 +708,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       final selectedProgramEnd = selectedEnd;
 
       setState(() {
-        _currentProgram = GuideProgram(
-          id: selectedMap['Id']?.toString() ?? '',
+        _currentProgram = GuideProgram.fromRawItem(
+          selectedMap,
           channelId: channelId,
-          name: selectedMap['Name']?.toString() ?? '',
           startDate: selectedProgramStart,
           endDate: selectedProgramEnd,
-          overview: selectedMap['Overview'] as String?,
-          episodeTitle: selectedMap['EpisodeTitle'] as String?,
-          isMovie: selectedMap['IsMovie'] == true,
-          isSeries: selectedMap['IsSeries'] == true,
-          isSports: selectedMap['IsSports'] == true,
-          isNews: selectedMap['IsNews'] == true,
-          isKids: selectedMap['IsKids'] == true,
-          isPremiere: selectedMap['IsPremiere'] == true,
-          hasTimer: selectedMap['TimerId'] != null,
-          rawData: selectedMap,
         );
       });
     } catch (_) {}
@@ -1744,7 +1733,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   Widget _buildBottomOverlay() {
     final padding = MediaQuery.of(context).padding;
-    final program = _currentProgram;
+    final episodeLabel = _currentProgram?.episodeLabel;
 
     return Positioned(
       bottom: 0,
@@ -1768,11 +1757,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (program?.episodeTitle != null)
+            if (episodeLabel != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.spaceXs),
                 child: Text(
-                  program!.episodeTitle!,
+                  episodeLabel,
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: AppTypography.fontSizeSm,
