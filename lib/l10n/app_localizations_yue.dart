@@ -2630,13 +2630,6 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => '偵測到嘅音訊能力';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable => '暫時仲未有執行階段嘅能力快照。';
 
   @override

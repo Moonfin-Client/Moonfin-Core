@@ -20,6 +20,11 @@ static uint32_t framebuffer[STUB_WIDTH * STUB_HEIGHT];
 static int32_t frame_counter;
 static uint8_t sram[64];
 
+// Set from the ROM contents, to mimic a core whose boot fails a few frames in:
+// it asks the frontend to quit and would fault if it were run again.
+static int shutdown_frame;
+static int did_shutdown;
+
 void retro_set_environment(retro_environment_t cb) { env_cb = cb; }
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 void retro_set_audio_sample(retro_audio_sample_t cb) { (void)cb; }
@@ -61,7 +66,12 @@ void retro_get_system_av_info(struct retro_system_av_info *info) {
 }
 
 bool retro_load_game(const struct retro_game_info *game) {
-  (void)game;
+  shutdown_frame = 0;
+  did_shutdown = 0;
+  if (game && game->data && game->size >= 8 &&
+      memcmp(game->data, "shutdown", 8) == 0) {
+    shutdown_frame = 3;
+  }
   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
   env_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
 
@@ -76,6 +86,19 @@ bool retro_load_game(const struct retro_game_info *game) {
 void retro_unload_game(void) {}
 
 void retro_run(void) {
+  if (did_shutdown) {
+    // A real core would fault here. Say so instead, so the harness can tell.
+    struct retro_message late = {"stub ran after shutdown", 180};
+    env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &late);
+    return;
+  }
+  if (shutdown_frame > 0 && frame_counter >= shutdown_frame) {
+    did_shutdown = 1;
+    struct retro_message msg = {"stub boot failed", 180};
+    env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
+    env_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
+    return;
+  }
   input_poll_cb();
   int16_t mask =
       input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);

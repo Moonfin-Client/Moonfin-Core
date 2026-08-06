@@ -2701,13 +2701,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'Илрүүлсэн аудио чадавхи';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Одоогоор ажиллах цагийн боломжийн агшин зураг байхгүй байна.';
 

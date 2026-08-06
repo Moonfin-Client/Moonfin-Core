@@ -2705,13 +2705,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Khả năng âm thanh được phát hiện';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Chưa có ảnh chụp nhanh khả năng thời gian chạy.';
 

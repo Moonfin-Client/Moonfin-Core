@@ -2697,13 +2697,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'හඳුනාගත් ශ්‍රව්‍ය හැකියාවන්';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'ධාවන කාලයේ හැකියාවන් පිළිබඳ තොරතුරු තවම නොමැත.';
 

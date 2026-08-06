@@ -2684,13 +2684,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'قابلیت های صوتی شناسایی شده';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'هنوز عکس فوری قابلیت زمان اجرا در دسترس نیست.';
 

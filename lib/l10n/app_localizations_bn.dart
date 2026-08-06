@@ -2691,13 +2691,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'সনাক্ত করা অডিও ক্ষমতা';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'কোন রানটাইম ক্ষমতা স্ন্যাপশট এখনও উপলব্ধ.';
 

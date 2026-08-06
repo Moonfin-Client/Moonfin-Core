@@ -46,6 +46,9 @@ final class GameSession {
     private var thread: Thread?
     nonisolated(unsafe) private var running = false
     nonisolated(unsafe) private var paused = false
+    // Set when the core asks to quit, with its last message as the reason.
+    nonisolated(unsafe) private var shutdownRequested = false
+    nonisolated(unsafe) private var lastCoreMessage: String?
     nonisolated(unsafe) private var fastForward = 1
     nonisolated(unsafe) private var jobs: [() -> Void] = []
     nonisolated private let jobsLock = NSLock()
@@ -105,12 +108,15 @@ final class GameSession {
             ok = core.loadGame(&game)
         }
         free(pathC)
-        guard ok else {
+        // A core that asked to quit during the load has nothing to run.
+        guard ok, !shutdownRequested else {
+            if ok { core.unloadGame() }
             core.retroDeinit()
             core.close()
             self.core = nil
             LibretroBridge.session = nil
-            throw SessionError.loadFailed("retro_load_game returned false")
+            throw SessionError.loadFailed(
+                ok ? "core shut down during load" : "retro_load_game returned false")
         }
 
         var av = retro_system_av_info()
@@ -132,7 +138,7 @@ final class GameSession {
     }
 
     func startRunLoop() {
-        guard thread == nil, core != nil else { return }
+        guard thread == nil, core != nil, !shutdownRequested else { return }
         running = true
         paused = false
         let t = Thread { [weak self] in self?.runLoop() }
@@ -242,10 +248,11 @@ final class GameSession {
                 continue
             }
             let iterations = fastForward
-            for _ in 0..<iterations {
+            for _ in 0..<iterations where running {
                 core?.run()
             }
             drainJobs()
+            if !running { break }
             flushSramIfDue()
             // Audio-master pacing: wait until the ring drains to the target level.
             while running && !paused && audio.bufferedSeconds > paceSeconds {
@@ -253,7 +260,9 @@ final class GameSession {
             }
         }
         // Teardown on the emulation thread so no retro_* call races retro_deinit.
-        flushSram()
+        // A core that quit has no save worth keeping, and its memory pointers
+        // may already be gone, so writing SRAM would only risk the good file.
+        if !shutdownRequested { flushSram() }
         if let core {
             core.unloadGame()
             core.retroDeinit()
@@ -261,6 +270,23 @@ final class GameSession {
         }
         core = nil
         thread = nil
+
+        // The core quit on its own, so say why instead of leaving a frozen
+        // picture behind.
+        if shutdownRequested {
+            let detail = lastCoreMessage ?? "The emulator core stopped unexpectedly."
+            DispatchQueue.main.async { [weak self] in
+                self?.onEvent?(["event": "error", "message": detail])
+            }
+        }
+    }
+
+    nonisolated private func deliverCoreMessage(_ text: String) {
+        guard !text.isEmpty else { return }
+        lastCoreMessage = text
+        DispatchQueue.main.async { [weak self] in
+            self?.onEvent?(["event": "coreMessage", "message": text])
+        }
     }
 
     private func enqueueJob(_ job: @escaping () -> Void) {
@@ -346,6 +372,26 @@ final class GameSession {
             data?.assumingMemoryBound(to: Bool.self).pointee = true
             return true
         case 8:  // SET_PERFORMANCE_LEVEL
+            return true
+        case 7:  // SHUTDOWN
+            // A core asks for this when a boot or a reset failed, and then
+            // answers the next retro_run with a machine it never initialised.
+            // Ending the loop keeps that frame from faulting inside the core.
+            shutdownRequested = true
+            running = false
+            return true
+        case 6:  // SET_MESSAGE
+            guard let data else { return false }
+            let msg = data.assumingMemoryBound(to: retro_message.self).pointee
+            if let text = msg.msg { deliverCoreMessage(String(cString: text)) }
+            return true
+        case 60:  // SET_MESSAGE_EXT
+            guard let data else { return false }
+            let msg = data.assumingMemoryBound(to: retro_message_ext.self).pointee
+            if let text = msg.msg { deliverCoreMessage(String(cString: text)) }
+            return true
+        case 59:  // GET_MESSAGE_INTERFACE_VERSION
+            data?.assumingMemoryBound(to: UInt32.self).pointee = 1
             return true
         case 9:  // GET_SYSTEM_DIRECTORY
             guard let data, let dir = systemDirC else { return false }

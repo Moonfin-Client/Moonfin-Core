@@ -224,11 +224,14 @@ struct lh_host {
   atomic_int running;
   atomic_int paused;
   atomic_int fast_forward;
+  atomic_int shutdown_requested;
   uint64_t last_sram_flush_ns;
 
-  // Jobs.
+  // Jobs. jobs_open says whether the loop is still there to drain them, so a
+  // job queued as the loop exits is never left waiting.
   lh_job *jobs[LH_MAX_JOBS];
   int job_count;
+  int jobs_open;
   lh_mutex jobs_lock;
   lh_cond jobs_cond;
 };
@@ -327,6 +330,10 @@ static void RETRO_CALLCONV log_printf_cb(enum retro_log_level level,
   va_end(args);
 }
 
+static void deliver_message(struct lh_host *h, const char *text) {
+  if (text && *text && h->cb.message) h->cb.message(h->cb.user, text);
+}
+
 static bool RETRO_CALLCONV environment_cb(unsigned cmd, void *data) {
   struct lh_host *h = g_session;
   if (!h) return false;
@@ -335,6 +342,28 @@ static bool RETRO_CALLCONV environment_cb(unsigned cmd, void *data) {
       if (data) *(bool *)data = true;
       return true;
     case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+      return true;
+    case RETRO_ENVIRONMENT_SHUTDOWN:
+      // A core asks for this when a boot or a reset failed, and then answers
+      // the next retro_run with a machine it never initialised. Stopping the
+      // loop here is what keeps that frame from faulting inside the core.
+      h->shutdown_requested = 1;
+      h->running = 0;
+      return true;
+    case RETRO_ENVIRONMENT_SET_MESSAGE:
+      if (!data) return false;
+      deliver_message(h, ((const struct retro_message *)data)->msg);
+      return true;
+    case RETRO_ENVIRONMENT_SET_MESSAGE_EXT: {
+      if (!data) return false;
+      const struct retro_message_ext *msg =
+          (const struct retro_message_ext *)data;
+      // Log-only messages are not meant for the user.
+      if (msg->target != RETRO_MESSAGE_TARGET_LOG) deliver_message(h, msg->msg);
+      return true;
+    }
+    case RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
+      if (data) *(unsigned *)data = 1;
       return true;
     case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
       if (!data || !h->system_dir) return false;
@@ -576,18 +605,21 @@ static void execute_job(struct lh_host *h, lh_job *job) {
 }
 
 // Runs [job] on the emulation thread and waits, or inline when no loop runs.
+// A full queue or a loop that already exited gives up instead of waiting, since
+// nothing would ever mark the job done.
 static void run_job(struct lh_host *h, lh_job *job) {
   mutex_lock(&h->jobs_lock);
-  if (!h->has_thread || !h->running) {
+  if (h->jobs_open) {
+    if (h->job_count < LH_MAX_JOBS) {
+      h->jobs[h->job_count++] = job;
+      while (!job->done) cond_wait(&h->jobs_cond, &h->jobs_lock);
+    }
     mutex_unlock(&h->jobs_lock);
-    execute_job(h, job);
     return;
   }
-  if (h->job_count < LH_MAX_JOBS) {
-    h->jobs[h->job_count++] = job;
-  }
-  while (!job->done) cond_wait(&h->jobs_cond, &h->jobs_lock);
+  int loaded = h->core_loaded;
   mutex_unlock(&h->jobs_lock);
+  if (loaded) execute_job(h, job);
 }
 
 static void drain_jobs(struct lh_host *h) {
@@ -656,10 +688,11 @@ static void *run_loop(void *arg) {
       continue;
     }
     int iterations = h->fast_forward;
-    for (int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations && h->running; i++) {
       if (h->core.run) h->core.run();
     }
     drain_jobs(h);
+    if (!h->running) break;
     if (now_ns() - h->last_sram_flush_ns > 30000000000ull) sram_flush(h);
 
     if (h->audio_paced) {
@@ -695,12 +728,28 @@ static void *run_loop(void *arg) {
     }
   }
 
-  sram_flush(h);
+  // Close the queue before touching the core, so a job that arrives while this
+  // thread is unloading is refused rather than run against a freed library.
+  mutex_lock(&h->jobs_lock);
+  h->jobs_open = 0;
+  h->core_loaded = 0;
+  for (int i = 0; i < h->job_count; i++) h->jobs[i]->done = 1;
+  h->job_count = 0;
+  cond_broadcast(&h->jobs_cond);
+  mutex_unlock(&h->jobs_lock);
+
+  // A core that quit has no save worth keeping, and its memory pointers may
+  // already be gone, so writing SRAM now would only risk the good file.
+  if (!h->shutdown_requested) sram_flush(h);
   if (h->core.unload_game) h->core.unload_game();
   if (h->core.deinit) h->core.deinit();
   if (h->core.handle) lib_close(h->core.handle);
   memset(&h->core, 0, sizeof(h->core));
-  h->core_loaded = 0;
+
+  // Reported last, once nothing in here touches the core any more.
+  if (h->shutdown_requested && h->cb.core_shutdown) {
+    h->cb.core_shutdown(h->cb.user);
+  }
   return NULL;
 }
 
@@ -801,6 +850,7 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
             const char *const *opt_keys, const char *const *opt_vals,
             int opt_count, lh_av_info *out_info) {
   if (g_session) return -1;  // one session per process
+  h->shutdown_requested = 0;
 
   h->core.handle = lib_open(core_path);
   if (!h->core.handle) return -2;
@@ -858,6 +908,11 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
   bool ok = h->core.load_game(&game);
   free(rom_data);
   if (!ok) return load_failed(h, -5);
+  // A core that asked to quit during the load has nothing to run.
+  if (h->shutdown_requested) {
+    if (h->core.unload_game) h->core.unload_game();
+    return load_failed(h, -6);
+  }
 
   struct retro_system_av_info av;
   memset(&av, 0, sizeof(av));
@@ -886,9 +941,12 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
 }
 
 void lh_start(lh_host *h) {
-  if (!h->core_loaded || h->has_thread) return;
+  if (!h->core_loaded || h->has_thread || h->shutdown_requested) return;
   h->running = 1;
   h->paused = 0;
+  mutex_lock(&h->jobs_lock);
+  h->jobs_open = 1;
+  mutex_unlock(&h->jobs_lock);
   thread_start(h);
 }
 
@@ -913,12 +971,16 @@ void lh_stop(lh_host *h) {
     h->running = 0;
     thread_join(h);  // the loop flushes SRAM and tears the core down
   } else if (h->core_loaded) {
+    // Same order as the run loop's exit, so a job from another thread is
+    // refused rather than run against a core going away.
+    mutex_lock(&h->jobs_lock);
+    h->core_loaded = 0;
+    mutex_unlock(&h->jobs_lock);
     sram_flush(h);
     if (h->core.unload_game) h->core.unload_game();
     if (h->core.deinit) h->core.deinit();
     if (h->core.handle) lib_close(h->core.handle);
     memset(&h->core, 0, sizeof(h->core));
-    h->core_loaded = 0;
   }
   g_session = NULL;
   free(h->system_dir);

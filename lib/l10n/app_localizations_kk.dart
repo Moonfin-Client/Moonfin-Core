@@ -2706,13 +2706,6 @@ class AppLocalizationsKk extends AppLocalizations {
       'Анықталған аудио мүмкіндіктері';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Орындалу кезіндегі мүмкіндіктер туралы дерек әзірге жоқ.';
 

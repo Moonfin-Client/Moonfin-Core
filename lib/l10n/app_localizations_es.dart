@@ -2717,13 +2717,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Capacidades de audio detectadas';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Aún no hay una instantánea de la capacidad de tiempo de ejecución disponible.';
 

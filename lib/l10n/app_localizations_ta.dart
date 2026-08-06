@@ -2717,13 +2717,6 @@ class AppLocalizationsTa extends AppLocalizations {
       'கண்டறியப்பட்ட ஆடியோ திறன்கள்';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'இயக்க நேரத் திறன் தகவல் இன்னும் கிடைக்கவில்லை.';
 

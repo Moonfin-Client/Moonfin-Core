@@ -3719,14 +3719,6 @@
   "@settingsDetectedAudioCapabilities": {
     "description": "Section title for detected runtime audio capabilities"
   },
-  "settingsShowAudioDecoderBanner": "Show audio decoder",
-  "@settingsShowAudioDecoderBanner": {
-    "description": "Toggle for the in-player audio decoder banner"
-  },
-  "settingsShowAudioDecoderBannerDescription": "Briefly name the decoder handling the audio when playback starts.",
-  "@settingsShowAudioDecoderBannerDescription": {
-    "description": "Description for the in-player audio decoder banner toggle"
-  },
   "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
   "@settingsDetectedAudioCapabilitiesUnavailable": {
     "description": "Message shown when runtime audio capability snapshot is missing"

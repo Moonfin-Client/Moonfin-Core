@@ -2718,13 +2718,6 @@ class AppLocalizationsRo extends AppLocalizations {
       'Capabilități audio detectate';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Nu este disponibil încă un instantaneu al capacității de rulare.';
 

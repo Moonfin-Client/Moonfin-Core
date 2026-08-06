@@ -396,12 +396,6 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
               children: [
                 ..._buildDetectedCapabilities(l10n),
                 _buildRedetectTile(),
-                SwitchPreferenceTile(
-                  preference: UserPreferences.showAudioPathBanner,
-                  title: l10n.settingsShowAudioDecoderBanner,
-                  subtitle: l10n.settingsShowAudioDecoderBannerDescription,
-                  icon: Icons.graphic_eq,
-                ),
               ],
             ),
           ],

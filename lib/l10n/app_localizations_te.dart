@@ -2715,13 +2715,6 @@ class AppLocalizationsTe extends AppLocalizations {
       'గుర్తించిన ఆడియో సామర్థ్యాలు';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'రన్‌టైమ్ సామర్థ్య స్నాప్‌షాట్ ఇంకా అందుబాటులో లేదు.';
 

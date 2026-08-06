@@ -2700,13 +2700,6 @@ class AppLocalizationsDa extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'Detekteret lydkapacitet';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Der er endnu ikke et øjebliksbillede af runtime-kapacitet tilgængelig.';
 

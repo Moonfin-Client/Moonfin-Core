@@ -2627,13 +2627,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => '检测到的音频功能';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable => '尚无可用的运行时功能快照。';
 
   @override

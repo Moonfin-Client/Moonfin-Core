@@ -4888,18 +4888,6 @@ abstract class AppLocalizations {
   /// **'Detected Audio Capabilities'**
   String get settingsDetectedAudioCapabilities;
 
-  /// Toggle for the in-player audio decoder banner
-  ///
-  /// In en, this message translates to:
-  /// **'Show audio decoder'**
-  String get settingsShowAudioDecoderBanner;
-
-  /// Description for the in-player audio decoder banner toggle
-  ///
-  /// In en, this message translates to:
-  /// **'Briefly name the decoder handling the audio when playback starts.'**
-  String get settingsShowAudioDecoderBannerDescription;
-
   /// Message shown when runtime audio capability snapshot is missing
   ///
   /// In en, this message translates to:

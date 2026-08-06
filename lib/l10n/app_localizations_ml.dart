@@ -2714,13 +2714,6 @@ class AppLocalizationsMl extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'കണ്ടെത്തിയ ഓഡിയോ കഴിവുകൾ';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'ഇതുവരെ റൺടൈം കപ്പാബിലിറ്റി സ്നാപ്ഷോട്ട് ലഭ്യമല്ല.';
 

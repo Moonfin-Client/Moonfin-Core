@@ -1,6 +1,12 @@
 import 'dart:async';
 
-enum AudioProducer { mainPlayback, mediaBarTrailer, inlinePreview, themeMusic }
+enum AudioProducer {
+  mainPlayback,
+  game,
+  mediaBarTrailer,
+  inlinePreview,
+  themeMusic,
+}
 
 enum RevokeReason { exclusive, background }
 
@@ -27,7 +33,8 @@ class PlaybackArbiter {
     final ambient = _isAmbient(who);
     for (final entry in _owners.entries.toList()) {
       if (entry.key == who) continue;
-      if (ambient && entry.key == AudioProducer.mainPlayback) continue;
+      // Ambient sound never interrupts what the user is watching or playing.
+      if (ambient && !_isAmbient(entry.key)) continue;
       await _revoke(entry.value, RevokeReason.exclusive);
     }
   }

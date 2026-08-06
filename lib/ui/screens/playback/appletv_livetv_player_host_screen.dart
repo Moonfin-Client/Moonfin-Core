@@ -17,6 +17,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/play_method_label.dart';
 import '../livetv/live_tv_guide_screen.dart';
 import '../../theme/app_theme_controller.dart';
+import 'osd_buttons.dart';
 
 class AppleTvLiveTvPlayerHostScreen extends StatefulWidget {
   final List<GuideChannel> channels;
@@ -640,6 +641,7 @@ class _AppleTvLiveTvPlayerHostScreenState
       liveChannelNumber: channel.number ?? '',
       channelList: _channelListPayload(),
       streamStats: _streamStatsPayload(),
+      osdButtons: visibleOsdButtonIds(_prefs),
     );
   }
 

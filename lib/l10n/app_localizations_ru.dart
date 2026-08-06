@@ -2724,13 +2724,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Обнаруженные возможности звука';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Данные о текущих возможностях устройства пока недоступны.';
 

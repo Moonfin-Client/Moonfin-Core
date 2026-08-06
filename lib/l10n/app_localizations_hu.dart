@@ -2716,13 +2716,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'Észlelt hangképességek';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Még nem érhető el futásidejű képességpillanatkép.';
 

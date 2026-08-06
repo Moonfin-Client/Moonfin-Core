@@ -505,6 +505,7 @@ class AppleTvBackend implements PlayerBackend {
     String liveChannelNumber = '',
     List<Map<String, dynamic>> channelList = const [],
     List<Map<String, dynamic>> streamStats = const [],
+    List<String>? osdButtons,
   }) async {
     await _invoke<void>('setUiMetadata', {
       'topTitle': topTitle,
@@ -532,6 +533,10 @@ class AppleTvBackend implements PlayerBackend {
       'liveChannelNumber': liveChannelNumber,
       'channelList': channelList,
       'streamStats': streamStats,
+      // The buttons the user left switched on, in their order. A caller with
+      // no row to arrange leaves this out, which reads as no opinion rather
+      // than as everything switched off.
+      'osdButtons': ?osdButtons,
     });
   }
 

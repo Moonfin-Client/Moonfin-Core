@@ -33,6 +33,8 @@ class NativeGame {
   static void OnFrameReady(void* user);
   static uint16_t OnPollInput(void* user, int port);
   static int OnControllerCount(void* user);
+  static void OnCoreMessage(void* user, const char* text);
+  static void OnCoreShutdown(void* user);
 
   flutter::TextureRegistrar* textures_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> control_;

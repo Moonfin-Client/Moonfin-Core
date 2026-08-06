@@ -20,12 +20,17 @@ import io.github.peerless2012.ass.media.type.AssRenderType
 import java.util.regex.Pattern
 
 /**
- * The Matroska extractor with two Moonfin additions on top of media3's.
+ * The Matroska extractor with Moonfin additions on top of media3's.
  *
  * It captures Dolby Vision block additions. A dual layer profile 7 MKV keeps
  * its enhancement layer and RPU in BlockAdditional elements, which the stock
  * extractor discards, so without this hook the DoVi compat chain never sees
  * an RPU to convert in those files.
+ *
+ * It tolerates zlib compressed PGS subtitle tracks. The stock extractor
+ * rejects the whole file over any compression other than header stripping,
+ * even though media3's own PGS parser inflates zlib samples on its own, so
+ * those tracks are waved through and the parser downstream does the rest.
  *
  * It also carries the ASS attachment and dialogue handling from ass-media's
  * AssMatroskaExtractor. That class is final and this subclass needs the same
@@ -77,6 +82,18 @@ class MoonfinMatroskaExtractor(
         }
         input.readFully(doviBlockAdditional, 0, contentSize)
         listener(track.number, track.nalUnitLengthFieldLength, doviBlockAdditional, contentSize)
+    }
+
+    override fun integerElement(id: Int, value: Long) {
+        // Only PGS gets waved through. Every other track type keeps the
+        // stock rejection, since nothing downstream could decompress it.
+        if (id == ID_CONTENT_COMPRESSION_ALGORITHM &&
+            value == CONTENT_COMP_ALGO_ZLIB &&
+            getCurrentTrack(id).codecId == CODEC_ID_PGS
+        ) {
+            return
+        }
+        super.integerElement(id, value)
     }
 
     override fun getElementType(id: Int): Int {
@@ -158,6 +175,10 @@ class MoonfinMatroskaExtractor(
     }
 
     companion object {
+        const val ID_CONTENT_COMPRESSION_ALGORITHM = 0x4254
+        const val CONTENT_COMP_ALGO_ZLIB = 0L
+        const val CODEC_ID_PGS = "S_HDMV/PGS"
+
         const val ID_EBML = 0x1A45DFA3
         const val ID_VIDEO = 0xE0
         const val ID_ATTACHMENTS = 0x1941A469

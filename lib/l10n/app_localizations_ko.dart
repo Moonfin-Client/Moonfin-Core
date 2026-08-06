@@ -2643,13 +2643,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => '감지된 오디오 지원 정보';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       '아직 사용할 수 있는 런타임 지원 정보가 없습니다.';
 

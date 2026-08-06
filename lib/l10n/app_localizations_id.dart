@@ -2702,13 +2702,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Kemampuan Audio yang Terdeteksi';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Belum ada snapshot kemampuan runtime yang tersedia.';
 

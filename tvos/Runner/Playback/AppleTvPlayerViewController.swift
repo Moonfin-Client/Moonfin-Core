@@ -64,6 +64,10 @@ final class AppleTvPlayerViewController: UIViewController {
     private var isFavorite = false
     private var canDownloadSubtitles = false
     private weak var subtitleSearchingAlert: UIAlertController?
+    /// The buttons the player button settings left switched on, in the order
+    /// the user put them in. Nil until the Dart side sends one, and the row
+    /// offers everything until then.
+    private var osdButtonOrder: [String]?
     private var syncPlayEnabled = false
     private var syncPlayGroupName = ""
     private var syncPlayParticipants: [String] = []
@@ -990,6 +994,42 @@ final class AppleTvPlayerViewController: UIViewController {
         return container
     }
 
+    /// What the player button settings call this control. The playback
+    /// controls carry no switch, so they answer to no id.
+    private func osdButtonId(for id: ControlId) -> String? {
+        switch id {
+        case .speed: return "speed"
+        case .chapters: return "chapters"
+        case .subtitles: return "subtitles"
+        case .audio: return "audio"
+        case .cast: return "castAndCrew"
+        case .quality: return "quality"
+        case .zoom: return "zoom"
+        case .info: return "info"
+        case .favorite: return "favorite"
+        case .syncplay: return "syncPlay"
+        case .prev, .skipBack, .playPause, .skipForward, .next, .channels:
+            return nil
+        }
+    }
+
+    private func osdShows(_ id: ControlId) -> Bool {
+        guard let order = osdButtonOrder, let settings = osdButtonId(for: id) else {
+            return true
+        }
+        return order.contains(settings)
+    }
+
+    /// The ones the user left switched on, in the order they put them in.
+    /// Walking their arrangement rather than the candidates is what drops the
+    /// switched-off ones, since those never appear in it.
+    private func arrangedOsdControls(_ ids: [ControlId]) -> [ControlId] {
+        guard let order = osdButtonOrder else { return ids }
+        return order.compactMap { settings in
+            ids.first { osdButtonId(for: $0) == settings }
+        }
+    }
+
     private func rebuildControls() {
         controlStack.arrangedSubviews.forEach {
             controlStack.removeArrangedSubview($0)
@@ -1002,23 +1042,28 @@ final class AppleTvPlayerViewController: UIViewController {
         if isLive {
             ids.append(.playPause)
             if !channelList.isEmpty { ids.append(.channels) }
-            if !streamInfoSections.isEmpty { ids.append(.info) }
+            if !streamInfoSections.isEmpty, osdShows(.info) { ids.append(.info) }
         } else {
             if hasPrevious { ids.append(.prev) }
             ids.append(.skipBack)
             ids.append(.playPause)
             ids.append(.skipForward)
             if hasNext { ids.append(.next) }
-            if canFavorite { ids.append(.favorite) }
-            ids.append(.speed)
-            if chapters.count > 1 { ids.append(.chapters) }
-            if !subtitleTracks.isEmpty || canDownloadSubtitles { ids.append(.subtitles) }
-            if audioTracks.count > 1 { ids.append(.audio) }
-            if hasCast { ids.append(.cast) }
-            if syncPlayEnabled { ids.append(.syncplay) }
-            ids.append(.quality)
-            ids.append(.zoom)
-            if !streamInfoSections.isEmpty { ids.append(.info) }
+
+            // Everything past the transport answers to the player button
+            // settings, both for whether it appears and where it sits.
+            var secondary: [ControlId] = []
+            if canFavorite { secondary.append(.favorite) }
+            secondary.append(.speed)
+            if chapters.count > 1 { secondary.append(.chapters) }
+            if !subtitleTracks.isEmpty || canDownloadSubtitles { secondary.append(.subtitles) }
+            if audioTracks.count > 1 { secondary.append(.audio) }
+            if hasCast { secondary.append(.cast) }
+            if syncPlayEnabled { secondary.append(.syncplay) }
+            secondary.append(.quality)
+            secondary.append(.zoom)
+            if !streamInfoSections.isEmpty { secondary.append(.info) }
+            ids += arrangedOsdControls(secondary)
         }
 
         controls = ids
@@ -1059,6 +1104,11 @@ final class AppleTvPlayerViewController: UIViewController {
         canFavorite = (args["canFavorite"] as? Bool) ?? false
         isFavorite = (args["isFavorite"] as? Bool) ?? false
         canDownloadSubtitles = (args["canDownloadSubtitles"] as? Bool) ?? false
+        // A push that carries no arrangement leaves the one already in hand
+        // alone rather than emptying the row.
+        if let osdButtons = args["osdButtons"] as? [String] {
+            osdButtonOrder = osdButtons
+        }
         if let sync = args["syncPlay"] as? [String: Any] {
             syncPlayEnabled = true
             syncPlayGroupName = (sync["groupName"] as? String) ?? "SyncPlay"

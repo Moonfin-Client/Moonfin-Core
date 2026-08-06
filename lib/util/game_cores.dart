@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import '../preference/user_preferences.dart';
 import 'game_cores_abi_stub.dart'
     if (dart.library.io) 'game_cores_abi_io.dart';
+import 'game_storage.dart';
 import 'platform_detection.dart';
 
 /// EmulatorJS core name to libretro core id, for the native libretro backend
@@ -48,6 +49,48 @@ const Set<String> appleBundledCores = {
 /// desktop.
 const String installedCoresPreferenceKey = 'installed_libretro_cores';
 
+/// Runtime files a core needs in the system directory before it can boot.
+class CoreSupportFiles {
+  const CoreSupportFiles({
+    required this.url,
+    required this.folder,
+    required this.markerFile,
+    required this.approxSizeMb,
+  });
+
+  /// A zip whose entries all sit under a single top-level [folder], so it
+  /// unpacks straight into the system directory.
+  final String url;
+
+  /// The folder the core looks for inside the system directory.
+  final String folder;
+
+  /// A file that only exists once the payload is unpacked, used to tell an
+  /// installed set from a missing or half-written one.
+  final String markerFile;
+
+  /// Rough download size in megabytes, added to the core's own size.
+  final double approxSizeMb;
+}
+
+/// The cores that can't boot on the core file alone. PPSSPP reads its fonts,
+/// atlas, and compatibility database from `<systemDir>/PPSSPP`, and without
+/// them a PSP game fails to boot and the core asks to quit mid-frame.
+const Map<String, CoreSupportFiles> coreSupportFiles = {
+  'ppsspp': CoreSupportFiles(
+    url: 'https://buildbot.libretro.com/assets/system/PPSSPP.zip',
+    folder: 'PPSSPP',
+    markerFile: 'compat.ini',
+    approxSizeMb: 11,
+  ),
+};
+
+/// The support files this platform has to fetch for [coreId], or null when
+/// there are none. The Apple targets bundle theirs and seed the system
+/// directory natively at load time, so nothing is downloaded there.
+CoreSupportFiles? coreSupportFilesFor(String coreId) =>
+    bundlesGameCores ? null : coreSupportFiles[coreId];
+
 /// A libretro core the user can download on Android and desktop.
 class GameCore {
   const GameCore({
@@ -84,7 +127,8 @@ const List<GameCore> downloadableCores = [
   GameCore(coreId: 'genesis_plus_gx', system: 'Sega Genesis, Master System, and Game Gear', approxSizeMb: 2),
   GameCore(coreId: 'pcsx_rearmed', system: 'PlayStation', approxSizeMb: 2),
   GameCore(coreId: 'mupen64plus_next', system: 'Nintendo 64', approxSizeMb: 6, needsJit: true),
-  GameCore(coreId: 'ppsspp', system: 'PlayStation Portable', approxSizeMb: 18, needsJit: true),
+  // 18 MB core plus the PPSSPP support files, which are fetched with it.
+  GameCore(coreId: 'ppsspp', system: 'PlayStation Portable', approxSizeMb: 29, needsJit: true),
   GameCore(coreId: 'melonds', system: 'Nintendo DS', approxSizeMb: 4, needsJit: true),
   GameCore(coreId: 'mednafen_pce_fast', system: 'PC Engine and TurboGrafx-16', approxSizeMb: 2),
   GameCore(coreId: 'stella', system: 'Atari 2600', approxSizeMb: 2),
@@ -238,4 +282,20 @@ Future<String?> installedCorePath(String coreId) async {
   final dir = await coresDirectory();
   final file = File('${dir.path}/${coreFileName(coreId)}');
   return await file.exists() ? file.path : null;
+}
+
+/// Where a core's support files live once installed, under the shared system
+/// directory the core is handed at load time.
+Future<Directory> coreSupportDirectory(CoreSupportFiles files) async {
+  final system = await GameStorage.systemDir();
+  return Directory('${system.path}/${files.folder}');
+}
+
+/// Whether [coreId] has everything it needs to boot. Cores without support
+/// files, and the platforms that bundle theirs, are always ready.
+Future<bool> coreSupportFilesInstalled(String coreId) async {
+  final files = coreSupportFilesFor(coreId);
+  if (files == null) return true;
+  final dir = await coreSupportDirectory(files);
+  return File('${dir.path}/${files.markerFile}').exists();
 }

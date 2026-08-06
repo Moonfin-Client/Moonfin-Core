@@ -1223,12 +1223,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.settingsAudioTrueHdPassthrough,
         keywords: ['truehd', 'atmos', 'bitstream'],
       ),
-      audio.leaf(
-        'show_audio_path_banner',
-        l10n.settingsShowAudioDecoderBanner,
-        subtitle: l10n.settingsShowAudioDecoderBannerDescription,
-        keywords: ['ffmpeg', 'decoder', 'banner', 'diagnostics'],
-      ),
     ],
 
     subtitles.screen(keywords: ['captions', 'cc']),

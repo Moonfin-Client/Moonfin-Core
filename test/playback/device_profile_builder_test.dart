@@ -286,7 +286,29 @@ void main() {
       expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
     });
 
-    test('excludes DoVi HDR10+ when known buggy model flag is set', () {
+    test('excludes DoVi HDR10+ on a known buggy model without a profile 8 '
+        'decoder', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        supportsHevcMain10: true,
+        supportsHevcDolbyVision: true,
+        supportsHevcDolbyVisionEl: true,
+        supportsHevcHdr10: true,
+        supportsHevcHdr10Plus: true,
+        supportsDvProfile5: true,
+        supportsDvProfile7: true,
+        supportsDvProfile8: false,
+        knownHevcDoviHdr10PlusBug: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'hevc');
+
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+      expect(unsupportedRanges, contains('DOVI_WITH_ELHDR10_PLUS'));
+    });
+
+    test('a profile 8 decoder lifts the buggy model exclusion, since the '
+        'Dolby Vision route sidesteps the broken HDR10+ handling', () {
       final profile = DeviceProfileBuilder.build(
         supportsHevc: true,
         supportsHevcMain10: true,
@@ -302,8 +324,8 @@ void main() {
 
       final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'hevc');
 
-      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
-      expect(unsupportedRanges, contains('DOVI_WITH_ELHDR10_PLUS'));
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_ELHDR10_PLUS')));
     });
 
     test('skipping device defects keeps DoVi HDR10+ direct-playable on a buggy '

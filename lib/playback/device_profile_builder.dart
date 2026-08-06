@@ -1326,7 +1326,11 @@ class DeviceProfileBuilder {
       }
     }
 
-    if (knownHevcDoviHdr10PlusBug) {
+    // The MediaTek Fire TV boxes behind this flag glitch on these hybrid
+    // range types, but a profile 8 decoder takes the Dolby Vision route
+    // through the stream and sidesteps the broken HDR10+ handling, so the
+    // exclusion only stands where that route does not exist.
+    if (knownHevcDoviHdr10PlusBug && !supportsDvProfile8) {
       unsupportedRangeTypesHevc.add('DOVI_WITH_HDR10_PLUS');
       unsupportedRangeTypesHevc.add('DOVI_WITH_ELHDR10_PLUS');
     }

@@ -2697,13 +2697,6 @@ class AppLocalizationsNb extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'Oppdagede lydfunksjoner';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Ingen øyeblikksbilde av kjøretidsfunksjoner er tilgjengelig ennå.';
 

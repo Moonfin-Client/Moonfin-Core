@@ -2706,13 +2706,6 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'Tuvastatud helivõimalused';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Käitusaja võimekuse hetktõmmis pole veel saadaval.';
 

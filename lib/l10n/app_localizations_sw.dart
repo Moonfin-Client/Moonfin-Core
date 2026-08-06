@@ -2718,13 +2718,6 @@ class AppLocalizationsSw extends AppLocalizations {
       'Uwezo wa Sauti Uliotambuliwa';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'Hakuna muhtasari wa uwezo wa wakati wa utekelezaji unaopatikana bado.';
 

@@ -87,6 +87,22 @@ enum OsdButton {
   };
 }
 
+/// The buttons the row should draw, in the order the user put them in.
+///
+/// The tvOS OSD is native and builds its own row, so it gets handed the
+/// arrangement as ids rather than reading the preferences itself.
+List<String> visibleOsdButtonIds(UserPreferences prefs) {
+  final hidden = osdButtonLayout.hidden(prefs);
+  return [
+    for (final button in osdButtonLayout.ordered(
+      OsdButton.values,
+      (button) => button.id,
+      prefs,
+    ))
+      if (button.isOffered && !hidden.contains(button.id)) button.id,
+  ];
+}
+
 final osdButtonLayout = ButtonLayout(
   hiddenTv: UserPreferences.hiddenOsdButtonsTv,
   hiddenMobile: UserPreferences.hiddenOsdButtonsMobile,

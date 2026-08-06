@@ -2681,13 +2681,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsDetectedAudioCapabilities => 'יכולות אודיו שזוהו';
 
   @override
-  String get settingsShowAudioDecoderBanner => 'Show audio decoder';
-
-  @override
-  String get settingsShowAudioDecoderBannerDescription =>
-      'Briefly name the decoder handling the audio when playback starts.';
-
-  @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
       'אין עדיין תמונת מצב של יכולות זמן ריצה.';
 
