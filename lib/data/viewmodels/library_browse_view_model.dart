@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
@@ -34,7 +35,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   static const _libraryMetaFields = '';
 
   static const _browseFields =
-      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists';
+      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,Album,AlbumId,AlbumArtist,Artists,Genres,Studios';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -113,6 +114,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   late LibraryScrollDirection _scrollDirection;
   LibraryScrollDirection get scrollDirection => _scrollDirection;
+
+  late LibraryGroupBy _groupBy;
+  LibraryGroupBy get groupBy => _groupBy;
+
+  String? _selectedCategoryTab;
+  String? get selectedCategoryTab => _selectedCategoryTab;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -277,6 +284,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _scrollDirection = _prefs.get(
       UserPreferences.libraryScrollDirection(_imagePrefKey),
     );
+    _groupBy = _prefs.get(
+      UserPreferences.libraryGroupBy(_imagePrefKey),
+    );
     _prefs.addListener(_onPrefsChanged);
   }
 
@@ -371,11 +381,24 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       await imageTypeSync;
       await _fetchPage(0);
       _state = LibraryBrowseState.ready;
+      notifyListeners();
+      if (_groupBy != LibraryGroupBy.none && isMovieOrSeriesLibrary) {
+        unawaited(_loadAllForGroupBy());
+      }
     } catch (e) {
       _errorMessage = e.toString();
       _state = LibraryBrowseState.error;
+      notifyListeners();
     }
-    notifyListeners();
+  }
+
+  Future<void> _loadAllForGroupBy() async {
+    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) return;
+    while (hasMore) {
+      final beforeCount = _items.length;
+      await loadMore();
+      if (_items.length == beforeCount) break;
+    }
   }
 
   Future<void> loadMore() async {
@@ -868,6 +891,159 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       value,
     );
     notifyListeners();
+  }
+
+  Future<void> setGroupBy(LibraryGroupBy value) async {
+    if (_groupBy == value) return;
+    _groupBy = value;
+    _selectedCategoryTab = null;
+    await _prefs.set(
+      UserPreferences.libraryGroupBy(_imagePrefKey),
+      value,
+    );
+    notifyListeners();
+    if (_groupBy != LibraryGroupBy.none && isMovieOrSeriesLibrary) {
+      unawaited(_loadAllForGroupBy());
+    }
+  }
+
+  void setSelectedCategoryTab(String? category) {
+    if (_selectedCategoryTab == category) return;
+    _selectedCategoryTab = category;
+    notifyListeners();
+  }
+
+  bool get isMovieOrSeriesLibrary =>
+      _collectionType == 'movies' ||
+      _collectionType == 'tvshows' ||
+      (includeItemTypes != null &&
+          includeItemTypes!.any((t) => t == 'Movie' || t == 'Series'));
+
+  Map<String, List<AggregatedItem>> get groupedCategories {
+    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) {
+      return const {};
+    }
+
+    final map = <String, List<AggregatedItem>>{};
+    for (final item in _items) {
+      switch (_groupBy) {
+        case LibraryGroupBy.genres:
+          final gList = item.genres;
+          if (gList.isEmpty) {
+            (map['Other'] ??= []).add(item);
+          } else {
+            for (final g in gList) {
+              (map[g] ??= []).add(item);
+            }
+          }
+        case LibraryGroupBy.parentalRatings:
+          final rating = (item.officialRating ?? '').trim().isNotEmpty
+              ? item.officialRating!.trim()
+              : 'Unrated';
+          (map[rating] ??= []).add(item);
+        case LibraryGroupBy.decade:
+          final year = item.productionYear;
+          final decadeStr = year != null ? '${(year ~/ 10) * 10}s' : 'Unknown';
+          (map[decadeStr] ??= []).add(item);
+        case LibraryGroupBy.studio:
+          final sList = item.studios;
+          if (sList.isEmpty) {
+            (map['Unknown'] ??= []).add(item);
+          } else {
+            for (final sMap in sList) {
+              final name = sMap['Name'] as String?;
+              if (name != null && name.isNotEmpty) {
+                (map[name] ??= []).add(item);
+              }
+            }
+          }
+        case LibraryGroupBy.none:
+          break;
+      }
+    }
+
+    final sortedKeys = map.keys.toList();
+    if (_groupBy == LibraryGroupBy.decade) {
+      sortedKeys.sort((a, b) {
+        if (a == 'Unknown') return 1;
+        if (b == 'Unknown') return -1;
+        return b.compareTo(a);
+      });
+    } else if (_groupBy == LibraryGroupBy.parentalRatings) {
+      sortedKeys.sort((a, b) {
+        final scoreA = _parentalRatingSeverity(a);
+        final scoreB = _parentalRatingSeverity(b);
+        if (scoreA != scoreB) {
+          return scoreA.compareTo(scoreB);
+        }
+        return a.compareTo(b);
+      });
+    } else {
+      sortedKeys.sort((a, b) {
+        if (a == 'Other' || a == 'Unknown' || a == 'Unrated') return 1;
+        if (b == 'Other' || b == 'Unknown' || b == 'Unrated') return -1;
+        return a.compareTo(b);
+      });
+    }
+
+    final sortedMap = <String, List<AggregatedItem>>{};
+    for (final key in sortedKeys) {
+      sortedMap[key] = map[key]!;
+    }
+    return sortedMap;
+  }
+
+  int _parentalRatingSeverity(String rating) {
+    final r = rating.toUpperCase().trim();
+    if (r == 'UNRATED' || r == 'NR' || r == 'UR' || r == 'NOT RATED' || r == 'UNKNOWN' || r == 'OTHER') {
+      return 999;
+    }
+    if (r == 'G' || r == 'TV-Y' || r == 'TV-G' || r == 'EC' || r == 'E' || r == 'U' || r == 'AL' || r == 'APPROVED' || r == 'PASSED') {
+      return 10;
+    }
+    if (r.contains('Y') && !r.contains('Y7')) return 10;
+    if (r == 'PG' || r == 'TV-Y7' || r == 'TV-Y7-FV' || r == 'E10+' || r == '7' || r == '6') {
+      return 20;
+    }
+    if (r.contains('Y7')) return 20;
+    if (r == 'TV-PG' || r == 'PG-12' || r == '12' || r == '12A' || r == '10') {
+      return 30;
+    }
+    if (r == 'PG-13' || r == 'TV-14' || r == 'T' || r == '13' || r == '14' || r == '14A' || r == '15' || r == '15A' || r == '16') {
+      return 40;
+    }
+    if (r.contains('PG-13') || r.contains('14')) return 40;
+    if (r == 'R' || r == 'TV-MA' || r == 'M' || r == '18' || r == '18+' || r == 'R18') {
+      return 50;
+    }
+    if (r.contains('MA') || r.contains('RESTRICTED')) return 50;
+    if (r == 'NC-17' || r == 'AO' || r == 'X' || r == 'XXX' || r == 'R-18') {
+      return 60;
+    }
+
+    final numMatch = RegExp(r'\d+').firstMatch(r);
+    if (numMatch != null) {
+      final age = int.tryParse(numMatch.group(0)!);
+      if (age != null) {
+        if (age <= 6) return 15;
+        if (age <= 10) return 25;
+        if (age <= 12) return 32;
+        if (age <= 15) return 42;
+        if (age <= 17) return 52;
+        return 62;
+      }
+    }
+    return 500;
+  }
+
+  List<AggregatedItem> get currentCategoryItems {
+    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) {
+      return _items;
+    }
+    final categories = groupedCategories;
+    if (categories.isEmpty) return _items;
+    final selected = _selectedCategoryTab ?? categories.keys.first;
+    return categories[selected] ?? _items;
   }
 
   bool get isSeriesLibrary =>

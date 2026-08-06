@@ -2,10 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import '../../widgets/offline_aware_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -251,14 +247,26 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
-    if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) {
-      return _vm.posterSize.portraitHeight.toDouble() * desktopScale;
-    }
     final posterSize = _vm.posterSize;
+    if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) {
+      final musicSide = switch (posterSize) {
+        PosterSize.small => 120.0,
+        PosterSize.medium => 160.0,
+        PosterSize.large => 220.0,
+        PosterSize.extraLarge => 300.0,
+      };
+      return musicSide * desktopScale;
+    }
+    final portraitH = switch (posterSize) {
+      PosterSize.small => 100.0,
+      PosterSize.medium => 150.0,
+      PosterSize.large => 210.0,
+      PosterSize.extraLarge => 300.0,
+    };
     final baseWidth = switch (_vm.imageType) {
-      ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
+      ImageType.thumb => (portraitH * 0.73) * (16 / 9),
       ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
-      ImageType.poster => posterSize.portraitHeight * (2 / 3),
+      ImageType.poster => portraitH * (2 / 3),
     };
     return baseWidth * desktopScale;
   }
@@ -648,6 +656,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     ? context.popOrHome()
                     : context.pop(),
                 onSort: () => _showFilterSortDialog(context),
+                onGroupBy: () => _showGroupByDialog(),
+                isMovieOrSeriesLibrary: _vm.isMovieOrSeriesLibrary,
                 onSettings: () => _showSettingsDialog(context),
                 onShuffle: _isSongsBrowse ? () => _shuffleSongsLibrary() : null,
                 onLetterChanged: (l) => _vm.setLetterFilter(l),
@@ -726,8 +736,15 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     } catch (_) {}
   }
 
+  void _showGroupByDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => _GroupByDialog(vm: _vm),
+    );
+  }
+
   Widget _buildBody() {
-    final spinnerColor = _vm.isBookLibrary ? _bookAccent : _jellyfinBlue;
+    final spinnerColor = _vm.isBookLibrary ? const Color(0xFFD97706) : _jellyfinBlue;
     final showHorizChevrons =
         _vm.scrollDirection == LibraryScrollDirection.horizontal &&
         PlatformDetection.useDesktopUi &&
@@ -802,7 +819,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 ),
               ),
             LibraryBrowseState.ready =>
-              _isSongsBrowse ? _buildSongsList() : (_vm.isBookLibrary ? _buildBookGrid() : _buildGrid()),
+              _isSongsBrowse ? _buildSongsList() : _buildGrid(),
           },
         ),
       ],
@@ -853,7 +870,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
     }
 
-    final l10n = AppLocalizations.of(context);
     if (_vm.scrollDirection == LibraryScrollDirection.horizontal) {
       return _buildHorizontalGrid();
     }
@@ -866,9 +882,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final watchedBehavior = _prefs.get(
       UserPreferences.watchedIndicatorBehavior,
     );
+    final useGroupBy = _vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary;
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final l10n = AppLocalizations.of(context);
         final isMobile = _isCompact(context);
         final gridPadding = isMobile ? 16.0 : _horizontalPadding;
         final minClamp = _vm.imageType == ImageType.banner
@@ -898,8 +916,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final isNeon =
             ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
-        // Grouping and the type checkboxes both move cards around, so focus
-        // nodes key on a card's place in the full list to stay with it.
         final gridItems = _vm.visiblePlaylists;
         final indexInItems = _vm.isPlaylistBrowse
             ? <String, int>{
@@ -992,7 +1008,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           );
         }
 
-        return CustomScrollView(
+        final itemsToDisplay = useGroupBy ? _vm.currentCategoryItems : gridItems;
+
+        final verticalScrollView = CustomScrollView(
           controller: _scrollController,
           slivers: [
             SliverPadding(
@@ -1005,13 +1023,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   childAspectRatio: childAspectRatio,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  final item = gridItems[index];
+                  final item = itemsToDisplay[index];
                   final itemAspectRatio = _itemAspectRatio(item);
                   return _buildGridCard(
                     item: item,
                     index: indexInItems[item.id] ?? index,
                     positionInSection: index,
-                    sectionCount: gridItems.length,
+                    sectionCount: itemsToDisplay.length,
                     crossAxisCount: crossAxisCount,
                     cellWidth: cellWidth,
                     childAspectRatio: childAspectRatio,
@@ -1020,58 +1038,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     isNeon: isNeon,
                     watchedBehavior: watchedBehavior,
                     isMobile: isMobile,
-                    itemType: item.type,
-                    onFocus: isMobile
-                      ? null
-                      : () {
-                          _onItemFocused(item);
-                          _scrollToGridRow(
-                            index: index,
-                            crossAxisCount: crossAxisCount,
-                            cellHeight: cellWidth / childAspectRatio,
-                            mainAxisSpacing: 8.0,
-                          );
-                        },
-                    onHoverStart: isMobile ? null : () => _onItemFocused(item),
-                    onHoverEnd: isMobile
-                        ? null
-                        : () => _vm.setFocusedItem(null),
-                    onKeyEvent: (_, event) {
-                      if (event.isActionable && event.logicalKey.isRightKey) {
-                        final isLastColumn =
-                            (index % crossAxisCount) == crossAxisCount - 1;
-                        final isLastItem = index == _vm.items.length - 1;
-                        if (isLastColumn || isLastItem) {
-                          return KeyEventResult.handled;
-                        }
-                      }
-
-                      if (!_vm.hasMore && !_vm.loadingMore) {
-                        return KeyEventResult.ignored;
-                      }
-                      if (!event.isActionable ||
-                          !event.logicalKey.isDownKey) {
-                        return KeyEventResult.ignored;
-                      }
-
-                      final nextRowIndex = index + crossAxisCount;
-                      final atBottomLoadedRow = nextRowIndex >= _vm.items.length;
-                      if (!atBottomLoadedRow) {
-                        return KeyEventResult.ignored;
-                      }
-
-                      _vm.loadMore();
-                      return KeyEventResult.handled;
-                    },
-                    onLongPress: () => showContextMenu(
-                      context,
-                      item,
-                      onChanged: () => setState(() {}),
-                    ),
-                    onTap: () => _onItemTap(item),
->>>>>>> 857b4146 (feat(library): add horizontal scroll direction option to library display settings)
                   );
-                }, childCount: gridItems.length),
+                }, childCount: itemsToDisplay.length),
               ),
             ),
             if (_vm.loadingMore)
@@ -1085,14 +1053,25 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               ),
           ],
         );
+
+        if (useGroupBy) {
+          return Column(
+            children: [
+              _CategoryTabBar(
+                groupedCategories: _vm.groupedCategories,
+                selectedTab: _vm.selectedCategoryTab,
+                onSelectTab: (cat) => _vm.setSelectedCategoryTab(cat),
+              ),
+              Expanded(child: verticalScrollView),
+            ],
+          );
+        }
+
+        return verticalScrollView;
       },
     );
   }
 
-  /// [index] keys the focus node and is the card's place in the full item list,
-  /// so it stays put as more pages arrive. [positionInSection] and
-  /// [sectionCount] describe the grid it's drawn in, which is one category once
-  /// the playlists page groups by type.
   Widget _buildGridCard({
     required AggregatedItem item,
     required int index,
@@ -1106,40 +1085,191 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required bool isNeon,
     required WatchedIndicatorBehavior watchedBehavior,
     required bool isMobile,
+    VoidCallback? onCardFocused,
   }) {
-    // Section headers throw off the uniform row maths in _scrollToGridRow, so a
-    // grouped card asks the viewport to reveal it and needs its own context.
-    // Every other grid keeps the row scrolling and skips the extra element.
-    final isGrouped = _vm.isPlaylistBrowse && _vm.groupByType;
+    final isGrouped = (_vm.isPlaylistBrowse && _vm.groupByType) ||
+        (_vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary);
+
+    Widget card(BuildContext? revealContext) {
+      return MediaCard(
+        title: item.name,
+        subtitle: _cardSubtitle(item),
+        imageUrl: _imageUrl(item),
+        width: double.infinity,
+        aspectRatio: itemAspectRatio,
+        isBanner: _vm.imageType == ImageType.banner,
+        focusColor: focusColor,
+        focusNode: getGridItemFocusNode(index),
+        cardFocusExpansion: _prefs.get(UserPreferences.cardFocusExpansion),
+        suppressFocusGlow: isNeon,
+        isPlayed: item.isPlayed,
+        isFavorite: item.isFavorite,
+        unplayedCount: item.unplayedItemCount,
+        playedPercentage: _displayPlayedPercentage(item),
+        watchedBehavior: watchedBehavior,
+        itemType: item.type,
+        onFocus: isMobile
+            ? null
+            : () {
+                _onItemFocused(item);
+                if (onCardFocused != null) {
+                  onCardFocused();
+                } else if (revealContext == null) {
+                  _scrollToGridRow(
+                    index: positionInSection,
+                    crossAxisCount: crossAxisCount,
+                    cellHeight: cellWidth / childAspectRatio,
+                    mainAxisSpacing: 8.0,
+                  );
+                } else if (revealContext.mounted) {
+                  unawaited(
+                    Scrollable.ensureVisible(
+                      revealContext,
+                      alignment: 0.15,
+                      duration: const Duration(milliseconds: 160),
+                      curve: Curves.easeOutCubic,
+                    ),
+                  );
+                }
+              },
+        onHoverStart: isMobile ? null : () => _onItemFocused(item),
+        onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
+        onKeyEvent: (_, event) {
+          if (PlatformDetection.isTV &&
+              event.isActionable &&
+              event.logicalKey.isBackKey &&
+              _allLetterFocusNode.context != null) {
+            _allLetterFocusNode.requestFocus();
+            return KeyEventResult.handled;
+          }
+          if (event.isActionable && event.logicalKey.isRightKey) {
+            final isLastColumn =
+                (positionInSection % crossAxisCount) == crossAxisCount - 1;
+            final isLastInSection = positionInSection == sectionCount - 1;
+            if (isLastColumn || isLastInSection) {
+              return KeyEventResult.handled;
+            }
+          }
+
+          if (!_vm.hasMore && !_vm.loadingMore) {
+            return KeyEventResult.ignored;
+          }
+          if (!event.isActionable || !event.logicalKey.isDownKey) {
+            return KeyEventResult.ignored;
+          }
+
+          final nextRowIndex = index + crossAxisCount;
+          final atBottomLoadedRow = nextRowIndex >= _vm.items.length;
+          if (!atBottomLoadedRow) {
+            return KeyEventResult.ignored;
+          }
+
+          _vm.loadMore();
+          return KeyEventResult.handled;
+        },
+        onLongPress: () =>
+            showContextMenu(context, item, onChanged: () => setState(() {})),
+        onTap: () => _onItemTap(item),
+      );
+    }
+
+    return isGrouped ? Builder(builder: card) : card(null);
+  }
+
+  Widget _buildGroupedHorizontalRows() {
+    final categories = _vm.groupedCategories;
+    if (categories.isEmpty) {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context).noItemsFound,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
+    final cardWidth = _cardWidth() * 0.88;
+    final isMobile = _isCompact(context);
+    final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+    final ar = _gridBaseAspectRatio();
+    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
+    final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
+    final rowCardHeight = cardWidth / ar + textHeight;
+    final rowContainerHeight = rowCardHeight + 36.0;
+
+    final focusColor = _vm.isFilterBrowse
+        ? ThemeRegistry.active.borders.focusBorder.color
+        : Color(_prefs.get(UserPreferences.focusColor).colorValue);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+
+    final keys = categories.keys.toList();
+
+    return FocusTraversalGroup(
+      policy: ReadingOrderTraversalPolicy(),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: EdgeInsets.symmetric(vertical: gridPadding),
+        itemCount: keys.length,
+        itemBuilder: (context, idx) {
+          final key = keys[idx];
+          final catItems = categories[key]!;
+
+          return _GroupedCategoryRow(
+            categoryKey: key,
+            items: catItems,
+            categoryIndex: idx,
+            cardWidth: cardWidth,
+            rowCardHeight: rowCardHeight,
+            rowContainerHeight: rowContainerHeight,
+            gridPadding: gridPadding,
+            focusColor: focusColor,
+            isNeon: isNeon,
+            watchedBehavior: watchedBehavior,
+            isMobile: isMobile,
+            buildGridCard: _buildGridCard,
+            getItemAspectRatio: _itemAspectRatio,          );
+        },
+      ),
+    );
+  }
 
   Widget _buildHorizontalGrid() {
+    if (_vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary) {
+      return _buildGroupedHorizontalRows();
+    }
     final spacing = 12.0;
     final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final gridPadding = _horizontalPadding;
+        final isMobile = _isCompact(context);
+        final horizPadding = isMobile ? 16.0 : _horizontalPadding;
+        final vertPadding = isMobile ? 12.0 : 20.0;
         final ar = _gridBaseAspectRatio();
+        final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final hasSubtitles = _vm.items.any(
           (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
         );
-        final textHeight = hasSubtitles ? 42.0 : 24.0;
+        final textHeight = (hasSubtitles ? 46.0 : 30.0) * desktopTextScale;
 
-        final targetImageHeight = _cardWidth() / ar;
+        final cellWidth = _cardWidth();
+        final targetImageHeight = cellWidth / ar;
         final targetCellHeight = targetImageHeight + textHeight;
 
-        final rowCount =
-            ((constraints.maxHeight - gridPadding * 2 + spacing) /
-                    (targetCellHeight + spacing))
-                .floor()
-                .clamp(1, 10);
+        final availableHeight = constraints.maxHeight - vertPadding * 2;
+        final rawRows = (availableHeight + spacing) / (targetCellHeight + spacing);
+        final rowCount = (rawRows >= 1.7 ? rawRows.round() : rawRows.floor()).clamp(1, 8);
 
-        final availableHeight = constraints.maxHeight - gridPadding * 2;
-        final actualCellHeight =
-            (availableHeight - (rowCount - 1) * spacing) / rowCount;
-        final actualImageHeight = actualCellHeight - textHeight;
+        final double actualCellHeight;
+        final double actualImageHeight;
+        if (rowCount == 1 && targetCellHeight < availableHeight) {
+          actualCellHeight = targetCellHeight;
+          actualImageHeight = targetImageHeight;
+        } else {
+          actualCellHeight = (availableHeight - (rowCount - 1) * spacing) / rowCount;
+          actualImageHeight = (actualCellHeight - textHeight).clamp(40.0, 1000.0);
+        }
         final actualCellWidth = actualImageHeight * ar;
-
         final childAspectRatio = actualCellHeight / actualCellWidth;
 
         return Listener(
@@ -1159,7 +1289,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             slivers: [
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(
-                  gridPadding, gridPadding, 16, gridPadding,
+                  horizPadding, vertPadding, horizPadding, vertPadding,
                 ),
                 sliver: SliverGrid(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -1231,7 +1361,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: _vm.isBookLibrary ? _bookAccent : _jellyfinBlue,
+                        color: _jellyfinBlue,
                       ),
                     ),
                   ),
@@ -1241,102 +1371,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         );
       },
     );
-  }
-
-  Widget _buildBookGrid() {
-    final baseItems = _vm.items.where((item) => !_vm.isNavigableFolder(item));
-    final tabFiltered = baseItems.where(
-      (item) => _bookMediaTab == _BookMediaTab.books
-          ? !_isAudiobook(item)
-          : _isAudiobook(item),
-    );
->>>>>>> 857b4146 (feat(library): add horizontal scroll direction option to library display settings)
-
-    Widget card(BuildContext? revealContext) {
-      return MediaCard(
-        title: item.name,
-        subtitle: _cardSubtitle(item),
-        imageUrl: _imageUrl(item),
-        width: double.infinity,
-        aspectRatio: itemAspectRatio,
-        isBanner: _vm.imageType == ImageType.banner,
-        focusColor: focusColor,
-        focusNode: getGridItemFocusNode(index),
-        cardFocusExpansion: _prefs.get(UserPreferences.cardFocusExpansion),
-        suppressFocusGlow: isNeon,
-        isPlayed: item.isPlayed,
-        isFavorite: item.isFavorite,
-        unplayedCount: item.unplayedItemCount,
-        playedPercentage: _displayPlayedPercentage(item),
-        watchedBehavior: watchedBehavior,
-        itemType: item.type,
-        onFocus: isMobile
-            ? null
-            : () {
-                _onItemFocused(item);
-                if (revealContext == null) {
-                  _scrollToGridRow(
-                    index: positionInSection,
-                    crossAxisCount: crossAxisCount,
-                    cellHeight: cellWidth / childAspectRatio,
-                    mainAxisSpacing: 8.0,
-                  );
-                } else if (revealContext.mounted) {
-                  unawaited(
-                    Scrollable.ensureVisible(
-                      revealContext,
-                      alignment: 0.15,
-                      duration: const Duration(milliseconds: 160),
-                      curve: Curves.easeOutCubic,
-                    ),
-                  );
-                }
-              },
-        onHoverStart: isMobile ? null : () => _onItemFocused(item),
-        onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
-        onKeyEvent: (_, event) {
-          if (PlatformDetection.isTV &&
-              event.isActionable &&
-              event.logicalKey.isBackKey &&
-              _allLetterFocusNode.context != null) {
-            _allLetterFocusNode.requestFocus();
-            return KeyEventResult.handled;
-          }
-          if (event.isActionable && event.logicalKey.isRightKey) {
-            // Measured against the section the card sits in, so the end of a
-            // ragged last row holds focus instead of jumping to the next
-            // category's first card.
-            final isLastColumn =
-                (positionInSection % crossAxisCount) == crossAxisCount - 1;
-            final isLastInSection = positionInSection == sectionCount - 1;
-            if (isLastColumn || isLastInSection) {
-              return KeyEventResult.handled;
-            }
-          }
-
-          if (!_vm.hasMore && !_vm.loadingMore) {
-            return KeyEventResult.ignored;
-          }
-          if (!event.isActionable || !event.logicalKey.isDownKey) {
-            return KeyEventResult.ignored;
-          }
-
-          final nextRowIndex = index + crossAxisCount;
-          final atBottomLoadedRow = nextRowIndex >= _vm.items.length;
-          if (!atBottomLoadedRow) {
-            return KeyEventResult.ignored;
-          }
-
-          _vm.loadMore();
-          return KeyEventResult.handled;
-        },
-        onLongPress: () =>
-            showContextMenu(context, item, onChanged: () => setState(() {})),
-        onTap: () => _onItemTap(item),
-      );
-    }
-
-    return isGrouped ? Builder(builder: card) : card(null);
   }
 
   String? _cardSubtitle(AggregatedItem item) {
@@ -1448,6 +1482,8 @@ class _LibraryHeader extends StatelessWidget {
   final FocusNode? allLetterFocusNode;
   final bool isMusicBrowse;
   final PlayedStatusFilter playedFilter;
+  final VoidCallback? onGroupBy;
+  final bool isMovieOrSeriesLibrary;
   final VoidCallback onBack;
   final VoidCallback onSort;
   final VoidCallback onSettings;
@@ -1470,6 +1506,8 @@ class _LibraryHeader extends StatelessWidget {
     this.allLetterFocusNode,
     this.isMusicBrowse = false,
     this.playedFilter = PlayedStatusFilter.all,
+    this.onGroupBy,
+    this.isMovieOrSeriesLibrary = false,
     required this.onBack,
     required this.onSort,
     required this.onSettings,
@@ -1565,6 +1603,16 @@ class _LibraryHeader extends StatelessWidget {
                 unfocusedIconAlpha: 128,
                 onTap: onSort,
               ),
+              if (isMovieOrSeriesLibrary && onGroupBy != null) ...[
+                SizedBox(width: 2 * desktopScale),
+                FocusableToolbarButton(
+                  icon: Icons.category_outlined,
+                  size: 30 * desktopScale,
+                  iconSize: 20 * desktopScale,
+                  unfocusedIconAlpha: 128,
+                  onTap: onGroupBy!,
+                ),
+              ],
               if (onShuffle != null) ...[
                 SizedBox(width: 2 * desktopScale),
                 FocusableToolbarButton(
@@ -2484,26 +2532,14 @@ class _SettingsDialogState extends State<_SettingsDialog> {
     String label,
   ) {
     final selected = vm.scrollDirection == direction;
-    final accent = vm.isBookLibrary ? _bookAccent : _jellyfinBlue;
+    final accent = vm.isBookLibrary ? const Color(0xFFD97706) : _jellyfinBlue;
     final onSurface = AppColorScheme.onSurface;
-    return InkWell(
+    return _DialogRadioTile(
+      label: label,
+      selected: selected,
       onTap: () => vm.setScrollDirection(direction),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: Row(
-          children: [
-            _radioCircle(selected, accent),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                color: selected ? onSurface : onSurface.withValues(alpha: 0.72),
-              ),
-            ),
-          ],
-        ),
-      ),
+      accent: accent,
+      onSurface: onSurface,
     );
   }
 
@@ -2536,6 +2572,374 @@ class _SettingsDialogState extends State<_SettingsDialog> {
       onTap: () => vm.setPosterSize(size),
       accent: accent,
       onSurface: onSurface,
+    );
+  }
+}
+
+class _GroupByDialog extends StatefulWidget {
+  final LibraryBrowseViewModel vm;
+
+  const _GroupByDialog({required this.vm});
+
+  @override
+  State<_GroupByDialog> createState() => _GroupByDialogState();
+}
+
+class _GroupByDialogState extends State<_GroupByDialog> {
+  @override
+  void initState() {
+    super.initState();
+    widget.vm.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    widget.vm.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = widget.vm;
+    final l10n = AppLocalizations.of(context);
+    final surfaceColor = AppColorScheme.surface.withValues(alpha: 0.92);
+    final onSurface = AppColorScheme.onSurface;
+    final dividerColor = onSurface.withValues(alpha: 0.12);
+    final dialogWidth = (MediaQuery.sizeOf(context).width - 32).clamp(
+      280.0,
+      360.0,
+    );
+
+    final options = [
+      (LibraryGroupBy.none, l10n.none),
+      (LibraryGroupBy.decade, 'Decade (Year)'),
+      (LibraryGroupBy.genres, l10n.genres),
+      (LibraryGroupBy.parentalRatings, 'Parental Rating'),
+      (LibraryGroupBy.studio, 'Studio'),
+    ];
+
+    return Dialog(
+      backgroundColor: surfaceColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.circular(20),
+        side: ThemeRegistry.active.borders.chipBorder.copyWith(
+          color: onSurface.withValues(alpha: 0.18),
+        ),
+      ),
+      child: SizedBox(
+        width: dialogWidth,
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                'Group By',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: onSurface,
+                ),
+              ),
+            ),
+            Divider(color: dividerColor),
+            for (final opt in options)
+              _DialogRadioTile(
+                label: opt.$2,
+                selected: vm.groupBy == opt.$1,
+                onTap: () {
+                  vm.setGroupBy(opt.$1);
+                  Navigator.of(context).pop();
+                },
+                accent: _jellyfinBlue,
+                onSurface: onSurface,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupedCategoryRow extends StatefulWidget {
+  final String categoryKey;
+  final List<AggregatedItem> items;
+  final int categoryIndex;
+  final double cardWidth;
+  final double rowCardHeight;
+  final double rowContainerHeight;
+  final double gridPadding;
+  final Color focusColor;
+  final bool isNeon;
+  final WatchedIndicatorBehavior watchedBehavior;
+  final bool isMobile;
+  final Widget Function({
+    required AggregatedItem item,
+    required int index,
+    required int positionInSection,
+    required int sectionCount,
+    required int crossAxisCount,
+    required double cellWidth,
+    required double childAspectRatio,
+    required double itemAspectRatio,
+    required Color focusColor,
+    required bool isNeon,
+    required WatchedIndicatorBehavior watchedBehavior,
+    required bool isMobile,
+    VoidCallback? onCardFocused,
+  }) buildGridCard;
+  final double Function(AggregatedItem item) getItemAspectRatio;
+
+  const _GroupedCategoryRow({
+    required this.categoryKey,
+    required this.items,
+    required this.categoryIndex,
+    required this.cardWidth,
+    required this.rowCardHeight,
+    required this.rowContainerHeight,
+    required this.gridPadding,
+    required this.focusColor,
+    required this.isNeon,
+    required this.watchedBehavior,
+    required this.isMobile,
+    required this.buildGridCard,
+    required this.getItemAspectRatio,
+  });
+
+  @override
+  State<_GroupedCategoryRow> createState() => _GroupedCategoryRowState();
+}
+
+class _GroupedCategoryRowState extends State<_GroupedCategoryRow> {
+  late final ScrollController _horizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _horizontalController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToItemIndex(int itemIndex) {
+    if (!_horizontalController.hasClients) return;
+    final itemExtent = widget.cardWidth + 12.0;
+    final maxOffset = _horizontalController.position.maxScrollExtent;
+    final target = (itemIndex * itemExtent).clamp(0.0, maxOffset);
+    _horizontalController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 160),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (rowContext) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(widget.gridPadding, 12, widget.gridPadding, 8),
+              child: Row(
+                children: [
+                  Text(
+                    widget.categoryKey,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(${widget.items.length})',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withAlpha(128),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: widget.rowContainerHeight,
+              child: ListView.builder(
+                controller: _horizontalController,
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: widget.gridPadding, vertical: 12),
+                itemCount: widget.items.length,
+                itemBuilder: (context, itemIdx) {
+                  final item = widget.items[itemIdx];
+                  final itemAspectRatio = widget.getItemAspectRatio(item);
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: SizedBox(
+                      width: widget.cardWidth,
+                      child: widget.buildGridCard(
+                        item: item,
+                        index: widget.categoryIndex * 10000 + itemIdx,
+                        positionInSection: itemIdx,
+                        sectionCount: widget.items.length,
+                        crossAxisCount: widget.items.length,
+                        cellWidth: widget.cardWidth,
+                        childAspectRatio: widget.cardWidth / widget.rowCardHeight,
+                        itemAspectRatio: itemAspectRatio,
+                        focusColor: widget.focusColor,
+                        isNeon: widget.isNeon,
+                        watchedBehavior: widget.watchedBehavior,
+                        isMobile: widget.isMobile,
+                        onCardFocused: () {
+                          _scrollToItemIndex(itemIdx);
+                          if (rowContext.mounted) {
+                            unawaited(
+                              Scrollable.ensureVisible(
+                                rowContext,
+                                alignment: 0.05,
+                                duration: const Duration(milliseconds: 160),
+                                curve: Curves.easeOutCubic,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CategoryTabBar extends StatelessWidget {
+  final Map<String, List<AggregatedItem>> groupedCategories;
+  final String? selectedTab;
+  final ValueChanged<String> onSelectTab;
+
+  const _CategoryTabBar({
+    required this.groupedCategories,
+    required this.selectedTab,
+    required this.onSelectTab,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (groupedCategories.isEmpty) return const SizedBox.shrink();
+    final keys = groupedCategories.keys.toList();
+    final active = selectedTab ?? keys.first;
+    final isMobile = _isCompact(context);
+    final desktopScale = _desktopUiScaleFactor();
+    final hPad = isMobile ? 16.0 : _horizontalPadding * desktopScale;
+
+    return Container(
+      height: 48,
+      padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 6),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: keys.length,
+        itemBuilder: (context, index) {
+          final key = keys[index];
+          final isSelected = key == active;
+          final count = groupedCategories[key]?.length ?? 0;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: _CategoryChip(
+              label: '$key ($count)',
+              isSelected: isSelected,
+              onTap: () => onSelectTab(key),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CategoryChip extends StatefulWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CategoryChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_CategoryChip> createState() => _CategoryChipState();
+}
+
+class _CategoryChipState extends State<_CategoryChip> with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final showActive = focused || hovered;
+    final accent = AppColorScheme.accent;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setHovered(true),
+      onExit: (_) => setHovered(false),
+      child: Focus(
+        onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedScale(
+            scale: showActive ? 1.06 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOutCubic,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: showActive
+                    ? (widget.isSelected ? accent : Colors.white.withValues(alpha: 0.28))
+                    : (widget.isSelected ? accent.withValues(alpha: 0.65) : Colors.white.withValues(alpha: 0.08)),
+                borderRadius: AppRadius.circular(16),
+                border: Border.all(
+                  color: showActive
+                      ? Colors.white
+                      : (widget.isSelected ? accent : Colors.transparent),
+                  width: showActive ? 2.5 : 1.5,
+                ),
+                boxShadow: showActive
+                    ? [
+                        BoxShadow(
+                          color: (widget.isSelected ? accent : Colors.white).withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Text(
+                widget.label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: widget.isSelected || showActive ? FontWeight.bold : FontWeight.normal,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -2354,6 +2354,14 @@ class UserPreferences extends ChangeNotifier {
     values: LibraryScrollDirection.values,
   );
 
+  static EnumPreference<LibraryGroupBy> libraryGroupBy(
+    String libraryId,
+  ) => EnumPreference(
+    key: 'library_group_by_$libraryId',
+    defaultValue: LibraryGroupBy.none,
+    values: LibraryGroupBy.values,
+  );
+
   static final allGenresImageType = EnumPreference(
     key: 'all_genres_image_type',
     defaultValue: ImageType.thumb,
