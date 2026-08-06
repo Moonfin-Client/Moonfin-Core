@@ -2616,10 +2616,10 @@ class _GroupByDialogState extends State<_GroupByDialog> {
 
     final options = [
       (LibraryGroupBy.none, l10n.none),
-      (LibraryGroupBy.decade, 'Decade (Year)'),
+      (LibraryGroupBy.decade, l10n.groupByDecade),
       (LibraryGroupBy.genres, l10n.genres),
-      (LibraryGroupBy.parentalRatings, 'Parental Rating'),
-      (LibraryGroupBy.studio, 'Studio'),
+      (LibraryGroupBy.parentalRatings, l10n.groupByParentalRating),
+      (LibraryGroupBy.studio, l10n.groupByStudio),
     ];
 
     return Dialog(
@@ -2639,7 +2639,7 @@ class _GroupByDialogState extends State<_GroupByDialog> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Text(
-                'Group By',
+                l10n.groupByTitle,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,

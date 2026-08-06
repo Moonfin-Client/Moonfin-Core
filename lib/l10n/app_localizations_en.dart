@@ -504,6 +504,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get extraLarge => 'Extra Large';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Genres';
   }
@@ -10339,6 +10348,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsMusicPlaybackTimeDescription =>
       'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
 }
 
 /// The translations for English, as used in the United Kingdom (`en_GB`).
@@ -10718,15 +10739,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get extraLarge => 'Extra Large';
-
-  @override
-  String get scrollDirection => 'Scroll Direction';
-
-  @override
-  String get scrollDirectionVertical => 'Vertical';
-
-  @override
-  String get scrollDirectionHorizontal => 'Horizontal';
 
   @override
   String libraryGenresTitle(String name) {

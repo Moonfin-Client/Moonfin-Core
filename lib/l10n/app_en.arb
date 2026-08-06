@@ -9282,5 +9282,21 @@
   "settingsMusicPlaybackTimeDescription": "Choose what is shown on the right side of the music progress bar.",
   "@settingsMusicPlaybackTimeDescription": {
     "description": "Setting description for the music progress bar time option"
+  },
+  "groupByTitle": "Group By",
+  "@groupByTitle": {
+    "description": "Dialog title and button label for library group by options"
+  },
+  "groupByDecade": "Decade (Year)",
+  "@groupByDecade": {
+    "description": "Option to group library items by release decade"
+  },
+  "groupByParentalRating": "Parental Rating",
+  "@groupByParentalRating": {
+    "description": "Option to group library items by parental rating"
+  },
+  "groupByStudio": "Studio",
+  "@groupByStudio": {
+    "description": "Option to group library items by production studio"
   }
 }

@@ -10495,4 +10495,16 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsMusicPlaybackTimeDescription =>
       'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
 }

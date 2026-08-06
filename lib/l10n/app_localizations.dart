@@ -18525,6 +18525,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose what is shown on the right side of the music progress bar.'**
   String get settingsMusicPlaybackTimeDescription;
+
+  /// Dialog title and button label for library group by options
+  ///
+  /// In en, this message translates to:
+  /// **'Group By'**
+  String get groupByTitle;
+
+  /// Option to group library items by release decade
+  ///
+  /// In en, this message translates to:
+  /// **'Decade (Year)'**
+  String get groupByDecade;
+
+  /// Option to group library items by parental rating
+  ///
+  /// In en, this message translates to:
+  /// **'Parental Rating'**
+  String get groupByParentalRating;
+
+  /// Option to group library items by production studio
+  ///
+  /// In en, this message translates to:
+  /// **'Studio'**
+  String get groupByStudio;
 }
 
 class _AppLocalizationsDelegate
