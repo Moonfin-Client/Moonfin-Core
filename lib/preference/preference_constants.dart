@@ -425,7 +425,7 @@ enum LibrarySortBy {
 
   /// The options a row can offer when it only ever sorts through the Items API.
   static List<LibrarySortBy> get itemsApiValues =>
-      values.where((v) => !v.usesDedicatedEndpoint && v != LibrarySortBy.rating).toList();
+      values.where((v) => !v.usesDedicatedEndpoint).toList();
 }
 
 enum LibraryGroupBy {

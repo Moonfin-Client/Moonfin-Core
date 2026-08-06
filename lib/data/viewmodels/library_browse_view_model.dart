@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
 import '../utils/bounded_concurrency.dart';
@@ -120,6 +121,17 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   String? _selectedCategoryTab;
   String? get selectedCategoryTab => _selectedCategoryTab;
+
+  int _groupByLoadGeneration = 0;
+  bool _disposed = false;
+
+  // Grouping walks every item and sorts the keys, and the grid asks for it
+  // more than once per build.
+  Map<String, List<AggregatedItem>>? _groupedCategoriesCache;
+  List<AggregatedItem>? _groupedCategoriesSource;
+  LibraryGroupBy? _groupedCategoriesGroupBy;
+
+  static const _catchAllCategories = {'Other', 'Unknown', 'Unrated'};
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -322,6 +334,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    // Any page walk still running belongs to the list we are about to drop.
+    _groupByLoadGeneration++;
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
@@ -381,22 +395,27 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       await imageTypeSync;
       await _fetchPage(0);
       _state = LibraryBrowseState.ready;
-      notifyListeners();
-      if (_groupBy != LibraryGroupBy.none && isMovieOrSeriesLibrary) {
-        unawaited(_loadAllForGroupBy());
-      }
     } catch (e) {
       _errorMessage = e.toString();
       _state = LibraryBrowseState.error;
-      notifyListeners();
     }
+    notifyListeners();
+    if (isGrouping) unawaited(_loadAllForGroupBy());
   }
 
+  /// Grouping needs the whole library, so this walks the pages the first fetch
+  /// left behind. The generation rises whenever the answer would change
+  /// underneath it, which abandons a walk nobody is waiting on any more.
   Future<void> _loadAllForGroupBy() async {
-    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) return;
+    final generation = ++_groupByLoadGeneration;
+    bool stillWanted() =>
+        !_disposed && _groupByLoadGeneration == generation && isGrouping;
+
+    if (!stillWanted()) return;
     while (hasMore) {
       final beforeCount = _items.length;
       await loadMore();
+      if (!stillWanted()) return;
       if (_items.length == beforeCount) break;
     }
   }
@@ -902,12 +921,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       value,
     );
     notifyListeners();
-    if (_groupBy != LibraryGroupBy.none && isMovieOrSeriesLibrary) {
-      unawaited(_loadAllForGroupBy());
-    }
+    if (isGrouping) unawaited(_loadAllForGroupBy());
   }
 
-  void setSelectedCategoryTab(String? category) {
+  void setSelectedCategoryTab(String category) {
     if (_selectedCategoryTab == category) return;
     _selectedCategoryTab = category;
     notifyListeners();
@@ -919,39 +936,50 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       (includeItemTypes != null &&
           includeItemTypes!.any((t) => t == 'Movie' || t == 'Series'));
 
+  /// Only movies and series carry the metadata the groupings read.
+  bool get isGrouping =>
+      _groupBy != LibraryGroupBy.none && isMovieOrSeriesLibrary;
+
   Map<String, List<AggregatedItem>> get groupedCategories {
-    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) {
-      return const {};
+    if (!isGrouping) return const {};
+
+    // _items is replaced wholesale on every fetch, so identity is enough to
+    // tell a fresh list from the one the cache was built against.
+    final cached = _groupedCategoriesCache;
+    if (cached != null &&
+        _groupedCategoriesGroupBy == _groupBy &&
+        identical(_groupedCategoriesSource, _items)) {
+      return cached;
     }
 
     final map = <String, List<AggregatedItem>>{};
     for (final item in _items) {
       switch (_groupBy) {
         case LibraryGroupBy.genres:
-          final gList = item.genres;
-          if (gList.isEmpty) {
+          // An item lands in every genre it carries, so the counts add up to
+          // more than the library holds.
+          final genres = item.genres;
+          if (genres.isEmpty) {
             (map['Other'] ??= []).add(item);
           } else {
-            for (final g in gList) {
-              (map[g] ??= []).add(item);
+            for (final genre in genres) {
+              (map[genre] ??= []).add(item);
             }
           }
         case LibraryGroupBy.parentalRatings:
-          final rating = (item.officialRating ?? '').trim().isNotEmpty
-              ? item.officialRating!.trim()
-              : 'Unrated';
-          (map[rating] ??= []).add(item);
+          final rating = item.officialRating?.trim() ?? '';
+          (map[rating.isEmpty ? 'Unrated' : rating] ??= []).add(item);
         case LibraryGroupBy.decade:
           final year = item.productionYear;
-          final decadeStr = year != null ? '${(year ~/ 10) * 10}s' : 'Unknown';
-          (map[decadeStr] ??= []).add(item);
+          final decade = year != null ? '${(year ~/ 10) * 10}s' : 'Unknown';
+          (map[decade] ??= []).add(item);
         case LibraryGroupBy.studio:
-          final sList = item.studios;
-          if (sList.isEmpty) {
+          final studios = item.studios;
+          if (studios.isEmpty) {
             (map['Unknown'] ??= []).add(item);
           } else {
-            for (final sMap in sList) {
-              final name = sMap['Name'] as String?;
+            for (final studio in studios) {
+              final name = studio['Name'] as String?;
               if (name != null && name.isNotEmpty) {
                 (map[name] ??= []).add(item);
               }
@@ -962,88 +990,43 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       }
     }
 
+    final severities = _groupBy == LibraryGroupBy.parentalRatings
+        ? {for (final key in map.keys) key: parentalRatingSeverity(key)}
+        : const <String, int>{};
+
     final sortedKeys = map.keys.toList();
-    if (_groupBy == LibraryGroupBy.decade) {
-      sortedKeys.sort((a, b) {
-        if (a == 'Unknown') return 1;
-        if (b == 'Unknown') return -1;
-        return b.compareTo(a);
-      });
-    } else if (_groupBy == LibraryGroupBy.parentalRatings) {
-      sortedKeys.sort((a, b) {
-        final scoreA = _parentalRatingSeverity(a);
-        final scoreB = _parentalRatingSeverity(b);
-        if (scoreA != scoreB) {
-          return scoreA.compareTo(scoreB);
-        }
-        return a.compareTo(b);
-      });
-    } else {
-      sortedKeys.sort((a, b) {
-        if (a == 'Other' || a == 'Unknown' || a == 'Unrated') return 1;
-        if (b == 'Other' || b == 'Unknown' || b == 'Unrated') return -1;
-        return a.compareTo(b);
-      });
-    }
+    sortedKeys.sort((a, b) {
+      final aIsCatchAll = _catchAllCategories.contains(a);
+      final bIsCatchAll = _catchAllCategories.contains(b);
+      if (aIsCatchAll != bIsCatchAll) return aIsCatchAll ? 1 : -1;
+      return switch (_groupBy) {
+        // Newest decade first.
+        LibraryGroupBy.decade => b.compareTo(a),
+        LibraryGroupBy.parentalRatings when severities[a] != severities[b] =>
+          severities[a]!.compareTo(severities[b]!),
+        _ => a.compareTo(b),
+      };
+    });
 
     final sortedMap = <String, List<AggregatedItem>>{};
     for (final key in sortedKeys) {
       sortedMap[key] = map[key]!;
     }
+
+    _groupedCategoriesCache = sortedMap;
+    _groupedCategoriesSource = _items;
+    _groupedCategoriesGroupBy = _groupBy;
     return sortedMap;
   }
 
-  int _parentalRatingSeverity(String rating) {
-    final r = rating.toUpperCase().trim();
-    if (r == 'UNRATED' || r == 'NR' || r == 'UR' || r == 'NOT RATED' || r == 'UNKNOWN' || r == 'OTHER') {
-      return 999;
-    }
-    if (r == 'G' || r == 'TV-Y' || r == 'TV-G' || r == 'EC' || r == 'E' || r == 'U' || r == 'AL' || r == 'APPROVED' || r == 'PASSED') {
-      return 10;
-    }
-    if (r.contains('Y') && !r.contains('Y7')) return 10;
-    if (r == 'PG' || r == 'TV-Y7' || r == 'TV-Y7-FV' || r == 'E10+' || r == '7' || r == '6') {
-      return 20;
-    }
-    if (r.contains('Y7')) return 20;
-    if (r == 'TV-PG' || r == 'PG-12' || r == '12' || r == '12A' || r == '10') {
-      return 30;
-    }
-    if (r == 'PG-13' || r == 'TV-14' || r == 'T' || r == '13' || r == '14' || r == '14A' || r == '15' || r == '15A' || r == '16') {
-      return 40;
-    }
-    if (r.contains('PG-13') || r.contains('14')) return 40;
-    if (r == 'R' || r == 'TV-MA' || r == 'M' || r == '18' || r == '18+' || r == 'R18') {
-      return 50;
-    }
-    if (r.contains('MA') || r.contains('RESTRICTED')) return 50;
-    if (r == 'NC-17' || r == 'AO' || r == 'X' || r == 'XXX' || r == 'R-18') {
-      return 60;
-    }
-
-    final numMatch = RegExp(r'\d+').firstMatch(r);
-    if (numMatch != null) {
-      final age = int.tryParse(numMatch.group(0)!);
-      if (age != null) {
-        if (age <= 6) return 15;
-        if (age <= 10) return 25;
-        if (age <= 12) return 32;
-        if (age <= 15) return 42;
-        if (age <= 17) return 52;
-        return 62;
-      }
-    }
-    return 500;
-  }
-
   List<AggregatedItem> get currentCategoryItems {
-    if (_groupBy == LibraryGroupBy.none || !isMovieOrSeriesLibrary) {
-      return _items;
-    }
+    if (!isGrouping) return _items;
     final categories = groupedCategories;
     if (categories.isEmpty) return _items;
+    // A filter can retire the selected category. Falling back to every item
+    // would mix in the other categories, so fall back to the first instead.
     final selected = _selectedCategoryTab ?? categories.keys.first;
-    return categories[selected] ?? _items;
+    return categories[selected] ?? categories.values.first;
   }
 
   bool get isSeriesLibrary =>
@@ -1119,8 +1102,19 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   String get counterText => '${_items.length} | $_totalCount';
 
+  // Fetches keep landing after the screen is popped, and notifying then throws.
+  // Dropping it here saves every async path from carrying its own guard.
+  @override
+  void notifyListeners() {
+    if (_disposed) return;
+    super.notifyListeners();
+  }
+
   @override
   void dispose() {
+    // Also stops an in-flight page walk from fetching what nobody will see.
+    _disposed = true;
+    _groupByLoadGeneration++;
     _prefs.removeListener(_onPrefsChanged);
     super.dispose();
   }

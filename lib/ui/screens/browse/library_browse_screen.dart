@@ -35,6 +35,26 @@ Color get _navyBackground => AppColorScheme.background;
 Color get _jellyfinBlue => AppColorScheme.accent;
 const _horizontalPadding = 60.0;
 const _kCompactBreakpoint = 600.0;
+
+/// Grouped rows run tighter than the flat grid so a row of posters and its
+/// category heading both fit.
+const _kGroupedRowCardScale = 0.88;
+
+/// Slack above and below a grouped row's cards so the focus ring isn't clipped.
+const _kGroupedRowFocusPadding = 36.0;
+
+/// Doubles as the stride the row uses to pin a focused card to the left edge.
+const _kGroupedRowCardGap = 12.0;
+
+/// The horizontal grid only takes another row once there is most of one to
+/// spare, so a sliver of leftover height doesn't squash every card.
+const _kHorizontalRowRoundUpThreshold = 1.7;
+
+/// Stops a very tall window shrinking cards into unreadable thumbnails.
+const _kMaxHorizontalRows = 8;
+
+const _kChevronScrollStep = 480.0;
+
 bool _isCompact(BuildContext context) =>
     !PlatformDetection.isTV &&
     (PlatformDetection.useMobileUi ||
@@ -247,26 +267,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
-    final posterSize = _vm.posterSize;
     if (_vm.isMusicBrowse || _vm.isPlaylistBrowse) {
-      final musicSide = switch (posterSize) {
-        PosterSize.small => 120.0,
-        PosterSize.medium => 160.0,
-        PosterSize.large => 220.0,
-        PosterSize.extraLarge => 300.0,
-      };
-      return musicSide * desktopScale;
+      return _vm.posterSize.portraitHeight.toDouble() * desktopScale;
     }
-    final portraitH = switch (posterSize) {
-      PosterSize.small => 100.0,
-      PosterSize.medium => 150.0,
-      PosterSize.large => 210.0,
-      PosterSize.extraLarge => 300.0,
-    };
+    final posterSize = _vm.posterSize;
     final baseWidth = switch (_vm.imageType) {
-      ImageType.thumb => (portraitH * 0.73) * (16 / 9),
+      ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
       ImageType.banner => kBannerCardHeight * kBannerAspectRatio,
-      ImageType.poster => portraitH * (2 / 3),
+      ImageType.poster => posterSize.portraitHeight * (2 / 3),
     };
     return baseWidth * desktopScale;
   }
@@ -743,19 +751,40 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  /// The chevrons drive [_scrollController], which only runs horizontally for
+  /// the plain horizontal grid. Grouped rows and the songs list keep the
+  /// controller on a vertical list, so pointing left and right at it there
+  /// would scroll the page up and down instead.
+  bool get _horizontalGridIsScrollable =>
+      _vm.scrollDirection == LibraryScrollDirection.horizontal &&
+      !_isSongsBrowse &&
+      !_vm.isGrouping;
+
+  void _nudgeHorizontalGrid(double delta) {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    _scrollController.animateTo(
+      (_scrollController.offset + delta).clamp(
+        position.minScrollExtent,
+        position.maxScrollExtent,
+      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   Widget _buildBody() {
     final spinnerColor = _vm.isBookLibrary ? const Color(0xFFD97706) : _jellyfinBlue;
     final showHorizChevrons =
-        _vm.scrollDirection == LibraryScrollDirection.horizontal &&
+        _horizontalGridIsScrollable &&
+        _vm.state == LibraryBrowseState.ready &&
         PlatformDetection.useDesktopUi &&
         !PlatformDetection.isTV;
     return Column(
       children: [
         if (showHorizChevrons)
-          // Chevron row matching home-screen style — sits just below the toolbar,
-          // flush with the right edge at _horizontalPadding inset.
           Padding(
-            padding: EdgeInsets.fromLTRB(_horizontalPadding, 0, _horizontalPadding, 0),
+            padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -765,15 +794,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   descendantsAreFocusable: false,
                   child: IconButton(
                     icon: const Icon(Icons.chevron_left),
-                    onPressed: () {
-                      if (_scrollController.hasClients) {
-                        _scrollController.animateTo(
-                          (_scrollController.offset - 480).clamp(0, double.infinity),
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
+                    onPressed: () => _nudgeHorizontalGrid(-_kChevronScrollStep),
                     visualDensity: VisualDensity.compact,
                   ),
                 ),
@@ -783,15 +804,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   descendantsAreFocusable: false,
                   child: IconButton(
                     icon: const Icon(Icons.chevron_right),
-                    onPressed: () {
-                      if (_scrollController.hasClients) {
-                        _scrollController.animateTo(
-                          _scrollController.offset + 480,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
+                    onPressed: () => _nudgeHorizontalGrid(_kChevronScrollStep),
                     visualDensity: VisualDensity.compact,
                   ),
                 ),
@@ -882,7 +895,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final watchedBehavior = _prefs.get(
       UserPreferences.watchedIndicatorBehavior,
     );
-    final useGroupBy = _vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -916,6 +928,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final isNeon =
             ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
+        // Grouping and the type checkboxes both move cards around, so focus
+        // nodes key on a card's place in the full list to stay with it.
         final gridItems = _vm.visiblePlaylists;
         final indexInItems = _vm.isPlaylistBrowse
             ? <String, int>{
@@ -1008,7 +1022,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           );
         }
 
-        final itemsToDisplay = useGroupBy ? _vm.currentCategoryItems : gridItems;
+        final itemsToDisplay =
+            _vm.isGrouping ? _vm.currentCategoryItems : gridItems;
 
         final verticalScrollView = CustomScrollView(
           controller: _scrollController,
@@ -1054,7 +1069,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           ],
         );
 
-        if (useGroupBy) {
+        if (_vm.isGrouping) {
           return Column(
             children: [
               _CategoryTabBar(
@@ -1072,6 +1087,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  /// [index] keys the focus node and is the card's place in the full item list,
+  /// so it stays put as more pages arrive. [positionInSection] and
+  /// [sectionCount] describe the grid it's drawn in, which is one category once
+  /// the playlists page groups by type or a library groups by category.
+  ///
+  /// [paginateOnEdge] is false for sections that already hold every item they
+  /// will ever hold, so the edge keys stay free to move focus instead of being
+  /// swallowed by a fetch that has nothing left to fetch.
   Widget _buildGridCard({
     required AggregatedItem item,
     required int index,
@@ -1086,9 +1109,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required WatchedIndicatorBehavior watchedBehavior,
     required bool isMobile,
     VoidCallback? onCardFocused,
+    bool paginateOnEdge = true,
   }) {
-    final isGrouped = (_vm.isPlaylistBrowse && _vm.groupByType) ||
-        (_vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary);
+    // Section headers throw off the uniform row maths in _scrollToGridRow, so a
+    // grouped card asks the viewport to reveal it and needs its own context.
+    // Every other grid keeps the row scrolling and skips the extra element.
+    final isGrouped =
+        (_vm.isPlaylistBrowse && _vm.groupByType) || _vm.isGrouping;
 
     Widget card(BuildContext? revealContext) {
       return MediaCard(
@@ -1143,6 +1170,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             return KeyEventResult.handled;
           }
           if (event.isActionable && event.logicalKey.isRightKey) {
+            // Measured against the section the card sits in, so the end of a
+            // ragged last row holds focus instead of jumping to the next
+            // category's first card.
             final isLastColumn =
                 (positionInSection % crossAxisCount) == crossAxisCount - 1;
             final isLastInSection = positionInSection == sectionCount - 1;
@@ -1151,7 +1181,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             }
           }
 
-          if (!_vm.hasMore && !_vm.loadingMore) {
+          if (!paginateOnEdge || (!_vm.hasMore && !_vm.loadingMore)) {
             return KeyEventResult.ignored;
           }
           if (!event.isActionable || !event.logicalKey.isDownKey) {
@@ -1187,7 +1217,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
     }
 
-    final cardWidth = _cardWidth() * 0.88;
+    final cardWidth = _cardWidth() * _kGroupedRowCardScale;
     final isMobile = _isCompact(context);
     final gridPadding = isMobile ? 16.0 : _horizontalPadding;
     final ar = _gridBaseAspectRatio();
@@ -1195,7 +1225,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
     final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
     final rowCardHeight = cardWidth / ar + textHeight;
-    final rowContainerHeight = rowCardHeight + 36.0;
+    final rowContainerHeight = rowCardHeight + _kGroupedRowFocusPadding;
 
     final focusColor = _vm.isFilterBrowse
         ? ThemeRegistry.active.borders.focusBorder.color
@@ -1203,6 +1233,16 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     final keys = categories.keys.toList();
+
+    // Focus nodes are cached by index alone, so hand each row a slice of the
+    // numbering wide enough for its own cards. A running total keeps the slices
+    // packed and, unlike a fixed stride, can't overflow into the next row.
+    final focusOffsets = List<int>.filled(keys.length, 0);
+    var runningOffset = 0;
+    for (var i = 0; i < keys.length; i++) {
+      focusOffsets[i] = runningOffset;
+      runningOffset += categories[keys[i]]!.length;
+    }
 
     return FocusTraversalGroup(
       policy: ReadingOrderTraversalPolicy(),
@@ -1217,7 +1257,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           return _GroupedCategoryRow(
             categoryKey: key,
             items: catItems,
-            categoryIndex: idx,
+            focusIndexOffset: focusOffsets[idx],
             cardWidth: cardWidth,
             rowCardHeight: rowCardHeight,
             rowContainerHeight: rowContainerHeight,
@@ -1227,18 +1267,22 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             watchedBehavior: watchedBehavior,
             isMobile: isMobile,
             buildGridCard: _buildGridCard,
-            getItemAspectRatio: _itemAspectRatio,          );
+            getItemAspectRatio: _itemAspectRatio,
+          );
         },
       ),
     );
   }
 
   Widget _buildHorizontalGrid() {
-    if (_vm.groupBy != LibraryGroupBy.none && _vm.isMovieOrSeriesLibrary) {
+    if (_vm.isGrouping) {
       return _buildGroupedHorizontalRows();
     }
-    final spacing = 12.0;
+    const spacing = 12.0;
     final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
+    final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+    final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1247,10 +1291,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final vertPadding = isMobile ? 12.0 : 20.0;
         final ar = _gridBaseAspectRatio();
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
-        final hasSubtitles = _vm.items.any(
-          (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
-        );
-        final textHeight = (hasSubtitles ? 46.0 : 30.0) * desktopTextScale;
+        final textHeight = (_hasSubtitles ? 46.0 : 30.0) * desktopTextScale;
 
         final cellWidth = _cardWidth();
         final targetImageHeight = cellWidth / ar;
@@ -1258,7 +1299,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
         final availableHeight = constraints.maxHeight - vertPadding * 2;
         final rawRows = (availableHeight + spacing) / (targetCellHeight + spacing);
-        final rowCount = (rawRows >= 1.7 ? rawRows.round() : rawRows.floor()).clamp(1, 8);
+        final rowCount = (rawRows >= _kHorizontalRowRoundUpThreshold
+                ? rawRows.round()
+                : rawRows.floor())
+            .clamp(1, _kMaxHorizontalRows);
 
         final double actualCellHeight;
         final double actualImageHeight;
@@ -1301,23 +1345,15 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final item = _vm.items[index];
-                      final itemAspectRatio = _itemAspectRatio(item);
-                      final focusColor = Color(
-                        _prefs.get(UserPreferences.focusColor).colorValue,
-                      );
-                      final isNeon =
-                          ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
                       return MediaCard(
                         title: item.name,
                         subtitle: _cardSubtitle(item),
                         imageUrl: _imageUrl(item),
                         width: double.infinity,
-                        aspectRatio: itemAspectRatio,
+                        aspectRatio: _itemAspectRatio(item),
                         focusColor: focusColor,
                         focusNode: getGridItemFocusNode(index),
-                        cardFocusExpansion: _prefs.get(
-                          UserPreferences.cardFocusExpansion,
-                        ),
+                        cardFocusExpansion: cardFocusExpansion,
                         suppressFocusGlow: isNeon,
                         isPlayed: item.isPlayed,
                         isFavorite: item.isFavorite,
@@ -2039,6 +2075,9 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                       (o != LibrarySortBy.rating &&
                           o != LibrarySortBy.criticRating &&
                           o != LibrarySortBy.communityRating)) &&
+                  // Group By covers parental rating better than a sort does, so
+                  // the libraries that offer it drop the duplicate.
+                  (!vm.isMovieOrSeriesLibrary || o != LibrarySortBy.rating) &&
                   (vm.isMusicBrowse ||
                       (o != LibrarySortBy.albumArtist &&
                           o != LibrarySortBy.album &&
@@ -2669,7 +2708,11 @@ class _GroupByDialogState extends State<_GroupByDialog> {
 class _GroupedCategoryRow extends StatefulWidget {
   final String categoryKey;
   final List<AggregatedItem> items;
-  final int categoryIndex;
+
+  /// Where this row's cards start in the screen-wide focus node numbering.
+  /// Nodes are cached by index alone, so every card across every category needs
+  /// a distinct index or two rows end up sharing a node.
+  final int focusIndexOffset;
   final double cardWidth;
   final double rowCardHeight;
   final double rowContainerHeight;
@@ -2692,13 +2735,14 @@ class _GroupedCategoryRow extends StatefulWidget {
     required WatchedIndicatorBehavior watchedBehavior,
     required bool isMobile,
     VoidCallback? onCardFocused,
+    bool paginateOnEdge,
   }) buildGridCard;
   final double Function(AggregatedItem item) getItemAspectRatio;
 
   const _GroupedCategoryRow({
     required this.categoryKey,
     required this.items,
-    required this.categoryIndex,
+    required this.focusIndexOffset,
     required this.cardWidth,
     required this.rowCardHeight,
     required this.rowContainerHeight,
@@ -2726,7 +2770,7 @@ class _GroupedCategoryRowState extends State<_GroupedCategoryRow> {
 
   void _scrollToItemIndex(int itemIndex) {
     if (!_horizontalController.hasClients) return;
-    final itemExtent = widget.cardWidth + 12.0;
+    final itemExtent = widget.cardWidth + _kGroupedRowCardGap;
     final maxOffset = _horizontalController.position.maxScrollExtent;
     final target = (itemIndex * itemExtent).clamp(0.0, maxOffset);
     _horizontalController.animateTo(
@@ -2738,84 +2782,82 @@ class _GroupedCategoryRowState extends State<_GroupedCategoryRow> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (rowContext) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(widget.gridPadding, 12, widget.gridPadding, 8),
-              child: Row(
-                children: [
-                  Text(
-                    widget.categoryKey,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '(${widget.items.length})',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withAlpha(128),
-                    ),
-                  ),
-                ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(widget.gridPadding, 12, widget.gridPadding, 8),
+          child: Row(
+            children: [
+              Text(
+                widget.categoryKey,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(
-              height: widget.rowContainerHeight,
-              child: ListView.builder(
-                controller: _horizontalController,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: widget.gridPadding, vertical: 12),
-                itemCount: widget.items.length,
-                itemBuilder: (context, itemIdx) {
-                  final item = widget.items[itemIdx];
-                  final itemAspectRatio = widget.getItemAspectRatio(item);
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: SizedBox(
-                      width: widget.cardWidth,
-                      child: widget.buildGridCard(
-                        item: item,
-                        index: widget.categoryIndex * 10000 + itemIdx,
-                        positionInSection: itemIdx,
-                        sectionCount: widget.items.length,
-                        crossAxisCount: widget.items.length,
-                        cellWidth: widget.cardWidth,
-                        childAspectRatio: widget.cardWidth / widget.rowCardHeight,
-                        itemAspectRatio: itemAspectRatio,
-                        focusColor: widget.focusColor,
-                        isNeon: widget.isNeon,
-                        watchedBehavior: widget.watchedBehavior,
-                        isMobile: widget.isMobile,
-                        onCardFocused: () {
-                          _scrollToItemIndex(itemIdx);
-                          if (rowContext.mounted) {
-                            unawaited(
-                              Scrollable.ensureVisible(
-                                rowContext,
-                                alignment: 0.05,
-                                duration: const Duration(milliseconds: 160),
-                                curve: Curves.easeOutCubic,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  );
-                },
+              const SizedBox(width: 8),
+              Text(
+                '(${widget.items.length})',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withAlpha(128),
+                ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          ),
+        ),
+        SizedBox(
+          height: widget.rowContainerHeight,
+          child: ListView.builder(
+            controller: _horizontalController,
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: widget.gridPadding, vertical: 12),
+            itemCount: widget.items.length,
+            // The row's own context is what ensureVisible below needs, so the
+            // builder's is left unnamed rather than shadowing it.
+            itemBuilder: (_, itemIdx) {
+              final item = widget.items[itemIdx];
+              final itemAspectRatio = widget.getItemAspectRatio(item);
+              return Padding(
+                padding: const EdgeInsets.only(right: _kGroupedRowCardGap),
+                child: SizedBox(
+                  width: widget.cardWidth,
+                  child: widget.buildGridCard(
+                    item: item,
+                    index: widget.focusIndexOffset + itemIdx,
+                    positionInSection: itemIdx,
+                    sectionCount: widget.items.length,
+                    crossAxisCount: widget.items.length,
+                    cellWidth: widget.cardWidth,
+                    childAspectRatio: widget.cardWidth / widget.rowCardHeight,
+                    itemAspectRatio: itemAspectRatio,
+                    focusColor: widget.focusColor,
+                    isNeon: widget.isNeon,
+                    watchedBehavior: widget.watchedBehavior,
+                    isMobile: widget.isMobile,
+                    paginateOnEdge: false,
+                    onCardFocused: () {
+                      _scrollToItemIndex(itemIdx);
+                      if (!mounted) return;
+                      unawaited(
+                        Scrollable.ensureVisible(
+                          context,
+                          alignment: 0.05,
+                          duration: const Duration(milliseconds: 160),
+                          curve: Curves.easeOutCubic,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -2843,22 +2885,27 @@ class _CategoryTabBar extends StatelessWidget {
     return Container(
       height: 48,
       padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 6),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: keys.length,
-        itemBuilder: (context, index) {
-          final key = keys[index];
-          final isSelected = key == active;
-          final count = groupedCategories[key]?.length ?? 0;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: _CategoryChip(
-              label: '$key ($count)',
-              isSelected: isSelected,
-              onTap: () => onSelectTab(key),
-            ),
-          );
-        },
+      // A studio grouping can run to hundreds of chips, so the row stays lazy
+      // and each chip pulls itself into view as it takes focus.
+      child: FocusTraversalGroup(
+        policy: ReadingOrderTraversalPolicy(),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: keys.length,
+          itemBuilder: (context, index) {
+            final key = keys[index];
+            final isSelected = key == active;
+            final count = groupedCategories[key]?.length ?? 0;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _CategoryChip(
+                label: '$key ($count)',
+                isSelected: isSelected,
+                onTap: () => onSelectTab(key),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -2880,6 +2927,19 @@ class _CategoryChip extends StatefulWidget {
 }
 
 class _CategoryChipState extends State<_CategoryChip> with FocusStateMixin {
+  void _onFocusChange(bool hasFocus) {
+    setFocused(hasFocus);
+    if (!hasFocus || !mounted) return;
+    unawaited(
+      Scrollable.ensureVisible(
+        context,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutCubic,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final showActive = focused || hovered;
@@ -2890,7 +2950,7 @@ class _CategoryChipState extends State<_CategoryChip> with FocusStateMixin {
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
-        onFocusChange: (f) => setFocused(f),
+        onFocusChange: _onFocusChange,
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {
             widget.onTap();

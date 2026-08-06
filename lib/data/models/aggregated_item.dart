@@ -54,8 +54,6 @@ class AggregatedItem {
 
   List<String> get genres => _toListOfStrings(rawData['Genres']);
 
-
-
   String? get primaryImageTag =>
       (rawData['ImageTags'] as Map?)?['Primary'] as String?;
 
