@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/current_app_localizations.dart';
-import '../utils/media_deduplication_utils.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../utils/media_deduplication_utils.dart';
 
 class SearchResultGroup {
   final String title;

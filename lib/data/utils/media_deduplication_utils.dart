@@ -1,106 +1,67 @@
 import '../models/aggregated_item.dart';
 
-/// Utilities for deduplicating media items across libraries and servers,
-/// as well as formatting version labels based on library counts.
+/// Collapses the same title arriving from more than one library or server into
+/// a single card.
 class MediaDeduplicationUtils {
   MediaDeduplicationUtils._();
 
-  /// Returns a canonical deduplication key for an item.
+  /// Matched in this order, and case insensitively, because the server spells
+  /// them differently between versions.
+  static const _providerPriority = ['imdb', 'tmdb', 'tvdb'];
+
+  /// A key two items share only when they are certainly the same title.
   ///
-  /// Prefers external provider IDs (IMDb, TMDb, TVDb). Fallbacks to
-  /// `Type|NormalizedTitle|ProductionYear` if no external IDs are present.
+  /// Only an external provider id can say that. Titles can't: every series has
+  /// a Season 1, plenty of episodes are called Pilot, and Greatest Hits is a
+  /// whole genre of album. So an item without one gets a key of its own and
+  /// never merges.
   static String getDeduplicationKey(AggregatedItem item) {
-    final imdb = item.imdbId?.trim().toLowerCase();
-    if (imdb != null && imdb.isNotEmpty) {
-      return 'imdb:$imdb';
+    final providerIds = item.providerIds;
+    for (final provider in _providerPriority) {
+      for (final entry in providerIds.entries) {
+        if (entry.key.trim().toLowerCase() != provider) continue;
+        final value = entry.value.trim().toLowerCase();
+        if (value.isNotEmpty) return '$provider:$value';
+      }
     }
-
-    final tmdb = item.tmdbId?.trim().toLowerCase();
-    if (tmdb != null && tmdb.isNotEmpty) {
-      return 'tmdb:$tmdb';
-    }
-
-    final tvdb = item.providerIds['Tvdb'] ??
-        item.providerIds['tvdb'] ??
-        item.providerIds['TVDB'];
-    if (tvdb != null && tvdb.trim().isNotEmpty) {
-      return 'tvdb:${tvdb.trim().toLowerCase()}';
-    }
-
-    final normType = (item.type ?? '').trim().toLowerCase();
-    final normName = item.name.trim().toLowerCase();
-    final year = item.productionYear ?? '';
-    return '$normType|$normName|$year';
+    return 'item:${item.serverId}:${item.id}';
   }
 
-  /// Deduplicates a list of [AggregatedItem]s based on their deduplication key.
-  ///
-  /// For items with duplicate keys, the representative item chosen is the one
-  /// with the most recent playback progress (highest [playbackPositionTicks]),
-  /// or marked played/favorite, preserving the original appearance order.
-  static List<AggregatedItem> deduplicateMediaItems(List<AggregatedItem> items) {
-    if (items.length <= 1) return items;
-
-    final groups = <String, List<AggregatedItem>>{};
-    final keyOrder = <String>[];
-
+  /// Keeps one card per title, in the order the titles first appear.
+  static List<AggregatedItem> deduplicateMediaItems(
+    List<AggregatedItem> items,
+  ) {
+    // Replacing a value leaves the key where it was, so the map already holds
+    // first-appearance order.
+    final best = <String, AggregatedItem>{};
     for (final item in items) {
       final key = getDeduplicationKey(item);
-      if (!groups.containsKey(key)) {
-        groups[key] = [];
-        keyOrder.add(key);
-      }
-      groups[key]!.add(item);
-    }
-
-    final result = <AggregatedItem>[];
-
-    for (final key in keyOrder) {
-      final group = groups[key]!;
-      if (group.length == 1) {
-        result.add(group.first);
-      } else {
-        // Pick best representative item: highest playback position or played status
-        group.sort((a, b) {
-          final aTicks = a.playbackPositionTicks ?? 0;
-          final bTicks = b.playbackPositionTicks ?? 0;
-          if (aTicks != bTicks) return bTicks.compareTo(aTicks);
-
-          if (a.isPlayed != b.isPlayed) return a.isPlayed ? -1 : 1;
-          if (a.isFavorite != b.isFavorite) return a.isFavorite ? -1 : 1;
-
-          return 0;
-        });
-        result.add(group.first);
+      final incumbent = best[key];
+      if (incumbent == null || _isBetterRepresentative(item, incumbent)) {
+        best[key] = item;
       }
     }
 
-    return result;
+    return best.values.toList();
   }
 
-  /// Formats a version option label for the details screen version selector.
-  ///
-  /// If [hasMultipleLibrariesForType] is true and [libraryName] is provided,
-  /// prefixes the label as `[Library Name] - [Version Name]`.
-  /// Otherwise, returns just the version name (or 'Main' if version name is empty).
-  static String formatVersionLabel({
-    required String? libraryName,
-    required String? versionLabel,
-    required bool hasMultipleLibrariesForType,
-  }) {
-    final cleanVersion = (versionLabel != null && versionLabel.trim().isNotEmpty)
-        ? versionLabel.trim()
-        : 'Main';
+  /// Whether [candidate] should represent the title instead of [incumbent]. The
+  /// copy the user is furthest through wins, then played, then favorite, so the
+  /// card still reflects their state. Ties fall back to the ids so the winner is
+  /// the same on every run.
+  static bool _isBetterRepresentative(
+    AggregatedItem candidate,
+    AggregatedItem incumbent,
+  ) {
+    final candidateTicks = candidate.playbackPositionTicks ?? 0;
+    final incumbentTicks = incumbent.playbackPositionTicks ?? 0;
+    if (candidateTicks != incumbentTicks) return candidateTicks > incumbentTicks;
 
-    final cleanLib = libraryName?.trim();
+    if (candidate.isPlayed != incumbent.isPlayed) return candidate.isPlayed;
+    if (candidate.isFavorite != incumbent.isFavorite) return candidate.isFavorite;
 
-    if (hasMultipleLibrariesForType && cleanLib != null && cleanLib.isNotEmpty) {
-      if (cleanVersion == 'Main') {
-        return cleanLib;
-      }
-      return '$cleanLib - $cleanVersion';
-    }
-
-    return cleanVersion;
+    final byServer = candidate.serverId.compareTo(incumbent.serverId);
+    if (byServer != 0) return byServer < 0;
+    return candidate.id.compareTo(incumbent.id) < 0;
   }
 }

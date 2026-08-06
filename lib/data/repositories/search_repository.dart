@@ -8,7 +8,7 @@ class SearchRepository {
   static const _searchFields =
       'Type,UserData,ProductionYear,SeriesName,ParentIndexNumber,IndexNumber,'
       'AlbumArtist,Album,ImageTags,BackdropImageTags,ParentBackdropItemId,'
-      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag';
+      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag,ProviderIds';
 
   SearchRepository(this._client);
 

@@ -52,7 +52,8 @@ class MultiServerRepository {
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
+      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,'
+      'PrimaryImageAspectRatio,ProviderIds';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb,Banner';
   static const _imageTypeLimit = 1;
@@ -342,9 +343,11 @@ class MultiServerRepository {
 
     final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
     final takenItems = deduplicated.take(limit).toList();
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
-    });
+    final totalCount = _totalAfterDeduplication(
+      serverTotal: _serverRowTotal(sessions, cacheKeyPrefix),
+      fetched: all.length,
+      kept: deduplicated.length,
+    );
 
     return HomeRow(
       id: cacheKeyPrefix,
@@ -881,9 +884,11 @@ class MultiServerRepository {
 
     final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(all);
     final takenItems = deduplicated.take(limit).toList();
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${id}_${session.server.id}'] ?? 0);
-    });
+    final totalCount = _totalAfterDeduplication(
+      serverTotal: _serverRowTotal(sessions, id),
+      fetched: all.length,
+      kept: deduplicated.length,
+    );
 
     return HomeRow(
       id: id,
@@ -1301,6 +1306,27 @@ class MultiServerRepository {
     final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
     final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
     return bDate.compareTo(aDate);
+  }
+
+  int _serverRowTotal(List<ServerUserSession> sessions, String rowKey) =>
+      sessions.fold<int>(
+        0,
+        (sum, session) =>
+            sum + (_rowTotals['${rowKey}_${session.server.id}'] ?? 0),
+      );
+
+  /// Each server counts its rows without knowing another holds the same title.
+  /// Only the fetched window can be checked, so this is an upper bound, but it
+  /// stops the row promising more than it has.
+  static int _totalAfterDeduplication({
+    required int serverTotal,
+    required int fetched,
+    required int kept,
+  }) {
+    final removed = fetched - kept;
+    if (removed <= 0) return serverTotal;
+    final adjusted = serverTotal - removed;
+    return adjusted < kept ? kept : adjusted;
   }
 
   Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
