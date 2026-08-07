@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
-const _serverUserAgent = 'Mozilla/5.0 (compatible; Moonfin/Flutter)';
+import 'server_user_agent.dart';
 
 void configureServerDio(Dio dio) {
   dio.transformer = FusedTransformer(contentLengthIsolateThreshold: 50 * 1024);
@@ -12,9 +12,7 @@ void configureServerDio(Dio dio) {
     createHttpClient: () {
       final client = HttpClient();
 
-      // Dart's default user agent is blocked by some reverse proxies. Keep a
-      // browser-compatible prefix while identifying Moonfin to server logs.
-      client.userAgent = _serverUserAgent;
+      client.userAgent = serverUserAgent;
 
       client.badCertificateCallback = (_, _, _) => true;
 

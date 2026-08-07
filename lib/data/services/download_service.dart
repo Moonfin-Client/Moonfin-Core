@@ -985,12 +985,12 @@ class DownloadService extends ChangeNotifier {
     if (token == null || token.isEmpty) {
       return {
         'Accept': 'application/octet-stream',
-        'User-Agent': 'Moonfin/Flutter',
+        'User-Agent': serverUserAgent,
       };
     }
     return {
       'Accept': 'application/octet-stream',
-      'User-Agent': 'Moonfin/Flutter',
+      'User-Agent': serverUserAgent,
       'X-Emby-Token': token,
       'Authorization': 'MediaBrowser Token="$token"',
     };

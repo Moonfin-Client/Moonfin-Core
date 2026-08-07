@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kindle_unpack/kindle_unpack.dart';
+import 'package:server_core/server_core.dart';
 
 import 'book_reader_service.dart';
 
@@ -48,7 +49,7 @@ class BookDocumentService {
     List<Uri> uris,
     Map<String, String> headers,
   ) async {
-    final client = HttpClient();
+    final client = HttpClient()..userAgent = serverUserAgent;
     try {
       HttpException? lastError;
 
@@ -93,7 +94,7 @@ class BookDocumentService {
     List<Uri> uris,
     Map<String, String> headers,
   ) async {
-    final client = HttpClient();
+    final client = HttpClient()..userAgent = serverUserAgent;
     try {
       for (final uri in uris) {
         if (uri.scheme == 'file') {

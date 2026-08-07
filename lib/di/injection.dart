@@ -372,12 +372,14 @@ Future<void> configureBackgroundDependencies() async {
   await preferenceStore.init();
 
   final deviceId = preferenceStore.getString('device_id') ?? const Uuid().v4();
+  final appVersion = await _resolveAppVersion();
+  setServerUserAgentVersion(appVersion);
   getIt.registerSingleton<DeviceInfo>(
     DeviceInfo(
       id: deviceId,
       name: await _resolveDeviceName(),
       appName: _clientName(),
-      appVersion: await _resolveAppVersion(),
+      appVersion: appVersion,
     ),
   );
 
@@ -391,6 +393,7 @@ Future<void> configureDependencies() async {
   final preferenceStore = PreferenceStore();
   await preferenceStore.init();
   final appVersion = await _resolveAppVersion();
+  setServerUserAgentVersion(appVersion);
   await _migrateLegacyBitrateCap(preferenceStore);
   await _migrateAndroidMobileStereoAacFallbackDefault(preferenceStore);
   await _migrateAndroidMobileAudioDefaults(preferenceStore);

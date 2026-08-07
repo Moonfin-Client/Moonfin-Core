@@ -48,6 +48,7 @@ export 'src/models/games_models.dart';
 export 'src/feature/feature_detector.dart';
 export 'src/diagnostics/server_log_sink.dart';
 export 'src/network/configure_server_dio.dart';
+export 'src/network/server_user_agent.dart';
 export 'src/network/auth_header.dart';
 export 'src/network/redirect_interceptor.dart';
 export 'src/network/server_probe.dart';

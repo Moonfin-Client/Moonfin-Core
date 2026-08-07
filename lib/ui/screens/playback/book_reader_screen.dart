@@ -936,7 +936,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     List<Uri> uris,
     Map<String, String> headers,
   ) async {
-    final client = HttpClient();
+    final client = HttpClient()..userAgent = serverUserAgent;
     final l10n = AppLocalizations.of(context);
     try {
       HttpException? lastError;

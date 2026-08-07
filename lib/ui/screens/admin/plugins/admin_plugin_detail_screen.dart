@@ -215,7 +215,7 @@ class _AdminPluginDetailScreenState
     }
 
     final uri = Uri.parse('$_webBaseUrl/web/ConfigurationPages');
-    final httpClient = HttpClient();
+    final httpClient = HttpClient()..userAgent = serverUserAgent;
     try {
       final request = await httpClient.getUrl(uri);
       request.headers.set('X-Emby-Token', token);
