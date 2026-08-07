@@ -104,10 +104,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     return _vm.rowItems[types[_selectedTab]] ?? const [];
   }
 
+  /// The list the grid focus nodes are keyed on.
+  List<AggregatedItem> get _focusTrackedItems =>
+      _vm.viewStyle == FavoritesViewStyle.library
+      ? _vm.gridItems
+      : _currentTabItems();
+
   void _maybeBumpGridVersion() {
-    final current = _vm.viewStyle == FavoritesViewStyle.library
-        ? _vm.gridItems
-        : _currentTabItems();
+    final current = _focusTrackedItems;
     final length = current.length;
     final firstId = length == 0 ? null : current.first.id;
     if (length != _lastGridItemsLength || firstId != _lastGridFirstItemId) {
@@ -353,7 +357,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         _vm.viewStyle == FavoritesViewStyle.home ? _tabsFocusNode : null,
     child: QuickReturnWrapper(
       scrollController: _scrollController,
-      topFocusNode: getGridItemFocusNode(0),
+      // cleanupGridFocusNodes disposes node 0 once the list empties, and the
+      // wrapper would keep holding it, so pass nothing instead.
+      topFocusNode: _focusTrackedItems.isNotEmpty
+          ? getGridItemFocusNode(0)
+          : null,
       child: _buildContent(context),
     ),
   );

@@ -167,10 +167,7 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
         curve: Curves.easeOutCubic,
       );
     }
-    final topNode = widget.topFocusNode;
-    if (topNode != null && topNode.canRequestFocus) {
-      topNode.requestFocus();
-    }
+    widget.topFocusNode?.requestFocus();
     widget.onReturn?.call();
   }
 

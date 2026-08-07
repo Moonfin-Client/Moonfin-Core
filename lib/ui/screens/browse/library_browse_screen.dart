@@ -730,6 +730,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               _vm.scrollDirection == LibraryScrollDirection.horizontal
               ? Axis.horizontal
               : Axis.vertical,
+          // cleanupGridFocusNodes disposes node 0 once the list empties, and
+          // the wrapper would keep holding it, so pass nothing instead.
           topFocusNode: _vm.items.isNotEmpty ? getGridItemFocusNode(0) : null,
           child: _buildContent(context),
         ),
@@ -1199,7 +1201,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   childAspectRatio: childAspectRatio,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  if (index < 0 || index >= itemsToDisplay.length) return null;
                   final item = itemsToDisplay[index];
                   final itemAspectRatio = _itemAspectRatio(item);
                   return _buildGridCard(
@@ -1520,7 +1521,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      if (index < 0 || index >= _vm.items.length) return null;
+                      // No childCount on this delegate, so returning null is
+                      // what tells the sliver where the list ends.
+                      if (index >= _vm.items.length) return null;
                       final item = _vm.items[index];
                       return MediaCard(
                         title: item.name,
