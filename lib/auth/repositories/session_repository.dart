@@ -152,7 +152,16 @@ class SessionRepository {
       return false;
     }
 
-    return switchCurrentSession(serverId: serverId, userId: userId);
+    try {
+      return await switchCurrentSession(serverId: serverId, userId: userId);
+    } catch (error) {
+      // Secure storage refuses on a machine whose keychain the app cannot
+      // reach, and an escape from here leaves the session mid switch forever,
+      // which strands the startup screen waiting to become ready.
+      _logger.w('Restoring the last session failed: $error');
+      _setState(SessionState.ready);
+      return false;
+    }
   }
 
   Future<bool> switchCurrentSession({

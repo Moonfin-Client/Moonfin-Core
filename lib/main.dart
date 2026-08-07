@@ -28,7 +28,7 @@ import 'util/webview_environment.dart';
 import 'data/services/theme_store_service.dart';
 import 'di/injection.dart';
 import 'playback/appletv_audio_now_playing_feeder.dart';
-import 'playback/appletv_mpv_backend.dart';
+import 'playback/appletv_backend.dart';
 import 'playback/audio_capability_profile.dart';
 import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
@@ -36,6 +36,7 @@ import 'playback/media_browse_service.dart';
 import 'playback/mpris_service.dart';
 import 'playback/playback_lifecycle_handler.dart';
 import 'platform/web_runtime_config.dart';
+import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
 import 'util/fullscreen_helper.dart';
 import 'util/http_overrides_stub.dart'
@@ -50,8 +51,8 @@ DateTime? _lastIosRouteResync;
 /// iOS-only audio route handling: observe output route changes to (a) pause when
 /// the current output device disappears (AirPods removed, cable unplugged) and
 /// (b) re-sync A/V when the output switches mid-playback (a new device connects,
-/// or AirPlay/HomePod is selected), which otherwise leaves libmpv writing to a
-/// stale clock and drifts audio out of sync.
+/// or AirPlay/HomePod is selected), which otherwise leaves the player writing
+/// to a stale clock and drifts audio out of sync.
 void _attachIosAudioRouteHandling() {
   final session = AVAudioSession();
   session.routeChangeStream.listen((change) async {
@@ -70,8 +71,8 @@ void _attachIosAudioRouteHandling() {
           return;
         }
         _lastIosRouteResync = now;
-        // A same-position seek re-primes libmpv's audio/video clock without an
-        // audible pause, realigning A/V after the output switch.
+        // A same-position seek re-primes the player's audio/video clock without
+        // an audible pause, realigning A/V after the output switch.
         await manager.seekTo(manager.state.position);
         break;
       default:
@@ -323,63 +324,19 @@ Future<void> _detectAndApplyAudioCapabilities(UserPreferences prefs) async {
     final profile = await AudioCapabilityProbe.queryWithRetry();
     AudioCapabilityProbe.apply(profile);
 
-    // Passthrough is no longer seeded into the toggle prefs: the tri-state
-    // resolvers compute it live from the detected capability, which also
-    // auto-adapts to later route changes. Existing installs whose toggles were
-    // auto-seeded by the old one-shot probe are migrated back to "Auto" once.
-    if (profile != null) {
-      await _migrateSeededPassthroughTogglesToAuto(prefs, profile);
+    // Installs migrated into manual mode carry only the toggles they had set
+    // by hand, so fill the rest from the probe and every switch has a real
+    // value.
+    if (profile != null &&
+        prefs.get(UserPreferences.audioPassthroughMode) ==
+            AudioPassthroughMode.manual) {
+      await prefs.seedAbsentPassthroughToggles();
     }
 
     // Re-probe whenever the audio route changes (e.g. the AVR is powered on
     // after launch) so detection self-heals without an app restart.
     AudioCapabilityProbe.listenForRouteChanges();
   } catch (_) {}
-}
-
-/// One-time migration for installs that ran the old startup seeding, which
-/// copied probe results into the 8 passthrough toggle prefs. A stored value
-/// that still matches what the probe would have seeded was almost certainly
-/// auto-seeded (not a deliberate choice), so it is cleared to return the toggle
-/// to tri-state "Auto". A value that differs is treated as a deliberate user
-/// override and preserved.
-Future<void> _migrateSeededPassthroughTogglesToAuto(
-  UserPreferences prefs,
-  AudioCapabilityProfile profile,
-) async {
-  if (prefs.get(UserPreferences.audioPassthroughMigratedToAuto)) return;
-
-  if (prefs.get(UserPreferences.audioPassthroughProbeSeeded)) {
-    final hasReceiverRoute =
-        profile.activeRouteType == AudioRouteType.arc ||
-        profile.activeRouteType == AudioRouteType.earc;
-    final seededValues = {
-      UserPreferences.ac3PassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughAc3,
-      UserPreferences.eac3PassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughEac3,
-      UserPreferences.eac3JocPassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughEac3Joc,
-      UserPreferences.dtsCorePassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughDts,
-      UserPreferences.dtsHdPassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughDtsHd,
-      UserPreferences.dtsXPassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughDtsX,
-      UserPreferences.trueHdPassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughTrueHd,
-      UserPreferences.trueHdAtmosPassthroughEnabled:
-          hasReceiverRoute && profile.canPassthroughTrueHdJoc,
-    };
-    for (final entry in seededValues.entries) {
-      if (prefs.containsPreference(entry.key) &&
-          prefs.get(entry.key) == entry.value) {
-        await prefs.removePreference(entry.key);
-      }
-    }
-  }
-
-  await prefs.set(UserPreferences.audioPassthroughMigratedToAuto, true);
 }
 
 void _sweepImageCache(UserPreferences prefs, {bool throttle = false}) {
@@ -479,11 +436,12 @@ void main() async {
     await windowManager.ensureInitialized();
   }
 
-  // iOS runs entirely on AetherEngine, so media_kit isn't initialized there
-  // and its native libs are stubbed out of the build.
+  // Apple runs entirely on AetherEngine, so media_kit isn't initialized there
+  // and its native libs are out of those builds.
   if (!PlatformDetection.isTizen &&
       !PlatformDetection.isAppleTV &&
-      !PlatformDetection.isIOS) {
+      !PlatformDetection.isIOS &&
+      !PlatformDetection.isMacOS) {
     MediaKit.ensureInitialized();
   }
 
@@ -582,7 +540,7 @@ void main() async {
       final feeder = AppleTvAudioNowPlayingFeeder(
         manager: GetIt.instance<PlaybackManager>(),
         clientFactory: GetIt.instance<MediaServerClientFactory>(),
-        backend: GetIt.instance<AppleTvMpvBackend>(),
+        backend: GetIt.instance<AppleTvBackend>(),
       )..start();
       GetIt.instance.registerSingleton<AppleTvAudioNowPlayingFeeder>(feeder);
     } catch (_) {}

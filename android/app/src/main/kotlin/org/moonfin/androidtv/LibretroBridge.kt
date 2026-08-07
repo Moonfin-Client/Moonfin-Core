@@ -46,6 +46,9 @@ class LibretroBridge(flutterEngine: FlutterEngine) {
   // not resume a game the user left paused.
   @Volatile private var userPaused = false
 
+  // The most recent message from the core, used as the reason if it then quits.
+  @Volatile private var lastCoreMessage: String? = null
+
   init {
     control.setMethodCallHandler { call, result -> handle(call.method, call.arguments, result) }
     events.setStreamHandler(object : EventChannel.StreamHandler {
@@ -171,6 +174,7 @@ class LibretroBridge(flutterEngine: FlutterEngine) {
   private fun stop() {
     isActive = false
     userPaused = false
+    lastCoreMessage = null
     stopAudio()
     nativeStop()
     surfaceProducer?.release()
@@ -266,6 +270,31 @@ class LibretroBridge(flutterEngine: FlutterEngine) {
       pulseMask = pulseMask and bit.inv()
       applyMask()
     }, durationMs.toLong())
+  }
+
+  // Called from JNI with a message the core wants shown, such as PPSSPP's
+  // warning about missing system files. The last one is kept so a core that
+  // then quits can explain itself.
+  fun onCoreMessage(message: String) {
+    lastCoreMessage = message
+    mainHandler.post {
+      eventSink?.success(mapOf("event" to "coreMessage", "message" to message))
+    }
+  }
+
+  // Called from JNI when the core asked to quit, which cores do when a boot
+  // fails. The emulation is already gone, so tear the rest down and let Dart
+  // show the reason instead of leaving a frozen picture behind.
+  fun onCoreShutdown() {
+    mainHandler.post {
+      val detail = lastCoreMessage
+      stop()
+      eventSink?.success(
+        mapOf(
+          "event" to "error",
+          "message" to (detail ?: "The emulator core stopped unexpectedly."),
+        ))
+    }
   }
 
   // Called from JNI on the host run-loop thread when the core geometry changes.

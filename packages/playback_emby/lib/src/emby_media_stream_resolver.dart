@@ -128,7 +128,16 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       mediaStreams: source.mediaStreams,
       selectedAudioStreamIndex: source.defaultAudioStreamIndex,
       selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
-      transcodingReasons: source.transcodingReasons,
+      transcodingReasons: mergeTranscodeReasons(
+        playMethod: playMethod,
+        serverReasons: source.transcodingReasons,
+        mediaStreams: source.mediaStreams,
+        container: source.container,
+        sourceBitrate: source.bitrate,
+        maxStreamingBitrate: maxStreamingBitrate,
+        audioStreamIndex: audioStreamIndex ?? source.defaultAudioStreamIndex,
+        deviceProfile: deviceProfile,
+      ),
     );
   }
 

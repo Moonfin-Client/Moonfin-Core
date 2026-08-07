@@ -7,15 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:gamepads/gamepads.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../../data/services/core_download_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/native_game_player.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/game_storage.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
+import 'game_audio_owner.dart';
 
 /// Native game player: the libretro core runs in the runner and renders into a
 /// Flutter texture, so this screen stays plain Flutter. It downloads and
@@ -41,15 +44,20 @@ class NativeGamePlayerScreen extends StatefulWidget {
   State<NativeGamePlayerScreen> createState() => _NativeGamePlayerScreenState();
 }
 
-class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
+class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
+    with GameAudioOwner {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   final NativeGamePlayer _player = NativeGamePlayer.create();
+  late final CoreDownloadService _cores =
+      CoreDownloadService(GetIt.instance<PreferenceStore>());
 
   String get _stateKey => gameStateKey(widget.gameId, widget.core);
 
   String? _error;
   String _status = '';
   double? _progress;
+  String? _coreMessage;
+  Timer? _coreMessageTimer;
   int? _textureId;
   double _aspect = 4 / 3;
   int _controllers = 1;
@@ -135,6 +143,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     // The pad belongs to the libretro core while a game is running, so UI level
     // pad navigation stays suppressed for the lifetime of this screen.
     GamepadSuppressor.push();
+    claimGameAudio();
     _events = _player.events.listen(_onEvent);
     if (_readsGamepadsInDart) {
       _gamepadEvents = Gamepads.normalizedEvents.listen(_onGamepadEvent);
@@ -143,10 +152,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
   }
 
   @override
+  Future<void> pauseForAudioClaim() => _player.pause();
+
+  @override
   void dispose() {
+    releaseGameAudio();
     _events?.cancel();
     _gamepadEvents?.cancel();
     _startHoldTimer?.cancel();
+    _coreMessageTimer?.cancel();
     _overlayScroll.dispose();
     _settingsScroll.dispose();
     _pickerScroll.dispose();
@@ -189,11 +203,24 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
         } else if (_overlayOpen && pressed) {
           _nav(_navForButton(index));
         }
+      case 'coreMessage':
+        _showCoreMessage(event['message']?.toString());
       case 'error':
         if (mounted) {
           setState(() => _error = event['message']?.toString() ?? 'Error');
         }
     }
+  }
+
+  // Cores warn about things like missing system files while they run, so show
+  // the latest one briefly over the game rather than dropping it.
+  void _showCoreMessage(String? message) {
+    if (message == null || message.isEmpty || !mounted) return;
+    _coreMessageTimer?.cancel();
+    setState(() => _coreMessage = message);
+    _coreMessageTimer = Timer(const Duration(seconds: 6), () {
+      if (mounted) setState(() => _coreMessage = null);
+    });
   }
 
   // Mirrored RetroPad indices: 0=confirm (bottom face), 8=cancel (east face),
@@ -436,6 +463,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       }
 
       await GameStorage.migrateOffCache();
+      if (!await _installSupportFiles(coreId)) return;
       final systemDir = await GameStorage.systemDir();
       final saveDir = await GameStorage.saveDir();
       final cacheDir =
@@ -511,6 +539,35 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
         setState(() => _error = message);
       }
     }
+  }
+
+  /// Makes sure the core's support files are in the system directory, fetching
+  /// them if they are missing. PSP is the case that matters, since the core
+  /// boots straight into a failure without them. Returns false once the error
+  /// is on screen.
+  Future<bool> _installSupportFiles(String coreId) async {
+    if (await coreSupportFilesInstalled(coreId)) return true;
+    if (!mounted) return false;
+    setState(() {
+      _status = 'Installing system files...';
+      _progress = 0;
+    });
+    try {
+      await _cores.installSupportFiles(
+        coreId,
+        onProgress: (p) {
+          if (mounted) setState(() => _progress = p);
+        },
+      );
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error =
+            'The system files for this core could not be installed. Check your connection and try again.');
+      }
+      return false;
+    }
+    if (mounted) setState(() => _progress = null);
+    return mounted;
   }
 
   /// Returns the playable content path: the file itself, or the ROM extracted
@@ -913,6 +970,31 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   iconSize: 32,
                   onPressed: _backOut,
+                ),
+              ),
+            ),
+          if (_coreMessage != null && _error == null)
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 24,
+              // Purely informational, so it never takes a press meant for the
+              // on-screen pad underneath it.
+              child: IgnorePointer(
+                child: SafeArea(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      _coreMessage!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ),
               ),
             ),

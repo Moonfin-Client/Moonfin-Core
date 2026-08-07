@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 import UIKit
 
@@ -45,15 +46,20 @@ enum VideoCapabilityDetector {
         return UIScreen.main
     }
 
+    /// Whether the connected television can show HDR. The caller pairs this
+    /// with what the box itself decodes.
+    ///
+    /// The display gamut trait reports the mode the box is outputting rather
+    /// than what the set accepts, so a television sitting in SDR reads as
+    /// having no HDR and every HDR title goes back for a tone mapping transcode
+    /// the server cannot produce fast enough to play. AVFoundation answers for
+    /// the display, so ask it first and let the trait fill in when it reports
+    /// nothing.
     static func displaySupportsHdr() -> Bool {
-        let supportsHdr10: Bool
-        switch currentGeneration() {
-        case .hd:
-            supportsHdr10 = false
-        case .k4Gen1, .k4Gen2, .k4Gen3, .unknown:
-            supportsHdr10 = true
+        if !AVPlayer.availableHDRModes.isEmpty {
+            return true
         }
-        return supportsHdr10 && activeScreen().traitCollection.displayGamut == .P3
+        return activeScreen().traitCollection.displayGamut == .P3
     }
 
     static func deviceProfileCapabilities() -> [String: Any] {

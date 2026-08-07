@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import '../models/aggregated_item.dart';
 
 int latestMediaFetchLimitForCollection(
@@ -15,6 +16,30 @@ int latestMediaFetchLimitForCollection(
   }
 
   return defaultLimit;
+}
+
+/// Marks a row stitched together from several libraries of one kind. Such a row
+/// has no single parent library, so nothing can ask the server for more of it.
+const mergedTypeRowIdPrefix = 'mergedtype_';
+
+bool isMergedTypeRowId(String rowId) => rowId.startsWith(mergedTypeRowIdPrefix);
+
+/// Names the kind of media a merged row holds, standing in for the library
+/// names it replaced.
+String genericDescriptorForCollectionType(
+  AppLocalizations l10n,
+  String? collectionType,
+) {
+  return switch (collectionType?.toLowerCase()) {
+    'movies' => l10n.movies,
+    'tvshows' || 'shows' => l10n.tvShows,
+    'music' => l10n.music,
+    'books' => l10n.books,
+    'audiobooks' => l10n.audiobooks,
+    'musicvideos' => l10n.musicVideos,
+    'homevideos' || 'photos' => l10n.homeVideos,
+    _ => l10n.library,
+  };
 }
 
 List<AggregatedItem> normalizeLatestMediaItems(

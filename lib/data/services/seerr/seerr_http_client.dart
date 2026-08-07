@@ -514,16 +514,24 @@ class SeerrHttpClient {
     int offset = 0,
   }) async {
     final page = (offset ~/ limit) + 1;
-    // Building the query through Dio rather than by hand, because
-    // Uri.encodeComponent leaves apostrophes as-is and Seerr rejects the
-    // request when a reserved character reaches it unencoded.
+    // Percent-encode query string explicitly using %20 for spaces and %27 for
+    // apostrophes. Passing query directly to Dio queryParameters uses
+    // x-www-form-urlencoded format (+ for spaces), which causes Seerr/TMDB
+    // to search for literal '+' characters and return 0 results.
+    final encodedQuery = Uri.encodeComponent(query)
+        .replaceAll("'", '%27')
+        .replaceAll('!', '%21')
+        .replaceAll('*', '%2A')
+        .replaceAll('(', '%28')
+        .replaceAll(')', '%29');
+
+    var url = '${_apiUrl('search')}?query=$encodedQuery&page=$page';
+    if (mediaType != null) {
+      url += '&type=${Uri.encodeComponent(mediaType)}';
+    }
+
     final response = await _dio.get(
-      _apiUrl('search'),
-      queryParameters: {
-        'query': query,
-        'page': page,
-        'type': ?mediaType,
-      },
+      url,
       options: _authOptions(),
     );
     _requireSuccess(response, 'search');

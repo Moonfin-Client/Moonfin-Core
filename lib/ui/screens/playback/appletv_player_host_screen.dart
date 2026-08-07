@@ -15,7 +15,7 @@ import '../../../data/services/media_segment_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../auth/repositories/user_repository.dart';
-import '../../../playback/appletv_mpv_backend.dart';
+import '../../../playback/appletv_backend.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
@@ -28,6 +28,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/play_method_label.dart';
 import 'appletv_playback_prompt_controller.dart';
+import 'osd_buttons.dart';
 
 class AppleTvPlayerHostScreen extends StatefulWidget {
   const AppleTvPlayerHostScreen({super.key});
@@ -55,9 +56,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   ScreensaverController? _screensaverController;
   StreamSubscription<bool>? _screensaverPlayingSub;
 
-  AppleTvMpvBackend? get _backend {
+  AppleTvBackend? get _backend {
     try {
-      return GetIt.instance<AppleTvMpvBackend>();
+      return GetIt.instance<AppleTvBackend>();
     } catch (_) {
       return null;
     }
@@ -1235,6 +1236,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       isFavorite: _queueItemIsFavorite(item),
       canDownloadSubtitles: _canDownloadSubtitles(item),
       syncPlay: _syncPlayPayload(),
+      osdButtons: _osdButtons(),
     );
 
     _resolveCastAsync(item);
@@ -1256,6 +1258,16 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       return GetIt.instance<UserPreferences>().get(pref);
     } catch (_) {
       return defaultValue;
+    }
+  }
+
+  /// Null when the preferences can't be read, which leaves the row as it is
+  /// rather than reading an empty list as every button switched off.
+  List<String>? _osdButtons() {
+    try {
+      return visibleOsdButtonIds(GetIt.instance<UserPreferences>());
+    } catch (_) {
+      return null;
     }
   }
 

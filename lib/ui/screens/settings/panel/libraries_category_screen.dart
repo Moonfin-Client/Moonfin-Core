@@ -21,19 +21,24 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                     context.pushSettingsScreen(const LibraryVisibilityScreen()),
               ),
               SwitchPreferenceTile(
-                preference: UserPreferences.enableFolderView,
-                title: l10n.enableFolderView,
-                subtitle: l10n.showFolderBrowsingOption,
-                icon: Icons.folder,
-                onChanged: _pushPersonalizationSync,
-              ),
-              SwitchPreferenceTile(
                 preference: UserPreferences.enableMultiServerLibraries,
                 title: l10n.multiServerLibraries,
                 subtitle: l10n.showLibrariesFromAllServers,
                 icon: Icons.dns,
                 onChanged: _pushPersonalizationSync,
               ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.mergeRecentRowsByType,
+                title: l10n.mergeRecentRowsByType,
+                subtitle: l10n.mergeRecentRowsByTypeDescription,
+                icon: Icons.library_books,
+                onChanged: _pushPersonalizationSync,
+              ),
+            ],
+          ),
+          _SectionHeader(l10n.libraryView),
+          adaptiveListSection(
+            children: [
               SwitchPreferenceTile(
                 preference: UserPreferences.groupItemsIntoCollections,
                 title: l10n.groupItemsIntoCollections,

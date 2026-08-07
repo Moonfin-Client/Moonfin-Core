@@ -7770,10 +7770,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(يوقىتىشسىز)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecMp3": "MP3\n(پەقەت ستېرېئو)",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"

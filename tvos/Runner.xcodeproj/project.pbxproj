@@ -8,26 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		039843062E60277649E9EA5D /* pcsx_rearmed_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 408735DC25E7BC9A0E23AF66 /* pcsx_rearmed_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		081D183CA0012150E55D5AEC /* MoonfinTvosStubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4684369CA34422E67A9AC61D /* MoonfinTvosStubs.swift */; };
 		0891769C67B4C60864B42A13 /* GameVideoOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AF6C4FDC95C4A3E0FE6876 /* GameVideoOutput.swift */; };
 		0BB4A7E017A41C2DC92AA740 /* AppleTvGameChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDED7BFBF49D54BA9795365 /* AppleTvGameChannel.swift */; };
+		0CC4DCFEE3EBAE70DA4E7584 /* AppleTvPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BB985024A25DF7B3F929F8 /* AppleTvPlayerViewController.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		1DFED451953EAD7F2A8939DF /* GameAudioOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5DC400404ADA61BB07E400A /* GameAudioOutput.swift */; };
-		224B2914FFCAF939B8A58918 /* SubtitleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C25965E14CF97BC2A76A5D3 /* SubtitleOverlay.swift */; };
 		2567189A5ED4D6CF76A03672 /* LibretroCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D492B1A866CDE5E7EA46048F /* LibretroCore.swift */; };
 		337D6DF5382996FA5E5A23CC /* MoonfinTopShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AC3CEF468D8D4EB37B773D1 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCE08AF23DCECD17895AC /* GameSession.swift */; };
 		3B3967161E833CAB004F5970 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAB004F5970 /* Flutter.framework */; };
-		549B7D32CB5D52C2B425AB01 /* AppleTvPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DAFDE906606E0A29F7BE667 /* AppleTvPlayerViewController.swift */; };
+		40683662B6C33B468774C6D3 /* NowPlayingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E050D044D30C97747C9AF63 /* NowPlayingController.swift */; };
+		4BB3BD5A3C8C2C56BCB2B32A /* AetherVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB2A16267CCEF78E57FCBBF /* AetherVideoChannel.swift */; };
 		572ECC94C4EC71C3ED83CAF1 /* GameInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112802CD31173650976CCFDD /* GameInputController.swift */; };
 		5BA7845828F41526E1B65D24 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E49740A9B3056886C7389DA /* Pods_Runner.framework */; };
 		5CE155E72FDE599A002FEC36 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CE155E62FDE599A002FEC36 /* AVKit.framework */; };
 		63160795D06DD3057225A07E /* libass in Frameworks */ = {isa = PBXBuildFile; productRef = 6839BF2ED5903422B72FBF8A /* libass */; };
-		63BF99DC0F79F62C115513B2 /* SubtitleFontLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211F7003FAC1CA03DD8462C8 /* SubtitleFontLocator.swift */; };
 		6E8429C73DFB8688BD40C60F /* AppleTvSystemChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D05FC70CE4F8BD2EC3962C /* AppleTvSystemChannel.swift */; };
+		78EF4B6DD80648BB6CCD5C58 /* AssRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A047E16625CE2E99DE21DFF8 /* AssRenderer.swift */; };
 		7A8BDAB827D12F39CAF7401E /* AetherEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 7AFE3931A7703B48EA41DA54 /* AetherEngine */; };
 		81DCCA41EF933CEC711C17AF /* genesis_plus_gx_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 3D25A3FF43C9B94D5ED8A397 /* genesis_plus_gx_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		86EBDA29EC9F3F8B48EC6A25 /* AppleTvPreviewChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */; };
-		8C3DD6E0F664A13108C13300 /* AppleTvVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7381C8ADAD82442BE7E0BD67 /* AppleTvVideoChannel.swift */; };
 		8DDA1544C590D9C1AAA8093C /* gambatte_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 5A0944BC3FD88308B7E81F3D /* gambatte_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAB004F5970 /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		97C146FB1CF9000082B4168C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000082B4168C /* AppDelegate.swift */; };
@@ -36,18 +37,18 @@
 		97C1470F1CF9000082B4168C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000082B4168C /* Assets.xcassets */; };
 		991C71B70423D0CB846BAF6C /* TopShelfChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0DB225C5FD5F802D648CC0 /* TopShelfChannel.swift */; };
 		A0A9A43E975A45351F5BAC7A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AA2EEAB62F9513C16D8925F /* Foundation.framework */; };
-		AC7E7382D6595F312410E6CA /* NowPlayingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B956F6A882509935D5BDC2DD /* NowPlayingController.swift */; };
 		AD10AD10AD10AD10AD100001 /* AppleTvAudioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */; };
 		AD10AD10AD10AD10AD100003 /* AppleTvThemeMusicChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100004 /* AppleTvThemeMusicChannel.swift */; };
-		B1D5781F929C2A6B0C63DFFF /* MoonfinTvosStubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA777E2D0FE8B6E0FBA471EB /* MoonfinTvosStubs.swift */; };
-		B3B1FA254E548B11BAD5E224 /* PlayerTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B42B27C010FC2423FD572E /* PlayerTypes.swift */; };
+		BAACBACE1436CCF9AB0E446D /* AppleTvVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD4A2B6E4AF40F910FD4860 /* AppleTvVideoChannel.swift */; };
 		C1F1E8188A6812EC3C6A9EF1 /* AppleTvGameInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A868E735744FD641776321 /* AppleTvGameInputViewController.swift */; };
-		CC0A0D98880DFE1984B32D3C /* AssRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8C46DBD95F75EBE9D77CD0 /* AssRenderer.swift */; };
+		C47C3FF1C8CC2CB3821CAE19 /* SubtitleFontLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C07344690EDD970257B854 /* SubtitleFontLocator.swift */; };
+		C73666C0A9895667A1FB1231 /* AetherPlayerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B293276FBDEEF9ED2CAD720A /* AetherPlayerWrapper.swift */; };
+		CD7FEA8EE1BE3CD8E71C2E86 /* SubtitleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4890C8CC60FBA50A23359E5B /* SubtitleOverlay.swift */; };
 		D806D8D63D0DFDE94D61895A /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69C2A2281BE7FC2256E62A2C /* TVServices.framework */; };
 		D8C7A8FA09A6FD717A2D9A10 /* mgba_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 98DD98A0507A79F82DE9B512 /* mgba_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC8916296F406B350E0E7238 /* ServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */; };
+		DE61012F8F92F4CF264FF537 /* PlayerTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DEDF102F77D98DBBE3D5B7 /* PlayerTypes.swift */; };
 		DFD4D95C3B71D467770180E3 /* fceumm_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E60EDFBE8104012209EAF5DE /* AetherPlayerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D30ADE4CA22FF82A3E77FC3 /* AetherPlayerWrapper.swift */; };
 		F679DA3562E5260D7EB5E8E9 /* snes9x_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = E96043FE795EA6E651493D5F /* snes9x_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -104,32 +105,32 @@
 
 /* Begin PBXFileReference section */
 		06981437AF8387C9BD61CC96 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
-		0D30ADE4CA22FF82A3E77FC3 /* AetherPlayerWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherPlayerWrapper.swift; path = Aether/AetherPlayerWrapper.swift; sourceTree = "<group>"; };
 		112802CD31173650976CCFDD /* GameInputController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameInputController.swift; sourceTree = "<group>"; };
+		11DEDF102F77D98DBBE3D5B7 /* PlayerTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlayerTypes.swift; path = Aether/PlayerTypes.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		1E49740A9B3056886C7389DA /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EE89F1EA89993C2ABEC53B7 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
-		211F7003FAC1CA03DD8462C8 /* SubtitleFontLocator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtitleFontLocator.swift; path = Aether/SubtitleFontLocator.swift; sourceTree = "<group>"; };
 		262ACA82479C66EBA778DB00 /* Runner.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		26AF6C4FDC95C4A3E0FE6876 /* GameVideoOutput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameVideoOutput.swift; sourceTree = "<group>"; };
-		28B42B27C010FC2423FD572E /* PlayerTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlayerTypes.swift; path = Aether/PlayerTypes.swift; sourceTree = "<group>"; };
 		2D0DB225C5FD5F802D648CC0 /* TopShelfChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TopShelfChannel.swift; sourceTree = "<group>"; };
 		3B3967151E833CAB004F5970 /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
 		3D25A3FF43C9B94D5ED8A397 /* genesis_plus_gx_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = genesis_plus_gx_libretro.framework; sourceTree = "<group>"; };
+		3E050D044D30C97747C9AF63 /* NowPlayingController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NowPlayingController.swift; path = Aether/NowPlayingController.swift; sourceTree = "<group>"; };
 		408735DC25E7BC9A0E23AF66 /* pcsx_rearmed_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = pcsx_rearmed_libretro.framework; sourceTree = "<group>"; };
+		4684369CA34422E67A9AC61D /* MoonfinTvosStubs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoonfinTvosStubs.swift; sourceTree = "<group>"; };
+		4890C8CC60FBA50A23359E5B /* SubtitleOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtitleOverlay.swift; path = Aether/SubtitleOverlay.swift; sourceTree = "<group>"; };
 		4AA2EEAB62F9513C16D8925F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		4DAFDE906606E0A29F7BE667 /* AppleTvPlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPlayerViewController.swift; sourceTree = "<group>"; };
 		4EDED7BFBF49D54BA9795365 /* AppleTvGameChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvGameChannel.swift; sourceTree = "<group>"; };
+		55BB985024A25DF7B3F929F8 /* AppleTvPlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPlayerViewController.swift; sourceTree = "<group>"; };
 		5A0944BC3FD88308B7E81F3D /* gambatte_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = gambatte_libretro.framework; sourceTree = "<group>"; };
 		5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPreviewChannel.swift; sourceTree = "<group>"; };
 		5CE155E62FDE599A002FEC36 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		69C2A2281BE7FC2256E62A2C /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = System/Library/Frameworks/TVServices.framework; sourceTree = SDKROOT; };
 		7159A7791642FD80F3643C71 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		7381C8ADAD82442BE7E0BD67 /* AppleTvVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvVideoChannel.swift; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
-		7C25965E14CF97BC2A76A5D3 /* SubtitleOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtitleOverlay.swift; path = Aether/SubtitleOverlay.swift; sourceTree = "<group>"; };
+		87C07344690EDD970257B854 /* SubtitleFontLocator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtitleFontLocator.swift; path = Aether/SubtitleFontLocator.swift; sourceTree = "<group>"; };
 		912CE3E99D0758A55751A1AC /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000082B41680 /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,20 +140,21 @@
 		97C146FF1CF9000082B4168D /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97C146FF1CF9000082B4168E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		98DD98A0507A79F82DE9B512 /* mgba_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = mgba_libretro.framework; sourceTree = "<group>"; };
+		9FB2A16267CCEF78E57FCBBF /* AetherVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoChannel.swift; path = Aether/AetherVideoChannel.swift; sourceTree = "<group>"; };
+		A047E16625CE2E99DE21DFF8 /* AssRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssRenderer.swift; path = Aether/AssRenderer.swift; sourceTree = "<group>"; };
 		A0D05FC70CE4F8BD2EC3962C /* AppleTvSystemChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvSystemChannel.swift; sourceTree = "<group>"; };
 		AAA000000000000000000003 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
 		AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvAudioChannel.swift; sourceTree = "<group>"; };
 		AD10AD10AD10AD10AD100004 /* AppleTvThemeMusicChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvThemeMusicChannel.swift; sourceTree = "<group>"; };
 		AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoonfinTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		B956F6A882509935D5BDC2DD /* NowPlayingController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NowPlayingController.swift; path = Aether/NowPlayingController.swift; sourceTree = "<group>"; };
+		B293276FBDEEF9ED2CAD720A /* AetherPlayerWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherPlayerWrapper.swift; path = Aether/AetherPlayerWrapper.swift; sourceTree = "<group>"; };
 		CD0CCE08AF23DCECD17895AC /* GameSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
+		CFD4A2B6E4AF40F910FD4860 /* AppleTvVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvVideoChannel.swift; sourceTree = "<group>"; };
 		D2A868E735744FD641776321 /* AppleTvGameInputViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvGameInputViewController.swift; sourceTree = "<group>"; };
 		D492B1A866CDE5E7EA46048F /* LibretroCore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LibretroCore.swift; sourceTree = "<group>"; };
 		D5DC400404ADA61BB07E400A /* GameAudioOutput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameAudioOutput.swift; sourceTree = "<group>"; };
-		DB8C46DBD95F75EBE9D77CD0 /* AssRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssRenderer.swift; path = Aether/AssRenderer.swift; sourceTree = "<group>"; };
 		E96043FE795EA6E651493D5F /* snes9x_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = snes9x_libretro.framework; sourceTree = "<group>"; };
-		EA777E2D0FE8B6E0FBA471EB /* MoonfinTvosStubs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoonfinTvosStubs.swift; sourceTree = "<group>"; };
 		EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = fceumm_libretro.framework; sourceTree = "<group>"; };
 		EC66562038A8BA35AC8B1733 /* MoonfinTopShelf.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MoonfinTopShelf.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -240,15 +242,16 @@
 			isa = PBXGroup;
 			children = (
 				2508F7D351997BD3CFD96028 /* Native */,
-				0D30ADE4CA22FF82A3E77FC3 /* AetherPlayerWrapper.swift */,
-				DB8C46DBD95F75EBE9D77CD0 /* AssRenderer.swift */,
-				B956F6A882509935D5BDC2DD /* NowPlayingController.swift */,
-				28B42B27C010FC2423FD572E /* PlayerTypes.swift */,
-				211F7003FAC1CA03DD8462C8 /* SubtitleFontLocator.swift */,
-				7C25965E14CF97BC2A76A5D3 /* SubtitleOverlay.swift */,
-				4DAFDE906606E0A29F7BE667 /* AppleTvPlayerViewController.swift */,
-				7381C8ADAD82442BE7E0BD67 /* AppleTvVideoChannel.swift */,
-				EA777E2D0FE8B6E0FBA471EB /* MoonfinTvosStubs.swift */,
+				B293276FBDEEF9ED2CAD720A /* AetherPlayerWrapper.swift */,
+				9FB2A16267CCEF78E57FCBBF /* AetherVideoChannel.swift */,
+				A047E16625CE2E99DE21DFF8 /* AssRenderer.swift */,
+				3E050D044D30C97747C9AF63 /* NowPlayingController.swift */,
+				11DEDF102F77D98DBBE3D5B7 /* PlayerTypes.swift */,
+				87C07344690EDD970257B854 /* SubtitleFontLocator.swift */,
+				4890C8CC60FBA50A23359E5B /* SubtitleOverlay.swift */,
+				55BB985024A25DF7B3F929F8 /* AppleTvPlayerViewController.swift */,
+				CFD4A2B6E4AF40F910FD4860 /* AppleTvVideoChannel.swift */,
+				4684369CA34422E67A9AC61D /* MoonfinTvosStubs.swift */,
 			);
 			name = Playback;
 			path = Runner/Playback;
@@ -533,15 +536,16 @@
 				3AC3CEF468D8D4EB37B773D1 /* GameSession.swift in Sources */,
 				0891769C67B4C60864B42A13 /* GameVideoOutput.swift in Sources */,
 				2567189A5ED4D6CF76A03672 /* LibretroCore.swift in Sources */,
-				E60EDFBE8104012209EAF5DE /* AetherPlayerWrapper.swift in Sources */,
-				CC0A0D98880DFE1984B32D3C /* AssRenderer.swift in Sources */,
-				AC7E7382D6595F312410E6CA /* NowPlayingController.swift in Sources */,
-				B3B1FA254E548B11BAD5E224 /* PlayerTypes.swift in Sources */,
-				63BF99DC0F79F62C115513B2 /* SubtitleFontLocator.swift in Sources */,
-				224B2914FFCAF939B8A58918 /* SubtitleOverlay.swift in Sources */,
-				549B7D32CB5D52C2B425AB01 /* AppleTvPlayerViewController.swift in Sources */,
-				8C3DD6E0F664A13108C13300 /* AppleTvVideoChannel.swift in Sources */,
-				B1D5781F929C2A6B0C63DFFF /* MoonfinTvosStubs.swift in Sources */,
+				C73666C0A9895667A1FB1231 /* AetherPlayerWrapper.swift in Sources */,
+				4BB3BD5A3C8C2C56BCB2B32A /* AetherVideoChannel.swift in Sources */,
+				78EF4B6DD80648BB6CCD5C58 /* AssRenderer.swift in Sources */,
+				40683662B6C33B468774C6D3 /* NowPlayingController.swift in Sources */,
+				DE61012F8F92F4CF264FF537 /* PlayerTypes.swift in Sources */,
+				C47C3FF1C8CC2CB3821CAE19 /* SubtitleFontLocator.swift in Sources */,
+				CD7FEA8EE1BE3CD8E71C2E86 /* SubtitleOverlay.swift in Sources */,
+				0CC4DCFEE3EBAE70DA4E7584 /* AppleTvPlayerViewController.swift in Sources */,
+				BAACBACE1436CCF9AB0E446D /* AppleTvVideoChannel.swift in Sources */,
+				081D183CA0012150E55D5AEC /* MoonfinTvosStubs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -943,10 +947,10 @@
 		};
 		28D9549FFBD2C43236F78996 /* XCRemoteSwiftPackageReference "AetherEngine" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/superuser404notfound/AetherEngine";
+			repositoryURL = "https://github.com/RadicalMuffinMan/AetherEngine";
 			requirement = {
-				kind = exactVersion;
-				version = 6.4.0;
+				kind = revision;
+				revision = 2e388e39ac4eecd7c3ad033b003f0172903ea5d3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

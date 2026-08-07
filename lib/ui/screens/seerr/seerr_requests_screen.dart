@@ -364,8 +364,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     final tmdbId = media.tmdbId;
     if (tmdbId == null) return;
     context.push(
-      Destinations.seerrMedia(tmdbId.toString()),
-      extra: {'mediaType': request.type},
+      Destinations.seerrMedia(tmdbId.toString(), mediaType: request.type),
     );
   }
 

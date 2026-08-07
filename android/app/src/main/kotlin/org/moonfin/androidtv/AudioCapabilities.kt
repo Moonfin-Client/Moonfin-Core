@@ -26,13 +26,6 @@ object AudioCapabilities {
         .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
         .build()
 
-    private val encodingDolbyTrueHdJoc: Int? = resolveEncodingAny(
-        listOf(
-            "ENCODING_DOLBY_TRUEHD_JOC",
-            "ENCODING_TRUEHD_JOC",
-        ),
-    )
-
     private data class DecodeCapabilities(
         val canDecodeAc3: Boolean,
         val canDecodeEac3: Boolean,
@@ -56,12 +49,9 @@ object AudioCapabilities {
         "canDecodeFlac" to true,
         "canPassthroughAc3" to false,
         "canPassthroughEac3" to false,
-        "canPassthroughEac3Joc" to false,
         "canPassthroughDts" to false,
         "canPassthroughDtsHd" to false,
-        "canPassthroughDtsX" to false,
         "canPassthroughTrueHd" to false,
-        "canPassthroughTrueHdJoc" to false,
         "maxPcmChannels" to 2,
         "activeRouteType" to ROUTE_OTHER,
         "routeSupportsHdAudio" to false,
@@ -116,30 +106,15 @@ object AudioCapabilities {
 
         var canPassthroughAc3 = encodings.contains(AudioFormat.ENCODING_AC3)
         var canPassthroughEac3 = encodings.contains(AudioFormat.ENCODING_E_AC3)
-        var canPassthroughEac3Joc =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                encodings.contains(AudioFormat.ENCODING_E_AC3_JOC)
         var canPassthroughDts = encodings.contains(AudioFormat.ENCODING_DTS)
         var canPassthroughDtsHd = encodings.contains(AudioFormat.ENCODING_DTS_HD)
-        var canPassthroughDtsX =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-                (encodings.contains(AudioFormat.ENCODING_DTS_UHD_P1) ||
-                    encodings.contains(AudioFormat.ENCODING_DTS_UHD_P2))
         var canPassthroughTrueHd = encodings.contains(AudioFormat.ENCODING_DOLBY_TRUEHD)
-        var canPassthroughTrueHdJoc =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-                supportsEncoding(encodings, encodingDolbyTrueHdJoc)
 
         if (allowSpeakerDolbyFallback) {
             canPassthroughAc3 =
                 canPassthroughAc3 || speakerEncodings.contains(AudioFormat.ENCODING_AC3)
             canPassthroughEac3 =
                 canPassthroughEac3 || speakerEncodings.contains(AudioFormat.ENCODING_E_AC3)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                canPassthroughEac3Joc =
-                    canPassthroughEac3Joc ||
-                        speakerEncodings.contains(AudioFormat.ENCODING_E_AC3_JOC)
-            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -160,33 +135,10 @@ object AudioCapabilities {
                 canPassthroughDtsHd ||
                     directProfileEncodings.contains(AudioFormat.ENCODING_DTS_HD) ||
                     supportsDirectPlaybackApi33(audioManager, AudioFormat.ENCODING_DTS_HD)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                canPassthroughDtsX =
-                    canPassthroughDtsX ||
-                        directProfileEncodings.contains(AudioFormat.ENCODING_DTS_UHD_P1) ||
-                        directProfileEncodings.contains(AudioFormat.ENCODING_DTS_UHD_P2) ||
-                        supportsDirectPlaybackApi33(audioManager, AudioFormat.ENCODING_DTS_UHD_P1) ||
-                        supportsDirectPlaybackApi33(audioManager, AudioFormat.ENCODING_DTS_UHD_P2)
-            }
             canPassthroughTrueHd =
                 canPassthroughTrueHd ||
                     directProfileEncodings.contains(AudioFormat.ENCODING_DOLBY_TRUEHD) ||
                     supportsDirectPlaybackApi33(audioManager, AudioFormat.ENCODING_DOLBY_TRUEHD)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val trueHdJocEncoding = encodingDolbyTrueHdJoc
-                canPassthroughTrueHdJoc =
-                    canPassthroughTrueHdJoc ||
-                        (trueHdJocEncoding != null && (
-                            directProfileEncodings.contains(trueHdJocEncoding) ||
-                                supportsDirectPlaybackApi33(audioManager, trueHdJocEncoding)
-                            ))
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                canPassthroughEac3Joc =
-                    canPassthroughEac3Joc ||
-                        directProfileEncodings.contains(AudioFormat.ENCODING_E_AC3_JOC) ||
-                        supportsDirectPlaybackApi33(audioManager, AudioFormat.ENCODING_E_AC3_JOC)
-            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             canPassthroughAc3 =
                 canPassthroughAc3 || supportsDirectPlaybackLegacy(AudioFormat.ENCODING_AC3)
@@ -196,40 +148,14 @@ object AudioCapabilities {
                 canPassthroughDts || supportsDirectPlaybackLegacy(AudioFormat.ENCODING_DTS)
             canPassthroughDtsHd =
                 canPassthroughDtsHd || supportsDirectPlaybackLegacy(AudioFormat.ENCODING_DTS_HD)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                canPassthroughDtsX =
-                    canPassthroughDtsX ||
-                        supportsDirectPlaybackLegacy(AudioFormat.ENCODING_DTS_UHD_P1) ||
-                        supportsDirectPlaybackLegacy(AudioFormat.ENCODING_DTS_UHD_P2)
-            }
             canPassthroughTrueHd =
                 canPassthroughTrueHd ||
                     supportsDirectPlaybackLegacy(AudioFormat.ENCODING_DOLBY_TRUEHD)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val trueHdJocEncoding = encodingDolbyTrueHdJoc
-                canPassthroughTrueHdJoc =
-                    canPassthroughTrueHdJoc ||
-                        (trueHdJocEncoding != null &&
-                            supportsDirectPlaybackLegacy(trueHdJocEncoding))
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                canPassthroughEac3Joc =
-                    canPassthroughEac3Joc ||
-                        supportsDirectPlaybackLegacy(AudioFormat.ENCODING_E_AC3_JOC)
-            }
         }
 
-        // TrueHD-Atmos (JOC) capability must come from a real probe only. We no
-        // longer infer it from plain TrueHD support + route: that over-reported
-        // Atmos on receivers that decode TrueHD but not Atmos, and under the
-        // capability-authoritative resolvers that would auto-advertise Atmos the
-        // AVR can't handle. Users who know their receiver supports it can still
-        // turn the TrueHD-Atmos passthrough toggle on explicitly (override wins).
-
-
         val supportsAc3 = canPassthroughAc3 || canPassthroughEac3
-        val supportsDts = canPassthroughDts || canPassthroughDtsHd || canPassthroughDtsX
-        val supportsTrueHd = canPassthroughTrueHd || canPassthroughTrueHdJoc
+        val supportsDts = canPassthroughDts || canPassthroughDtsHd
+        val supportsTrueHd = canPassthroughTrueHd
 
         val maxPcmChannels = detectMaxPcmChannels(
             if (activeDevices.isNotEmpty()) activeDevices else bitstreamDevices,
@@ -250,12 +176,9 @@ object AudioCapabilities {
             "canDecodeFlac" to decodeCapabilities.canDecodeFlac,
             "canPassthroughAc3" to canPassthroughAc3,
             "canPassthroughEac3" to canPassthroughEac3,
-            "canPassthroughEac3Joc" to canPassthroughEac3Joc,
             "canPassthroughDts" to canPassthroughDts,
             "canPassthroughDtsHd" to canPassthroughDtsHd,
-            "canPassthroughDtsX" to canPassthroughDtsX,
             "canPassthroughTrueHd" to canPassthroughTrueHd,
-            "canPassthroughTrueHdJoc" to canPassthroughTrueHdJoc,
             "maxPcmChannels" to maxPcmChannels,
             "activeRouteType" to routeType,
             "routeSupportsHdAudio" to routeSupportsHdAudio,
@@ -377,26 +300,6 @@ object AudioCapabilities {
                 mimeTypes.any { it.equals(type, ignoreCase = true) }
             }
         }
-    }
-
-    private fun resolveEncoding(fieldName: String): Int? {
-        return runCatching {
-            AudioFormat::class.java.getField(fieldName).getInt(null)
-        }.getOrNull()
-    }
-
-    private fun resolveEncodingAny(fieldNames: List<String>): Int? {
-        for (fieldName in fieldNames) {
-            val value = resolveEncoding(fieldName)
-            if (value != null) {
-                return value
-            }
-        }
-        return null
-    }
-
-    private fun supportsEncoding(encodings: Set<Int>, encoding: Int?): Boolean {
-        return encoding != null && encodings.contains(encoding)
     }
 
     /**

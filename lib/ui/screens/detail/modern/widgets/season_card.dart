@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/seerr/seerr_status_dot.dart';
 
 /// Glassy season card with a subtle background image, title, episode count and a
 /// chevron. Purely presentational and theme-tokenized; the host resolves the
@@ -29,6 +30,9 @@ class SeasonCard extends StatelessWidget {
   /// d-pad can reach rows below the fold).
   final bool autoScroll;
 
+  /// Seerr's status for this season, when Seerr has one.
+  final int? seerrStatus;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -44,6 +48,7 @@ class SeasonCard extends StatelessWidget {
     this.width,
     this.height,
     this.autoScroll = false,
+    this.seerrStatus,
   });
 
   @override
@@ -98,6 +103,12 @@ class SeasonCard extends StatelessWidget {
                   ),
                 ),
               ),
+              if (SeerrMediaStatus.hasDot(seerrStatus))
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: SeerrStatusDot(status: seerrStatus, size: 18),
+                ),
               Positioned(
                 left: 8,
                 right: 8,

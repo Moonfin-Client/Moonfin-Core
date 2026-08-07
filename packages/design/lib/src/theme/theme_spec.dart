@@ -33,6 +33,12 @@ class ThemeColorTokens {
   final Color recordingScheduled;
   final Color? error;
 
+  /// Fill for Material `Card` surfaces. Optional so themes and theme-store
+  /// JSON that leave it out keep the grey they have always had.
+  final Color? _card;
+
+  Color get card => _card ?? const Color(0xFF202020);
+
   const ThemeColorTokens({
     required this.background,
     required this.onBackground,
@@ -64,7 +70,8 @@ class ThemeColorTokens {
     required this.recordingActive,
     required this.recordingScheduled,
     this.error,
-  });
+    Color? card,
+  }) : _card = card;
 
   factory ThemeColorTokens.fromJson(Map<String, dynamic> json) {
     Color c(String key) => _parseColor(json[key], key);
@@ -99,6 +106,7 @@ class ThemeColorTokens {
       recordingActive: c('recordingActive'),
       recordingScheduled: c('recordingScheduled'),
       error: json['error'] != null ? c('error') : null,
+      card: json['card'] != null ? c('card') : null,
     );
   }
 
@@ -133,7 +141,76 @@ class ThemeColorTokens {
         'recordingActive': _encodeColor(recordingActive),
         'recordingScheduled': _encodeColor(recordingScheduled),
         if (error != null) 'error': _encodeColor(error!),
+        if (_card != null) 'card': _encodeColor(_card),
       };
+
+  ThemeColorTokens copyWith({
+    Color? background,
+    Color? onBackground,
+    Color? surface,
+    Color? onSurface,
+    Color? surfaceVariant,
+    Color? scrim,
+    Color? accent,
+    Color? onAccent,
+    Color? buttonNormal,
+    Color? buttonFocused,
+    Color? buttonDisabled,
+    Color? buttonActive,
+    Color? onButtonNormal,
+    Color? onButtonFocused,
+    Color? onButtonDisabled,
+    Color? inputBackground,
+    Color? inputFocused,
+    Color? inputBorder,
+    Color? inputBorderFocused,
+    Color? rangeTrack,
+    Color? rangeProgress,
+    Color? rangeThumb,
+    Color? seekbarBuffered,
+    Color? badgeBackground,
+    Color? onBadge,
+    Color? badgeUnplayed,
+    Color? badgeWatched,
+    Color? recordingActive,
+    Color? recordingScheduled,
+    Color? error,
+    Color? card,
+  }) {
+    return ThemeColorTokens(
+      background: background ?? this.background,
+      onBackground: onBackground ?? this.onBackground,
+      surface: surface ?? this.surface,
+      onSurface: onSurface ?? this.onSurface,
+      surfaceVariant: surfaceVariant ?? this.surfaceVariant,
+      scrim: scrim ?? this.scrim,
+      accent: accent ?? this.accent,
+      onAccent: onAccent ?? this.onAccent,
+      buttonNormal: buttonNormal ?? this.buttonNormal,
+      buttonFocused: buttonFocused ?? this.buttonFocused,
+      buttonDisabled: buttonDisabled ?? this.buttonDisabled,
+      buttonActive: buttonActive ?? this.buttonActive,
+      onButtonNormal: onButtonNormal ?? this.onButtonNormal,
+      onButtonFocused: onButtonFocused ?? this.onButtonFocused,
+      onButtonDisabled: onButtonDisabled ?? this.onButtonDisabled,
+      inputBackground: inputBackground ?? this.inputBackground,
+      inputFocused: inputFocused ?? this.inputFocused,
+      inputBorder: inputBorder ?? this.inputBorder,
+      inputBorderFocused: inputBorderFocused ?? this.inputBorderFocused,
+      rangeTrack: rangeTrack ?? this.rangeTrack,
+      rangeProgress: rangeProgress ?? this.rangeProgress,
+      rangeThumb: rangeThumb ?? this.rangeThumb,
+      seekbarBuffered: seekbarBuffered ?? this.seekbarBuffered,
+      badgeBackground: badgeBackground ?? this.badgeBackground,
+      onBadge: onBadge ?? this.onBadge,
+      badgeUnplayed: badgeUnplayed ?? this.badgeUnplayed,
+      badgeWatched: badgeWatched ?? this.badgeWatched,
+      recordingActive: recordingActive ?? this.recordingActive,
+      recordingScheduled: recordingScheduled ?? this.recordingScheduled,
+      error: error ?? this.error,
+      card: card ?? _card,
+    );
+  }
 }
 
 @immutable
@@ -425,6 +502,24 @@ class ThemeSpec {
     this.isGlass = false,
     this.isPixel = false,
   });
+
+  /// Same spec with a different colour palette. Used by the OLED Mode
+  /// derivation, which only ever rewrites [colors].
+  ThemeSpec withColors(ThemeColorTokens colors) => ThemeSpec(
+        id: id,
+        displayName: displayName,
+        description: description,
+        colors: colors,
+        borders: borders,
+        semantic: semantic,
+        book: book,
+        fontFamily: fontFamily,
+        textGlow: textGlow,
+        navColorCycle: navColorCycle,
+        transparentNavbarSurface: transparentNavbarSurface,
+        isGlass: isGlass,
+        isPixel: isPixel,
+      );
 
   factory ThemeSpec.fromJson(Map<String, dynamic> json) {
     final version = (json['schemaVersion'] as num?)?.toInt() ?? 1;

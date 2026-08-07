@@ -13,4 +13,5 @@ export 'src/player_state.dart';
 export 'src/media_stream_resolver.dart';
 export 'src/track_ordinal_mapper.dart';
 export 'src/stream_resolution_result.dart';
+export 'src/transcode_reasons.dart';
 export 'src/web_platform.dart';

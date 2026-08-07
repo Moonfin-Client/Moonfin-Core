@@ -21,6 +21,11 @@ class SeerrQualityStatus {
   final bool canManageRequests;
   final int? currentUserId;
 
+  /// What Seerr reports per season, when it reports anything. Older servers and
+  /// movie payloads leave this empty, which is why [seasonStatus] can fall back
+  /// to the request list.
+  final List<SeerrSeasonAvailability> seasonAvailability;
+
   const SeerrQualityStatus({
     required this.is4k,
     required this.status,
@@ -29,6 +34,7 @@ class SeerrQualityStatus {
     required this.download,
     required this.canManageRequests,
     required this.currentUserId,
+    this.seasonAvailability = const [],
   });
 
   factory SeerrQualityStatus.of({
@@ -56,6 +62,8 @@ class SeerrQualityStatus {
       ),
       canManageRequests: canManageRequests,
       currentUserId: currentUserId,
+      seasonAvailability:
+          mediaInfo?.seasons ?? const <SeerrSeasonAvailability>[],
     );
   }
 
@@ -102,6 +110,42 @@ class SeerrQualityStatus {
       }
     }
     return seasons;
+  }
+
+  /// Season number to media status (2 pending, 3 processing, 4 partial,
+  /// 5 available) for this quality track, so a series can show where it stands
+  /// season by season rather than only as a whole.
+  ///
+  /// Deliberately separate from [requestedSeasons], which answers the narrower
+  /// "may this season still be requested" question the request sheet asks.
+  /// Folding availability into that would quietly change which seasons a user
+  /// can tick.
+  Map<int, int> get seasonStatus {
+    final byNumber = <int, int>{};
+
+    // What the server says, wherever it says anything.
+    for (final s in seasonAvailability) {
+      final status = (is4k ? s.status4k : s.status) ?? 0;
+      if (status > 1) byNumber[s.seasonNumber] = status;
+    }
+
+    // Anything the server didn't cover falls back to the request it came from.
+    for (final r in requests) {
+      if (r.status == SeerrRequest.statusDeclined ||
+          r.status == SeerrRequest.statusFailed) {
+        continue;
+      }
+      final derived = switch (r.status) {
+        SeerrRequest.statusCompleted => 5,
+        SeerrRequest.statusApproved => 3,
+        _ => 2,
+      };
+      for (final s in r.seasons ?? const <SeerrSeasonRequest>[]) {
+        byNumber.putIfAbsent(s.seasonNumber, () => derived);
+      }
+    }
+
+    return byNumber;
   }
 }
 

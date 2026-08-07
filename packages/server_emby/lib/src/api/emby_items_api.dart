@@ -255,11 +255,13 @@ class EmbyItemsApi implements ItemsApi {
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
+    bool recursive = false,
   }) async {
     final response = await _dio.get(
       '/Items',
       queryParameters: {
         if (parentId != null) 'ParentId': parentId,
+        if (recursive) 'Recursive': true,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
         if (limit != null) 'Limit': limit,
@@ -398,7 +400,11 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getPlaylistItems(String playlistId) async {
+  Future<Map<String, dynamic>> getPlaylistItems(
+    String playlistId, {
+    int? startIndex,
+    int? limit,
+  }) async {
     final response = await _dio.get(
       '/Playlists/$playlistId/Items',
       queryParameters: {
@@ -406,6 +412,8 @@ class EmbyItemsApi implements ItemsApi {
             'BasicSyncInfo,PrimaryImageAspectRatio,RunTimeTicks,Artists,AlbumArtist,IndexNumber,MediaType,PlaylistItemId,BackdropImageTags,ParentBackdropImageTags,ParentBackdropItemId,SeriesName,ParentIndexNumber,Genres,Chapters,Overview,UserData,MediaStreams',
         'EnableImageTypes': 'Primary,Backdrop,Logo,Thumb',
         'ImageTypeLimit': 1,
+        'StartIndex': ?startIndex,
+        'Limit': ?limit,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -650,12 +658,12 @@ class EmbyItemsApi implements ItemsApi {
       if (raw is! Map) continue;
       final ticks = (raw['StartPositionTicks'] as num?)?.toInt();
       if (ticks == null) continue;
-      switch (raw['MarkerType']?.toString()) {
-        case 'IntroStart':
+      switch (_markerType(raw['MarkerType'])) {
+        case 'introstart':
           introStart ??= ticks;
-        case 'IntroEnd':
+        case 'introend':
           introEnd ??= ticks;
-        case 'CreditsStart':
+        case 'creditsstart':
           creditsStart ??= ticks;
       }
     }
@@ -684,6 +692,30 @@ class EmbyItemsApi implements ItemsApi {
     }
 
     return segments;
+  }
+
+  // Declaration order matters, since a marker sent as a number is read as an
+  // index into this.
+  static const _markerTypes = [
+    'chapter',
+    'introstart',
+    'introend',
+    'creditsstart',
+  ];
+
+  /// The chapter marker in lower case, or null for one worth nothing here.
+  /// Markers arrive as their enum name, but a server is free to send the
+  /// ordinal instead and then no name ever matches, so both are read.
+  static String? _markerType(Object? raw) {
+    if (raw == null) return null;
+    if (raw is num) {
+      final index = raw.toInt();
+      return index >= 0 && index < _markerTypes.length
+          ? _markerTypes[index]
+          : null;
+    }
+    final name = raw.toString().trim().toLowerCase();
+    return _markerTypes.contains(name) ? name : null;
   }
 
   @override

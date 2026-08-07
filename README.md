@@ -80,7 +80,8 @@ Download platform artifacts from the [Releases page](https://github.com/Moonfin-
 | iOS | `Moonfin_iOS_v<version>.ipa` |
 | Windows (x64 and ARM64) | `Moonfin_Windows_v<version>.exe` |
 | macOS | `Moonfin_macOS_v<version>.dmg` |
-| Linux | `Moonfin_Linux_v<version>.<ext>` (AppImage, deb, rpm, snap, flatpak, tarball) |
+| Linux x64 | `Moonfin_Linux_v<version>.<ext>` (AppImage, deb, rpm, snap, flatpak, tarball) |
+| Linux ARM64 | `Moonfin_LinuxARM64_v<version>.<ext>` (same formats) |
 | Web | Served as a PWA by the [Moonbase](https://github.com/Moonfin-Client/Plugin) server plugin |
 
 On Arch Linux, install from the AUR with `yay -S moonfin` (or `paru`, `pamac build`).

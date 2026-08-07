@@ -35,6 +35,18 @@ void OnFrameReady(void* user) {
   }
 }
 
+// Nothing listens on the desktop event channel, so a core that complains or
+// quits says so in the log instead.
+void OnCoreMessage(void* user, const char* text) {
+  (void)user;
+  g_warning("libretro core: %s", text);
+}
+
+void OnCoreShutdown(void* user) {
+  (void)user;
+  g_warning("libretro core asked to quit, emulation stopped");
+}
+
 }  // namespace
 
 // A pixel-buffer texture that hands Flutter the host's latest frame.
@@ -122,6 +134,8 @@ FlValue* Load(FlValue* args) {
   cb.frame_ready = OnFrameReady;
   cb.poll_input = OnPollInput;
   cb.controller_count = OnControllerCount;
+  cb.message = OnCoreMessage;
+  cb.core_shutdown = OnCoreShutdown;
 
   g_host = lh_create(LH_FORMAT_RGBA8888, cb);
   lh_av_info info = {};

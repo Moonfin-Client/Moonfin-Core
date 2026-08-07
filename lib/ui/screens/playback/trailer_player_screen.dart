@@ -119,6 +119,14 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     if (_embedFallbackTriggered || !_useEmbeddedYouTube) {
       return;
     }
+    // AVFoundation cannot decode what the resolver pulls out of YouTube, so
+    // on Apple the embed is the only thing that can play this. Leave it up for
+    // the viewer to start rather than falling back to a stream path with
+    // nothing behind it.
+    if (PlatformDetection.useApplePreviewPlayer) {
+      if (_loading) setState(() => _loading = false);
+      return;
+    }
     _embedFallbackTriggered = true;
     setState(() {
       _useEmbeddedYouTube = false;

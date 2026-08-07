@@ -23,6 +23,9 @@ static void msleep(int ms) {
 static int g_failures;
 static atomic_int g_frames_ready;
 static _Atomic uint16_t g_mask;
+static atomic_int g_shutdowns;
+static atomic_int g_late_runs;
+static char g_last_message[128];
 
 #define CHECK(cond, msg)                            \
   do {                                              \
@@ -53,6 +56,17 @@ static void on_geometry(void *user, int w, int h, double aspect) {
   (void)aspect;
 }
 
+static void on_message(void *user, const char *text) {
+  (void)user;
+  if (!text) return;
+  if (strstr(text, "after shutdown")) g_late_runs++;
+  snprintf(g_last_message, sizeof(g_last_message), "%s", text);
+}
+static void on_core_shutdown(void *user) {
+  (void)user;
+  g_shutdowns++;
+}
+
 static lh_callbacks make_callbacks(void) {
   lh_callbacks cb;
   memset(&cb, 0, sizeof(cb));
@@ -60,15 +74,50 @@ static lh_callbacks make_callbacks(void) {
   cb.poll_input = on_poll_input;
   cb.controller_count = on_controller_count;
   cb.geometry_changed = on_geometry;
+  cb.message = on_message;
+  cb.core_shutdown = on_core_shutdown;
   return cb;
 }
 
-static void write_dummy_rom(const char *path) {
+static void write_rom(const char *path, const char *contents) {
   FILE *f = fopen(path, "wb");
   if (f) {
-    fputs("stub-rom", f);
+    fputs(contents, f);
     fclose(f);
   }
+}
+
+// A core that asks to quit must be left alone afterwards, since running it
+// again is what turns a failed boot into a native crash.
+static void test_shutdown(const char *core_path, const char *work_dir) {
+  printf("core shutdown:\n");
+  char rom_path[1024];
+  snprintf(rom_path, sizeof(rom_path), "%s/shutdown.rom", work_dir);
+  write_rom(rom_path, "shutdown");
+  g_shutdowns = 0;
+  g_late_runs = 0;
+  g_last_message[0] = '\0';
+
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  lh_av_info av;
+  int rc = lh_load(host, core_path, rom_path, work_dir, work_dir, "shutdown",
+                   NULL, NULL, 0, &av);
+  CHECK(rc == 0, "core loads");
+  if (rc != 0) {
+    lh_destroy(host);
+    return;
+  }
+  lh_start(host);
+  msleep(300);
+  CHECK(g_shutdowns == 1, "shutdown reported once");
+  CHECK(g_late_runs == 0, "core is not run after it quit");
+  CHECK(strcmp(g_last_message, "stub boot failed") == 0, "core message shown");
+
+  // A save state after the loop is gone must fail rather than wait forever.
+  CHECK(lh_serialize_size(host) == 0, "serialize refused after shutdown");
+
+  lh_stop(host);
+  lh_destroy(host);
 }
 
 static void test_format(const char *core_path, const char *rom_path,
@@ -159,7 +208,7 @@ int main(int argc, char **argv) {
   const char *work_dir = argv[2];
   char rom_path[1024];
   snprintf(rom_path, sizeof(rom_path), "%s/dummy.rom", work_dir);
-  write_dummy_rom(rom_path);
+  write_rom(rom_path, "stub-rom");
 
   // A failed load must clean up fully so a later load still works.
   printf("negative load:\n");
@@ -172,6 +221,7 @@ int main(int argc, char **argv) {
 
   test_format(core_path, rom_path, work_dir, LH_FORMAT_RGBA8888);
   test_format(core_path, rom_path, work_dir, LH_FORMAT_BGRA8888);
+  test_shutdown(core_path, work_dir);
 
   printf("\n%s (%d failure%s)\n", g_failures == 0 ? "PASS" : "FAIL",
          g_failures, g_failures == 1 ? "" : "s");

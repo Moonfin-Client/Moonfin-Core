@@ -5,9 +5,10 @@ class KnownDefects {
   const KnownDefects._();
 
   static const Set<String> modelsWithDoViHdr10PlusBug = <String>{
-    'AFTKA',
-    'AFTKM',
-    'AFTKRT',
+    'AFTKA', // Amazon Fire TV 4K Max (1st Gen)
+    'AFTKM', // Amazon Fire TV 4K (2nd Gen)
+    'AFTKRT', // Amazon Fire TV 4K Max (2nd Gen)
+    'AFTMM', // Amazon Fire TV 4K (1st Gen)
     'BRAVIA 4K VH22',
   };
 
@@ -40,6 +41,7 @@ class KnownDefects {
     required DolbyVisionProfile7DirectPlayBehavior behavior,
     String? model,
     bool hasHardwareDolbyVisionDecoder = false,
+    bool hasDoviCompat = false,
   }) {
     switch (behavior) {
       case DolbyVisionProfile7DirectPlayBehavior.enabled:
@@ -49,8 +51,11 @@ class KnownDefects {
       case DolbyVisionProfile7DirectPlayBehavior.auto:
         // A device with a hardware Dolby Vision decoder can render the P7 base
         // layer, so allow it there even when the EL-specific probe is
-        // inconclusive. Non-DV devices stay gated (P7 transcodes).
+        // inconclusive. A player with the DoVi compat chain rewrites or strips
+        // the P7 metadata itself, so it always renders the base layer too.
+        // Everything else stays gated (P7 transcodes).
         return PlatformDetection.isDesktop ||
+            hasDoviCompat ||
             hasHardwareDolbyVisionDecoder ||
             modelHasDolbyVisionProfile7ElDirectPlayDefault(
               model ?? PlatformDetection.deviceModel,

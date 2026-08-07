@@ -11,24 +11,19 @@ Map<String, dynamic> buildHtmlVideoBackendDeviceProfile(
 }) {
   final maxBitrate = int.tryParse(prefs.get(UserPreferences.maxBitrate));
   final maxResolution = prefs.get(UserPreferences.maxVideoResolution);
-  final audioOutputMode = prefs.resolveAudioOutputMode();
   final audioFallbackCodec = prefs.resolveAudioFallbackCodec();
   final audioCapabilityProfile = prefs.detectedAudioCapabilities;
 
   return DeviceProfileBuilder.build(
     maxBitrateMbps: maxBitrate,
     audioCapabilityProfile: audioCapabilityProfile,
-    audioOutputMode: audioOutputMode,
     audioFallbackCodec: audioFallbackCodec,
     ac3PassthroughEnabled: prefs.resolveAc3PassthroughEnabled(),
     eac3PassthroughEnabled: prefs.resolveEac3PassthroughEnabled(),
-    eac3JocPassthroughEnabled: prefs.resolveEac3JocPassthroughEnabled(),
     dtsCorePassthroughEnabled: prefs.resolveDtsCorePassthroughEnabled(),
-    dtsHdPassthroughEnabled: prefs.resolveDtsHdPassthroughEnabled(),
     trueHdPassthroughEnabled: prefs.resolveTrueHdPassthroughEnabled(),
-    trueHdAtmosPassthroughEnabled: prefs.resolveTrueHdAtmosPassthroughEnabled(),
-    explicitPassthroughToggles: prefs.explicitPassthroughToggles,
     maxAudioChannels: prefs.resolveMaxAudioChannels(),
+    downmixToStereo: prefs.get(UserPreferences.downmixToStereo),
     maxResolution: maxResolution,
     pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
     assDirectPlay: prefs.get(UserPreferences.assDirectPlay),

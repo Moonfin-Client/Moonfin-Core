@@ -19,9 +19,11 @@ import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/cast/cast_target.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../playback/media3_player_backend.dart';
+import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/input_mode_tracker.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
@@ -47,6 +49,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   final _castService = GetIt.instance<CastService>();
   final _clientFactory = GetIt.instance<MediaServerClientFactory>();
   final _mutations = GetIt.instance<ItemMutationRepository>();
+  final _prefs = GetIt.instance<UserPreferences>();
   final _subs = <StreamSubscription>[];
   final _tvOverlayFocus = FocusNode(debugLabel: 'AudioPlayerTvOverlay');
   final _queueScrollController = ScrollController();
@@ -831,17 +834,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     return null;
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:'
-          '${seconds.toString().padLeft(2, '0')}';
-    }
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
-  }
-
   bool _shouldUseSplitLyricsLayout(BuildContext context) {
     if (_showQueue || _lyrics == null || _lyrics!.isEmpty) {
       return false;
@@ -1311,7 +1303,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                     subtitle: stateVal != null
                         ? Text(
                             '${stateVal[0].toUpperCase()}${stateVal.substring(1)}'
-                            ' · ${_formatDuration(Duration(microseconds: ticks ~/ 10))}',
+                            ' · ${formatPlaybackDuration(Duration(microseconds: ticks ~/ 10))}',
                             style: TextStyle(
                               color: AppColorScheme.onSurface.withValues(
                                 alpha: 0.54,
@@ -1758,14 +1750,21 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _formatDuration(pos),
+                  formatPlaybackDuration(pos),
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 Text(
-                  _formatDuration(dur),
+                  formatPlaybackTrailingTime(
+                    context,
+                    position: pos,
+                    duration: dur,
+                    mode: _prefs.get(UserPreferences.musicPlaybackTimeDisplay),
+                    use24Hour: _prefs.get(UserPreferences.use24HourClock),
+                    playbackSpeed: _state.playbackSpeed,
+                  ),
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColorScheme.onSurface.withValues(alpha: 0.6),

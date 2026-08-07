@@ -149,19 +149,16 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       maxStreamingBitrate: maxStreamingBitrate,
     );
 
-    final reasons = List<String>.from(source.transcodingReasons);
-    if (playMethod == StreamPlayMethod.transcode) {
-      final mediaBitrate = source.bitrate;
-      if (maxStreamingBitrate != null &&
-          mediaBitrate != null &&
-          mediaBitrate > maxStreamingBitrate) {
-        final lowerReasons = reasons.map((r) => r.toLowerCase()).toSet();
-        if (!lowerReasons.contains('videobitratenotsupported') &&
-            !lowerReasons.contains('containerbitrateexceedslimit')) {
-          reasons.add('VideoBitrateNotSupported');
-        }
-      }
-    }
+    final reasons = mergeTranscodeReasons(
+      playMethod: playMethod,
+      serverReasons: source.transcodingReasons,
+      mediaStreams: source.mediaStreams,
+      container: source.container,
+      sourceBitrate: source.bitrate,
+      maxStreamingBitrate: maxStreamingBitrate,
+      audioStreamIndex: audioStreamIndex ?? source.defaultAudioStreamIndex,
+      deviceProfile: deviceProfile,
+    );
 
     if (playMethod == StreamPlayMethod.transcode || playMethod == StreamPlayMethod.directStream) {
       // When the server chose to deliver the subtitle externally, it leaves the
@@ -393,92 +390,135 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       return (resolvedPath, method);
     }
 
-    final serverPlayMethod = source.defaultPlayMethod;
-    if (serverPlayMethod != null) {
-      if (serverPlayMethod == PlayMethod.directPlay && source.supportsDirectPlay) {
-        if (isAudio) {
-          return (
-            _buildDirectPlayAudioUrl(itemId, source),
-            StreamPlayMethod.directPlay,
-          );
-        }
+    final route = chooseStreamRoute(
+      serverPlayMethod: source.defaultPlayMethod,
+      supportsDirectPlay: source.supportsDirectPlay,
+      supportsDirectStream: source.supportsDirectStream,
+      hasDirectStreamUrl: source.directStreamUrl != null,
+      supportsTranscoding: source.supportsTranscoding,
+      hasTranscodingUrl: source.transcodingUrl != null,
+      enableDirectPlay: enableDirectPlay,
+      isAudio: isAudio,
+      transcodingReasons: source.transcodingReasons,
+      bitrate: source.bitrate,
+      maxStreamingBitrate: maxStreamingBitrate,
+    );
+
+    switch (route) {
+      case JellyfinStreamRoute.audioDirectPlay:
+        return (
+          _buildDirectPlayAudioUrl(itemId, source),
+          StreamPlayMethod.directPlay,
+        );
+      case JellyfinStreamRoute.directPlay:
+      case JellyfinStreamRoute.terminalDirectPlay:
         return (
           _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
           StreamPlayMethod.directPlay,
         );
-      }
-      if (serverPlayMethod == PlayMethod.directStream && source.supportsDirectStream && source.directStreamUrl != null) {
+      case JellyfinStreamRoute.directStream:
         var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
         if (source.liveStreamId != null) {
           dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
         }
         return (dsUrl, StreamPlayMethod.directStream);
-      }
-      if (serverPlayMethod == PlayMethod.transcode && source.supportsTranscoding && source.transcodingUrl != null) {
+      case JellyfinStreamRoute.transcode:
         var tcUrl = '${_client.baseUrl}${source.transcodingUrl}';
         if (source.liveStreamId != null) {
           tcUrl = '$tcUrl${tcUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
         }
         return (tcUrl, StreamPlayMethod.transcode);
-      }
     }
+  }
 
-    const videoReEncodeReasons = <String>{
-      'videocodecnotsupported',
-      'videoprofilenotsupported',
-      'videolevelnotsupported',
-      'videoresolutionnotsupported',
-      'videobitratenotsupported',
-      'videoframeratenotsupported',
-      'videorangenotsupported',
-      'videorangetypenotsupported',
-      'videobitdepthnotsupported',
-      'anamorphicvideonotsupported',
-      'interlacedvideonotsupported',
-      'refframesnotsupported',
-      'containerbitrateexceedslimit',
-      'videobitrateexceedslimit',
-      'bitratelimitexceeded',
-      'containerbitratenotsupported',
-      'resolutionnotsupported',
-    };
-    final lowerReasons = source.transcodingReasons.map((e) => e.toLowerCase()).toSet();
-    var requiresVideoTranscode = lowerReasons.any(videoReEncodeReasons.contains);
-    final mediaBitrate = source.bitrate;
-    if (maxStreamingBitrate != null && mediaBitrate != null && mediaBitrate > maxStreamingBitrate) {
+  static const _videoReEncodeReasons = <String>{
+    'videocodecnotsupported',
+    'videoprofilenotsupported',
+    'videolevelnotsupported',
+    'videoresolutionnotsupported',
+    'videobitratenotsupported',
+    'videoframeratenotsupported',
+    'videorangenotsupported',
+    'videorangetypenotsupported',
+    'videobitdepthnotsupported',
+    'anamorphicvideonotsupported',
+    'interlacedvideonotsupported',
+    'refframesnotsupported',
+    'containerbitrateexceedslimit',
+    'videobitrateexceedslimit',
+    'bitratelimitexceeded',
+    'containerbitratenotsupported',
+    'resolutionnotsupported',
+  };
+
+  /// Picks the route for a source, leaving URL building to the caller.
+  ///
+  /// Direct play has to lose to a forced transcode and to any video re-encode
+  /// reason. The server reports what the source could do, not what this
+  /// resolve asked for, so following it alone hands back the original file the
+  /// caller was trying to move away from. The server's own verdict still wins
+  /// among the routes that survive those gates.
+  static JellyfinStreamRoute chooseStreamRoute({
+    required PlayMethod? serverPlayMethod,
+    required bool supportsDirectPlay,
+    required bool supportsDirectStream,
+    required bool hasDirectStreamUrl,
+    required bool supportsTranscoding,
+    required bool hasTranscodingUrl,
+    required bool enableDirectPlay,
+    required bool isAudio,
+    required List<String> transcodingReasons,
+    required int? bitrate,
+    required int? maxStreamingBitrate,
+  }) {
+    final lowerReasons = transcodingReasons.map((e) => e.toLowerCase()).toSet();
+    var requiresVideoTranscode = lowerReasons.any(
+      _videoReEncodeReasons.contains,
+    );
+    if (maxStreamingBitrate != null &&
+        bitrate != null &&
+        bitrate > maxStreamingBitrate) {
       requiresVideoTranscode = true;
     }
 
-    if (source.supportsDirectPlay && isAudio) {
-      return (
-        _buildDirectPlayAudioUrl(itemId, source),
-        StreamPlayMethod.directPlay,
-      );
+    final canDirectPlay =
+        enableDirectPlay && !requiresVideoTranscode && supportsDirectPlay;
+    // A remux copies the video stream through untouched, so a reason to
+    // re-encode it rules this out the same way it rules out direct play.
+    final canDirectStream =
+        supportsDirectStream && hasDirectStreamUrl && !requiresVideoTranscode;
+    final canTranscode = supportsTranscoding && hasTranscodingUrl;
+    final directPlayRoute = isAudio
+        ? JellyfinStreamRoute.audioDirectPlay
+        : JellyfinStreamRoute.directPlay;
+
+    if (serverPlayMethod == PlayMethod.directPlay && canDirectPlay) {
+      return directPlayRoute;
+    }
+    if (serverPlayMethod == PlayMethod.directStream && canDirectStream) {
+      return JellyfinStreamRoute.directStream;
+    }
+    if (serverPlayMethod == PlayMethod.transcode && canTranscode) {
+      return JellyfinStreamRoute.transcode;
     }
 
-    if (source.supportsDirectPlay) {
-      return (
-        _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
-        StreamPlayMethod.directPlay,
-      );
-    }
-    if (source.supportsDirectStream && source.directStreamUrl != null && !requiresVideoTranscode) {
-      var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
-      if (source.liveStreamId != null) {
-        dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
-      }
-      return (dsUrl, StreamPlayMethod.directStream);
-    }
-    if (source.supportsTranscoding && source.transcodingUrl != null) {
-      var tcUrl = '${_client.baseUrl}${source.transcodingUrl}';
-      if (source.liveStreamId != null) {
-        tcUrl = '$tcUrl${tcUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
-      }
-      return (tcUrl, StreamPlayMethod.transcode);
-    }
-    return (
-      _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
-      StreamPlayMethod.directPlay,
-    );
+    if (canDirectPlay) return directPlayRoute;
+    if (canDirectStream) return JellyfinStreamRoute.directStream;
+    if (canTranscode) return JellyfinStreamRoute.transcode;
+    return JellyfinStreamRoute.terminalDirectPlay;
   }
+}
+
+/// How a Jellyfin source should play.
+///
+/// [terminalDirectPlay] is the last resort when nothing else resolved, so a
+/// source with no remux or transcode URL still plays rather than erroring. It
+/// stays separate from [directPlay] because it keeps the plain stream URL even
+/// for audio, and because it is the one route no gate can suppress.
+enum JellyfinStreamRoute {
+  audioDirectPlay,
+  directPlay,
+  directStream,
+  transcode,
+  terminalDirectPlay,
 }

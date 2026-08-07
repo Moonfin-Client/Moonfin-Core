@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 
 import '../data/services/log_service.dart';
-import '../preference/preference_constants.dart';
 import '../util/platform_detection.dart';
 import 'audio_capability_profile.dart';
 
@@ -75,34 +74,12 @@ class AudioCapabilityProbe {
   }
 
   /// A result that looks like the "nothing connected / not yet enumerated"
-  /// fallback: no AVR route, no passthrough, stereo-only. Public so the
-  /// audio settings screen can avoid locking in recommendations (like the
-  /// stereo preset) off a degenerate probe result.
+  /// fallback: no AVR route, no passthrough, stereo-only. Used to avoid
+  /// treating a transient enumeration failure as a real stereo sink.
   static bool looksEmpty(AudioCapabilityProfile p) =>
       p.activeRouteType == AudioRouteType.other &&
       !p.hasCompressedPassthroughRoute &&
       p.maxPcmChannels <= 2;
-
-  /// Picks the preset the "Re-detect & apply recommended" action applies for
-  /// a probe result. A stereo-looking result on an unidentified route is
-  /// treated as a failed probe rather than a stereo sink, because
-  /// recommending the stereo preset there would lock users into forced
-  /// stereo off a transient enumeration failure.
-  static AudioPassthroughPreset recommendedPresetFor(
-    AudioCapabilityProfile? profile,
-  ) {
-    if (profile == null || looksEmpty(profile)) {
-      return AudioPassthroughPreset.auto;
-    }
-    if (profile.maxPcmChannels <= 2 &&
-        profile.activeRouteType != AudioRouteType.other) {
-      return AudioPassthroughPreset.stereo;
-    }
-    if (profile.isAvReceiverRoute && profile.hasCompressedPassthroughRoute) {
-      return AudioPassthroughPreset.surroundReceiver;
-    }
-    return AudioPassthroughPreset.auto;
-  }
 
   /// Queries with a short backoff so a startup race (audio outputs not yet
   /// enumerated when the app launches) doesn't strand detection on an empty

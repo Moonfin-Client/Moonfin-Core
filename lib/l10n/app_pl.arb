@@ -7841,10 +7841,6 @@
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Bezstratny)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "subtitleModeForcedDescription": "Wczytuje tylko napisy jawnie oznaczone flagą metadanych „forced”.",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"

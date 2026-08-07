@@ -18,6 +18,7 @@ import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/focus/gamepad/android_gamepad_channel.dart';
 import '../../../util/insecure_certificates.dart';
 import '../../../util/webview_environment.dart';
+import 'game_audio_owner.dart';
 
 /// Full-screen EmulatorJS host. Loads the Moonbase plugin's player shell in a WebView, streams
 /// the ROM from the user's server, and syncs the save state on exit. Includes a native,
@@ -48,7 +49,8 @@ class GameEmulatorScreen extends StatefulWidget {
   State<GameEmulatorScreen> createState() => _GameEmulatorScreenState();
 }
 
-class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
+class _GameEmulatorScreenState extends State<GameEmulatorScreen>
+    with GameAudioOwner {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   InAppWebViewController? _controller;
 
@@ -106,6 +108,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
     // Outside the Android guard on purpose, because the pad belongs to the
     // game on every platform. Either way UI navigation shouldn't also react.
     GamepadSuppressor.push();
+    claimGameAudio();
     if (PlatformDetection.isAndroid) {
       // Routed rather than taking the channel outright, since stick navigation
       // listens on the same channel and only one handler is allowed.
@@ -591,7 +594,14 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
   }
 
   @override
+  Future<void> pauseForAudioClaim() async {
+    await _controller?.evaluateJavascript(
+        source: 'window.moonfinPause && window.moonfinPause(true);');
+  }
+
+  @override
   void dispose() {
+    releaseGameAudio();
     _comboTimer?.cancel();
     _settingsScroll.dispose();
     _overlayScroll.dispose();

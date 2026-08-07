@@ -10,13 +10,14 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
-import '../../../playback/appletv_mpv_backend.dart';
+import '../../../playback/appletv_backend.dart';
 import '../../../playback/appletv_preview_player.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/play_method_label.dart';
 import '../livetv/live_tv_guide_screen.dart';
 import '../../theme/app_theme_controller.dart';
+import 'osd_buttons.dart';
 
 class AppleTvLiveTvPlayerHostScreen extends StatefulWidget {
   final List<GuideChannel> channels;
@@ -65,9 +66,9 @@ class _AppleTvLiveTvPlayerHostScreenState
   bool _sweepInFlight = false;
   AppThemeController? _themeController;
 
-  AppleTvMpvBackend? get _backend {
+  AppleTvBackend? get _backend {
     try {
-      return GetIt.instance<AppleTvMpvBackend>();
+      return GetIt.instance<AppleTvBackend>();
     } catch (_) {
       return null;
     }
@@ -640,6 +641,7 @@ class _AppleTvLiveTvPlayerHostScreenState
       liveChannelNumber: channel.number ?? '',
       channelList: _channelListPayload(),
       streamStats: _streamStatsPayload(),
+      osdButtons: visibleOsdButtonIds(_prefs),
     );
   }
 

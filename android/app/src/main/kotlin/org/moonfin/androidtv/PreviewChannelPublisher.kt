@@ -12,8 +12,8 @@ import androidx.tvprovider.media.tv.TvContractCompat
 import java.util.concurrent.Executors
 
 /**
- * Publishes the app-owned home screen channel rows (Latest Movies, Latest
- * Shows, Upcoming) as preview channels on the Android TV launcher. Data is
+ * Publishes the app-owned home screen channel rows (Next Up, Recently Added,
+ * Recently Released) as preview channels on the Android TV launcher. Data is
  * shaped in Dart and handed over the watch next method channel, so this class
  * only talks to the TvProvider. Deep link intents reuse the watch next extras
  * so a tapped tile resolves through the same handler.
@@ -53,17 +53,27 @@ class PreviewChannelPublisher(private val context: Context) {
         // reinserting keeps each row current without touching other apps.
         deleteAllPrograms()
 
-        channels.forEachIndexed { index, channel ->
-            val key = channel["key"] as? String ?: return@forEachIndexed
+        val incomingKeys = channels.mapNotNull { it["key"] as? String }.toSet()
+        cleanUpObsoleteChannels(incomingKeys)
+
+        var autoAddClaimed = false
+        channels.forEach { channel ->
+            val key = channel["key"] as? String ?: return@forEach
             val title = channel["title"] as? String ?: key
             @Suppress("UNCHECKED_CAST")
             val items = channel["items"] as? List<Map<String, Any?>> ?: emptyList()
-            if (items.isEmpty()) return@forEachIndexed
 
             // The launcher only lets an app auto add one row, so the first
-            // channel is requested browsable and the rest are opt in.
-            val channelId = getChannelId(key, title, default = index == 0)
-                ?: return@forEachIndexed
+            // channel with something in it is requested browsable and the rest
+            // are opt in. An empty row would only park a blank strip up there.
+            val autoAdd = !autoAddClaimed && items.isNotEmpty()
+            val channelId = getChannelId(key, title, default = autoAdd)
+                ?: return@forEach
+            if (autoAdd) autoAddClaimed = true
+
+            // Empty channels are still created so the user can find and turn
+            // them on in the launcher settings before they fill up.
+            if (items.isEmpty()) return@forEach
 
             val values = items.mapNotNull { buildProgram(channelId, it)?.toContentValues() }
             if (values.isNotEmpty()) {
@@ -82,6 +92,55 @@ class PreviewChannelPublisher(private val context: Context) {
     }
 
     /**
+     * Drops channels this build no longer publishes so a renamed or retired row
+     * does not linger on the home screen. The provider only hands an app its own
+     * channels, so this never reaches another app's rows.
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun cleanUpObsoleteChannels(incomingKeys: Set<String>) {
+        val store = context.getSharedPreferences("moonfin_tv_channels", Context.MODE_PRIVATE)
+        val edits = store.edit()
+        val projection = arrayOf(
+            TvContractCompat.Channels._ID,
+            TvContractCompat.Channels.COLUMN_INTERNAL_PROVIDER_ID,
+        )
+
+        runCatching {
+            context.contentResolver.query(
+                TvContractCompat.Channels.CONTENT_URI, projection, null, null, null,
+            )?.use { cursor ->
+                val idIndex = cursor.getColumnIndex(TvContractCompat.Channels._ID)
+                val keyIndex = cursor.getColumnIndex(TvContractCompat.Channels.COLUMN_INTERNAL_PROVIDER_ID)
+
+                while (cursor.moveToNext()) {
+                    val id = if (idIndex != -1) cursor.getLong(idIndex) else -1L
+                    val key = if (keyIndex != -1) cursor.getString(keyIndex) else null
+
+                    if (id != -1L && key != null && key !in incomingKeys) {
+                        val channelUri = TvContractCompat.buildChannelUri(id)
+                        context.contentResolver.delete(channelUri, null, null)
+                        edits.remove(key)
+                    }
+                }
+            }
+        }
+
+        // Older channels have no key recorded on them, so they come back empty
+        // handed above and are matched here by the uri cached when they were
+        // created.
+        for (oldKey in store.all.keys - incomingKeys) {
+            store.getString(oldKey, null)?.let { oldUri ->
+                runCatching {
+                    context.contentResolver.delete(Uri.parse(oldUri), null, null)
+                }
+            }
+            edits.remove(oldKey)
+        }
+
+        edits.apply()
+    }
+
+    /**
      * Returns the id of the channel stored under [key], creating it when it does
      * not exist yet. The uri is cached so a channel the user placed on the home
      * screen keeps its position across refreshes.
@@ -89,10 +148,15 @@ class PreviewChannelPublisher(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getChannelId(key: String, title: String, default: Boolean): Long? {
         val store = context.getSharedPreferences("moonfin_tv_channels", Context.MODE_PRIVATE)
+        val appLinkIntent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
         val settings = Channel.Builder()
             .setType(TvContractCompat.Channels.TYPE_PREVIEW)
             .setDisplayName(title)
-            .setAppLinkIntent(Intent(context, MainActivity::class.java))
+            .setInternalProviderId(key)
+            .setAppLinkIntent(appLinkIntent)
             .build()
 
         var uri: Uri? = null
@@ -126,9 +190,15 @@ class PreviewChannelPublisher(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun buildProgram(channelId: Long, item: Map<String, Any?>): PreviewProgram? {
         val id = item["id"] as? String ?: return null
-        val isMovie = (item["kind"] as? String) == "movie"
+        // The tile is mostly artwork, so an item without a poster would show
+        // up as a placeholder.
+        val posterUriStr = item["posterUri"] as? String
+        if (posterUriStr.isNullOrEmpty()) return null
+        val kind = item["kind"] as? String
 
         val intent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(WatchNextPublisher.EXTRA_ITEM_ID, id)
             (item["serverId"] as? String)?.takeIf { it.isNotEmpty() }
                 ?.let { putExtra(WatchNextPublisher.EXTRA_SERVER_ID, it) }
@@ -137,21 +207,24 @@ class PreviewChannelPublisher(private val context: Context) {
         val builder = PreviewProgram.Builder()
             .setChannelId(channelId)
             .setType(
-                if (isMovie) TvContractCompat.PreviewPrograms.TYPE_MOVIE
-                else TvContractCompat.PreviewPrograms.TYPE_TV_EPISODE,
+                when (kind) {
+                    "episode" -> TvContractCompat.PreviewPrograms.TYPE_TV_EPISODE
+                    "series" -> TvContractCompat.PreviewPrograms.TYPE_TV_SERIES
+                    else -> TvContractCompat.PreviewPrograms.TYPE_MOVIE
+                },
             )
             .setPosterArtAspectRatio(
-                if (isMovie) TvContractCompat.PreviewPrograms.ASPECT_RATIO_MOVIE_POSTER
-                else TvContractCompat.PreviewPrograms.ASPECT_RATIO_16_9,
+                if (kind == "episode") TvContractCompat.PreviewPrograms.ASPECT_RATIO_16_9
+                else TvContractCompat.PreviewPrograms.ASPECT_RATIO_MOVIE_POSTER,
             )
             .setTitle(item["title"] as? String ?: "")
+            .setPosterArtUri(Uri.parse(posterUriStr))
             .setIntent(intent)
 
         (item["episodeTitle"] as? String)?.let { builder.setEpisodeTitle(it) }
         (item["seasonNumber"] as? Number)?.let { builder.setSeasonNumber(it.toInt()) }
         (item["episodeNumber"] as? Number)?.let { builder.setEpisodeNumber(it.toInt()) }
         (item["description"] as? String)?.let { builder.setDescription(it) }
-        (item["posterUri"] as? String)?.let { builder.setPosterArtUri(Uri.parse(it)) }
         (item["durationMs"] as? Number)?.let { builder.setDurationMillis(it.toInt()) }
 
         return builder.build()

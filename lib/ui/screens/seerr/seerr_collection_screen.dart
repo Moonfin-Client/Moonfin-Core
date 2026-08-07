@@ -15,6 +15,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/seerr/seerr_advanced_request_options.dart';
 import '../../widgets/seerr/seerr_quota_row.dart';
 import '../../widgets/seerr/seerr_tv_controls.dart';
@@ -37,6 +38,7 @@ class SeerrCollectionScreen extends StatefulWidget {
 class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
   SeerrCollectionViewModel? _vm;
   bool _initializing = true;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -67,6 +69,7 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
   void dispose() {
     _vm?.removeListener(_onChanged);
     _vm?.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -83,7 +86,10 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
         showBackButton: true,
-        child: _buildBody(),
+        child: QuickReturnWrapper(
+          scrollController: _scrollController,
+          child: _buildBody(),
+        ),
       ),
     );
   }
@@ -154,6 +160,7 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
           ),
         ),
         SingleChildScrollView(
+          controller: _scrollController,
           padding: EdgeInsets.only(
             top: MediaQuery.of(context).padding.top + 56,
             bottom: 48,
@@ -300,8 +307,10 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
               cardFocusExpansion: cardExpansion,
               suppressFocusGlow: suppressFocusGlow,
               onTap: () => context.push(
-                Destinations.seerrMedia(item.id.toString()),
-                extra: {'mediaType': item.mediaType ?? 'movie'},
+                Destinations.seerrMedia(
+                  item.id.toString(),
+                  mediaType: item.mediaType ?? 'movie',
+                ),
               ),
             ),
           )

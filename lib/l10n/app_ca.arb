@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Canvia entre Moonfin i Neon Pulse sense reiniciar l'aplicació",
+    "settingsAppearanceThemeSubtitle": "Aplica un tema totalment personalitzat i canvia entre una interfície d'usuari inspirada en Apple o en Material.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count} can.",
+    "channelsCount": "{count, plural, =1{1 Canal} other{{count} Canals}}",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -2824,7 +2824,7 @@
     "@playerZoomMode": {
         "description": "Setting for player zoom mode"
     },
-    "fit": "Fit",
+    "fit": "Ajustar",
     "@fit": {
         "description": "Zoom mode: fit"
     },
@@ -3641,7 +3641,7 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Activa l'àudio per a les previsualitzacions de tràilers i episodis",
+    "enablePreviewAudio": "Activa l’àudio per a les previsualitzacions multimèdia",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
@@ -4223,7 +4223,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "Reordena i canvia les files d'inici",
+    "reorderToggleHomeRows": "Reordenar i alternar les files d'inici de la biblioteca i les basades en recursos externs",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -4892,7 +4892,7 @@
     },
     "adminPermissionsSaved": "Permisos desats",
     "adminPasswordsMismatch": "Les contrasenyes no coincideixen",
-    "adminFailed": "Error: {error}",
+    "adminFailed": "Fallat: {error}",
     "@adminFailed": {
         "placeholders": {
             "error": {
@@ -6529,7 +6529,7 @@
     "settingsPrivacyAndSafetySection": "PRIVACITAT I SEGURETAT",
     "settingsBlockedRatings": "Classificacions bloquejades",
     "settingsGeneralStyle": "Estil general",
-    "settingsGeneralStyleSubtitle": "Accents temàtics, fons, indicadors de visualització i música de tema",
+    "settingsGeneralStyleSubtitle": "Accents temàtics, fons i indicadors de visualització",
     "settingsHomePage": "Pàgina d'inici",
     "settingsHomePageSubtitle": "Seccions, tipus d'imatge, superposicions i previsualitzacions multimèdia",
     "settingsLibrariesSubtitle": "Visibilitat de la biblioteca, visualització de carpetes i comportament multiservidor",
@@ -7399,10 +7399,6 @@
     "@settingsAudioFallbackCodecAc3": {
         "description": "Fallback codec option: AC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sense perdues)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecFlac": "FLAC\n(Sense perdua)",
     "@settingsAudioFallbackCodecFlac": {
         "description": "Fallback codec option: FLAC"
@@ -7439,7 +7435,7 @@
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "settingsMaxAudioChannels7_1": "7.1 Envolvent",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
@@ -8760,7 +8756,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} mins}}",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -9005,5 +9001,384 @@
     "imdbMostPopularMovies": "Pel·lícules més populars d'IMDb",
     "imdbMostPopularTvShows": "Sèries de TV més populars d'IMDb",
     "imdbLowestRatedMovies": "Pel·lícules pitjor valorades d'IMDb",
-    "imdbTopEnglishMovies": "Millors pel·lícules en anglès d'IMDb"
+    "imdbTopEnglishMovies": "Millors pel·lícules en anglès d'IMDb",
+    "castMembers": "Repartiment",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Finalitzant…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "failedToDeleteItemWithError": "L'operació d'eliminació ha fallat amb l'error següent: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "shuffleAll": "Barreja-ho tot",
+    "@shuffleAll": {
+        "description": "Action button label for shuffling all tracks of an artist"
+    },
+    "settingsSearchHint": "Configuració de cerca",
+    "@settingsSearchHint": {
+        "description": "Hint text in the settings search field"
+    },
+    "detailsBackgroundOpacity": "Transparència de fons per a detalls",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "osdButtons": "Botons del reproductor",
+    "@osdButtons": {
+        "description": "Settings screen for choosing which buttons the player shows"
+    },
+    "osdButtonsDescription": "Tria quins botons mostra el reproductor",
+    "@osdButtonsDescription": {
+        "description": "Subtitle for the player buttons settings tile"
+    },
+    "osdButtonsSectionDescription": "Els controls de reproducció sempre es mostren. Tot el que hi ha a continuació depèn de tu, i cada tipus de dispositiu manté la seva pròpia llista.",
+    "@osdButtonsSectionDescription": {
+        "description": "Explains that transport controls can't be hidden and that the list is per device kind"
+    },
+    "detailButtons": "Botons d'acció",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "detailButtonsDescription": "Tria quins botons mostra la pantalla de detalls",
+    "@detailButtonsDescription": {
+        "description": "Subtitle for the details action buttons settings tile"
+    },
+    "detailButtonsSectionDescription": "El boto de reproduir sempre és el primer i els botons bloquejats sempre es mostren. La resta depèn de tu, i cada tipus de dispositiu manté la seva pròpia llista.",
+    "@detailButtonsSectionDescription": {
+        "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    },
+    "moveUp": "Pujar",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Baixar",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "buttonOrderHint": "Utilitza les fletxes per canviar l'ordre. Amb el comandament a distància, mou cap a l'esquerra i cap a la dreta el botó ressaltat. Apagar-ne un el fa caure per sota de la resta.",
+    "@buttonOrderHint": {
+        "description": "Explains how to reorder the buttons in a row"
+    },
+    "orientationLock": "Bloqueig d'orientació",
+    "@orientationLock": {
+        "description": "Player button that locks the screen orientation"
+    },
+    "fullscreen": "Pantalla completa",
+    "@fullscreen": {
+        "description": "Player button that toggles fullscreen"
+    },
+    "resetProfile": "Restaurar el perfil",
+    "@resetProfile": {
+        "description": "Button to reset a profile to defaults"
+    },
+    "resetProfileTitle": "Restaurar {profile}?",
+    "@resetProfileTitle": {
+        "description": "Title of the dialog confirming a profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetProfileDescription": "Això elimina el perfil {profile} del servidor i restableix a les predeterminades totes les configuracions sincronitzades d'aquest dispositiu.",
+    "@resetProfileDescription": {
+        "description": "Body of the dialog confirming a device profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetGlobalProfileDescription": "Això elimina tots els perfils desats del servidor i restableix a la configuració per defecte totes les configuracions sincronitzades en aquest dispositiu.",
+    "@resetGlobalProfileDescription": {
+        "description": "Body of the dialog confirming a global profile reset"
+    },
+    "profileReset": "Restabliu el perfil {profile} als valors per defecte.",
+    "@profileReset": {
+        "description": "Message after a profile was reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetRatingsTitle": "Restablir les valoracions?",
+    "@resetRatingsTitle": {
+        "description": "Title of the dialog confirming a ratings reset"
+    },
+    "resetRatingsDescription": "Això restableix tots els paràmetres de classificació als valors per defecte, incloent-hi quines fonts es mostren i l'ordre en què apareixen.",
+    "@resetRatingsDescription": {
+        "description": "Body of the dialog confirming a ratings reset"
+    },
+    "ratingsReset": "Restabliu les valoracions als valors per defecte.",
+    "@ratingsReset": {
+        "description": "Message after the ratings settings were reset"
+    },
+    "failedToResetProfile": "Restauració del perfil {profile} fallida.",
+    "@failedToResetProfile": {
+        "description": "Message when a profile reset failed",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodingTimeRemainingUnavailable": "Transcodificació: temps restant no disponible",
+    "@transcodingTimeRemainingUnavailable": {
+        "description": "Notice shown below downloading text when downloading a transcoded stream"
+    },
+    "trailerCaptions": "Subtítols del Tràiler",
+    "@trailerCaptions": {
+        "description": "Setting for YouTube trailer captions"
+    },
+    "trailerCaptionsDescription": "Mostra els subtítols dels tràilers de YouTube a la barra de mitjans",
+    "@trailerCaptionsDescription": {
+        "description": "Description for YouTube trailer captions"
+    },
+    "nextUpMaxDays": "Màxim de dies a \"A continuació\"",
+    "@nextUpMaxDays": {
+        "description": "Setting for how far back the Next Up row reaches"
+    },
+    "nextUpMaxDaysDescription": "Quant de temps un programa roman a \"A continuació\" després de l'última vegada que el vas veure",
+    "@nextUpMaxDaysDescription": {
+        "description": "Description for the Next Up window setting"
+    },
+    "daysValue": "{days} dies",
+    "@daysValue": {
+        "description": "A number of days",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "homeRowsPadding": "Separació de les fileres d'inici",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Personalitza la separació entre les fileres d'inici",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
+    },
+    "yourWatchlist": "La teva llista de seguiment",
+    "@yourWatchlist": {
+        "description": "Seerr row: watchlist"
+    },
+    "seerrNotifyNewMediaTitle": "Nou contingut afegit",
+    "@seerrNotifyNewMediaTitle": {
+        "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
+    },
+    "seerrNotifyNewMediaSubtitle": "Qualsevol contingut multimèdia nou afegit a la biblioteca",
+    "@seerrNotifyNewMediaSubtitle": {
+        "description": "Subtitle for the new media notifications toggle"
+    },
+    "requestMore4k": "Sol·licita més en 4K",
+    "@requestMore4k": {
+        "description": "Button to request more seasons in 4K, shown next to the non-4K Request More button"
+    },
+    "request4k": "Sol·licita en 4K",
+    "@request4k": {
+        "description": "Button to submit a 4K media request, shown next to the non-4K Request button"
+    },
+    "requested4k": "4K Sol·licitat",
+    "@requested4k": {
+        "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
+    },
+    "cancelRequest4k": "Cancel·la la sol·licitud de 4K",
+    "@cancelRequest4k": {
+        "description": "Button/dialog title to cancel a 4K media request"
+    },
+    "requestSeriesOrMovie4k": "Sol·licitar {type} 4K",
+    "@requestSeriesOrMovie4k": {
+        "description": "Bottom sheet title for requesting media in 4K",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "useNativeEmulator": "Emulació nativa",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Juga a jocs amb nuclis natius en lloc del reproductor web d'EmulatorJS",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Nuclis de l'emulador",
+    "emulatorCoresSubtitle": "Descargueu sistemes per jugar a jocs de manera nativa",
+    "emulatorCoresDescription": "Tria quins sistemes vols instal·lar. Els nuclis els proporciona el projecte libretro i permeten que els jocs s’executin de manera nativa, en lloc de fer-ho dins d’una vista del navegador.",
+    "emulatorCoreDownloading": "Descarregant",
+    "emulatorCoreUnavailable": "No disponible per aquest dispositiu",
+    "emulatorCoreDownloadFailed": "No s'ha pogut descarregar el nucli. Verifica la connexió i torna-ho a provar.",
+    "downloadedGames": "Jocs descarregats",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Allibera espai ocupat pels fitxers del joc",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "Els jocs es copien a aquest dispositiu abans d’executar-se. Elimina els que hagis acabat per alliberar espai. Les partides guardades es conserven al servidor i no s'eliminen.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Encara no s'ha descarregat cap joc en aquest dispositiu.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} jocs, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Elimina-ho tot",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "Eliminar {title} d'aquest dispositiu? Es tornarà a descarregar la propera vegada que el juguis.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "Eliminar tots els jocs descarregats d'aquest dispositiu? Es tornaran a descarregar la propera vegada que els juguis.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
+    },
+    "addToWatchlist": "Afegir a la llista de seguiment",
+    "@addToWatchlist": {
+        "description": "Button label to add media to the user's Seerr watchlist"
+    },
+    "removeFromWatchlist": "Treure de la llista de seguiment",
+    "@removeFromWatchlist": {
+        "description": "Button label to remove media from the user's Seerr watchlist"
+    },
+    "watchlistUpdateFailed": "No s'ha pogut actualitzar la llista de seguiment",
+    "@watchlistUpdateFailed": {
+        "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
+    },
+    "adminSearchParameters": "Paràmetres de cerca",
+    "@adminSearchParameters": {
+        "description": "Column header above the editable fields used to search metadata providers in the Identify dialog"
+    },
+    "adminCurrentMetadata": "Metadades actuals",
+    "@adminCurrentMetadata": {
+        "description": "Column header above the read-only values currently stored on the item in the Identify dialog"
+    },
+    "adminLabelYear": "Any",
+    "@adminLabelYear": {
+        "description": "Label for the release year field in the Identify dialog"
+    },
+    "adminLabelImdbId": "ID d'IMDb",
+    "@adminLabelImdbId": {
+        "description": "Label for the IMDb identifier field in the Identify dialog. IMDb is a brand name and is normally left untranslated"
+    },
+    "adminLabelTmdbMovieId": "Id de pel·lícula de TheMovieDb",
+    "@adminLabelTmdbMovieId": {
+        "description": "Label for the TheMovieDb movie identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+    },
+    "adminLabelTmdbBoxSetId": "Id de la col·lecció de TheMovieDb",
+    "@adminLabelTmdbBoxSetId": {
+        "description": "Label for the TheMovieDb collection identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbBoxSetId": "Id de la col·lecció de TheTVDB",
+    "@adminLabelTvdbBoxSetId": {
+        "description": "Label for the TheTVDB collection identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbId": "Id numèric de TheTVDB",
+    "@adminLabelTvdbId": {
+        "description": "Label for the numeric TheTVDB identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbSlug": "Id Slug de pel·lícula de TheTVDB",
+    "@adminLabelTvdbSlug": {
+        "description": "Label for the TheTVDB slug identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminReplaceImages": "Substitueix les imatges existents",
+    "@adminReplaceImages": {
+        "description": "Checkbox label in the confirmation dialog shown before applying an identified metadata match"
+    },
+    "adminBackToSearch": "Tornar al formulari de cerca",
+    "@adminBackToSearch": {
+        "description": "Tooltip on the button that returns from the Identify results list to the search form"
+    },
+    "grouping": "Agrupament",
+    "@grouping": {
+        "description": "Section header in the library display dialog for grouping options"
+    },
+    "groupByType": "Grup per tipus",
+    "@groupByType": {
+        "description": "Checkbox label to group playlists by their media type category"
+    },
+    "playlistTypes": "Tipus de llistes de reproducció",
+    "@playlistTypes": {
+        "description": "Section header in the library display dialog for filtering playlist categories"
+    },
+    "playlistTypeVideo": "Vídeo",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "playlistTypeAudio": "Àudio (Música)",
+    "@playlistTypeAudio": {
+        "description": "Filter checkbox label for audio/music playlists"
+    },
+    "playlistTypeAudiobook": "Audiollibre",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Llibre",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "playlistTypePhoto": "Foto",
+    "@playlistTypePhoto": {
+        "description": "Filter checkbox label for photo playlists"
+    },
+    "playlistTypeMixed": "Mesclat",
+    "@playlistTypeMixed": {
+        "description": "Filter checkbox label for mixed media playlists"
+    },
+    "videoPlaylistsSection": "Llistes de reproducció de vídeo",
+    "@videoPlaylistsSection": {
+        "description": "Section header above video playlists when Group by Type is enabled"
+    },
+    "audioPlaylistsSection": "Llistes de reproducció de música",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "audiobookPlaylistsSection": "Llistes de reproducció d'audiollibres",
+    "@audiobookPlaylistsSection": {
+        "description": "Section header above audiobook playlists when Group by Type is enabled"
+    },
+    "bookPlaylistsSection": "Llistes de reproducció de llibres",
+    "@bookPlaylistsSection": {
+        "description": "Section header above book playlists when Group by Type is enabled"
+    },
+    "photoPlaylistsSection": "Llistes de reproducció de fotos",
+    "@photoPlaylistsSection": {
+        "description": "Section header above photo playlists when Group by Type is enabled"
+    },
+    "mixedPlaylistsSection": "Llistes de reproducció mixtes",
+    "@mixedPlaylistsSection": {
+        "description": "Section header above mixed playlists when Group by Type is enabled"
+    }
 }

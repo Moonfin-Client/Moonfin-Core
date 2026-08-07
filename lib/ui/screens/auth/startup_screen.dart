@@ -83,7 +83,14 @@ class _StartupScreenState extends State<StartupScreen>
     final authPrefs = GetIt.instance<AuthenticationPreferences>();
 
     if (session.state != SessionState.ready) {
-      await session.stateStream.firstWhere((s) => s == SessionState.ready);
+      // Never wait here forever. A session that cannot finish restoring would
+      // otherwise hold the splash with nothing on screen to say why.
+      await session.stateStream
+          .firstWhere((s) => s == SessionState.ready)
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () => SessionState.ready,
+          );
     }
 
     await serverRepo.loadStoredServers();
@@ -125,7 +132,11 @@ class _StartupScreenState extends State<StartupScreen>
 
     if (!mounted) return;
 
-    if (credentialStore.consumeSecureStorageUnavailable()) {
+    // Read the flag either way so a one-off failure doesn't carry over to the
+    // next launch, but only warn when it cost the user something. A session
+    // that came back has the token it needs and the warning is just noise.
+    final storageFailed = credentialStore.consumeSecureStorageUnavailable();
+    if (storageFailed && !(restored && session.activeUserId != null)) {
       await _showSecureStorageWarning();
       if (!mounted) return;
     }

@@ -26,6 +26,7 @@ import '../../../util/clock_format.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -1068,7 +1069,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         : '${_currentChannel.number} ${_currentChannel.name}';
     final duration = _state.duration;
     final durationLabel = duration > Duration.zero
-        ? _formatDurationLabel(duration)
+        ? formatPlaybackDuration(duration)
         : 'Live';
     final streams = resolution?.mediaStreams ?? const <Map<String, dynamic>>[];
 
@@ -1131,7 +1132,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       ),
       row('Playing', _state.isPlaying ? 'Yes' : 'No'),
       row('Buffering', _state.isBuffering ? 'Yes' : 'No'),
-      row('Position', _formatDurationLabel(_state.position)),
+      row('Position', formatPlaybackDuration(_state.position)),
       row('Duration', durationLabel),
     ];
     addSection(l10n.playback, playbackRows);
@@ -1895,8 +1896,17 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                       0.0,
                       1.0,
                     );
-                leftLabel = _formatDurationLabel(position);
-                rightLabel = _formatDurationLabel(duration);
+                leftLabel = formatPlaybackDuration(position);
+                // Recorded content follows the same bottom right slot the
+                // video player uses, including an empty label for none.
+                rightLabel = formatPlaybackTimeSlot(
+                  context,
+                  slot: _prefs.get(UserPreferences.playbackTimeBelowRight),
+                  position: position,
+                  duration: duration,
+                  use24Hour: _prefs.get(UserPreferences.use24HourClock),
+                  playbackSpeed: _state.playbackSpeed,
+                );
               } else {
                 progress = null;
                 leftLabel = _formatTime(DateTime.now());
@@ -1942,18 +1952,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         );
       },
     );
-  }
-
-  String _formatDurationLabel(Duration value) {
-    final totalSeconds = value.inSeconds;
-    final hours = totalSeconds ~/ 3600;
-    final minutes = (totalSeconds % 3600) ~/ 60;
-    final seconds = totalSeconds % 60;
-
-    if (hours > 0) {
-      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
   Widget _buildOverlayControlButton({

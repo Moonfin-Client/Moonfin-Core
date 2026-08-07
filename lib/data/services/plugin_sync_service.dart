@@ -777,11 +777,15 @@ class PluginSyncService extends ChangeNotifier {
     } catch (_) {}
   }
 
+  /// Pass `requireAvailable: false` from callers that run before the plugin
+  /// ping has resolved, such as the home rows. The request is then attempted
+  /// regardless and a missing plugin simply comes back null.
   Future<List<String>?> fetchCustomCollectionOrder(
     MediaServerClient client,
-    String collectionId,
-  ) async {
-    if (!_pluginAvailable) return null;
+    String collectionId, {
+    bool requireAvailable = true,
+  }) async {
+    if (requireAvailable && !_pluginAvailable) return null;
     final headers = _authHeaders(client);
     if (headers == null) return null;
 

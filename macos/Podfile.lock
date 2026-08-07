@@ -10,8 +10,6 @@ PODS:
     - FlutterMacOS
   - libretro_host (0.1.0)
   - LzmaSDK-ObjC (2.1.1)
-  - media_kit_libs_macos_video (1.0.4):
-    - FlutterMacOS
   - media_kit_video (0.0.1):
     - FlutterMacOS
   - moonfin_game_host (0.1.0):
@@ -33,7 +31,6 @@ DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
   - gamepads_darwin (from `Flutter/ephemeral/.symlinks/plugins/gamepads_darwin/macos`)
   - libretro_host (from `../native/libretro_host`)
-  - media_kit_libs_macos_video (from `Flutter/ephemeral/.symlinks/plugins/media_kit_libs_macos_video/macos`)
   - media_kit_video (from `Flutter/ephemeral/.symlinks/plugins/media_kit_video/macos`)
   - moonfin_game_host (from `game_host`)
   - rar (from `Flutter/ephemeral/.symlinks/plugins/rar/macos`)
@@ -56,8 +53,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/gamepads_darwin/macos
   libretro_host:
     :path: "../native/libretro_host"
-  media_kit_libs_macos_video:
-    :path: Flutter/ephemeral/.symlinks/plugins/media_kit_libs_macos_video/macos
   media_kit_video:
     :path: Flutter/ephemeral/.symlinks/plugins/media_kit_video/macos
   moonfin_game_host:
@@ -74,8 +69,7 @@ SPEC CHECKSUMS:
   gamepads_darwin: 643b6a69e20ca678fae83781b7f7fc8f15f5d710
   libretro_host: becbc28b6e0d23dffeef32b0d432ab4990798f1a
   LzmaSDK-ObjC: 6c68c37743a658fc9a4c7b70f7d6045b587aa42b
-  media_kit_libs_macos_video: 85a23e549b5f480e72cae3e5634b5514bc692f65
-  media_kit_video: fa6564e3799a0a28bff39442334817088b7ca758
+  media_kit_video: 28d7d27611c7769a2464eb7621c37386a61dcc9a
   moonfin_game_host: 07f43f7e194bb2cec1d7a077f549d9acf916a803
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   rar: bea203a640a83e62c47f6e110dd6af83a7e56ac3

@@ -208,6 +208,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get glassQuality => 'Kualitas Efek Kaca';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Otomatis memilih efek kaca terbaik untuk perangkat ini. Penuh memaksa blur asli; Ringan menggunakan efek kaca sederhana yang menghemat daya GPU.';
 
@@ -493,6 +506,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get extraLarge => 'Sangat Besar';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Genre';
   }
@@ -586,6 +608,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get scrollRight => 'Gulir ke kanan';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
 
   @override
   String get couldNotLoadGenre => 'Genre ini tidak dapat dimuat saat ini.';
@@ -2556,20 +2581,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Bitstream audio DTS ke AVR saja; memerlukan dukungan receiver dan trek sumber DTS';
 
   @override
-  String get enableTrueHdAudio =>
-      'Aktifkan audio TrueHD (mungkin tidak berfungsi di semua platform)';
-
-  @override
-  String get settingsAudioOutputMode => 'Mode Output Audio';
-
-  @override
-  String get settingsAudioOutputModeDescription =>
-      'Pilih cara audio didekode. AVR Passthrough mengirim stream Dolby/DTS mentah ke receiver Anda; Auto atau Downmix mendekode secara lokal.';
-
-  @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
-
-  @override
   String get settingsAudioFallbackCodec => 'Codec Fallback Audio';
 
   @override
@@ -2587,9 +2598,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
-
-  @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
   String get settingsAudioFallbackCodecMp3 => 'MP3\n(Hanya Stereo)';
@@ -2649,35 +2657,48 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsAudioEac3Passthrough => 'Passthrough EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'Passthrough EAC3 JOC (Atmos)';
-
-  @override
   String get settingsAudioDtsCorePassthrough => 'Passthrough DTS Core';
 
   @override
   String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
 
   @override
+  String get settingsAudioPassthroughMode => 'Passthrough';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'How compressed surround sound reaches your TV or receiver.';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled =>
+      'Disabled (always decode on this device)';
+
+  @override
+  String get settingsAudioPassthroughModeAuto =>
+      'Auto (match detected device support)';
+
+  @override
+  String get settingsAudioPassthroughModeManual =>
+      'Manual (choose formats below)';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Mix all decoded audio down to two channels.';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos =>
+      'Bitstream E-AC-3, including Dolby Atmos (JOC).';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX =>
+      'Bitstream DTS-HD, including DTS:X.';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos =>
+      'Bitstream TrueHD, including Dolby Atmos.';
+
+  @override
   String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
-
-  @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'Passthrough TrueHD Atmos';
-
-  @override
-  String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) ke decoder eksternal.';
-
-  @override
-  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos melalui EAC3 (JOC) ke decoder eksternal.';
-
-  @override
-  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (termasuk DTS core) ke decoder eksternal.';
-
-  @override
-  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD dengan metadata Atmos ke decoder eksternal.';
 
   @override
   String get settingsDetectedAudioCapabilities =>
@@ -3248,6 +3269,16 @@ class AppLocalizationsId extends AppLocalizations {
       'Tampilkan pustaka dari semua server yang terhubung';
 
   @override
+  String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Combine separate libraries of the same type for Recently Added and Recently Released home rows.';
+
+  @override
+  String get libraryView => 'Library View';
+
+  @override
   String get enableFolderView => 'Aktifkan Tampilan Folder';
 
   @override
@@ -3759,6 +3790,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get networks => 'Jaringan';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Baris Discovery Seerr';
 
   @override
@@ -4024,6 +4061,15 @@ class AppLocalizationsId extends AppLocalizations {
   String requestedByName(String name) {
     return 'Diminta oleh $name';
   }
+
+  @override
+  String get manageRequests => 'Manage Requests';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get onWatchlist => 'On Watchlist';
 
   @override
   String get approve => 'Setujui';
@@ -9122,6 +9168,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Urutkan baris Koleksi berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
+  String get collectionsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
+
+  @override
   String get displayGenresRows => 'Tampilkan Baris Genre';
 
   @override
@@ -9155,6 +9208,13 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Urutkan baris Playlist berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
 
   @override
   String get displayAudioRows => 'Tampilkan Baris Audio';
@@ -9225,17 +9285,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get notSupportedOnThisDevice => 'Tidak Didukung pada perangkat ini';
-
-  @override
-  String get settingsAudioDtsXPassthrough => 'Passthrough DTS:X (DTS UHD)';
-
-  @override
-  String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) ke dekoder eksternal.';
-
-  @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'Passthrough TrueHD dengan Atmos (JOC)';
 
   @override
   String get mediaPlayerBehavior => 'Perilaku Pemutar Media';
@@ -10344,4 +10393,70 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => 'Mixed Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose which time labels appear around the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

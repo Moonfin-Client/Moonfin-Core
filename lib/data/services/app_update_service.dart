@@ -12,6 +12,7 @@ enum DesktopUpdateCheckStatus {
   upToDate,
   checkFailed,
   unsupportedPlatform,
+  managedByStore,
   disabledByPreference,
   rateLimited,
   alreadyNotified,
@@ -52,6 +53,25 @@ class AppUpdateService {
   static const _lastCheckMsKey = 'app_update_last_check_ms';
   static const _lastNotifiedVersionKey = 'app_update_last_notified_version';
 
+  /// Installers that deliver their own updates. The distribution channel only
+  /// records which artifact a build came from, and stores that redistribute the
+  /// sideload APK unchanged (the Amazon Appstore does) would otherwise offer a
+  /// GitHub download they can never install.
+  static const _storeInstallerPackages = <String>{
+    'com.android.vending',
+    'com.amazon.venezia',
+    'com.sec.android.app.samsungapps',
+    'com.huawei.appmarket',
+    'com.xiaomi.mipicks',
+    'org.fdroid.fdroid',
+  };
+
+  static bool isStoreInstaller(String? installer) {
+    return _storeInstallerPackages.contains(
+      installer?.trim().toLowerCase() ?? '',
+    );
+  }
+
   final PreferenceStore _store;
   final UserPreferences _userPreferences;
 
@@ -85,6 +105,12 @@ class AppUpdateService {
     if (!AppDistribution.supportsInAppUpdates) {
       return const DesktopUpdateCheckResult(
         status: DesktopUpdateCheckStatus.unsupportedPlatform,
+      );
+    }
+
+    if (await _isStoreInstalled()) {
+      return const DesktopUpdateCheckResult(
+        status: DesktopUpdateCheckStatus.managedByStore,
       );
     }
 
@@ -145,6 +171,23 @@ class AppUpdateService {
         releaseNotesUrl: release.releaseNotesUrl,
       ),
     );
+  }
+
+  /// Whether a store installed this copy. Only the Android APK channels can end
+  /// up store-installed while still carrying the in-app updater.
+  Future<bool> _isStoreInstalled() async {
+    final channel = AppDistribution.channel;
+    if (channel != DistributionChannel.apk &&
+        channel != DistributionChannel.androidTvApk) {
+      return false;
+    }
+
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      return isStoreInstaller(packageInfo.installerStore);
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<String> _currentAppVersion() async {

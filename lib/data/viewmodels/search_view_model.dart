@@ -8,6 +8,7 @@ import '../models/aggregated_item.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../utils/media_deduplication_utils.dart';
 
 class SearchResultGroup {
   final String title;
@@ -232,9 +233,11 @@ class SearchViewModel extends ChangeNotifier {
       }
       final matched = allItems
           .where((item) => group.itemTypes.contains(item.type))
+          .toList();
+      final deduplicated = MediaDeduplicationUtils.deduplicateMediaItems(matched)
           .take(_resultLimit)
           .toList();
-      grouped.add(group.copyWith(items: matched));
+      grouped.add(group.copyWith(items: deduplicated));
     }
 
     return grouped;

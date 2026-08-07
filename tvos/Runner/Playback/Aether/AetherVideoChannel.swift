@@ -4,6 +4,7 @@
 #if os(iOS) || os(macOS)
 
 import AVFoundation
+import AetherEngine
 import VideoToolbox
 #if canImport(Flutter)
 import Flutter
@@ -37,6 +38,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
     private var lastTextTrackCount = -1
     private var lastClosedCaptionCount = -1
     private var didComplete = false
+    private var didReportTerminalError = false
 
     init(messenger: FlutterBinaryMessenger) {
         control = FlutterMethodChannel(
@@ -121,6 +123,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
                 fontWeight: (args["fontWeight"] as? NSNumber)?.intValue,
                 verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue)
+        case "setAllowUntrustedTls":
+            EngineTLS.allowUntrustedCertificates = (args["enabled"] as? Bool) == true
         case "setSubtitleRendererMode":
             // The host overlay is the only subtitle renderer on this path.
             break
@@ -140,6 +144,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
     private func setSource(_ args: [String: Any]) {
         guard let url = args["url"] as? String else { return }
         didComplete = false
+        didReportTerminalError = false
         lastTextTrackCount = -1
         lastClosedCaptionCount = -1
 
@@ -233,7 +238,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             send(["event": "completed", "completed": true])
         }
 
-        if p.state == .error {
+        if p.state == .error, !didReportTerminalError {
+            didReportTerminalError = true
             send(["event": "error", "error": "Playback error"])
         }
     }

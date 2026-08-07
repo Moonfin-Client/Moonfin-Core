@@ -1163,8 +1163,16 @@ class _MediaBarState extends State<MediaBar>
 
       _isTrailerPlaying = true;
       _autoAdvanceTimer?.cancel();
-      await _waitForMedia3TrailerReady(resolveId);
+      final ready = await _waitForMedia3TrailerReady(resolveId);
       if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
+        _cancelTrailerPreview();
+        return;
+      }
+      // The advance timer is already cancelled by this point, so a trailer that
+      // never reaches playing has to be treated like any other start failure.
+      // Revealing it instead parks the bar on this slide for good.
+      if (!ready) {
+        _markTrailerFailed(item.itemId);
         _cancelTrailerPreview();
         return;
       }
@@ -1223,8 +1231,13 @@ class _MediaBarState extends State<MediaBar>
 
     _isTrailerPlaying = true;
     _autoAdvanceTimer?.cancel();
-    await _waitForMediaKitTrailerReady(player, resolveId);
+    final ready = await _waitForMediaKitTrailerReady(player, resolveId);
     if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
+      _cancelTrailerPreview();
+      return;
+    }
+    if (!ready) {
+      _markTrailerFailed(item.itemId);
       _cancelTrailerPreview();
       return;
     }

@@ -11,6 +11,7 @@ import '../../util/focus/key_event_utils.dart';
 import 'bounded_network_image.dart';
 import 'focus/glass_focus_halo.dart';
 import 'marquee_text.dart';
+import 'seerr/seerr_status_dot.dart';
 import '../mixins/focus_state_mixin.dart';
 
 class MediaCard extends StatefulWidget {
@@ -737,7 +738,7 @@ class _CardImage extends StatelessWidget {
                   Positioned(
                     top: 6,
                     right: 6,
-                    child: _buildSeerrStatusIndicator(),
+                    child: SeerrStatusDot(status: seerrStatus),
                   )
                 else if (_showWatchedIndicator)
                   Positioned(top: 4, right: 4, child: _buildWatchedIndicator()),
@@ -810,11 +811,7 @@ class _CardImage extends StatelessWidget {
     return type == 'movie' || type == 'tv';
   }
 
-  bool get _showSeerrStatusIndicator =>
-      seerrStatus == 2 ||
-      seerrStatus == 3 ||
-      seerrStatus == 4 ||
-      seerrStatus == 5;
+  bool get _showSeerrStatusIndicator => SeerrMediaStatus.hasDot(seerrStatus);
 
   Widget _buildSeerrMediaTypeBadge() {
     final type = seerrMediaType?.toLowerCase();
@@ -839,74 +836,6 @@ class _CardImage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSeerrStatusIndicator() {
-    if (seerrStatus == 5) {
-      return _buildStatusCircle(
-        borderColor: AppColorScheme.statusAvailable,
-        icon: Icon(
-          Icons.check_rounded,
-          size: 12,
-          color: AppColorScheme.statusAvailable,
-        ),
-      );
-    }
-
-    if (seerrStatus == 4) {
-      return _buildStatusCircle(
-        fillColor: AppColorScheme.statusAvailable,
-        icon: Icon(
-          Icons.remove_rounded,
-          size: 13,
-          color: AppColorScheme.onBadge,
-        ),
-      );
-    }
-
-    if (seerrStatus == 3) {
-      return _buildStatusCircle(
-        borderColor: AppColorScheme.statusRequested,
-        icon: Icon(
-          Icons.schedule_rounded,
-          size: 12,
-          color: AppColorScheme.statusRequested,
-        ),
-      );
-    }
-
-    return _buildStatusCircle(
-      borderColor: AppColorScheme.statusPending,
-      icon: Icon(
-        Icons.schedule_rounded,
-        size: 12,
-        color: AppColorScheme.statusPending,
-      ),
-    );
-  }
-
-  Widget _buildStatusCircle({
-    required Widget icon,
-    Color? fillColor,
-    Color? borderColor,
-  }) {
-    final effectiveFillColor = fillColor ?? AppColorScheme.onBadge;
-    return Container(
-      width: 20,
-      height: 20,
-      decoration: BoxDecoration(
-        color: effectiveFillColor,
-        shape: BoxShape.circle,
-        border: Border.fromBorderSide(
-          ThemeRegistry.active.borders.chipBorder.copyWith(
-            color: borderColor ?? effectiveFillColor,
-            width: 1.5,
-          ),
-        ),
-      ),
-      alignment: Alignment.center,
-      child: icon,
     );
   }
 

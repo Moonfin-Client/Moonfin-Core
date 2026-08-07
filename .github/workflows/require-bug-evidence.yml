@@ -1,0 +1,230 @@
+name: Require a real title and evidence on issues
+
+# Every issue needs a title that says something beyond the template's "[UI]" tag.
+# UI bugs also need a screenshot or recording, and playback bugs need a diagnostic log.
+# GitHub can't reject an issue at submission time, so this labels and asks instead.
+# The issue forms mark both evidence fields required, which stops the empty case in
+# the browser, and this catches "n/a" and everything a form can't check.
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  check-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check title, screenshots and logs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const MARKER = '<!-- missing-evidence-bot -->';
+            const MIN_TITLE = 10;
+
+            const CHECKS = {
+              title: {
+                name: 'Missing Title',
+                color: 'c5def5',
+                description: 'Issue still has the untouched template title',
+              },
+              screenshot: {
+                name: 'Missing Screenshot',
+                color: 'fbca04',
+                description: 'UI bug reported without a screenshot or recording',
+              },
+              log: {
+                name: 'Missing Logs',
+                color: 'd93f0b',
+                description: 'Playback bug reported without a diagnostic log',
+              },
+            };
+
+            const issue = context.payload.issue;
+            if (!issue || issue.pull_request) return;
+            if (['OWNER', 'MEMBER', 'COLLABORATOR'].includes(issue.author_association)) return;
+
+            const labels = (issue.labels || []).map(l => l.name);
+            const has = name => labels.some(l => l.toLowerCase() === name.toLowerCase());
+
+            const needsImage = has('Bug') && has('UI');
+            const needsLog = has('Bug') && has('Playback');
+
+            // The templates prefill "[UI] ", "[Playback] ", "[Seerr] ", "[Feature] " and
+            // "[Vent] ", so strip the leading tags and see what the author wrote themselves.
+            const rest = (issue.title || '')
+              .replace(/^\s*(\[[^\]]*\]\s*)+/, '')
+              .replace(/[\s.!?-]+$/, '')
+              .trim();
+
+            const GENERIC = /^(bug|issue|issues|problem|problems|help|help me|crash|crashes|broken|error|errors|fix|please fix|question|feature|request|vent|title|test|n\/?a|none|ui|playback|seerr|not working|doesn'?t work|does not work|no work)$/i;
+
+            const badTitle = rest.length < MIN_TITLE || GENERIC.test(rest);
+
+            // With nothing to check and no label left over from a previous run there is
+            // no reason to spend an API call reading the comments.
+            const leftover = Object.values(CHECKS).some(c => labels.includes(c.name));
+            if (!badTitle && !needsImage && !needsLog && !leftover) return;
+
+            // Read the body and every human comment, so evidence posted as a follow-up counts.
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+
+            const authored = [issue.body || '']
+              .concat(comments.filter(c => c.user.type !== 'Bot').map(c => c.body || ''))
+              .join('\n');
+
+            const hasImage = [
+              /!\[[^\]]*\]\(\s*https?:\/\/\S+/i,
+              /<img\s[^>]*src\s*=/i,
+              /<video\s/i,
+              /https:\/\/github\.com\/user-attachments\/assets\/\S+/i,   // current upload host
+              /https:\/\/user-images\.githubusercontent\.com\/\S+/i,     // the older upload host
+              /https?:\/\/\S+\.(png|jpe?g|gif|webp|heic|bmp|mp4|mov|webm|m4v)(\?\S*)?/i,
+            ].some(re => re.test(authored));
+
+            // A pasted report opens with this header, then one "<ISO8601> LEVEL [category]
+            // message" line per entry.
+            const LOG_LINE = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\S*\s+\w+\s+\[\w+\]/;
+
+            const fences = authored.match(/```[\s\S]*?```/g) || [];
+            const hasPastedBlock = fences.some(block => {
+              const inner = block.replace(/```[^\n]*\n?/, '').replace(/```$/, '').trim();
+              return inner.length >= 200 || inner.split('\n').length >= 6;
+            });
+
+            // Plenty of people paste without fencing, so count bare log lines too.
+            const looseLogLines = authored.split('\n').filter(l => LOG_LINE.test(l)).length;
+
+            const hasLog = [
+              /Moonfin diagnostic report/i,
+              /https:\/\/github\.com\/user-attachments\/files\/\S+/i,
+              /https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/files\/\d+\/\S+/i,
+              /https?:\/\/\S+\.(log|txt|zip|7z|gz|tgz)(\?\S*)?/i,
+            ].some(re => re.test(authored)) || looseLogLines >= 3 || hasPastedBlock;
+
+            const wanted = [];
+            if (badTitle) wanted.push('title');
+            if (needsImage && !hasImage) wanted.push('screenshot');
+            if (needsLog && !hasLog) wanted.push('log');
+
+            // Drop any label whose problem has since been fixed.
+            for (const [kind, check] of Object.entries(CHECKS)) {
+              if (!wanted.includes(kind) && labels.includes(check.name)) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  name: check.name,
+                });
+              }
+            }
+
+            if (!wanted.length) return;
+
+            const toAdd = wanted.map(k => CHECKS[k]).filter(c => !labels.includes(c.name));
+            for (const check of toAdd) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner, repo: context.repo.repo, name: check.name,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: check.name,
+                  color: check.color,
+                  description: check.description,
+                });
+              }
+            }
+            if (toAdd.length) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: toAdd.map(c => c.name),
+              });
+            }
+
+            // Ask once, not on every edit.
+            if (comments.some(c => (c.body || '').includes(MARKER))) return;
+
+            const TITLE_ASK = [
+              '### The title still looks like the template',
+              '',
+              `This issue is titled \`${issue.title}\`, which doesn't say what actually went wrong. Titles like that are impossible to scan, search, or spot as a duplicate.`,
+              '',
+              'Please edit the title to describe the problem itself, keeping the tag on the front:',
+              '',
+              '- `[UI] Focus jumps to the top row when scrolling the Home screen`',
+              '- `[Playback] HDR10 movies play with a green tint on Android TV`',
+              '- `[Seerr] Login fails with "invalid credentials" on a correct password`',
+              '',
+              'You can change it with the **Edit** button next to the title.',
+            ].join('\n');
+
+            const SCREENSHOT_ASK = [
+              '### A screenshot or recording is missing',
+              '',
+              'UI issues are very hard to act on from a description alone. Please drag an image or a short screen recording straight into a comment below.',
+              '',
+              '- Android: power + volume down, or hold the D-pad centre on Android TV',
+              '- iOS and tvOS: side button + volume up',
+              '- macOS: `Cmd + Shift + 4`',
+              '- Windows: `Win + Shift + S`',
+              '- Linux: `PrtSc`, or your desktop screenshot tool',
+              '',
+              'If the problem is motion, a jump, a flicker, or focus moving the wrong way, then a recording is far more useful than a still.',
+            ].join('\n');
+
+            const LOG_ASK = [
+              '### A diagnostic log is missing',
+              '',
+              'Playback problems depend heavily on your media, server, and device, so we need the log to see what actually happened.',
+              '',
+              "Diagnostic logging is **off by default** and is kept in memory only, so it has to be turned on *before* you reproduce the problem. There's no log file on disk to go looking for.",
+              '',
+              '1. Go to **Settings > About > Diagnostics & Logging**.',
+              '2. Turn on **Enable diagnostic logging**.',
+              '3. Repeat the actions that cause the problem. Don\'t restart the app afterwards, restarting clears the buffer.',
+              '4. Come back to **Settings > About > Diagnostics & Logging** and press **Copy all logs**.',
+              '5. Paste it into a comment below, inside a ``` code block ```.',
+              '',
+              'The report has to end up here on the issue. **Send report to server** uploads it to *your own* server, not to us, so the filename it shows you means nothing on our end. That button is only worth using if you administer that server and go and fetch the file yourself, from **Administration > Logs**, using **Save log file**, and then attach it here.',
+              '',
+              'Full instructions, including what a report contains and what to redact before posting one: **[Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs)**.',
+            ].join('\n');
+
+            const named = wanted.map(k => `**${CHECKS[k].name}**`);
+            const listed = named.length === 1
+              ? named[0]
+              : `${named.slice(0, -1).join(', ')} and ${named[named.length - 1]}`;
+
+            const parts = [
+              MARKER,
+              `Thanks for the report, @${issue.user.login}.`,
+              '',
+              `Before anyone can pick this up it needs a little more from you, so it has been labelled ${listed}.`,
+              '',
+            ];
+            if (wanted.includes('title')) parts.push(TITLE_ASK, '');
+            if (wanted.includes('screenshot')) parts.push(SCREENSHOT_ASK, '');
+            if (wanted.includes('log')) parts.push(LOG_ASK, '');
+            parts.push('Each label comes off automatically once that piece is sorted.');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: parts.join('\n'),
+            });

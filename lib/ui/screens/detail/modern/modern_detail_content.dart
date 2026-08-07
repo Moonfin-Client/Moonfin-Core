@@ -21,6 +21,7 @@ import '../../../../preference/preference_constants.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
+import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
@@ -55,7 +56,15 @@ import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
 import 'widgets/season_card.dart';
 import 'widgets/up_next_card.dart';
+import '../../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../../preference/seerr_preferences.dart';
 import '../../../widgets/overlay_sheet.dart';
+import '../../../widgets/seerr/seerr_collection_banner.dart';
+import '../../../widgets/seerr/seerr_item_chips.dart';
+import '../../../widgets/seerr/seerr_request_dialog.dart';
+import '../../../widgets/seerr/seerr_item_status.dart';
+import '../../../widgets/seerr/seerr_stats_card.dart';
+import '../../../widgets/seerr/seerr_status_pill.dart';
 
 double _desktopUiScale({UserPreferences? prefs}) {
   final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
@@ -146,6 +155,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _personMoviesFirstFocusNode = FocusNode(debugLabel: 'personMoviesFirst');
   final FocusNode _personSeriesFirstFocusNode = FocusNode(debugLabel: 'personSeriesFirst');
   final FocusNode _personSeerrAppearancesFirstFocusNode = FocusNode(debugLabel: 'personSeerrAppearancesFirst');
+  final FocusNode _seerrChipsFocusNode =
+      FocusNode(debugLabel: 'seerrChipsFirst');
+  final FocusNode _seerrRecommendationsFocusNode =
+      FocusNode(debugLabel: 'seerrRecommendationsFirst');
+  final FocusNode _seerrSimilarFocusNode =
+      FocusNode(debugLabel: 'seerrSimilarFirst');
+  final FocusNode _seerrBannerFocusNode =
+      FocusNode(debugLabel: 'seerrCollectionBanner');
   final FocusNode _personSeerrCrewCreditsFirstFocusNode = FocusNode(debugLabel: 'personSeerrCrewCreditsFirst');
   final Map<String, FocusNode> _boxSetHeadingFocusNodes = {};
   final Map<String, FocusNode> _boxSetRowFirstFocusNodes = {};
@@ -159,6 +176,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
   late final ScrollController _scrollController = ScrollController();
+
+  // The scroll extent the last collection page was asked for at. A page landing
+  // grows the extent, so holding the previous one stops the notifications that
+  // arrive during that reflow from asking for the same page again.
+  double _boxSetLastTriggerMaxExtent = -1;
   String? _seriesLogoTag;
   String? _seriesLogoId;
   bool _showNavbarState = true;
@@ -458,7 +480,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   void initState() {
     super.initState();
     
-    final FocusOnKeyEventCallback leftToSidebarHandler = (node, event) {
+    KeyEventResult leftToSidebarHandler(FocusNode node, KeyEvent event) {
       if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
         if (navbarPosition == NavbarPosition.left) {
@@ -470,7 +492,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         }
       }
       return KeyEventResult.ignored;
-    };
+    }
 
     _castFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _crewFirstFocusNode.onKeyEvent = leftToSidebarHandler;
@@ -482,11 +504,36 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _personMoviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeerrAppearancesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _seerrChipsFocusNode.onKeyEvent = leftToSidebarHandler;
+    _seerrRecommendationsFocusNode.onKeyEvent = leftToSidebarHandler;
+    _seerrSimilarFocusNode.onKeyEvent = leftToSidebarHandler;
+    _seerrBannerFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeerrCrewCreditsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _gridFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _moviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _collectionFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+
+    void attachAutoScroll(FocusNode node) {
+      node.addListener(() {
+        final ctx = node.context;
+        if (node.hasFocus && mounted && ctx != null) {
+          scrollFocusIntoView(ctx);
+        }
+      });
+    }
+
+    // _seerrChipsFocusNode is left out on purpose. It lands on a
+    // SeerrBrowseChip, which scrolls itself, and two calls racing over the same
+    // viewport settle wherever the slower one happens to finish.
+    attachAutoScroll(_seerrRecommendationsFocusNode);
+    attachAutoScroll(_seerrSimilarFocusNode);
+    attachAutoScroll(_seerrBannerFocusNode);
+    attachAutoScroll(_castFirstFocusNode);
+    attachAutoScroll(_crewFirstFocusNode);
+    attachAutoScroll(_similarFirstFocusNode);
+    attachAutoScroll(_seasonsFirstFocusNode);
+    attachAutoScroll(_episodesFirstFocusNode);
 
     for (final cat in extraCategoriesOrder) {
       final node = FocusNode(debugLabel: 'modernFeatureFirst_$cat');
@@ -546,6 +593,20 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onScroll() {
     if (!mounted) return;
+
+    // Ahead of the isTV return below, so a D-pad walk down a collection pulls
+    // the next page the same way a touch scroll does.
+    if (_vm.item?.type == 'BoxSet' && _scrollController.hasClients) {
+      final pos = _scrollController.position;
+      final maxExtent = pos.maxScrollExtent;
+      if (pos.pixels > maxExtent - 400 &&
+          maxExtent > _boxSetLastTriggerMaxExtent) {
+        _boxSetLastTriggerMaxExtent = maxExtent;
+        _vm.loadMoreCollectionItems();
+        _vm.loadMorePlaylistItems();
+      }
+    }
+
     if (PlatformDetection.isTV) return;
     final scrolledDown = _scrollController.offset > 50.0;
     if (scrolledDown && _showNavbarState) {
@@ -559,6 +620,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onViewModelChanged() {
     if (mounted) {
+      // A new collection, or one whose list restarted after a sort change,
+      // needs the trigger to fire again from wherever the scroll now sits.
+      if (_vm.item?.type == 'BoxSet' &&
+          (_vm.state == ItemDetailState.loading || _vm.playlistItems.isEmpty)) {
+        _boxSetLastTriggerMaxExtent = -1;
+      }
       setState(() {});
       _loadSeriesLogo();
       _loadStudioLogos();
@@ -605,6 +672,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _personMoviesFirstFocusNode.dispose();
     _personSeriesFirstFocusNode.dispose();
     _personSeerrAppearancesFirstFocusNode.dispose();
+    _seerrChipsFocusNode.dispose();
+    _seerrRecommendationsFocusNode.dispose();
+    _seerrSimilarFocusNode.dispose();
+    _seerrBannerFocusNode.dispose();
     _personSeerrCrewCreditsFirstFocusNode.dispose();
     for (final node in _boxSetHeadingFocusNodes.values) {
       node.dispose();
@@ -762,6 +833,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           } else {
             _personSeriesFirstFocusNode.requestFocus();
           }
+        } else if (label ==
+            GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)) {
+          final state = seerrItemTabState(_vm);
+          if (state != null) _seerrTabChain(state).firstOrNull?.requestFocus();
         } else if (label == l10n.appearancesSeerr) {
           _personSeerrAppearancesFirstFocusNode.requestFocus();
         } else if (label == l10n.crewContributionsSeerr) {
@@ -823,6 +898,21 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   List<_ModernTab> _tabsFor(AggregatedItem item, AppLocalizations l10n) {
     final hasCast = _vm.actors.isNotEmpty;
+    final cast = _ModernTab(l10n.castMembers, _castTab);
+    final seerrState = seerrItemTabState(_vm);
+    final seerrTab = seerrState == null
+        ? null
+        : _ModernTab(
+            GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr),
+            (context, item) => _seerrTab(context, seerrState),
+          );
+
+    // A title that isn't in the library has no episodes to list, no chapters,
+    // no extras and no file to describe, so the rest would all be empty.
+    if (_vm.isSeerrOnly) {
+      return [if (hasCast) cast, ?seerrTab];
+    }
+
     final hasCrew = _vm.directors.isNotEmpty || _vm.writers.isNotEmpty;
     final hasStudios = item.studios.isNotEmpty;
     final hasSimilar = _vm.similar.isNotEmpty;
@@ -844,7 +934,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       }
     }
 
-    final cast = _ModernTab(l10n.castMembers, _castTab);
     final crew = _ModernTab(l10n.crewSection, _crewTab);
     final studios = _ModernTab(l10n.studios, _studiosTab);
     final chapters = _ModernTab(l10n.chapters, _chaptersTab);
@@ -867,6 +956,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               (context, item) => _collectionsTab(context, item),
             ),
           if (hasSimilar) similar,
+          ?seerrTab,
         ];
       case 'Season':
         return [
@@ -946,10 +1036,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         });
 
         return [
-          if (_vm.playlistItems.isNotEmpty)
+          if (moviesList.isNotEmpty)
+            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
+          if (seriesList.isNotEmpty)
+            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
+          if (hasCast) _ModernTab(l10n.castMembers, _boxSetCastTab),
+          if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
+          if (hasStudios) studios,
+          // Show the Playlist tab while the index is building (spinner) OR
+          // once items are available (the list). Placed last so simple
+          // movie-only collections land on Movies by default.
+          if (_vm.playlistItems.isNotEmpty || _vm.playlistIndexBuilding)
             _ModernTab(
               l10n.playlist,
               (context, item) {
+                // Phase 1: flat ID index still building — show full spinner.
+                if (_vm.playlistIndexBuilding) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
                 final listWidget = DetailTrackList(
                   tracks: _vm.playlistItems,
                   imageApi: _vm.imageApi,
@@ -1012,6 +1117,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             ),
                           ),
                           listWidget,
+                          // Phase 3: page loading footer spinner.
+                          if (_vm.playlistLoadingMore)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
                         ],
                       ),
                     ),
@@ -1019,14 +1130,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 );
               },
             ),
-          if (moviesList.isNotEmpty)
-            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
-          if (seriesList.isNotEmpty)
-            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
-          if (hasCast) _ModernTab(l10n.castMembers, _boxSetCastTab),
-          if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
-          if (hasStudios) studios,
         ];
+
       default:
         return [
           if (hasCast) cast,
@@ -1041,6 +1146,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               (context, item) => _collectionsTab(context, item),
             ),
           if (hasSimilar) similar,
+          ?seerrTab,
         ];
     }
   }
@@ -1055,6 +1161,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // unplayed episode's seasonId so the cyan border always renders correctly.
     final nextUpSeasonId = _vm.nextUp?.seasonId ??
         _vm.seriesEpisodes.firstWhereOrNull((e) => !e.isPlayed)?.seasonId;
+    final seerrSeasonStatus = seerrItemSeasonStatus(_vm);
+    // Set only for a series with no season to open, where the card offers to
+    // request that season instead.
+    final seerrOnlyVm = _vm.isSeerrOnly ? _vm.seerr : null;
     SeasonCard buildSeasonCard(
       int i, {
       double? width,
@@ -1062,6 +1172,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       bool topRow = true,
     }) =>
         SeasonCard(
+          seerrStatus: seerrSeasonStatus[_vm.seasons[i].indexNumber],
           title: _vm.seasons[i].name,
           subtitle: l10n.episodeCount(
             counts[_vm.seasons[i].id] ?? _vm.seasons[i].childCount ?? 0,
@@ -1075,9 +1186,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           width: width,
           height: height,
           autoScroll: true,
-          onTap: () => context.push(
-            Destinations.item(_vm.seasons[i].id, serverId: _vm.seasons[i].serverId),
-          ),
+          onTap: () => seerrOnlyVm != null
+              ? showSeerrRequestDialog(
+                  context: context,
+                  vm: seerrOnlyVm,
+                  is4k: false,
+                  season: _vm.seasons[i].indexNumber,
+                )
+              : context.push(
+                  Destinations.item(
+                    _vm.seasons[i].id,
+                    serverId: _vm.seasons[i].serverId,
+                  ),
+                ),
         );
     final seasonLabelStyle = textTheme.labelMedium?.copyWith(
       color: Colors.white70,
@@ -2143,6 +2264,124 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
+  /// The focusable pieces of the Seerr tab, in the order they appear, so each
+  /// can hand off to its neighbour without every branch restating the order.
+  List<FocusNode> _seerrTabChain(SeerrMediaDetailState state) => [
+        if (SeerrItemChips.hasContent(state)) _seerrChipsFocusNode,
+        if (state.recommendations.isNotEmpty) _seerrRecommendationsFocusNode,
+        if (state.similar.isNotEmpty) _seerrSimilarFocusNode,
+        if (state.movie?.collection != null) _seerrBannerFocusNode,
+      ];
+
+  /// The Seerr side of a title: what it is filed under, the facts behind it,
+  /// and what it leads to.
+  Widget _seerrTab(BuildContext context, SeerrMediaDetailState state) {
+    final l10n = AppLocalizations.of(context);
+    final collection = state.movie?.collection;
+    final chain = _seerrTabChain(state);
+
+    VoidCallback above(FocusNode node) {
+      final i = chain.indexOf(node);
+      return i > 0 ? chain[i - 1].requestFocus : _focusSelectedTab;
+    }
+
+    VoidCallback? below(FocusNode node) {
+      final i = chain.indexOf(node);
+      return i >= 0 && i < chain.length - 1 ? chain[i + 1].requestFocus : null;
+    }
+
+    final sections = <Widget>[
+      if (SeerrItemChips.hasContent(state))
+        SeerrItemChips(
+          state: state,
+          firstFocusNode: _seerrChipsFocusNode,
+          onNavigateUp: above(_seerrChipsFocusNode),
+          onNavigateDown: below(_seerrChipsFocusNode),
+        ),
+      if (SeerrStatsCard.hasContent(state, l10n)) SeerrStatsCard(state: state),
+      if (state.recommendations.isNotEmpty)
+        _seerrTabRow(
+          l10n.recommendations,
+          state.recommendations,
+          firstFocusNode: _seerrRecommendationsFocusNode,
+          onNavigateUp: above(_seerrRecommendationsFocusNode),
+          onNavigateDown: below(_seerrRecommendationsFocusNode),
+        ),
+      if (state.similar.isNotEmpty)
+        _seerrTabRow(
+          l10n.similar,
+          state.similar,
+          firstFocusNode: _seerrSimilarFocusNode,
+          onNavigateUp: above(_seerrSimilarFocusNode),
+          onNavigateDown: below(_seerrSimilarFocusNode),
+        ),
+      if (collection != null)
+        SeerrCollectionBanner(
+          collection: collection,
+          focusNode: _seerrBannerFocusNode,
+          onNavigateUp: above(_seerrBannerFocusNode),
+        ),
+    ];
+
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (!mounted) return;
+        widget.onToggleNavbar?.call(!focused);
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < sections.length; i++) ...[
+            if (i > 0) const SizedBox(height: 16),
+            sections[i],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _seerrTabRow(
+    String title,
+    List<SeerrDiscoverItem> items, {
+    FocusNode? firstFocusNode,
+    VoidCallback? onNavigateUp,
+    VoidCallback? onNavigateDown,
+  }) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        SeerrAppearancesRow(
+          items: items,
+          prefs: widget.prefs,
+          firstFocusNode: firstFocusNode,
+          onItemKeyEvent: (index, event) {
+            if (event is! KeyDownEvent) return KeyEventResult.ignored;
+            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              (onNavigateUp ?? _focusSelectedTab)();
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                onNavigateDown != null) {
+              onNavigateDown();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _seerrCrewCreditsTab(BuildContext context, List<SeerrDiscoverItem> items) {
     return Focus(
       canRequestFocus: false,
@@ -2259,7 +2498,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: collections.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 32),
+        separatorBuilder: (_, _) => const SizedBox(height: 32),
         itemBuilder: (context, index) {
           final col = collections[index];
           final rowFocusNode = _collectionRowFocusNodeFor(col.id);
@@ -3818,7 +4057,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       addText(l10n.seasonCount(item.childCount!));
     }
     if (item.type == 'Season') {
-      final epCount = _vm.episodes.length > 0 ? _vm.episodes.length : (item.childCount ?? 0);
+      final epCount = _vm.episodes.isNotEmpty ? _vm.episodes.length : (item.childCount ?? 0);
       if (epCount > 0) {
         addText(l10n.episodeCount(epCount));
       }
@@ -3827,7 +4066,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final s = item.parentIndexNumber;
       final e = item.indexNumber;
       if (s != null && e != null) {
-        addText('S${s}:E$e');
+        addText('S$s:E$e');
       }
     }
     final status = item.status;
@@ -3871,7 +4110,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (item.genres.isNotEmpty) {
       addText(item.genres.take(3).join(' · '));
     }
-    if (pieces.isEmpty) return const SizedBox.shrink();
+    // A badge rather than another word in the line, so it sits outside the dot
+    // separators.
+    final seerrStatus = seerrItemStatus(_vm);
+    final seerrPills = seerrStatus == null
+        ? null
+        : SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true);
+    if (pieces.isEmpty) return seerrPills ?? const SizedBox.shrink();
 
     final separated = <Widget>[];
     for (var i = 0; i < pieces.length; i++) {
@@ -3880,6 +4125,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       }
       separated.add(pieces[i]);
     }
+    if (seerrPills != null) separated.add(seerrPills);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
@@ -4204,6 +4450,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ),
           ),
         ] else
+          // Never reaches full opacity, so the image carries all the way down
+          // rather than stopping partway.
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -4211,8 +4459,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 end: Alignment.bottomCenter,
                 colors: [
                   base.withValues(alpha: 0.15 * gradientScale),
-                  base.withValues(alpha: 0.55 * gradientScale),
-                  base,
+                  base.withValues(alpha: 0.45 * gradientScale),
+                  base.withValues(alpha: 0.85 * gradientScale),
                 ],
                 stops: const [0.0, 0.55, 1.0],
               ),
@@ -4495,6 +4743,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             tabBar: tabBarWidget,
             tabContent: tabContent,
             topInset: topInset,
+            scrollController: _scrollController,
           );
   }
 }
@@ -4659,6 +4908,7 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
                   return KeyEventResult.handled;
                 }
               }
+              widget.onNavigateUp?.call();
               return KeyEventResult.handled;
             } else if (focused == widget.audioButtonFocusNode) {
               widget.focusNode?.requestFocus();

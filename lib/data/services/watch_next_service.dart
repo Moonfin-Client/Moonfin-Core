@@ -53,8 +53,8 @@ class WatchNextService {
       if (signature == _lastPublishedSignature) return;
 
       await CarArtwork.instance.ensureReady();
-      final imageApi = GetIt.instance<MediaServerClient>().imageApi;
-      final items = buildItems(rows, imageApi);
+      final client = GetIt.instance<MediaServerClient>();
+      final items = buildItems(rows, client);
 
       if (items.isEmpty) {
         await _channel.invokeMethod('clear');
@@ -96,7 +96,7 @@ class WatchNextService {
 
   static List<Map<String, dynamic>> buildItems(
     List<HomeRow> rows,
-    ImageApi imageApi,
+    MediaServerClient client,
   ) {
     final seen = <String>{};
     final items = <Map<String, dynamic>>[];
@@ -105,7 +105,7 @@ class WatchNextService {
     )) {
       for (final item in row.items) {
         if (item.id.isEmpty || !seen.add(item.id)) continue;
-        final payload = buildProgramPayload(item, imageApi, index: items.length);
+        final payload = buildProgramPayload(item, client, index: items.length);
         if (payload != null) items.add(payload);
         if (items.length >= _maxItems) break;
       }
@@ -114,22 +114,25 @@ class WatchNextService {
     return items;
   }
 
-  /// Shapes a movie or episode into the native program payload. Public so the
-  /// launcher channel rows reuse the same fields. Returns null for other types.
+  /// Shapes a movie, series or episode into the native program payload. Public
+  /// so the launcher channel rows reuse the same fields. Returns null for other
+  /// types.
   static Map<String, dynamic>? buildProgramPayload(
     AggregatedItem item,
-    ImageApi imageApi, {
+    MediaServerClient client, {
     int index = 0,
   }) {
     final id = item.id;
     final isMovie = item.type == 'Movie';
     final isEpisode = item.type == 'Episode';
-    if (!isMovie && !isEpisode) return null;
+    final isSeries = item.type == 'Series';
+    if (!isMovie && !isEpisode && !isSeries) return null;
 
     final serverId = item.serverId;
+    final imageApi = client.imageApi;
 
     final poster = CarArtwork.instance
-        .wrap(isMovie ? _moviePoster(item, imageApi) : _episodePoster(item, imageApi))
+        .wrap(carAuthedImageUrl(client, isEpisode ? _episodePoster(item, imageApi) : _moviePoster(item, imageApi)))
         ?.toString();
 
     final resumeMs = item.playbackPositionTicks != null
@@ -146,7 +149,7 @@ class WatchNextService {
     return {
       'id': id,
       'serverId': serverId,
-      'kind': isMovie ? 'movie' : 'episode',
+      'kind': isEpisode ? 'episode' : (isSeries ? 'series' : 'movie'),
       'title': isEpisode ? (item.seriesName ?? item.name) : item.name,
       if (isEpisode) 'episodeTitle': item.name,
       if (isEpisode && item.parentIndexNumber != null)

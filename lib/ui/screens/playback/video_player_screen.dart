@@ -17,6 +17,7 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../util/fullscreen_helper.dart';
+import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/seek_icons.dart';
 import '../../widgets/playback/trickplay_tile_image.dart';
 
@@ -46,11 +47,11 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/auto_hdr_switcher.dart';
-import '../../../util/clock_format.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/playback_time_label.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/subtitle_preview.dart';
@@ -1858,7 +1859,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_remotePositionTicks <= 0) {
       return base;
     }
-    return '$base · ${_formatDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}';
+    return '$base · ${formatPlaybackDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}';
   }
 
   Future<List<Map<String, dynamic>>> _resolveCastPeopleForMetadata(
@@ -2922,16 +2923,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _seekRepeatCount = 0;
   }
 
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60);
-    final s = d.inSeconds.remainder(60);
-    if (h > 0) {
-      return '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-    }
-    return '$m:${s.toString().padLeft(2, '0')}';
-  }
-
   String _formatDelay(double seconds) {
     if (seconds == 0) return AppLocalizations.of(context).none;
     return '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms';
@@ -3590,7 +3581,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!mounted || !_subtitleActive) return;
     final idx = _manager.subtitleStreamIndex;
     if (idx == null || idx < 0) return;
-    unawaited(_manager.changeSubtitleTrack(idx));
+    unawaited(_manager.changeSubtitleTrack(idx, userInitiated: false));
     if (_subtitleReapplyRetryScheduled || _state.duration > Duration.zero) {
       return;
     }
@@ -3603,7 +3594,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
         final retryIdx = _manager.subtitleStreamIndex;
         if (retryIdx == null || retryIdx < 0) return;
-        await _manager.changeSubtitleTrack(retryIdx);
+        await _manager.changeSubtitleTrack(retryIdx, userInitiated: false);
       }),
     );
   }
@@ -4080,24 +4071,37 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  String _endsAtLabel({
+  String _timeSlotLabel(
+    PlaybackTimeSlot slot, {
     required Duration position,
     required Duration duration,
+    required bool use24Hour,
   }) {
-    if (duration <= Duration.zero) return '';
-    final remainingMedia = duration - position;
-    if (remainingMedia <= Duration.zero) return '';
-    final speed = _state.playbackSpeed > 0 ? _state.playbackSpeed : 1.0;
-    final remainingWall = Duration(
-      milliseconds: (remainingMedia.inMilliseconds / speed).round(),
+    return formatPlaybackTimeSlot(
+      context,
+      slot: slot,
+      position: position,
+      duration: duration,
+      use24Hour: use24Hour,
+      playbackSpeed: _state.playbackSpeed,
     );
-    if (remainingWall <= Duration.zero) return '';
-    final end = DateTime.now().add(remainingWall);
-    final time = formatClockTime(
-      end,
-      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+  }
+
+  Widget _buildTimeSlotRow({
+    required String left,
+    required String center,
+    required String right,
+    bool bold = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+      child: PlaybackTimeRow(
+        left: left,
+        center: center,
+        right: right,
+        bold: bold,
+      ),
     );
-    return AppLocalizations.of(context).endsAt(time);
   }
 
   String? _logoUrlForQueueItem(dynamic item) {
@@ -4260,6 +4264,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget _buildSeekbar() {
+    // The slot layout only changes from the settings screen, so resolve it
+    // here instead of on every position tick inside the stream builders.
+    final aboveLeftSlot = _prefs.get(UserPreferences.playbackTimeAboveLeft);
+    final aboveCenterSlot = _prefs.get(UserPreferences.playbackTimeAboveCenter);
+    final aboveRightSlot = _prefs.get(UserPreferences.playbackTimeAboveRight);
+    final belowLeftSlot = _prefs.get(UserPreferences.playbackTimeBelowLeft);
+    final belowCenterSlot = _prefs.get(UserPreferences.playbackTimeBelowCenter);
+    final belowRightSlot = _prefs.get(UserPreferences.playbackTimeBelowRight);
+    final use24Hour = _prefs.get(UserPreferences.use24HourClock);
     return StreamBuilder<Duration>(
       stream: _state.positionStream,
       initialData: _state.position,
@@ -4288,10 +4301,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     .toDouble();
                 final seekPosition = Duration(milliseconds: positionMs.round());
                 final livePosition = _isSeeking ? seekPosition : position;
-                final endsAt = _endsAtLabel(
+                final aboveLeft = _timeSlotLabel(
+                  aboveLeftSlot,
                   position: livePosition,
                   duration: duration,
+                  use24Hour: use24Hour,
                 );
+                final aboveCenter = _timeSlotLabel(
+                  aboveCenterSlot,
+                  position: livePosition,
+                  duration: duration,
+                  use24Hour: use24Hour,
+                );
+                final aboveRight = _timeSlotLabel(
+                  aboveRightSlot,
+                  position: livePosition,
+                  duration: duration,
+                  use24Hour: use24Hour,
+                );
+                final hasAboveRow =
+                    aboveLeft.isNotEmpty ||
+                    aboveCenter.isNotEmpty ||
+                    aboveRight.isNotEmpty;
                 final trickplayTile = _isSeeking
                     ? _getTrickplayTile(seekPosition)
                     : null;
@@ -4315,22 +4346,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           tileHeight: trickplayTile.tileHeight,
                         ),
                       ),
-                    if (endsAt.isNotEmpty)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            right: AppSpacing.spaceLg,
-                            bottom: AppSpacing.spaceXs,
-                          ),
-                          child: Text(
-                            endsAt,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                    if (hasAboveRow)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: AppSpacing.spaceXs,
+                        ),
+                        child: _buildTimeSlotRow(
+                          left: aboveLeft,
+                          center: aboveCenter,
+                          right: aboveRight,
+                          bold: true,
                         ),
                       ),
                     Focus(
@@ -4430,32 +4455,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.spaceLg,
+                    _buildTimeSlotRow(
+                      left: _timeSlotLabel(
+                        belowLeftSlot,
+                        position: livePosition,
+                        duration: duration,
+                        use24Hour: use24Hour,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _formatDuration(
-                              _isSeeking
-                                  ? Duration(milliseconds: _seekValue.round())
-                                  : position,
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                            ),
-                          ),
-                          Text(
-                            _formatDuration(duration),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: AppTypography.fontSizeXs,
-                            ),
-                          ),
-                        ],
+                      center: _timeSlotLabel(
+                        belowCenterSlot,
+                        position: livePosition,
+                        duration: duration,
+                        use24Hour: use24Hour,
+                      ),
+                      right: _timeSlotLabel(
+                        belowRightSlot,
+                        position: livePosition,
+                        duration: duration,
+                        use24Hour: use24Hour,
                       ),
                     ),
                   ],
@@ -4511,7 +4528,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ),
         const SizedBox(height: AppSpacing.spaceXs),
         Text(
-          _formatDuration(position),
+          formatPlaybackDuration(position),
           style: const TextStyle(
             color: Colors.white,
             fontSize: AppTypography.fontSizeXs,
@@ -6184,23 +6201,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       if (!mounted) return;
 
+      final delayLimits = _delayLimits(audio: audio);
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        // Delay controls are only wired for the MPV/MediaKit backend.
-        // ExoPlayer (Media3) backend does not play/sync nicely with offsets,
-        // so the footer is hidden on other backends to avoid a confusing unresponsive control.
-        footer: _activeMediaKitBackend != null
-            ? _DelayFooter(
+        footer: delayLimits == null
+            ? null
+            : _DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
+                minDelay: delayLimits.$1,
+                maxDelay: delayLimits.$2,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
-              )
-            : null,
+              ),
       );
       _suppressBackNavigation();
       if (result == null || !mounted) return;
@@ -6359,7 +6376,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       final ticks = ch['StartPositionTicks'] as int? ?? 0;
       return TrackOption(
         label: name,
-        subtitle: _formatDuration(Duration(microseconds: ticks ~/ 10)),
+        subtitle: formatPlaybackDuration(Duration(microseconds: ticks ~/ 10)),
       );
     });
     unawaited(() async {
@@ -6537,7 +6554,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final playbackSubtitle = _remotePlaybackState != null
         ? '${_remotePlaybackState![0].toUpperCase()}${_remotePlaybackState!.substring(1)}'
-              ' · ${_formatDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}'
+              ' · ${formatPlaybackDuration(Duration(microseconds: _remotePositionTicks ~/ 10))}'
         : null;
 
     unawaited(() async {
@@ -6699,6 +6716,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       };
       _showThrottledCastError(l10n.castActionFailed(label, '$e'));
     }
+  }
+
+  /// The range the active backend honors, or null when it cant offset this
+  /// track at all. Either bound being null means it takes anything.
+  ///
+  /// Media3 clamps audio to two seconds either way, and it can only hold a cue
+  /// back once ExoPlayer surfaces it, never show one early, so its subtitle
+  /// offset starts at zero. Aether has its own subtitle overlay to shift but no
+  /// say over AVFoundation audio timing.
+  (double?, double?)? _delayLimits({required bool audio}) {
+    final backend = _activeBackend;
+    if (backend is MediaKitPlayerBackend) return (null, null);
+    if (backend is Media3PlayerBackend) {
+      return audio ? (-2.0, 2.0) : (0.0, 5.0);
+    }
+    if (backend is AetherBackend) return audio ? null : (null, null);
+    return null;
   }
 
   void _applyDelay({required bool audio, required double delay}) {
@@ -7096,12 +7130,16 @@ class _CastPersonTileState extends State<_CastPersonTile> {
 class _DelayFooter extends StatefulWidget {
   final double initialDelay;
   final String label;
+  final double? minDelay;
+  final double? maxDelay;
   final void Function(double delay) onDelayChanged;
   final String Function(double seconds) formatDelay;
 
   const _DelayFooter({
     required this.initialDelay,
     required this.label,
+    this.minDelay,
+    this.maxDelay,
     required this.onDelayChanged,
     required this.formatDelay,
   });
@@ -7120,8 +7158,14 @@ class _DelayFooterState extends State<_DelayFooter> {
   }
 
   void _adjust(double delta) {
-    setState(() => _delay = ((_delay + delta) * 10).roundToDouble() / 10);
-    widget.onDelayChanged(_delay);
+    var next = ((_delay + delta) * 10).roundToDouble() / 10;
+    final min = widget.minDelay;
+    final max = widget.maxDelay;
+    if (min != null && next < min) next = min;
+    if (max != null && next > max) next = max;
+    if (next == _delay) return;
+    setState(() => _delay = next);
+    widget.onDelayChanged(next);
   }
 
   @override

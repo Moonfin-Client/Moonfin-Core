@@ -12,12 +12,10 @@ import 'package:flutter_tvos/flutter_tvos.dart'
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'auth/repositories/session_repository.dart';
 import 'data/models/aggregated_item.dart';
-import 'data/services/app_update_service.dart';
 import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/download_service.dart';
@@ -36,12 +34,12 @@ import 'ui/navigation/deep_link_navigator.dart';
 import 'ui/navigation/home_refresh_bus.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
+import 'ui/widgets/app_update_banner.dart';
 import 'ui/widgets/cast_mini_player.dart';
 import 'ui/widgets/offline_banner.dart';
 import 'ui/widgets/exit_confirmation_dialog.dart';
 import 'ui/screensaver/screensaver_controller.dart';
 import 'ui/screensaver/screensaver_host.dart';
-import 'util/app_distribution.dart';
 import 'util/app_exit.dart';
 import 'util/focus/dpad_keys.dart';
 import 'util/focus/siri_remote_glide.dart';
@@ -248,7 +246,13 @@ class _MoonfinAppState extends State<MoonfinApp> {
                                   ),
                                   const Align(
                                     alignment: Alignment.topCenter,
-                                    child: OfflineBanner(),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        OfflineBanner(),
+                                        AppUpdateBanner(),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -371,7 +375,10 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   final FocusNode _focusNode = FocusNode(debugLabel: 'GlobalShortcutScope');
   final ScreensaverController _screensaverController =
       GetIt.instance<ScreensaverController>();
-  final bool _trackMouseThumbHistory = PlatformDetection.isDesktop || kIsWeb;
+  // Not on web. The browser maps the thumb buttons to its own history, which
+  // pops the router too, so handling them here as well moves back twice for a
+  // single click.
+  final bool _trackMouseThumbHistory = PlatformDetection.isDesktop;
   final List<String> _routeHistory = [];
   late final KeyEventCallback _hardwareKeyHandler;
   Timer? _geometrySaveTimer;
@@ -894,7 +901,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     with WidgetsBindingObserver {
   bool? _wasOnline;
   bool? _wasServerReachable;
-  bool _didScheduleUpdateCheck = false;
   StreamSubscription<SyncPlayUiEvent>? _syncPlayEventsSub;
   StreamSubscription<String>? _downloadErrorSub;
 
@@ -902,7 +908,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _scheduleDesktopUpdateCheck();
     ref.read(syncPlayRuntimeCoordinatorProvider);
     final manager = ref.read(syncPlayManagerProvider);
     _syncPlayEventsSub = manager.uiEvents.listen(_handleSyncPlayEvent);
@@ -964,20 +969,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     if (!PlatformDetection.isMobile) return null;
     if (!GetIt.instance.isRegistered<SessionRepository>()) return null;
     return GetIt.instance<SessionRepository>();
-  }
-
-  void _scheduleDesktopUpdateCheck() {
-    if (!AppDistribution.supportsInAppUpdates || _didScheduleUpdateCheck) {
-      return;
-    }
-
-    _didScheduleUpdateCheck = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      unawaited(_runDesktopUpdateCheck());
-    });
   }
 
   void _handleSyncPlayEvent(SyncPlayUiEvent event) {
@@ -1044,37 +1035,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       barrierDismissible: false,
       builder: (ctx) => _AdminMessageDialog(message: message),
     );
-  }
-
-  Future<void> _runDesktopUpdateCheck() async {
-    try {
-      final update = await GetIt.instance<AppUpdateService>()
-          .checkForUpdateIfDue();
-      if (!mounted || update == null) {
-        return;
-      }
-
-      final messenger = ScaffoldMessenger.of(context);
-      messenger.clearSnackBars();
-      final l10n = AppLocalizations.of(context);
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.updateAvailableVersion(update.version)),
-          duration: const Duration(seconds: 7),
-          action: SnackBarAction(
-            label: l10n.download,
-            onPressed: () {
-              unawaited(
-                launchUrl(
-                  update.downloadUri,
-                  mode: LaunchMode.externalApplication,
-                ),
-              );
-            },
-          ),
-        ),
-      );
-    } catch (_) {}
   }
 
   /// Fires whenever server reachability flips (either way) so home swaps

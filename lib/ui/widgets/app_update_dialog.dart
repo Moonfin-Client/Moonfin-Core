@@ -26,6 +26,7 @@ Future<void> checkAndShowUpdateResult(BuildContext context) async {
     DesktopUpdateCheckStatus.upToDate => l10n.youAreUpToDate,
     DesktopUpdateCheckStatus.checkFailed => l10n.couldNotCheckForUpdates,
     DesktopUpdateCheckStatus.unsupportedPlatform => l10n.updateChecksNotSupported,
+    DesktopUpdateCheckStatus.managedByStore => l10n.updateChecksNotSupported,
     DesktopUpdateCheckStatus.disabledByPreference => l10n.updateNotificationsDisabled,
     DesktopUpdateCheckStatus.rateLimited => l10n.pleaseWaitBeforeChecking,
     DesktopUpdateCheckStatus.alreadyNotified => l10n.latestUpdateAlreadyShown,

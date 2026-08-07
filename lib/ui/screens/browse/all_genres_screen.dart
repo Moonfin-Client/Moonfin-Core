@@ -21,6 +21,7 @@ import '../../widgets/genre_grid_card.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
+import '../../widgets/quick_return_wrapper.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -46,6 +47,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   final _client = GetIt.instance<MediaServerClient>();
   final _backgroundService = GetIt.instance<BackgroundService>();
   final _prefs = GetIt.instance<UserPreferences>();
+  final _scrollController = ScrollController();
   StreamSubscription<String?>? _backgroundSub;
   String? _backdropUrl;
   bool _disposed = false;
@@ -77,6 +79,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     _disposed = true;
     _backgroundSub?.cancel();
     _prefs.removeListener(_onChanged);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -309,7 +312,12 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+      RequestInitialFocus(
+        child: QuickReturnWrapper(
+          scrollController: _scrollController,
+          child: _buildContent(context),
+        ),
+      );
 
   Widget _buildContent(BuildContext context) {
     final isMobile = _isCompact(context);
@@ -414,6 +422,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                 .clamp(minColumns, maxColumns);
 
         return GridView.builder(
+          controller: _scrollController,
           padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 32),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,

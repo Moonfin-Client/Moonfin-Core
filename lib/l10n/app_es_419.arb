@@ -7300,10 +7300,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sin pérdida)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecMp3": "MP3\n(Sólo Stereo)",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"

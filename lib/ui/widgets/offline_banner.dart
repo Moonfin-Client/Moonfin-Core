@@ -10,6 +10,7 @@ import '../../util/platform_detection.dart';
 import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
 import '../screens/downloads/downloads_panel.dart';
+import 'status_banner_pill.dart';
 
 /// Floating glass pill shown while the device is offline or the server is
 /// unreachable. Auto-dismisses after a few seconds and comes back whenever
@@ -26,16 +27,11 @@ class _OfflineBannerState extends ConsumerState<OfflineBanner>
     with SingleTickerProviderStateMixin {
   static const _autoDismissDuration = Duration(seconds: 7);
 
-  late final AnimationController _entrance = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
-    reverseDuration: const Duration(milliseconds: 180),
-  );
-  late final CurvedAnimation _entranceCurve = CurvedAnimation(
-    parent: _entrance,
-    curve: Curves.easeOutCubic,
-    reverseCurve: Curves.easeInCubic,
-  );
+  // Built in initState, not as field initializers: a banner that never becomes
+  // visible would otherwise run them from dispose, and creating a ticker on a
+  // deactivated element throws.
+  late final AnimationController _entrance;
+  late final CurvedAnimation _entranceCurve;
 
   bool _dismissed = false;
   bool _lastIsOnline = true;
@@ -44,6 +40,21 @@ class _OfflineBannerState extends ConsumerState<OfflineBanner>
 
   /// Bumped on every visibility reset so the TV countdown bar restarts.
   int _epoch = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _entrance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+      reverseDuration: const Duration(milliseconds: 180),
+    );
+    _entranceCurve = CurvedAnimation(
+      parent: _entrance,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+  }
 
   @override
   void dispose() {
@@ -92,100 +103,56 @@ class _OfflineBannerState extends ConsumerState<OfflineBanner>
         : AppColorScheme.statusPending;
     final onSurface = AppColorScheme.onSurface;
 
-    final pill = GlassSurface(
-      cornerRadius: 16,
-      reinforced: true,
-      fallbackColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.95),
-      padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: tint.withValues(alpha: 0.16),
-              borderRadius: AppRadius.circular(10),
-            ),
-            child: Icon(
-              isServerUnavailable
-                  ? Icons.cloud_off_rounded
-                  : Icons.wifi_off_rounded,
-              size: 18,
-              color: tint,
-            ),
+    final pill = StatusBannerPill(
+      icon: isServerUnavailable
+          ? Icons.cloud_off_rounded
+          : Icons.wifi_off_rounded,
+      tint: tint,
+      title: isServerUnavailable
+          ? l10n.serverUnreachableBannerTitle
+          : l10n.offlineBannerTitle,
+      // TV can't download, so the downloads subtitle only shows on
+      // platforms that can.
+      subtitle: isTv
+          ? null
+          : isServerUnavailable
+          ? l10n.serverUnreachableBannerSubtitle
+          : l10n.offlineBannerSubtitle,
+      trailing: [
+        if (isTv)
+          BannerCountdownBar(
+            key: ValueKey(_epoch),
+            duration: _autoDismissDuration,
+            color: tint,
+          )
+        else ...[
+          BannerActionCapsule(
+            label: isServerUnavailable
+                ? l10n.offlineSwitchServer
+                : l10n.offlineBannerAction,
+            tint: tint,
+            onTap: () {
+              if (isServerUnavailable) {
+                appRouter.go(Destinations.serverSelect);
+              } else {
+                showDownloadsDialog(context);
+              }
+            },
           ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isServerUnavailable
-                      ? l10n.serverUnreachableBannerTitle
-                      : l10n.offlineBannerTitle,
-                  style: TextStyle(
-                    color: onSurface,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                // TV can't download, so the downloads subtitle only shows on
-                // platforms that can.
-                if (!isTv)
-                  Text(
-                    isServerUnavailable
-                        ? l10n.serverUnreachableBannerSubtitle
-                        : l10n.offlineBannerSubtitle,
-                    style: TextStyle(
-                      color: onSurface.withValues(alpha: 0.6),
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-              ],
+          const SizedBox(width: 2),
+          IconButton(
+            onPressed: _dismiss,
+            icon: Icon(
+              Icons.close_rounded,
+              size: 16,
+              color: onSurface.withValues(alpha: 0.45),
             ),
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
-          const SizedBox(width: 12),
-          if (isTv)
-            _CountdownBar(
-              key: ValueKey(_epoch),
-              duration: _autoDismissDuration,
-              color: tint,
-            )
-          else ...[
-            _ActionCapsule(
-              label: isServerUnavailable
-                  ? l10n.offlineSwitchServer
-                  : l10n.offlineBannerAction,
-              tint: tint,
-              onTap: () {
-                if (isServerUnavailable) {
-                  appRouter.go(Destinations.serverSelect);
-                } else {
-                  showDownloadsDialog(context);
-                }
-              },
-            ),
-            const SizedBox(width: 2),
-            IconButton(
-              onPressed: _dismiss,
-              icon: Icon(
-                Icons.close_rounded,
-                size: 16,
-                color: onSurface.withValues(alpha: 0.45),
-              ),
-              visualDensity: VisualDensity.compact,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            ),
-          ],
         ],
-      ),
+      ],
     );
 
     Widget banner = SafeArea(
@@ -220,72 +187,6 @@ class _OfflineBannerState extends ConsumerState<OfflineBanner>
         end: Offset.zero,
       ).animate(_entranceCurve),
       child: FadeTransition(opacity: _entranceCurve, child: banner),
-    );
-  }
-}
-
-class _ActionCapsule extends StatelessWidget {
-  final String label;
-  final Color tint;
-  final VoidCallback onTap;
-
-  const _ActionCapsule({
-    required this.label,
-    required this.tint,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: tint.withValues(alpha: 0.14),
-      borderRadius: AppRadius.circular(999),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: AppRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: tint,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Thin bar that drains while the auto-dismiss timer counts down.
-class _CountdownBar extends StatelessWidget {
-  final Duration duration;
-  final Color color;
-
-  const _CountdownBar({super.key, required this.duration, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 56,
-      height: 3,
-      child: ClipRRect(
-        borderRadius: AppRadius.circular(2),
-        child: ColoredBox(
-          color: AppColorScheme.onSurface.withValues(alpha: 0.14),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 1, end: 0),
-            duration: duration,
-            builder: (context, value, _) => FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: value,
-              child: ColoredBox(color: color.withValues(alpha: 0.7)),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

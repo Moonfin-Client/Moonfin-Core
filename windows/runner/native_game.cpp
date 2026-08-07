@@ -4,6 +4,7 @@
 #include <flutter/standard_method_codec.h>
 
 #include <chrono>
+#include <cstdio>
 #include <string>
 #include <thread>
 #include <vector>
@@ -170,6 +171,8 @@ flutter::EncodableValue NativeGame::Load(const flutter::EncodableMap& args) {
   cb.frame_ready = &NativeGame::OnFrameReady;
   cb.poll_input = &NativeGame::OnPollInput;
   cb.controller_count = &NativeGame::OnControllerCount;
+  cb.message = &NativeGame::OnCoreMessage;
+  cb.core_shutdown = &NativeGame::OnCoreShutdown;
 
   host_ = lh_create(LH_FORMAT_RGBA8888, cb);
   lh_av_info info = {};
@@ -274,4 +277,16 @@ uint16_t NativeGame::OnPollInput(void* user, int port) {
 int NativeGame::OnControllerCount(void* user) {
   (void)user;
   return 1;
+}
+
+// Nothing listens on the desktop event channel, so a core that complains or
+// quits says so in the log instead.
+void NativeGame::OnCoreMessage(void* user, const char* text) {
+  (void)user;
+  std::fprintf(stderr, "libretro core: %s\n", text);
+}
+
+void NativeGame::OnCoreShutdown(void* user) {
+  (void)user;
+  std::fprintf(stderr, "libretro core asked to quit, emulation stopped\n");
 }

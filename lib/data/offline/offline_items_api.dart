@@ -612,6 +612,8 @@ class OfflineItemsApi implements ItemsApi {
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
+    // The downloaded catalog is flat, so there is nothing to recurse into.
+    bool recursive = false,
   }) async {
     var scope = _scope(parentId, includeItemTypes: includeItemTypes);
     if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
@@ -814,7 +816,11 @@ class OfflineItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getPlaylistItems(String playlistId) async =>
+  Future<Map<String, dynamic>> getPlaylistItems(
+    String playlistId, {
+    int? startIndex,
+    int? limit,
+  }) async =>
       _envelope(const []);
 
   @override

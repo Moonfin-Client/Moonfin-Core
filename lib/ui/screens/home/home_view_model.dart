@@ -9,13 +9,16 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/multi_server_repository.dart';
 import '../../../data/repositories/user_views_repository.dart';
+import '../../../data/utils/latest_media_row_normalizer.dart';
 import '../../../data/services/connectivity_service.dart';
 import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/services/topshelf_service.dart';
+import '../../../data/services/tv_channels_service.dart';
 import '../../../data/services/watch_next_service.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -33,6 +36,9 @@ import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
+  /// Cards in a merged row, matching what a single library row shows.
+  static const _mergedRowItemLimit = 15;
+
   final RowDataSource _dataSource;
   final UserPreferences _prefs;
   final MediaServerClient _client;
@@ -45,6 +51,7 @@ class HomeViewModel extends ChangeNotifier {
 
   final TopShelfService _topShelf = TopShelfService();
   final WatchNextService _watchNext = WatchNextService();
+  final TvChannelsService _tvChannels = TvChannelsService();
 
   List<HomeRow> _rows = [];
   List<HomeRow> get rows => _rows;
@@ -554,6 +561,7 @@ class HomeViewModel extends ChangeNotifier {
       unawaited(_cacheStore.write(_homeCacheKey(), _rows));
       _topShelf.update(_rows);
       _watchNext.update(_rows);
+      _tvChannels.update();
 
       if (showMergedResume) {
         unawaited(_loadResumeAndNextUpInBackground());
@@ -801,6 +809,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     _topShelf.update(_rows);
     _watchNext.update(_rows);
+    _tvChannels.update();
   }
 
   /// Refetches the row with [rowId] and replaces it in place, or removes it when
@@ -1409,47 +1418,39 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<HomeRow>> _loadLatestMediaRows() async {
-    final viewsFuture = GetIt.instance<UserViewsRepository>()
-        .getAllViewsIncludingHidden();
-    final configFuture = _client.usersApi
-        .getUserConfiguration()
-        .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
-        .catchError((_) => const <String>{});
-
-    final views = await viewsFuture;
-    final Set<String> latestExcludes = await configFuture;
-
-    final filteredViews = views.where((lib) {
-      final collectionType = lib.collectionType.toLowerCase();
-      if (collectionType == 'playlists' ||
-          collectionType == 'boxsets' ||
-          collectionType == 'livetv') {
-        return false;
-      }
-      return !latestExcludes.contains(lib.id);
-    }).toList();
-
-    final tasks = filteredViews.map((lib) async {
-      try {
-        final row = await _dataSource.loadLatestMedia(
-          lib.id,
-          lib.name,
-          _serverId,
-          lib.collectionType.toLowerCase(),
-        );
-        return row.items.isNotEmpty ? row : null;
-      } catch (_) {
-        return null;
-      }
-    }).toList();
-
-    final resolved = await Future.wait(tasks);
-    final rows = resolved.whereType<HomeRow>().toList();
-    return rows;
+  Future<List<HomeRow>> _loadLatestMediaRows() {
+    return _loadRecentRows(
+      load: (lib, type) =>
+          _dataSource.loadLatestMedia(lib.id, lib.name, _serverId, type),
+      sortKey: (item) => _parseDate(item.rawData['DateCreated']),
+      idPrefix: 'latest',
+      rowType: HomeRowType.latestMedia,
+      mergedTitle: (l10n, descriptor) => l10n.latestLibraryName(descriptor),
+    );
   }
 
-  Future<List<HomeRow>> _loadRecentlyReleasedRow() async {
+  Future<List<HomeRow>> _loadRecentlyReleasedRow() {
+    return _loadRecentRows(
+      load: (lib, type) =>
+          _dataSource.loadRecentlyReleased(lib.id, lib.name, _serverId, type),
+      sortKey: _premiereDateOf,
+      idPrefix: 'recently_released',
+      rowType: HomeRowType.recentlyReleased,
+      mergedTitle: (l10n, descriptor) =>
+          l10n.recentlyReleasedLibraryName(descriptor),
+    );
+  }
+
+  /// One row per library, or one row per media kind when the user has asked for
+  /// libraries of a kind to be merged.
+  Future<List<HomeRow>> _loadRecentRows({
+    required Future<HomeRow> Function(AggregatedLibrary lib, String type) load,
+    required DateTime? Function(AggregatedItem item) sortKey,
+    required String idPrefix,
+    required HomeRowType rowType,
+    required String Function(AppLocalizations l10n, String descriptor)
+        mergedTitle,
+  }) async {
     final viewsFuture = GetIt.instance<UserViewsRepository>()
         .getAllViewsIncludingHidden();
     final configFuture = _client.usersApi
@@ -1470,23 +1471,91 @@ class HomeViewModel extends ChangeNotifier {
       return !latestExcludes.contains(lib.id);
     }).toList();
 
-    final tasks = filteredViews.map((lib) async {
+    Future<HomeRow?> rowFor(AggregatedLibrary lib) async {
       try {
-        final row = await _dataSource.loadRecentlyReleased(
-          lib.id,
-          lib.name,
-          _serverId,
-          lib.collectionType.toLowerCase(),
-        );
-        return row.items.isNotEmpty ? row : null;
+        return await load(lib, lib.collectionType.toLowerCase());
       } catch (_) {
         return null;
       }
-    }).toList();
+    }
 
-    final resolved = await Future.wait(tasks);
-    final rows = resolved.whereType<HomeRow>().toList();
-    return rows;
+    if (!_prefs.get(UserPreferences.mergeRecentRowsByType)) {
+      final resolved = await Future.wait(filteredViews.map(rowFor));
+      return resolved
+          .whereType<HomeRow>()
+          .where((row) => row.items.isNotEmpty)
+          .toList();
+    }
+
+    final grouped = <String, List<AggregatedLibrary>>{};
+    for (final lib in filteredViews) {
+      grouped.putIfAbsent(lib.collectionType.toLowerCase(), () => []).add(lib);
+    }
+
+    final l10n = currentAppLocalizations();
+    final mergedRows = <HomeRow>[];
+    for (final entry in grouped.entries) {
+      final collectionType = entry.key;
+      final loadedRows = (await Future.wait(entry.value.map(rowFor)))
+          .whereType<HomeRow>();
+
+      // The same title can sit in more than one library, so it is kept once.
+      final seenIds = <String>{};
+      final allItems = [
+        for (final row in loadedRows)
+          for (final item in row.items)
+            if (seenIds.add(item.id)) item,
+      ];
+      if (allItems.isEmpty) continue;
+
+      allItems.sort((a, b) {
+        final da = sortKey(a);
+        final db = sortKey(b);
+        if (da != null && db != null) return db.compareTo(da);
+        if (da != null) return -1;
+        if (db != null) return 1;
+        return 0;
+      });
+
+      // Trimmed to the same length a single library row gets, so merging
+      // changes what a row holds rather than how big it is.
+      final items = normalizeLatestMediaItems(
+        allItems,
+        collectionType: collectionType,
+        limit: _mergedRowItemLimit,
+      );
+      if (items.isEmpty) continue;
+
+      mergedRows.add(
+        HomeRow(
+          id: '$mergedTypeRowIdPrefix${idPrefix}_$collectionType',
+          title: mergedTitle(
+            l10n,
+            genericDescriptorForCollectionType(l10n, collectionType),
+          ),
+          items: items,
+          rowType: rowType,
+          // Everything the row will ever hold is already here.
+          totalCount: items.length,
+          isAudio: collectionType == 'music',
+        ),
+      );
+    }
+
+    return mergedRows;
+  }
+
+  static DateTime? _parseDate(dynamic value) =>
+      value is String ? DateTime.tryParse(value) : null;
+
+  /// Release date, falling back to the production year and then to when the
+  /// item was added, so an item missing one still lands somewhere sensible.
+  static DateTime? _premiereDateOf(AggregatedItem item) {
+    final premiere = _parseDate(item.rawData['PremiereDate']);
+    if (premiere != null) return premiere;
+    final year = item.rawData['ProductionYear'];
+    if (year is int) return DateTime(year);
+    return _parseDate(item.rawData['DateCreated']);
   }
 
   HomeRow? _placeholderForSection(HomeSectionType section) {
@@ -1976,6 +2045,7 @@ class HomeViewModel extends ChangeNotifier {
     }
     notifyListeners();
     _watchNext.update(_rows);
+    _tvChannels.update();
   }
 
   static const _seerrEnrichConcurrency = 5;

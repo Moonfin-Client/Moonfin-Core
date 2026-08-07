@@ -209,6 +209,19 @@ class AppLocalizationsSl extends AppLocalizations {
   String get glassQuality => 'Kakovost stekla';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Samodejna izbere najboljši učinek stekla za to napravo. Polna vsili pravo zabrisanost, Zmanjšana uporabi lahko steklo, ki varčuje z močjo GPU.';
 
@@ -496,6 +509,15 @@ class AppLocalizationsSl extends AppLocalizations {
   String get extraLarge => 'Zelo velik';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Žanri';
   }
@@ -588,6 +610,9 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get scrollRight => 'Pomaknite se desno';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
 
   @override
   String get couldNotLoadGenre => 'Te zvrsti trenutno ni bilo mogoče naložiti.';
@@ -2579,20 +2604,6 @@ class AppLocalizationsSl extends AppLocalizations {
       'Bitstream DTS zvok samo v AVR; zahteva podporo za sprejemnik in izvorno sled DTS';
 
   @override
-  String get enableTrueHdAudio =>
-      'Omogoči zvok TrueHD (morda ne deluje na vseh platformah)';
-
-  @override
-  String get settingsAudioOutputMode => 'Način zvočnega izhoda';
-
-  @override
-  String get settingsAudioOutputModeDescription =>
-      'Izberite, kako se zvok dekodira. AVR Passthrough pošilja surove pretoke Dolby/DTS v vaš sprejemnik, Samodejno ali Downmix dekodirata lokalno.';
-
-  @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
-
-  @override
   String get settingsAudioFallbackCodec => 'Nadomestni zvočni kodek';
 
   @override
@@ -2611,9 +2622,6 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
-
-  @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(brez izgub)';
 
   @override
   String get settingsAudioFallbackCodecMp3 => 'MP3\n(samo stereo)';
@@ -2673,35 +2681,48 @@ class AppLocalizationsSl extends AppLocalizations {
   String get settingsAudioEac3Passthrough => 'Passthrough EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'Passthrough EAC3 JOC (Atmos)';
-
-  @override
   String get settingsAudioDtsCorePassthrough => 'Passthrough DTS Core';
 
   @override
   String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
 
   @override
+  String get settingsAudioPassthroughMode => 'Passthrough';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'How compressed surround sound reaches your TV or receiver.';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled =>
+      'Disabled (always decode on this device)';
+
+  @override
+  String get settingsAudioPassthroughModeAuto =>
+      'Auto (match detected device support)';
+
+  @override
+  String get settingsAudioPassthroughModeManual =>
+      'Manual (choose formats below)';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Mix all decoded audio down to two channels.';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos =>
+      'Bitstream E-AC-3, including Dolby Atmos (JOC).';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX =>
+      'Bitstream DTS-HD, including DTS:X.';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos =>
+      'Bitstream TrueHD, including Dolby Atmos.';
+
+  @override
   String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
-
-  @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'Passthrough TrueHD Atmos';
-
-  @override
-  String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Pošlji bitni tok Dolby Digital Plus (EAC3) v zunanji dekodirnik.';
-
-  @override
-  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Pošlji bitni tok Dolby Atmos prek EAC3 (JOC) v zunanji dekodirnik.';
-
-  @override
-  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Pošlji bitni tok DTS-HD MA (vključno z jedrom DTS) v zunanji dekodirnik.';
-
-  @override
-  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Pošlji bitni tok Dolby TrueHD z metapodatki Atmos v zunanji dekodirnik.';
 
   @override
   String get settingsDetectedAudioCapabilities => 'Zaznane zvočne zmožnosti';
@@ -3273,6 +3294,16 @@ class AppLocalizationsSl extends AppLocalizations {
       'Prikaži knjižnice iz vseh povezanih strežnikov';
 
   @override
+  String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Combine separate libraries of the same type for Recently Added and Recently Released home rows.';
+
+  @override
+  String get libraryView => 'Library View';
+
+  @override
   String get enableFolderView => 'Omogoči pogled mape';
 
   @override
@@ -3782,6 +3813,12 @@ class AppLocalizationsSl extends AppLocalizations {
   String get networks => 'Omrežja';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Vrstice za odkrivanje Seerr';
 
   @override
@@ -4048,6 +4085,15 @@ class AppLocalizationsSl extends AppLocalizations {
   String requestedByName(String name) {
     return 'Zahteval $name';
   }
+
+  @override
+  String get manageRequests => 'Manage Requests';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get onWatchlist => 'On Watchlist';
 
   @override
   String get approve => 'odobri';
@@ -9180,6 +9226,13 @@ class AppLocalizationsSl extends AppLocalizations {
       'Vrstice zbirk razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
 
   @override
+  String get collectionsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
+
+  @override
   String get displayGenresRows => 'Prikaži vrstice žanrov';
 
   @override
@@ -9213,6 +9266,13 @@ class AppLocalizationsSl extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Vrstice seznamov predvajanja razvrstite po datumu dodajanja, datumu izida, po abecedi in drugih merilih.';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
 
   @override
   String get displayAudioRows => 'Prikaži zvočne vrstice';
@@ -9284,17 +9344,6 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get notSupportedOnThisDevice => 'Ni podprto na tej napravi';
-
-  @override
-  String get settingsAudioDtsXPassthrough => 'Passthrough DTS:X (DTS UHD)';
-
-  @override
-  String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Pošlji bitni tok DTS:X (DTS UHD) v zunanji dekodirnik.';
-
-  @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'Passthrough TrueHD z Atmos (JOC)';
 
   @override
   String get mediaPlayerBehavior => 'Vedenje predvajalnika';
@@ -10409,4 +10458,70 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => 'Mixed Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose which time labels appear around the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

@@ -25,6 +25,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/game/game_alpha_picker_bar.dart';
 import '../../widgets/game/game_artwork_load_scheduler.dart';
 import '../../widgets/game/game_poster_card.dart';
+import '../../widgets/local_search_field.dart';
 
 /// Browses one retro-game platform using the same vertical grid and alphabet
 /// filtering interaction as Moonfin's regular media libraries.
@@ -576,81 +577,11 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   }
 
   Widget _buildSearchField() {
-    final l10n = AppLocalizations.of(context);
-    final hasFocus = _searchFocus.hasFocus;
-    final fillColor = hasFocus
-        ? AppColorScheme.buttonFocused
-        : AppColorScheme.surface.withValues(alpha: 0.72);
-    final foreground = hasFocus
-        ? AppColorScheme.onButtonFocused
-        : AppColorScheme.onSurface;
-
-    if (PlatformDetection.isTV) {
-      return Focus(
-        focusNode: _searchFocus,
-        onKeyEvent: _onTvSearchKey,
-        child: CustomTVTextField(
-          key: _searchTvFieldKey,
-          controller: _searchController,
-          isFocused: hasFocus,
-          inputPurpose: InputPurpose.search,
-          preferSystemIme: _prefs.get(UserPreferences.preferSystemImeKeyboard),
-          popParentOnKeyboardClose: false,
-          hint: l10n.searchThisLibrary,
-          prefixIcon: Icon(Icons.search, color: foreground),
-          textStyle: TextStyle(color: foreground, fontSize: 17),
-          hintStyle: TextStyle(
-            color: foreground.withValues(alpha: 0.62),
-            fontSize: 17,
-          ),
-          filled: true,
-          fillColor: fillColor,
-          borderRadius: 24,
-          borderColor: Colors.transparent,
-          focusedBorderColor: Colors.transparent,
-          borderWidth: 0,
-          focusedBorderWidth: 0,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 11,
-          ),
-        ),
-      );
-    }
-
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: _searchController,
-      builder: (context, value, _) => TextField(
-        controller: _searchController,
-        focusNode: _searchFocus,
-        style: TextStyle(color: foreground, fontSize: 17),
-        decoration: InputDecoration(
-          hintText: l10n.searchThisLibrary,
-          hintStyle: TextStyle(color: foreground.withValues(alpha: 0.62)),
-          prefixIcon: Icon(Icons.search, color: foreground),
-          suffixIcon: value.text.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: l10n.clear,
-                  onPressed: _searchController.clear,
-                  icon: Icon(Icons.close, color: foreground),
-                ),
-          filled: true,
-          fillColor: fillColor,
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(24)),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(24)),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(24)),
-            borderSide: BorderSide.none,
-          ),
-        ),
-      ),
+    return LocalSearchField(
+      controller: _searchController,
+      focusNode: _searchFocus,
+      tvFieldKey: _searchTvFieldKey,
+      onTvKeyEvent: _onTvSearchKey,
     );
   }
 

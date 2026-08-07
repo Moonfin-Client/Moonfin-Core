@@ -108,6 +108,12 @@ abstract class PlayerBackend {
 
   bool get supportsRuntimeTrackSelection;
 
+  /// Whether a direct-played source can switch audio tracks in place through
+  /// [setAudioTrack]. When true the manager skips the PlaybackInfo round trip
+  /// and player rebuild that a re-resolve costs, since every embedded track is
+  /// already in the stream.
+  bool get supportsDirectPlayAudioSwitch => false;
+
   int? get activeSubtitleTrackIndex => null;
 
   Future<int?> getActiveSubtitleTrackIndexAsync() async => null;

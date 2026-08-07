@@ -27,6 +27,13 @@ abs_files = Dir.glob(File.join(project_dir, 'Runner/Playback/**/*'))
 shared_dir = File.expand_path(
   File.join(project_dir, '..', 'tvos', 'Runner', 'Playback', 'Aether'))
 abs_files += Dir.glob(File.join(shared_dir, '*.swift')).sort
+# The preview and theme music channels live beside the tvOS runner and serve
+# every Apple platform, so macOS plays trailers and theme music through
+# AVFoundation rather than a second media stack.
+shared_channels = File.expand_path(File.join(project_dir, '..', 'tvos', 'Runner'))
+abs_files += %w[AppleTvPreviewChannel.swift AppleTvThemeMusicChannel.swift]
+  .map { |name| File.join(shared_channels, name) }
+  .select { |path| File.exist?(path) }
 basenames = abs_files.map { |f| File.basename(f) }
 
 # Drop references this script is about to re-add, and any left pointing at a
@@ -52,8 +59,11 @@ abs_files.each do |abs|
 end
 
 # --- AetherEngine ---
-aether_remote_url = 'https://github.com/superuser404notfound/AetherEngine'
-aether_version = '6.0.2'
+# The trust hook the engine needs for a self signed origin lives on the
+# fork and has no upstream release yet, so this pins a revision rather than
+# a version. Move it back to an upstream tag once the hook lands there.
+aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
+aether_revision = '2e388e39ac4eecd7c3ad033b003f0172903ea5d3'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 
@@ -62,7 +72,8 @@ if use_local_aether && !File.directory?(aether_local_path)
 end
 
 project.root_object.package_references.dup.each do |p|
-  is_remote_aether = p.respond_to?(:repositoryURL) && p.repositoryURL == aether_remote_url
+  is_remote_aether = p.respond_to?(:repositoryURL) &&
+                     File.basename(p.repositoryURL.to_s.chomp('/'), '.git') == 'AetherEngine'
   is_local_aether = p.is_a?(Xcodeproj::Project::Object::XCLocalSwiftPackageReference) &&
                     File.basename(p.relative_path.to_s) == 'AetherEngine'
   next unless (is_remote_aether && use_local_aether) || (is_local_aether && !use_local_aether)
@@ -77,8 +88,12 @@ project.root_object.package_references.dup.each do |p|
   puts 'removed stale AetherEngine package reference'
 end
 
+# Match on the repository name rather than the whole url. A url that does not
+# match adds a second reference for the same product, and the project then
+# fails to resolve.
 aether_pkg = project.root_object.package_references.find do |p|
-  (p.respond_to?(:repositoryURL) && p.repositoryURL == aether_remote_url) ||
+  (p.respond_to?(:repositoryURL) &&
+   File.basename(p.repositoryURL.to_s.chomp('/'), '.git') == 'AetherEngine') ||
     (p.is_a?(Xcodeproj::Project::Object::XCLocalSwiftPackageReference) &&
      File.basename(p.relative_path.to_s) == 'AetherEngine')
 end
@@ -90,8 +105,8 @@ unless aether_pkg
   else
     aether_pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
     aether_pkg.repositoryURL = aether_remote_url
-    aether_pkg.requirement = { 'kind' => 'exactVersion', 'version' => aether_version }
-    puts "added AetherEngine remote package reference (#{aether_version})"
+    aether_pkg.requirement = { 'kind' => 'revision', 'revision' => aether_revision }
+    puts "added AetherEngine remote package reference (#{aether_revision})"
   end
   project.root_object.package_references << aether_pkg
 end

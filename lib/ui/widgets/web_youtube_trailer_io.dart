@@ -443,7 +443,12 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
     _embeddedUnavailableReported = true;
     _autoplayTimer?.cancel();
-    widget.onEmbeddedUnavailable?.call();
+    // This can be decided while the widget is still being built, and the
+    // listener rebuilds its parent, so hand it back after the frame rather
+    // than during one.
+    final report = widget.onEmbeddedUnavailable;
+    if (report == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) => report());
   }
 
   String get _playerHtml {

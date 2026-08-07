@@ -1,6 +1,9 @@
 import AVFoundation
-import Flutter
-import UIKit
+#if canImport(Flutter)
+    import Flutter
+#elseif canImport(FlutterMacOS)
+    import FlutterMacOS
+#endif
 
 @MainActor
 protocol PreviewBackend: AnyObject {
@@ -119,7 +122,11 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
     private var player: AVPlayer?
     private var item: AVPlayerItem?
     nonisolated(unsafe) private var output: AVPlayerItemVideoOutput?
-    private var displayLink: CADisplayLink?
+    #if os(macOS)
+        private var frameTimer: Timer?
+    #else
+        private var displayLink: CADisplayLink?
+    #endif
     private var statusObservation: NSKeyValueObservation?
     private var endObserver: NSObjectProtocol?
     private var openCompletion: ((Bool) -> Void)?
@@ -197,9 +204,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
             }
         }
 
-        let link = CADisplayLink(target: self, selector: #selector(onFrame))
-        link.add(to: .main, forMode: .common)
-        displayLink = link
+        startFramePump()
     }
 
     private func finishOpen(success: Bool) {
@@ -208,9 +213,44 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         completion(success)
     }
 
+    /// Polls the output for a new frame at display rate. macOS has no
+    /// CADisplayLink initializer that takes a target, so it runs a main runloop
+    /// timer at the same interval.
+    private func startFramePump() {
+        #if os(macOS)
+            let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                Task { @MainActor in self?.onFrame() }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            frameTimer = timer
+        #else
+            let link = CADisplayLink(target: self, selector: #selector(onFrame))
+            link.add(to: .main, forMode: .common)
+            displayLink = link
+        #endif
+    }
+
+    private func stopFramePump() {
+        #if os(macOS)
+            frameTimer?.invalidate()
+            frameTimer = nil
+        #else
+            displayLink?.invalidate()
+            displayLink = nil
+        #endif
+    }
+
     @objc private func onFrame() {
-        guard let output, let item else { return }
-        let time = item.currentTime()
+        guard let output else { return }
+        #if os(macOS)
+            // Ask on the same clock copyPixelBuffer fetches on. A display link
+            // keeps the item clock close to host time, but a plain timer does
+            // not, and the mismatch means a frame is never reported ready.
+            let time = output.itemTime(forHostTime: CACurrentMediaTime())
+        #else
+            guard let item else { return }
+            let time = item.currentTime()
+        #endif
         if output.hasNewPixelBuffer(forItemTime: time) {
             textures.textureFrameAvailable(textureId)
         }
@@ -247,8 +287,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
 
     func teardown() {
         finishOpen(success: false)
-        displayLink?.invalidate()
-        displayLink = nil
+        stopFramePump()
         statusObservation?.invalidate()
         statusObservation = nil
         if let endObserver {

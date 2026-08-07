@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../data/services/log_service.dart';
+import '../util/platform_detection.dart';
 import 'audio_capability_profile.dart';
 
 class PlaybackProfileDiagnostics {
@@ -58,6 +59,17 @@ class PlaybackProfileDiagnostics {
       'videoProfile': _streamString(videoStream, 'Profile'),
       'videoLevel': _streamLevel(videoStream),
       'videoRange': _streamVideoRange(videoStream, resolution),
+      // A "VideoRangeTypeNotSupported" transcode reason must trace back to one
+      // of these values.
+      'videoRangeCapabilities': <String, dynamic>{
+        'hdr10': PlatformDetection.supportsHevcHdr10,
+        'hdr10Plus': PlatformDetection.supportsHevcHdr10Plus,
+        'dolbyVision': PlatformDetection.supportsHevcDolbyVision,
+        'dolbyVisionEl': PlatformDetection.supportsHevcDolbyVisionEl,
+        'dvProfile5': PlatformDetection.supportsDoViProfile5,
+        'dvProfile7': PlatformDetection.supportsDoViProfile7,
+        'dvProfile8': PlatformDetection.supportsDoViProfile8,
+      },
       'audioCodec': _streamCodec(audioStream),
       'audioProfile': _streamString(audioStream, 'Profile'),
       'audioChannels': _streamChannels(audioStream),

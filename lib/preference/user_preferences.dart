@@ -6,6 +6,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../data/models/aggregated_item.dart';
+import '../data/models/series_track_preference.dart';
 import '../playback/audio_capability_profile.dart';
 import '../util/idiom/app_ui_idiom.dart';
 import '../util/insecure_certificates.dart';
@@ -58,7 +59,9 @@ class UserPreferences extends ChangeNotifier {
   void _migrateSeerrPreferenceKeys() {
     const legacyBlockNsfw = 'jellyseerrBlockNsfw';
     if (_store.containsKey(legacyBlockNsfw)) {
-      final value = _store.get(Preference(key: legacyBlockNsfw, defaultValue: false));
+      final value = _store.get(
+        Preference(key: legacyBlockNsfw, defaultValue: false),
+      );
       _setIfMissing(seerrBlockNsfw, value);
     }
   }
@@ -76,10 +79,9 @@ class UserPreferences extends ChangeNotifier {
     if (!wasVisible) {
       for (final key in _store.keys.toList()) {
         if (!key.startsWith('seerr_rows_config_')) continue;
-        final disabled =
-            SeerrRowConfig.fromJsonString(_store.getString(key) ?? '')
-                .map((c) => c.copyWith(enabled: false))
-                .toList();
+        final disabled = SeerrRowConfig.fromJsonString(
+          _store.getString(key) ?? '',
+        ).map((c) => c.copyWith(enabled: false)).toList();
         _store.setString(key, SeerrRowConfig.toJsonString(disabled));
       }
     }
@@ -154,7 +156,9 @@ class UserPreferences extends ChangeNotifier {
         continue;
       }
       final stored = _store.getString(key);
-      if (stored == null || mediaBarContentTypeValues.contains(stored)) continue;
+      if (stored == null || mediaBarContentTypeValues.contains(stored)) {
+        continue;
+      }
       _store.setString(key, normalizeMediaBarContentType(stored));
     }
   }
@@ -193,20 +197,22 @@ class UserPreferences extends ChangeNotifier {
   /// - SubtitleMode: if the local pref has never been explicitly stored (empty
   ///   default), convert it to the closest Moonfin subtitle mode.
   void initLanguagePrefs(UserConfiguration config) {
-    final sysIso3 = toIso3Language(normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode));
+    final sysIso3 = toIso3Language(
+      normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode),
+    );
 
     // defaultAudioLanguage
     final serverAudio = config.audioLanguagePreference;
     final audioToSet = (serverAudio != null && serverAudio.isNotEmpty)
-      ? serverAudio.toLowerCase()
-      : sysIso3; // fallback to system language
+        ? serverAudio.toLowerCase()
+        : sysIso3; // fallback to system language
     _setIfMissing(defaultAudioLanguage, audioToSet);
 
     // defaultSubtitleLanguage
     final serverSubtitle = config.subtitleLanguagePreference;
     final subToSet = (serverSubtitle != null && serverSubtitle.isNotEmpty)
-      ? serverSubtitle.toLowerCase()
-      : sysIso3; // fallback to system language
+        ? serverSubtitle.toLowerCase()
+        : sysIso3; // fallback to system language
     _setIfMissing(defaultSubtitleLanguage, subToSet);
 
     // subtitleMode
@@ -260,11 +266,18 @@ class UserPreferences extends ChangeNotifier {
     'imdb_top_250_tv_shows_enabled',
     'imdb_top_english_movies_enabled',
     'live_tv_channel_sort_by',
+    'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
     'osdButtonOrderTv',
     'osdLockEnabled',
     'pgs_enabled',
+    'playback_time_above_center',
+    'playback_time_above_left',
+    'playback_time_above_right',
+    'playback_time_below_center',
+    'playback_time_below_left',
+    'playback_time_below_right',
     'player_zoom_mode',
     'pref_audio_rows_sort_by',
     'pref_diagnostic_logging_enabled',
@@ -276,6 +289,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_live_direct',
     'pref_max_bitrate',
     'pref_max_video_resolution',
+    'pref_playlists_row_show_episodes',
     'pref_playlists_row_sort_by',
     'pref_recommendations_apply_parental_rating_cap',
     'pref_resume_last_queue_on_play',
@@ -372,6 +386,7 @@ class UserPreferences extends ChangeNotifier {
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
+    'pref_oled_mode',
     'pref_navbar_position',
     'focus_color',
     'pref_watched_indicator_behavior',
@@ -384,6 +399,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_display_collections_rows',
     'pref_display_genres_rows',
     'pref_favorites_row_sort_by',
+    'pref_collections_row_show_episodes',
     'pref_collections_row_sort_by',
     'pref_genres_row_sort_by',
     'pref_genres_row_item_filter',
@@ -397,6 +413,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_merge_continue_watching_next_up',
     'pref_next_up_max_days',
     'enable_multi_server_libraries',
+    'pref_merge_recent_rows_by_type',
     'enable_folder_view',
     'seasonal_surprise',
     'mediaBarEnabled',
@@ -513,7 +530,8 @@ class UserPreferences extends ChangeNotifier {
       final newMode = value as SubtitleMode;
       if (newMode == SubtitleMode.none) {
         await set(defaultSubtitleLanguage, '');
-      } else if (prevMode == SubtitleMode.none && !containsPreference(defaultSubtitleLanguage, scopedOnly: true)) {
+      } else if (prevMode == SubtitleMode.none &&
+          !containsPreference(defaultSubtitleLanguage, scopedOnly: true)) {
         final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
         final iso3 = toIso3Language(normalizeLanguage(sysLang));
         await set(defaultSubtitleLanguage, iso3);
@@ -584,8 +602,6 @@ class UserPreferences extends ChangeNotifier {
       get(enableEpisodeRatings) &&
       isRatingSourceEnabled('tmdb');
 
-  AudioOutputMode resolveAudioOutputMode() => get(audioOutputMode);
-
   AudioFallbackCodec resolveAudioFallbackCodec() => get(audioFallbackCodec);
 
   int resolveMaxAudioChannels() => get(maxAudioChannels);
@@ -611,25 +627,27 @@ class UserPreferences extends ChangeNotifier {
       PlatformDetection.hasAudioCapabilities
       ? AudioCapabilityProfile.fromMap(
           PlatformDetection.audioCapabilitiesSnapshot,
-          audioOutputMode: resolveAudioOutputMode(),
         )
       : const AudioCapabilityProfile.optimistic();
 
-  // Tri-state passthrough resolution: an explicitly-set toggle wins (On or
-  // Off); when unset, the resolved value follows the detected hardware
-  // capability so passthrough "just works" out of the box without the user
-  // toggling anything. Callers may pass a profile they already built; when
-  // omitted, the live detected profile is used. The DeviceProfileBuilder gate
-  // already ANDs the codec hierarchy (e.g. DTS:X requires DTS core + DTS-HD)
-  // across the resolved values, so each resolver only needs to report its own
-  // capability.
+  // Mode-aware passthrough resolution. Disabled bitstreams nothing, auto
+  // follows the detected hardware capability, and manual follows the stored
+  // toggles. Callers may pass a profile they already built, and when omitted
+  // the live detected profile is used.
   bool _resolvePassthrough(
     Preference<bool> pref,
     bool Function(AudioCapabilityProfile) capabilityOf,
     AudioCapabilityProfile? profile,
-  ) => containsPreference(pref)
-      ? get(pref)
-      : capabilityOf(profile ?? detectedAudioCapabilities);
+  ) {
+    switch (get(audioPassthroughMode)) {
+      case AudioPassthroughMode.disabled:
+        return false;
+      case AudioPassthroughMode.auto:
+        return capabilityOf(profile ?? detectedAudioCapabilities);
+      case AudioPassthroughMode.manual:
+        return get(pref);
+    }
+  }
 
   bool resolveAc3PassthroughEnabled([AudioCapabilityProfile? profile]) =>
       _resolvePassthrough(
@@ -645,13 +663,6 @@ class UserPreferences extends ChangeNotifier {
         profile,
       );
 
-  bool resolveEac3JocPassthroughEnabled([AudioCapabilityProfile? profile]) =>
-      _resolvePassthrough(
-        eac3JocPassthroughEnabled,
-        (p) => p.canPassthroughEac3Joc,
-        profile,
-      );
-
   bool resolveDtsCorePassthroughEnabled([AudioCapabilityProfile? profile]) =>
       _resolvePassthrough(
         dtsCorePassthroughEnabled,
@@ -659,17 +670,13 @@ class UserPreferences extends ChangeNotifier {
         profile,
       );
 
+  /// DTS-HD rides on a DTS core stream, so bitstreaming it also requires the
+  /// core toggle in manual mode (and core capability in auto).
   bool resolveDtsHdPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      resolveDtsCorePassthroughEnabled(profile) &&
       _resolvePassthrough(
         dtsHdPassthroughEnabled,
         (p) => p.canPassthroughDtsHd,
-        profile,
-      );
-
-  bool resolveDtsXPassthroughEnabled([AudioCapabilityProfile? profile]) =>
-      _resolvePassthrough(
-        dtsXPassthroughEnabled,
-        (p) => p.canPassthroughDtsX,
         profile,
       );
 
@@ -680,132 +687,66 @@ class UserPreferences extends ChangeNotifier {
         profile,
       );
 
-  bool resolveTrueHdAtmosPassthroughEnabled([
+  /// The effective passthrough codec set for the current mode, in wire form
+  /// for the native player and the mpv spdif synthesis.
+  Set<PassthroughCodec> resolvedPassthroughCodecs([
     AudioCapabilityProfile? profile,
-  ]) => _resolvePassthrough(
-    trueHdAtmosPassthroughEnabled,
-    (p) => p.canPassthroughTrueHdJoc,
-    profile,
-  );
+  ]) {
+    // Resolved once so the five resolvers below don't each rebuild it.
+    final capabilities = profile ?? detectedAudioCapabilities;
+    return <PassthroughCodec>{
+      if (resolveAc3PassthroughEnabled(capabilities)) PassthroughCodec.ac3,
+      if (resolveEac3PassthroughEnabled(capabilities)) PassthroughCodec.eac3,
+      if (resolveDtsCorePassthroughEnabled(capabilities))
+        PassthroughCodec.dtsCore,
+      if (resolveDtsHdPassthroughEnabled(capabilities)) PassthroughCodec.dtsHd,
+      if (resolveTrueHdPassthroughEnabled(capabilities))
+        PassthroughCodec.trueHd,
+    };
+  }
 
-  /// The toggles the user set by hand, as opposed to the ones still following
-  /// detection. A hand-set toggle is a stated intent, so it still applies when
-  /// the hardware probe comes back empty and there is no detected capability
-  /// left to follow.
-  Set<AudioPassthroughToggle> get explicitPassthroughToggles =>
-      <AudioPassthroughToggle>{
-        if (containsPreference(ac3PassthroughEnabled))
-          AudioPassthroughToggle.ac3,
-        if (containsPreference(eac3PassthroughEnabled))
-          AudioPassthroughToggle.eac3,
-        if (containsPreference(eac3JocPassthroughEnabled))
-          AudioPassthroughToggle.eac3Joc,
-        if (containsPreference(dtsCorePassthroughEnabled))
-          AudioPassthroughToggle.dtsCore,
-        if (containsPreference(dtsHdPassthroughEnabled))
-          AudioPassthroughToggle.dtsHd,
-        if (containsPreference(dtsXPassthroughEnabled))
-          AudioPassthroughToggle.dtsX,
-        if (containsPreference(trueHdPassthroughEnabled))
-          AudioPassthroughToggle.trueHd,
-        if (containsPreference(trueHdAtmosPassthroughEnabled))
-          AudioPassthroughToggle.trueHdAtmos,
-      };
-
-  /// The eight per-codec passthrough toggle preferences.
+  /// The five per-codec passthrough toggle preferences.
   static List<Preference<bool>> get passthroughTogglePreferences =>
       <Preference<bool>>[
         ac3PassthroughEnabled,
         eac3PassthroughEnabled,
-        eac3JocPassthroughEnabled,
         dtsCorePassthroughEnabled,
         dtsHdPassthroughEnabled,
-        dtsXPassthroughEnabled,
         trueHdPassthroughEnabled,
-        trueHdAtmosPassthroughEnabled,
       ];
 
-  /// Applies a high-level preset by bulk-writing the output mode and clearing
-  /// per-codec overrides (so detection drives passthrough). Auto and AVR also
-  /// reset Max Channels to Auto so the detected route maxes out (e.g. 8 on
-  /// eARC, stereo on a stereo-only TV). [advanced] leaves the output mode,
-  /// channels, and toggles untouched for manual control.
-  Future<void> applyAudioPassthroughPreset(
-    AudioPassthroughPreset preset,
-  ) async {
-    await set(audioPassthroughPreset, preset);
-    switch (preset) {
-      case AudioPassthroughPreset.auto:
-        await set(audioOutputMode, AudioOutputMode.auto);
-        await set(maxAudioChannels, 0);
-        await clearPassthroughOverrides();
-      case AudioPassthroughPreset.surroundReceiver:
-        await set(audioOutputMode, AudioOutputMode.avrPassthrough);
-        await set(maxAudioChannels, 0);
-        await clearPassthroughOverrides();
-      case AudioPassthroughPreset.stereo:
-        await set(audioOutputMode, AudioOutputMode.forceStereo);
-        // Reset like the other presets: a leftover explicit channel cap from
-        // Advanced would otherwise keep forcing 2ch server transcodes.
-        await set(maxAudioChannels, 0);
-        await clearPassthroughOverrides();
-      case AudioPassthroughPreset.advanced:
-        // Snapshot the current effective values into explicit prefs so the
-        // per-codec Advanced switches show the true state (a codec auto-enabled
-        // by detection would otherwise read as a bare "off").
-        await materializePassthroughOverrides();
+  /// Switches the passthrough mode. Entering manual seeds any toggle that was
+  /// never written from the detected capability, so the switches start out
+  /// showing what the hardware can actually do instead of a wall of "off".
+  Future<void> setAudioPassthroughMode(AudioPassthroughMode mode) async {
+    await set(audioPassthroughMode, mode);
+    if (mode == AudioPassthroughMode.manual) {
+      await seedAbsentPassthroughToggles();
     }
   }
 
-  /// Clears every per-codec passthrough override so each resolves back to
-  /// "Auto" (follow the detected capability).
+  /// Writes the detected capability into each toggle that has no stored value.
+  /// Idempotent: existing values are never touched, so it is safe to run again
+  /// after a late hardware probe.
+  Future<void> seedAbsentPassthroughToggles() async {
+    final profile = detectedAudioCapabilities;
+    Future<void> seed(Preference<bool> pref, bool value) async {
+      if (!containsPreference(pref)) await set(pref, value);
+    }
+
+    await seed(ac3PassthroughEnabled, profile.canPassthroughAc3);
+    await seed(eac3PassthroughEnabled, profile.canPassthroughEac3);
+    await seed(dtsCorePassthroughEnabled, profile.canPassthroughDts);
+    await seed(dtsHdPassthroughEnabled, profile.canPassthroughDtsHd);
+    await seed(trueHdPassthroughEnabled, profile.canPassthroughTrueHd);
+  }
+
+  /// Clears every per-codec passthrough toggle back to unwritten, so the next
+  /// entry into manual mode reseeds them from detection.
   Future<void> clearPassthroughOverrides() async {
     for (final pref in passthroughTogglePreferences) {
       await removePreference(pref);
     }
-  }
-
-  /// Writes the current resolved (effective) passthrough values into explicit
-  /// prefs for any toggle still on "Auto", so the per-codec Advanced switches
-  /// reflect what detection is actually doing.
-  Future<void> materializePassthroughOverrides() async {
-    final profile = detectedAudioCapabilities;
-    Future<void> materialize(Preference<bool> pref, bool value) async {
-      if (!containsPreference(pref)) await set(pref, value);
-    }
-
-    await materialize(
-      ac3PassthroughEnabled,
-      resolveAc3PassthroughEnabled(profile),
-    );
-    await materialize(
-      eac3PassthroughEnabled,
-      resolveEac3PassthroughEnabled(profile),
-    );
-    await materialize(
-      eac3JocPassthroughEnabled,
-      resolveEac3JocPassthroughEnabled(profile),
-    );
-    await materialize(
-      dtsCorePassthroughEnabled,
-      resolveDtsCorePassthroughEnabled(profile),
-    );
-    await materialize(
-      dtsHdPassthroughEnabled,
-      resolveDtsHdPassthroughEnabled(profile),
-    );
-    await materialize(
-      dtsXPassthroughEnabled,
-      resolveDtsXPassthroughEnabled(profile),
-    );
-    await materialize(
-      trueHdPassthroughEnabled,
-      resolveTrueHdPassthroughEnabled(profile),
-    );
-    await materialize(
-      trueHdAtmosPassthroughEnabled,
-      resolveTrueHdAtmosPassthroughEnabled(profile),
-    );
   }
 
   void notifyPreferenceChanged() {
@@ -1073,8 +1014,13 @@ class UserPreferences extends ChangeNotifier {
 
   static final collectionsRowSortBy = EnumPreference(
     key: 'pref_collections_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.playlistOrder,
     values: LibrarySortBy.values,
+  );
+
+  static final collectionsRowShowEpisodes = Preference(
+    key: 'pref_collections_row_show_episodes',
+    defaultValue: false,
   );
 
   static final genresRowSortBy = EnumPreference(
@@ -1085,8 +1031,13 @@ class UserPreferences extends ChangeNotifier {
 
   static final playlistsRowSortBy = EnumPreference(
     key: 'pref_playlists_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.playlistOrder,
     values: LibrarySortBy.values,
+  );
+
+  static final playlistsRowShowEpisodes = Preference(
+    key: 'pref_playlists_row_show_episodes',
+    defaultValue: false,
   );
 
   static final audioRowsSortBy = EnumPreference(
@@ -1127,7 +1078,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final preferSystemImeKeyboard = Preference(
     key: 'pref_prefer_system_ime_keyboard',
-    defaultValue: PlatformDetection.useMobileUi ||
+    defaultValue:
+        PlatformDetection.useMobileUi ||
         PlatformDetection.isDesktop ||
         PlatformDetection.isAppleTV,
   );
@@ -1150,6 +1102,14 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_glass_quality',
     defaultValue: GlassQualityMode.auto,
     values: GlassQualityMode.values,
+  );
+
+  /// Deepens chrome toward pure black and enriches artwork, on top of the
+  /// selected theme. Off by default so no existing install changes look.
+  static final oledMode = EnumPreference(
+    key: 'pref_oled_mode',
+    defaultValue: OledMode.off,
+    values: OledMode.values,
   );
 
   /// Settled quality of the adaptive glass renderer from the last session.
@@ -1246,6 +1206,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final showAlphabeticalFilters = Preference(
+    key: 'pref_show_alphabetical_filters',
+    defaultValue: false,
+  );
+
   static final showSyncPlayButton = Preference(
     key: 'pref_show_syncplay_button',
     defaultValue: false,
@@ -1288,6 +1253,10 @@ class UserPreferences extends ChangeNotifier {
   );
   static final enableMultiServerLibraries = Preference(
     key: 'enable_multi_server_libraries',
+    defaultValue: false,
+  );
+  static final mergeRecentRowsByType = Preference(
+    key: 'pref_merge_recent_rows_by_type',
     defaultValue: false,
   );
 
@@ -1480,6 +1449,51 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  // Defaults chosen so the overlay looks unchanged for anyone who never opens
+  // the setting.
+  static final playbackTimeAboveLeft = EnumPreference(
+    key: 'playback_time_above_left',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeAboveCenter = EnumPreference(
+    key: 'playback_time_above_center',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeAboveRight = EnumPreference(
+    key: 'playback_time_above_right',
+    defaultValue: PlaybackTimeSlot.endsAt,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowLeft = EnumPreference(
+    key: 'playback_time_below_left',
+    defaultValue: PlaybackTimeSlot.elapsed,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowCenter = EnumPreference(
+    key: 'playback_time_below_center',
+    defaultValue: PlaybackTimeSlot.none,
+    values: PlaybackTimeSlot.values,
+  );
+
+  static final playbackTimeBelowRight = EnumPreference(
+    key: 'playback_time_below_right',
+    defaultValue: PlaybackTimeSlot.totalDuration,
+    values: PlaybackTimeSlot.values,
+  );
+
+  /// The music player has one label rather than six slots, so it picks a mode.
+  static final musicPlaybackTimeDisplay = EnumPreference(
+    key: 'music_playback_time_display',
+    defaultValue: PlaybackTimeDisplay.totalDuration,
+    values: PlaybackTimeDisplay.values,
+  );
+
   static final pgsDirectPlay = Preference(
     key: 'pgs_enabled',
     defaultValue: true,
@@ -1494,30 +1508,28 @@ class UserPreferences extends ChangeNotifier {
     key: 'video_start_delay',
     defaultValue: 0,
   );
-  static final audioOutputMode = EnumPreference(
-    key: 'audio_output_mode',
-    defaultValue: AudioOutputMode.auto,
-    values: AudioOutputMode.values,
-  );
-
   static final audioFallbackCodec = EnumPreference(
     key: 'audio_fallback_codec',
     defaultValue: AudioFallbackCodec.auto,
     values: AudioFallbackCodec.values,
   );
 
-  static final audioPassthroughPreset = EnumPreference(
-    key: 'pref_audio_passthrough_preset',
-    defaultValue: AudioPassthroughPreset.auto,
-    values: AudioPassthroughPreset.values,
+  static final audioPassthroughMode = EnumPreference(
+    key: 'pref_audio_passthrough_mode',
+    defaultValue: AudioPassthroughMode.auto,
+    values: AudioPassthroughMode.values,
   );
 
-  /// One-time flag: existing installs that had their passthrough toggles
-  /// auto-seeded by the old startup probe have been cleared back to "Auto"
-  /// (tri-state follow-detection) where their stored value still matched the
-  /// probe.
-  static final audioPassthroughMigratedToAuto = Preference(
-    key: 'pref_audio_passthrough_migrated_to_auto_v1',
+  static final downmixToStereo = Preference(
+    key: 'pref_downmix_to_stereo',
+    defaultValue: false,
+  );
+
+  /// One-time flag: the old preset, output mode, and variant toggles have been
+  /// folded into [audioPassthroughMode], [downmixToStereo], and the five base
+  /// toggles.
+  static final audioModeMigrated = Preference(
+    key: 'pref_audio_passthrough_mode_migrated_v1',
     defaultValue: false,
   );
 
@@ -1536,11 +1548,6 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  static final eac3JocPassthroughEnabled = Preference(
-    key: 'pref_passthrough_eac3_joc',
-    defaultValue: false,
-  );
-
   static final dtsCorePassthroughEnabled = Preference(
     key: 'pref_passthrough_dts_core',
     defaultValue: false,
@@ -1551,33 +1558,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  static final dtsXPassthroughEnabled = Preference(
-    key: 'pref_passthrough_dts_x',
-    defaultValue: false,
-  );
-
   static final trueHdPassthroughEnabled = Preference(
     key: 'pref_passthrough_truehd',
     defaultValue: false,
   );
 
-  static final trueHdAtmosPassthroughEnabled = Preference(
-    key: 'pref_passthrough_truehd_atmos',
-    defaultValue: false,
-  );
-
   static final audioNightMode = Preference(
     key: 'audio_night_mode',
-    defaultValue: false,
-  );
-
-  static final audioPrefsAutoDetected = Preference(
-    key: 'pref_audio_caps_auto_detected',
-    defaultValue: false,
-  );
-
-  static final audioPassthroughProbeSeeded = Preference(
-    key: 'pref_audio_passthrough_probe_seeded_v1',
     defaultValue: false,
   );
 
@@ -2357,6 +2344,22 @@ class UserPreferences extends ChangeNotifier {
         values: ImageType.values,
       );
 
+  static EnumPreference<LibraryScrollDirection> libraryScrollDirection(
+    String libraryId,
+  ) => EnumPreference(
+    key: 'library_scroll_dir_$libraryId',
+    defaultValue: LibraryScrollDirection.vertical,
+    values: LibraryScrollDirection.values,
+  );
+
+  static EnumPreference<LibraryGroupBy> libraryGroupBy(
+    String libraryId,
+  ) => EnumPreference(
+    key: 'library_group_by_$libraryId',
+    defaultValue: LibraryGroupBy.none,
+    values: LibraryGroupBy.values,
+  );
+
   static final allGenresImageType = EnumPreference(
     key: 'all_genres_image_type',
     defaultValue: ImageType.thumb,
@@ -2507,20 +2510,42 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  String getSeriesSubtitleLanguage(String seriesId) {
+  SeriesTrackPreference getSeriesSubtitlePreference(String seriesId) {
     final pref = Preference(
       key: 'pref_series_subtitle_lang_$seriesId',
       defaultValue: '',
     );
-    return _store.get(pref);
+    final raw = _store.get(pref);
+    return SeriesTrackPreference.fromRawString(raw);
   }
 
-  Future<void> setSeriesSubtitleLanguage(String seriesId, String language) async {
-    final pref = Preference(
+  Future<void> setSeriesSubtitlePreference(
+    String seriesId,
+    SeriesTrackPreference pref,
+  ) async {
+    final key = Preference(
       key: 'pref_series_subtitle_lang_$seriesId',
       defaultValue: '',
     );
-    await _store.set(pref, language);
+    await _store.set(key, pref.toRawString());
+    notifyListeners();
+  }
+
+  SeriesTrackPreference getSeriesAudioPreference(String seriesId) {
+    final pref = Preference(
+      key: 'pref_series_audio_lang_$seriesId',
+      defaultValue: '',
+    );
+    final raw = _store.get(pref);
+    return SeriesTrackPreference.fromRawString(raw);
+  }
+
+  Future<void> setSeriesAudioPreference(String seriesId, SeriesTrackPreference pref) async {
+    final key = Preference(
+      key: 'pref_series_audio_lang_$seriesId',
+      defaultValue: '',
+    );
+    await _store.set(key, pref.toRawString());
     notifyListeners();
   }
 
@@ -2641,11 +2666,14 @@ class UserPreferences extends ChangeNotifier {
       }
 
       if (matchedKey != null) {
-        final lastPlayedStr = item.rawData['UserData']?['LastPlayedDate'] as String?;
+        final lastPlayedStr =
+            item.rawData['UserData']?['LastPlayedDate'] as String?;
         if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
           final lastPlayed = DateTime.tryParse(lastPlayedStr);
           final hiddenAt = DateTime.tryParse(hidden[matchedKey]!);
-          if (lastPlayed != null && hiddenAt != null && lastPlayed.isAfter(hiddenAt)) {
+          if (lastPlayed != null &&
+              hiddenAt != null &&
+              lastPlayed.isAfter(hiddenAt)) {
             toRemove.add(matchedKey);
             result.add(item);
             continue;
@@ -2685,11 +2713,14 @@ class UserPreferences extends ChangeNotifier {
       final seriesId = item.seriesId;
 
       if (seriesId != null && hidden.containsKey(seriesId)) {
-        final lastPlayedStr = item.rawData['UserData']?['LastPlayedDate'] as String?;
+        final lastPlayedStr =
+            item.rawData['UserData']?['LastPlayedDate'] as String?;
         if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
           final lastPlayed = DateTime.tryParse(lastPlayedStr);
           final hiddenAt = DateTime.tryParse(hidden[seriesId]!);
-          if (lastPlayed != null && hiddenAt != null && lastPlayed.isAfter(hiddenAt)) {
+          if (lastPlayed != null &&
+              hiddenAt != null &&
+              lastPlayed.isAfter(hiddenAt)) {
             toRemove.add(seriesId);
             result.add(item);
             continue;
@@ -2718,4 +2749,3 @@ class UserPreferences extends ChangeNotifier {
     return result;
   }
 }
-

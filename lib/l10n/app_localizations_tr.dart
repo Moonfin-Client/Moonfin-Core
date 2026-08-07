@@ -208,6 +208,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get glassQuality => 'Cam Efekti Kalitesi';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Bu cihaz için en iyi cam efektini otomatik seçer. Tam, gerçek bulanıklaştırma efektini zorlar; Azaltılmış ise GPU (grafik işlemci) gücünden tasarruf sağlayan hafif bir cam efekti kullanır.';
 
@@ -491,6 +504,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get extraLarge => 'Ekstra Büyük';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Türler';
   }
@@ -584,6 +606,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get scrollRight => 'Sağa kaydır';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
 
   @override
   String get couldNotLoadGenre => 'Bu tür şu anda yüklenemedi.';
@@ -2552,21 +2577,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'DTS sesi yalnızca AVR\'ye bitstream olarak aktar; alıcı desteği ve DTS kaynak izi gerektirir';
 
   @override
-  String get enableTrueHdAudio =>
-      'TrueHD sesi etkinleştir (tüm platformlarda çalışmayabilir)';
-
-  @override
-  String get settingsAudioOutputMode => 'Ses Çıkış Modu';
-
-  @override
-  String get settingsAudioOutputModeDescription =>
-      'Ses çözme yöntemini seçin. AVR Doğrudan Geçiş (Passthrough), ham Dolby/DTS akışlarını alıcınıza gönderir; Otomatik veya Downmix ise sesi cihazınızda çözer.';
-
-  @override
-  String get settingsAudioOutputModeAvrPassthrough =>
-      'AVR Doğrudan Geçiş (Passthrough)';
-
-  @override
   String get settingsAudioFallbackCodec => 'Yedek Ses Kodeki';
 
   @override
@@ -2584,9 +2594,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
-
-  @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Kayıpsız)';
 
   @override
   String get settingsAudioFallbackCodecMp3 => 'MP3\n(Sadece Stereo)';
@@ -2649,10 +2656,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'EAC3 Doğrudan Geçiş (Passthrough)';
 
   @override
-  String get settingsAudioEac3JocPassthrough =>
-      'EAC3 JOC (Atmos) Doğrudan Geçiş (Passthrough)';
-
-  @override
   String get settingsAudioDtsCorePassthrough =>
       'DTS Core Doğrudan Geçiş (Passthrough)';
 
@@ -2661,28 +2664,43 @@ class AppLocalizationsTr extends AppLocalizations {
       'DTS-HD MA Doğrudan Geçiş (Passthrough)';
 
   @override
+  String get settingsAudioPassthroughMode => 'Passthrough';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'How compressed surround sound reaches your TV or receiver.';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled =>
+      'Disabled (always decode on this device)';
+
+  @override
+  String get settingsAudioPassthroughModeAuto =>
+      'Auto (match detected device support)';
+
+  @override
+  String get settingsAudioPassthroughModeManual =>
+      'Manual (choose formats below)';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Mix all decoded audio down to two channels.';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos =>
+      'Bitstream E-AC-3, including Dolby Atmos (JOC).';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX =>
+      'Bitstream DTS-HD, including DTS:X.';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos =>
+      'Bitstream TrueHD, including Dolby Atmos.';
+
+  @override
   String get settingsAudioTrueHdPassthrough =>
       'TrueHD Doğrudan Geçiş (Passthrough)';
-
-  @override
-  String get settingsAudioTrueHdAtmosPassthrough =>
-      'TrueHD Atmos Doğrudan Geçiş (Passthrough)';
-
-  @override
-  String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Dolby Digital Plus (EAC3) ses akışını harici dekodere ilet.';
-
-  @override
-  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'EAC3 (JOC) üzerinden Dolby Atmos ses akışını harici dekodere ilet.';
-
-  @override
-  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'DTS çekirdeğini içeren DTS-HD MA ses akışını harici dekodere ilet.';
-
-  @override
-  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Atmos meta verileri içeren Dolby TrueHD ses akışını harici dekodere ilet.';
 
   @override
   String get settingsDetectedAudioCapabilities => 'Algılanan Ses Özellikleri';
@@ -3028,40 +3046,40 @@ class AppLocalizationsTr extends AppLocalizations {
   String get syncToProfile => 'Profili Senkronize Et';
 
   @override
-  String get resetProfile => 'Reset Profile';
+  String get resetProfile => 'Profili Sıfırla';
 
   @override
   String resetProfileTitle(String profile) {
-    return 'Reset $profile?';
+    return '$profile sıfırlansın mı?';
   }
 
   @override
   String resetProfileDescription(String profile) {
-    return 'This deletes the $profile profile from the server and puts every synced setting on this device back to its default.';
+    return 'Bu işlem $profile profilini sunucudan siler ve bu cihazdaki tüm eşitlenmiş ayarları varsayılan değerlerine döndürür.';
   }
 
   @override
   String get resetGlobalProfileDescription =>
-      'This deletes every saved profile from the server and puts every synced setting on this device back to its default.';
+      'Bu işlem sunucudaki tüm kayıtlı profilleri siler ve bu cihazdaki tüm eşitlenmiş ayarları varsayılan değerlerine döndürür.';
 
   @override
   String profileReset(String profile) {
-    return 'Reset $profile profile to defaults.';
+    return '$profile profilini varsayılana sıfırla.';
   }
 
   @override
-  String get resetRatingsTitle => 'Reset ratings?';
+  String get resetRatingsTitle => 'Puanları sıfırla?';
 
   @override
   String get resetRatingsDescription =>
-      'This puts every ratings setting back to its default, including which sources show and the order they appear in.';
+      'Bu işlem, hangi kaynakların görüneceği ve görünüm sıralaması dahil olmak üzere tüm puanlama ayarlarını varsayılan değerlerine döndürür.';
 
   @override
-  String get ratingsReset => 'Reset ratings to defaults.';
+  String get ratingsReset => 'Puanları varsayılana sıfırla.';
 
   @override
   String failedToResetProfile(String profile) {
-    return 'Failed to reset $profile profile.';
+    return '$profile profili sıfırlanamadı.';
   }
 
   @override
@@ -3256,6 +3274,16 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get showLibrariesFromAllServers =>
       'Bağlı tüm sunuculardaki kitaplıkları göster';
+
+  @override
+  String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Combine separate libraries of the same type for Recently Added and Recently Released home rows.';
+
+  @override
+  String get libraryView => 'Library View';
 
   @override
   String get enableFolderView => 'Klasör Görünümünü Etkinleştir';
@@ -3770,6 +3798,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get networks => 'Yayıncılar';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr Keşfet Satırları';
 
   @override
@@ -4014,22 +4048,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get requestMore => 'Daha Fazla Talep Et';
 
   @override
-  String get requestMore4k => 'Request More in 4K';
+  String get requestMore4k => '4K Olarak Daha Fazla İste';
 
   @override
   String get request => 'İste';
 
   @override
-  String get request4k => 'Request 4K';
+  String get request4k => '4K İste';
 
   @override
-  String get requested4k => '4K Requested';
+  String get requested4k => '4K İstendi';
 
   @override
   String get cancelRequest => 'İsteği İptal Et';
 
   @override
-  String get cancelRequest4k => 'Cancel 4K Request';
+  String get cancelRequest4k => '4K İsteğini İptal Et';
 
   @override
   String get playInMoonfin => 'Moonfin\'da oynat';
@@ -4038,6 +4072,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String requestedByName(String name) {
     return '$name tarafından istendi';
   }
+
+  @override
+  String get manageRequests => 'Manage Requests';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get onWatchlist => 'On Watchlist';
 
   @override
   String get approve => 'Onayla';
@@ -4092,7 +4135,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie4k(String type) {
-    return 'Request 4K $type';
+    return '4K $type İste';
   }
 
   @override
@@ -9135,6 +9178,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Koleksiyonlar satırlarını ekleme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.';
 
   @override
+  String get collectionsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
+
+  @override
   String get displayGenresRows => 'Tür Satırlarını Göster';
 
   @override
@@ -9168,6 +9218,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Oynatma listesi satırlarını ekleme tarihi, yayınlanma tarihi, alfabetik ve daha fazlasına göre sıralayın.';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
 
   @override
   String get displayAudioRows => 'Ses Satırlarını Göster';
@@ -9238,18 +9295,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notSupportedOnThisDevice => 'Bu cihazda desteklenmiyor';
-
-  @override
-  String get settingsAudioDtsXPassthrough =>
-      'DTS:X (DTS UHD) Doğrudan Geçiş (Passthrough)';
-
-  @override
-  String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'DTS:X (DTS UHD) sesini harici kod çözücüye bitstream olarak aktar.';
-
-  @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Doğrudan Geçiş (Passthrough)';
 
   @override
   String get mediaPlayerBehavior => 'Medya Oynatıcı Davranışı';
@@ -10316,47 +10361,113 @@ class AppLocalizationsTr extends AppLocalizations {
   String get adminBackToSearch => 'Arama Kriterlerine Dön';
 
   @override
-  String get grouping => 'Grouping';
+  String get grouping => 'Gruplama';
 
   @override
-  String get groupByType => 'Group by Type';
+  String get groupByType => 'Türe Göre Grupla';
 
   @override
-  String get playlistTypes => 'Playlist Types';
+  String get playlistTypes => 'Oynatma Listesi Türleri';
 
   @override
   String get playlistTypeVideo => 'Video';
 
   @override
-  String get playlistTypeAudio => 'Audio (Music)';
+  String get playlistTypeAudio => 'Ses (Müzik)';
 
   @override
-  String get playlistTypeAudiobook => 'Audiobook';
+  String get playlistTypeAudiobook => 'Sesli Kitap';
 
   @override
-  String get playlistTypeBook => 'Book';
+  String get playlistTypeBook => 'Kitap';
 
   @override
-  String get playlistTypePhoto => 'Photo';
+  String get playlistTypePhoto => 'Resim';
 
   @override
-  String get playlistTypeMixed => 'Mixed';
+  String get playlistTypeMixed => 'Karışık';
 
   @override
-  String get videoPlaylistsSection => 'Video Playlists';
+  String get videoPlaylistsSection => 'Video Oynatma Listeleri';
 
   @override
-  String get audioPlaylistsSection => 'Audio Playlists';
+  String get audioPlaylistsSection => 'Ses Oynatma Listesi';
 
   @override
-  String get audiobookPlaylistsSection => 'Audiobook Playlists';
+  String get audiobookPlaylistsSection => 'Sesli Kitap Oynatma Listesi';
 
   @override
-  String get bookPlaylistsSection => 'Book Playlists';
+  String get bookPlaylistsSection => 'Kitap Oynatma Listesi';
 
   @override
-  String get photoPlaylistsSection => 'Photo Playlists';
+  String get photoPlaylistsSection => 'Resim Oynatma Listesi';
 
   @override
-  String get mixedPlaylistsSection => 'Mixed Playlists';
+  String get mixedPlaylistsSection => 'Karışık Oynatma Listesi';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose which time labels appear around the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

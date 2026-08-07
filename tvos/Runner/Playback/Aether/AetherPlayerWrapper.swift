@@ -576,6 +576,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     static func classifyLoadError(_ error: Error) -> (kind: String, message: String) {
         let message = (error as? LocalizedError)?.errorDescription ?? String(describing: error)
+        // A transport failure is not a container the engine cannot read, and
+        // labeling it as one sends the host into a transcode retry that meets
+        // the same network and fails the same way.
+        var cursor: NSError? = error as NSError
+        while let current = cursor {
+            if current.domain == NSURLErrorDomain {
+                return ("network", message)
+            }
+            cursor = current.userInfo[NSUnderlyingErrorKey] as? NSError
+        }
         if let engineError = error as? AetherEngineError {
             switch engineError {
             case .dolbyVisionUnplayableOnSoftwarePath:

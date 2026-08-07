@@ -5,6 +5,22 @@
 <dict>
   <key>ITSAppUsesNonExemptEncryption</key>
   <false/>
+  <!--
+    The playback engine fetches media through URLSession, which enforces App
+    Transport Security. iOS and macOS already declare this exception. Without
+    it here, any http server address that uses a hostname instead of an IP is
+    blocked on device before the request is ever sent, so playback dies while
+    every Dart side API call still works.
+
+    Do not add NSAllowsLocalNetworking alongside this. The system ignores
+    NSAllowsArbitraryLoads whenever that key is present, which leaves single
+    label hosts working and every fully qualified one refused.
+  -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
   <key>CFBundleDevelopmentRegion</key>
   <string>$(DEVELOPMENT_LANGUAGE)</string>
   <key>CFBundleDisplayName</key>

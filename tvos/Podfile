@@ -15,12 +15,27 @@ project 'Runner', {
 target 'Runner' do
   use_frameworks!
 
+  # The flutter tool rewrites .flutter-plugins-dependencies without a tvos key
+  # on every build, and installing straight from it in that state drops every
+  # tvOS plugin from the Runner without a word. Secure storage is one of them,
+  # so a build that ships that way cannot keep a signed in session. Put the key
+  # back first and refuse to install if it is still not there.
+  restore_tvos_plugins = File.expand_path(
+    File.join('scripts', 'restore_tvos_plugins.py'), File.dirname(__FILE__))
+  system('python3', restore_tvos_plugins) if File.exist?(restore_tvos_plugins)
+
   # Install plugin pods from .flutter-plugins-dependencies
   flutter_plugins_deps = File.expand_path(File.join('..', '.flutter-plugins-dependencies'), File.dirname(__FILE__))
   if File.exist?(flutter_plugins_deps)
     require 'json'
     deps = JSON.parse(File.read(flutter_plugins_deps))
     tvos_plugins = deps.dig('plugins', 'tvos') || []
+    if tvos_plugins.empty?
+      raise 'moonfin: no tvos plugins to install, and the restore above did ' \
+            'not put any back. A Runner built from this has no secure storage ' \
+            'and cannot keep a signed in session. Check that python3 is on ' \
+            'PATH and that flutter pub get has fetched the tvos packages.'
+    end
     tvos_plugins.each do |plugin|
       plugin_name = plugin['name']
       plugin_path = plugin['path']

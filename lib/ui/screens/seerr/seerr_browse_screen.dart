@@ -17,6 +17,7 @@ import '../../widgets/media_card.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/quick_return_wrapper.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 Color get _navyBackground => AppColorScheme.background;
@@ -129,7 +130,13 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+      RequestInitialFocus(
+        child: QuickReturnWrapper(
+          scrollController: _scrollController,
+          topFocusNode: _allLetterFocusNode,
+          child: _buildContent(context),
+        ),
+      );
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -301,8 +308,10 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
                     onTap: () {
                       final mt = item.mediaType ?? widget.mediaType ?? 'movie';
                       context.push(
-                        Destinations.seerrMedia(item.id.toString()),
-                        extra: {'mediaType': mt},
+                        Destinations.seerrMedia(
+                          item.id.toString(),
+                          mediaType: mt,
+                        ),
                       );
                     },
                   );

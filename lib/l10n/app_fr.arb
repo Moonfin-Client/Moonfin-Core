@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Connexion rapide",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Basculez entre Moonfin et Neon Pulse sans redémarrer l'application",
+    "settingsAppearanceThemeSubtitle": "Appliquez un thème entièrement personnalisé et basculez entre une interface d'inspiration Apple ou Material.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -3583,7 +3583,7 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Activer l’audio pour les aperçus de bandes-annonces et d’épisodes",
+    "enablePreviewAudio": "Activer l'audio pour les aperçus des médias",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
@@ -4022,7 +4022,7 @@
             }
         }
     },
-    "discoverRows": "Page d'acceuil Seerr",
+    "discoverRows": "Page de découverte Seerr",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
@@ -6533,7 +6533,7 @@
     "settingsDynamicContentSubtitle": "Barre média et superpositions visuelles",
     "settingsPlaybackSyncplay": "Lecture & SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "Paramètres audio/vidéo, sous-titres, téléchargements et commandes SyncPlay",
-    "settingsIntegrationsSubtitle": "Synchronisation des plugins, Seerr, évaluations et plus encore",
+    "settingsIntegrationsSubtitle": "Synchronisation des plugins, Seerr, notes et plus encore",
     "settingsAboutSubtitle": "Version de l'application, informations légales et crédits",
     "settingsAuthenticationSection": "AUTHENTIFICATION",
     "settingsSortServersBy": "Trier les serveurs par",
@@ -6542,7 +6542,7 @@
     "settingsPrivacyAndSafetySection": "CONFIDENTIALITÉ ET SÉCURITÉ",
     "settingsBlockedRatings": "Notes bloquées",
     "settingsGeneralStyle": "Style général",
-    "settingsGeneralStyleSubtitle": "Couleurs d'accentuation, vignettes, indicateurs de visionnage et musique de thème",
+    "settingsGeneralStyleSubtitle": "Couleurs d'accentuation, vignettes et indicateurs de visionnage",
     "settingsHomePage": "Page d'accueil",
     "settingsHomePageSubtitle": "Sections, types d'images, superpositions et aperçus multimédias",
     "settingsLibrariesSubtitle": "Visibilité des bibliothèques, vue des dossiers et gestion multi-serveur",
@@ -6556,7 +6556,7 @@
     "settingsMediaBarAndLocalPreviews": "Barre multimédia et aperçus locaux",
     "settingsVisualOverlays": "Superpositions visuelles",
     "settingsSeasonalSurprise": "Surprise saisonnière",
-    "settingsMetadataAndRatings": "Métadonnées et évaluations",
+    "settingsMetadataAndRatings": "Métadonnées et notes",
     "settingsPluginScreenDescription": "Moonbase alimente les intégrations côté serveur, notamment des sources de notation supplémentaires, des requêtes Seerr et des préférences synchronisées.",
     "settingsOfflineDownloads": "Téléchargements hors ligne",
     "settingsHigh": "Haut",
@@ -7399,10 +7399,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sans perte)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecMp3": "MP3\n(Stéréo uniquement)",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
@@ -7716,11 +7712,11 @@
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "interfaceStyle": "Style d'interface",
+    "interfaceStyle": "Style de l'interface",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Automatique utilise l'apparence native sur les appareils Apple. Choisissez Apple pour la forcer, ou Material pour l'apparence standard.",
+    "interfaceStyleSubtitle": "Automatique s'adapte à votre appareil. Choisissez Apple ou Material pour forcer une apparence.",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
@@ -7817,7 +7813,7 @@
     "audioRowsSortingDescription": "Triez les rangées audio par date d'ajout, date de sortie, par ordre alphabétique, etc.",
     "audioPlaylists": "Playlists audio",
     "displayAudioRows": "Afficher les rangées audio",
-    "externalLists": "Listes de rangées d'accueil externes",
+    "externalLists": "Listes externes",
     "audiobookExportFailed": "Export échoué : {error}",
     "@audiobookExportFailed": {
         "placeholders": {
@@ -7916,7 +7912,7 @@
     "audiobookSpeedReset": "Réinitialiser a 1.0x",
     "forced": "Forcé",
     "transcodeSubtitleCodecNotSupported": "Le format de sous-titre n'est pas supporté (burn-in requis).",
-    "glassQualityFull": "Complet",
+    "glassQualityFull": "Complète",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
@@ -8017,7 +8013,7 @@
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
     "audiobookNoteHint": "Écrire une note pour ce passage",
-    "audiobookSleepTimer": "Minuteur de sommeil",
+    "audiobookSleepTimer": "Minuteur de veille",
     "audiobookSleepOff": "Désactivé",
     "audiobookPlaybackSpeed": "Vitesse de lecture",
     "audiobookRemainingTime": "Restant",
@@ -8039,7 +8035,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Afficher les ({count}) pistes sous-titre",
+    "showAllSubtitleTracks": "Afficher les ({count}) pistes de sous-titre",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8553,7 +8549,7 @@
     "adminDrawerNfo": "Paramètres NFO",
     "adminActivitySeverityAll": "Toutes les gravités",
     "adminActivityDateRange": "Plage de dates",
-    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
+    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -9005,5 +9001,384 @@
     "imdbMostPopularMovies": "IMDb Films les plus populaires",
     "imdbMostPopularTvShows": "IMDb Séries TV les plus populaires",
     "imdbLowestRatedMovies": "IMDb Films les moins bien notés",
-    "imdbTopEnglishMovies": "IMDb Meilleurs films anglophones"
+    "imdbTopEnglishMovies": "IMDb Meilleurs films anglophones",
+    "castMembers": "Distribution",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Finalisation…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "failedToDeleteItemWithError": "Échec de la suppression avec l'erreur suivante : {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "shuffleAll": "Tout lire en aléatoire",
+    "@shuffleAll": {
+        "description": "Action button label for shuffling all tracks of an artist"
+    },
+    "settingsSearchHint": "Rechercher dans les réglages",
+    "@settingsSearchHint": {
+        "description": "Hint text in the settings search field"
+    },
+    "osdButtons": "Boutons du lecteur",
+    "@osdButtons": {
+        "description": "Settings screen for choosing which buttons the player shows"
+    },
+    "osdButtonsDescription": "Choisir les boutons affichés par le lecteur",
+    "@osdButtonsDescription": {
+        "description": "Subtitle for the player buttons settings tile"
+    },
+    "osdButtonsSectionDescription": "Les commandes de lecture sont toujours affichées. Le reste est à votre choix, et chaque type d'appareil conserve sa propre liste.",
+    "@osdButtonsSectionDescription": {
+        "description": "Explains that transport controls can't be hidden and that the list is per device kind"
+    },
+    "detailButtons": "Boutons d'action",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "detailButtonsDescription": "Choisir les boutons affichés sur l'écran de détails",
+    "@detailButtonsDescription": {
+        "description": "Subtitle for the details action buttons settings tile"
+    },
+    "detailButtonsSectionDescription": "Le bouton Lecture est toujours en premier et les boutons verrouillés sont toujours affichés. Le reste est à votre choix, et chaque type d'appareil conserve sa propre liste.",
+    "@detailButtonsSectionDescription": {
+        "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    },
+    "moveUp": "Monter",
+    "@moveUp": {
+        "description": "Moves a button one place earlier in its row"
+    },
+    "moveDown": "Descendre",
+    "@moveDown": {
+        "description": "Moves a button one place later in its row"
+    },
+    "buttonOrderHint": "Utilisez les flèches pour modifier l'ordre. Avec une télécommande, les touches gauche et droite déplacent le bouton sélectionné. Désactiver un bouton le place en bas de la liste.",
+    "@buttonOrderHint": {
+        "description": "Explains how to reorder the buttons in a row"
+    },
+    "detailsBackgroundOpacity": "Opacité de l'arrière-plan des détails",
+    "@detailsBackgroundOpacity": {
+        "description": "Setting for details background opacity on modern screens"
+    },
+    "orientationLock": "Verrouillage de l'orientation",
+    "@orientationLock": {
+        "description": "Player button that locks the screen orientation"
+    },
+    "fullscreen": "Plein écran",
+    "@fullscreen": {
+        "description": "Player button that toggles fullscreen"
+    },
+    "resetProfile": "Réinitialiser le profil",
+    "@resetProfile": {
+        "description": "Button to reset a profile to defaults"
+    },
+    "resetProfileTitle": "Réinitialiser {profile} ?",
+    "@resetProfileTitle": {
+        "description": "Title of the dialog confirming a profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetProfileDescription": "Supprime le profil {profile} du serveur et rétablit tous les réglages synchronisés de cet appareil à leurs valeurs par défaut.",
+    "@resetProfileDescription": {
+        "description": "Body of the dialog confirming a device profile reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetGlobalProfileDescription": "Supprime tous les profils enregistrés du serveur et rétablit tous les réglages synchronisés de cet appareil à leurs valeurs par défaut.",
+    "@resetGlobalProfileDescription": {
+        "description": "Body of the dialog confirming a global profile reset"
+    },
+    "profileReset": "Profil {profile} réinitialisé aux valeurs par défaut.",
+    "@profileReset": {
+        "description": "Message after a profile was reset",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "resetRatingsDescription": "Rétablit tous les réglages de notes à leurs valeurs par défaut, y compris les sources affichées et leur ordre d'apparition.",
+    "@resetRatingsDescription": {
+        "description": "Body of the dialog confirming a ratings reset"
+    },
+    "resetRatingsTitle": "Réinitialiser les notes ?",
+    "@resetRatingsTitle": {
+        "description": "Title of the dialog confirming a ratings reset"
+    },
+    "ratingsReset": "Notes réinitialisées aux valeurs par défaut.",
+    "@ratingsReset": {
+        "description": "Message after the ratings settings were reset"
+    },
+    "failedToResetProfile": "Échec de la réinitialisation du profil {profile}.",
+    "@failedToResetProfile": {
+        "description": "Message when a profile reset failed",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodingTimeRemainingUnavailable": "Transcodage : temps restant indisponible",
+    "@transcodingTimeRemainingUnavailable": {
+        "description": "Notice shown below downloading text when downloading a transcoded stream"
+    },
+    "trailerCaptions": "Sous-titres des bandes-annonces",
+    "@trailerCaptions": {
+        "description": "Setting for YouTube trailer captions"
+    },
+    "trailerCaptionsDescription": "Afficher les sous-titres des bandes-annonces YouTube dans la barre média",
+    "@trailerCaptionsDescription": {
+        "description": "Description for YouTube trailer captions"
+    },
+    "nextUpMaxDays": "Nombre de jours maximum dans « À suivre »",
+    "@nextUpMaxDays": {
+        "description": "Setting for how far back the Next Up row reaches"
+    },
+    "nextUpMaxDaysDescription": "Durée pendant laquelle une série reste dans « À suivre » après votre dernier visionnage",
+    "@nextUpMaxDaysDescription": {
+        "description": "Description for the Next Up window setting"
+    },
+    "daysValue": "{days} jours",
+    "@daysValue": {
+        "description": "A number of days",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "homeRowsPadding": "Espacement des rangées d'accueil",
+    "@homeRowsPadding": {
+        "description": "Title for home rows padding setting"
+    },
+    "homeRowsPaddingDescription": "Personnaliser l'espacement entre les rangées d'accueil",
+    "@homeRowsPaddingDescription": {
+        "description": "Description for home rows padding setting"
+    },
+    "yourWatchlist": "Ma liste",
+    "@yourWatchlist": {
+        "description": "Seerr row: watchlist"
+    },
+    "seerrNotifyNewMediaTitle": "Nouveau média ajouté",
+    "@seerrNotifyNewMediaTitle": {
+        "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
+    },
+    "seerrNotifyNewMediaSubtitle": "Tout nouvel ajout à la bibliothèque du serveur",
+    "@seerrNotifyNewMediaSubtitle": {
+        "description": "Subtitle for the new media notifications toggle"
+    },
+    "requestMore4k": "Demander davantage en 4K",
+    "@requestMore4k": {
+        "description": "Button to request more seasons in 4K, shown next to the non-4K Request More button"
+    },
+    "request4k": "Demander en 4K",
+    "@request4k": {
+        "description": "Button to submit a 4K media request, shown next to the non-4K Request button"
+    },
+    "requested4k": "Demande 4K envoyée",
+    "@requested4k": {
+        "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
+    },
+    "cancelRequest4k": "Annuler la demande 4K",
+    "@cancelRequest4k": {
+        "description": "Button/dialog title to cancel a 4K media request"
+    },
+    "requestSeriesOrMovie4k": "Demander en 4K : {type}",
+    "@requestSeriesOrMovie4k": {
+        "description": "Bottom sheet title for requesting media in 4K",
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "useNativeEmulator": "Émulation native",
+    "@useNativeEmulator": {
+        "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
+    },
+    "useNativeEmulatorSubtitle": "Jouer avec des cores natifs au lieu du lecteur web EmulatorJS",
+    "@useNativeEmulatorSubtitle": {
+        "description": "Subtitle under the Native Emulation settings toggle. EmulatorJS is a product name and should not be translated."
+    },
+    "emulatorCores": "Cores d'émulateur",
+    "emulatorCoresSubtitle": "Télécharger des systèmes pour jouer nativement",
+    "emulatorCoresDescription": "Choisir les systèmes à installer. Les cores sont fournis par le projet libretro et permettent d'exécuter les jeux nativement plutôt que dans une vue navigateur.",
+    "emulatorCoreDownloading": "Téléchargement…",
+    "emulatorCoreUnavailable": "Non disponible sur cet appareil",
+    "emulatorCoreDownloadFailed": "Impossible de télécharger le core. Vérifiez votre connexion et réessayez.",
+    "downloadedGames": "Jeux téléchargés",
+    "@downloadedGames": {
+        "description": "Settings screen title for managing game files stored on the device"
+    },
+    "downloadedGamesSubtitle": "Libérer l'espace utilisé par les fichiers de jeux",
+    "@downloadedGamesSubtitle": {
+        "description": "Subtitle for the Downloaded Games settings entry"
+    },
+    "downloadedGamesDescription": "Les jeux sont copiés sur cet appareil avant d'être lancés. Supprimez ceux que vous avez terminés pour libérer de l'espace. Les sauvegardes sont conservées sur le serveur et ne sont pas supprimées.",
+    "@downloadedGamesDescription": {
+        "description": "Explanation at the top of the Downloaded Games settings screen"
+    },
+    "downloadedGamesEmpty": "Aucun jeu n'a encore été téléchargé sur cet appareil.",
+    "@downloadedGamesEmpty": {
+        "description": "Shown on the Downloaded Games screen when nothing is cached"
+    },
+    "downloadedGamesTotal": "{count} jeux, {size}",
+    "@downloadedGamesTotal": {
+        "description": "Summary of how many games are stored and how much space they take, where size is a formatted amount such as 1.4 GB",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGames": "Tout supprimer",
+    "@removeAllDownloadedGames": {
+        "description": "Button that deletes every downloaded game from the device"
+    },
+    "removeDownloadedGameConfirm": "Supprimer {title} de cet appareil ? Le jeu sera de nouveau téléchargé lors de votre prochaine partie.",
+    "@removeDownloadedGameConfirm": {
+        "description": "Confirmation prompt before deleting a single downloaded game, where title is the game name",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "removeAllDownloadedGamesConfirm": "Supprimer tous les jeux téléchargés de cet appareil ? Ils seront de nouveau téléchargés lors de votre prochaine partie.",
+    "@removeAllDownloadedGamesConfirm": {
+        "description": "Confirmation prompt before deleting every downloaded game"
+    },
+    "addToWatchlist": "Ajouter à votre liste",
+    "@addToWatchlist": {
+        "description": "Button label to add media to the user's Seerr watchlist"
+    },
+    "removeFromWatchlist": "Retirer de votre liste",
+    "@removeFromWatchlist": {
+        "description": "Button label to remove media from the user's Seerr watchlist"
+    },
+    "watchlistUpdateFailed": "Impossible de mettre à jour votre liste",
+    "@watchlistUpdateFailed": {
+        "description": "Snackbar shown when adding/removing a Seerr watchlist item fails"
+    },
+    "adminSearchParameters": "Paramètres de recherche",
+    "@adminSearchParameters": {
+        "description": "Column header above the editable fields used to search metadata providers in the Identify dialog"
+    },
+    "adminCurrentMetadata": "Métadonnées actuelles",
+    "@adminCurrentMetadata": {
+        "description": "Column header above the read-only values currently stored on the item in the Identify dialog"
+    },
+    "adminLabelYear": "Année",
+    "@adminLabelYear": {
+        "description": "Label for the release year field in the Identify dialog"
+    },
+    "adminLabelImdbId": "ID IMDb",
+    "@adminLabelImdbId": {
+        "description": "Label for the IMDb identifier field in the Identify dialog. IMDb is a brand name and is normally left untranslated"
+    },
+    "adminReplaceImages": "Remplacer les images existantes",
+    "@adminReplaceImages": {
+        "description": "Checkbox label in the confirmation dialog shown before applying an identified metadata match"
+    },
+    "adminLabelTmdbMovieId": "ID du film TheMovieDb",
+    "@adminLabelTmdbMovieId": {
+        "description": "Label for the TheMovieDb movie identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+    },
+    "adminLabelTmdbBoxSetId": "ID du coffret TheMovieDb",
+    "@adminLabelTmdbBoxSetId": {
+        "description": "Label for the TheMovieDb collection identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbBoxSetId": "ID du coffret TheTVDB",
+    "@adminLabelTvdbBoxSetId": {
+        "description": "Label for the TheTVDB collection identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbId": "ID numérique TheTVDB",
+    "@adminLabelTvdbId": {
+        "description": "Label for the numeric TheTVDB identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminLabelTvdbSlug": "ID slug TheTVDB",
+    "@adminLabelTvdbSlug": {
+        "description": "Label for the TheTVDB slug identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated"
+    },
+    "adminBackToSearch": "Retour aux critères de recherche",
+    "@adminBackToSearch": {
+        "description": "Tooltip on the button that returns from the Identify results list to the search form"
+    },
+    "grouping": "Regroupement",
+    "@grouping": {
+        "description": "Section header in the library display dialog for grouping options"
+    },
+    "groupByType": "Regrouper par type",
+    "@groupByType": {
+        "description": "Checkbox label to group playlists by their media type category"
+    },
+    "playlistTypes": "Types de playlists",
+    "@playlistTypes": {
+        "description": "Section header in the library display dialog for filtering playlist categories"
+    },
+    "playlistTypeVideo": "Vidéo",
+    "@playlistTypeVideo": {
+        "description": "Filter checkbox label for video playlists"
+    },
+    "playlistTypeAudio": "Audio (musique)",
+    "@playlistTypeAudio": {
+        "description": "Filter checkbox label for audio/music playlists"
+    },
+    "playlistTypeAudiobook": "Livre audio",
+    "@playlistTypeAudiobook": {
+        "description": "Filter checkbox label for audiobook playlists"
+    },
+    "playlistTypeBook": "Livre",
+    "@playlistTypeBook": {
+        "description": "Filter checkbox label for book playlists"
+    },
+    "playlistTypePhoto": "Photo",
+    "@playlistTypePhoto": {
+        "description": "Filter checkbox label for photo playlists"
+    },
+    "playlistTypeMixed": "Mixte",
+    "@playlistTypeMixed": {
+        "description": "Filter checkbox label for mixed media playlists"
+    },
+    "videoPlaylistsSection": "Playlists vidéo",
+    "@videoPlaylistsSection": {
+        "description": "Section header above video playlists when Group by Type is enabled"
+    },
+    "audioPlaylistsSection": "Playlists audio",
+    "@audioPlaylistsSection": {
+        "description": "Section header above audio playlists when Group by Type is enabled"
+    },
+    "audiobookPlaylistsSection": "Playlists de livres audio",
+    "@audiobookPlaylistsSection": {
+        "description": "Section header above audiobook playlists when Group by Type is enabled"
+    },
+    "bookPlaylistsSection": "Playlists de livres",
+    "@bookPlaylistsSection": {
+        "description": "Section header above book playlists when Group by Type is enabled"
+    },
+    "photoPlaylistsSection": "Playlists photo",
+    "@photoPlaylistsSection": {
+        "description": "Section header above photo playlists when Group by Type is enabled"
+    },
+    "mixedPlaylistsSection": "Playlists mixtes",
+    "@mixedPlaylistsSection": {
+        "description": "Section header above mixed playlists when Group by Type is enabled"
+    }
 }

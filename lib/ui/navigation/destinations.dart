@@ -305,10 +305,19 @@ class Destinations {
     return Uri(path: search, queryParameters: params).toString();
   }
 
-  static String seerrMedia(String itemId, {String? mediaType}) {
+  /// Everything the screen needs travels in the route, so a restored or shared
+  /// link resolves the same way a fresh tap does.
+  static String seerrMedia(String itemId, {String? mediaType, String? title}) {
     final base = '/seerr/media/$itemId';
-    if (mediaType == null || mediaType.trim().isEmpty) return base;
-    return Uri(path: base, queryParameters: {'mediaType': mediaType}).toString();
+    final params = <String, String>{};
+    if (mediaType != null && mediaType.trim().isNotEmpty) {
+      params['mediaType'] = mediaType;
+    }
+    if (title != null && title.trim().isNotEmpty) {
+      params['title'] = title;
+    }
+    if (params.isEmpty) return base;
+    return Uri(path: base, queryParameters: params).toString();
   }
   static String seerrPerson(String personId) => '/seerr/person/$personId';
   static String seerrCollection(String collectionId) =>

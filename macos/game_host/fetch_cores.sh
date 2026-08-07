@@ -80,18 +80,17 @@ PLIST
 done
 
 # The PSP core needs its assets in the system directory at runtime. Bundle them
-# so the app can seed them. The native side copies them in when PSP loads.
+# so the native side can seed them when PSP loads. This is the same payload the
+# other platforms download, so every build runs PSP against the assets the
+# nightly cores expect.
 ppsspp_assets="$out/assets/PPSSPP"
 if [ ! -d "$ppsspp_assets" ]; then
-  ref="${PPSSPP_ASSETS_REF:-v1.17.1}"
-  echo "==> PPSSPP assets ($ref)"
-  if curl -fsSL "https://codeload.github.com/hrydgard/ppsspp/tar.gz/refs/tags/${ref}" \
-      -o "$work/ppsspp.tgz"; then
+  echo "==> PPSSPP assets"
+  if curl -fsSL "https://buildbot.libretro.com/assets/system/PPSSPP.zip" \
+      -o "$work/ppsspp_assets.zip"; then
     mkdir -p "$out/assets"
-    if tar -xzf "$work/ppsspp.tgz" -C "$out/assets" --strip-components=1 \
-        "ppsspp-${ref#v}/assets"; then
-      mv "$out/assets/assets" "$ppsspp_assets"
-    else
+    # The zip carries its own top-level PPSSPP folder.
+    if ! unzip -q -o "$work/ppsspp_assets.zip" -d "$out/assets"; then
       echo "    warn: could not extract PPSSPP assets; PSP will not boot"
     fi
   else

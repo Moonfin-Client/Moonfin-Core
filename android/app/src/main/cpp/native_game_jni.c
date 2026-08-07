@@ -28,6 +28,8 @@ typedef struct {
   JavaVM *vm;
   jobject bridge;
   jmethodID on_geometry;
+  jmethodID on_core_message;
+  jmethodID on_core_shutdown;
   pthread_t render_thread;
   int has_render_thread;
   atomic_int render_running;
@@ -117,13 +119,59 @@ static int controller_count(void *user) {
   return 1;
 }
 
+// Host callbacks arrive on the emulation thread once the game runs, and on the
+// platform thread while the core is still loading. Only an attach we made is
+// ours to undo, since detaching the platform thread would break every later JNI
+// call on it.
+static JNIEnv *jni_enter(native_ctx *c, int *attached) {
+  JNIEnv *env = NULL;
+  *attached = 0;
+  if ((*c->vm)->GetEnv(c->vm, (void **)&env, JNI_VERSION_1_6) == JNI_OK) {
+    return env;
+  }
+  if ((*c->vm)->AttachCurrentThread(c->vm, &env, NULL) != JNI_OK) return NULL;
+  *attached = 1;
+  return env;
+}
+
+static void jni_leave(native_ctx *c, int attached) {
+  if (attached) (*c->vm)->DetachCurrentThread(c->vm);
+}
+
 static void geometry_changed(void *user, int width, int height, double aspect) {
   native_ctx *c = (native_ctx *)user;
   if (!c->vm || !c->bridge || !c->on_geometry) return;
-  JNIEnv *env;
-  if ((*c->vm)->AttachCurrentThread(c->vm, &env, NULL) != JNI_OK) return;
+  int attached;
+  JNIEnv *env = jni_enter(c, &attached);
+  if (!env) return;
   (*env)->CallVoidMethod(env, c->bridge, c->on_geometry, width, height, aspect);
-  (*c->vm)->DetachCurrentThread(c->vm);
+  jni_leave(c, attached);
+}
+
+static void core_message(void *user, const char *text) {
+  native_ctx *c = (native_ctx *)user;
+  if (!c->vm || !c->bridge || !c->on_core_message || !text) return;
+  int attached;
+  JNIEnv *env = jni_enter(c, &attached);
+  if (!env) return;
+  jstring message = (*env)->NewStringUTF(env, text);
+  if (message) {
+    (*env)->CallVoidMethod(env, c->bridge, c->on_core_message, message);
+    (*env)->DeleteLocalRef(env, message);
+  }
+  jni_leave(c, attached);
+}
+
+// Kotlin ends the session from the main thread, since this runs on the
+// emulation thread as it exits and must not join itself.
+static void core_shutdown(void *user) {
+  native_ctx *c = (native_ctx *)user;
+  if (!c->vm || !c->bridge || !c->on_core_shutdown) return;
+  int attached;
+  JNIEnv *env = jni_enter(c, &attached);
+  if (!env) return;
+  (*env)->CallVoidMethod(env, c->bridge, c->on_core_shutdown);
+  jni_leave(c, attached);
 }
 
 static void teardown(JNIEnv *env) {
@@ -148,6 +196,8 @@ static void teardown(JNIEnv *env) {
     g_ctx.bridge = NULL;
   }
   g_ctx.on_geometry = NULL;
+  g_ctx.on_core_message = NULL;
+  g_ctx.on_core_shutdown = NULL;
 }
 
 #define JNI(ret, name) \
@@ -173,12 +223,18 @@ JNI(jdoubleArray, nativeLoad)(
   cb.poll_input = poll_input;
   cb.controller_count = controller_count;
   cb.geometry_changed = geometry_changed;
+  cb.message = core_message;
+  cb.core_shutdown = core_shutdown;
 
   g_ctx.host = lh_create(LH_FORMAT_RGBA8888, cb);
   for (int i = 0; i < 4; i++) atomic_store(&g_ctx.mask[i], 0);
   g_ctx.bridge = (*env)->NewGlobalRef(env, thiz);
   jclass cls = (*env)->GetObjectClass(env, thiz);
   g_ctx.on_geometry = (*env)->GetMethodID(env, cls, "onGeometry", "(IID)V");
+  g_ctx.on_core_message =
+      (*env)->GetMethodID(env, cls, "onCoreMessage", "(Ljava/lang/String;)V");
+  g_ctx.on_core_shutdown =
+      (*env)->GetMethodID(env, cls, "onCoreShutdown", "()V");
 
   const char *c_core_path = (*env)->GetStringUTFChars(env, corePath, NULL);
   const char *c_rom = (*env)->GetStringUTFChars(env, romPath, NULL);

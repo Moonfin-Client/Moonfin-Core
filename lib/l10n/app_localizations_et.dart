@@ -209,6 +209,19 @@ class AppLocalizationsEt extends AppLocalizations {
   String get glassQuality => 'Klaasi kvaliteet';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       'Automaatne valib selle seadme jaoks parima klaasiefekti. Täielik sunnib päris hägustuse, Vähendatud kasutab kerget klaasi, mis säästab GPU jõudlust.';
 
@@ -494,6 +507,15 @@ class AppLocalizationsEt extends AppLocalizations {
   String get extraLarge => 'Eriti suur';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Žanrid';
   }
@@ -587,6 +609,9 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get scrollRight => 'Kerige paremale';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
 
   @override
   String get couldNotLoadGenre => 'Seda žanrit ei saanud praegu laadida.';
@@ -2560,20 +2585,6 @@ class AppLocalizationsEt extends AppLocalizations {
       'Bitivoo DTS-heli ainult AVR-ile; nõuab vastuvõtja tuge ja DTS-i allika rada';
 
   @override
-  String get enableTrueHdAudio =>
-      'Luba TrueHD heli (ei pruugi kõigil platvormidel töötada)';
-
-  @override
-  String get settingsAudioOutputMode => 'Heli väljundrežiim';
-
-  @override
-  String get settingsAudioOutputModeDescription =>
-      'Vali, kuidas heli dekodeeritakse. AVR-läbilase saadab Dolby ja DTS toorvood ressiiverisse, Automaatne ja Allamiksimine dekodeerivad heli seadmes.';
-
-  @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR-läbilase';
-
-  @override
   String get settingsAudioFallbackCodec => 'Heli varukoodek';
 
   @override
@@ -2592,9 +2603,6 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
-
-  @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(kadudeta)';
 
   @override
   String get settingsAudioFallbackCodecMp3 => 'MP3\n(ainult stereo)';
@@ -2654,35 +2662,48 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsAudioEac3Passthrough => 'EAC3 läbipääs';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) läbipääs';
-
-  @override
   String get settingsAudioDtsCorePassthrough => 'DTS Core läbilase';
 
   @override
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA läbilaskevõime';
 
   @override
+  String get settingsAudioPassthroughMode => 'Passthrough';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'How compressed surround sound reaches your TV or receiver.';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled =>
+      'Disabled (always decode on this device)';
+
+  @override
+  String get settingsAudioPassthroughModeAuto =>
+      'Auto (match detected device support)';
+
+  @override
+  String get settingsAudioPassthroughModeManual =>
+      'Manual (choose formats below)';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Mix all decoded audio down to two channels.';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos =>
+      'Bitstream E-AC-3, including Dolby Atmos (JOC).';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX =>
+      'Bitstream DTS-HD, including DTS:X.';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos =>
+      'Bitstream TrueHD, including Dolby Atmos.';
+
+  @override
   String get settingsAudioTrueHdPassthrough => 'TrueHD läbilase';
-
-  @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos läbilase';
-
-  @override
-  String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitivoog Dolby Digital Plus (EAC3) välisele dekoodrile.';
-
-  @override
-  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitivoog Dolby Atmos üle EAC3 (JOC) välisele dekoodrile.';
-
-  @override
-  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitivoog DTS-HD MA (sisaldab DTS-tuuma) välisele dekoodrile.';
-
-  @override
-  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD koos Atmose metaandmetega välisele dekoodrile.';
 
   @override
   String get settingsDetectedAudioCapabilities => 'Tuvastatud helivõimalused';
@@ -3255,6 +3276,16 @@ class AppLocalizationsEt extends AppLocalizations {
       'Kuva kõigi ühendatud serverite teegid';
 
   @override
+  String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Combine separate libraries of the same type for Recently Added and Recently Released home rows.';
+
+  @override
+  String get libraryView => 'Library View';
+
+  @override
   String get enableFolderView => 'Luba kaustavaade';
 
   @override
@@ -3758,6 +3789,12 @@ class AppLocalizationsEt extends AppLocalizations {
   String get networks => 'Võrgud';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerri avastamisread';
 
   @override
@@ -4025,6 +4062,15 @@ class AppLocalizationsEt extends AppLocalizations {
   String requestedByName(String name) {
     return 'Taotleja $name';
   }
+
+  @override
+  String get manageRequests => 'Manage Requests';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get onWatchlist => 'On Watchlist';
 
   @override
   String get approve => 'Kinnita';
@@ -9131,6 +9177,13 @@ class AppLocalizationsEt extends AppLocalizations {
       'Sorteerige kogude ridu lisamiskuupäeva, väljalaskekuupäeva, tähestiku ja muu järgi.';
 
   @override
+  String get collectionsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
+
+  @override
   String get displayGenresRows => 'Kuva Žanrid read';
 
   @override
@@ -9164,6 +9217,13 @@ class AppLocalizationsEt extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sordi esitusloendite ridu lisamiskuupäeva, ilmumiskuupäeva, tähestiku ja muu järgi.';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
 
   @override
   String get displayAudioRows => 'Näita heliridu';
@@ -9233,17 +9293,6 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get notSupportedOnThisDevice => 'Selles seadmes ei toetata';
-
-  @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) läbilaskevõime';
-
-  @override
-  String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitivoog DTS:X (DTS UHD) välisele dekoodrile.';
-
-  @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD koos Atmose (JOC) läbipääsuga';
 
   @override
   String get mediaPlayerBehavior => 'Meediumipleieri käitumine';
@@ -10352,4 +10401,70 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => 'Mixed Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose which time labels appear around the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

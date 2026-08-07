@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/vibrance.dart';
 import 'image_source.dart';
 
 export 'image_source.dart' show isLocalImagePath, offlineAwareImageProvider;
@@ -65,6 +66,12 @@ class OfflineAwareImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Wrapping out here rather than at each return covers the `imageBuilder`
+    // path below, which several callers rely on.
+    return Vibrance.wrap(_buildImage(context));
+  }
+
+  Widget _buildImage(BuildContext context) {
     if (isLocalImagePath(imageUrl)) {
       final provider = offlineAwareImageProvider(
         imageUrl,

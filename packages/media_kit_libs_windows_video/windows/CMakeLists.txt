@@ -66,9 +66,11 @@ endfunction()
 # Windows ARM64 support:
 # Locate a real 7-Zip executable. The ARM64 native-lib archives are compressed
 # with 7-Zip's ARM64 BCJ branch filter (codec 0x0a, added in 7-Zip 23.00), which
-# the libarchive bundled inside the VS2022 CMake cannot decode -- `cmake -E tar`
-# fails on them with "Unexpected codec ID: a". The windows-11-arm runner ships
-# 7-Zip 26.00, which extracts them correctly.
+# the libarchive bundled inside the VS2022 CMake cannot decode. Depending on the
+# archive, `cmake -E tar` either stops with a codec error or writes out a DLL of
+# the right size holding the wrong bytes, so the 7-Zip branch below is load
+# bearing rather than a convenience. The windows-11-arm runner ships 7-Zip
+# 26.00, which extracts them correctly.
 find_program(SEVENZIP_EXECUTABLE
   NAMES 7z 7za 7zr
   HINTS "$ENV{ProgramW6432}/7-Zip" "$ENV{ProgramFiles}/7-Zip"
@@ -82,24 +84,27 @@ find_program(SEVENZIP_EXECUTABLE
 # (see windows/flutter/CMakeLists.txt). Select arch-matched native libs so the
 # build links against ARM64 libmpv/ANGLE on the windows-11-arm runner instead of
 # the upstream x64-only archives (which caused LNK4272 / unresolved mpv_* symbols).
-# The x64 branch is kept byte-identical to upstream media_kit_libs_windows_video
-# 1.0.11 so existing x64 builds are unaffected.
+#
+# MOONFIN PATCH (PGS subtitles):
+# Both arches take shinchiro's libmpv instead of the media-kit archives. Those
+# pass --disable-decoders and then re-enable an allowlist that leaves out
+# pgssub, so a PGS track was listed and stayed selectable while mpv had no
+# decoder to turn a single sample into a picture. shinchiro's build excludes
+# only libaom_av1, so every other decoder is present. The download points at the
+# SourceForge mirror because the matching GitHub releases are pruned once thirty
+# newer builds exist.
 if(NOT DEFINED FLUTTER_TARGET_PLATFORM)
   set(FLUTTER_TARGET_PLATFORM "windows-x64")
 endif()
 
 if(FLUTTER_TARGET_PLATFORM STREQUAL "windows-arm64")
-  # ARM64 libmpv (aarch64). Hosted on the media-kit-controlled mirror so the URL
-  # is stable (shinchiro's daily releases get pruned within weeks).
-  set(LIBMPV "mpv-dev-aarch64-20241021-git-0f78584.7z")
-  set(LIBMPV_URL "https://github.com/media-kit/libmpv-win32-video-cmake/releases/download/20241021/${LIBMPV}")
-  set(LIBMPV_MD5 "5b507a35db13eee6cb7eb21e8be7c83d")
+  set(LIBMPV "mpv-dev-aarch64-20260607-git-71ebd08.7z")
+  set(LIBMPV_MD5 "c1ffe70ca6f4c17dc4b2ff0e28b49ea2")
 else()
-  # x64 (upstream default, unchanged).
-  set(LIBMPV "mpv-dev-x86_64-20230924-git-652a1dd.7z")
-  set(LIBMPV_URL "https://github.com/media-kit/libmpv-win32-video-build/releases/download/2023-09-24/${LIBMPV}")
-  set(LIBMPV_MD5 "a832ef24b3a6ff97cd2560b5b9d04cd8")
+  set(LIBMPV "mpv-dev-x86_64-20260607-git-71ebd08.7z")
+  set(LIBMPV_MD5 "650a6c8fde5855a7cb3e219616d5d5f2")
 endif()
+set(LIBMPV_URL "https://downloads.sourceforge.net/project/mpv-player-windows/libmpv/${LIBMPV}")
 
 # Download location of the libmpv archive.
 set(LIBMPV_ARCHIVE "${CMAKE_BINARY_DIR}/${LIBMPV}")

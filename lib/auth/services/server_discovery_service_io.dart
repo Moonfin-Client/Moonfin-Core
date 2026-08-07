@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+
+import '../../data/services/log_service.dart';
 
 import 'server_discovery_types.dart';
 
@@ -58,7 +61,16 @@ class ServerDiscoveryService {
       });
 
       yield* controller.stream;
-    } catch (_) {
+    } catch (error) {
+      // Swallowing this leaves an empty list that reads exactly like a
+      // network with no servers on it.
+      if (GetIt.instance.isRegistered<LogService>()) {
+        GetIt.instance<LogService>().network(
+          'Local server discovery failed',
+          level: LogLevel.error,
+          error: error,
+        );
+      }
       if (!controller.isClosed) await controller.close();
     } finally {
       rebroadcastTimer?.cancel();

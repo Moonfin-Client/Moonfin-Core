@@ -3,14 +3,26 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import 'oled_mode_tuning.dart';
+import 'vibrance.dart';
 
 class AppThemeController extends ChangeNotifier {
   ThemeSpec _activeSpec;
   VisualThemeId _activeThemeId;
   String _activeCustomId;
+  OledMode _activeOled;
 
-  AppThemeController(this._activeSpec, this._activeThemeId, this._activeCustomId) {
+  AppThemeController(
+    this._activeSpec,
+    this._activeThemeId,
+    this._activeCustomId,
+    this._activeOled,
+  ) {
     ThemeRegistry.setActiveById(_activeSpec.id);
+    ThemeRegistry.setOledTuning(_activeOled.tuning);
+    Vibrance.apply(_activeOled.tuning);
+    // Re-read so we hold the derived spec, not the plain one we were given.
+    _activeSpec = ThemeRegistry.active;
   }
 
   ThemeSpec get activeSpec => _activeSpec;
@@ -48,19 +60,19 @@ class AppThemeController extends ChangeNotifier {
   }
 
   /// Re-resolve the active spec from the current preferences. Call this after
-  /// the custom theme registry has been updated (e.g. plugin sync) or when
-  /// either preference changes.
+  /// the custom theme registry has been updated (e.g. plugin sync) or when any
+  /// of the theme preferences change.
   void refreshFromPreferences(UserPreferences prefs) {
     final builtIn = prefs.get(UserPreferences.visualTheme);
     final customId = prefs.get(UserPreferences.customThemeId);
-    _apply(builtIn, customId);
+    _apply(builtIn, customId, prefs.get(UserPreferences.oledMode));
   }
 
   void setByThemeId(VisualThemeId themeId) {
-    _apply(themeId, _activeCustomId);
+    _apply(themeId, _activeCustomId, _activeOled);
   }
 
-  void _apply(VisualThemeId builtIn, String customId) {
+  void _apply(VisualThemeId builtIn, String customId, OledMode oled) {
     ThemeSpec resolved;
     final hasCustom =
         customId.isNotEmpty &&
@@ -72,15 +84,22 @@ class AppThemeController extends ChangeNotifier {
       resolved = ThemeRegistry.resolveById(builtInThemeIdFor(builtIn));
     }
 
+    // OLED Mode changes no theme id, so it has to be part of this guard or
+    // toggling it would be a silent no-op.
     if (resolved.id == _activeSpec.id &&
         builtIn == _activeThemeId &&
-        customId == _activeCustomId) {
+        customId == _activeCustomId &&
+        oled == _activeOled) {
       return;
     }
     _activeThemeId = builtIn;
     _activeCustomId = hasCustom ? customId : '';
-    _activeSpec = resolved;
-    ThemeRegistry.setActiveById(_activeSpec.id);
+    _activeOled = oled;
+    ThemeRegistry.setActiveById(resolved.id);
+    ThemeRegistry.setOledTuning(oled.tuning);
+    Vibrance.apply(oled.tuning);
+    // The derived spec, not `resolved`.
+    _activeSpec = ThemeRegistry.active;
     notifyListeners();
   }
 
@@ -91,7 +110,7 @@ class AppThemeController extends ChangeNotifier {
     await prefs.set(UserPreferences.visualTheme, themeId);
     await prefs.set(UserPreferences.customThemeId, '');
     await prefs.set(UserPreferences.focusColor, _defaultFocusColorForTheme(themeId));
-    _apply(themeId, '');
+    _apply(themeId, '', _activeOled);
   }
 
   /// Applies a theme by registry id. Built-in IDs map to [visualTheme], while
@@ -114,7 +133,7 @@ class AppThemeController extends ChangeNotifier {
   Future<void> applyCustomTheme(UserPreferences prefs, String customId) async {
     if (customId.isEmpty) {
       await prefs.set(UserPreferences.customThemeId, '');
-      _apply(prefs.get(UserPreferences.visualTheme), '');
+      _apply(prefs.get(UserPreferences.visualTheme), '', _activeOled);
       return;
     }
     if (ThemeRegistry.builtInIds.contains(customId)) {
@@ -126,11 +145,11 @@ class AppThemeController extends ChangeNotifier {
     }
     if (!ThemeRegistry.availableThemes.containsKey(customId)) {
       await prefs.set(UserPreferences.customThemeId, '');
-      _apply(prefs.get(UserPreferences.visualTheme), '');
+      _apply(prefs.get(UserPreferences.visualTheme), '', _activeOled);
       return;
     }
     await prefs.set(UserPreferences.customThemeId, customId);
-    _apply(prefs.get(UserPreferences.visualTheme), customId);
+    _apply(prefs.get(UserPreferences.visualTheme), customId, _activeOled);
   }
 
   static AppThemeController fromPreferences(UserPreferences prefs) {
@@ -143,7 +162,12 @@ class AppThemeController extends ChangeNotifier {
     final initial = hasCustom
         ? ThemeRegistry.resolveById(customId)
       : ThemeRegistry.resolveById(builtInThemeIdFor(prefTheme));
-    return AppThemeController(initial, prefTheme, hasCustom ? customId : '');
+    return AppThemeController(
+      initial,
+      prefTheme,
+      hasCustom ? customId : '',
+      prefs.get(UserPreferences.oledMode),
+    );
   }
 }
 

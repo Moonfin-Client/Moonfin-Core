@@ -317,16 +317,44 @@ jobs:
           path: Moonfin_WindowsARM64_v*.exe
           if-no-files-found: error
 
-  # Linux packages
+  # Linux packages, built natively for each architecture
   linux:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.linux }}
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+            appimagetool_arch: x86_64
+            artifact_prefix: Moonfin_Linux
+          # glibc and libstdc++ are deliberately not bundled, so the build host
+          # decides the oldest system the packages can run on. 24.04 puts that
+          # floor at glibc 2.38, newer than the Debian 12 base that Raspberry Pi
+          # OS and most other ARM64 boards run. 22.04 puts it at 2.35.
+          - arch: arm64
+            runner: ubuntu-22.04-arm
+            appimagetool_arch: aarch64
+            artifact_prefix: Moonfin_LinuxARM64
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
+        if: matrix.arch == 'x64'
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      # Flutter publishes no Linux ARM64 SDK archive for the action to fetch, so
+      # the SDK is cloned instead and its own bootstrap pulls the arm64 Dart SDK
+      # and engine artifacts to match the host.
+      - name: Set up Flutter (native ARM64)
+        if: matrix.arch == 'arm64'
+        run: |
+          set -euo pipefail
+          git clone https://github.com/flutter/flutter.git \
+            --branch "$FLUTTER_VERSION" --depth 1 "$HOME/flutter"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
 
       - name: Install system build dependencies
         run: |
@@ -360,7 +388,7 @@ jobs:
       - name: Install appimagetool
         run: |
           sudo curl -fsSL -o /usr/local/bin/appimagetool \
-            https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+            https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.appimagetool_arch }}.AppImage
           sudo chmod +x /usr/local/bin/appimagetool
 
       - name: Install snapcraft
@@ -377,17 +405,19 @@ jobs:
           ./build-linux.sh all
 
       - name: Verify Linux artifacts
+        env:
+          PREFIX: ${{ matrix.artifact_prefix }}
         run: |
           set -euo pipefail
           shopt -s nullglob
           patterns=(
-            "Moonfin_Linux_v*.tar.gz"
-            "Moonfin_Linux_v*.AppImage"
-            "Moonfin_Linux_v*.AppImage.zsync"
-            "Moonfin_Linux_v*.deb"
-            "Moonfin_Linux_v*.rpm"
-            "Moonfin_Linux_v*.snap"
-            "Moonfin_Linux_v*.flatpak"
+            "${PREFIX}_v*.tar.gz"
+            "${PREFIX}_v*.AppImage"
+            "${PREFIX}_v*.AppImage.zsync"
+            "${PREFIX}_v*.deb"
+            "${PREFIX}_v*.rpm"
+            "${PREFIX}_v*.snap"
+            "${PREFIX}_v*.flatpak"
           )
 
           missing=0
@@ -410,15 +440,15 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: linux-packages
+          name: linux-packages-${{ matrix.arch }}
           path: |
-            Moonfin_Linux_v*.tar.gz
-            Moonfin_Linux_v*.AppImage
-            Moonfin_Linux_v*.AppImage.zsync
-            Moonfin_Linux_v*.deb
-            Moonfin_Linux_v*.rpm
-            Moonfin_Linux_v*.snap
-            Moonfin_Linux_v*.flatpak
+            ${{ matrix.artifact_prefix }}_v*.tar.gz
+            ${{ matrix.artifact_prefix }}_v*.AppImage
+            ${{ matrix.artifact_prefix }}_v*.AppImage.zsync
+            ${{ matrix.artifact_prefix }}_v*.deb
+            ${{ matrix.artifact_prefix }}_v*.rpm
+            ${{ matrix.artifact_prefix }}_v*.snap
+            ${{ matrix.artifact_prefix }}_v*.flatpak
           if-no-files-found: error
 
   # GitHub Release

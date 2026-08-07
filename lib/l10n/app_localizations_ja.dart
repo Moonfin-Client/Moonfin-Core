@@ -204,6 +204,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get glassQuality => 'グラスの品質';
 
   @override
+  String get oledMode => 'OLED Mode';
+
+  @override
+  String get oledModeSubtitle =>
+      'Deepen blacks and enrich artwork. Best on OLED displays.';
+
+  @override
+  String get oledModeSubtle => 'Subtle';
+
+  @override
+  String get oledModeVivid => 'Vivid';
+
+  @override
   String get glassQualitySubtitle =>
       '自動はこのデバイスに最適なグラス効果を選びます。フルは本物のぼかしを使用し、軽量は GPU 負荷を抑えた軽いグラスを使用します。';
 
@@ -478,6 +491,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get extraLarge => '特大';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — ジャンル';
   }
@@ -567,6 +589,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get scrollRight => '右にスクロール';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
 
   @override
   String get couldNotLoadGenre => '現在このジャンルを読み込めませんでした。';
@@ -2502,20 +2527,6 @@ class AppLocalizationsJa extends AppLocalizations {
       'DTS オーディオを AVR にのみビットストリームします。レシーバーのサポートと DTS ソース トラックが必要です';
 
   @override
-  String get enableTrueHdAudio =>
-      'TrueHD オーディオを有効にする (プラットフォームによっては機能しない場合があります)';
-
-  @override
-  String get settingsAudioOutputMode => 'オーディオ出力モード';
-
-  @override
-  String get settingsAudioOutputModeDescription =>
-      'オーディオのデコード方法を選択します。AVR パススルーは Dolby / DTS のストリームをそのままレシーバーに送信し、自動またはダウンミックスは本体でデコードします。';
-
-  @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR パススルー';
-
-  @override
   String get settingsAudioFallbackCodec => '代替オーディオコーデック';
 
   @override
@@ -2533,9 +2544,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
-
-  @override
-  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(ロスレス)';
 
   @override
   String get settingsAudioFallbackCodecMp3 => 'MP3\n(ステレオのみ)';
@@ -2594,35 +2602,48 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsAudioEac3Passthrough => 'EAC3 パススルー';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) パススルー';
-
-  @override
   String get settingsAudioDtsCorePassthrough => 'DTS コアパススルー';
 
   @override
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA パススルー';
 
   @override
+  String get settingsAudioPassthroughMode => 'Passthrough';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'How compressed surround sound reaches your TV or receiver.';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled =>
+      'Disabled (always decode on this device)';
+
+  @override
+  String get settingsAudioPassthroughModeAuto =>
+      'Auto (match detected device support)';
+
+  @override
+  String get settingsAudioPassthroughModeManual =>
+      'Manual (choose formats below)';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Mix all decoded audio down to two channels.';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos =>
+      'Bitstream E-AC-3, including Dolby Atmos (JOC).';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX =>
+      'Bitstream DTS-HD, including DTS:X.';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos =>
+      'Bitstream TrueHD, including Dolby Atmos.';
+
+  @override
   String get settingsAudioTrueHdPassthrough => 'TrueHD パススルー';
-
-  @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos パススルー';
-
-  @override
-  String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Dolby Digital Plus (EAC3) を外部デコーダーにビットストリーム出力します。';
-
-  @override
-  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'EAC3 (JOC) の Dolby Atmos を外部デコーダーにビットストリーム出力します。';
-
-  @override
-  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'DTS-HD MA (DTS コアを含む) を外部デコーダーにビットストリーム出力します。';
-
-  @override
-  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Atmos メタデータ付きの Dolby TrueHD を外部デコーダーにビットストリーム出力します。';
 
   @override
   String get settingsDetectedAudioCapabilities => '検出されたオーディオ機能';
@@ -3181,6 +3202,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showLibrariesFromAllServers => '接続されているすべてのサーバーのライブラリを表示する';
 
   @override
+  String get mergeRecentRowsByType => 'Merge Recent Rows by Type';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Combine separate libraries of the same type for Recently Added and Recently Released home rows.';
+
+  @override
+  String get libraryView => 'Library View';
+
+  @override
   String get enableFolderView => 'フォルダービューを有効にする';
 
   @override
@@ -3671,6 +3702,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get networks => 'ネットワーク';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr のディスカバリー行';
 
   @override
@@ -3921,6 +3958,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String requestedByName(String name) {
     return '$name がリクエスト';
   }
+
+  @override
+  String get manageRequests => 'Manage Requests';
+
+  @override
+  String get watchlist => 'Watchlist';
+
+  @override
+  String get onWatchlist => 'On Watchlist';
 
   @override
   String get approve => '承認する';
@@ -8843,6 +8889,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'コレクションの行を追加日、公開日、名前順などで並べ替えます。';
 
   @override
+  String get collectionsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
+
+  @override
   String get displayGenresRows => 'ジャンルの行を表示';
 
   @override
@@ -8871,6 +8924,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get playlistsRowSortingDescription => 'プレイリストの行を追加日、公開日、名前順などで並べ替えます。';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Show Individual Episodes';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Expand TV shows to display each episode separately.';
 
   @override
   String get displayAudioRows => 'オーディオの行を表示';
@@ -8937,17 +8997,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notSupportedOnThisDevice => 'このデバイスでは対応していません';
-
-  @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) パススルー';
-
-  @override
-  String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'DTS:X (DTS UHD) を外部デコーダーにビットストリーム出力します。';
-
-  @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) パススルー';
 
   @override
   String get mediaPlayerBehavior => 'メディアプレイヤーの動作';
@@ -10028,4 +10077,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mixedPlaylistsSection => 'Mixed Playlists';
+
+  @override
+  String get playbackTimeDisplay => 'Progress Bar Time';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Choose which time labels appear around the playback progress bar.';
+
+  @override
+  String get playbackTimeTotal => 'Total duration';
+
+  @override
+  String get playbackTimeRemaining => 'Time remaining';
+
+  @override
+  String get playbackTimeEndsAt => 'Ends at';
+
+  @override
+  String get playbackTimeElapsed => 'Time elapsed';
+
+  @override
+  String get playbackTimeVideoSection => 'Video Player';
+
+  @override
+  String get playbackTimeMusicSection => 'Music Player';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Choose what is shown here, or hide it.';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Above bar, left';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Above bar, center';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Above bar, right';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Below bar, left';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Below bar, center';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Below bar, right';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Choose what is shown on the right side of the music progress bar.';
+
+  @override
+  String get groupByTitle => 'Group By';
+
+  @override
+  String get groupByDecade => 'Decade (Year)';
+
+  @override
+  String get groupByParentalRating => 'Parental Rating';
+
+  @override
+  String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

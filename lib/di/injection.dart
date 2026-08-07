@@ -188,24 +188,6 @@ Future<void> _migrateLegacyBitrateCap(PreferenceStore store) async {
   await store.setBool(migrationKey, true);
 }
 
-Future<void> _migrateAndroidTvPassthroughDefaults(
-  PreferenceStore store,
-) async {
-  const migrationKey = 'pref_audio_passthrough_defaults_android_tv_v1';
-
-  if (!PlatformDetection.isAndroid || !PlatformDetection.isTV) {
-    return;
-  }
-
-  if (store.getBool(migrationKey) == true) {
-    return;
-  }
-
-  await store.setBool(UserPreferences.audioPrefsAutoDetected.key, false);
-
-  await store.setBool(migrationKey, true);
-}
-
 Future<void> _migrateAndroidMobileStereoAacFallbackDefault(
   PreferenceStore store,
 ) async {
@@ -275,12 +257,10 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
   if (legacyOn(_legacyDtsEnabledKey)) {
     await setBoolIfMissing(UserPreferences.dtsCorePassthroughEnabled, true);
     await setBoolIfMissing(UserPreferences.dtsHdPassthroughEnabled, true);
-    await setBoolIfMissing(UserPreferences.dtsXPassthroughEnabled, true);
     carriedOver = true;
   }
   if (legacyOn(_legacyTrueHdEnabledKey)) {
     await setBoolIfMissing(UserPreferences.trueHdPassthroughEnabled, true);
-    await setBoolIfMissing(UserPreferences.trueHdAtmosPassthroughEnabled, true);
     carriedOver = true;
   }
 
@@ -289,19 +269,15 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
       store.getString(_legacyAudioBehaviorKey) ==
           _legacyAudioBehaviorDownmixValue;
   if (wasDownmix) {
+    await setBoolIfMissing(UserPreferences.downmixToStereo, true);
     await setEnumIfMissing(
-      UserPreferences.audioOutputMode,
-      AudioOutputMode.forceStereo,
+      UserPreferences.audioPassthroughMode,
+      AudioPassthroughMode.disabled,
     );
-  }
-
-  final migratedPreset = carriedOver
-      ? AudioPassthroughPreset.advanced
-      : (wasDownmix ? AudioPassthroughPreset.stereo : null);
-  if (migratedPreset != null) {
+  } else if (carriedOver) {
     await setEnumIfMissing(
-      UserPreferences.audioPassthroughPreset,
-      migratedPreset,
+      UserPreferences.audioPassthroughMode,
+      AudioPassthroughMode.manual,
     );
   }
 
@@ -331,6 +307,58 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
   }
 
   await store.setBool(migrationKey, true);
+}
+
+// Retired keys from the preset era, read raw because the prefs no longer exist.
+const _oldPresetKey = 'pref_audio_passthrough_preset';
+const _oldOutputModeKey = 'audio_output_mode';
+const _oldToggleKeys = <String>[
+  'pref_passthrough_ac3',
+  'pref_passthrough_eac3',
+  'pref_passthrough_eac3_joc',
+  'pref_passthrough_dts_core',
+  'pref_passthrough_dts_hd',
+  'pref_passthrough_dts_x',
+  'pref_passthrough_truehd',
+  'pref_passthrough_truehd_atmos',
+];
+
+/// Folds the retired preset, output mode, and variant toggles into the
+/// passthrough mode and downmix prefs. The five base toggle keys keep their
+/// stored values. The variant keys are left behind, since a variant-only ON
+/// was a no-op once its base toggle was off.
+Future<void> migrateAudioPassthroughMode(PreferenceStore store) async {
+  if (store.getBool(UserPreferences.audioModeMigrated.key) == true) {
+    return;
+  }
+
+  final preset = store.getString(_oldPresetKey);
+  final outputMode = store.getString(_oldOutputModeKey);
+  final anyToggleSet = _oldToggleKeys.any(store.containsKey);
+
+  final AudioPassthroughMode mode;
+  var downmix = false;
+  if (preset == 'stereo' || outputMode == 'forceStereo') {
+    // The old stereo path meant no passthrough plus a local downmix.
+    mode = AudioPassthroughMode.disabled;
+    downmix = true;
+  } else if (preset == 'advanced' || anyToggleSet) {
+    // Hand-managed toggles keep their intent. Absent base keys get filled
+    // from the probe after startup detection.
+    mode = AudioPassthroughMode.manual;
+  } else {
+    mode = AudioPassthroughMode.auto;
+  }
+
+  if (mode != AudioPassthroughMode.auto &&
+      !store.containsKey(UserPreferences.audioPassthroughMode.key)) {
+    await store.setString(UserPreferences.audioPassthroughMode.key, mode.name);
+  }
+  if (downmix && !store.containsKey(UserPreferences.downmixToStereo.key)) {
+    await store.setBool(UserPreferences.downmixToStereo.key, true);
+  }
+
+  await store.setBool(UserPreferences.audioModeMigrated.key, true);
 }
 
 // Minimal DI for background isolates like the Watch Next worker. This must not
@@ -364,10 +392,10 @@ Future<void> configureDependencies() async {
   await preferenceStore.init();
   final appVersion = await _resolveAppVersion();
   await _migrateLegacyBitrateCap(preferenceStore);
-  await _migrateAndroidTvPassthroughDefaults(preferenceStore);
   await _migrateAndroidMobileStereoAacFallbackDefault(preferenceStore);
   await _migrateAndroidMobileAudioDefaults(preferenceStore);
   await migrateAudioPreferenceSplit(preferenceStore);
+  await migrateAudioPassthroughMode(preferenceStore);
 
   var deviceId = preferenceStore.getString('device_id');
   if (deviceId == null) {

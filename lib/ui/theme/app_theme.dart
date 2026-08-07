@@ -102,7 +102,9 @@ class AppTheme {
         cursorColor: c.accent,
       ),
       cardTheme: CardThemeData(
-        color: JellyfinTokens.colors.card,
+        // From the spec so OLED Mode reaches Cards instead of leaving them as
+        // grey slabs on a black scaffold.
+        color: c.card,
         shape: buttonShape,
       ),
       appBarTheme: AppBarTheme(

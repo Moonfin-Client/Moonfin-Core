@@ -93,6 +93,14 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
   void _ensureVisible() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_focusNode.hasFocus) return;
+      // Scrolling a box into view needs it laid out first, and focus can land
+      // here a frame before that happens.
+      final renderObject = context.findRenderObject();
+      if (renderObject is! RenderBox ||
+          !renderObject.attached ||
+          !renderObject.hasSize) {
+        return;
+      }
       Scrollable.ensureVisible(
         context,
         alignment: 0.5,

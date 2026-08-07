@@ -4,178 +4,86 @@ import 'package:moonfin/preference/preference_constants.dart';
 
 void main() {
   group('MediaKitPlayerBackend passthrough codec synthesis', () {
-    test('returns empty codecs for force stereo mode', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.forceStereo,
-        ac3PassthroughEnabled: true,
-        eac3PassthroughEnabled: true,
-        eac3JocPassthroughEnabled: true,
-        dtsCorePassthroughEnabled: true,
-        dtsHdPassthroughEnabled: true,
-        dtsXPassthroughEnabled: true,
-        trueHdPassthroughEnabled: true,
-        trueHdAtmosPassthroughEnabled: true,
+    test('downmix empties the codec list regardless of the set', () {
+      final codecs = MediaKitPlayerBackend.passthroughCodecsFromSet(
+        PassthroughCodec.values.toSet(),
+        downmixToStereo: true,
       );
 
       expect(codecs, isEmpty);
     });
 
-    test('maps enabled codec toggles to mpv passthrough codec names', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.avrPassthrough,
-        ac3PassthroughEnabled: true,
-        eac3PassthroughEnabled: true,
-        eac3JocPassthroughEnabled: false,
-        dtsCorePassthroughEnabled: true,
-        dtsHdPassthroughEnabled: true,
-        dtsXPassthroughEnabled: false,
-        trueHdPassthroughEnabled: true,
-        trueHdAtmosPassthroughEnabled: false,
-      );
+    test('maps the codec set to mpv passthrough names in order', () {
+      final codecs = MediaKitPlayerBackend.passthroughCodecsFromSet({
+        PassthroughCodec.ac3,
+        PassthroughCodec.eac3,
+        PassthroughCodec.dtsCore,
+        PassthroughCodec.dtsHd,
+        PassthroughCodec.trueHd,
+      }, downmixToStereo: false);
 
       expect(codecs, equals(<String>['ac3', 'eac3', 'dts-hd', 'truehd']));
     });
 
-    test('emits DTS core only when DTS-HD is disabled', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.auto,
-        ac3PassthroughEnabled: false,
-        eac3PassthroughEnabled: false,
-        eac3JocPassthroughEnabled: false,
-        dtsCorePassthroughEnabled: true,
-        dtsHdPassthroughEnabled: false,
-        dtsXPassthroughEnabled: false,
-        trueHdPassthroughEnabled: false,
-        trueHdAtmosPassthroughEnabled: false,
-      );
+    test('emits DTS core only when DTS-HD is absent', () {
+      final codecs = MediaKitPlayerBackend.passthroughCodecsFromSet({
+        PassthroughCodec.dtsCore,
+      }, downmixToStereo: false);
 
       expect(codecs, equals(<String>['dts']));
     });
 
-    test('prefers DTS-HD over DTS core when both toggles are enabled', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.auto,
-        ac3PassthroughEnabled: false,
-        eac3PassthroughEnabled: false,
-        eac3JocPassthroughEnabled: false,
-        dtsCorePassthroughEnabled: true,
-        dtsHdPassthroughEnabled: true,
-        dtsXPassthroughEnabled: false,
-        trueHdPassthroughEnabled: false,
-        trueHdAtmosPassthroughEnabled: false,
-      );
+    test('prefers dts-hd over dts when both are present', () {
+      final codecs = MediaKitPlayerBackend.passthroughCodecsFromSet({
+        PassthroughCodec.dtsCore,
+        PassthroughCodec.dtsHd,
+      }, downmixToStereo: false);
 
       expect(codecs, equals(<String>['dts-hd']));
     });
 
-    test('requires base toggles for eac3-joc and truehd-atmos passthrough', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.auto,
-        ac3PassthroughEnabled: false,
-        eac3PassthroughEnabled: false,
-        eac3JocPassthroughEnabled: true,
-        dtsCorePassthroughEnabled: false,
-        dtsHdPassthroughEnabled: false,
-        dtsXPassthroughEnabled: false,
-        trueHdPassthroughEnabled: false,
-        trueHdAtmosPassthroughEnabled: true,
-      );
-
-      expect(codecs, isEmpty);
-    });
-
-    test(
-      'maps DTS:X toggle to dts-hd when DTS core and DTS-HD are enabled',
-      () {
-        final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-          audioOutputMode: AudioOutputMode.auto,
-          ac3PassthroughEnabled: false,
-          eac3PassthroughEnabled: false,
-          eac3JocPassthroughEnabled: false,
-          dtsCorePassthroughEnabled: true,
-          dtsHdPassthroughEnabled: true,
-          dtsXPassthroughEnabled: true,
-          trueHdPassthroughEnabled: false,
-          trueHdAtmosPassthroughEnabled: false,
-        );
-
-        expect(codecs, equals(<String>['dts-hd']));
-      },
-    );
-
-    test('ignores DTS:X toggle when DTS core is disabled', () {
-      final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
-        audioOutputMode: AudioOutputMode.auto,
-        ac3PassthroughEnabled: false,
-        eac3PassthroughEnabled: false,
-        eac3JocPassthroughEnabled: false,
-        dtsCorePassthroughEnabled: false,
-        dtsHdPassthroughEnabled: true,
-        dtsXPassthroughEnabled: true,
-        trueHdPassthroughEnabled: false,
-        trueHdAtmosPassthroughEnabled: false,
+    test('an empty set synthesizes nothing', () {
+      final codecs = MediaKitPlayerBackend.passthroughCodecsFromSet(
+        const {},
+        downmixToStereo: false,
       );
 
       expect(codecs, isEmpty);
     });
   });
 
-  group('MediaKitPlayerBackend passthrough property synthesis', () {
-    test('builds audio-spdif and audio-exclusive on desktop path', () {
-      final props = MediaKitPlayerBackend
-          .passthroughMpvPropertiesFromPreferences(
-            audioOutputMode: AudioOutputMode.auto,
-            ac3PassthroughEnabled: true,
-            eac3PassthroughEnabled: true,
-            eac3JocPassthroughEnabled: false,
-            dtsCorePassthroughEnabled: false,
-            dtsHdPassthroughEnabled: false,
-            dtsXPassthroughEnabled: false,
-            trueHdPassthroughEnabled: true,
-            trueHdAtmosPassthroughEnabled: false,
-            includeAudioExclusive: true,
-          );
+  group('MediaKitPlayerBackend mpv property synthesis', () {
+    test('writes audio-spdif and audio-exclusive on desktop', () {
+      final properties = MediaKitPlayerBackend.passthroughMpvPropertiesFromSet(
+        {PassthroughCodec.ac3, PassthroughCodec.eac3},
+        downmixToStereo: false,
+        includeAudioExclusive: true,
+      );
 
-      expect(props['audio-spdif'], equals('ac3,eac3,truehd'));
-      expect(props['audio-exclusive'], equals('yes'));
+      expect(properties['audio-spdif'], 'ac3,eac3');
+      expect(properties['audio-exclusive'], 'yes');
     });
 
-    test('disables exclusive when no passthrough codecs remain', () {
-      final props = MediaKitPlayerBackend
-          .passthroughMpvPropertiesFromPreferences(
-            audioOutputMode: AudioOutputMode.forceStereo,
-            ac3PassthroughEnabled: true,
-            eac3PassthroughEnabled: true,
-            eac3JocPassthroughEnabled: true,
-            dtsCorePassthroughEnabled: true,
-            dtsHdPassthroughEnabled: true,
-            dtsXPassthroughEnabled: true,
-            trueHdPassthroughEnabled: true,
-            trueHdAtmosPassthroughEnabled: true,
-            includeAudioExclusive: true,
-          );
+    test('clears audio-exclusive when nothing is passed through', () {
+      final properties = MediaKitPlayerBackend.passthroughMpvPropertiesFromSet(
+        const {},
+        downmixToStereo: false,
+        includeAudioExclusive: true,
+      );
 
-      expect(props['audio-spdif'], isEmpty);
-      expect(props['audio-exclusive'], equals('no'));
+      expect(properties['audio-spdif'], '');
+      expect(properties['audio-exclusive'], 'no');
     });
 
-    test('omits audio-exclusive on non-desktop path', () {
-      final props = MediaKitPlayerBackend
-          .passthroughMpvPropertiesFromPreferences(
-            audioOutputMode: AudioOutputMode.auto,
-            ac3PassthroughEnabled: true,
-            eac3PassthroughEnabled: true,
-            eac3JocPassthroughEnabled: false,
-            dtsCorePassthroughEnabled: true,
-            dtsHdPassthroughEnabled: true,
-            dtsXPassthroughEnabled: false,
-            trueHdPassthroughEnabled: false,
-            trueHdAtmosPassthroughEnabled: false,
-            includeAudioExclusive: false,
-          );
+    test('omits audio-exclusive off desktop', () {
+      final properties = MediaKitPlayerBackend.passthroughMpvPropertiesFromSet(
+        {PassthroughCodec.ac3},
+        downmixToStereo: false,
+        includeAudioExclusive: false,
+      );
 
-      expect(props['audio-spdif'], equals('ac3,eac3,dts-hd'));
-      expect(props.containsKey('audio-exclusive'), isFalse);
+      expect(properties.containsKey('audio-exclusive'), isFalse);
+      expect(properties['audio-spdif'], 'ac3');
     });
   });
 }

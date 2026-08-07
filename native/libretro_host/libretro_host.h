@@ -45,8 +45,16 @@ typedef struct {
   int (*controller_count)(void *user);
   // The core changed its output geometry or aspect ratio.
   void (*geometry_changed)(void *user, int width, int height, double aspect);
-  // Optional diagnostic message, may be NULL.
-  void (*log_message)(void *user, const char *message);
+  // A message the core wants shown, such as a missing-system-files warning.
+  // Arrives on the run-loop thread, or on the caller's thread during lh_load.
+  // Optional, may be NULL.
+  void (*message)(void *user, const char *text);
+  // The core asked to quit, which cores do when a boot or a reset fails. The
+  // loop has stopped and the core is already unloaded, so the platform should
+  // end the session and tell the user. Called once, from the run-loop thread as
+  // it exits, so post the teardown elsewhere rather than calling lh_stop or
+  // lh_destroy from here. Optional, may be NULL.
+  void (*core_shutdown)(void *user);
 } lh_callbacks;
 
 // One core option and its choices.

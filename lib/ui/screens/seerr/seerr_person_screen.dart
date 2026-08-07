@@ -18,6 +18,7 @@ import '../../widgets/navigation_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
+import '../../widgets/quick_return_wrapper.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbProfileLarge = 'https://image.tmdb.org/t/p/w500';
@@ -36,6 +37,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
   bool _initializing = true;
   bool _bioExpanded = false;
   bool _bioFocused = false;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -73,6 +75,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
   void dispose() {
     _vm?.removeListener(_onChanged);
     _vm?.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -87,7 +90,13 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
   Widget _buildScreenContent(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
-      body: NavigationLayout(showBackButton: true, child: _buildBody()),
+      body: NavigationLayout(
+        showBackButton: true,
+        child: QuickReturnWrapper(
+          scrollController: _scrollController,
+          child: _buildBody(),
+        ),
+      ),
     );
   }
 
@@ -134,6 +143,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
     final topPad = MediaQuery.of(context).padding.top;
 
     return CustomScrollView(
+      controller: _scrollController,
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
@@ -398,8 +408,10 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
               onTap: () {
                 final mediaType = item.mediaType ?? 'movie';
                 context.push(
-                  Destinations.seerrMedia(item.id.toString()),
-                  extra: {'mediaType': mediaType},
+                  Destinations.seerrMedia(
+                    item.id.toString(),
+                    mediaType: mediaType,
+                  ),
                 );
               },
             ),

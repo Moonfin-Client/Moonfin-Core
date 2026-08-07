@@ -1,3 +1,4 @@
+import AetherEngine
 import Flutter
 import UIKit
 
@@ -14,6 +15,8 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var lastTextTrackCount = -1
     private var lastClosedCaptionCount = -1
     private var didComplete = false
+    private var lastLoggedState: PlayerState?
+    private var didReportTerminalError = false
     private var lastMetadata: [String: Any]?
     private var lastSubtitleStyle: [String: Any]?
     private var lastThemeConfig: [String: Any]?
@@ -72,6 +75,10 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             dismiss()
         case "setSource":
             setSource(args)
+        case "setEngineLogForwarding":
+            setEngineLogForwarding((args["enabled"] as? Bool) == true)
+        case "setAllowUntrustedTls":
+            EngineTLS.allowUntrustedCertificates = (args["enabled"] as? Bool) == true
         case "setUiMetadata":
             lastMetadata = args
             playerVC?.applyUiMetadata(args)
@@ -202,6 +209,15 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         vc.onSelectSubtitle = { [weak self] index in
             self?.send(["event": "selectSubtitle", "index": index])
         }
+        // Keeps the stored delay on the Dart side in step with what the user
+        // set here. Audio delay has no control on this path, so it stays zero.
+        vc.onSubtitleDelayChanged = { [weak self] delayMs in
+            self?.send([
+                "event": "syncDelays",
+                "audioDelayMs": 0,
+                "subtitleDelayMs": delayMs,
+            ])
+        }
         vc.onSetSpeed = { [weak self] speed in
             self?.send(["event": "setSpeed", "speed": speed])
         }
@@ -292,9 +308,31 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         }
     }
 
+    /// Engine lines otherwise only reach the device console, which a remote
+    /// user can't capture, so a report says nothing about what the reader and
+    /// demuxer saw before the failure.
+    private func setEngineLogForwarding(_ enabled: Bool) {
+        guard enabled else {
+            EngineLog.handler = nil
+            return
+        }
+        EngineLog.handler = { [weak self] line in
+            DispatchQueue.main.async {
+                self?.send(["event": "engineLog", "line": line])
+            }
+        }
+    }
+
+    /// Rides the same event the engine lines use, so a report carries the open
+    /// in order rather than as two separate streams.
+    private func hostLog(_ line: String) {
+        send(["event": "engineLog", "line": "[AppleTvVideoChannel] \(line)"])
+    }
+
     private func setSource(_ args: [String: Any]) {
         guard let player = player, let url = args["url"] as? String else { return }
         didComplete = false
+        didReportTerminalError = false
         lastTextTrackCount = -1
         lastClosedCaptionCount = -1
         let startMs = (args["startPositionMs"] as? NSNumber)?.doubleValue ?? 0
@@ -318,10 +356,21 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
 
         Task {
+            let started = Date()
             await player.play(
                 streamUrl: url, startPosition: startMs / 1000.0, audioOnly: audioOnly)
+            let elapsed = Int(Date().timeIntervalSince(started) * 1000)
+            hostLog(
+                "play returned after \(elapsed)ms state=\(player.state) "
+                    + "duration=\(Int(player.duration))s audioTracks=\(player.audioTracks.count) "
+                    + "subtitleTracks=\(player.subtitleTracks.count)")
             if let speed = (args["speed"] as? NSNumber)?.floatValue, speed != 1.0 {
                 player.setRate(speed)
+            }
+            if let delayMs = (args["subtitleDelayMs"] as? NSNumber)?.doubleValue,
+                delayMs != 0
+            {
+                player.setSubtitleDelay(delayMs / 1000.0)
             }
         }
     }
@@ -341,6 +390,12 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
 
     private func pushState() {
         guard let p = player else { return }
+        if p.state != lastLoggedState {
+            lastLoggedState = p.state
+            hostLog(
+                "state \(p.state) at \(String(format: "%.2f", p.currentTime))s "
+                    + "buffered=\(Int(p.bufferProgress * 100))%")
+        }
         var isPlaying = false
         var isBuffering = false
         switch p.state {
@@ -388,7 +443,8 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             send(["event": "completed", "completed": true])
         }
 
-        if p.state == .error {
+        if p.state == .error, !didReportTerminalError {
+            didReportTerminalError = true
             send(["event": "error", "error": "Playback error"])
         }
     }

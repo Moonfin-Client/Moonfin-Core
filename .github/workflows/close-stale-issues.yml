@@ -1,0 +1,55 @@
+name: Close stale issues
+
+# Issues with no activity for 14 days are marked stale and warned, then closed
+# a week later if still nobody has replied. Commenting clears the label and
+# resets the clock, so anything still live stays open on its own.
+
+on:
+  schedule:
+    - cron: '30 2 * * *' # daily, 02:30 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-issue-stale: 14
+          days-before-issue-close: 7
+          stale-issue-label: 'Stale'
+          close-issue-reason: not_planned
+
+          # Pull requests are reviewed on their own schedule, leave them alone.
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+
+          exempt-issue-labels: 'Pinned,Keep Open,Roadmap,Security,Confirmed'
+
+          # Default is 30 API operations per run, which quietly skips issues
+          # once the backlog is larger than that.
+          operations-per-run: 200
+
+          stale-issue-message: >
+            This issue has had no activity for 14 days, so it has been marked
+            **Stale**. If it's still happening, please reply with anything we
+            are missing, a screenshot for a UI problem, or a diagnostic report
+            for a playback one. See
+            [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs)
+            for how to capture a report.
+
+
+            Any comment removes the label and reopens the clock. Without one
+            this will be closed in 7 days.
+
+          close-issue-message: >
+            Closing this as inactive, since there has been no response for 21
+            days. That's not a judgement on the report, we simply can't
+            reproduce or track something with no further information.
+
+
+            If you run into this again, comment here with the details and we
+            will reopen it. A new issue isn't necessary.

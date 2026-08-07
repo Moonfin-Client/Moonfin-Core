@@ -7749,10 +7749,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(무손실)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecMp3": "MP3\n(스테레오 전용)",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"

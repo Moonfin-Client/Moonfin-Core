@@ -1,5 +1,9 @@
 import AVFoundation
-import Flutter
+#if canImport(Flutter)
+    import Flutter
+#elseif canImport(FlutterMacOS)
+    import FlutterMacOS
+#endif
 
 @MainActor
 final class AppleTvThemeMusicChannel: NSObject {

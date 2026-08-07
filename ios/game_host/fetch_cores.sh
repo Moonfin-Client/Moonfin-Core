@@ -18,16 +18,35 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAGING="$SCRIPT_DIR/cores/staging"
 mkdir -p "$STAGING"
 
+# Cores come and go from the nightly buildbot, so a missing one is skipped
+# with a warning rather than sinking the whole set. A download that lands but
+# is broken still stops everything, since that means something real is wrong.
+fetched=0
+skipped=()
 for core in "${CORES[@]}"; do
   zip="${core}_libretro_ios.dylib.zip"
   echo "==> $core"
-  curl -fL --retry 3 -o "$STAGING/$zip" "$BUILDBOT/$zip"
+  if ! curl -fL --retry 3 -o "$STAGING/$zip" "$BUILDBOT/$zip"; then
+    echo "warning: the buildbot has no iOS build of $core right now, skipping it" >&2
+    rm -f "$STAGING/$zip"
+    skipped+=("$core")
+    continue
+  fi
   unzip -o -q "$STAGING/$zip" -d "$STAGING"
   rm -f "$STAGING/$zip"
   dylib="$STAGING/${core}_libretro_ios.dylib"
   [ -f "$dylib" ] || { echo "error: $dylib missing after unzip" >&2; exit 1; }
   lipo -info "$dylib" | grep -q arm64 || { echo "error: $core is not arm64" >&2; exit 1; }
+  fetched=$((fetched + 1))
 done
 
+if [ "$fetched" -eq 0 ]; then
+  echo "error: no cores could be fetched, the buildbot may be down" >&2
+  exit 1
+fi
+
+if [ ${#skipped[@]} -gt 0 ]; then
+  echo "skipped, no buildbot build today: ${skipped[*]}" >&2
+fi
 echo "done: $(ls "$STAGING" | wc -l | tr -d ' ') dylibs in $STAGING"
 echo "next: wrap_frameworks.sh"

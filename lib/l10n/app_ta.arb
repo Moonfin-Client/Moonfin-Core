@@ -7749,10 +7749,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(இழப்பற்றது)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecMp3": "MP3\n(ஸ்டீரியோ மட்டும்)",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"

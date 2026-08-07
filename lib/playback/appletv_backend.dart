@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 
+import '../data/services/log_service.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
@@ -11,12 +13,14 @@ import 'device_profile_builder.dart';
 import 'known_defects.dart';
 import 'server_transcode_capabilities.dart';
 
-class AppleTvMpvBackend implements PlayerBackend {
-  AppleTvMpvBackend(this._prefs) {
+class AppleTvBackend implements PlayerBackend {
+  AppleTvBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
       onError: (_) {},
     );
+    _prefs.addListener(_syncNativePreferences);
+    _syncNativePreferences();
   }
 
   static const _control = MethodChannel('moonfin/appletv_video_control');
@@ -47,6 +51,8 @@ class AppleTvMpvBackend implements PlayerBackend {
   final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
+  bool? _engineLogForwarding;
+  bool? _allowUntrustedTls;
   bool _playerPresented = false;
   Timer? _audioDelayDebounce;
 
@@ -71,9 +77,31 @@ class AppleTvMpvBackend implements PlayerBackend {
     if (_disposed) return null;
     try {
       return await _control.invokeMethod<T>(method, arguments);
-    } catch (_) {
+    } on PlatformException catch (error) {
+      _log(
+        'Channel call $method failed code=${error.code}',
+        level: LogLevel.error,
+        error: error.message,
+      );
+      return null;
+    } catch (error) {
+      _log('Channel call $method failed', level: LogLevel.error, error: error);
       return null;
     }
+  }
+
+  void _log(String message, {LogLevel level = LogLevel.debug, Object? error}) {
+    if (!GetIt.instance.isRegistered<LogService>()) return;
+    GetIt.instance<LogService>().playback(message, level: level, error: error);
+  }
+
+  /// The query carries the server token, so only the origin and path go in a
+  /// report a user uploads.
+  String _describeUrl(String url) {
+    final parsed = Uri.tryParse(url);
+    if (parsed == null) return 'unparsable url';
+    final port = parsed.hasPort ? ':${parsed.port}' : '';
+    return '${parsed.scheme}://${parsed.host}$port${parsed.path}';
   }
 
   Future<void> _ensurePlayerPresented({bool audioOnly = false}) async {
@@ -168,8 +196,11 @@ class AppleTvMpvBackend implements PlayerBackend {
       case 'syncDelays':
         _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
         _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+      case 'engineLog':
+        _logEngineLine(map['line']);
       case 'playerError':
       case 'error':
+        _logPlaybackError(map);
         _errorStream.add(map.cast<String, dynamic>());
         _isPlaying = false;
         _isBuffering = false;
@@ -178,6 +209,47 @@ class AppleTvMpvBackend implements PlayerBackend {
         _bufferingStream.add(false);
         _completedStream.add(false);
     }
+  }
+
+  /// The preferences notify on every change, so each sync below guards its
+  /// own flag and only a real change reaches the channel.
+  void _syncNativePreferences() {
+    _syncEngineLogForwarding();
+    _syncAllowUntrustedTls();
+  }
+
+  void _syncEngineLogForwarding() {
+    final enabled = _prefs.get(UserPreferences.diagnosticLoggingEnabled);
+    if (enabled == _engineLogForwarding) return;
+    _engineLogForwarding = enabled;
+    _invoke<void>('setEngineLogForwarding', {'enabled': enabled});
+  }
+
+  void _logEngineLine(dynamic line) {
+    if (line is! String || line.isEmpty) return;
+    _log(line);
+  }
+
+  /// A native failure never reaches the server, so without this the report
+  /// from a user whose playback didn't start shows only browsing.
+  void _logPlaybackError(Map<dynamic, dynamic> map) {
+    _log(
+      'Native player error kind=${map['kind'] ?? 'unknown'} '
+      'recoverable=${map['recoverable']}',
+      level: LogLevel.error,
+      error: map['message'],
+    );
+  }
+
+  /// The engine streams over URLSession, which enforces system certificate
+  /// trust that the Dart client bypasses through its bad certificate
+  /// callback, so without this a self signed server browses fine and fails
+  /// every playback.
+  void _syncAllowUntrustedTls() {
+    final enabled = _prefs.get(UserPreferences.allowSelfSignedCerts);
+    if (enabled == _allowUntrustedTls) return;
+    _allowUntrustedTls = enabled;
+    _invoke<void>('setAllowUntrustedTls', {'enabled': enabled});
   }
 
   int _toInt(dynamic value) {
@@ -227,6 +299,11 @@ class AppleTvMpvBackend implements PlayerBackend {
 
     final audioOnly =
         (payload['mediaType']?.toString() ?? 'video') == 'audio';
+    _log(
+      'play ${_describeUrl(url)} live=${payload['isLive'] == true} '
+      'audioOnly=$audioOnly startMs=${startPosition.inMilliseconds} '
+      'headers=${(headers.keys.toList()..sort()).join(',')}',
+    );
     await _ensurePlayerPresented(audioOnly: audioOnly);
 
     await _invoke<void>('setSource', {
@@ -340,18 +417,12 @@ class AppleTvMpvBackend implements PlayerBackend {
     return DeviceProfileBuilder.build(
       maxBitrateMbps: maxBitrate,
       audioCapabilityProfile: audioCapabilityProfile,
-      audioOutputMode: _prefs.resolveAudioOutputMode(),
       audioFallbackCodec: _prefs.resolveAudioFallbackCodec(),
       ac3PassthroughEnabled: _prefs.resolveAc3PassthroughEnabled(),
       eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
-      eac3JocPassthroughEnabled: _prefs.resolveEac3JocPassthroughEnabled(),
       dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
-      dtsHdPassthroughEnabled: _prefs.resolveDtsHdPassthroughEnabled(),
-      dtsXPassthroughEnabled: _prefs.resolveDtsXPassthroughEnabled(),
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
-      trueHdAtmosPassthroughEnabled: _prefs
-          .resolveTrueHdAtmosPassthroughEnabled(),
-      explicitPassthroughToggles: _prefs.explicitPassthroughToggles,
+      downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
       // AetherEngine plays every advertised audio codec: AAC/AC3/EAC3(+JOC
       // Atmos)/FLAC/ALAC are stream-copied intact, and TrueHD/DTS/MP3/Opus/
       // Vorbis/PCM are bridged to EAC3 or FLAC on-device, so stereo routes
@@ -368,6 +439,7 @@ class AppleTvMpvBackend implements PlayerBackend {
       supportsHevcMain10: PlatformDetection.supportsHevcMain10,
       transcodeHevcAllowed: serverAllowsHevcTranscode(),
       hevcRequiresFmp4Hls: true,
+      hlsAudioExcludesDts: true,
       hevcMainLevel: PlatformDetection.hevcMainLevel,
       supportsHevcDolbyVision: PlatformDetection.supportsHevcDolbyVision,
       supportsHevcDolbyVisionEl: PlatformDetection.supportsHevcDolbyVisionEl,
@@ -398,6 +470,11 @@ class AppleTvMpvBackend implements PlayerBackend {
             behavior: _prefs.get(
               UserPreferences.dolbyVisionProfile7DirectPlayBehavior,
             ),
+            // Auto otherwise falls through to a model list that no Apple
+            // device is on, so every P7 title transcodes on hardware that
+            // can play it.
+            hasHardwareDolbyVisionDecoder:
+                PlatformDetection.supportsDoViProfile7,
           ),
     );
   }
@@ -428,6 +505,7 @@ class AppleTvMpvBackend implements PlayerBackend {
     String liveChannelNumber = '',
     List<Map<String, dynamic>> channelList = const [],
     List<Map<String, dynamic>> streamStats = const [],
+    List<String>? osdButtons,
   }) async {
     await _invoke<void>('setUiMetadata', {
       'topTitle': topTitle,
@@ -455,6 +533,10 @@ class AppleTvMpvBackend implements PlayerBackend {
       'liveChannelNumber': liveChannelNumber,
       'channelList': channelList,
       'streamStats': streamStats,
+      // The buttons the user left switched on, in their order. A caller with
+      // no row to arrange leaves this out, which reads as no opinion rather
+      // than as everything switched off.
+      'osdButtons': ?osdButtons,
     });
   }
 
@@ -675,6 +757,9 @@ class AppleTvMpvBackend implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  bool get supportsDirectPlayAudioSwitch => false;
+
+  @override
   bool get requiresStartupMediaReadyCheck => false;
 
   @override
@@ -705,6 +790,7 @@ class AppleTvMpvBackend implements PlayerBackend {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _prefs.removeListener(_syncNativePreferences);
     _audioDelayDebounce?.cancel();
     _audioDelayDebounce = null;
     unawaited(_dismissPlayer());

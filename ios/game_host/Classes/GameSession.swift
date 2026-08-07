@@ -26,6 +26,8 @@ final class GameSession {
   private var video: GameVideoOutput?
   private var audio: GameAudioOutput?
   private let textures: FlutterTextureRegistry
+  // The core's last message, used as the reason if it then quits.
+  private var lastCoreMessage: String?
 
   init(textures: FlutterTextureRegistry) {
     self.textures = textures
@@ -49,6 +51,13 @@ final class GameSession {
     callbacks.geometry_changed = { user, width, height, aspect in
       GameSession.from(user)?.emitGeometry(
         width: Int(width), height: Int(height), aspect: aspect)
+    }
+    callbacks.message = { user, text in
+      guard let text else { return }
+      GameSession.from(user)?.emitCoreMessage(String(cString: text))
+    }
+    callbacks.core_shutdown = { user in
+      GameSession.from(user)?.emitCoreShutdown()
     }
 
     guard let host = lh_create(LH_FORMAT_BGRA8888, callbacks) else { return nil }
@@ -169,6 +178,23 @@ final class GameSession {
       "aspect": aspect,
     ]
     DispatchQueue.main.async { [weak self] in self?.onEvent?(payload) }
+  }
+
+  private func emitCoreMessage(_ text: String) {
+    lastCoreMessage = text
+    DispatchQueue.main.async { [weak self] in
+      self?.onEvent?(["event": "coreMessage", "message": text])
+    }
+  }
+
+  // The core asked to quit, which it does when a boot fails. The teardown goes
+  // to the main queue, since this runs on the emulation thread as it ends.
+  private func emitCoreShutdown() {
+    let detail = lastCoreMessage ?? "The emulator core stopped unexpectedly."
+    DispatchQueue.main.async { [weak self] in
+      self?.stop()
+      self?.onEvent?(["event": "error", "message": detail])
+    }
   }
 
   private static func from(_ user: UnsafeMutableRawPointer?) -> GameSession? {

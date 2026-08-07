@@ -7438,10 +7438,6 @@
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Veszteségmentes)",
-    "@settingsAudioFallbackCodecTrueHd": {
-        "description": "Fallback codec option: TrueHD"
-    },
     "settingsAudioFallbackCodecOpus": "Opus\n(Hatékony)",
     "@settingsAudioFallbackCodecOpus": {
         "description": "Fallback codec option: Opus"

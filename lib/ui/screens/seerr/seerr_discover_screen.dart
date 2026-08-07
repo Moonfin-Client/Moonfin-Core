@@ -25,6 +25,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/horizontal_scroll_section.dart';
+import '../../widgets/quick_return_wrapper.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w300';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -289,8 +290,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   void _onItemTap(SeerrDiscoverItem item) {
     final mediaType = item.mediaType ?? 'movie';
     context.push(
-      Destinations.seerrMedia(item.id.toString()),
-      extra: {'mediaType': mediaType},
+      Destinations.seerrMedia(item.id.toString(), mediaType: mediaType),
     );
   }
 
@@ -329,42 +329,46 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
         showBackButton: true,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (backdropEnabled) _Backdrop(url: _backdropUrl),
-            const _GradientScrim(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoPanel(item: _selectedItem, topInset: infoTopInset, leftInset: infoPanelLeft),
-                Expanded(
-                  child: Focus(
-                    focusNode: _loadingHoldFocusNode,
-                    canRequestFocus: !_initialFocusResolved,
-                    skipTraversal: true,
-                    onKeyEvent: _onContentKeyEvent,
-                    child: _buildContent(rowLeftInset: rowLeftInset),
+        child: QuickReturnWrapper(
+          scrollController: _scrollController,
+          topFocusNode: _initialFocusNode,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (backdropEnabled) _Backdrop(url: _backdropUrl),
+              const _GradientScrim(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _InfoPanel(item: _selectedItem, topInset: infoTopInset, leftInset: infoPanelLeft),
+                  Expanded(
+                    child: Focus(
+                      focusNode: _loadingHoldFocusNode,
+                      canRequestFocus: !_initialFocusResolved,
+                      skipTraversal: true,
+                      onKeyEvent: _onContentKeyEvent,
+                      child: _buildContent(rowLeftInset: rowLeftInset),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              // On phones the navbar pill and row titles crowd the top edge,
-              // so the entry drops below them.
-              top: PlatformDetection.useMobileUi
-                  ? infoTopInset + 40.0
-                  : infoTopInset,
-              right: 24,
-              child: _RequestsEntryButton(
-                focusNode: _requestsEntryFocusNode,
-                badgeCount: _badgeCount,
-                onTap: _openRequests,
-                onDown: () => _initialFocusNode.requestFocus(),
-                onUp: _focusNavbarFromEntry,
+                ],
               ),
-            ),
-          ],
+              Positioned(
+                // On phones the navbar pill and row titles crowd the top edge,
+                // so the entry drops below them.
+                top: PlatformDetection.useMobileUi
+                    ? infoTopInset + 40.0
+                    : infoTopInset,
+                right: 24,
+                child: _RequestsEntryButton(
+                  focusNode: _requestsEntryFocusNode,
+                  badgeCount: _badgeCount,
+                  onTap: _openRequests,
+                  onDown: () => _initialFocusNode.requestFocus(),
+                  onUp: _focusNavbarFromEntry,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

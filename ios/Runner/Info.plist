@@ -109,11 +109,6 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<!-- AetherEngine serves remuxed media to AVPlayer from a loopback
-		     HTTP server, so keep local networking allowed even if arbitrary
-		     loads are ever tightened. -->
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
 	</dict>
 	</dict>
 </plist>

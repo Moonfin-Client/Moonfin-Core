@@ -268,6 +268,22 @@
   "@glassQuality": {
     "description": "Label for the glass rendering quality setting"
   },
+  "oledMode": "OLED Mode",
+  "@oledMode": {
+    "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+  },
+  "oledModeSubtitle": "Deepen blacks and enrich artwork. Best on OLED displays.",
+  "@oledModeSubtitle": {
+    "description": "Explanation under the OLED Mode setting"
+  },
+  "oledModeSubtle": "Subtle",
+  "@oledModeSubtle": {
+    "description": "OLED Mode level that darkens surfaces gently and lightly enriches artwork"
+  },
+  "oledModeVivid": "Vivid",
+  "@oledModeVivid": {
+    "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
+  },
   "glassQualitySubtitle": "Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.",
   "@glassQualitySubtitle": {
     "description": "Explanation under the glass quality setting"
@@ -632,6 +648,18 @@
   "@extraLarge": {
     "description": "Poster size option"
   },
+  "scrollDirection": "Scroll Direction",
+  "@scrollDirection": {
+    "description": "Section header for scroll direction selection in library display settings"
+  },
+  "scrollDirectionVertical": "Vertical",
+  "@scrollDirectionVertical": {
+    "description": "Library scroll direction option: vertical grid (default)"
+  },
+  "scrollDirectionHorizontal": "Horizontal",
+  "@scrollDirectionHorizontal": {
+    "description": "Library scroll direction option: horizontal grid for ultrawide displays"
+  },
   "libraryGenresTitle": "{name} \u2014 Genres",
   "@libraryGenresTitle": {
     "description": "Header title showing library name with genres suffix",
@@ -764,6 +792,10 @@
   "scrollRight": "Scroll right",
   "@scrollRight": {
     "description": "Tooltip for scroll right button"
+  },
+  "scrollToTop": "Scroll to top",
+  "@scrollToTop": {
+    "description": "Tooltip for the button that returns a scrolled list to the top"
   },
   "couldNotLoadGenre": "Could not load this genre right now.",
   "@couldNotLoadGenre": {
@@ -3567,22 +3599,6 @@
   "@enableDtsPassthrough": {
     "description": "Description for DTS passthrough"
   },
-  "enableTrueHdAudio": "Enable TrueHD audio (may not work on all platforms)",
-  "@enableTrueHdAudio": {
-    "description": "Description for TrueHD support"
-  },
-  "settingsAudioOutputMode": "Audio Output Mode",
-  "@settingsAudioOutputMode": {
-    "description": "Setting for audio output mode"
-  },
-  "settingsAudioOutputModeDescription": "Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.",
-  "@settingsAudioOutputModeDescription": {
-    "description": "Description for audio output mode setting"
-  },
-  "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
-  "@settingsAudioOutputModeAvrPassthrough": {
-    "description": "Audio output mode option for AVR passthrough"
-  },
   "settingsAudioFallbackCodec": "Audio Fallback Codec",
   "@settingsAudioFallbackCodec": {
     "description": "Setting for fallback audio codec"
@@ -3606,10 +3622,6 @@
   "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
   "@settingsAudioFallbackCodecEac3": {
     "description": "Fallback codec option: EAC3"
-  },
-  "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Lossless)",
-  "@settingsAudioFallbackCodecTrueHd": {
-    "description": "Fallback codec option: TrueHD"
   },
   "settingsAudioFallbackCodecMp3": "MP3\n(Stereo Only)",
   "@settingsAudioFallbackCodecMp3": {
@@ -3683,10 +3695,6 @@
   "@settingsAudioEac3Passthrough": {
     "description": "Setting for EAC3 passthrough"
   },
-  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
-  "@settingsAudioEac3JocPassthrough": {
-    "description": "Setting for EAC3 JOC Atmos passthrough"
-  },
   "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
   "@settingsAudioDtsCorePassthrough": {
     "description": "Setting for DTS core passthrough"
@@ -3695,29 +3703,21 @@
   "@settingsAudioDtsHdPassthrough": {
     "description": "Setting for DTS-HD MA passthrough"
   },
+  "settingsAudioPassthroughMode": "Passthrough",
+  "@settingsAudioPassthroughMode": {
+    "description": "Title of the audio passthrough mode selector"
+  },
+  "settingsAudioPassthroughModeDescription": "How compressed surround sound reaches your TV or receiver.",
+  "settingsAudioPassthroughModeDisabled": "Disabled (always decode on this device)",
+  "settingsAudioPassthroughModeAuto": "Auto (match detected device support)",
+  "settingsAudioPassthroughModeManual": "Manual (choose formats below)",
+  "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
+  "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
+  "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",
+  "settingsAudioTrueHdIncludesAtmos": "Bitstream TrueHD, including Dolby Atmos.",
   "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
   "@settingsAudioTrueHdPassthrough": {
     "description": "Setting for TrueHD passthrough"
-  },
-  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
-  "@settingsAudioTrueHdAtmosPassthrough": {
-    "description": "Setting for TrueHD Atmos passthrough"
-  },
-  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
-  "@settingsAudioBitstreamEac3ToExternalDecoder": {
-    "description": "Description for EAC3 passthrough"
-  },
-  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
-  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
-    "description": "Description for EAC3 JOC passthrough"
-  },
-  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
-  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
-    "description": "Description for DTS-HD MA passthrough"
-  },
-  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
-  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
-    "description": "Description for TrueHD Atmos passthrough"
   },
   "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
   "@settingsDetectedAudioCapabilities": {
@@ -4466,6 +4466,18 @@
   "@showLibrariesFromAllServers": {
     "description": "Description for multi-server libraries"
   },
+  "mergeRecentRowsByType": "Merge Recent Rows by Type",
+  "@mergeRecentRowsByType": {
+    "description": "Setting for merging recently added and recently released libraries by media type"
+  },
+  "mergeRecentRowsByTypeDescription": "Combine separate libraries of the same type for Recently Added and Recently Released home rows.",
+  "@mergeRecentRowsByTypeDescription": {
+    "description": "Description for merging recent home rows by media type"
+  },
+  "libraryView": "Library View",
+  "@libraryView": {
+    "description": "Section title for library view settings"
+  },
   "enableFolderView": "Enable Folder View",
   "@enableFolderView": {
     "description": "Setting for enabling folder view"
@@ -5128,6 +5140,14 @@
   "@networks": {
     "description": "Seerr row: networks"
   },
+  "tags": "Tags",
+  "@tags": {
+    "description": "Heading for the keyword tags a title is filed under"
+  },
+  "genresAndTags": "Genres and Tags",
+  "@genresAndTags": {
+    "description": "Button and dialog title for browsing a title's genres, networks and tags"
+  },
   "seerrDiscoveryRows": "Seerr Discovery Rows",
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
@@ -5484,6 +5504,18 @@
         "type": "String"
       }
     }
+  },
+  "manageRequests": "Manage Requests",
+  "@manageRequests": {
+    "description": "Details screen button opening the pending requests to approve or decline"
+  },
+  "watchlist": "Watchlist",
+  "@watchlist": {
+    "description": "Details screen button adding the title to the Seerr watchlist"
+  },
+  "onWatchlist": "On Watchlist",
+  "@onWatchlist": {
+    "description": "Details screen button label when the title is already on the Seerr watchlist"
   },
   "approve": "Approve",
   "@approve": {
@@ -8242,9 +8274,9 @@
   "settingsPreferServerTranscode": "Prefer server transcode",
   "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision Profile 7 Direct Play",
   "settingsDolbyVisionProfile7DirectPlayDescription": "Controls whether Dolby Vision profile 7 enhancement-layer streams should direct play.",
-  "settingsAutoAftkrtEnabled": "Auto (AFTKRT enabled)",
-  "settingsEnabledOnThisDevice": "Enabled on this device",
-  "settingsDisabledPreferTranscode": "Disabled (prefer transcode)",
+  "settingsAutoAftkrtEnabled": "Auto",
+  "settingsEnabledOnThisDevice": "Enabled",
+  "settingsDisabledPreferTranscode": "Off",
   "settingsResumeRewindDescription": "When resuming playback (from Continue Watching or a media item page), how many seconds should be rewound?",
   "settingsUnpauseRewindDescription": "When resuming playback after pressing the pause button, how many seconds should be rewound?",
   "settingsSkipBackLengthDescription": "How many seconds to jump back after pressing the rewind button.",
@@ -8369,13 +8401,13 @@
     "description": "Setting subtitle for enable tunneling"
   },
 
-  "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+  "mapDolbyVisionP7Title": "Always play Dolby Vision profile 7 as HDR10",
   "@mapDolbyVisionP7Title": {
-    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+    "description": "Setting title: force DV P7 streams to the HDR10 strip path"
   },
-  "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+  "mapDolbyVisionP7Subtitle": "Skip the profile 8 conversion and strip Dolby Vision profile 7 streams to HDR10-compatible HEVC. Use this if converted streams look wrong.",
   "@mapDolbyVisionP7Subtitle": {
-    "description": "Setting subtitle for DV P7 to HEVC mapping"
+    "description": "Setting subtitle for forcing the DV P7 strip path"
   },
 
   "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
@@ -8497,6 +8529,8 @@
   "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
   "collectionsRowSorting": "Collections Row Sorting",
   "collectionsRowSortingDescription": "Sort Collections rows by date added, release date, alphabetically, and more.",
+  "collectionsRowShowEpisodes": "Show Individual Episodes",
+  "collectionsRowShowEpisodesSubtitle": "Expand TV shows to display each episode separately.",
   "displayGenresRows": "Display Genres Rows",
   "displayGenresRowsSubtitle": "Show Genres rows in Home Sections.",
   "genresRowSorting": "Genres Row Sorting",
@@ -8507,6 +8541,8 @@
   "displayPlaylistsRowsSubtitle": "Show Playlist rows in Home Sections.",
   "playlistsRowSorting": "Playlist Row Sorting",
   "playlistsRowSortingDescription": "Sort Playlist rows by date added, release date, alphabetically, and more.",
+  "playlistsRowShowEpisodes": "Show Individual Episodes",
+  "playlistsRowShowEpisodesSubtitle": "Expand TV shows to display each episode separately.",
   "displayAudioRows": "Display Audio Rows",
   "displayAudioRowsSubtitle": "Show Audio rows in Home Sections.",
   "audioRowsSorting": "Audio Rows sorting",
@@ -8529,9 +8565,6 @@
   "passthrough": "Passthrough",
   "supportedOnThisDevice": "Supported on this device",
   "notSupportedOnThisDevice": "Not Supported on this device",
-  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
-  "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) to external decoder.",
-  "settingsAudioTrueHdJocPassthrough": "TrueHD with Atmos (JOC) Passthrough",
   "mediaPlayerBehavior": "Media Player Behavior",
   "playbackEnhancements": "Playback Enhancements",
   "alwaysOn": "Always on.",
@@ -9201,5 +9234,89 @@
   "mixedPlaylistsSection": "Mixed Playlists",
   "@mixedPlaylistsSection": {
     "description": "Section header above mixed playlists when Group by Type is enabled"
+  },
+  "playbackTimeDisplay": "Progress Bar Time",
+  "@playbackTimeDisplay": {
+    "description": "Setting title for what is shown next to the playback progress bar"
+  },
+  "settingsPlaybackTimeDisplayDescription": "Choose which time labels appear around the playback progress bar.",
+  "@settingsPlaybackTimeDisplayDescription": {
+    "description": "Setting description for the progress bar time option"
+  },
+  "playbackTimeTotal": "Total duration",
+  "@playbackTimeTotal": {
+    "description": "Progress bar time option showing the full runtime"
+  },
+  "playbackTimeRemaining": "Time remaining",
+  "@playbackTimeRemaining": {
+    "description": "Progress bar time option showing how much is left to play"
+  },
+  "playbackTimeEndsAt": "Ends at",
+  "@playbackTimeEndsAt": {
+    "description": "Progress bar time option showing the clock time playback finishes"
+  },
+  "playbackTimeElapsed": "Time elapsed",
+  "@playbackTimeElapsed": {
+    "description": "Progress bar time option showing how far into the item playback is"
+  },
+  "playbackTimeVideoSection": "Video Player",
+  "@playbackTimeVideoSection": {
+    "description": "Section header above the video progress bar time slots"
+  },
+  "playbackTimeMusicSection": "Music Player",
+  "@playbackTimeMusicSection": {
+    "description": "Section header above the music progress bar time option"
+  },
+  "playbackTimeSlotDescription": "Choose what is shown here, or hide it.",
+  "@playbackTimeSlotDescription": {
+    "description": "Setting description for a single progress bar time slot"
+  },
+  "playbackTimeAboveBarLeft": "Above bar, left",
+  "@playbackTimeAboveBarLeft": {
+    "description": "Progress bar time slot above the bar on the left"
+  },
+  "playbackTimeAboveBarCenter": "Above bar, center",
+  "@playbackTimeAboveBarCenter": {
+    "description": "Progress bar time slot above the bar in the center"
+  },
+  "playbackTimeAboveBarRight": "Above bar, right",
+  "@playbackTimeAboveBarRight": {
+    "description": "Progress bar time slot above the bar on the right"
+  },
+  "playbackTimeBelowBarLeft": "Below bar, left",
+  "@playbackTimeBelowBarLeft": {
+    "description": "Progress bar time slot below the bar on the left"
+  },
+  "playbackTimeBelowBarCenter": "Below bar, center",
+  "@playbackTimeBelowBarCenter": {
+    "description": "Progress bar time slot below the bar in the center"
+  },
+  "playbackTimeBelowBarRight": "Below bar, right",
+  "@playbackTimeBelowBarRight": {
+    "description": "Progress bar time slot below the bar on the right"
+  },
+  "settingsMusicPlaybackTimeDescription": "Choose what is shown on the right side of the music progress bar.",
+  "@settingsMusicPlaybackTimeDescription": {
+    "description": "Setting description for the music progress bar time option"
+  },
+  "groupByTitle": "Group By",
+  "@groupByTitle": {
+    "description": "Dialog title and button label for library group by options"
+  },
+  "groupByDecade": "Decade (Year)",
+  "@groupByDecade": {
+    "description": "Option to group library items by release decade"
+  },
+  "groupByParentalRating": "Parental Rating",
+  "@groupByParentalRating": {
+    "description": "Option to group library items by parental rating"
+  },
+  "groupByStudio": "Studio",
+  "@groupByStudio": {
+    "description": "Option to group library items by production studio"
+  },
+  "showAlphabeticalFilters": "Show Alphabet",
+  "@showAlphabeticalFilters": {
+    "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
   }
 }

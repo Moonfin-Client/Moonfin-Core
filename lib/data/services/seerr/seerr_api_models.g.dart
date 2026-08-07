@@ -536,6 +536,22 @@ Map<String, dynamic> _$SeerrCrewMemberToJson(SeerrCrewMember instance) =>
       'profilePath': instance.profilePath,
     };
 
+SeerrSeasonAvailability _$SeerrSeasonAvailabilityFromJson(
+  Map<String, dynamic> json,
+) => SeerrSeasonAvailability(
+  seasonNumber: (json['seasonNumber'] as num).toInt(),
+  status: (json['status'] as num?)?.toInt(),
+  status4k: (json['status4k'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$SeerrSeasonAvailabilityToJson(
+  SeerrSeasonAvailability instance,
+) => <String, dynamic>{
+  'seasonNumber': instance.seasonNumber,
+  'status': instance.status,
+  'status4k': instance.status4k,
+};
+
 SeerrMediaInfo _$SeerrMediaInfoFromJson(Map<String, dynamic> json) =>
     SeerrMediaInfo(
       id: (json['id'] as num?)?.toInt(),
@@ -552,6 +568,11 @@ SeerrMediaInfo _$SeerrMediaInfoFromJson(Map<String, dynamic> json) =>
       requests: (json['requests'] as List<dynamic>?)
           ?.map((e) => SeerrRequest.fromJson(e as Map<String, dynamic>))
           .toList(),
+      seasons: (json['seasons'] as List<dynamic>?)
+          ?.map(
+            (e) => SeerrSeasonAvailability.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
       jellyfinMediaId: json['jellyfinMediaId'] as String?,
       jellyfinMediaId4k: json['jellyfinMediaId4k'] as String?,
     );
@@ -566,6 +587,7 @@ Map<String, dynamic> _$SeerrMediaInfoToJson(SeerrMediaInfo instance) =>
       'downloadStatus': instance.downloadStatus,
       'downloadStatus4k': instance.downloadStatus4k,
       'requests': instance.requests,
+      'seasons': instance.seasons,
       'jellyfinMediaId': instance.jellyfinMediaId,
       'jellyfinMediaId4k': instance.jellyfinMediaId4k,
     };

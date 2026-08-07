@@ -135,6 +135,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   icon: Icons.unfold_more,
                   onChanged: _pushPersonalizationSync,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.enableFolderView,
+                  title: l10n.enableFolderView,
+                  subtitle: l10n.showFolderBrowsingOption,
+                  icon: Icons.folder,
+                  onChanged: _pushPersonalizationSync,
+                ),
                 if (seerrEnabledOnAccount && _syncService.seerrAvailable)
                   SwitchPreferenceTile(
                     preference: UserPreferences.showSeerrButton,

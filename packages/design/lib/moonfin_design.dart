@@ -18,6 +18,8 @@ export 'src/theme/app_spacing.dart';
 export 'src/theme/app_shapes.dart';
 export 'src/theme/theme_spec.dart';
 export 'src/theme/theme_registry.dart';
+export 'src/theme/oled_tuning.dart';
+export 'src/theme/oled_derivation.dart';
 export 'src/theme/glass_settings.dart';
 export 'src/widgets/ambient_background.dart';
 export 'src/widgets/glass_surface.dart';
