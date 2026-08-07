@@ -303,21 +303,37 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       final targetIndex = _indexOfLetter(letter);
       if (targetIndex < 0) return;
 
+      double targetOffset = 0.0;
       if (_isSongsBrowse) {
-        _scrollController.jumpTo(targetIndex * _kSongRowHeight);
+        targetOffset = targetIndex * _kSongRowHeight;
       } else {
         final geometry = _gridGeometry;
         if (geometry == null) return;
         final line = targetIndex ~/ geometry.perLine;
-        _scrollController.jumpTo(
-          (geometry.leadingPad +
-                  line * (geometry.lineExtent + geometry.lineSpacing))
-              .clamp(0.0, _scrollController.position.maxScrollExtent),
-        );
+        targetOffset = geometry.leadingPad +
+            line * (geometry.lineExtent + geometry.lineSpacing);
       }
 
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
+      // Slivers in a CustomScrollView compute maxScrollExtent lazily as children are laid out.
+      // Jumping to a line deeper than currently built children gets clamped to the current maxExtent.
+      // Loop jumps over frame boundaries until the layout expands to reach targetOffset or true scroll bottom.
+      for (int i = 0; i < 5; i++) {
+        if (!mounted || !_scrollController.hasClients) break;
+        final currentMax = _scrollController.position.maxScrollExtent;
+        final destination = targetOffset.clamp(0.0, currentMax);
+        _scrollController.jumpTo(destination);
+
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted || !_scrollController.hasClients) break;
+
+        final currentPixels = _scrollController.position.pixels;
+        final newMax = _scrollController.position.maxScrollExtent;
+        if ((currentPixels - targetOffset).abs() < 2.0 ||
+            (destination >= currentMax && currentMax == newMax)) {
+          break;
+        }
+      }
+
       if (PlatformDetection.isTV) {
         getGridItemFocusNode(targetIndex).requestFocus();
       }

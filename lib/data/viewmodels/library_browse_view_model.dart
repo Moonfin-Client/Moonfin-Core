@@ -490,20 +490,20 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     while (!hasPrefix() && hasMore) {
       final beforeCount = _items.length;
-      await loadMore();
+      await loadMore(pageSizeOverride: 300);
       if (_items.length == beforeCount) break;
     }
     return hasPrefix();
   }
 
-  Future<void> loadMore() async {
+  Future<void> loadMore({int? pageSizeOverride}) async {
     if (_loadingMore || !hasMore) return;
     _loadingMore = true;
     notifyListeners();
 
     final previouslyFetched = _fetchedCount;
     try {
-      await _fetchPage(_fetchedCount);
+      await _fetchPage(_fetchedCount, pageSizeOverride: pageSizeOverride);
       // Stop on a page the server had nothing left for, not on one that only
       // repeated what is already shown, which a random sort does by chance.
       if (_fetchedCount <= previouslyFetched) {
@@ -516,8 +516,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _fetchPage(int startIndex) async {
-    final pageSize = startIndex == 0 ? _firstPageSize : _pageSize;
+  Future<void> _fetchPage(int startIndex, {int? pageSizeOverride}) async {
+    final pageSize = pageSizeOverride ?? (startIndex == 0 ? _firstPageSize : _pageSize);
     final filters = <String>[];
     if (_playedFilter == PlayedStatusFilter.watched) {
       filters.add('IsPlayed');
