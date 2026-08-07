@@ -10,6 +10,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/utils/alphabet_bucket.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
@@ -30,6 +31,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/rating_display.dart';
 import '../detail/item_detail_screen.dart';
+import '../../widgets/local_search_field.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -57,6 +59,18 @@ const _kHorizontalRowRoundUpThreshold = 1.7;
 const _kMaxHorizontalRows = 8;
 
 const _kChevronScrollStep = 480.0;
+
+/// Row height of the songs list, which the letter jump multiplies out because
+/// that list has no grid geometry to read.
+const _kSongRowHeight = 56.0;
+
+/// One line of the grid, across whichever axis it scrolls.
+typedef _GridGeometry = ({
+  int perLine,
+  double lineExtent,
+  double lineSpacing,
+  double leadingPad,
+});
 
 bool _isCompact(BuildContext context) =>
     !PlatformDetection.isTV &&
@@ -97,6 +111,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     with GridFocusNodeMixin<LibraryBrowseScreen> {
   late final LibraryBrowseViewModel _vm;
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final _homeButtonFocusNode = FocusNode(debugLabel: 'library_home_button');
   Timer? _backdropDebounce;
   bool? _hasSubtitlesCache;
   final _prefs = GetIt.instance<UserPreferences>();
@@ -135,6 +152,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   @override
   void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    _homeButtonFocusNode.dispose();
     _allLetterFocusNode.dispose();
     _backdropDebounce?.cancel();
     _backgroundSub?.cancel();
@@ -228,6 +248,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     _vm.loadMore();
   }
 
+  /// Geometry from the last grid layout, so a letter jump lands on the line the
+  /// grid really drew instead of one worked out from a second copy of the sums.
+  _GridGeometry? _gridGeometry;
+
   void _scrollToGridRow({
     required int index,
     required int crossAxisCount,
@@ -259,6 +283,69 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         curve: Curves.easeOutCubic,
       ),
     );
+  }
+
+  bool _isJumpingToLetter = false;
+
+  /// Scrolls the first item whose sort name starts with [letter] to the
+  /// leading edge, loading pages first if it hasn't arrived yet.
+  Future<void> _jumpToLetter(String letter) async {
+    _vm.setLetterFilter(letter);
+    if (!mounted) return;
+    setState(() => _isJumpingToLetter = true);
+
+    try {
+      await _vm.ensureItemsLoadedForPrefix(letter);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || !_scrollController.hasClients) return;
+
+      final targetIndex = _indexOfLetter(letter);
+      if (targetIndex < 0) return;
+
+      if (_isSongsBrowse) {
+        _scrollController.jumpTo(targetIndex * _kSongRowHeight);
+      } else {
+        final geometry = _gridGeometry;
+        if (geometry == null) return;
+        final line = targetIndex ~/ geometry.perLine;
+        _scrollController.jumpTo(
+          (geometry.leadingPad +
+                  line * (geometry.lineExtent + geometry.lineSpacing))
+              .clamp(0.0, _scrollController.position.maxScrollExtent),
+        );
+      }
+
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      if (PlatformDetection.isTV) {
+        getGridItemFocusNode(targetIndex).requestFocus();
+      }
+    } finally {
+      if (mounted) setState(() => _isJumpingToLetter = false);
+    }
+  }
+
+  int _indexOfLetter(String letter) {
+    final items = _vm.items;
+    if (items.isEmpty) return -1;
+    if (letter.isEmpty || letter == 'ALL') return 0;
+    return items.indexWhere((item) => matchesAlphabetBucket(item, letter));
+  }
+
+  /// The field sits at the top of the screen, so sideways and upward presses
+  /// have nowhere to go and would otherwise throw focus out of the header.
+  KeyEventResult _onTvSearchKey(FocusNode node, KeyEvent event) {
+    if (!event.isActionable) return KeyEventResult.ignored;
+    if (event.logicalKey.isUpKey ||
+        event.logicalKey.isLeftKey ||
+        event.logicalKey.isRightKey) {
+      return KeyEventResult.handled;
+    }
+    if (event.logicalKey.isDownKey) {
+      _homeButtonFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   void _onItemFocused(AggregatedItem item) {
@@ -635,9 +722,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   @override
   Widget build(BuildContext context) =>
       RequestInitialFocus(
+        targetNode: _homeButtonFocusNode,
         child: QuickReturnWrapper(
           scrollController: _scrollController,
-          scrollDirection: _vm.scrollDirection == LibraryScrollDirection.horizontal
+          scrollDirection:
+              _vm.scrollDirection == LibraryScrollDirection.horizontal
               ? Axis.horizontal
               : Axis.vertical,
           topFocusNode: getGridItemFocusNode(0),
@@ -671,6 +760,15 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               ),
             ),
           ),
+          if (_isJumpingToLetter)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black45,
+                child: Center(
+                  child: CircularProgressIndicator(color: _jellyfinBlue),
+                ),
+              ),
+            ),
           Column(
             children: [
               _LibraryHeader(
@@ -708,8 +806,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 sortBy: _vm.sortBy,
                 letterFilter: _vm.letterFilter,
                 allLetterFocusNode: _allLetterFocusNode,
+                homeFocusNode: _homeButtonFocusNode,
+                onTvSearchKey: _onTvSearchKey,
                 isMusicBrowse: _vm.isMusicBrowse,
                 playedFilter: _vm.playedFilter,
+                searchController: _searchController,
+                searchFocusNode: _searchFocusNode,
+                onSearchChanged: (query) => _vm.setSearchQuery(query),
                 onBack: () => PlatformDetection.isWeb
                     ? context.popOrHome()
                     : context.pop(),
@@ -718,7 +821,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 isMovieOrSeriesLibrary: _vm.isMovieOrSeriesLibrary,
                 onSettings: () => _showSettingsDialog(context),
                 onShuffle: _isSongsBrowse ? () => _shuffleSongsLibrary() : null,
-                onLetterChanged: (l) => _vm.setLetterFilter(l),
+                onLetterChanged: (l) => _jumpToLetter(l),
                 onPlayedFilterChanged: (status) => _vm.setPlayedFilter(status),
               ),
               Expanded(child: _buildBody()),
@@ -970,6 +1073,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
         final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        _gridGeometry = (
+          perLine: crossAxisCount,
+          lineExtent: cellWidth / ar + textHeight,
+          lineSpacing: 8,
+          leadingPad: 8,
+        );
 
         final focusColor = _vm.isFilterBrowse
             ? ThemeRegistry.active.borders.focusBorder.color
@@ -1215,6 +1324,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         onKeyEvent: (_, event) {
           if (PlatformDetection.isTV &&
               event.isActionable &&
+              event.logicalKey.isUpKey &&
+              positionInSection < crossAxisCount) {
+            _homeButtonFocusNode.requestFocus();
+            return KeyEventResult.handled;
+          }
+          if (PlatformDetection.isTV &&
+              event.isActionable &&
               event.logicalKey.isBackKey &&
               _allLetterFocusNode.context != null) {
             _allLetterFocusNode.requestFocus();
@@ -1367,6 +1483,12 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         }
         final actualCellWidth = actualImageHeight * ar;
         final childAspectRatio = actualCellHeight / actualCellWidth;
+        _gridGeometry = (
+          perLine: rowCount,
+          lineExtent: actualCellWidth,
+          lineSpacing: spacing,
+          leadingPad: horizPadding,
+        );
 
         return Listener(
           onPointerSignal: (signal) {
@@ -1578,6 +1700,11 @@ class _LibraryHeader extends StatelessWidget {
   final VoidCallback? onShuffle;
   final ValueChanged<String> onLetterChanged;
   final ValueChanged<PlayedStatusFilter> onPlayedFilterChanged;
+  final FocusNode? homeFocusNode;
+  final KeyEventResult Function(FocusNode, KeyEvent)? onTvSearchKey;
+  final TextEditingController? searchController;
+  final FocusNode? searchFocusNode;
+  final ValueChanged<String>? onSearchChanged;
 
   const _LibraryHeader({
     required this.libraryName,
@@ -1592,6 +1719,8 @@ class _LibraryHeader extends StatelessWidget {
     required this.sortBy,
     required this.letterFilter,
     this.allLetterFocusNode,
+    this.homeFocusNode,
+    this.onTvSearchKey,
     this.isMusicBrowse = false,
     this.playedFilter = PlayedStatusFilter.all,
     this.onGroupBy,
@@ -1602,6 +1731,9 @@ class _LibraryHeader extends StatelessWidget {
     this.onShuffle,
     required this.onLetterChanged,
     required this.onPlayedFilterChanged,
+    this.searchController,
+    this.searchFocusNode,
+    this.onSearchChanged,
   });
 
   @override
@@ -1612,10 +1744,13 @@ class _LibraryHeader extends StatelessWidget {
     final isLandscape = size.width > size.height;
     final isCompactLandscape = isMobile && isLandscape;
     final isCompactPortrait = isMobile && !isLandscape;
-    final showAlpha = isMusicBrowse ||
-        sortBy == LibrarySortBy.name ||
-        sortBy == LibrarySortBy.albumArtist ||
-        sortBy == LibrarySortBy.album;
+    final prefs = GetIt.instance<UserPreferences>();
+    final showAlpha =
+        prefs.get(UserPreferences.showAlphabeticalFilters) &&
+        (isMusicBrowse ||
+            sortBy == LibrarySortBy.name ||
+            sortBy == LibrarySortBy.albumArtist ||
+            sortBy == LibrarySortBy.album);
     final showInlineAlpha = showAlpha && (!isMobile || isCompactLandscape);
     final showBelowAlpha = showAlpha && isCompactPortrait;
     final topPad = (isMobile ? MediaQuery.of(context).padding.top : 0.0) + 8.0;
@@ -1627,29 +1762,7 @@ class _LibraryHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                libraryName,
-                style: TextStyle(
-                  fontSize: 26 * desktopScale,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white,
-                ),
-              ),
-              if (totalCount > 0) ...[
-                SizedBox(width: 12 * desktopScale),
-                Text(
-                  '$totalCount Items',
-                  style: TextStyle(
-                    fontSize: 12 * desktopScale,
-                    color: Colors.white.withAlpha(102),
-                  ),
-                ),
-              ],
-            ],
-          ),
+          _buildTitleAndSearch(context, isMobile: isMobile, desktopScale: desktopScale),
           if (showMediaDetails && !isMobile) ...[
             const SizedBox(height: 2),
             _FocusedItemHud(
@@ -1669,19 +1782,23 @@ class _LibraryHeader extends StatelessWidget {
             children: [
               if (PlatformDetection.isTV)
                 FocusableToolbarButton(
+                  focusNode: homeFocusNode,
                   icon: Icons.home,
                   size: 30 * desktopScale,
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: () => context.go(Destinations.home),
+                  onUpKey: _focusSearch,
                 )
               else
                 FocusableToolbarButton(
+                  focusNode: homeFocusNode,
                   icon: Icons.arrow_back,
                   size: 30 * desktopScale,
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: onBack,
+                  onUpKey: _focusSearch,
                 ),
               SizedBox(width: 2 * desktopScale),
               FocusableToolbarButton(
@@ -1690,6 +1807,7 @@ class _LibraryHeader extends StatelessWidget {
                 iconSize: 20 * desktopScale,
                 unfocusedIconAlpha: 128,
                 onTap: onSort,
+                onUpKey: _focusSearch,
               ),
               if (isMovieOrSeriesLibrary && onGroupBy != null) ...[
                 SizedBox(width: 2 * desktopScale),
@@ -1699,6 +1817,7 @@ class _LibraryHeader extends StatelessWidget {
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: onGroupBy!,
+                  onUpKey: _focusSearch,
                 ),
               ],
               if (onShuffle != null) ...[
@@ -1709,6 +1828,7 @@ class _LibraryHeader extends StatelessWidget {
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: onShuffle!,
+                  onUpKey: _focusSearch,
                 ),
               ],
               if (!isMusicBrowse) ...[
@@ -1719,15 +1839,16 @@ class _LibraryHeader extends StatelessWidget {
                   iconSize: 20 * desktopScale,
                   unfocusedIconAlpha: 128,
                   onTap: onSettings,
+                  onUpKey: _focusSearch,
                 ),
               ],
               if (showInlineAlpha) ...[
                 SizedBox(width: 10 * desktopScale),
                 Expanded(
                   child: _AlphaPickerBar(
-                    selected: letterFilter,
                     onChanged: onLetterChanged,
                     allFocusNode: allLetterFocusNode,
+                    onUpKey: _focusSearch,
                   ),
                 ),
               ],
@@ -1736,13 +1857,97 @@ class _LibraryHeader extends StatelessWidget {
           if (showBelowAlpha) ...[
             const SizedBox(height: 8),
             _AlphaPickerBar(
-              selected: letterFilter,
               onChanged: onLetterChanged,
               allFocusNode: allLetterFocusNode,
+              onUpKey: _focusSearch,
             ),
           ],
         ],
       ),
+    );
+  }
+
+  void _focusSearch() => searchFocusNode?.requestFocus();
+
+  Widget _buildTitleAndSearch(
+    BuildContext context, {
+    required bool isMobile,
+    required double desktopScale,
+  }) {
+    final titleWidget = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          libraryName,
+          style: TextStyle(
+            fontSize: 26 * desktopScale,
+            fontWeight: FontWeight.w300,
+            color: Colors.white,
+          ),
+        ),
+        if (totalCount > 0) ...[
+          SizedBox(width: 12 * desktopScale),
+          Text(
+            '$totalCount Items',
+            style: TextStyle(
+              fontSize: 12 * desktopScale,
+              color: Colors.white.withAlpha(102),
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (searchController == null || searchFocusNode == null) {
+      return Center(child: titleWidget);
+    }
+
+    if (!isMobile) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final desiredSearchWidth = 320 * desktopScale;
+          final maxSearchWidth = (constraints.maxWidth - 220 * desktopScale) / 2;
+          final searchWidth = (desiredSearchWidth < maxSearchWidth
+                  ? desiredSearchWidth
+                  : maxSearchWidth)
+              .clamp(160.0, 400.0);
+
+          return Row(
+            children: [
+              SizedBox(width: searchWidth),
+              Expanded(child: Center(child: titleWidget)),
+              SizedBox(
+                width: searchWidth,
+                child: LocalSearchField(
+                  controller: searchController!,
+                  focusNode: searchFocusNode!,
+                  onChanged: onSearchChanged,
+                  onTvKeyEvent: onTvSearchKey,
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return Column(
+      children: [
+        Center(child: titleWidget),
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: LocalSearchField(
+              controller: searchController!,
+              focusNode: searchFocusNode!,
+              onChanged: onSearchChanged,
+              onTvKeyEvent: onTvSearchKey,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1896,17 +2101,16 @@ class _MetadataRow extends StatelessWidget {
 
 class _AlphaPickerBar extends StatelessWidget {
   final FocusNode? allFocusNode;
-  final String selected;
   final ValueChanged<String> onChanged;
+  final VoidCallback? onUpKey;
 
   const _AlphaPickerBar({
-    required this.selected,
     required this.onChanged,
     this.allFocusNode,
+    this.onUpKey,
   });
 
   static const _letters = [
-    '',
     '#',
     'A',
     'B',
@@ -1942,12 +2146,11 @@ class _AlphaPickerBar extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: _letters.map((letter) {
-          final isSelected = selected == letter;
           return _AlphaLetterButton(
             label: letter.isEmpty ? AppLocalizations.of(context).all : letter,
-            isSelected: isSelected,
             onTap: () => onChanged(letter),
             focusNode: letter.isEmpty ? allFocusNode : null,
+            onUpKey: onUpKey,
           );
         }).toList(),
       ),
@@ -1957,15 +2160,15 @@ class _AlphaPickerBar extends StatelessWidget {
 
 class _AlphaLetterButton extends StatefulWidget {
   final String label;
-  final bool isSelected;
   final VoidCallback onTap;
   final FocusNode? focusNode;
+  final VoidCallback? onUpKey;
 
   const _AlphaLetterButton({
     required this.label,
-    required this.isSelected,
     required this.onTap,
     this.focusNode,
+    this.onUpKey,
   });
 
   @override
@@ -1990,6 +2193,10 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
         focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (_, event) {
+          if (event.isActionable && event.logicalKey.isUpKey && widget.onUpKey != null) {
+            widget.onUpKey!();
+            return KeyEventResult.handled;
+          }
           if (isActivateKey(event)) {
             widget.onTap();
             return KeyEventResult.handled;
@@ -2004,7 +2211,6 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
             height: 30 * desktopScale,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: widget.isSelected ? Colors.white.withAlpha(26) : null,
               borderRadius: AppRadius.circular(4),
               border: showFocusBorder
                   ? Border.fromBorderSide(
@@ -2019,12 +2225,8 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
               widget.label,
               style: TextStyle(
                 fontSize: 15 * desktopScale,
-                fontWeight: widget.isSelected
-                    ? FontWeight.w700
-                    : FontWeight.w500,
-                color: widget.isSelected
-                    ? _jellyfinBlue
-                    : Colors.white.withAlpha(140),
+                fontWeight: focused || hovered ? FontWeight.w700 : FontWeight.w500,
+                color: focused || hovered ? _jellyfinBlue : AppColorScheme.onSurface.withValues(alpha: 0.85),
               ),
             ),
           ),
@@ -2100,6 +2302,20 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                   color: onSurface,
                 ),
               ),
+            ),
+            _DialogCheckboxTile(
+              label: l10n.showAlphabeticalFilters,
+              checked: GetIt.instance<UserPreferences>().get(
+                UserPreferences.showAlphabeticalFilters,
+              ),
+              onTap: () {
+                final prefs = GetIt.instance<UserPreferences>();
+                final val = prefs.get(UserPreferences.showAlphabeticalFilters);
+                prefs.set(UserPreferences.showAlphabeticalFilters, !val);
+                setState(() {});
+              },
+              accent: accent,
+              onSurface: onSurface,
             ),
             Divider(color: dividerColor),
             _sectionHeader(l10n.sortBy, sectionColor),

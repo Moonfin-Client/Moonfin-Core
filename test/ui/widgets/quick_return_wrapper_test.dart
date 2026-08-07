@@ -200,4 +200,67 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+
+  group('driven by a notifier instead of a controller', () {
+    testWidgets('follows the notifier and calls back on return', (
+      tester,
+    ) async {
+      final isAtStart = ValueNotifier<bool>(true);
+      addTearDown(isAtStart.dispose);
+      var returned = 0;
+
+      await tester.pumpWidget(
+        _app(
+          QuickReturnWrapper(
+            isAtStart: isAtStart,
+            onReturn: () => returned++,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      double opacity() =>
+          tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity)).opacity;
+      expect(opacity(), 0.0);
+
+      isAtStart.value = false;
+      await tester.pumpAndSettle();
+      expect(opacity(), 1.0);
+
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await tester.pumpAndSettle();
+
+      // The screen owns the scrolling, so all this does is ask.
+      expect(returned, 1);
+    });
+
+    testWidgets('takes the back key on TV while away from the start', (
+      tester,
+    ) async {
+      PlatformDetection.setTvMode(true);
+      final isAtStart = ValueNotifier<bool>(true);
+      addTearDown(isAtStart.dispose);
+      var returned = 0;
+
+      await tester.pumpWidget(
+        _app(
+          QuickReturnWrapper(
+            isAtStart: isAtStart,
+            onReturn: () => returned++,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(InlineBackInterceptor.handleBack(), isFalse);
+
+      isAtStart.value = false;
+      await tester.pump();
+
+      expect(InlineBackInterceptor.handleBack(), isTrue);
+      expect(returned, 1);
+    });
+  });
 }

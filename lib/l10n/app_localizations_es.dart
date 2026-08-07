@@ -10570,6 +10570,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).

@@ -156,8 +156,9 @@ class UserPreferences extends ChangeNotifier {
         continue;
       }
       final stored = _store.getString(key);
-      if (stored == null || mediaBarContentTypeValues.contains(stored))
+      if (stored == null || mediaBarContentTypeValues.contains(stored)) {
         continue;
+      }
       _store.setString(key, normalizeMediaBarContentType(stored));
     }
   }
@@ -1203,6 +1204,11 @@ class UserPreferences extends ChangeNotifier {
   static final showFavoritesButton = Preference(
     key: 'pref_show_favorites_button',
     defaultValue: true,
+  );
+
+  static final showAlphabeticalFilters = Preference(
+    key: 'pref_show_alphabetical_filters',
+    defaultValue: false,
   );
 
   static final showSyncPlayButton = Preference(

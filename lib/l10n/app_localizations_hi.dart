@@ -10421,4 +10421,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }

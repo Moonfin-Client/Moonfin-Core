@@ -18561,6 +18561,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Studio'**
   String get groupByStudio;
+
+  /// Checkbox label for toggling alphabetical picker visibility in Sort and Filter options
+  ///
+  /// In en, this message translates to:
+  /// **'Show Alphabet'**
+  String get showAlphabeticalFilters;
 }
 
 class _AppLocalizationsDelegate

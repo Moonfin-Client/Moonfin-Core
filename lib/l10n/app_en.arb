@@ -9306,5 +9306,9 @@
   "groupByStudio": "Studio",
   "@groupByStudio": {
     "description": "Option to group library items by production studio"
+  },
+  "showAlphabeticalFilters": "Show Alphabet",
+  "@showAlphabeticalFilters": {
+    "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
   }
 }

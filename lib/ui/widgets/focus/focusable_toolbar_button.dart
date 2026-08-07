@@ -29,6 +29,7 @@ class FocusableToolbarButton extends StatefulWidget {
   /// Multiplicative scale applied while focused. 1.0 disables scaling.
   final double scaleOnFocus;
   final FocusNode? focusNode;
+  final VoidCallback? onUpKey;
 
   const FocusableToolbarButton({
     super.key,
@@ -42,6 +43,7 @@ class FocusableToolbarButton extends StatefulWidget {
     this.unfocusedIconAlpha = 179,
     this.scaleOnFocus = 1.0,
     this.focusNode,
+    this.onUpKey,
   });
 
   @override
@@ -88,6 +90,10 @@ class _FocusableToolbarButtonState extends State<FocusableToolbarButton>
         focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (_, event) {
+          if (event.isActionable && event.logicalKey.isUpKey && widget.onUpKey != null) {
+            widget.onUpKey!();
+            return KeyEventResult.handled;
+          }
           if (isActivateKey(event)) {
             widget.onTap();
             return KeyEventResult.handled;

@@ -38,6 +38,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/exit_confirmation_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/quick_return_wrapper.dart';
 import '../../../util/app_exit.dart';
 import '../../../util/overview_text.dart';
 import '../../../util/global_shortcut_focus.dart';
@@ -71,6 +72,9 @@ import '../../../util/game_library.dart';
 import 'home_view_model.dart';
 
 Color get _homeBackground => AppColorScheme.background;
+
+/// How far the rows have to scroll before the return is worth offering.
+const _kHomeStartThreshold = 20.0;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -443,41 +447,45 @@ class _HomeShellState extends State<_HomeShell>
         backgroundColor: _homeBackground,
         body: NavigationLayout(
           activeRoute: Destinations.home,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (backdropEnabled)
-                ValueListenableBuilder<String?>(
-                  valueListenable: _backdropUrlNotifier,
-                  builder: (context, url, _) {
-                    return _Backdrop(
-                      url: url,
-                      blurAmount: blurAmount,
-                      useMakdBackdropFx: useMakdBackdropFx,
-                    );
-                  },
+          child: QuickReturnWrapper(
+            isAtStart: _isScrolledToTopNotifier,
+            onReturn: () => _contentRowsKey.currentState?.returnToTop(),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (backdropEnabled)
+                  ValueListenableBuilder<String?>(
+                    valueListenable: _backdropUrlNotifier,
+                    builder: (context, url, _) {
+                      return _Backdrop(
+                        url: url,
+                        blurAmount: blurAmount,
+                        useMakdBackdropFx: useMakdBackdropFx,
+                      );
+                    },
+                  ),
+                const _GradientScrim(),
+                Positioned.fill(
+                  child: _ContentRows(
+                    key: _contentRowsKey,
+                    viewModel: _viewModel,
+                    mediaBarViewModel: _viewModel.mediaBarViewModel,
+                    prefs: _userPrefs,
+                    selectedItemNotifier: _selectedItemNotifier,
+                    onItemSelected: onItemSelected,
+                    isHoverPausedNotifier: _isHoverPausedNotifier,
+                    isScrolledToTopNotifier: _isScrolledToTopNotifier,
+                    onScrolledToTopChanged: (atTop) {
+                      if (atTop != _isScrolledToTopNotifier.value) {
+                        _isScrolledToTopNotifier.value = atTop;
+                      }
+                    },
+                  ),
                 ),
-              const _GradientScrim(),
-              Positioned.fill(
-                child: _ContentRows(
-                  key: _contentRowsKey,
-                  viewModel: _viewModel,
-                  mediaBarViewModel: _viewModel.mediaBarViewModel,
-                  prefs: _userPrefs,
-                  selectedItemNotifier: _selectedItemNotifier,
-                  onItemSelected: onItemSelected,
-                  isHoverPausedNotifier: _isHoverPausedNotifier,
-                  isScrolledToTopNotifier: _isScrolledToTopNotifier,
-                  onScrolledToTopChanged: (atTop) {
-                    if (atTop != _isScrolledToTopNotifier.value) {
-                      _isScrolledToTopNotifier.value = atTop;
-                    }
-                  },
-                ),
-              ),
-              if (seasonalEffect != 'none')
-                Positioned.fill(child: SeasonalEffects(effect: seasonalEffect)),
-            ],
+                if (seasonalEffect != 'none')
+                  Positioned.fill(child: SeasonalEffects(effect: seasonalEffect)),
+              ],
+            ),
           ),
         ),
       ),
@@ -1054,6 +1062,12 @@ class _ContentRowsState extends State<_ContentRows>
     );
     _audioArbiter.register(this);
     _activeFocusedRowNotifier.addListener(_updateOffsets);
+    _activeFocusedRowNotifier.addListener(_updateIsScrolledToTop);
+    _mediaBarFocusNode.addListener(_updateIsScrolledToTop);
+    // Settle the initial reading once the rows have laid out.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _updateIsScrolledToTop(),
+    );
     widget.viewModel.addListener(_onViewModelChanged);
     widget.mediaBarViewModel.addListener(_onMediaBarStateChanged);
     _lastMediaBarStateRuntime = widget.mediaBarViewModel.state.runtimeType;
@@ -1208,6 +1222,8 @@ class _ContentRowsState extends State<_ContentRows>
           _previousFocusContentFromNavbarCallback;
     }
     _scrollIdleTimer?.cancel();
+    _activeFocusedRowNotifier.removeListener(_updateIsScrolledToTop);
+    _mediaBarFocusNode.removeListener(_updateIsScrolledToTop);
     _mediaBarFocusNode.dispose();
     _activeFocusedRowNotifier.removeListener(_updateOffsets);
     widget.viewModel.removeListener(_onViewModelChanged);
@@ -3020,16 +3036,57 @@ class _ContentRowsState extends State<_ContentRows>
     return KeyEventResult.ignored;
   }
 
+  /// The rows are at the start when nothing has scrolled past and focus hasn't
+  /// dropped below the top row. Both have to hold, or Back on TV would leave
+  /// the screen while the user is still looking at row three.
+  void _updateIsScrolledToTop() {
+    if (!mounted) return;
+    final scrolledPast =
+        _scrollController.hasClients &&
+        _scrollController.offset > _kHomeStartThreshold;
+    final activeRow = _activeFocusedRowNotifier.value;
+    final belowTopRow = _isMediaBarIncluded()
+        ? !_mediaBarFocusNode.hasFocus && activeRow != null
+        : activeRow != null && activeRow > 0;
+    final atStart = !scrolledPast && !belowTopRow;
+    if (atStart != _isScrolledToTop) {
+      widget.onScrolledToTopChanged?.call(atStart);
+    }
+  }
+
+  void returnToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    }
+    // Only carry focus back up if it was down in the rows to begin with. A
+    // pointer user who clicked the button has none to carry.
+    final hadRowFocus =
+        _activeFocusedRowIndex != null || _mediaBarFocusNode.hasFocus;
+    _activeFocusedRowIndex = null;
+    if (hadRowFocus) {
+      if (_isMediaBarIncluded() && _mediaBarFocusNode.context != null) {
+        _mediaBarFocusNode.requestFocus();
+      } else {
+        for (var i = 0; i < widget.viewModel.rows.length; i++) {
+          if (!_rowHasFocusableItems(widget.viewModel.rows[i])) continue;
+          _rowStateOf(i)?.requestFocusFromMemory();
+          break;
+        }
+      }
+    }
+    _updateIsScrolledToTop();
+  }
+
   void _onScroll() {
     _lastScrollTime = DateTime.now();
     final offset = _scrollController.offset;
     final previousOffset = _scrollOffset;
     final scrollingUp = offset < previousOffset;
-    final atTop = offset <= 0;
-    final topStateChanged = atTop != _isScrolledToTop;
-    if (topStateChanged) {
-      widget.onScrolledToTopChanged?.call(atTop);
-    }
+    _updateIsScrolledToTop();
 
     final isDesktop = !PlatformDetection.isTV && !PlatformDetection.useMobileUi;
     final fullScreenRows =

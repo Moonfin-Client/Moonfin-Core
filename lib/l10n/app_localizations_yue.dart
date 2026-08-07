@@ -10048,6 +10048,9 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get groupByStudio => 'Studio';
+
+  @override
+  String get showAlphabeticalFilters => 'Show Alphabet';
 }
 
 /// The translations for Yue Chinese Cantonese, as used in China (`yue_CN`).

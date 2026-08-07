@@ -8,6 +8,7 @@ import '../../preference/user_preferences.dart';
 import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
+import '../utils/alphabet_bucket.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/playlist_utils.dart';
 
@@ -45,7 +46,30 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   LibraryBrowseState get state => _state;
 
   List<AggregatedItem> _items = const [];
-  List<AggregatedItem> get items => _items;
+
+  // The grid reads this from its item builders, so a search would otherwise
+  // rescan and reallocate the whole library several times a frame.
+  List<AggregatedItem>? _searchResults;
+  List<AggregatedItem>? _searchResultsSource;
+  String _searchResultsQuery = '';
+
+  List<AggregatedItem> get items {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) return _items;
+    if (_searchResults != null &&
+        _searchResultsQuery == query &&
+        identical(_searchResultsSource, _items)) {
+      return _searchResults!;
+    }
+    final matches = [
+      for (final item in _items)
+        if ((item.sortName ?? item.name).toLowerCase().contains(query)) item,
+    ];
+    _searchResults = matches;
+    _searchResultsSource = _items;
+    _searchResultsQuery = query;
+    return matches;
+  }
 
   int _totalCount = 0;
   int get totalCount => _totalCount;
@@ -97,6 +121,27 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   late String _letterFilter;
   String get letterFilter => _letterFilter;
 
+  String _searchQuery = '';
+  String get searchQuery => _searchQuery;
+
+  Timer? _searchDebounceTimer;
+  static const _searchLoadDelay = Duration(milliseconds: 300);
+
+  /// Matching happens against the items already loaded, so a query that reaches
+  /// past the first page needs the rest pulled in. Typing a word would abandon
+  /// and restart that walk on every letter, so it waits for a pause first.
+  void setSearchQuery(String query) {
+    if (_searchQuery == query) return;
+    _searchQuery = query;
+    notifyListeners();
+    _searchDebounceTimer?.cancel();
+    if (_searchQuery.trim().isEmpty || !hasMore) return;
+    _searchDebounceTimer = Timer(_searchLoadDelay, () {
+      if (_disposed) return;
+      unawaited(ensureAllItemsLoaded());
+    });
+  }
+
   String? _libraryFilter;
   String? get libraryFilter => _libraryFilter;
 
@@ -122,7 +167,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String? _selectedCategoryTab;
   String? get selectedCategoryTab => _selectedCategoryTab;
 
-  int _groupByLoadGeneration = 0;
+  int _pageWalkGeneration = 0;
   bool _disposed = false;
 
   // Grouping walks every item and sorts the keys, and the grid asks for it
@@ -170,8 +215,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// The loaded playlists the type checkboxes let through. Filtering here rather
   /// than while paging keeps ticking a box a repaint instead of a fresh load.
   List<AggregatedItem> get visiblePlaylists {
-    if (!isPlaylistBrowse) return _items;
-    return _items
+    if (!isPlaylistBrowse) return items;
+    return items
         .where(
           (item) =>
               item.type != 'Playlist' ||
@@ -335,7 +380,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   Future<void> load() async {
     // Any page walk still running belongs to the list we are about to drop.
-    _groupByLoadGeneration++;
+    _pageWalkGeneration++;
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
@@ -369,13 +414,30 @@ class LibraryBrowseViewModel extends ChangeNotifier {
                 ?.toLowerCase();
           } catch (_) {}
         }
-      } else if (!_libraryMetaResolved) {
-        final parentData = await _client.itemsApi
-            .getItem(libraryId, fields: _libraryMetaFields);
-        _libraryName = parentData['Name'] as String? ?? '';
-        _collectionType = (parentData['CollectionType'] as String?)
-            ?.toLowerCase();
-        _libraryMetaResolved = true;
+      }
+      if (!isFilterBrowse && !_libraryMetaResolved && libraryId.isNotEmpty) {
+        try {
+          final parentData = await _client.itemsApi
+              .getItem(libraryId, fields: _libraryMetaFields);
+          _libraryName = parentData['Name'] as String? ?? '';
+          _collectionType = (parentData['CollectionType'] as String?)
+              ?.toLowerCase();
+          _libraryMetaResolved = true;
+        } catch (_) {}
+      }
+
+      if (_collectionType == null || _collectionType!.isEmpty) {
+        if (includeItemTypes != null && includeItemTypes!.isNotEmpty) {
+          if (includeItemTypes!.contains('Series')) {
+            _collectionType = 'tvshows';
+          } else if (includeItemTypes!.contains('Movie')) {
+            _collectionType = 'movies';
+          } else if (includeItemTypes!.contains('MusicVideo')) {
+            _collectionType = 'musicvideos';
+          } else if (includeItemTypes!.contains('Book')) {
+            _collectionType = 'books';
+          }
+        }
       }
 
       if (isHomeVideosLibrary || isMixedContentLibrary) {
@@ -400,16 +462,15 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       _state = LibraryBrowseState.error;
     }
     notifyListeners();
-    if (isGrouping) unawaited(_loadAllForGroupBy());
+    if (isGrouping || _prefs.get(UserPreferences.showAlphabeticalFilters)) {
+      unawaited(ensureAllItemsLoaded());
+    }
   }
 
-  /// Grouping needs the whole library, so this walks the pages the first fetch
-  /// left behind. The generation rises whenever the answer would change
-  /// underneath it, which abandons a walk nobody is waiting on any more.
-  Future<void> _loadAllForGroupBy() async {
-    final generation = ++_groupByLoadGeneration;
+  Future<void> ensureAllItemsLoaded() async {
+    final generation = ++_pageWalkGeneration;
     bool stillWanted() =>
-        !_disposed && _groupByLoadGeneration == generation && isGrouping;
+        !_disposed && _pageWalkGeneration == generation;
 
     if (!stillWanted()) return;
     while (hasMore) {
@@ -418,6 +479,21 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       if (!stillWanted()) return;
       if (_items.length == beforeCount) break;
     }
+  }
+
+  /// Pages until an item starting with [letter] is loaded, and reports whether
+  /// one ever turned up.
+  Future<bool> ensureItemsLoadedForPrefix(String letter) async {
+    if (letter.isEmpty || letter == 'ALL') return true;
+    bool hasPrefix() =>
+        _items.any((item) => matchesAlphabetBucket(item, letter));
+
+    while (!hasPrefix() && hasMore) {
+      final beforeCount = _items.length;
+      await loadMore();
+      if (_items.length == beforeCount) break;
+    }
+    return hasPrefix();
   }
 
   Future<void> loadMore() async {
@@ -476,12 +552,15 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           (includeTypes.contains('Movie') ||
               includeTypes.contains('Series'))) {
         collapseBoxSets = true;
+        if (!includeTypes.contains('BoxSet')) {
+          includeTypes.add('BoxSet');
+        }
       }
     } else {
       switch (_collectionType) {
         case 'movies':
           if (groupCollections) {
-            includeTypes = ['Movie'];
+            includeTypes = ['Movie', 'BoxSet'];
             excludeTypes = null;
             collapseBoxSets = true;
           } else {
@@ -492,7 +571,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
           break;
         case 'tvshows':
           if (groupCollections) {
-            includeTypes = ['Series'];
+            includeTypes = ['Series', 'BoxSet'];
             collapseBoxSets = true;
           } else {
             includeTypes = ['Series'];
@@ -542,20 +621,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'SortName';
     }
 
-    final isSongsBrowse =
-        includeItemTypes != null &&
-        includeItemTypes!.length == 1 &&
-        includeItemTypes!.first == 'Audio';
-
-    final selectedLetter = _letterFilter.isEmpty ? null : _letterFilter;
-    final isNumericBucket = selectedLetter == '#';
-    final nameStartsWith =
-        (isSongsBrowse || isNumericBucket) ? null : selectedLetter;
-    final nameLessThan =
-        (isSongsBrowse || !isNumericBucket) ? null : 'A';
-    final fetchLimit =
-        (isSongsBrowse && selectedLetter != null) ? 500 : pageSize;
-
     final Map<String, dynamic> response;
     if (isAlbumArtistBrowse) {
       response = await _client.itemsApi.getAlbumArtists(
@@ -569,8 +634,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         limit: pageSize,
         recursive: recursive,
         fields: 'PrimaryImageAspectRatio,SortName',
-        nameStartsWith: nameStartsWith,
-        nameLessThan: nameLessThan,
         isFavorite: _favoriteFilter ? true : null,
       );
     } else if (isArtistBrowse) {
@@ -585,8 +648,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         limit: pageSize,
         recursive: recursive,
         fields: 'PrimaryImageAspectRatio,SortName',
-        nameStartsWith: nameStartsWith,
-        nameLessThan: nameLessThan,
         isFavorite: _favoriteFilter ? true : null,
       );
     } else {
@@ -602,13 +663,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
             ? 'Ascending'
             : 'Descending',
         startIndex: startIndex,
-        limit: fetchLimit,
+        limit: pageSize,
         recursive: recursive,
         fields: _browseFields,
         filters: filters.isEmpty ? null : filters,
         seriesStatus: seriesStatus.isEmpty ? null : seriesStatus,
-        nameStartsWith: nameStartsWith,
-        nameLessThan: nameLessThan,
         isFavorite: _favoriteFilter ? true : null,
       );
     }
@@ -628,21 +687,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         })
         .whereType<AggregatedItem>()
         .toList();
-
-    if (isSongsBrowse && selectedLetter != null && selectedLetter.isNotEmpty) {
-      if (isNumericBucket) {
-        mapped = mapped.where((item) {
-          final name = (item.sortName ?? item.name).trim().toUpperCase();
-          return name.isNotEmpty && !RegExp(r'^[A-Z]').hasMatch(name);
-        }).toList();
-      } else {
-        final prefix = selectedLetter.toUpperCase();
-        mapped = mapped.where((item) {
-          final name = (item.sortName ?? item.name).trim().toUpperCase();
-          return name.startsWith(prefix);
-        }).toList();
-      }
-    }
 
     var filtered = await _filterLibraryItems(mapped);
 
@@ -697,8 +741,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     required String fields,
     List<String>? filters,
     List<String>? seriesStatus,
-    String? nameStartsWith,
-    String? nameLessThan,
     bool? isFavorite,
   }) async {
     try {
@@ -719,8 +761,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         imageTypeLimit: _imageTypeLimit,
         filters: filters,
         seriesStatus: seriesStatus,
-        nameStartsWith: nameStartsWith,
-        nameLessThan: nameLessThan,
         isFavorite: isFavorite,
       );
     } on DioException catch (e) {
@@ -751,8 +791,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         imageTypeLimit: _imageTypeLimit,
         filters: filters,
         seriesStatus: seriesStatus,
-        nameStartsWith: nameStartsWith,
-        nameLessThan: nameLessThan,
         isFavorite: isFavorite,
         enableTotalRecordCount: false,
       );
@@ -832,10 +870,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     await load();
   }
 
-  Future<void> setLetterFilter(String value) async {
+  void setLetterFilter(String value) {
     if (_letterFilter == value) return;
     _letterFilter = value;
-    await load();
+    notifyListeners();
   }
 
   Future<void> setImageType(ImageType value) async {
@@ -921,7 +959,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       value,
     );
     notifyListeners();
-    if (isGrouping) unawaited(_loadAllForGroupBy());
+    if (isGrouping) unawaited(ensureAllItemsLoaded());
   }
 
   void setSelectedCategoryTab(String category) {
@@ -1114,7 +1152,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   void dispose() {
     // Also stops an in-flight page walk from fetching what nobody will see.
     _disposed = true;
-    _groupByLoadGeneration++;
+    _searchDebounceTimer?.cancel();
+    _pageWalkGeneration++;
     _prefs.removeListener(_onPrefsChanged);
     super.dispose();
   }

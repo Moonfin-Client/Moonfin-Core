@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -16,22 +17,40 @@ const _kScrolledAwayThreshold = 20.0;
 ///
 /// Wrap the scrolling body, not the whole screen, so the button lands above
 /// any bottom chrome the screen draws rather than on top of it.
+///
+/// A screen with one scroll view hands over its [scrollController] and lets
+/// this drive it. A screen where the start means more than an offset, like the
+/// home rows where focus also has to come back up, reports its own state
+/// through [isAtStart] and does the returning itself in [onReturn].
 class QuickReturnWrapper extends StatefulWidget {
   const QuickReturnWrapper({
     super.key,
     required this.child,
-    required this.scrollController,
+    this.scrollController,
     this.scrollDirection = Axis.vertical,
     this.topFocusNode,
-  });
+    this.isAtStart,
+    this.onReturn,
+  }) : assert(
+         scrollController != null || isAtStart != null,
+         'Give it a controller to watch or a notifier telling it where it is.',
+       );
 
   final Widget child;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
   final Axis scrollDirection;
 
   /// Focused after the scroll finishes, so a remote carries on from the first
   /// card rather than from wherever the old focus scrolled away to.
   final FocusNode? topFocusNode;
+
+  /// Overrides the reading taken from [scrollController] for screens that
+  /// count more than the offset.
+  final ValueListenable<bool>? isAtStart;
+
+  /// Runs after the scroll, for whatever returning to the start means beyond
+  /// moving the offset.
+  final VoidCallback? onReturn;
 
   @override
   State<QuickReturnWrapper> createState() => _QuickReturnWrapperState();
@@ -47,7 +66,8 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   @override
   void initState() {
     super.initState();
-    widget.scrollController.addListener(_updateScrollState);
+    widget.scrollController?.addListener(_updateScrollState);
+    widget.isAtStart?.addListener(_updateScrollState);
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollState());
   }
 
@@ -65,8 +85,13 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   void didUpdateWidget(QuickReturnWrapper oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.scrollController != widget.scrollController) {
-      oldWidget.scrollController.removeListener(_updateScrollState);
-      widget.scrollController.addListener(_updateScrollState);
+      oldWidget.scrollController?.removeListener(_updateScrollState);
+      widget.scrollController?.addListener(_updateScrollState);
+      _updateScrollState();
+    }
+    if (oldWidget.isAtStart != widget.isAtStart) {
+      oldWidget.isAtStart?.removeListener(_updateScrollState);
+      widget.isAtStart?.addListener(_updateScrollState);
       _updateScrollState();
     }
   }
@@ -75,7 +100,8 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   void dispose() {
     _unregisterInterceptor();
     if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
-    widget.scrollController.removeListener(_updateScrollState);
+    widget.scrollController?.removeListener(_updateScrollState);
+    widget.isAtStart?.removeListener(_updateScrollState);
     super.dispose();
   }
 
@@ -97,7 +123,7 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   void _syncInterceptor() {
     final wanted = PlatformDetection.isTV && _isScrolledAway && _routeIsOnTop;
     if (wanted && !_interceptorRegistered) {
-      InlineBackInterceptor.push(_scrollToStart);
+      InlineBackInterceptor.push(_returnToStart);
       _interceptorRegistered = true;
     } else if (!wanted) {
       _unregisterInterceptor();
@@ -106,13 +132,16 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
 
   void _unregisterInterceptor() {
     if (!_interceptorRegistered) return;
-    InlineBackInterceptor.remove(_scrollToStart);
+    InlineBackInterceptor.remove(_returnToStart);
     _interceptorRegistered = false;
   }
 
   void _updateScrollState() {
     if (!mounted) return;
-    final isAway = _offset > _kScrolledAwayThreshold;
+    final notifier = widget.isAtStart;
+    final isAway = notifier != null
+        ? !notifier.value
+        : _offset > _kScrolledAwayThreshold;
     if (isAway != _isScrolledAway) {
       setState(() => _isScrolledAway = isAway);
     }
@@ -124,20 +153,22 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   /// throws rather than returning either one.
   double get _offset {
     final controller = widget.scrollController;
-    if (controller.positions.length != 1) return 0;
+    if (controller == null || controller.positions.length != 1) return 0;
     final position = controller.position;
     return position.hasPixels ? position.pixels : 0;
   }
 
-  void _scrollToStart() {
-    if (widget.scrollController.hasClients) {
-      widget.scrollController.animateTo(
+  void _returnToStart() {
+    final controller = widget.scrollController;
+    if (controller != null && controller.hasClients) {
+      controller.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
       );
     }
     widget.topFocusNode?.requestFocus();
+    widget.onReturn?.call();
   }
 
   @override
@@ -165,7 +196,7 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
                   child: ExcludeFocus(
                     excluding: !_isScrolledAway,
                     child: _QuickReturnButton(
-                      onPressed: _scrollToStart,
+                      onPressed: _returnToStart,
                       scrollDirection: widget.scrollDirection,
                     ),
                   ),
