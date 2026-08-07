@@ -208,6 +208,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   /// Whether the scroll view has settled metrics and is within
   /// [_kLoadMoreExtent] of its end.
   bool get _nearGridEnd {
+    if (!_scrollController.hasClients) return false;
     // Two grids briefly share the controller while one is swapped out.
     if (_scrollController.positions.length != 1) return false;
     final pos = _scrollController.position;
@@ -729,7 +730,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               _vm.scrollDirection == LibraryScrollDirection.horizontal
               ? Axis.horizontal
               : Axis.vertical,
-          topFocusNode: getGridItemFocusNode(0),
+          topFocusNode: _vm.items.isNotEmpty ? getGridItemFocusNode(0) : null,
           child: _buildContent(context),
         ),
       );
@@ -1198,6 +1199,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   childAspectRatio: childAspectRatio,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
+                  if (index < 0 || index >= itemsToDisplay.length) return null;
                   final item = itemsToDisplay[index];
                   final itemAspectRatio = _itemAspectRatio(item);
                   return _buildGridCard(
@@ -1492,7 +1494,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
         return Listener(
           onPointerSignal: (signal) {
-            if (signal is PointerScrollEvent) {
+            if (signal is PointerScrollEvent && _scrollController.hasClients) {
               final pos = _scrollController.position;
               final newOffset =
                   (_scrollController.offset + signal.scrollDelta.dy)
@@ -1518,6 +1520,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
+                      if (index < 0 || index >= _vm.items.length) return null;
                       final item = _vm.items[index];
                       return MediaCard(
                         title: item.name,
