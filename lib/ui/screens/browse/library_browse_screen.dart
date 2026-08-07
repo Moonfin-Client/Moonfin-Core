@@ -287,10 +287,17 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   }
 
   bool _isJumpingToLetter = false;
+  int _letterJumpGeneration = 0;
 
   /// Scrolls the first item whose sort name starts with [letter] to the
   /// leading edge, loading pages first if it hasn't arrived yet.
   Future<void> _jumpToLetter(String letter) async {
+    // Scrubbing along the alphabet bar starts a jump per letter, and an older
+    // one would keep re-asserting its own offset against the newest, so each
+    // jump checks in after every await and bows out once superseded.
+    final generation = ++_letterJumpGeneration;
+    bool stillCurrent() => mounted && generation == _letterJumpGeneration;
+
     _vm.setLetterFilter(letter);
     if (!mounted) return;
     setState(() => _isJumpingToLetter = true);
@@ -298,7 +305,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     try {
       await _vm.ensureItemsLoadedForPrefix(letter);
       await WidgetsBinding.instance.endOfFrame;
-      if (!mounted || !_scrollController.hasClients) return;
+      if (!stillCurrent() || !_scrollController.hasClients) return;
 
       final targetIndex = _indexOfLetter(letter);
       if (targetIndex < 0) return;
@@ -314,17 +321,18 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             line * (geometry.lineExtent + geometry.lineSpacing);
       }
 
-      // Slivers in a CustomScrollView compute maxScrollExtent lazily as children are laid out.
-      // Jumping to a line deeper than currently built children gets clamped to the current maxExtent.
-      // Loop jumps over frame boundaries until the layout expands to reach targetOffset or true scroll bottom.
+      // Slivers report maxScrollExtent lazily as children are laid out, so a
+      // jump deeper than the built children clamps short. Re-jump across
+      // frame boundaries until the layout reaches the target or the true
+      // scroll bottom.
       for (int i = 0; i < 5; i++) {
-        if (!mounted || !_scrollController.hasClients) break;
         final currentMax = _scrollController.position.maxScrollExtent;
         final destination = targetOffset.clamp(0.0, currentMax);
         _scrollController.jumpTo(destination);
 
         await WidgetsBinding.instance.endOfFrame;
-        if (!mounted || !_scrollController.hasClients) break;
+        if (!stillCurrent()) return;
+        if (!_scrollController.hasClients) break;
 
         final currentPixels = _scrollController.position.pixels;
         final newMax = _scrollController.position.maxScrollExtent;
@@ -338,7 +346,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         getGridItemFocusNode(targetIndex).requestFocus();
       }
     } finally {
-      if (mounted) setState(() => _isJumpingToLetter = false);
+      // A superseded jump leaves the flag for the jump that replaced it.
+      if (stillCurrent()) setState(() => _isJumpingToLetter = false);
     }
   }
 
