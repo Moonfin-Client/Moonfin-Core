@@ -3808,6 +3808,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get networks => 'నెట్‌వర్క్‌లు';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr డిస్కవరీ వరుసలు';
 
   @override

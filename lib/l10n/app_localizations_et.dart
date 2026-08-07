@@ -3789,6 +3789,12 @@ class AppLocalizationsEt extends AppLocalizations {
   String get networks => 'Võrgud';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerri avastamisread';
 
   @override

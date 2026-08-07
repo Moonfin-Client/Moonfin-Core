@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../mixins/focus_state_mixin.dart';
 import '../../navigation/destinations.dart';
 import 'seerr_browse_chip.dart';
 
-/// Modal popup displaying all Genres, Networks, and Keywords for a title in a
-/// clean categorized dialog.
+/// The genres, networks and tags a title is filed under, each one a shortcut
+/// into browsing everything else filed the same way.
 class SeerrTagsDialog extends StatefulWidget {
   final SeerrMediaDetailState state;
 
@@ -30,7 +31,7 @@ class SeerrTagsDialog extends StatefulWidget {
 }
 
 class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
-  late final FocusNode _firstChipFocusNode = FocusNode(debugLabel: 'dialogFirstChip');
+  final FocusNode _firstChipFocusNode = FocusNode(debugLabel: 'dialogFirstChip');
 
   @override
   void dispose() {
@@ -38,8 +39,16 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
     super.dispose();
   }
 
+  /// Whichever section comes first owns the node, so Down off the close button
+  /// always lands somewhere.
+  bool get _hasFirstChip =>
+      widget.state.genres.isNotEmpty ||
+      widget.state.networks.isNotEmpty ||
+      widget.state.keywords.isNotEmpty;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final mediaType = widget.state.isTv ? 'tv' : 'movie';
 
     void open(String id, String name, String filterType) {
@@ -54,14 +63,11 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
       );
     }
 
-    var isFirstChip = true;
-
-    FocusNode? grabFirstChipFocusNode() {
-      if (isFirstChip) {
-        isFirstChip = false;
-        return _firstChipFocusNode;
-      }
-      return null;
+    var claimed = false;
+    FocusNode? claimFirstChip() {
+      if (claimed) return null;
+      claimed = true;
+      return _firstChipFocusNode;
     }
 
     return Dialog(
@@ -90,10 +96,10 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Keywords',
-                    style: TextStyle(
+                    l10n.genresAndTags,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -101,12 +107,11 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
                   ),
                 ),
                 _DialogCloseButton(
+                  label: l10n.close,
                   onPressed: () => Navigator.of(context).pop(),
-                  onNavigateDown: () {
-                    if (_firstChipFocusNode.canRequestFocus) {
-                      _firstChipFocusNode.requestFocus();
-                    }
-                  },
+                  onNavigateDown: _hasFirstChip
+                      ? _firstChipFocusNode.requestFocus
+                      : null,
                 ),
               ],
             ),
@@ -116,86 +121,57 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.state.genres.isNotEmpty) ...[
-                      const Text(
-                        'Genres',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final g in widget.state.genres)
-                            SeerrBrowseChip(
-                              label: g.name,
-                              focusNode: grabFirstChipFocusNode(),
-                              onTap: () =>
-                                  open(g.id.toString(), g.name, 'genre'),
+                    _section(
+                      title: l10n.genres,
+                      spacing: 8,
+                      chips: [
+                        for (final genre in widget.state.genres)
+                          SeerrBrowseChip(
+                            label: genre.name,
+                            focusNode: claimFirstChip(),
+                            onTap: () =>
+                                open(genre.id.toString(), genre.name, 'genre'),
+                          ),
+                      ],
+                    ),
+                    _section(
+                      title: l10n.networks,
+                      spacing: 8,
+                      chips: [
+                        for (final network in widget.state.networks)
+                          SeerrBrowseChip(
+                            label: network.name,
+                            color: Colors.transparent,
+                            borderColor: Colors.white24,
+                            labelColor: Colors.white70,
+                            focusNode: claimFirstChip(),
+                            onTap: () => open(
+                              network.id.toString(),
+                              network.name,
+                              'network',
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    if (widget.state.networks.isNotEmpty) ...[
-                      const Text(
-                        'Networks',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final n in widget.state.networks)
-                            SeerrBrowseChip(
-                              label: n.name,
-                              color: Colors.transparent,
-                              borderColor: Colors.white24,
-                              labelColor: Colors.white70,
-                              focusNode: grabFirstChipFocusNode(),
-                              onTap: () =>
-                                  open(n.id.toString(), n.name, 'network'),
+                          ),
+                      ],
+                    ),
+                    _section(
+                      title: l10n.tags,
+                      spacing: 6,
+                      chips: [
+                        for (final keyword in widget.state.keywords)
+                          SeerrBrowseChip(
+                            label: keyword.name,
+                            color: Colors.white.withValues(alpha: 0.08),
+                            labelColor: Colors.white70,
+                            dense: true,
+                            focusNode: claimFirstChip(),
+                            onTap: () => open(
+                              keyword.id.toString(),
+                              keyword.name,
+                              'keyword',
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    if (widget.state.keywords.isNotEmpty) ...[
-                      const Text(
-                        'Tags',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          for (final k in widget.state.keywords)
-                            SeerrBrowseChip(
-                              label: k.name,
-                              color: Colors.white.withValues(alpha: 0.08),
-                              labelColor: Colors.white70,
-                              dense: true,
-                              focusNode: grabFirstChipFocusNode(),
-                              onTap: () =>
-                                  open(k.id.toString(), k.name, 'keyword'),
-                            ),
-                        ],
-                      ),
-                    ],
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -205,13 +181,41 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
       ),
     );
   }
+
+  Widget _section({
+    required String title,
+    required double spacing,
+    required List<Widget> chips,
+  }) {
+    if (chips.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(spacing: spacing, runSpacing: spacing, children: chips),
+        ],
+      ),
+    );
+  }
 }
 
 class _DialogCloseButton extends StatefulWidget {
+  final String label;
   final VoidCallback onPressed;
   final VoidCallback? onNavigateDown;
 
   const _DialogCloseButton({
+    required this.label,
     required this.onPressed,
     this.onNavigateDown,
   });
@@ -224,53 +228,60 @@ class _DialogCloseButtonState extends State<_DialogCloseButton>
     with FocusStateMixin {
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      onFocusChange: setFocused,
-      onKeyEvent: (node, event) {
-        if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-          return KeyEventResult.ignored;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.select ||
-            event.logicalKey == LogicalKeyboardKey.enter ||
-            event.logicalKey == LogicalKeyboardKey.gameButtonA) {
-          widget.onPressed();
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
-            widget.onNavigateDown != null) {
-          widget.onNavigateDown!();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setHovered(true),
-        onExit: (_) => setHovered(false),
-        child: GestureDetector(
-          onTap: widget.onPressed,
-          child: AnimatedScale(
-            scale: showFocusBorder ? 1.1 : 1.0,
-            duration: const Duration(milliseconds: 120),
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: showFocusBorder
-                    ? focusColor.withValues(alpha: 0.2)
-                    : Colors.white.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-                border: Border.fromBorderSide(
-                  ThemeRegistry.active.borders.chipBorder.copyWith(
-                    color: showFocusBorder ? focusColor : Colors.transparent,
-                    width: showFocusBorder ? 2 : 1,
+    return Semantics(
+      container: true,
+      button: true,
+      label: widget.label,
+      child: Tooltip(
+        message: widget.label,
+        child: Focus(
+          onFocusChange: setFocused,
+          onKeyEvent: (node, event) {
+            if (isActivateKey(event)) {
+              widget.onPressed();
+              return KeyEventResult.handled;
+            }
+            final down = widget.onNavigateDown;
+            if (down != null &&
+                event.isActionable &&
+                event.logicalKey.isDownKey) {
+              down();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setHovered(true),
+            onExit: (_) => setHovered(false),
+            child: GestureDetector(
+              onTap: widget.onPressed,
+              child: AnimatedScale(
+                scale: showFocusBorder ? 1.1 : 1.0,
+                duration: const Duration(milliseconds: 120),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: showFocusBorder
+                        ? focusColor.withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                    border: Border.fromBorderSide(
+                      ThemeRegistry.active.borders.chipBorder.copyWith(
+                        color: showFocusBorder
+                            ? focusColor
+                            : Colors.transparent,
+                        width: showFocusBorder ? 2 : 1,
+                      ),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Colors.white70,
                   ),
                 ),
-              ),
-              child: const Icon(
-                Icons.close,
-                size: 20,
-                color: Colors.white70,
               ),
             ),
           ),

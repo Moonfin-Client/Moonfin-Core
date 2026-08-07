@@ -3793,6 +3793,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get networks => 'الشبكات';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'صفوف استكشاف Seerr';
 
   @override

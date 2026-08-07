@@ -3787,6 +3787,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get networks => 'ජාල';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr සොයාගැනීමේ පේළි';
 
   @override

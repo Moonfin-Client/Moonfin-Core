@@ -3808,6 +3808,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get networks => 'Emissoras';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Linhas de Descoberta do Seerr';
 
   @override

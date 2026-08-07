@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../util/focus/focus_scroll.dart';
 import '../../mixins/focus_state_mixin.dart';
 
 /// A tappable pill for a genre, network or keyword, which leads into Seerr
@@ -48,13 +49,7 @@ class _SeerrBrowseChipState extends State<SeerrBrowseChip>
       focusNode: widget.focusNode,
       onFocusChange: (focused) {
         setFocused(focused);
-        if (focused && mounted) {
-          Scrollable.ensureVisible(
-            context,
-            duration: const Duration(milliseconds: 180),
-            alignment: 0.2,
-          );
-        }
+        if (focused && mounted) scrollFocusIntoView(context);
       },
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {

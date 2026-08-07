@@ -3668,6 +3668,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get networks => '網路';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr 探索列表';
 
   @override

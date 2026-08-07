@@ -3813,6 +3813,12 @@ class AppLocalizationsSl extends AppLocalizations {
   String get networks => 'Omrežja';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Vrstice za odkrivanje Seerr';
 
   @override

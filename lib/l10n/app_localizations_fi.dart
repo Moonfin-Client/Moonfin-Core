@@ -3801,6 +3801,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get networks => 'Verkot';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr-löytörivit';
 
   @override

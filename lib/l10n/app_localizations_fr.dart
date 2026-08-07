@@ -3837,6 +3837,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get networks => 'Diffuseurs';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Découvertes Seerr';
 
   @override

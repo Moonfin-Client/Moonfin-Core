@@ -12,6 +12,11 @@ String seerrFormatRuntime(int minutes) {
   return m > 0 ? '${h}h ${m}m' : '${h}h';
 }
 
+/// Facts sit side by side once the card is at least this wide, and stack below.
+const _kStatsGridBreakpoint = 540.0;
+
+const _kStatsPerLine = 3;
+
 /// The facts Seerr knows about a title that the library does not: its TMDB
 /// score, where production stands, and the money behind it.
 class SeerrStatsCard extends StatelessWidget {
@@ -75,124 +80,123 @@ class SeerrStatsCard extends StatelessWidget {
     if (rows.isEmpty) return const SizedBox.shrink();
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 540;
+      builder: (context, constraints) =>
+          constraints.maxWidth >= _kStatsGridBreakpoint
+          ? _grid(rows)
+          : _stack(rows),
+    );
+  }
 
-        if (isWide) {
-          final gridRows = <List<_StatRow>>[];
-          for (var i = 0; i < rows.length; i += 3) {
-            gridRows.add(rows.sublist(i, (i + 3).clamp(0, rows.length)));
-          }
+  Widget _card({required Widget child, EdgeInsetsGeometry? padding}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: AppRadius.circular(10),
+        border: Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder),
+      ),
+      padding: padding,
+      child: child,
+    );
+  }
 
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
-              borderRadius: AppRadius.circular(10),
-              border: Border.fromBorderSide(
-                ThemeRegistry.active.borders.cardBorder,
+  Widget _grid(List<_StatRow> rows) {
+    final lines = <List<_StatRow>>[
+      for (var i = 0; i < rows.length; i += _kStatsPerLine)
+        rows.sublist(i, (i + _kStatsPerLine).clamp(0, rows.length)),
+    ];
+
+    return _card(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+      child: Column(
+        children: [
+          for (var r = 0; r < lines.length; r++) ...[
+            if (r > 0)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Divider(height: 1, thickness: 1, color: Colors.white10),
               ),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-            child: Column(
+            Row(
               children: [
-                for (var r = 0; r < gridRows.length; r++) ...[
-                  if (r > 0)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Colors.white10,
-                      ),
+                for (var c = 0; c < _kStatsPerLine; c++) ...[
+                  if (c > 0)
+                    Container(
+                      height: 32,
+                      width: 1,
+                      color: Colors.white10,
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
                     ),
-                  Row(
-                    children: [
-                      for (var c = 0; c < 3; c++) ...[
-                        if (c > 0)
-                          Container(
-                            height: 32,
-                            width: 1,
-                            color: Colors.white10,
-                            margin: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                        Expanded(
-                          child: c < gridRows[r].length
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      gridRows[r][c].label,
-                                      style: const TextStyle(
-                                        color: Colors.white60,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      gridRows[r][c].value,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                        ),
-                      ],
-                    ],
+                  // The last line is padded out so its facts keep the column
+                  // widths the lines above set.
+                  Expanded(
+                    child: c < lines[r].length
+                        ? _fact(lines[r][c])
+                        : const SizedBox.shrink(),
                   ),
                 ],
               ],
             ),
-          );
-        }
+          ],
+        ],
+      ),
+    );
+  }
 
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
-            borderRadius: AppRadius.circular(10),
-            border: Border.fromBorderSide(
-              ThemeRegistry.active.borders.cardBorder,
-            ),
+  Widget _fact(_StatRow row) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          row.label,
+          style: const TextStyle(
+            color: Colors.white60,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
           ),
-          child: Column(
-            children: [
-              for (var i = 0; i < rows.length; i++) ...[
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          rows[i].label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          row.value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _stack(List<_StatRow> rows) {
+    return _card(
+      child: Column(
+        children: [
+          for (var i = 0; i < rows.length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      rows[i].label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
-                      Text(
-                        rows[i].value,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                if (i < rows.length - 1)
-                  const Divider(height: 1, thickness: 1, color: Colors.white10),
-              ],
-            ],
-          ),
-        );
-      },
+                  Text(
+                    rows[i].value,
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            if (i < rows.length - 1)
+              const Divider(height: 1, thickness: 1, color: Colors.white10),
+          ],
+        ],
+      ),
     );
   }
 

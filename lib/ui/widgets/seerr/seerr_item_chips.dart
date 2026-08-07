@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../l10n/app_localizations.dart';
 import 'seerr_browse_chip.dart';
 import 'seerr_tags_dialog.dart';
 
-/// Seerr's genres, networks and keywords for a title, each leading into Seerr
-/// browse filtered by it.
+/// Opens Seerr's genres, networks and keywords for a title.
+///
+/// Kept apart from the library's own genres, which lead into library browse.
+/// They look alike but land somewhere else, so folding them together would
+/// break one of the two.
 class SeerrItemChips extends StatelessWidget {
   final SeerrMediaDetailState state;
 
-  /// Where a d-pad lands when it enters the block from above.
+  /// Where a d-pad lands when it enters from above.
   final FocusNode? firstFocusNode;
 
-  /// Called when up from the first chip or down from the last would leave the
-  /// block. Everything in between is left to the usual traversal, which walks
-  /// the wrapped rows by position.
+  /// Called when up or down would leave the button.
   final VoidCallback? onNavigateUp;
   final VoidCallback? onNavigateDown;
 
@@ -36,7 +38,7 @@ class SeerrItemChips extends StatelessWidget {
     if (!hasContent(state)) return const SizedBox.shrink();
 
     return SeerrBrowseChip(
-      label: 'Genre and Tag Search',
+      label: AppLocalizations.of(context).genresAndTags,
       onTap: () => SeerrTagsDialog.show(context, state),
       color: Colors.white.withValues(alpha: 0.1),
       borderColor: Colors.white24,

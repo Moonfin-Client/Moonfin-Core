@@ -5140,6 +5140,14 @@
   "@networks": {
     "description": "Seerr row: networks"
   },
+  "tags": "Tags",
+  "@tags": {
+    "description": "Heading for the keyword tags a title is filed under"
+  },
+  "genresAndTags": "Genres and Tags",
+  "@genresAndTags": {
+    "description": "Button and dialog title for browsing a title's genres, networks and tags"
+  },
   "seerrDiscoveryRows": "Seerr Discovery Rows",
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"

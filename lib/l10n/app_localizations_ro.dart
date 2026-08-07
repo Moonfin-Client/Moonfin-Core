@@ -3815,6 +3815,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get networks => 'Rețele';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Rânduri de descoperire Seerr';
 
   @override

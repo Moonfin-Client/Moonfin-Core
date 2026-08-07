@@ -3791,6 +3791,12 @@ class AppLocalizationsSv extends AppLocalizations {
   String get networks => 'Nätverk';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr-upptäcktsrader';
 
   @override

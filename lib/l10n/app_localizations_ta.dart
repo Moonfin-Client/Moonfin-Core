@@ -3816,6 +3816,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get networks => 'நெட்வொர்க்குகள்';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr கண்டுபிடிப்பு வரிசைகள்';
 
   @override

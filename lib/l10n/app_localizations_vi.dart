@@ -3793,6 +3793,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get networks => 'Mạng';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Hàng khám phá Seerr';
 
   @override

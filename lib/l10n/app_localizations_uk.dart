@@ -3812,6 +3812,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get networks => 'мережі';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Рядки відкриттів Seerr';
 
   @override

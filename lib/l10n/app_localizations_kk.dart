@@ -3804,6 +3804,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get networks => 'Желілер';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr ашу жолдары';
 
   @override

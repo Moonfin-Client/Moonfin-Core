@@ -6874,6 +6874,18 @@ abstract class AppLocalizations {
   /// **'Networks'**
   String get networks;
 
+  /// Heading for the keyword tags a title is filed under
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// Button and dialog title for browsing a title's genres, networks and tags
+  ///
+  /// In en, this message translates to:
+  /// **'Genres and Tags'**
+  String get genresAndTags;
+
   /// Subtitle shown under Seerr discovery home rows
   ///
   /// In en, this message translates to:

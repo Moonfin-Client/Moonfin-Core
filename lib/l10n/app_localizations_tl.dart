@@ -3821,6 +3821,12 @@ class AppLocalizationsTl extends AppLocalizations {
   String get networks => 'Mga network';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Mga Seerr Discovery Row';
 
   @override

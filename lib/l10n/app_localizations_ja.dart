@@ -3702,6 +3702,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get networks => 'ネットワーク';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr のディスカバリー行';
 
   @override

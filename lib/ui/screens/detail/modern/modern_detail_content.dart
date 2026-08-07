@@ -21,6 +21,7 @@ import '../../../../preference/preference_constants.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
+import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
@@ -515,21 +516,16 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     void attachAutoScroll(FocusNode node) {
       node.addListener(() {
-        if (node.hasFocus && mounted) {
-          final ctx = node.context;
-          if (ctx != null) {
-            Scrollable.ensureVisible(
-              ctx,
-              duration: const Duration(milliseconds: 250),
-              alignment: 0.15,
-              curve: Curves.easeOutCubic,
-            );
-          }
+        final ctx = node.context;
+        if (node.hasFocus && mounted && ctx != null) {
+          scrollFocusIntoView(ctx);
         }
       });
     }
 
-    attachAutoScroll(_seerrChipsFocusNode);
+    // _seerrChipsFocusNode is left out on purpose. It lands on a
+    // SeerrBrowseChip, which scrolls itself, and two calls racing over the same
+    // viewport settle wherever the slower one happens to finish.
     attachAutoScroll(_seerrRecommendationsFocusNode);
     attachAutoScroll(_seerrSimilarFocusNode);
     attachAutoScroll(_seerrBannerFocusNode);

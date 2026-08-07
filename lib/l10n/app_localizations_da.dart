@@ -3785,6 +3785,12 @@ class AppLocalizationsDa extends AppLocalizations {
   String get networks => 'Netværk';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr-opdagelsesrækker';
 
   @override

@@ -3695,6 +3695,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get networks => '네트워크';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr 둘러보기 행';
 
   @override

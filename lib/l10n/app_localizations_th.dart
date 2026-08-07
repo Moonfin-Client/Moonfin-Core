@@ -3759,6 +3759,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get networks => 'เครือข่าย';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'แถวสำรวจของ Seerr';
 
   @override

@@ -3795,6 +3795,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get networks => 'Сүлжээ';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr-ийн танилцах эгнээ';
 
   @override

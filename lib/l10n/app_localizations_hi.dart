@@ -3777,6 +3777,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get networks => 'नेटवर्क';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr डिस्कवरी पंक्तियाँ';
 
   @override

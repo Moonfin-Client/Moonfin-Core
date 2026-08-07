@@ -3810,6 +3810,12 @@ class AppLocalizationsSk extends AppLocalizations {
   String get networks => 'siete';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Objavovacie riadky Seerr';
 
   @override

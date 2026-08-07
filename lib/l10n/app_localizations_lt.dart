@@ -3806,6 +3806,12 @@ class AppLocalizationsLt extends AppLocalizations {
   String get networks => 'Tinklai';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr atradimų eilutės';
 
   @override

@@ -3832,6 +3832,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get networks => 'Δίκτυα';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Σειρές ανακάλυψης Seerr';
 
   @override

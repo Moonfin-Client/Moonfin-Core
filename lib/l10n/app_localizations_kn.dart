@@ -3809,6 +3809,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get networks => 'ಜಾಲಗಳು';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr ಡಿಸ್ಕವರಿ ಸಾಲುಗಳು';
 
   @override

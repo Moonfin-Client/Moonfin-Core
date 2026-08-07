@@ -3751,6 +3751,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get networks => 'רשתות';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'שורות גילוי של Seerr';
 
   @override

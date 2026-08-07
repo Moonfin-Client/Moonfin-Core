@@ -3815,6 +3815,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get networks => 'Redes';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Filas de descubrimiento de Seerr';
 
   @override

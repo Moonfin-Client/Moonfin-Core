@@ -3810,6 +3810,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get networks => 'Reti';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Righe Scoperta Seerr';
 
   @override

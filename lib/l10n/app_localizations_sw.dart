@@ -3814,6 +3814,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get networks => 'Mitandao';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Safu za Ugunduzi za Seerr';
 
   @override

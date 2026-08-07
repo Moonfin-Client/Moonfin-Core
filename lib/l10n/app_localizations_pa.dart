@@ -3775,6 +3775,12 @@ class AppLocalizationsPa extends AppLocalizations {
   String get networks => 'ਨੈੱਟਵਰਕ';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr ਖੋਜ ਕਤਾਰਾਂ';
 
   @override

@@ -3797,6 +3797,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get networks => 'sítě';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Objevovací řádky Seerr';
 
   @override

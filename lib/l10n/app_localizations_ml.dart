@@ -3812,6 +3812,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get networks => 'നെറ്റ്വർക്കുകൾ';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr ഡിസ്കവറി വരികൾ';
 
   @override

@@ -3792,6 +3792,12 @@ class AppLocalizationsAf extends AppLocalizations {
   String get networks => 'Netwerke';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr-ontdekkingsrye';
 
   @override

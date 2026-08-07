@@ -3784,6 +3784,12 @@ class AppLocalizationsEo extends AppLocalizations {
   String get networks => 'Retoj';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Malkovraj vicoj de Seerr';
 
   @override

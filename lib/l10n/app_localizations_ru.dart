@@ -3818,6 +3818,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get networks => 'Сети';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Ряды подборок Seerr';
 
   @override

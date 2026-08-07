@@ -3659,6 +3659,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get networks => '电视网';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Seerr 发现栏目';
 
   @override

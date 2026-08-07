@@ -3818,6 +3818,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get networks => 'Rrjetet';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Genres and Tags';
+
+  @override
   String get seerrDiscoveryRows => 'Rreshtat e zbulimit Seerr';
 
   @override
