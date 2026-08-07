@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
-import '../../navigation/destinations.dart';
 import 'seerr_browse_chip.dart';
+import 'seerr_tags_dialog.dart';
 
 /// Seerr's genres, networks and keywords for a title, each leading into Seerr
 /// browse filtered by it.
-///
-/// Kept apart from the library's own genres, which lead into library browse.
-/// They look alike but land somewhere else, so folding them together would
-/// break one of the two.
 class SeerrItemChips extends StatelessWidget {
   final SeerrMediaDetailState state;
 
@@ -38,99 +33,17 @@ class SeerrItemChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaType = state.isTv ? 'tv' : 'movie';
+    if (!hasContent(state)) return const SizedBox.shrink();
 
-    void open(String id, String name, String filterType) => context.push(
-          Destinations.seerrBrowseWith(
-            filterId: id,
-            filterName: name,
-            mediaType: mediaType,
-            filterType: filterType,
-          ),
-        );
-
-    // Numbered across the whole block, so only the first and last chip hand
-    // off out of it.
-    final total =
-        state.genres.length + state.networks.length + state.keywords.length;
-    var index = 0;
-    SeerrBrowseChip chip({
-      required String label,
-      required VoidCallback onTap,
-      Color color = Colors.white12,
-      Color? borderColor,
-      Color labelColor = Colors.white,
-      bool dense = false,
-    }) {
-      final i = index++;
-      return SeerrBrowseChip(
-        label: label,
-        onTap: onTap,
-        color: color,
-        borderColor: borderColor,
-        labelColor: labelColor,
-        dense: dense,
-        focusNode: i == 0 ? firstFocusNode : null,
-        onNavigateUp: i == 0 ? onNavigateUp : null,
-        onNavigateDown: i == total - 1 ? onNavigateDown : null,
-      );
-    }
-
-    final rows = <Widget>[
-      if (state.genres.isNotEmpty)
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final g in state.genres)
-              chip(
-                label: g.name,
-                onTap: () => open(g.id.toString(), g.name, 'genre'),
-              ),
-          ],
-        ),
-      if (state.networks.isNotEmpty)
-        Wrap(
-          spacing: 8,
-          runSpacing: 6,
-          children: [
-            for (final n in state.networks)
-              chip(
-                label: n.name,
-                color: Colors.transparent,
-                borderColor: Colors.white24,
-                labelColor: Colors.white70,
-                onTap: () => open(n.id.toString(), n.name, 'network'),
-              ),
-          ],
-        ),
-      if (state.keywords.isNotEmpty)
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: [
-            for (final k in state.keywords)
-              chip(
-                label: k.name,
-                color: Colors.white.withValues(alpha: 0.05),
-                labelColor: Colors.white60,
-                dense: true,
-                onTap: () => open(k.id.toString(), k.name, 'keyword'),
-              ),
-          ],
-        ),
-    ];
-    if (rows.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < rows.length; i++) ...[
-          if (i > 0) const SizedBox(height: 10),
-          rows[i],
-        ],
-      ],
+    return SeerrBrowseChip(
+      label: 'Genre and Tag Search',
+      onTap: () => SeerrTagsDialog.show(context, state),
+      color: Colors.white.withValues(alpha: 0.1),
+      borderColor: Colors.white24,
+      labelColor: Colors.white.withValues(alpha: 0.9),
+      focusNode: firstFocusNode,
+      onNavigateUp: onNavigateUp,
+      onNavigateDown: onNavigateDown,
     );
   }
 }

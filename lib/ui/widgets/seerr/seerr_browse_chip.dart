@@ -46,7 +46,16 @@ class _SeerrBrowseChipState extends State<SeerrBrowseChip>
     final borderRadius = AppRadius.circular(999);
     return Focus(
       focusNode: widget.focusNode,
-      onFocusChange: setFocused,
+      onFocusChange: (focused) {
+        setFocused(focused);
+        if (focused && mounted) {
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 180),
+            alignment: 0.2,
+          );
+        }
+      },
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
           return KeyEventResult.ignored;

@@ -479,7 +479,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   void initState() {
     super.initState();
     
-    final FocusOnKeyEventCallback leftToSidebarHandler = (node, event) {
+    KeyEventResult leftToSidebarHandler(FocusNode node, KeyEvent event) {
       if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
         if (navbarPosition == NavbarPosition.left) {
@@ -491,7 +491,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         }
       }
       return KeyEventResult.ignored;
-    };
+    }
 
     _castFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _crewFirstFocusNode.onKeyEvent = leftToSidebarHandler;
@@ -512,6 +512,32 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _moviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _collectionFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+
+    void attachAutoScroll(FocusNode node) {
+      node.addListener(() {
+        if (node.hasFocus && mounted) {
+          final ctx = node.context;
+          if (ctx != null) {
+            Scrollable.ensureVisible(
+              ctx,
+              duration: const Duration(milliseconds: 250),
+              alignment: 0.15,
+              curve: Curves.easeOutCubic,
+            );
+          }
+        }
+      });
+    }
+
+    attachAutoScroll(_seerrChipsFocusNode);
+    attachAutoScroll(_seerrRecommendationsFocusNode);
+    attachAutoScroll(_seerrSimilarFocusNode);
+    attachAutoScroll(_seerrBannerFocusNode);
+    attachAutoScroll(_castFirstFocusNode);
+    attachAutoScroll(_crewFirstFocusNode);
+    attachAutoScroll(_similarFirstFocusNode);
+    attachAutoScroll(_seasonsFirstFocusNode);
+    attachAutoScroll(_episodesFirstFocusNode);
 
     for (final cat in extraCategoriesOrder) {
       final node = FocusNode(debugLabel: 'modernFeatureFirst_$cat');
@@ -2311,7 +2337,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (var i = 0; i < sections.length; i++) ...[
-            if (i > 0) const SizedBox(height: 20),
+            if (i > 0) const SizedBox(height: 16),
             sections[i],
           ],
         ],
@@ -2476,7 +2502,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: collections.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 32),
+        separatorBuilder: (_, _) => const SizedBox(height: 32),
         itemBuilder: (context, index) {
           final col = collections[index];
           final rowFocusNode = _collectionRowFocusNodeFor(col.id);
@@ -4035,7 +4061,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       addText(l10n.seasonCount(item.childCount!));
     }
     if (item.type == 'Season') {
-      final epCount = _vm.episodes.length > 0 ? _vm.episodes.length : (item.childCount ?? 0);
+      final epCount = _vm.episodes.isNotEmpty ? _vm.episodes.length : (item.childCount ?? 0);
       if (epCount > 0) {
         addText(l10n.episodeCount(epCount));
       }
@@ -4044,7 +4070,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final s = item.parentIndexNumber;
       final e = item.indexNumber;
       if (s != null && e != null) {
-        addText('S${s}:E$e');
+        addText('S$s:E$e');
       }
     }
     final status = item.status;

@@ -47,13 +47,9 @@ class SeerrStatsCard extends StatelessWidget {
         rows.add(_StatRow(l10n.firstAirDateLabel, dateLabel));
       }
     }
-    if (s.isTv) {
-      if (s.numberOfSeasons != null && s.numberOfSeasons! > 0) {
-        rows.add(_StatRow(l10n.seasonsLabel, s.numberOfSeasons.toString()));
-      }
-      if (s.numberOfEpisodes != null && s.numberOfEpisodes! > 0) {
-        rows.add(_StatRow(l10n.episodesLabel, s.numberOfEpisodes.toString()));
-      }
+
+    if (s.budget != null && s.budget! > 0) {
+      rows.add(_StatRow(l10n.budgetLabel, _formatMoneyFull(s.budget!)));
     }
     if (s.revenue != null && s.revenue! > 0) {
       rows.add(_StatRow(l10n.revenueLabel, _formatMoneyFull(s.revenue!)));
@@ -61,8 +57,14 @@ class SeerrStatsCard extends StatelessWidget {
     if (s.runtime != null && s.runtime! > 0) {
       rows.add(_StatRow(l10n.runtimeLabel, seerrFormatRuntime(s.runtime!)));
     }
-    if (s.budget != null && s.budget! > 0) {
-      rows.add(_StatRow(l10n.budgetLabel, _formatMoneyFull(s.budget!)));
+
+    if (s.isTv) {
+      if (s.numberOfSeasons != null && s.numberOfSeasons! > 0) {
+        rows.add(_StatRow(l10n.seasonsLabel, s.numberOfSeasons.toString()));
+      }
+      if (s.numberOfEpisodes != null && s.numberOfEpisodes! > 0) {
+        rows.add(_StatRow(l10n.episodesLabel, s.numberOfEpisodes.toString()));
+      }
     }
     return rows;
   }
@@ -72,41 +74,125 @@ class SeerrStatsCard extends StatelessWidget {
     final rows = _facts(state, AppLocalizations.of(context));
     if (rows.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: AppRadius.circular(10),
-        border: Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder),
-      ),
-      child: Column(
-        children: [
-          for (var i = 0; i < rows.length; i++) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      rows[i].label,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    rows[i].value,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 540;
+
+        if (isWide) {
+          final gridRows = <List<_StatRow>>[];
+          for (var i = 0; i < rows.length; i += 3) {
+            gridRows.add(rows.sublist(i, (i + 3).clamp(0, rows.length)));
+          }
+
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: AppRadius.circular(10),
+              border: Border.fromBorderSide(
+                ThemeRegistry.active.borders.cardBorder,
               ),
             ),
-            if (i < rows.length - 1)
-              const Divider(height: 1, thickness: 1, color: Colors.white10),
-          ],
-        ],
-      ),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            child: Column(
+              children: [
+                for (var r = 0; r < gridRows.length; r++) ...[
+                  if (r > 0)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.white10,
+                      ),
+                    ),
+                  Row(
+                    children: [
+                      for (var c = 0; c < 3; c++) ...[
+                        if (c > 0)
+                          Container(
+                            height: 32,
+                            width: 1,
+                            color: Colors.white10,
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                        Expanded(
+                          child: c < gridRows[r].length
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      gridRows[r][c].label,
+                                      style: const TextStyle(
+                                        color: Colors.white60,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      gridRows[r][c].value,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          );
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            borderRadius: AppRadius.circular(10),
+            border: Border.fromBorderSide(
+              ThemeRegistry.active.borders.cardBorder,
+            ),
+          ),
+          child: Column(
+            children: [
+              for (var i = 0; i < rows.length; i++) ...[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          rows[i].label,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        rows[i].value,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (i < rows.length - 1)
+                  const Divider(height: 1, thickness: 1, color: Colors.white10),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 
