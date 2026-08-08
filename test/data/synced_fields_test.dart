@@ -140,6 +140,7 @@ void main() {
     'osdLockEnabled',
     'personPageGroupItems',
     'personPageSortOption',
+    'personalRatingStyle',
     'musicPlaybackTimeDisplay',
     'pgsDirectPlay',
     'playbackTimeAboveCenter',

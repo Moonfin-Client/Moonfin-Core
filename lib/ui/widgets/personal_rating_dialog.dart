@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../../data/models/aggregated_item.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import 'overlay_sheet.dart';
@@ -57,7 +58,10 @@ class _PersonalRatingDialogState extends State<PersonalRatingDialog> {
   bool _saving = false;
 
   bool? get _displayLikes =>
-      widget.likes ?? (widget.rating == null ? null : widget.rating! >= 6.5);
+      widget.likes ??
+      (widget.rating == null
+          ? null
+          : widget.rating! >= AggregatedItem.likedRatingThreshold);
 
   @override
   void initState() {

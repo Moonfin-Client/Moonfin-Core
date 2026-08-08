@@ -5835,7 +5835,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
   bool? _displayRatingLikes(AggregatedItem item) =>
       item.personalRatingLikes ??
-      (item.personalRating == null ? null : item.personalRating! >= 6.5);
+      (item.personalRating == null
+          ? null
+          : item.personalRating! >= AggregatedItem.likedRatingThreshold);
 
   String _personalRatingActionLabel(
     AppLocalizations l10n,
@@ -5844,8 +5846,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final rating = item.personalRating;
     switch (_personalRatingStyle()) {
       case PersonalRatingStyle.thumbs:
-        if (rating == null) return l10n.rate;
-        return _displayRatingLikes(item) == true ? l10n.like : l10n.dislike;
+        // A thumb rating only stores Likes on the server, so the numeric
+        // rating alone can't say whether this item was rated.
+        final likes = _displayRatingLikes(item);
+        if (likes == null) return l10n.rate;
+        return likes ? l10n.like : l10n.dislike;
       case PersonalRatingStyle.stars:
         if (rating == null) return l10n.rate;
         final stars = rating / 2;
@@ -6401,7 +6406,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: viewModel.isRatingMutationInProgress
               ? () {}
               : () => _showPersonalRatingDialog(context),
-          isActive: item.personalRating != null,
+          isActive: _displayRatingLikes(item) != null,
           activeColor: Colors.amber,
         ),
       if (!isBook && shows(DetailButton.playlist))

@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/tmdb_repository.dart';
+import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -17,6 +18,8 @@ class _Client extends Mock implements MediaServerClient {}
 class _ItemsApi extends Mock implements ItemsApi {}
 
 class _UserLibraryApi extends Mock implements UserLibraryApi {}
+
+class _PluginSyncService extends Mock implements PluginSyncService {}
 
 Future<UserPreferences> _prefs() async {
   SharedPreferences.setMockInitialValues({});
@@ -36,6 +39,9 @@ void main() {
   setUp(() async {
     await GetIt.instance.reset();
     GetIt.instance.registerSingleton<UserPreferences>(await _prefs());
+    final pluginSync = _PluginSyncService();
+    when(() => pluginSync.seerrAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
     client = _Client();
     itemsApi = _ItemsApi();
     userLibraryApi = _UserLibraryApi();
@@ -60,13 +66,16 @@ void main() {
 
   tearDown(() => GetIt.instance.reset());
 
-  ItemDetailViewModel createViewModel() => ItemDetailViewModel(
-    itemId: 'movie-1',
-    client: client,
-    mutations: ItemMutationRepository(client),
-    mdbListRepository: MdbListRepository(client),
-    tmdbRepository: TmdbRepository(client),
-  );
+  ItemDetailViewModel createViewModel() {
+    final tmdbRepository = TmdbRepository(client);
+    return ItemDetailViewModel(
+      itemId: 'movie-1',
+      client: client,
+      mutations: ItemMutationRepository(client),
+      mdbListRepository: MdbListRepository(client, tmdbRepository),
+      tmdbRepository: tmdbRepository,
+    );
+  }
 
   test(
     'numeric rating updates optimistically and reloads after success',

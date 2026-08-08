@@ -1581,18 +1581,20 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> setThumbRating(bool likes) async {
     return _mutateRating(
-      {'Rating': likes ? 10.0 : 1.0, 'Likes': likes},
+      {'Likes': likes},
       () => _mutations.setRating(itemId, likes: likes),
     );
   }
 
   Future<void> setNumericRating(double rating) async {
-    if (_isRatingMutationInProgress) return;
     if (!rating.isFinite || rating < 0 || rating > 10) {
       throw ArgumentError.value(rating, 'rating', 'must be between 0 and 10');
     }
     return _mutateRating(
-      {'Rating': rating, 'Likes': rating >= 6.5},
+      {
+        'Rating': rating,
+        'Likes': rating >= AggregatedItem.likedRatingThreshold,
+      },
       () => _mutations.setNumericRating(itemId, rating: rating),
     );
   }
