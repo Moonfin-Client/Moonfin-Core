@@ -12354,12 +12354,19 @@ Widget? _seerrRequestButton(
   bool isPrimary = false,
   FocusNode? focusNode,
   bool autofocus = false,
+  String? itemStatus,
 }) {
   if (seerr == null) return null;
+  final statusStr = (seerr.state.tv?.status ?? itemStatus ?? '').toLowerCase();
+  final isContinuing = statusStr.isNotEmpty &&
+      statusStr != 'ended' &&
+      statusStr != 'canceled';
   final action = seerrRequestActionFor(
     seerr.state.quality(is4k: is4k),
     l10n,
     allowed: is4k ? seerr.canRequest4k : seerr.canRequest,
+    isTv: seerr.state.isTv,
+    isContinuing: isContinuing,
   );
   if (action.kind != SeerrRequestActionKind.request) return null;
   return _DetailActionButton(
@@ -12373,9 +12380,11 @@ Widget? _seerrRequestButton(
       vm: seerr,
       is4k: is4k,
       qualityToggle: qualityToggle,
+      isContinuing: isContinuing,
     ),
   );
 }
+
 
 /// Takes this track's open request back. Rides in the same arrangement slot
 /// as the track's request button, so an open request on a partially available

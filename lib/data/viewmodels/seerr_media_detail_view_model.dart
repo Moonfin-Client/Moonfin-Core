@@ -125,6 +125,20 @@ class SeerrQualityStatus {
     return seasons;
   }
 
+  /// Season numbers that are either already available in the library (status 4 or 5)
+  /// or have active/approved requests, so their chips should be greyed out.
+  Set<int> get unavailableOrRequestedSeasons {
+    final seasons = Set<int>.from(requestedSeasons);
+    for (final s in seasonAvailability) {
+      final statusVal = (is4k ? s.status4k : s.status) ?? 0;
+      if (statusVal >= 4) {
+        seasons.add(s.seasonNumber);
+      }
+    }
+    return seasons;
+  }
+
+
   /// Season number to media status (2 pending, 3 processing, 4 partial,
   /// 5 available) for this quality track, so a series can show where it stands
   /// season by season rather than only as a whole.

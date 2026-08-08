@@ -126,12 +126,14 @@ class SeerrChoiceChip extends StatelessWidget {
   final String label;
   final bool selected;
   final ValueChanged<bool>? onSelected;
+  final bool isAvailable;
 
   const SeerrChoiceChip({
     super.key,
     required this.label,
     required this.selected,
     required this.onSelected,
+    this.isAvailable = false,
   });
 
   @override
@@ -145,16 +147,29 @@ class SeerrChoiceChip extends StatelessWidget {
             : Colors.white.withValues(alpha: enabled ? 0.08 : 0.04),
         borderRadius: AppRadius.circular(999),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 13,
-          color: !enabled
-              ? Colors.white38
-              : selected
-                  ? Colors.white
-                  : Colors.white70,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isAvailable) ...[
+            const Icon(
+              Icons.check_circle,
+              size: 14,
+              color: Color(0xFF10B981),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: !enabled
+                  ? Colors.white38
+                  : selected
+                      ? Colors.white
+                      : Colors.white70,
+            ),
+          ),
+        ],
       ),
     );
 
@@ -168,6 +183,7 @@ class SeerrChoiceChip extends StatelessWidget {
     );
   }
 }
+
 
 /// A dialog action button (Cancel / primary submit) that works with d-pad.
 class SeerrDialogButton extends StatelessWidget {

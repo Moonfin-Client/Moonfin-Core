@@ -106,6 +106,28 @@ void main() {
       expect(uhd.requestedSeasons, {1});
     });
 
+    test('unavailableOrRequestedSeasons includes seasons available in library',
+        () {
+      final info = SeerrMediaInfo(
+        seasons: const [
+          SeerrSeasonAvailability(seasonNumber: 3, status: 5),
+        ],
+        requests: [
+          _request(id: 1, status: SeerrRequest.statusApproved, seasons: [2]),
+        ],
+      );
+      final hd = SeerrQualityStatus.of(
+        is4k: false,
+        mediaInfo: info,
+        canManageRequests: false,
+        currentUserId: null,
+      );
+
+      expect(hd.requestedSeasons, {2});
+      expect(hd.unavailableOrRequestedSeasons, {2, 3});
+    });
+
+
     test('declined and failed requests are not active and free their seasons',
         () {
       final info = SeerrMediaInfo(

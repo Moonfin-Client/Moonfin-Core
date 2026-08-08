@@ -28,16 +28,20 @@ SeerrRequestAction seerrRequestActionFor(
   SeerrQualityStatus q,
   AppLocalizations l10n, {
   required bool allowed,
+  bool isTv = false,
+  bool isContinuing = false,
 }) {
+  final isContinuingTv = isTv && isContinuing;
   final canShowRequest = allowed &&
-      !q.isFullyAvailable &&
-      (!q.hasExistingRequest || q.isPartiallyAvailable);
-  final hasOpenRequest = q.activeRequests.isNotEmpty && !q.isFullyAvailable;
+      (!q.isFullyAvailable || isContinuingTv) &&
+      (!q.hasExistingRequest || q.isPartiallyAvailable || isContinuingTv);
+  final hasOpenRequest =
+      q.activeRequests.isNotEmpty && (!q.isFullyAvailable || isContinuingTv);
 
   if (canShowRequest) {
     return SeerrRequestAction(
       SeerrRequestActionKind.request,
-      q.isPartiallyAvailable
+      (q.isPartiallyAvailable || (q.isFullyAvailable && isContinuingTv))
           ? (q.is4k ? l10n.requestMore4k : l10n.requestMore)
           : (q.is4k ? l10n.request4k : l10n.request),
     );
@@ -50,6 +54,7 @@ SeerrRequestAction seerrRequestActionFor(
   }
   return SeerrRequestAction.none;
 }
+
 
 /// The label for taking this track's open request back, or null when there is
 /// nothing the viewer may cancel.

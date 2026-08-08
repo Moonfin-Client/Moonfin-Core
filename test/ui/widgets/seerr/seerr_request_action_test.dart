@@ -85,7 +85,21 @@ void main() {
       final action = seerrRequestActionFor(q, _l10n, allowed: true);
       expect(action.label, _l10n.requestMore4k);
     });
+
+    test('a fully available continuing TV series still offers request more', () {
+      final q = _track(status: 5);
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: true,
+        isContinuing: true,
+      );
+      expect(action.kind, SeerrRequestActionKind.request);
+      expect(action.label, _l10n.requestMore);
+    });
   });
+
 
   group('seerrCancelLabelFor', () {
     test('offers a viewer their own pending request back', () {
