@@ -190,7 +190,8 @@ bool FlutterWindow::OnCreate() {
 
   native_game_ = std::make_unique<NativeGame>(
       flutter_controller_->engine()->messenger(),
-      native_game_registrar_->texture_registrar());
+      native_game_registrar_->texture_registrar(),
+      native_game_registrar_.get());
 
   if (!g_hdr_display_channel) {
     g_hdr_display_channel =

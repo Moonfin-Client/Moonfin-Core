@@ -177,6 +177,7 @@ dependencies:
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  pointer_interceptor: ^0.10.1+2
 
 dev_dependencies:
   flutter_test:
@@ -190,6 +191,7 @@ dev_dependencies:
   drift_dev: ^2.28.0
   mocktail: ^1.0.5
   msix: ^3.16.12
+  wakelock_plus_platform_interface: ^1.5.1
   # Lets a test stand in for the Android side of path_provider.
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8

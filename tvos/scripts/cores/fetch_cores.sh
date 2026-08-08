@@ -10,7 +10,11 @@ set -euo pipefail
 
 CORES=("$@")
 if [ ${#CORES[@]} -eq 0 ]; then
-  CORES=(fceumm snes9x gambatte mgba genesis_plus_gx pcsx_rearmed)
+  # fbneo is the only arcade core available natively (MAME is EmulatorJS-only,
+  # and tvOS has no WebView). Interpreter-only, so it clears wrap_frameworks.sh's
+  # no-JIT gate. ~53 MB unpacked vs ~1 MB for the next biggest core -- keep in
+  # sync by hand with ios/game_host/fetch_cores.sh.
+  CORES=(fceumm snes9x gambatte mgba genesis_plus_gx pcsx_rearmed fbneo)
 fi
 
 BUILDBOT="https://buildbot.libretro.com/nightly/apple/tvos-arm64/latest"

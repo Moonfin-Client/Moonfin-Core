@@ -1,23 +1,31 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gamepads/gamepads.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../data/services/core_download_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../../playback/native_game_player.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/game_storage.dart';
+import '../../../util/native_controller_mapping.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/focus/gamepad/android_gamepad_channel.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
+import '../../screensaver/screensaver_controller.dart';
+import 'game_playback_ui.dart';
+import 'native_controller_mapping_screen.dart';
 import 'game_audio_owner.dart';
 
 /// Native game player: the libretro core runs in the runner and renders into a
@@ -32,6 +40,7 @@ class NativeGamePlayerScreen extends StatefulWidget {
     required this.core,
     this.gameName,
     this.startFresh = false,
+    @visibleForTesting this.player,
   });
 
   final String libraryId;
@@ -40,6 +49,12 @@ class NativeGamePlayerScreen extends StatefulWidget {
   final String? gameName;
   final bool startFresh;
 
+  /// Test-only seam: a fake [NativeGamePlayer] widget tests can drive
+  /// through load/event lifecycles without a native runner. Always null in
+  /// production, where [NativeGamePlayer.create] picks the platform bridge.
+  @visibleForTesting
+  final NativeGamePlayer? player;
+
   @override
   State<NativeGamePlayerScreen> createState() => _NativeGamePlayerScreenState();
 }
@@ -47,7 +62,7 @@ class NativeGamePlayerScreen extends StatefulWidget {
 class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     with GameAudioOwner {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
-  final NativeGamePlayer _player = NativeGamePlayer.create();
+  late final NativeGamePlayer _player;
   late final CoreDownloadService _cores =
       CoreDownloadService(GetIt.instance<PreferenceStore>());
 
@@ -62,12 +77,21 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   double _aspect = 4 / 3;
   int _controllers = 1;
   bool _exiting = false;
+  // True once the native session has been told to stop. Separate from
+  // _exiting so a fatal error can tear the core down without also
+  // suppressing the route pop that the user still needs.
+  bool _sessionStopped = false;
+  RetroArtworkActivityGate? _artworkActivityGate;
+  bool _holdsGameplayArtworkBlock = false;
+  ScreensaverController? _screensaverController;
   StreamSubscription<Map<String, dynamic>>? _events;
 
   // In-game overlay, opened with the Menu button and driven by the same
   // controller (mirrored button events) or the Siri remote (remote presses).
   bool _overlayOpen = false;
   bool _settingsOpen = false;
+  bool _controllerMappingOpen = false;
+  bool _confirmingExit = false;
   int _selected = 0;
   int _settingsSelected = 0;
   int _fastForward = 1;
@@ -85,6 +109,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   final ScrollController _overlayScroll = ScrollController();
   final ScrollController _settingsScroll = ScrollController();
   final ScrollController _pickerScroll = ScrollController();
+  final GlobalKey<NativeControllerMappingScreenState> _controllerMappingKey =
+      GlobalKey<NativeControllerMappingScreenState>();
+  List<NativeControllerDevice> _controllerDevices = const [];
+  Map<String, NativeControllerMapping> _controllerMappings = const {};
 
   // Controller Start is deferred so it can double as the menu gesture: a quick
   // press reaches the game on release, holding it opens the overlay.
@@ -138,17 +166,64 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   @override
   void initState() {
     super.initState();
-    WakelockPlus.enable();
+    _player = widget.player ?? NativeGamePlayer.create();
+    _acquireGameplayArtworkBlock();
+    _acquireScreensaverBlock();
     _enterImmersive();
+    // A game owns every key from here; a stale IME binding from the browse
+    // screen's search field would otherwise sit in front of the d-pad.
+    detachTextInputForGameplay();
     // The pad belongs to the libretro core while a game is running, so UI level
     // pad navigation stays suppressed for the lifetime of this screen.
     GamepadSuppressor.push();
     claimGameAudio();
-    _events = _player.events.listen(_onEvent);
+    _events = _player.events.listen(
+      _onEvent,
+      onError: (Object error) => _setFatalError('Playback error: $error'),
+    );
     if (_readsGamepadsInDart) {
       _gamepadEvents = Gamepads.normalizedEvents.listen(_onGamepadEvent);
     }
     _prepare();
+  }
+
+  void _acquireGameplayArtworkBlock() {
+    if (_holdsGameplayArtworkBlock ||
+        !GetIt.instance.isRegistered<RetroArtworkActivityGate>()) {
+      return;
+    }
+    _artworkActivityGate = GetIt.instance<RetroArtworkActivityGate>();
+    _holdsGameplayArtworkBlock = true;
+    _artworkActivityGate!.setGameplayActive(true);
+    // The gate stops new artwork work but frees none of what is already
+    // decoded, and the core about to load allocates its own heap and frame
+    // buffers on top of whatever this app is still holding.
+    releaseImageMemoryForGameplay();
+  }
+
+  void _releaseGameplayArtworkBlock() {
+    if (!_holdsGameplayArtworkBlock) return;
+    _holdsGameplayArtworkBlock = false;
+    _artworkActivityGate?.setGameplayActive(false);
+  }
+
+  // The screensaver controller owns the wake lock, so marking playback active
+  // does both jobs at once: the display stays awake, and the idle screensaver
+  // stays disarmed. Taking the wake lock directly leaves the controller
+  // believing the app is idle, and the screensaver then draws itself over a
+  // running game -- with no way out, because gameplay keys are consumed
+  // natively and never reach the dismiss handler in Flutter's key pipeline.
+  void _acquireScreensaverBlock() {
+    if (!GetIt.instance.isRegistered<ScreensaverController>()) return;
+    _screensaverController = GetIt.instance<ScreensaverController>();
+    _screensaverController!.setPlaybackActive(true);
+  }
+
+  void _releaseScreensaverBlock() {
+    final controller = _screensaverController;
+    if (controller == null) return;
+    _screensaverController = null;
+    controller.setPlaybackActive(false);
   }
 
   @override
@@ -156,6 +231,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
 
   @override
   void dispose() {
+    _releaseGameplayArtworkBlock();
+    _releaseScreensaverBlock();
     releaseGameAudio();
     _events?.cancel();
     _gamepadEvents?.cancel();
@@ -165,10 +242,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     _settingsScroll.dispose();
     _pickerScroll.dispose();
     GamepadSuppressor.pop();
-    WakelockPlus.disable();
     // Best-effort restore if disposed without going through an exit path.
     unawaited(_restoreSystemUi());
-    unawaited(_player.stop());
+    // _exit() and _backOut() already await/queue their own stop() before
+    // popping the route, which is what tears this screen down in the normal
+    // case. Calling stop() again here would be a second, redundant teardown
+    // of the single per-process libretro session -- and on the native side, a
+    // save-state that lands just as a stop() call arrives can hang forever,
+    // so every extra unawaited stop() widens that race. Only fire one here
+    // when neither exit path already did.
+    if (!_sessionStopped) unawaited(_player.stop());
     super.dispose();
   }
 
@@ -198,18 +281,50 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       case 'button':
         final index = (event['index'] as num?)?.toInt() ?? -1;
         final pressed = event['pressed'] as bool? ?? false;
-        if (index == 3 && !PlatformDetection.isAppleTV) {
+        if (index == 3 &&
+            !PlatformDetection.isAppleTV &&
+            !_controllerMappingOpen) {
           _onStartButton(pressed);
         } else if (_overlayOpen && pressed) {
-          _nav(_navForButton(index));
+          if (_controllerMappingOpen) {
+            _controllerMappingKey.currentState?.handleButton(index, pressed);
+          } else {
+            _nav(_navForButton(index));
+          }
         }
       case 'coreMessage':
         _showCoreMessage(event['message']?.toString());
       case 'error':
-        if (mounted) {
-          setState(() => _error = event['message']?.toString() ?? 'Error');
-        }
+        _setFatalError(event['message']?.toString() ?? 'Error');
     }
+  }
+
+  // Shared by the in-band 'error' event and the event stream's own onError:
+  // an unrecoverable native failure. When a texture is already live, this
+  // stops the core and drops it so the error message isn't shown floating
+  // over a frozen game. Guarded against _sessionStopped so it never races the
+  // stop() that the normal exit path already performs.
+  void _setFatalError(String message) {
+    if (!mounted) return;
+    _releaseGameplayArtworkBlock();
+    final hadTexture = _textureId != null && !_sessionStopped;
+    setState(() {
+      _error = message;
+      if (hadTexture) _textureId = null;
+    });
+    if (hadTexture) {
+      // Mark the session as torn down so dispose()'s stop() guard and any
+      // later _exit()/_backOut() do not stop() a second time. The route pop
+      // stays available: _exiting is deliberately left alone here, so the
+      // user is never stranded on the error screen behind a dead back button.
+      _sessionStopped = true;
+      unawaited(_player.stop());
+    }
+  }
+
+  void _showTransientMessage(String message) {
+    if (!mounted) return;
+    showGamePlaybackMessage(context, message);
   }
 
   // Cores warn about things like missing system files while they run, so show
@@ -226,13 +341,13 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // Mirrored RetroPad indices: 0=confirm (bottom face), 8=cancel (east face),
   // 4=up, 5=down, 6=left, 7=right.
   String? _navForButton(int index) => const {
-        4: 'up',
-        5: 'down',
-        6: 'left',
-        7: 'right',
-        0: 'confirm',
-        8: 'cancel',
-      }[index];
+    4: 'up',
+    5: 'down',
+    6: 'left',
+    7: 'right',
+    0: 'confirm',
+    8: 'cancel',
+  }[index];
 
   // Controller Start: a quick press is pulsed to the game on release, holding
   // past the threshold opens the overlay, and while the overlay is open a press
@@ -286,10 +401,29 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
           _stickMask = 0;
           _sendMask();
         }
-        if (pressed) _nav(_navActionForGamepad(button));
+        if (pressed) {
+          // The remapping panel is driven by RetroPad indices from the native
+          // 'button' event stream, which only Android and the Apple runners
+          // emit -- desktop runners consume setInput and send nothing back. So
+          // the panel has to be fed from here, or its rows would sit inert
+          // while the d-pad quietly moved the pause menu underneath it.
+          //
+          // No guard against the press that is being captured for a binding:
+          // handleButton already ignores everything while _capturing is set,
+          // which is what keeps the button the user is binding from also
+          // activating the row they are binding it to.
+          if (_controllerMappingOpen) {
+            final index = _retroPadIndexForGamepad(button);
+            if (index != null) {
+              _controllerMappingKey.currentState?.handleButton(index, true);
+            }
+          } else {
+            _nav(_navActionForGamepad(button));
+          }
+        }
         return;
       }
-      final bit = _gamepadButtonToBit[button];
+      final bit = _bitForGamepadButton(event.gamepadId, button);
       if (bit == null) return;
       _gamepadMask = pressed ? _gamepadMask | bit : _gamepadMask & ~bit;
       _sendMask();
@@ -312,6 +446,25 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     _sendMask();
   }
 
+  /// The RetroPad bit a physical button should set, honouring any custom
+  /// mapping saved for the controller that produced it.
+  ///
+  /// A button the user has not rebound keeps [_gamepadButtonToBit]'s default,
+  /// which matches how Android treats a partial mapping. That does mean a
+  /// custom binding can double up with a default one -- bind Y to RetroPad A
+  /// and the physical A still sends A as well -- but the alternative, silently
+  /// unbinding buttons the user never touched, makes a half-finished remap feel
+  /// like the pad has broken.
+  int? _bitForGamepadButton(String gamepadId, GamepadButton button) {
+    final mapping = _controllerMappings[desktopControllerDeviceId(gamepadId)];
+    final code = desktopGamepadButtonCodes[button];
+    if (mapping != null && code != null) {
+      final bound = mapping.keycodeToButton[code];
+      if (bound != null) return 1 << bound.retroPadIndex;
+    }
+    return _gamepadButtonToBit[button];
+  }
+
   // Negative stick values map to the first bit, positive to the second. The Y
   // axis reports up as positive, so up is the positive bit there.
   void _setStickBits(int negativeBit, int positiveBit, double value) {
@@ -324,18 +477,35 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   void _setTriggerBit(int bit, double value) {
-    _stickMask = value >= _gamepadDeadzone ? _stickMask | bit : _stickMask & ~bit;
+    _stickMask = value >= _gamepadDeadzone
+        ? _stickMask | bit
+        : _stickMask & ~bit;
   }
 
+  /// The RetroPad index [NativeControllerMappingScreen.handleButton] expects
+  /// for a physical button. Deliberately the raw button rather than the
+  /// remapped one: the panel is navigated with the pad as it physically is,
+  /// otherwise a half-finished remap could leave the user unable to reach the
+  /// row that would fix it.
+  int? _retroPadIndexForGamepad(GamepadButton button) => switch (button) {
+    GamepadButton.dpadUp => 4,
+    GamepadButton.dpadDown => 5,
+    GamepadButton.dpadLeft => 6,
+    GamepadButton.dpadRight => 7,
+    GamepadButton.a => 0,
+    GamepadButton.b => 8,
+    _ => null,
+  };
+
   String? _navActionForGamepad(GamepadButton button) => switch (button) {
-        GamepadButton.dpadUp => 'up',
-        GamepadButton.dpadDown => 'down',
-        GamepadButton.dpadLeft => 'left',
-        GamepadButton.dpadRight => 'right',
-        GamepadButton.a => 'confirm',
-        GamepadButton.b => 'cancel',
-        _ => null,
-      };
+    GamepadButton.dpadUp => 'up',
+    GamepadButton.dpadDown => 'down',
+    GamepadButton.dpadLeft => 'left',
+    GamepadButton.dpadRight => 'right',
+    GamepadButton.a => 'confirm',
+    GamepadButton.b => 'cancel',
+    _ => null,
+  };
 
   void _onRemotePress(String? key) => _nav(key == 'select' ? 'confirm' : key);
 
@@ -378,6 +548,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
           return KeyEventResult.handled;
       }
     }
+    // Only the platforms that actually play with a keyboard turn keys into
+    // RetroPad bits. Android reads controllers natively and forwards them over
+    // the gamepad channel, so mapping them here as well would send every press
+    // to the core twice.
+    if (!usesKeyboardInput) return KeyEventResult.ignored;
     final bit = _keyToBit[event.logicalKey];
     if (bit == null) return KeyEventResult.ignored;
     if (event is KeyDownEvent) {
@@ -414,10 +589,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // Steps back one overlay level: the value picker returns to the settings
   // list, the settings list to the pause menu, and the pause menu resumes.
   void _overlayBack() {
-    if (_pickerOpen) {
+    // Back out of the confirmation before any other level, so a stray Back
+    // never falls through to something that ends the session.
+    if (_confirmingExit) {
+      _cancelExitConfirmation();
+    } else if (_pickerOpen) {
       setState(() => _pickerOption = null);
     } else if (_settingsOpen) {
       setState(() => _settingsOpen = false);
+    } else if (_controllerMappingOpen) {
+      setState(() => _controllerMappingOpen = false);
     } else {
       _closeOverlay();
     }
@@ -426,38 +607,60 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   Future<void> _prepare() async {
     final games = _client.gamesApi;
     if (games == null) {
+      _releaseGameplayArtworkBlock();
       setState(() => _error = 'This server does not support games.');
       return;
     }
     final coreId = libretroCoreId(widget.core);
-    if (coreId == null) {
+    if (coreId == null || !nativeCanPlay(widget.core)) {
+      _releaseGameplayArtworkBlock();
       setState(() => _error = 'This system is not supported yet.');
       return;
     }
-
-    // tvOS and macOS bundle their cores, so the native side loads them from the
-    // app. Android, Windows, and Linux load a downloaded file.
-    String? corePath;
-    if (!bundlesGameCores) {
-      if (!supportsCoreDownloads) {
-        if (mounted) {
-          setState(() => _error = 'This system is not supported on this device.');
-        }
-        return;
-      }
-      corePath = await installedCorePath(coreId);
-      if (corePath == null) {
-        if (mounted) {
-          setState(() => _error =
-              'The core for this system is not installed. Add it in Settings > Playback > Emulator Cores.');
-        }
-        return;
-      }
-    }
-
     try {
+      // Isolated from the outer try below: this reads persisted, user-editable
+      // JSON, and a corrupt mapping must degrade to default controller
+      // mappings rather than turn a cosmetic remap problem into a hard
+      // "Could not start this game" failure for the whole screen.
+      try {
+        await _loadControllerMappings(games);
+      } catch (e) {
+        debugPrint(
+          '[NativeGamePlayerScreen] Ignoring bad controller mapping data: $e',
+        );
+        _controllerDevices = const [];
+        _controllerMappings = const {};
+      }
+
+      // tvOS and macOS bundle their cores, so the native side loads them from
+      // the app. Android, Windows, and Linux load a downloaded file.
+      String? corePath;
+      if (!bundlesGameCores) {
+        if (!supportsCoreDownloads) {
+          _releaseGameplayArtworkBlock();
+          if (mounted) {
+            setState(
+              () => _error = 'This system is not supported on this device.',
+            );
+          }
+          return;
+        }
+        corePath = await installedCorePath(coreId);
+        if (corePath == null) {
+          _releaseGameplayArtworkBlock();
+          if (mounted) {
+            setState(
+              () => _error =
+                  'The core for this system is not installed. Add it in Settings > Playback > Emulator Cores.',
+            );
+          }
+          return;
+        }
+      }
+
       final detail = await games.getGame(widget.libraryId, widget.gameId);
       if (detail == null || !mounted) {
+        _releaseGameplayArtworkBlock();
         if (mounted) setState(() => _error = 'Game not found.');
         return;
       }
@@ -466,12 +669,33 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       if (!await _installSupportFiles(coreId)) return;
       final systemDir = await GameStorage.systemDir();
       final saveDir = await GameStorage.saveDir();
-      final cacheDir =
-          await GameStorage.romDir(widget.libraryId, widget.gameId);
+      final cacheDir = await GameStorage.romDir(
+        widget.libraryId,
+        widget.gameId,
+      );
       await GameStorage.writeMeta(cacheDir, detail.title, detail.system);
+      // Five awaited IO calls happened since the last mounted check above, and
+      // only one native libretro session can exist per process -- so backing
+      // out mid-extraction must not let a later step start a session on a
+      // torn-down screen.
+      if (!mounted) return;
 
       setState(() => _status = 'Downloading...');
-      final romFile = File('${cacheDir.path}/${detail.fileName}');
+      // The server names these files; a traversal or absolute path here means
+      // the server is hostile or compromised. Reject rather than sanitize
+      // (same decision as the native host's lh_load game_id guard) and
+      // surface it as a visible error instead of silently writing wherever
+      // the name points.
+      final String romFileName;
+      try {
+        romFileName = sanitizeDownloadFileName(detail.fileName);
+      } on FormatException catch (e) {
+        _setFatalError(
+          'This game has an invalid file name and cannot be downloaded. (${e.message})',
+        );
+        return;
+      }
+      final romFile = File(p.join(cacheDir.path, romFileName));
       if (!await romFile.exists()) {
         await games.downloadRom(
           widget.libraryId,
@@ -486,7 +710,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       }
 
       for (final bios in detail.bios) {
-        final biosFile = File('${systemDir.path}/${bios.fileName}');
+        final String biosFileName;
+        try {
+          biosFileName = sanitizeDownloadFileName(bios.fileName);
+        } on FormatException catch (e) {
+          _setFatalError(
+            'A required BIOS file has an invalid name and cannot be downloaded. (${e.message})',
+          );
+          return;
+        }
+        final biosFile = File(p.join(systemDir.path, biosFileName));
         if (!await biosFile.exists()) {
           await games.downloadBios(widget.libraryId, bios.id, biosFile.path);
         }
@@ -497,16 +730,27 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         _status = 'Starting...';
         _progress = null;
       });
-      final contentPath = await _extractIfArchive(romFile, cacheDir);
+      final contentPath = await _extractIfArchive(
+        romFile,
+        cacheDir,
+        preserveArchive: isArcadeFamilyCore(widget.core),
+      );
       if (contentPath == null) {
+        _releaseGameplayArtworkBlock();
         if (mounted) {
           setState(() => _error = 'This archive format is not supported.');
         }
         return;
       }
 
-      final settingsJson =
-          await _loadSettings(games, coreId).catchError((_) => null);
+      final settingsJson = await _loadSettings(
+        games,
+        coreId,
+      ).catchError((_) => null);
+      // Last check before starting the one-per-process native session: if the
+      // screen was unmounted while settings were loading, starting it now
+      // would leave a session running with nothing left to tear it down.
+      if (!mounted) return;
       final info = await _player.load(
         core: coreId,
         corePath: corePath,
@@ -525,18 +769,20 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
 
       await _player.start();
       if (!widget.startFresh) {
-        final save = await games.getSave(_stateKey);
+        final save = await loadGameStateWithMigration(
+          games,
+          widget.gameId,
+          widget.core,
+        );
         if (save != null && save.isNotEmpty) {
           await _player.loadState(Uint8List.fromList(save));
         }
       }
       if (mounted) setState(() => _textureId = info.textureId);
     } catch (e) {
+      _releaseGameplayArtworkBlock();
       if (mounted) {
-        final message = e is PlatformException && e.code == 'core_missing'
-            ? 'The core for this system is not included in this build.'
-            : 'Could not start this game. ($e)';
-        setState(() => _error = message);
+        setState(() => _error = _startFailureMessage(e));
       }
     }
   }
@@ -570,12 +816,51 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     return mounted;
   }
 
-  /// Returns the playable content path: the file itself, or the ROM extracted
-  /// from a .zip next to it. 7z is not readable here yet.
-  Future<String?> _extractIfArchive(File file, Directory cacheDir) async {
+  /// The message shown when the native session fails to start.
+  ///
+  /// `load_failed` is deliberately not reported as an error condition the user
+  /// should try to interpret. It is the single code every native load failure
+  /// collapses into -- the core rejecting the ROM, and the core demanding a
+  /// renderer this host does not provide, arrive here identically -- so naming
+  /// a cause would be a guess. What every one of those cases has in common is
+  /// that the same game is very likely playable through the other backend, so
+  /// the message points at the control that switches it. The wording matches
+  /// the game detail screen's own labels so the user is looking for a string
+  /// that actually appears on screen.
+  ///
+  /// The most common trigger today is a hardware-rendered core: the host
+  /// answers RETRO_ENVIRONMENT_SET_HW_RENDER with false, and cores with no
+  /// software renderer (Nintendo 64's mupen64plus_next above all) fail their
+  /// content load outright. See buglog bug-032.
+  String _startFailureMessage(Object error) {
+    if (error is PlatformException) {
+      switch (error.code) {
+        case 'core_missing':
+          return 'The core for this system is not included in this build.';
+        case 'load_failed':
+          return 'This game cannot be played with the native core. '
+              'Open the game\'s details screen and switch it to '
+              '"EmulatorJS (WebView)", then try again.';
+      }
+    }
+    return 'Could not start this game. ($error)';
+  }
+
+  /// Returns the playable content path: the file itself, the ROM extracted
+  /// from a .zip next to it, or (when [preserveArchive] is true) the zip
+  /// path unmodified. Arcade cores (FBNeo/MAME) identify a machine by the
+  /// zip's own name and expect every chip inside it, so extracting "the
+  /// largest file" like every other system does would destroy the set.
+  /// 7z is not readable here yet.
+  Future<String?> _extractIfArchive(
+    File file,
+    Directory cacheDir, {
+    bool preserveArchive = false,
+  }) async {
     final lower = file.path.toLowerCase();
     if (lower.endsWith('.7z')) return null;
     if (!lower.endsWith('.zip')) return file.path;
+    if (preserveArchive) return file.path;
 
     final marker = File('${cacheDir.path}/.extracted');
     if (await marker.exists()) {
@@ -594,7 +879,24 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         if (best == null || entry.size > best.size) best = entry;
       }
       if (best == null) return null;
-      final outPath = '${cacheDir.path}/${best.name.split('/').last}';
+      // The archive came from the server, so its entry names are as untrusted
+      // as the download file names. Split on either separator before taking the
+      // last segment: the zip format specifies forward slashes, but nothing
+      // enforces it, and a hostile archive can use backslashes precisely to
+      // slip past a '/'-only split on Windows. Whatever survives still has to
+      // pass the same single-segment rejection.
+      final String entryName;
+      try {
+        entryName = sanitizeDownloadFileName(
+          best.name.split(RegExp(r'[/\\]')).last,
+        );
+      } on FormatException {
+        _setFatalError(
+          'The downloaded archive contains an unusable file name.',
+        );
+        return null;
+      }
+      final outPath = p.join(cacheDir.path, entryName);
       final output = OutputFileStream(outPath);
       best.writeContent(output);
       await output.close();
@@ -606,8 +908,13 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Future<Map<String, String>?> _loadSettings(
-      GamesApi games, String coreId) async {
-    final blob = await games.getSave('moonfin-native-$coreId', kind: 'settings');
+    GamesApi games,
+    String coreId,
+  ) async {
+    final blob = await games.getSave(
+      'moonfin-native-$coreId',
+      kind: 'settings',
+    );
     if (blob == null || blob.isEmpty) return null;
     final text = String.fromCharCodes(blob);
     final map = <String, String>{};
@@ -620,20 +927,62 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     return map.isEmpty ? null : map;
   }
 
-  List<_OverlayAction> _actions() => [
-        _OverlayAction('Resume', _closeOverlay),
-        _OverlayAction('Press Start', () => _pressButton(3)),
-        _OverlayAction('Press Select', () => _pressButton(2)),
-        _OverlayAction('Save state', _saveState),
-        _OverlayAction('Load state', _loadState),
-        _OverlayAction('Restart', _restart),
-        _OverlayAction(
-          _fastForward > 1 ? 'Fast-forward: On' : 'Fast-forward: Off',
-          _toggleFastForward,
-        ),
-        _OverlayAction('Emulator settings', _openSettings),
-        _OverlayAction('Exit', _exit),
-      ];
+  // Exit is the one destructive action in this menu, and it is reachable by a
+  // single press from several input paths. Confirming it as a replacement
+  // action list rather than a dialog keeps it navigable by remote, gamepad and
+  // keyboard alike, because selection, wrapping and scrolling are all driven
+  // off this list. "Keep playing" is first so the default highlight is the
+  // safe choice.
+  List<_OverlayAction> _actions() => _confirmingExit
+      ? [
+          _OverlayAction('Keep playing', _cancelExitConfirmation),
+          _OverlayAction('Exit game', _exit, danger: true),
+        ]
+      : _mainActions();
+
+  List<_OverlayAction> _mainActions() => [
+    _OverlayAction('Resume', _closeOverlay),
+    _OverlayAction('Press Start', () => _pressButton(3)),
+    _OverlayAction('Press Select', () => _pressButton(2)),
+    _OverlayAction('Save state', _saveState),
+    _OverlayAction('Load state', _loadState),
+    _OverlayAction(
+      _fastForward > 1 ? 'Fast-forward: On' : 'Fast-forward: Off',
+      _toggleFastForward,
+    ),
+    _OverlayAction('Restart', _restart),
+    // Hidden when nothing was found to remap, which covers both the Apple
+    // platforms (no remapping at all) and a desktop session with no controller
+    // plugged in, where the panel would open onto an empty list.
+    if (_controllerDevices.isNotEmpty)
+      _OverlayAction('Controller mapping', _openControllerMapping),
+    _OverlayAction('Emulator settings', _openSettings),
+    _OverlayAction('Reset emulator settings', _resetEmulatorSettings),
+    _OverlayAction('Exit', _requestExit),
+  ];
+
+  /// Asks before ending a running session.
+  ///
+  /// Only while a game is actually running: on the loading or error screen
+  /// there is nothing to lose, and making the user confirm their way off a
+  /// failure message would be obstructive.
+  void _requestExit() {
+    if (_textureId == null || _error != null) {
+      _exit();
+      return;
+    }
+    setState(() {
+      _confirmingExit = true;
+      _selected = 0;
+    });
+  }
+
+  void _cancelExitConfirmation() {
+    setState(() {
+      _confirmingExit = false;
+      _selected = 0;
+    });
+  }
 
   void _toggleOverlay() {
     if (_textureId == null) return;
@@ -645,6 +994,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         _overlayOpen = true;
         _selected = 0;
       });
+      unawaited(AndroidGamepadChannel.setOverlayOpen(true));
     }
   }
 
@@ -652,8 +1002,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     setState(() {
       _overlayOpen = false;
       _settingsOpen = false;
+      _controllerMappingOpen = false;
+      _confirmingExit = false;
       _pickerOption = null;
     });
+    unawaited(AndroidGamepadChannel.setOverlayOpen(false));
     _player.resume();
   }
 
@@ -675,7 +1028,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       controller = _overlayScroll;
     }
     if (count == 0) return;
-    final wrapped = ((current + delta) % count + count) % count;
+    final wrapped = wrapGamePlaybackMenuSelection(current, delta, count);
     setState(() {
       if (_pickerOpen) {
         _pickerSelected = wrapped;
@@ -685,27 +1038,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         _selected = wrapped;
       }
     });
-    _ensureVisible(controller, wrapped);
-  }
-
-  // Scrolls the selected row back into view, walking the list by whole rows.
-  void _ensureVisible(ScrollController controller, int index) {
-    if (!controller.hasClients) return;
-    final position = controller.position;
-    final top = index * _rowExtent;
-    final bottom = top + _rowExtent;
-    var target = position.pixels;
-    if (top < position.pixels) {
-      target = top;
-    } else if (bottom > position.pixels + position.viewportDimension) {
-      target = bottom - position.viewportDimension;
-    }
-    target = target.clamp(position.minScrollExtent, position.maxScrollExtent);
-    if (target == position.pixels) return;
-    controller.animateTo(
-      target,
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeOut,
+    ensureGamePlaybackMenuSelectionVisible(
+      controller,
+      wrapped,
+      rowExtent: _rowExtent,
     );
   }
 
@@ -713,9 +1049,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     if (_pickerOpen) {
       _applyPicker();
     } else if (_settingsOpen) {
-      _openPicker(_settingsSelected);
+      if (_options.isNotEmpty && _settingsSelected < _options.length) {
+        _openPicker(_settingsSelected);
+      }
     } else {
-      _actions()[_selected].onSelect();
+      final actions = _actions();
+      if (_selected < actions.length) actions[_selected].onSelect();
     }
   }
 
@@ -737,11 +1076,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     if (opt.choices.length < 2) return;
     setState(() {
       _pickerOption = optionIndex;
-      _pickerSelected =
-          opt.choices.indexOf(opt.current).clamp(0, opt.choices.length - 1);
+      _pickerSelected = opt.choices
+          .indexOf(opt.current)
+          .clamp(0, opt.choices.length - 1);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _pickerOpen) _ensureVisible(_pickerScroll, _pickerSelected);
+      if (mounted && _pickerOpen) {
+        ensureGamePlaybackMenuSelectionVisible(
+          _pickerScroll,
+          _pickerSelected,
+          rowExtent: _rowExtent,
+        );
+      }
     });
   }
 
@@ -773,8 +1119,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     final games = _client.gamesApi;
     final coreId = libretroCoreId(widget.core);
     if (games == null || coreId == null || _options.isEmpty) return;
-    final blob =
-        _options.map((o) => '${o.id}=${o.current}').join('\n').codeUnits;
+    final blob = _options
+        .map((o) => '${o.id}=${o.current}')
+        .join('\n')
+        .codeUnits;
     try {
       await games.putSave('moonfin-native-$coreId', blob, kind: 'settings');
     } on Exception {
@@ -783,26 +1131,87 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Future<void> _saveState() async {
-    final games = _client.gamesApi;
-    final bytes = await _player.saveState();
-    if (bytes != null && bytes.isNotEmpty && games != null) {
-      await games.putSave(_stateKey, bytes);
+    try {
+      final games = _client.gamesApi;
+      final bytes = await _player.saveState();
+      if (bytes != null && bytes.isNotEmpty && games != null) {
+        await games.putSave(_stateKey, bytes);
+      }
+    } catch (_) {
+      _showTransientMessage('Could not save state.');
+    } finally {
+      if (mounted) _closeOverlay();
     }
-    _closeOverlay();
   }
 
   Future<void> _loadState() async {
-    final games = _client.gamesApi;
-    final save = await games?.getSave(_stateKey);
-    if (save != null && save.isNotEmpty) {
-      await _player.loadState(Uint8List.fromList(save));
+    try {
+      final games = _client.gamesApi;
+      final save = games == null
+          ? null
+          : await loadGameStateWithMigration(games, widget.gameId, widget.core);
+      if (save != null && save.isNotEmpty) {
+        await _player.loadState(Uint8List.fromList(save));
+      }
+    } catch (_) {
+      _showTransientMessage('Could not load state.');
+    } finally {
+      if (mounted) _closeOverlay();
     }
-    _closeOverlay();
   }
 
   Future<void> _restart() async {
-    await _player.restart();
-    _closeOverlay();
+    try {
+      // _applyOption persists in the background. Re-send and flush the
+      // visible values here so an immediate restart cannot race that
+      // best-effort write.
+      for (final option in _options) {
+        await _player.setOption(option.id, option.current);
+      }
+      await _persistOptions();
+      await _player.restart();
+    } on PlatformException catch (e) {
+      _showTransientMessage(
+        e.code == 'restart_unavailable'
+            ? 'Restart is not available for this core.'
+            : 'Could not restart.',
+      );
+    } catch (_) {
+      _showTransientMessage('Could not restart.');
+    } finally {
+      if (mounted) _closeOverlay();
+    }
+  }
+
+  // The first value in a legacy libretro option is its core-defined default.
+  // Restart immediately because many cores only read these during initialization.
+  Future<void> _resetEmulatorSettings() async {
+    try {
+      final options = await _player.getOptions();
+      if (options.isEmpty) return;
+      for (final option in options) {
+        await _player.setOption(option.id, option.choices.first);
+      }
+      if (!mounted) return;
+      setState(() {
+        _options = options
+            .map(
+              (option) => GameCoreOption(
+                id: option.id,
+                label: option.label,
+                current: option.choices.first,
+                choices: option.choices,
+              ),
+            )
+            .toList(growable: false);
+      });
+      await _persistOptions();
+      await _player.restart();
+    } catch (_) {
+      _showTransientMessage('Could not reset emulator settings.');
+    } finally {
+      if (mounted) _closeOverlay();
+    }
   }
 
   // Resume first so the running core samples the pulse, then send the button.
@@ -818,12 +1227,108 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Future<void> _openSettings() async {
-    final options = await _player.getOptions();
+    // Invoked as an unawaited VoidCallback from the overlay, and unlike its
+    // sibling action methods, getOptions() does not swallow its own errors --
+    // a throwing core would otherwise surface as an unhandled async error
+    // with no feedback to the player.
+    List<GameCoreOption> options;
+    try {
+      options = await _player.getOptions();
+    } catch (_) {
+      if (mounted) _showTransientMessage('Could not load emulator settings.');
+      return;
+    }
     if (!mounted) return;
     setState(() {
       _options = List.of(options);
       _settingsOpen = true;
       _settingsSelected = 0;
+    });
+  }
+
+  /// The controllers that can be remapped on this platform.
+  ///
+  /// Android asks its gamepad channel, which is also what applies the mapping.
+  /// Windows and Linux ask the gamepads package, since on those platforms the
+  /// mapping is applied here in Dart. Apple platforms bind their buttons in
+  /// Swift and have no remapping, so they report nothing and the menu entry is
+  /// hidden.
+  Future<List<NativeControllerDevice>> _remappableDevices() async {
+    if (PlatformDetection.isAndroid) {
+      final rawDevices = await AndroidGamepadChannel.getEmulatorGamepads();
+      return rawDevices
+          .map(NativeControllerDevice.fromMap)
+          .where((device) => device.id.isNotEmpty)
+          .toList(growable: false);
+    }
+    if (!_readsGamepadsInDart) return const [];
+    final pads = await Gamepads.list();
+    return pads
+        .where((pad) => pad.id.isNotEmpty)
+        .map(
+          (pad) => NativeControllerDevice(
+            id: desktopControllerDeviceId(pad.id),
+            name: pad.name.isEmpty ? 'Gamepad ${pad.id}' : pad.name,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  Future<void> _loadControllerMappings(GamesApi games) async {
+    final devices = await _remappableDevices();
+    if (devices.isEmpty) return;
+    final mappings = <String, NativeControllerMapping>{};
+    for (final device in devices) {
+      mappings[device.id] = await loadControllerMapping(games, device.id);
+    }
+    if (!mounted) return;
+    _controllerDevices = devices;
+    _controllerMappings = mappings;
+    await _syncControllerMappings();
+  }
+
+  String _controllerMappingsJson() => jsonEncode({
+    for (final entry in _controllerMappings.entries)
+      entry.key: jsonDecode(entry.value.toJson()),
+  });
+
+  /// Pushes the mappings to whatever applies them.
+  ///
+  /// Only Android has a native side to tell: it filters KeyEvents before they
+  /// ever reach Dart. On Windows and Linux nothing needs pushing, because
+  /// [_bitForGamepadButton] consults [_controllerMappings] directly as each
+  /// event arrives.
+  Future<void> _syncControllerMappings() async {
+    if (!PlatformDetection.isAndroid) return;
+    await AndroidGamepadChannel.setControllerMapping(_controllerMappingsJson());
+  }
+
+  Future<void> _updateControllerMapping(
+    String deviceId,
+    NativeControllerMapping mapping,
+  ) async {
+    final games = _client.gamesApi;
+    if (games == null) return;
+    setState(() {
+      _controllerMappings = Map.unmodifiable({
+        ..._controllerMappings,
+        deviceId: mapping,
+      });
+    });
+    await _syncControllerMappings();
+    try {
+      await saveControllerMapping(games, deviceId, mapping);
+    } catch (_) {
+      // The mapping is active for this session even if the best-effort sync
+      // fails; the next successful change will persist the latest value.
+    }
+  }
+
+  void _openControllerMapping() {
+    setState(() {
+      _controllerMappingOpen = true;
+      _settingsOpen = false;
+      _pickerOption = null;
     });
   }
 
@@ -844,22 +1349,38 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
               .map((e) => '${e.key}=${e.value}')
               .join('\n')
               .codeUnits;
-          await games.putSave('moonfin-native-$coreId', blob,
-              kind: 'settings');
+          await games.putSave('moonfin-native-$coreId', blob, kind: 'settings');
         }
       }
     } catch (_) {
       // Exit must not be blocked by sync failures.
     }
-    await _player.stop();
-    await _restoreSystemUi();
-    if (mounted) context.pop();
+    if (!_sessionStopped) {
+      _sessionStopped = true;
+      try {
+        await _player.stop().timeout(const Duration(seconds: 3));
+      } catch (_) {
+        // The route must still be escapable when native teardown fails or stalls.
+      }
+    }
+    try {
+      await _restoreSystemUi();
+    } finally {
+      if (mounted) context.pop();
+    }
   }
 
   // Leaves the loading or error screen without the save-on-exit that a running
-  // game does.
+  // game does. Guarded the same way as _exit(): reachable both from the menu
+  // and from the system back gesture, and a second invocation (or a prior
+  // _setFatalError that already stopped the session) must not stop() again.
   void _backOut() {
-    unawaited(_player.stop());
+    if (_exiting) return;
+    _exiting = true;
+    if (!_sessionStopped) {
+      _sessionStopped = true;
+      unawaited(_player.stop());
+    }
     unawaited(_restoreSystemUi());
     if (mounted) context.pop();
   }
@@ -867,23 +1388,25 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // Phones and tablets play full screen in landscape, the natural orientation
   // for the on-screen pad and most games. TV and desktop are left alone.
   void _enterImmersive() {
-    if (!usesOnScreenControls) return;
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    GamePlaybackSystemUi.enter(
+      immersive: usesOnScreenControls,
+      lockLandscape: usesOnScreenControls,
+    );
   }
 
-  Future<void> _restoreSystemUi() async {
-    if (!usesOnScreenControls) return;
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
-  }
+  Future<void> _restoreSystemUi() =>
+      GamePlaybackSystemUi.restore(immersive: usesOnScreenControls);
 
   @override
   Widget build(BuildContext context) {
     Widget scaffold = _buildScaffold(context);
+    // Keyboard-driven platforms only, deliberately. Putting this on Android as
+    // well briefly looked like the way to catch a USB keyboard's Escape, but it
+    // inserts the framework's key pipeline in front of every gameplay key that
+    // falls through from the native router -- and each of those then waits on a
+    // platform -> Dart -> platform round trip before Android considers the
+    // event handled, which shows up as input lag. Android catches Escape in
+    // NativePadInput instead, alongside Menu, and never involves Flutter.
     if (usesKeyboardInput) {
       scaffold = Focus(autofocus: true, onKeyEvent: _onKey, child: scaffold);
     }
@@ -914,7 +1437,19 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
             Center(
               child: AspectRatio(
                 aspectRatio: _aspect,
-                child: Texture(textureId: _textureId!),
+                // The core renders at its native resolution (a few hundred
+                // pixels per side) and this texture is stretched to the whole
+                // display. Texture defaults to FilterQuality.low, whose 2x2
+                // bilinear tap turns every source pixel into a gradient at the
+                // 4-8x magnification a TV asks for, which is why native cores
+                // looked soft next to EmulatorJS. Point sampling keeps the
+                // pixel art crisp. Scaling is still non-integer here, so
+                // pixels land on uneven widths; an integer prescale in the
+                // host removes that separately.
+                child: Texture(
+                  textureId: _textureId!,
+                  filterQuality: FilterQuality.none,
+                ),
               ),
             ),
           if (_textureId == null && _error == null)
@@ -924,10 +1459,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                 children: [
                   const CircularProgressIndicator(),
                   const SizedBox(height: 20),
-                  Text(
-                    _status,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
+                  Text(_status, style: const TextStyle(color: Colors.white70)),
                   if (_progress != null) ...[
                     const SizedBox(height: 12),
                     SizedBox(
@@ -1036,7 +1568,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         ),
         alignment: Alignment.center,
         child: DefaultTextStyle(
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
           child: label,
         ),
       ),
@@ -1059,19 +1594,31 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                   children: [
                     Align(
                       alignment: Alignment.topCenter,
-                      child: _touchButton(1 << 4, const Icon(Icons.keyboard_arrow_up, color: white)),
+                      child: _touchButton(
+                        1 << 4,
+                        const Icon(Icons.keyboard_arrow_up, color: white),
+                      ),
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,
-                      child: _touchButton(1 << 5, const Icon(Icons.keyboard_arrow_down, color: white)),
+                      child: _touchButton(
+                        1 << 5,
+                        const Icon(Icons.keyboard_arrow_down, color: white),
+                      ),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: _touchButton(1 << 6, const Icon(Icons.keyboard_arrow_left, color: white)),
+                      child: _touchButton(
+                        1 << 6,
+                        const Icon(Icons.keyboard_arrow_left, color: white),
+                      ),
                     ),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: _touchButton(1 << 7, const Icon(Icons.keyboard_arrow_right, color: white)),
+                      child: _touchButton(
+                        1 << 7,
+                        const Icon(Icons.keyboard_arrow_right, color: white),
+                      ),
                     ),
                   ],
                 ),
@@ -1085,10 +1632,22 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                 height: 168,
                 child: Stack(
                   children: [
-                    Align(alignment: Alignment.topCenter, child: _touchButton(1 << 9, const Text('X'))),
-                    Align(alignment: Alignment.bottomCenter, child: _touchButton(1 << 0, const Text('B'))),
-                    Align(alignment: Alignment.centerLeft, child: _touchButton(1 << 1, const Text('Y'))),
-                    Align(alignment: Alignment.centerRight, child: _touchButton(1 << 8, const Text('A'))),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: _touchButton(1 << 9, const Text('X')),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _touchButton(1 << 0, const Text('B')),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _touchButton(1 << 1, const Text('Y')),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _touchButton(1 << 8, const Text('A')),
+                    ),
                   ],
                 ),
               ),
@@ -1101,8 +1660,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _touchButton(1 << 2, const Text('SEL', style: TextStyle(fontSize: 11)), size: 44),
-                    _touchButton(1 << 3, const Text('START', style: TextStyle(fontSize: 10)), size: 44),
+                    _touchButton(
+                      1 << 2,
+                      const Text('SEL', style: TextStyle(fontSize: 11)),
+                      size: 44,
+                    ),
+                    _touchButton(
+                      1 << 3,
+                      const Text('START', style: TextStyle(fontSize: 10)),
+                      size: 44,
+                    ),
                   ],
                 ),
               ),
@@ -1174,9 +1741,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
 
   Widget _buildOverlay() {
     final l10n = AppLocalizations.of(context);
-    final showBack = _settingsOpen || _pickerOpen;
+    final showBack = _settingsOpen || _pickerOpen || _controllerMappingOpen;
     final String title;
-    if (_pickerOpen) {
+    if (_controllerMappingOpen) {
+      title = 'Controller mapping';
+    } else if (_pickerOpen) {
       title = _options[_pickerOption!].label;
     } else if (_settingsOpen) {
       title = l10n.gameEmulatorSettings;
@@ -1221,8 +1790,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                               width: 44,
                               height: 44,
                               child: Center(
-                                child: Icon(Icons.arrow_back,
-                                    color: Colors.white, size: 28),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
                               ),
                             ),
                           )
@@ -1254,6 +1826,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Widget _buildOverlayBody(AppLocalizations l10n) {
+    if (_controllerMappingOpen) {
+      return NativeControllerMappingScreen(
+        key: _controllerMappingKey,
+        devices: _controllerDevices,
+        mappings: _controllerMappings,
+        onMappingChanged: _updateControllerMapping,
+        onClose: () => setState(() => _controllerMappingOpen = false),
+      );
+    }
     if (_pickerOpen) {
       final opt = _options[_pickerOption!];
       return Flexible(
@@ -1305,26 +1886,49 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     }
     final actions = _actions();
     return Flexible(
-      child: ListView.builder(
-        key: const ValueKey('actions'),
-        controller: _overlayScroll,
-        shrinkWrap: true,
-        itemExtent: _rowExtent,
-        itemCount: actions.length,
-        itemBuilder: (context, i) => _overlayRow(
-          actions[i].label,
-          i == _selected,
-          () {
-            setState(() => _selected = i);
-            actions[i].onSelect();
-          },
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (_confirmingExit)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: Text(
+                'Exit this game? Progress since the last save will be lost.',
+                style: TextStyle(color: Colors.white70, fontSize: 18),
+              ),
+            ),
+          Flexible(
+            child: ListView.builder(
+              key: const ValueKey('actions'),
+              controller: _overlayScroll,
+              shrinkWrap: true,
+              itemExtent: _rowExtent,
+              itemCount: actions.length,
+              itemBuilder: (context, i) =>
+                  _overlayRow(actions[i].label, i == _selected, () {
+                    setState(() => _selected = i);
+                    actions[i].onSelect();
+                  }, danger: actions[i].danger),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _overlayRow(String label, bool selected, VoidCallback onTap,
-      {IconData? trailing}) {
+  Widget _overlayRow(
+    String label,
+    bool selected,
+    VoidCallback onTap, {
+    IconData? trailing,
+    bool danger = false,
+  }) {
+    // Selected rows invert to a white fill, so the warning tint only applies
+    // when unselected; on the highlight it would be unreadable.
+    final labelColor = selected
+        ? Colors.black
+        : (danger ? const Color(0xFFFF8A80) : Colors.white);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -1343,15 +1947,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: selected ? Colors.black : Colors.white,
-                  fontSize: 22,
-                ),
+                style: TextStyle(color: labelColor, fontSize: 22),
               ),
             ),
             if (trailing != null)
-              Icon(trailing,
-                  size: 22, color: selected ? Colors.black : Colors.white),
+              Icon(
+                trailing,
+                size: 22,
+                color: selected ? Colors.black : Colors.white,
+              ),
           ],
         ),
       ),
@@ -1360,7 +1964,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
 }
 
 class _OverlayAction {
-  const _OverlayAction(this.label, this.onSelect);
+  const _OverlayAction(this.label, this.onSelect, {this.danger = false});
   final String label;
   final VoidCallback onSelect;
+
+  /// Marks an action that ends the session, so the row can read as the
+  /// consequential one rather than looking like every other menu entry.
+  final bool danger;
 }

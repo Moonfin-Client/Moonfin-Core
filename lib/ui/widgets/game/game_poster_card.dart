@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../util/game_library.dart';
+import '../../../util/game_artwork_cache.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
@@ -21,7 +23,7 @@ import 'game_card_focus_frame.dart';
 class GamePosterCard extends StatefulWidget {
   const GamePosterCard({
     super.key,
-    required this.imageUrl,
+    this.imageUrl,
     required this.title,
     required this.fileName,
     required this.seed,
@@ -41,6 +43,9 @@ class GamePosterCard extends StatefulWidget {
     this.loadArtwork = true,
     this.onArtworkLoadFinished,
     this.autoScroll = true,
+    this.cacheManager,
+    this.artwork,
+    this.onArtworkError,
   });
 
   final String? imageUrl;
@@ -63,6 +68,12 @@ class GamePosterCard extends StatefulWidget {
   final bool loadArtwork;
   final VoidCallback? onArtworkLoadFinished;
   final bool autoScroll;
+  final BaseCacheManager? cacheManager;
+
+  /// A protocol-2, bytes-backed artwork widget supplied by the owning screen.
+  /// When present it replaces the legacy cache-manager URL path entirely.
+  final Widget? artwork;
+  final ValueChanged<Object>? onArtworkError;
 
   @override
   State<GamePosterCard> createState() => _GamePosterCardState();
@@ -185,7 +196,8 @@ class _GamePosterCardState extends State<GamePosterCard> {
             height: widget.width * 1.34,
             child: ClipRRect(
               borderRadius: borders.cardRadius,
-              child: url == null || !widget.loadArtwork
+              child:
+                  !widget.loadArtwork || (url == null && widget.artwork == null)
                   ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
                   : Stack(
                       fit: StackFit.expand,
@@ -196,14 +208,22 @@ class _GamePosterCardState extends State<GamePosterCard> {
                           seed: widget.seed,
                           iconSize: widget.width * 0.3,
                         ),
-                        BoundedNetworkImage(
-                          imageUrl: url,
-                          fit: BoxFit.cover,
-                          maxWidth: 1024,
-                          onLoadFinished: widget.onArtworkLoadFinished,
-                          // The fallback underneath remains visible on error.
-                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                        ),
+                        if (widget.artwork != null)
+                          widget.artwork!
+                        else
+                          BoundedNetworkImage(
+                            imageUrl: url!,
+                            cacheManager:
+                                widget.cacheManager ?? gameArtworkCacheManager,
+                            fit: BoxFit.cover,
+                            maxWidth: 1024,
+                            onLoadFinished: widget.onArtworkLoadFinished,
+                            // The fallback underneath remains visible on error.
+                            errorBuilder: (_, _, error) {
+                              widget.onArtworkError?.call(error);
+                              return const SizedBox.shrink();
+                            },
+                          ),
                       ],
                     ),
             ),

@@ -18,7 +18,11 @@ class AndroidGamepadChannel {
     'org.moonfin.androidtv/gamepad',
   );
 
-  static Future<dynamic> Function(MethodCall)? _buttonHandler;
+  // Handles both onButton (native RetroPad input) and onKeyboard (physical
+  // keyboard forwarded from the overlay) — despite the name implied by the
+  // old field, it is not button-only.
+  static Future<dynamic> Function(MethodCall)? _emulatorInputHandler;
+  static Future<dynamic> Function(MethodCall)? _controllerMappingKeyHandler;
   static AndroidStickNavigator? _navigator;
   static bool _installed = false;
 
@@ -30,10 +34,11 @@ class AndroidGamepadChannel {
     _navigator = AndroidStickNavigator();
   }
 
-  /// Register the emulator's button handler for the lifetime of a game.
-  /// Pass null on teardown.
-  static void setButtonHandler(Future<dynamic> Function(MethodCall)? handler) =>
-      _buttonHandler = handler;
+  /// Register the emulator's input handler (onButton and onKeyboard) for the
+  /// lifetime of a game. Pass null on teardown.
+  static void setEmulatorInputHandler(
+    Future<dynamic> Function(MethodCall)? handler,
+  ) => _emulatorInputHandler = handler;
 
   /// Tell the native side whether a game currently owns the pad.
   static Future<void> setGameActive(bool active) async {
@@ -42,10 +47,70 @@ class AndroidGamepadChannel {
     await _channel.invokeMethod('setActive', {'active': active});
   }
 
+  static Future<void> setEmulatorControlsActive(bool active) async {
+    if (!PlatformDetection.isAndroid) return;
+    await _channel.invokeMethod('setEmulatorControlsActive', {
+      'active': active,
+    });
+  }
+
+  /// Applies per-controller native RetroPad overrides for the active session.
+  static Future<void> setControllerMapping(String mappingJson) async {
+    if (!PlatformDetection.isAndroid) return;
+    await _channel.invokeMethod('setControllerMapping', {
+      'mapping': mappingJson,
+    });
+  }
+
+  /// Captures the next physical button from [deviceId] instead of forwarding
+  /// it to libretro. Used only while the native mapping overlay is rebinding.
+  static Future<void> setControllerMappingCapture(
+    bool active, {
+    String? deviceId,
+  }) async {
+    if (!PlatformDetection.isAndroid) return;
+    await _channel.invokeMethod('setControllerMappingCapture', {
+      'active': active,
+      'deviceId': ?deviceId,
+    });
+  }
+
+  static void setControllerMappingKeyHandler(
+    Future<dynamic> Function(MethodCall)? handler,
+  ) => _controllerMappingKeyHandler = handler;
+
+  /// Tells NativePadInput whether the in-game pause overlay is showing.
+  /// Native RetroPad Start uses this to decide between its short-press
+  /// pulse/long-press-hold gesture (overlay closed) and closing/stepping
+  /// back through the overlay on any press (overlay open); LibretroBridge
+  /// uses it to gate the "button" EventChannel message to overlay navigation
+  /// only, so nothing crosses the channel during gameplay.
+  static Future<void> setOverlayOpen(bool open) async {
+    if (!PlatformDetection.isAndroid) return;
+    await _channel.invokeMethod('setOverlayOpen', {'open': open});
+  }
+
+  /// Physical pads known to Android. The native side returns privacy-safe,
+  /// stable profile ids rather than raw device descriptors.
+  static Future<List<Map<String, dynamic>>> getEmulatorGamepads() async {
+    if (!PlatformDetection.isAndroid) return const [];
+    final result = await _channel.invokeListMethod<dynamic>(
+      'getGamepadDevices',
+    );
+    return result
+            ?.whereType<Map>()
+            .map((value) => value.cast<String, dynamic>())
+            .toList(growable: false) ??
+        const [];
+  }
+
   static Future<dynamic> _dispatch(MethodCall call) async {
     switch (call.method) {
       case 'onButton':
-        return _buttonHandler?.call(call);
+      case 'onKeyboard':
+        return _emulatorInputHandler?.call(call);
+      case 'onControllerMappingKey':
+        return _controllerMappingKeyHandler?.call(call);
       case 'onNavigate':
         final args = (call.arguments as Map).cast<String, dynamic>();
         _navigator?.handle(

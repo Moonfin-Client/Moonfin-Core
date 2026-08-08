@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../theme/vibrance.dart';
 import 'image_source.dart';
@@ -19,6 +20,7 @@ class BoundedNetworkImage extends StatelessWidget {
   final Widget Function(BuildContext context, String url, Object error)?
       errorBuilder;
   final VoidCallback? onLoadFinished;
+  final BaseCacheManager? cacheManager;
 
   /// Multiplier applied to the resolved width before clamping. Useful for
   /// blurred images where a low-resolution decode is acceptable.
@@ -38,21 +40,27 @@ class BoundedNetworkImage extends StatelessWidget {
     this.fadeInDuration = Duration.zero,
     this.errorBuilder,
     this.onLoadFinished,
+    this.cacheManager,
     this.scale = 1.0,
     this.minWidth = 64,
     this.maxWidth = 1024,
   });
 
-  static int _cacheWidthFor(
+  /// The decoded pixel width upstream uses for every bounded image: the painted
+  /// width in physical pixels, clamped. Public so the game artwork widgets --
+  /// which decode from bytes rather than a URL and so cannot use this widget
+  /// itself -- size their decodes by the same rule instead of a constant.
+  static int cacheWidthFor(
     double layoutWidth,
     double devicePixelRatio, {
     double scale = 1.0,
     int minWidth = 64,
     int maxWidth = 1024,
   }) {
-    return (layoutWidth * devicePixelRatio * scale)
-        .round()
-        .clamp(minWidth, maxWidth);
+    return (layoutWidth * devicePixelRatio * scale).round().clamp(
+      minWidth,
+      maxWidth,
+    );
   }
 
   static Future<void> precache(
@@ -64,7 +72,7 @@ class BoundedNetworkImage extends StatelessWidget {
     int maxWidth = 1024,
   }) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final cacheW = _cacheWidthFor(
+    final cacheW = cacheWidthFor(
       layoutWidth,
       dpr,
       scale: scale,
@@ -96,7 +104,7 @@ class BoundedNetworkImage extends StatelessWidget {
   Widget _buildImage(BuildContext context, double dpr) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final cacheW = _cacheWidthFor(
+        final cacheW = cacheWidthFor(
           constraints.maxWidth,
           dpr,
           scale: scale,
@@ -128,6 +136,7 @@ class BoundedNetworkImage extends StatelessWidget {
         }
         return CachedNetworkImage(
           imageUrl: imageUrl,
+          cacheManager: cacheManager,
           fit: fit,
           alignment: alignment,
           fadeInDuration: fadeInDuration,

@@ -342,6 +342,7 @@ Future<void> _detectAndApplyAudioCapabilities(UserPreferences prefs) async {
 void _sweepImageCache(UserPreferences prefs, {bool throttle = false}) {
   final mb = prefs.get(UserPreferences.imageCacheLimitMb);
   unawaited(enforceImageCacheBudget(mb * 1024 * 1024, throttle: throttle));
+  unawaited(enforceGameArtworkCacheBudget(throttle: throttle));
 }
 
 class _ImageCacheSweepObserver with WidgetsBindingObserver {

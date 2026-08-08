@@ -29,6 +29,9 @@ import '../../data/services/cast/google_cast_provider.dart';
 import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
 import '../../data/services/plugin_sync_service.dart';
+import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
+import '../../data/services/retro_artwork/retro_artwork_cache.dart';
+import '../../data/services/retro_artwork/retro_artwork_disk_cache.dart';
 import '../../data/services/custom_external_lists_service.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
@@ -71,6 +74,11 @@ void resetUserScopedSingletons() {
 }
 
 void registerAppModule() {
+  _getIt.registerLazySingleton(() => RetroArtworkActivityGate());
+  _getIt.registerLazySingletonAsync<RetroArtworkByteCache>(
+    () => openDefaultRetroArtworkDiskCache(),
+    dispose: (cache) => cache.dispose(),
+  );
   _getIt.registerLazySingleton(() => SocketHandler());
   _getIt.registerLazySingleton(() => CustomExternalListsService());
   _getIt.registerLazySingleton(
@@ -82,7 +90,10 @@ void registerAppModule() {
         AppUpdateService(_getIt<PreferenceStore>(), _getIt<UserPreferences>()),
   );
   _getIt.registerLazySingleton(
-    () => ScreensaverController(_getIt<UserPreferences>(), _getIt<PlaybackManager>()),
+    () => ScreensaverController(
+      _getIt<UserPreferences>(),
+      _getIt<PlaybackManager>(),
+    ),
     dispose: (controller) => controller.dispose(),
   );
   _getIt.registerLazySingleton(() => const NativeCastChannel());
@@ -156,7 +167,10 @@ void _registerUserScopedSingletons() {
     () => RowDataSource(_getIt<MediaServerClient>()),
   );
   _getIt.registerLazySingleton(
-    () => MdbListRepository(_getIt<MediaServerClient>(), _getIt<TmdbRepository>()),
+    () => MdbListRepository(
+      _getIt<MediaServerClient>(),
+      _getIt<TmdbRepository>(),
+    ),
     dispose: (repository) => repository.dispose(),
   );
   _getIt.registerLazySingleton(

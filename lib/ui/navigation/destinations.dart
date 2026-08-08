@@ -223,19 +223,24 @@ class Destinations {
     String libraryId,
     String gameId, {
     required String core,
+    String? romFileName,
     String? biosId,
     String? name,
     bool startFresh = false,
+    bool forceEmulatorJs = false,
   }) {
     final base =
         '/game-player/${Uri.encodeComponent(libraryId)}/${Uri.encodeComponent(gameId)}';
     final params = <String>[
       'core=${Uri.encodeQueryComponent(core)}',
+      if (romFileName != null && romFileName.isNotEmpty)
+        'romFile=${Uri.encodeQueryComponent(romFileName)}',
       if (biosId != null && biosId.isNotEmpty)
         'bios=${Uri.encodeQueryComponent(biosId)}',
       if (name != null && name.isNotEmpty)
         'name=${Uri.encodeQueryComponent(name)}',
       if (startFresh) 'fresh=1',
+      if (forceEmulatorJs) 'backend=emulatorjs',
     ];
     return '$base?${params.join('&')}';
   }
@@ -262,6 +267,7 @@ class Destinations {
         ? '$base?serverId=${Uri.encodeComponent(serverId)}'
         : base;
   }
+
   static String collection(String collectionId) => '/collection/$collectionId';
   static String musicLibrary(String libraryId) => '/music/$libraryId';
   static String bookLibrary(String libraryId, {String? collectionType}) {
@@ -270,6 +276,7 @@ class Destinations {
         ? '$base?collectionType=${Uri.encodeComponent(collectionType)}'
         : base;
   }
+
   static String photo(String itemId) => '/player/photo/$itemId';
   static String trailer({String? videoId, String? url}) {
     final params = <String, String>{
@@ -304,6 +311,7 @@ class Destinations {
     if (isFolderType(type)) return folder(itemId, serverId: serverId);
     return item(itemId, serverId: serverId);
   }
+
   static String nextUpFor(String itemId) => '/player/next-up/$itemId';
   static String stillWatchingFor(String itemId) =>
       '/player/still-watching/$itemId';
@@ -331,6 +339,7 @@ class Destinations {
     if (params.isEmpty) return base;
     return Uri(path: base, queryParameters: params).toString();
   }
+
   static String seerrPerson(String personId) => '/seerr/person/$personId';
   static String seerrCollection(String collectionId) =>
       '/seerr/collection/$collectionId';

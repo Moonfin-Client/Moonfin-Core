@@ -1,5 +1,6 @@
 package org.moonfin.androidtv
 
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import androidx.work.BackoffPolicy
@@ -33,6 +34,15 @@ class WatchNextWorker(
     override suspend fun doWork(): Result {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return Result.success()
         if (!isTelevision(applicationContext)) return Result.success()
+        // While the app is foregrounded, WatchNextService.update() already
+        // publishes through MainActivity's channel, so this run would only
+        // duplicate that -- at the cost of building and destroying a second
+        // FlutterEngine on the main thread (see the Dispatchers.Main blocks
+        // below), which on Android is the same thread that drives the UI.
+        // Skipping loses nothing for the same reason, and it keeps the periodic
+        // schedule intact -- retrying here would instead re-poke the process on
+        // the backoff interval for as long as the app stays open.
+        if (isAppInForeground()) return Result.success()
 
         val done = CompletableDeferred<Boolean>()
         // Set when Dart reports a failure that retrying can't fix, so the
@@ -126,6 +136,13 @@ class WatchNextWorker(
             }
             ioScope.cancel()
         }
+    }
+
+    private fun isAppInForeground(): Boolean {
+        val state = ActivityManager.RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(state)
+        return state.importance <=
+            ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
     }
 
     // Gives up after a few attempts so a failing refresh can't retry forever.

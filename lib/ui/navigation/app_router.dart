@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
+import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../di/injection.dart';
 import '../../playback/external_player_policy.dart';
 import '../../preference/user_preferences.dart';
@@ -169,6 +170,7 @@ final appRouter = GoRouter(
   initialLocation: Destinations.startup,
   observers: [
     FocusRouteObserver(),
+    RetroArtworkRouteObserver.instance,
     routeLifecycleObserver,
     PlayerRouteObserver.instance,
   ],
@@ -446,13 +448,15 @@ final appRouter = GoRouter(
         final gameId = state.pathParameters['gameId']!;
         final core = state.uri.queryParameters['core'] ?? 'nes';
         final startFresh = state.uri.queryParameters['fresh'] == '1';
+        final forceEmulatorJs =
+            state.uri.queryParameters['backend'] == 'emulatorjs';
         return _opaqueFullScreenPage<void>(
           state: state,
           // Native libretro or the EmulatorJS WebView: forced where only one
           // backend works (tvOS and Linux native), the user's choice elsewhere,
           // and per game where native can't play the system but the WebView can
           // (a PSP or N64 title on the bundled Apple targets).
-          child: usesNativeGameBackendFor(core)
+          child: !forceEmulatorJs && usesNativeGameBackendFor(core)
               ? NativeGamePlayerScreen(
                   libraryId: libraryId,
                   gameId: gameId,
@@ -464,6 +468,7 @@ final appRouter = GoRouter(
                   libraryId: libraryId,
                   gameId: gameId,
                   core: core,
+                  romFileName: state.uri.queryParameters['romFile'],
                   biosId: state.uri.queryParameters['bios'],
                   gameName: state.uri.queryParameters['name'],
                   startFresh: startFresh,
@@ -528,10 +533,7 @@ final appRouter = GoRouter(
                 channelId: state.uri.queryParameters['channelId'] ?? '',
               );
             }
-            return _opaqueFullScreenPage<void>(
-              state: state,
-              child: child,
-            );
+            return _opaqueFullScreenPage<void>(state: state, child: child);
           },
         ),
       ],
@@ -808,7 +810,6 @@ final appRouter = GoRouter(
         return SeerrPersonScreen(personId: personId);
       },
     ),
-
   ],
 );
 
@@ -860,5 +861,85 @@ class PlayerRouteObserver extends NavigatorObserver {
       _playerRoutes.add(newRoute);
     }
     isPlayerActive.value = _playerRoutes.isNotEmpty;
+  }
+}
+
+/// Drives the one global artwork coverage blocker from the effective top route.
+/// Hidden game screens never clear the blocker themselves, so popping or
+/// disposing a lower screen cannot reopen artwork work under gameplay/dialogs.
+class RetroArtworkRouteObserver extends NavigatorObserver {
+  RetroArtworkRouteObserver({RetroArtworkActivityGate? activityGate})
+    : _activityGate = activityGate;
+
+  static final instance = RetroArtworkRouteObserver();
+
+  final RetroArtworkActivityGate? _activityGate;
+  final List<Route<dynamic>> _routes = <Route<dynamic>>[];
+
+  RetroArtworkActivityGate? get _gate {
+    if (_activityGate != null) return _activityGate;
+    if (!GetIt.instance.isRegistered<RetroArtworkActivityGate>()) return null;
+    return GetIt.instance<RetroArtworkActivityGate>();
+  }
+
+  bool _isArtworkRoute(Route<dynamic>? route) {
+    final name = route?.settings.name;
+    return name != null &&
+        (name.startsWith('/games/') || name.startsWith('/game/'));
+  }
+
+  /// Non-opaque routes (dialogs, popups, bottom sheets -- e.g. the "Choose
+  /// player" picker) sit on top of the screen beneath without hiding it, so
+  /// they must not flip coverage themselves. Only an opaque route (a real
+  /// page navigation, including into gameplay) actually covers the artwork
+  /// screen.
+  bool _isOpaque(Route<dynamic> route) =>
+      route is! ModalRoute<dynamic> || route.opaque;
+
+  void _sync() {
+    Route<dynamic>? topmostOpaque;
+    for (final route in _routes.reversed) {
+      if (_isOpaque(route)) {
+        topmostOpaque = route;
+        break;
+      }
+    }
+    _gate?.setRouteCovered(
+      topmostOpaque == null || !_isArtworkRoute(topmostOpaque),
+      owner: this,
+    );
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _routes.add(route);
+    _sync();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _routes.remove(route);
+    _sync();
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _routes.remove(route);
+    _sync();
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    final oldIndex = oldRoute == null ? -1 : _routes.indexOf(oldRoute);
+    if (oldIndex >= 0) {
+      if (newRoute == null) {
+        _routes.removeAt(oldIndex);
+      } else {
+        _routes[oldIndex] = newRoute;
+      }
+    } else if (newRoute != null) {
+      _routes.add(newRoute);
+    }
+    _sync();
   }
 }

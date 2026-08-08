@@ -2,30 +2,51 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart'
+    show HttpExceptionWithStatus;
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/background_service.dart';
+import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
+import '../../../data/services/retro_artwork/retro_artwork_cache.dart';
+import '../../../data/services/retro_artwork/retro_artwork_data_source.dart';
+import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
 import '../../../data/viewmodels/game_system_browse_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/game_artwork_cache.dart';
 import '../../../util/game_library.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/tv_image_cache_stub.dart'
+    if (dart.library.io) '../../../util/tv_image_cache_io.dart';
 import '../../navigation/destinations.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/game/game_alpha_picker_bar.dart';
-import '../../widgets/game/game_artwork_load_scheduler.dart';
 import '../../widgets/game/game_poster_card.dart';
+import '../../widgets/game/retro_artwork_image.dart';
+
 import '../../widgets/local_search_field.dart';
+
+/// Rows either side of the anchor named in the server priority hint. Wider
+/// than the viewport so thumbnailing starts before a row is scrolled into it.
+const int _priorityWindowRows = 4;
+
+/// Concurrent legacy-protocol cache warms. Protocol 2 is bounded by
+/// [RetroArtworkTransport.maxConcurrentTransfers] instead.
+const int _legacyPrefetchWorkers = 4;
 
 /// Browses one retro-game platform using the same vertical grid and alphabet
 /// filtering interaction as Moonfin's regular media libraries.
@@ -35,28 +56,40 @@ class GameSystemScreen extends StatefulWidget {
     required this.libraryId,
     required this.systemId,
     this.systemName,
+    @visibleForTesting this.debugArtworkDataSource,
+    @visibleForTesting this.debugArtworkTransport,
+    @visibleForTesting this.debugArtworkActivityGate,
   });
 
   final String libraryId;
   final String systemId;
   final String? systemName;
 
+  /// Test-only seam. When supplied, [_initializeArtworkDataSource] wires
+  /// these directly instead of resolving the real capability probe and
+  /// factory chain, so widget tests can drive band admission with fully
+  /// controllable fakes.
+  @visibleForTesting
+  final RetroArtworkDataSource? debugArtworkDataSource;
+  @visibleForTesting
+  final RetroArtworkTransport? debugArtworkTransport;
+  @visibleForTesting
+  final RetroArtworkActivityGate? debugArtworkActivityGate;
+
   @override
   State<GameSystemScreen> createState() => _GameSystemScreenState();
 }
 
 class _GameSystemScreenState extends State<GameSystemScreen>
-    with GridFocusNodeMixin<GameSystemScreen> {
+    with GridFocusNodeMixin<GameSystemScreen>, RouteAware {
   static const _compactBreakpoint = 600.0;
   static const _compactHorizontalPadding = 16.0;
   static const _desktopHorizontalPadding = 60.0;
   static const _gridTopPadding = 8.0;
   static const _gridBottomFocusPeek = 52.0;
-  static const _artworkPrefetchRows = 5;
-  static const _tvArtworkSettleDelay = Duration(milliseconds: 200);
-  static const _otherArtworkSettleDelay = Duration(milliseconds: 120);
-  static const _tvArtworkPrefetchDelay = Duration(milliseconds: 700);
-  static const _otherArtworkPrefetchDelay = Duration(milliseconds: 450);
+  // Backdrop art is a much heavier decode than a grid thumbnail; deliberately
+  // its own constant, not shared with the grid settle delays above.
+  static const _backdropSettleDelay = Duration(milliseconds: 700);
 
   final UserPreferences _prefs = GetIt.instance<UserPreferences>();
   final TextEditingController _searchController = TextEditingController();
@@ -69,42 +102,208 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       ),
   };
   final ScrollController _gridScrollController = ScrollController();
-  late final GamesApi? _gamesApi;
-  late final GameArtworkLoadScheduler _artworkScheduler;
   late final GameSystemBrowseViewModel _browse;
+  RetroArtworkActivityGate? _retroArtworkActivityGate;
+  RetroArtworkTransport? _retroArtworkTransport;
+  RetroArtworkDataSource? _retroArtworkDataSource;
+  _ArtworkGridLayout? _artworkGridLayout;
+  // Only used to avoid re-sending an identical priority hint. Nothing about
+  // what renders depends on these.
+  List<GameSummary>? _artworkPlanGames;
+  int? _artworkPlanAnchorRow;
+  int _priorityGeneration = 0;
+  late String _artworkScope;
   List<GameSummary>? _observedVisibleGames;
   Timer? _hoverScrollSettle;
   GameSummary? _hoveredGame;
   bool _suppressHoverEnrichment = false;
   Timer? _tvBackReplayGuardTimer;
-  Timer? _artworkSettleTimer;
-  Timer? _artworkPrefetchTimer;
+  Timer? _backdropSettleTimer;
+  // Only ever set by the settle timer below, never straight from the view
+  // model's own (shorter) backdropGame.
+  GameSummary? _settledBackdropGame;
+  String? _pendingBackdropGameId;
   bool _ignoreNextTvPop = false;
   bool _allowTvPop = false;
+  bool _routeIsCovered = false;
+  bool _artworkRefreshQueued = false;
+  ModalRoute<dynamic>? _observedRoute;
 
   @override
   void initState() {
     super.initState();
-    _gamesApi = GetIt.instance<MediaServerClient>().gamesApi;
-    _artworkScheduler = GameArtworkLoadScheduler()
-      ..addListener(_onArtworkSchedulerChanged);
+    _artworkScope = gameArtworkScope(widget.libraryId, widget.systemId);
+    _activateArtworkScope();
     _browse = GameSystemBrowseViewModel(
-      gamesApi: _gamesApi,
+      gamesApi: GetIt.instance<MediaServerClient>().gamesApi,
       libraryId: widget.libraryId,
       systemId: widget.systemId,
       systemName: widget.systemName,
     )..addListener(_onBrowseChanged);
     _searchController.addListener(_onSearchChanged);
     _searchFocus.addListener(_onSearchFocusChanged);
-    _browse.load();
+    unawaited(_loadGamesAndArtwork());
+  }
+
+  Future<void> _loadGamesAndArtwork() async {
+    await _browse.load();
+    if (!mounted || _browse.error != null) return;
+    await _initializeArtworkDataSource();
+    final dataSource = _retroArtworkDataSource;
+    if (dataSource == null || !mounted) return;
+    try {
+      await dataSource.refreshSystem(
+        libraryId: widget.libraryId,
+        systemId: widget.systemId,
+      );
+    } catch (error) {
+      debugPrint(
+        '[GameSystemScreen] Failed to refresh artwork manifest: $error',
+      );
+    }
+    if (mounted) {
+      setState(() {});
+      _scheduleArtworkPriority();
+    }
+  }
+
+  Future<void> _initializeArtworkDataSource() async {
+    if (_retroArtworkDataSource != null) return;
+    final debugDataSource = widget.debugArtworkDataSource;
+    if (debugDataSource != null) {
+      debugDataSource.addSnapshotListener(_onArtworkSnapshotChanged);
+      final gate = widget.debugArtworkActivityGate;
+      if (gate != null) {
+        _retroArtworkActivityGate = gate;
+        gate.addListener(_onArtworkGateChanged);
+      }
+      _retroArtworkTransport = widget.debugArtworkTransport;
+      _retroArtworkDataSource = debugDataSource;
+      if (_routeIsCovered) debugDataSource.onRouteCovered();
+      return;
+    }
+    if (!GetIt.instance.isRegistered<RetroArtworkByteCache>() ||
+        !GetIt.instance.isRegistered<RetroArtworkActivityGate>()) {
+      return;
+    }
+    final client = GetIt.instance<MediaServerClient>();
+    final cache = await GetIt.instance.getAsync<RetroArtworkByteCache>();
+    if (!mounted || _retroArtworkDataSource != null) return;
+    final gate = GetIt.instance<RetroArtworkActivityGate>();
+    final transport = RetroArtworkTransport.forServer(
+      client: client,
+      cache: cache,
+      activityGate: gate,
+    );
+    final dataSource = await RetroArtworkDataSourceFactory.create(
+      client: client,
+      activityGate: gate,
+      transport: transport,
+    );
+    if (!mounted) {
+      dataSource?.dispose();
+      transport.dispose();
+      return;
+    }
+    dataSource?.addSnapshotListener(_onArtworkSnapshotChanged);
+    _retroArtworkActivityGate = gate;
+    gate.addListener(_onArtworkGateChanged);
+    _retroArtworkTransport = transport;
+    _retroArtworkDataSource = dataSource;
+    if (_routeIsCovered) dataSource?.onRouteCovered();
+  }
+
+  void _onArtworkSnapshotChanged() {
+    _scheduleArtworkRefresh(
+      recenter:
+          _retroArtworkDataSource?.protocol == RetroArtworkProtocol.manifest,
+    );
+  }
+
+  /// Image loading and error builders may report an artwork outcome while the
+  /// framework is building the grid. Repaint only after that frame completes.
+  void _scheduleArtworkRefresh({required bool recenter}) {
+    if (!mounted || _artworkRefreshQueued) return;
+    _artworkRefreshQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _artworkRefreshQueued = false;
+      if (!mounted) return;
+      setState(() {});
+      if (recenter) _scheduleArtworkPriority(force: true);
+    });
+    // addPostFrameCallback only fires once a frame is already scheduled. If
+    // artwork completes while the app is otherwise idle there isn't one, so
+    // ask for it explicitly or the callback above queues forever.
+    WidgetsBinding.instance.scheduleFrame();
+  }
+
+  void _onArtworkGateChanged() {
+    final gate = _retroArtworkActivityGate;
+    if (!mounted || gate == null) return;
+    if (!gate.isOpen) {
+      _clearArtworkPlan();
+      return;
+    }
+    if (!_routeIsCovered) _scheduleArtworkPriority(force: true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPushNext() {
+    super.didPushNext();
+    _routeIsCovered = true;
+    _clearArtworkPlan();
+    _retroArtworkDataSource?.onRouteCovered();
+    _retroArtworkTransport?.cancelAll();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _routeIsCovered = false;
+    _retroArtworkDataSource?.onRouteReentered();
+    _scheduleArtworkPriority(force: true);
+  }
+
+  // This route is keyed by "<libraryId>/<systemId>" (see app_router.dart), so
+  // Flutter always mounts a fresh state when the system changes and this
+  // branch is not expected to run in practice. It stays as a safety net in
+  // case that keying ever changes.
+  @override
+  void didUpdateWidget(covariant GameSystemScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.libraryId != widget.libraryId ||
+        oldWidget.systemId != widget.systemId) {
+      releaseGameArtworkCacheScope(_artworkScope);
+      _artworkScope = gameArtworkScope(widget.libraryId, widget.systemId);
+      _activateArtworkScope();
+    }
   }
 
   @override
   void dispose() {
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+      _observedRoute = null;
+    }
     _browse.removeListener(_onBrowseChanged);
     _browse.dispose();
-    _artworkScheduler.removeListener(_onArtworkSchedulerChanged);
-    _artworkScheduler.dispose();
+    _retroArtworkDataSource?.removeSnapshotListener(_onArtworkSnapshotChanged);
+    _retroArtworkDataSource?.dispose();
+    _retroArtworkTransport?.dispose();
+    _retroArtworkActivityGate?.removeListener(_onArtworkGateChanged);
+    _backdropSettleTimer?.cancel();
     _searchController.removeListener(_onSearchChanged);
     _searchFocus.removeListener(_onSearchFocusChanged);
     _searchController.dispose();
@@ -115,14 +314,25 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     _gridScrollController.dispose();
     _hoverScrollSettle?.cancel();
     _tvBackReplayGuardTimer?.cancel();
-    _artworkSettleTimer?.cancel();
-    _artworkPrefetchTimer?.cancel();
+    releaseGameArtworkCacheScope(_artworkScope);
+    unawaited(enforceGameArtworkCacheBudget(throttle: true));
     disposeGridFocusNodes();
     super.dispose();
   }
 
   void _onSearchChanged() {
     _browse.updateSearch(_searchController.text);
+  }
+
+  void _activateArtworkScope() {
+    unawaited(_retainArtworkScope());
+  }
+
+  Future<void> _retainArtworkScope() async {
+    await retainGameArtworkCacheScope(_artworkScope);
+    // Once the new system is protected, inactive systems are eligible for
+    // whole-scope LRU eviction if the combined game-art budget needs room.
+    await enforceGameArtworkCacheBudget(throttle: true);
   }
 
   void _selectLetter(String letter) {
@@ -144,22 +354,47 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     final visibleGames = _browse.visibleGames;
     if (!identical(_observedVisibleGames, visibleGames)) {
       _observedVisibleGames = visibleGames;
-      _artworkSettleTimer?.cancel();
-      _artworkPrefetchTimer?.cancel();
-      _artworkScheduler.clearViewport();
+      _artworkGridLayout = null;
+      _clearArtworkPlan();
       gridContentVersion++;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) cleanupGridFocusNodes(visibleGames.length);
       });
     }
+    _scheduleBackdropSettle();
     setState(() {});
   }
 
-  void _onSearchFocusChanged() {
-    if (mounted) setState(() {});
+  /// Gates the entire backdrop pipeline (build, decode, blur) behind
+  /// [_backdropSettleDelay], keyed off undebounced `activeGame` rather than
+  /// the view model's own `backdropGame` (using both would stack two waits).
+  void _scheduleBackdropSettle() {
+    final target = _browse.activeGame;
+    if (target == null) {
+      // Hiding is immediate; only *starting* a new backdrop is delayed.
+      _backdropSettleTimer?.cancel();
+      _backdropSettleTimer = null;
+      _pendingBackdropGameId = null;
+      _settledBackdropGame = null;
+      return;
+    }
+    // Comparing String ids (not null == null) below: a null target is
+    // handled above, so reaching here always means a real candidate.
+    if (target.id == _settledBackdropGame?.id ||
+        target.id == _pendingBackdropGameId) {
+      return;
+    }
+    _backdropSettleTimer?.cancel();
+    _pendingBackdropGameId = target.id;
+    _backdropSettleTimer = Timer(_backdropSettleDelay, () {
+      _backdropSettleTimer = null;
+      _pendingBackdropGameId = null;
+      if (!mounted || _browse.activeGame?.id != target.id) return;
+      setState(() => _settledBackdropGame = target);
+    });
   }
 
-  void _onArtworkSchedulerChanged() {
+  void _onSearchFocusChanged() {
     if (mounted) setState(() {});
   }
 
@@ -214,139 +449,6 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     });
   }
 
-  void _scheduleArtworkWindow({
-    required ScrollMetrics metrics,
-    required int crossAxisCount,
-    required double rowStride,
-    required List<GameSummary> games,
-  }) {
-    _artworkSettleTimer?.cancel();
-    _artworkPrefetchTimer?.cancel();
-    // Stop feeding the old viewport into flutter_cache_manager. Its requests
-    // cannot be cancelled once started, but clearing here caps stale work at
-    // the current four-request batch instead of the whole nearby-row queue.
-    _artworkScheduler.clearViewport();
-    final rowCount = (games.length / crossAxisCount).ceil();
-    if (rowCount == 0) return;
-    final firstVisibleRow = ((metrics.pixels - _gridTopPadding) / rowStride)
-        .floor()
-        .clamp(0, rowCount - 1)
-        .toInt();
-    final lastVisibleRowExclusive =
-        ((metrics.pixels + metrics.viewportDimension - _gridTopPadding) /
-                rowStride)
-            .ceil()
-            .clamp(firstVisibleRow + 1, rowCount)
-            .toInt();
-    final firstRow = (firstVisibleRow - _artworkPrefetchRows)
-        .clamp(0, rowCount - 1)
-        .toInt();
-    final lastRowExclusive = (lastVisibleRowExclusive + _artworkPrefetchRows)
-        .clamp(1, rowCount)
-        .toInt();
-    final visibleFirstIndex = firstVisibleRow * crossAxisCount;
-    final visibleLastIndexExclusive = (lastVisibleRowExclusive * crossAxisCount)
-        .clamp(0, games.length)
-        .toInt();
-
-    final settleDelay = PlatformDetection.isTV
-        ? _tvArtworkSettleDelay
-        : _otherArtworkSettleDelay;
-    _artworkSettleTimer = Timer(settleDelay, () {
-      if (!mounted || !identical(games, _browse.visibleGames)) return;
-      // Submit only the settled viewport first. Rapid intermediate d-pad or
-      // pointer positions never reach the cache manager's non-cancellable FIFO.
-      _showArtworkRange(
-        games,
-        firstIndex: visibleFirstIndex,
-        lastIndexExclusive: visibleLastIndexExclusive,
-        priorityFirstIndex: visibleFirstIndex,
-        priorityLastIndexExclusive: visibleLastIndexExclusive,
-        crossAxisCount: crossAxisCount,
-      );
-    });
-
-    final prefetchDelay = PlatformDetection.isTV
-        ? _tvArtworkPrefetchDelay
-        : _otherArtworkPrefetchDelay;
-    _artworkPrefetchTimer = Timer(prefetchDelay, () {
-      if (!mounted || !identical(games, _browse.visibleGames)) return;
-      // Add nearby rows only after the user remains on this viewport. Visible
-      // URLs stay first in the expanded queue.
-      _showArtworkRange(
-        games,
-        firstIndex: firstRow * crossAxisCount,
-        lastIndexExclusive: (lastRowExclusive * crossAxisCount)
-            .clamp(0, games.length)
-            .toInt(),
-        priorityFirstIndex: visibleFirstIndex,
-        priorityLastIndexExclusive: visibleLastIndexExclusive,
-        crossAxisCount: crossAxisCount,
-      );
-    });
-  }
-
-  void _showArtworkRange(
-    List<GameSummary> games, {
-    required int firstIndex,
-    required int lastIndexExclusive,
-    required int priorityFirstIndex,
-    required int priorityLastIndexExclusive,
-    required int crossAxisCount,
-  }) {
-    if (games.isEmpty || firstIndex >= lastIndexExclusive) return;
-    var priorityStart = priorityFirstIndex.clamp(
-      firstIndex,
-      lastIndexExclusive - 1,
-    );
-    var priorityEnd = priorityLastIndexExclusive.clamp(
-      priorityStart + 1,
-      lastIndexExclusive,
-    );
-
-    // Center the priority block on the focused row so the row the user is on
-    // fetches first and nearby rows expand outward from it, rather than always
-    // starting at the top row of the viewport (which may be partly scrolled
-    // off). Falls back to the passed viewport block when nothing is focused
-    // (e.g. touch scrolling), where there is no "current row".
-    final focusedIndex = _gridHasFocus ? lastFocusedGridIndex : null;
-    if (focusedIndex != null &&
-        focusedIndex >= firstIndex &&
-        focusedIndex < lastIndexExclusive) {
-      final focusedRowStart = focusedIndex - (focusedIndex % crossAxisCount);
-      priorityStart = focusedRowStart.clamp(firstIndex, lastIndexExclusive - 1);
-      priorityEnd = (focusedRowStart + crossAxisCount).clamp(
-        priorityStart + 1,
-        lastIndexExclusive,
-      );
-    }
-
-    final orderedIndexes = gameArtworkLoadOrder(
-      firstIndex: firstIndex,
-      lastIndexExclusive: lastIndexExclusive,
-      visibleFirstIndex: priorityStart,
-      visibleLastIndexExclusive: priorityEnd,
-      crossAxisCount: crossAxisCount,
-      surroundingRows: _artworkPrefetchRows,
-    );
-    final urls = <String>[
-      for (final index in orderedIndexes) ?_gameThumbUrl(games[index].id),
-    ];
-    final priorityIndex =
-        focusedIndex != null &&
-            focusedIndex >= priorityStart &&
-            focusedIndex < priorityEnd
-        ? focusedIndex
-        : priorityStart;
-    _artworkScheduler.showViewport(
-      urls,
-      priorityKey: _gameThumbUrl(games[priorityIndex].id),
-    );
-  }
-
-  String? _gameThumbUrl(String gameId) =>
-      _gamesApi?.thumbUrl(libraryId: widget.libraryId, gameId: gameId);
-
   @override
   Widget build(BuildContext context) {
     final compact =
@@ -364,20 +466,23 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         !compact &&
         screenSize.height >= 480 * textScale.clamp(1, 2) &&
         _prefs.get(UserPreferences.showMediaDetailsOnLibraryPage);
-    final backdropGame = showBackdrop ? _browse.backdropGame : null;
+    final backdropGame = showBackdrop ? _settledBackdropGame : null;
     final hasBackdrop = backdropGame != null;
     final scaffold = Scaffold(
       backgroundColor: AppColorScheme.background,
       body: Stack(
         children: [
-          if (backdropGame != null)
+          if (backdropGame != null && !_routeIsCovered)
             Positioned.fill(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: _GameBrowseBackdrop(
                   key: ValueKey(backdropGame.id),
-                  libraryId: widget.libraryId,
                   game: backdropGame,
+                  artworkScope: _artworkScope,
+                  artworkDataSource: _retroArtworkDataSource,
+                  retroArtworkTransport: _retroArtworkTransport,
+                  retroArtworkActivityGate: _retroArtworkActivityGate,
                   blur: _prefs
                       .get(UserPreferences.browsingBackgroundBlurAmount)
                       .toDouble(),
@@ -676,6 +781,138 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     });
   }
 
+  /// Tells the server which games to thumbnail first, and pre-warms the cache
+  /// on the legacy protocol.
+  ///
+  /// This is advisory. Nothing gates rendering on it, so a hint that is stale,
+  /// superseded, or never sent costs ordering and never artwork: each card
+  /// requests its own image when the grid builds it and cancels when the grid
+  /// disposes it, which is also what bounds a fast scroll.
+  void _scheduleArtworkPriority({
+    ScrollMetrics? metrics,
+    int? focusedIndex,
+    bool force = false,
+  }) {
+    final layout = _artworkGridLayout;
+    final dataSource = _retroArtworkDataSource;
+    // A null data source here is the ordinary case for the first frames after
+    // the screen opens: initialization is async, and the hint follows as soon
+    // as it lands.
+    if (!mounted || layout == null || dataSource == null) return;
+    final currentMetrics =
+        metrics ??
+        (_gridScrollController.hasClients
+            ? _gridScrollController.position
+            : null);
+    final viewportCenter = _viewportCenteredIndex(layout, currentMetrics);
+    final anchorIndex =
+        (focusedIndex ??
+                (_gridHasFocus ? lastFocusedGridIndex : null) ??
+                viewportCenter)
+            .clamp(0, layout.games.length - 1)
+            .toInt();
+    final anchorRow = anchorIndex ~/ layout.crossAxisCount;
+    if (!force &&
+        identical(_artworkPlanGames, layout.games) &&
+        _artworkPlanAnchorRow == anchorRow) {
+      return;
+    }
+    _artworkPlanGames = layout.games;
+    _artworkPlanAnchorRow = anchorRow;
+
+    final reach = layout.crossAxisCount * _priorityWindowRows;
+    final start = (anchorIndex - reach).clamp(0, layout.games.length).toInt();
+    final end = (anchorIndex + reach).clamp(0, layout.games.length).toInt();
+    final gameIds = <String>[
+      layout.games[anchorIndex].id,
+      for (var index = start; index < end; index++)
+        if (index != anchorIndex) layout.games[index].id,
+    ];
+    if (gameIds.isEmpty) return;
+    // The generation only supersedes queued hints, never a transfer.
+    unawaited(
+      dataSource.submitActiveBandPriority(
+        gameIds,
+        planGeneration: ++_priorityGeneration,
+      ),
+    );
+    if (dataSource.protocol == RetroArtworkProtocol.legacy) {
+      unawaited(_prefetchLegacyArtwork(dataSource, gameIds));
+    }
+  }
+
+  void _clearArtworkPlan() {
+    _artworkPlanGames = null;
+    _artworkPlanAnchorRow = null;
+  }
+
+  int _viewportCenteredIndex(
+    _ArtworkGridLayout layout,
+    ScrollMetrics? metrics,
+  ) {
+    final offset = metrics == null
+        ? 0.0
+        : metrics.pixels + metrics.viewportDimension / 2;
+    final row = (offset / layout.rowStride)
+        .floor()
+        .clamp(0, (layout.games.length - 1) ~/ layout.crossAxisCount)
+        .toInt();
+    return (row * layout.crossAxisCount + layout.crossAxisCount ~/ 2)
+        .clamp(0, layout.games.length - 1)
+        .toInt();
+  }
+
+  /// Pre-warms the legacy cache manager and records each outcome so missing
+  /// art stays known. Protocol 2 needs no equivalent: its cards drive their own
+  /// transfers through [RetroArtworkImage].
+  Future<void> _prefetchLegacyArtwork(
+    RetroArtworkDataSource dataSource,
+    List<String> gameIds,
+  ) async {
+    final pending = <(String, String)>[
+      for (final gameId in gameIds)
+        if (dataSource.imageFor(gameId)?.legacyUrl case final url?)
+          (gameId, url),
+    ];
+    if (pending.isEmpty) return;
+    // Abandons the walk when a newer hint replaces this one. Safe because this
+    // only fills a cache -- the cards read through it either way.
+    final generation = _priorityGeneration;
+    var next = 0;
+
+    Future<void> worker() async {
+      while (mounted &&
+          generation == _priorityGeneration &&
+          next < pending.length) {
+        final (gameId, url) = pending[next++];
+        try {
+          await gameArtworkCacheManagerForScope(
+            _artworkScope,
+          ).getSingleFile(url);
+          dataSource.reportImageLoaded(gameId);
+        } catch (error) {
+          dataSource.reportImageFailure(
+            gameId,
+            statusCode: _statusCodeFromArtworkError(error),
+          );
+        }
+      }
+    }
+
+    final workerCount = pending.length < _legacyPrefetchWorkers
+        ? pending.length
+        : _legacyPrefetchWorkers;
+    await Future.wait(<Future<void>>[
+      for (var index = 0; index < workerCount; index++) worker(),
+    ]);
+  }
+
+  int? _statusCodeFromArtworkError(Object error) {
+    if (error is DioException) return error.response?.statusCode;
+    if (error is HttpExceptionWithStatus) return error.statusCode;
+    return null;
+  }
+
   Widget _buildGrid(
     List<GameSummary> games, {
     required double desktopScale,
@@ -709,33 +946,16 @@ class _GameSystemScreenState extends State<GameSystemScreen>
             captionHeight * textScale;
         final childAspectRatio = cardWidth / cardHeight;
         final rowStride = cardHeight + 14;
-        final initialVisibleRowCount = (constraints.maxHeight / rowStride)
-            .ceil();
-        final initialVisibleLastIndex = (initialVisibleRowCount * columnCount)
-            .clamp(0, games.length)
-            .toInt();
-        final initialArtworkLastIndex =
-            ((initialVisibleRowCount + _artworkPrefetchRows) * columnCount)
-                .clamp(0, games.length)
-                .toInt();
-        final scheduleArtwork = PlatformDetection.isTV;
-        if (scheduleArtwork &&
-            !_artworkScheduler.hasViewport &&
-            games.isNotEmpty) {
+        final layout = _ArtworkGridLayout(
+          games: games,
+          crossAxisCount: columnCount,
+          rowStride: rowStride,
+        );
+        if (_artworkGridLayout != layout) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted ||
-                _artworkScheduler.hasViewport ||
-                !identical(games, _browse.visibleGames)) {
-              return;
-            }
-            _showArtworkRange(
-              games,
-              firstIndex: 0,
-              lastIndexExclusive: initialArtworkLastIndex,
-              priorityFirstIndex: 0,
-              priorityLastIndexExclusive: initialVisibleLastIndex,
-              crossAxisCount: columnCount,
-            );
+            if (!mounted || !identical(games, _browse.visibleGames)) return;
+            _artworkGridLayout = layout;
+            _scheduleArtworkPriority();
           });
         }
         final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
@@ -747,26 +967,10 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         );
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
-            // TV navigation uses a small priority queue to keep d-pad focus
-            // ahead of the cache manager's non-cancellable request FIFO.
-            // Pointer-driven platforms use the same lazy image loading as the
-            // standard media grids, allowing incoming rows to paint artwork
-            // while a drag or fling is still in progress.
-            if (!scheduleArtwork) return false;
-            if (notification is ScrollStartNotification) {
-              // Cancel pending prefetch, but keep the current viewport enabled
-              // so already-loaded artwork stays visible while scrolling and the
-              // initial submission is not wiped by a programmatic scroll (e.g.
-              // the first focus). ScrollEnd re-submits the settled window.
-              _artworkSettleTimer?.cancel();
-              _artworkPrefetchTimer?.cancel();
+            if (notification is ScrollUpdateNotification) {
+              _scheduleArtworkPriority(metrics: notification.metrics);
             } else if (notification is ScrollEndNotification) {
-              _scheduleArtworkWindow(
-                metrics: notification.metrics,
-                crossAxisCount: columnCount,
-                rowStride: rowStride,
-                games: games,
-              );
+              _scheduleArtworkPriority(metrics: notification.metrics);
             }
             return false;
           },
@@ -778,12 +982,10 @@ class _GameSystemScreenState extends State<GameSystemScreen>
             ),
             child: GridView.builder(
               controller: _gridScrollController,
-              // Pointer-driven platforms construct an extra viewport so their
-              // normal lazy image loading stays ahead of an active scroll. TV
-              // uses the explicit artwork scheduler instead.
-              scrollCacheExtent: scheduleArtwork
-                  ? null
-                  : const ScrollCacheExtent.viewport(1),
+              // Keep one viewport above and below the visible rows constructed
+              // on every platform. This restores smooth reverse scrolling and
+              // lets the focused row begin its own image request immediately.
+              scrollCacheExtent: const ScrollCacheExtent.viewport(1),
               padding: EdgeInsets.fromLTRB(
                 horizontalPadding,
                 _gridTopPadding,
@@ -799,19 +1001,51 @@ class _GameSystemScreenState extends State<GameSystemScreen>
               itemCount: games.length,
               itemBuilder: (context, index) {
                 final game = games[index];
-                final imageUrl = _gameThumbUrl(game.id);
-                final artworkGeneration = !scheduleArtwork || imageUrl == null
+                final reference = _routeIsCovered
                     ? null
-                    : _artworkScheduler.generationFor(imageUrl);
+                    : _retroArtworkDataSource?.imageFor(game.id);
+                final source = reference?.source;
                 final column = index % columnCount;
                 final atVisualRightEdge = isRtl
                     ? column == 0
                     : column == columnCount - 1 || index == games.length - 1;
                 return GamePosterCard(
-                  imageUrl: imageUrl,
+                  imageUrl: reference?.legacyUrl,
+                  artwork:
+                      source == null ||
+                          _retroArtworkTransport == null ||
+                          _retroArtworkActivityGate == null
+                      ? null
+                      : RetroArtworkImage(
+                          source: source,
+                          transport: _retroArtworkTransport!,
+                          activityGate: _retroArtworkActivityGate!,
+                          // Same rule every other bounded image in the app
+                          // uses: decode to the pixels actually painted. A
+                          // constant here decoded a grid tile at the source
+                          // thumbnail's full width on every device, which is
+                          // several times the tile's real size on a dense
+                          // display and wasted the image cache budget
+                          // accordingly.
+                          maxDecodeWidth: BoundedNetworkImage.cacheWidthFor(
+                            cardWidth,
+                            MediaQuery.devicePixelRatioOf(context),
+                          ),
+                          fit: BoxFit.cover,
+                          onLoadFinished: () => _retroArtworkDataSource
+                              ?.reportImageLoaded(game.id),
+                          errorBuilder: (_, error) {
+                            _retroArtworkDataSource?.reportImageFailure(
+                              game.id,
+                              statusCode: _statusCodeFromArtworkError(error),
+                            );
+                            return const SizedBox.shrink();
+                          },
+                        ),
                   title: game.title,
                   fileName: game.fileName,
                   seed: game.id,
+                  cacheManager: gameArtworkCacheManagerForScope(_artworkScope),
                   width: cardWidth,
                   focusNode: getGridItemFocusNode(index, prefix: 'game_grid'),
                   focusColor: focusColor,
@@ -824,6 +1058,7 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                       showBackdrop: showBackdrop,
                       showDetails: showDetails,
                     );
+                    _scheduleArtworkPriority(focusedIndex: index);
                     _scrollToGridRow(
                       index: index,
                       crossAxisCount: columnCount,
@@ -839,20 +1074,15 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                   ),
                   onHoverEnd: () => _deactivateHoveredGame(game),
                   stopRightTraversal: atVisualRightEdge,
-                  loadArtwork:
-                      imageUrl != null &&
-                      (!scheduleArtwork ||
-                          _artworkScheduler.isEnabled(imageUrl)),
-                  onArtworkLoadFinished:
-                      artworkGeneration == null || imageUrl == null
-                      ? null
-                      : () {
-                          if (!mounted) return;
-                          _artworkScheduler.markFinished(
-                            imageUrl,
-                            artworkGeneration,
-                          );
-                        },
+                  loadArtwork: true,
+                  onArtworkLoadFinished: () =>
+                      _retroArtworkDataSource?.reportImageLoaded(game.id),
+                  onArtworkError: (error) {
+                    _retroArtworkDataSource?.reportImageFailure(
+                      game.id,
+                      statusCode: _statusCodeFromArtworkError(error),
+                    );
+                  },
                   onKeyEvent: (_, event) {
                     if (PlatformDetection.isTV &&
                         event.isActionable &&
@@ -879,6 +1109,28 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       },
     );
   }
+}
+
+class _ArtworkGridLayout {
+  const _ArtworkGridLayout({
+    required this.games,
+    required this.crossAxisCount,
+    required this.rowStride,
+  });
+
+  final List<GameSummary> games;
+  final int crossAxisCount;
+  final double rowStride;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _ArtworkGridLayout &&
+      identical(other.games, games) &&
+      other.crossAxisCount == crossAxisCount &&
+      other.rowStride == rowStride;
+
+  @override
+  int get hashCode => Object.hash(games, crossAxisCount, rowStride);
 }
 
 class _FocusedGameHud extends StatelessWidget {
@@ -1008,23 +1260,25 @@ class _GameMetadataRow extends StatelessWidget {
 class _GameBrowseBackdrop extends StatelessWidget {
   const _GameBrowseBackdrop({
     super.key,
-    required this.libraryId,
     required this.game,
+    required this.artworkScope,
+    required this.artworkDataSource,
+    required this.retroArtworkTransport,
+    required this.retroArtworkActivityGate,
     required this.blur,
   });
 
-  final String libraryId;
   final GameSummary game;
+  final String artworkScope;
+  final RetroArtworkDataSource? artworkDataSource;
+  final RetroArtworkTransport? retroArtworkTransport;
+  final RetroArtworkActivityGate? retroArtworkActivityGate;
   final double blur;
 
   @override
   Widget build(BuildContext context) {
     final fallback = gameFallbackColor(game.id);
-    final urls = <String?>[
-      gameThumbUrl(libraryId, game.id, kind: 'snap'),
-      gameThumbUrl(libraryId, game.id, kind: 'title'),
-      gameThumbUrl(libraryId, game.id),
-    ].nonNulls.toList(growable: false);
+    const roles = <String>['snap', 'title', 'boxart'];
 
     return Stack(
       fit: StackFit.expand,
@@ -1041,7 +1295,15 @@ class _GameBrowseBackdrop extends StatelessWidget {
             ),
           ),
         ),
-        _GameBrowseBackdropImage(urls: urls, blur: blur),
+        _GameBrowseBackdropImage(
+          roles: roles,
+          gameId: game.id,
+          artworkScope: artworkScope,
+          artworkDataSource: artworkDataSource,
+          retroArtworkTransport: retroArtworkTransport,
+          retroArtworkActivityGate: retroArtworkActivityGate,
+          blur: blur,
+        ),
       ],
     );
   }
@@ -1049,28 +1311,85 @@ class _GameBrowseBackdrop extends StatelessWidget {
 
 class _GameBrowseBackdropImage extends StatelessWidget {
   const _GameBrowseBackdropImage({
-    required this.urls,
+    required this.roles,
+    required this.gameId,
+    required this.artworkScope,
+    required this.artworkDataSource,
+    required this.retroArtworkTransport,
+    required this.retroArtworkActivityGate,
     required this.blur,
     this.index = 0,
   });
 
-  final List<String> urls;
+  final List<String> roles;
+  final String gameId;
+  final String artworkScope;
+  final RetroArtworkDataSource? artworkDataSource;
+  final RetroArtworkTransport? retroArtworkTransport;
+  final RetroArtworkActivityGate? retroArtworkActivityGate;
   final double blur;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    if (index >= urls.length) return const SizedBox.shrink();
+    if (index >= roles.length) return const SizedBox.shrink();
+    final role = roles[index];
+    final reference = artworkDataSource?.imageFor(gameId, role: role);
+    if (reference == null) return _next();
 
-    Widget image = BoundedNetworkImage(
-      imageUrl: urls[index],
-      fit: BoxFit.cover,
-      maxWidth: blur > 0 ? 640 : 1920,
-      scale: blur > 0 ? 0.6 : 1,
-      fadeInDuration: const Duration(milliseconds: 200),
-      errorBuilder: (_, _, _) =>
-          _GameBrowseBackdropImage(urls: urls, blur: blur, index: index + 1),
-    );
+    final source = reference.source;
+    final transport = retroArtworkTransport;
+    final gate = retroArtworkActivityGate;
+
+    // Always sits behind a translucent scrim (often a blur too), so it is
+    // decoded at half upstream's backdrop budget: indistinguishable once
+    // dimmed, for a quarter the decode cost. Derived from upstream's constants
+    // rather than written out, so this tracks any change to them. Note the
+    // blurred case halves the *unblurred* budget, not upstream's already
+    // reduced blurred one, which would be softer than this layer wants.
+    Widget image;
+    if (source != null && transport != null && gate != null) {
+      image = RetroArtworkImage(
+        source: source,
+        transport: transport,
+        activityGate: gate,
+        maxDecodeWidth: blur > 0
+            ? BackgroundService.backdropMaxWidth ~/ 4
+            : BackgroundService.backdropMaxWidth ~/ 2,
+        fit: BoxFit.cover,
+        onLoadFinished: () =>
+            artworkDataSource?.reportImageLoaded(gameId, role: role),
+        errorBuilder: (_, error) {
+          artworkDataSource?.reportImageFailure(
+            gameId,
+            role: role,
+            statusCode: _gameArtworkStatusCode(error),
+          );
+          return _next();
+        },
+      );
+    } else if (reference.legacyUrl case final url?) {
+      image = BoundedNetworkImage(
+        imageUrl: url,
+        cacheManager: gameArtworkCacheManagerForScope(artworkScope),
+        fit: BoxFit.cover,
+        maxWidth: blur > 0 ? 480 : 960,
+        scale: blur > 0 ? 0.6 : 1,
+        fadeInDuration: const Duration(milliseconds: 200),
+        onLoadFinished: () =>
+            artworkDataSource?.reportImageLoaded(gameId, role: role),
+        errorBuilder: (_, _, error) {
+          artworkDataSource?.reportImageFailure(
+            gameId,
+            role: role,
+            statusCode: _gameArtworkStatusCode(error),
+          );
+          return _next();
+        },
+      );
+    } else {
+      return _next();
+    }
     if (blur <= 0) return image;
 
     final sigma = GlassSettings.decorativeSigma(blur);
@@ -1086,4 +1405,21 @@ class _GameBrowseBackdropImage extends StatelessWidget {
     );
     return image;
   }
+
+  Widget _next() => _GameBrowseBackdropImage(
+    roles: roles,
+    gameId: gameId,
+    artworkScope: artworkScope,
+    artworkDataSource: artworkDataSource,
+    retroArtworkTransport: retroArtworkTransport,
+    retroArtworkActivityGate: retroArtworkActivityGate,
+    blur: blur,
+    index: index + 1,
+  );
+}
+
+int? _gameArtworkStatusCode(Object error) {
+  if (error is DioException) return error.response?.statusCode;
+  if (error is HttpExceptionWithStatus) return error.statusCode;
+  return null;
 }

@@ -2,6 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/viewmodels/game_system_browse_view_model.dart';
 import 'package:server_core/server_core.dart';
 
+// Added on top of the view model's own debounce durations so a wait is
+// guaranteed to land after the timer fires, without hard-coding unrelated
+// millisecond counts that silently drift out of sync if a duration changes.
+const _settleBuffer = Duration(milliseconds: 25);
+
 void main() {
   late _FakeGamesApi api;
   late GameSystemBrowseViewModel viewModel;
@@ -33,12 +38,14 @@ void main() {
 
   test('debounces filtering and folds accents', () async {
     await viewModel.load();
+    const searchDebounce = GameSystemBrowseViewModel.searchDebounceDuration;
 
     viewModel.updateSearch('elite');
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    // Before the debounce elapses, the unfiltered list is still showing.
+    await Future<void>.delayed(searchDebounce - _settleBuffer);
     expect(viewModel.visibleGames, hasLength(2));
 
-    await Future<void>.delayed(const Duration(milliseconds: 75));
+    await Future<void>.delayed(_settleBuffer * 2);
     expect(viewModel.visibleGames.map((game) => game.title), ['Élite']);
   });
 
@@ -52,20 +59,24 @@ void main() {
 
     expect(viewModel.selectedLetter, isEmpty);
     expect(viewModel.visibleGames, hasLength(2));
-    await Future<void>.delayed(const Duration(milliseconds: 175));
+    await Future<void>.delayed(
+      GameSystemBrowseViewModel.searchDebounceDuration + _settleBuffer,
+    );
     expect(viewModel.visibleGames.map((game) => game.title), ['Élite']);
   });
 
   test('only requests details when the caller displays the HUD', () async {
     await viewModel.load();
     final game = viewModel.visibleGames.first;
+    final afterDetailDebounce =
+        GameSystemBrowseViewModel.detailDebounceDuration + _settleBuffer;
 
     viewModel.activateGame(game, showBackdrop: false, loadDetails: false);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(afterDetailDebounce);
     expect(api.detailRequests, 0);
 
     viewModel.activateGame(game, showBackdrop: false, loadDetails: true);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(afterDetailDebounce);
     expect(api.detailRequests, 1);
     expect(viewModel.hudGame?.id, game.id);
     expect(viewModel.gameDetails[game.id]?.overview, 'Game overview');
@@ -81,7 +92,9 @@ void main() {
 
       expect(viewModel.activeGame?.id, game.id);
       expect(viewModel.hudGame, isNull);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(
+        GameSystemBrowseViewModel.detailDebounceDuration + _settleBuffer,
+      );
       expect(viewModel.hudGame?.id, game.id);
       expect(viewModel.gameDetails[game.id]?.overview, 'Game overview');
     },
@@ -90,14 +103,22 @@ void main() {
   test('loads description details before changing the backdrop', () async {
     await viewModel.load();
     final game = viewModel.visibleGames.first;
+    final afterDetailDebounce =
+        GameSystemBrowseViewModel.detailDebounceDuration + _settleBuffer;
 
     viewModel.activateGame(game, showBackdrop: true, loadDetails: true);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(afterDetailDebounce);
 
     expect(api.detailRequests, 1);
     expect(viewModel.backdropGame, isNull);
 
-    await Future<void>.delayed(const Duration(milliseconds: 575));
+    // The backdrop debounce is measured from activation, not from the point
+    // above: wait out the remainder so the cumulative delay clears it.
+    await Future<void>.delayed(
+      GameSystemBrowseViewModel.backdropDebounceDuration -
+          afterDetailDebounce +
+          _settleBuffer,
+    );
     expect(viewModel.backdropGame?.id, game.id);
   });
 
@@ -188,7 +209,7 @@ void main() {
   });
 }
 
-class _FakeGamesApi implements GamesApi {
+class _FakeGamesApi extends GamesApi {
   _FakeGamesApi({List<GameSummary>? games}) : games = games ?? _defaultGames;
 
   int detailRequests = 0;
@@ -215,7 +236,12 @@ class _FakeGamesApi implements GamesApi {
   Future<List<GameSummary>> getGames(
     String libraryId, {
     String? system,
-  }) async => [...games];
+  }) async =>
+      // Unmodifiable, not a growable spread copy: the view model's defensive
+      // copy (List<GameSummary>.of(...)) has no regression coverage
+      // otherwise, since a growable list here would silently tolerate a
+      // caller that mutated or held onto the API result directly.
+      List.unmodifiable(games);
 
   @override
   Future<List<GameSystem>> getSystems(String libraryId) async => [
@@ -244,6 +270,20 @@ class _FakeGamesApi implements GamesApi {
   }
 
   @override
+  Future<GameDetail?> setGameCoreOverride(
+    String libraryId,
+    String gameId, {
+    String? core,
+  }) async => null;
+
+  @override
+  Future<GameDetail?> setGameBackendOverride(
+    String libraryId,
+    String gameId, {
+    String? backend,
+  }) async => null;
+
+  @override
   Future<List<GameLibrary>> getLibraries() async => const [];
 
   @override
@@ -258,9 +298,11 @@ class _FakeGamesApi implements GamesApi {
     required String libraryId,
     required String gameId,
     required String core,
+    String? romFileName,
     String? biosId,
     String? gameName,
     bool includeSaveUrl = false,
+    String? saveId,
   }) => '';
 
   @override

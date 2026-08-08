@@ -17,6 +17,10 @@ extern "C" {
 
 typedef struct lh_host lh_host;
 
+// Ports the input latch tracks. Matches the largest per-platform mask array
+// (Android, macOS/iOS); the desktop runners only ever touch port 0.
+#define LH_MAX_PORTS 4
+
 // The 32-bit layout the host writes converted frames in. Pick whichever the
 // platform texture expects: Flutter desktop pixel buffers want RGBA, a macOS
 // CVPixelBuffer wants BGRA.
@@ -26,11 +30,18 @@ typedef enum {
 } lh_output_format;
 
 typedef struct {
+  // Post-rotation display geometry: when the core requested a 90 or 270 degree
+  // rotation, width/height are already swapped and aspect already inverted, so
+  // these match the frames lh_get_frame hands back.
   int width;
   int height;
   double aspect;
   double fps;
   double sample_rate;
+  // 0, 1, 2, 3 = 0, 90, 180, 270 degrees counter-clockwise, per
+  // RETRO_ENVIRONMENT_SET_ROTATION. Informational: the host already bakes the
+  // rotation into the converted frame, so platforms need not act on it.
+  int rotation;
 } lh_av_info;
 
 typedef struct {
@@ -38,9 +49,6 @@ typedef struct {
   // A new converted frame is ready. The platform pulls it with lh_get_frame.
   // Called from the run-loop thread.
   void (*frame_ready)(void *user);
-  // The RetroPad button bitmask (RETRO_DEVICE_ID_JOYPAD_* bits) for a port.
-  // Called from the run-loop thread on every input poll.
-  uint16_t (*poll_input)(void *user, int port);
   // Number of connected controllers, for the player-count event.
   int (*controller_count)(void *user);
   // The core changed its output geometry or aspect ratio.
@@ -55,19 +63,57 @@ typedef struct {
   // it exits, so post the teardown elsewhere rather than calling lh_stop or
   // lh_destroy from here. Optional, may be NULL.
   void (*core_shutdown)(void *user);
+  // The emulation thread is terminating because of an unrecoverable error.
+  // Distinct from core_shutdown, which is the core asking to quit cleanly.
+  // Optional, may be NULL. Called from the run-loop thread.
+  void (*fatal_error)(void *user, const char *message);
 } lh_callbacks;
 
-// One core option and its choices.
+// Bounds for the option snapshot below. The host only speaks the legacy
+// SET_VARIABLES form ("Label; a|b|c" - GET_CORE_OPTIONS_VERSION is answered
+// with 0), where ids, labels, and values are all short, so these caps are
+// generous rather than tight. Anything longer is truncated, never overrun.
+#define LH_OPTION_ID_MAX 128
+#define LH_OPTION_LABEL_MAX 256
+#define LH_OPTION_VALUE_MAX 128
+#define LH_OPTION_CHOICE_MAX 64
+
+// One core option and its choices, as a caller-owned snapshot.
+//
+// These used to be borrowed pointers into the host's own allocations, which
+// was not safe to hand out: restart_core frees every definition on the
+// emulation thread and lh_set_option frees the old value on whichever thread
+// changed it, so a caller reading its lh_option afterwards read freed memory.
+// lh_get_option now copies everything under the host's option lock, so a
+// snapshot stays valid for as long as the caller keeps the struct, whatever
+// the other threads do to the host in the meantime.
 typedef struct {
-  const char *id;
-  const char *label;
-  const char *current;
-  const char *const *choices;
+  char id[LH_OPTION_ID_MAX];
+  char label[LH_OPTION_LABEL_MAX];
+  char current[LH_OPTION_VALUE_MAX];
+  char choices[LH_OPTION_CHOICE_MAX][LH_OPTION_VALUE_MAX];
+  // Choices actually copied, so it never exceeds LH_OPTION_CHOICE_MAX even if
+  // the core published more.
   int choice_count;
 } lh_option;
 
 // Creates a host that writes frames in [fmt] and reports back through [cb].
 lh_host *lh_create(lh_output_format fmt, lh_callbacks cb);
+
+// Reports the RetroPad button mask (RETRO_DEVICE_ID_JOYPAD_* bits) currently
+// held on [port]. Call this every time the platform's raw input state
+// changes - on a key/button edge, a controller value-changed callback, a
+// method-channel message, whatever the platform's transport is - not once
+// per frame. The host does not sample this instantaneously: every mask
+// reported between two core polls is OR'd into a pending latch, so a press
+// whose down and up both land inside one ~16.7ms poll window is still
+// observed by the core for exactly one frame, and reads of different button
+// ids within the same frame stay coherent (RetroArch does the same thing).
+// A bit held continuously across many frames stays set in every one of them.
+// Thread-safe and safe to call before a core is loaded or after lh_stop; the
+// write just has nothing to be read by yet. [port] outside
+// [0, LH_MAX_PORTS) is ignored.
+void lh_set_input(lh_host *host, int port, uint16_t mask);
 
 // Loads [core_path] and [rom_path]. [system_dir] and [save_dir] back the core's
 // directory requests. [game_id] names the SRAM file. [opt_keys]/[opt_vals] seed
@@ -83,6 +129,17 @@ int lh_load(lh_host *host, const char *core_path, const char *rom_path,
 void lh_start(lh_host *host);
 void lh_pause(lh_host *host);
 void lh_resume(lh_host *host);
+// Fully recreates the core and reloads its current content. Unlike lh_reset,
+// this applies options that a core only reads during initialization.
+int lh_restart(lh_host *host);
+// Schedules the same restart on the emulation thread without waiting for it.
+// Returns non-zero when no running core can accept the request.
+int lh_restart_async(lh_host *host);
+// Increments once for every restart the run loop applies, whether scheduled by
+// lh_restart or lh_restart_async and whether it succeeds or fails. Lets a
+// caller poll for a scheduled restart to actually land before reading state
+// that only makes sense post-restart.
+unsigned lh_restart_generation(lh_host *host);
 void lh_reset(lh_host *host);
 void lh_set_fast_forward(lh_host *host, int factor);
 void lh_stop(lh_host *host);
@@ -111,11 +168,26 @@ int lh_serialize(lh_host *host, void *dst, size_t size);
 int lh_unserialize(lh_host *host, const void *src, size_t size);
 
 // Core options. lh_option_count and lh_get_option read the definitions the core
-// published, and lh_set_option changes a value. Strings stay valid until the next
-// options call or lh_stop.
+// published, and lh_set_option changes a value. lh_get_option fills [out] with
+// a self-contained copy taken under the host's option lock, so the caller owns
+// the strings and nothing invalidates them. Returns 0 on success, -1 for a NULL
+// argument or an index outside the current definitions - and note the count can
+// shrink between the two calls, because a restart on the emulation thread
+// rebuilds the whole definition list. Treat a -1 as "stop enumerating", not as
+// a hole to skip past.
 int lh_option_count(lh_host *host);
 int lh_get_option(lh_host *host, int index, lh_option *out);
 void lh_set_option(lh_host *host, const char *id, const char *value);
+
+// Test-only: drives one input-latch step directly, without a running core or
+// run loop, and reads the value that step produced for [port]. This is the
+// exact same latch step input_poll_cb runs once per real libretro poll (see
+// lh_set_input) - these exist so its exactly-once-per-edge semantics can be
+// verified deterministically in native/libretro_host/test, instead of racing
+// a live run loop's wall-clock pacing. Not part of the platform-facing
+// contract; no shipping caller should need these.
+void lh_test_poll_input(lh_host *host);
+uint16_t lh_test_read_input(lh_host *host, int port);
 
 #ifdef __cplusplus
 }

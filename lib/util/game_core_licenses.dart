@@ -26,6 +26,7 @@ const Map<String, String> _coreLicenseNames = {
   'mednafen_wswan': 'Mednafen (WonderSwan core)',
   'mednafen_ngp': 'Mednafen (Neo Geo Pocket core)',
   'mednafen_vb': 'Mednafen (Virtual Boy core)',
+  'fbneo': 'FinalBurn Neo (Arcade core)',
 };
 
 /// Adds the emulator cores present on this device to LicenseRegistry so they
@@ -48,9 +49,10 @@ Set<String> _presentCoreIds() {
   if (PlatformDetection.isAppleTV || PlatformDetection.isIOS) {
     return appleBundledCores;
   }
-  // macOS ships every downloadable core inside the app bundle.
-  if (bundlesGameCores) {
-    return downloadableCores.map((core) => core.coreId).toSet();
+  // macOS bundles only the cores fetch_cores.sh actually fetches, not every
+  // downloadable core (see macosBundledCores' doc comment in game_cores.dart).
+  if (PlatformDetection.isMacOS) {
+    return macosBundledCores;
   }
   if (!GetIt.instance.isRegistered<PreferenceStore>()) return const {};
   final installed = GetIt.instance<PreferenceStore>()

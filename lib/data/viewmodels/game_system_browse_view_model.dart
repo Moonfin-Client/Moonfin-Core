@@ -75,7 +75,9 @@ class GameSystemBrowseViewModel extends ChangeNotifier {
       final systemNameFuture = _providedSystemName?.isNotEmpty == true
           ? null
           : _resolveSystemName(api);
-      final loadedGames = await api.getGames(libraryId, system: systemId);
+      final loadedGames = List<GameSummary>.of(
+        await api.getGames(libraryId, system: systemId),
+      );
       final loadedDisplayTitles = {
         for (final game in loadedGames)
           game.id: gameDisplayTitle(game.title, game.fileName),

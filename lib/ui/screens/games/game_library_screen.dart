@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -6,12 +7,16 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
+import '../../../data/services/retro_artwork/retro_artwork_cache.dart';
+import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/game/game_system_card.dart';
 
 /// Displays the platforms in a retro-game library. Selecting a platform opens
@@ -27,24 +32,73 @@ class GameLibraryScreen extends StatefulWidget {
 }
 
 class _GameLibraryScreenState extends State<GameLibraryScreen>
-    with GridFocusNodeMixin<GameLibraryScreen> {
+    with GridFocusNodeMixin<GameLibraryScreen>, RouteAware {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   final UserPreferences _prefs = GetIt.instance<UserPreferences>();
 
   bool _loading = true;
   bool _hasError = false;
   List<GameSystem> _systems = const [];
-  Map<String, List<GameSummary>> _gamesBySystem = const {};
-  Map<String, int> _gameCountsBySystem = const {};
+  RetroArtworkActivityGate? _retroArtworkActivityGate;
+  RetroArtworkTransport? _retroArtworkTransport;
+  String? _retroArtworkServerIdentity;
+  ModalRoute<dynamic>? _observedRoute;
+  bool _routeIsCovered = false;
 
   @override
   void initState() {
     super.initState();
+    unawaited(_initializePreviewArtwork());
     _load();
+  }
+
+  Future<void> _initializePreviewArtwork() async {
+    if (!GetIt.instance.isRegistered<RetroArtworkByteCache>() ||
+        !GetIt.instance.isRegistered<RetroArtworkActivityGate>()) {
+      // Widget tests and stripped-down embeddings can still use protocol 1.
+      return;
+    }
+    final cache = await GetIt.instance.getAsync<RetroArtworkByteCache>();
+    if (!mounted) return;
+    final gate = GetIt.instance<RetroArtworkActivityGate>();
+    _retroArtworkActivityGate = gate;
+    _retroArtworkTransport = RetroArtworkTransport.forServer(
+      client: _client,
+      cache: cache,
+      activityGate: gate,
+    );
+    _retroArtworkServerIdentity = normalizeRetroArtworkServerIdentity(
+      _client.baseUrl,
+    );
+    if (mounted && !_routeIsCovered) setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPushNext() {
+    _routeIsCovered = true;
+    _retroArtworkTransport?.cancelAll();
+  }
+
+  @override
+  void didPopNext() {
+    _routeIsCovered = false;
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
+    _retroArtworkTransport?.dispose();
     disposeGridFocusNodes();
     super.dispose();
   }
@@ -63,36 +117,15 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
       return;
     }
 
-    // Begin optional previews immediately, but do not make them part of the
-    // critical path for rendering the system list.
-    final previewsFuture = _loadPreviews(games);
     try {
       final systems = await games.getSystems(widget.libraryId);
       if (!mounted) return;
       setState(() {
         _systems = systems;
-        _gamesBySystem = const {};
-        _gameCountsBySystem = {
-          for (final system in systems)
-            if (system.gameCount > 0) system.id.toLowerCase(): system.gameCount,
-        };
         _loading = false;
       });
-
-      final previews = await previewsFuture;
-      if (!mounted || previews == null) return;
-      final populatedSystems = systems
-          .where(
-            (system) => (previews.counts[system.id.toLowerCase()] ?? 0) > 0,
-          )
-          .toList(growable: false);
-      setState(() {
-        _systems = populatedSystems;
-        _gamesBySystem = previews.games;
-        _gameCountsBySystem = previews.counts;
-      });
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) cleanupGridFocusNodes(populatedSystems.length);
+        if (mounted) cleanupGridFocusNodes(systems.length);
       });
     } catch (e) {
       debugPrint('[GameLibraryScreen] Failed to load systems: $e');
@@ -101,24 +134,6 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
         _loading = false;
         _hasError = true;
       });
-    }
-  }
-
-  Future<_GameSystemPreviews?> _loadPreviews(GamesApi gamesApi) async {
-    try {
-      final allGames = await gamesApi.getGames(widget.libraryId);
-      final previews = <String, List<GameSummary>>{};
-      final counts = <String, int>{};
-      for (final game in allGames) {
-        final key = game.system.toLowerCase();
-        counts[key] = (counts[key] ?? 0) + 1;
-        final systemPreviews = previews.putIfAbsent(key, () => <GameSummary>[]);
-        if (systemPreviews.length < 4) systemPreviews.add(game);
-      }
-      return _GameSystemPreviews(games: previews, counts: counts);
-    } catch (e) {
-      debugPrint('[GameLibraryScreen] Failed to load system previews: $e');
-      return null;
     }
   }
 
@@ -206,12 +221,16 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
           itemBuilder: (context, index) {
             final system = _systems[index];
             return GameSystemCard(
-              libraryId: widget.libraryId,
               system: system,
-              games: _gamesBySystem[system.id.toLowerCase()] ?? const [],
-              gameCount:
-                  _gameCountsBySystem[system.id.toLowerCase()] ??
-                  (system.gameCount > 0 ? system.gameCount : null),
+              gameCount: system.gameCount,
+              retroArtworkTransport: _routeIsCovered
+                  ? null
+                  : _retroArtworkTransport,
+              retroArtworkActivityGate: _routeIsCovered
+                  ? null
+                  : _retroArtworkActivityGate,
+              libraryId: widget.libraryId,
+              serverIdentity: _retroArtworkServerIdentity,
               autofocus: PlatformDetection.isTV && index == 0,
               focusNode: getGridItemFocusNode(index, prefix: 'game_system'),
               focusColor: focusColor,
@@ -241,11 +260,4 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
       },
     );
   }
-}
-
-class _GameSystemPreviews {
-  const _GameSystemPreviews({required this.games, required this.counts});
-
-  final Map<String, List<GameSummary>> games;
-  final Map<String, int> counts;
 }

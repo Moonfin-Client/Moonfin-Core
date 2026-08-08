@@ -28,7 +28,6 @@ import android.os.Process
 import android.os.PowerManager
 import android.util.Rational
 import android.view.Display
-import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.mediarouter.media.MediaRouteSelector
@@ -58,6 +57,10 @@ import org.flame_engine.gamepads_android.GamepadsCompatibleActivity
 
 class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
+    // Never invoked: kept only so the gamepads_android plugin's
+    // GamepadsCompatibleActivity.registerKeyEventHandler call below has
+    // somewhere to store its callback. See dispatchKeyEvent's comment for why
+    // calling it per key event was removed.
     private var keyHandler: ((KeyEvent) -> Boolean)? = null
     private var motionHandler: ((MotionEvent) -> Boolean)? = null
 
@@ -90,20 +93,23 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     private var externalPlayerPendingResult: MethodChannel.Result? = null
     private var gamepadChannel: MethodChannel? = null
     private var libretroBridge: LibretroBridge? = null
+    // Native path: constructed alongside libretroBridge in configureFlutterEngine
+    // (it needs that instance to reach nativeSetMask). Nullable rather than
+    // lateinit since dispatchKeyEvent can run before the engine is configured.
+    private var nativePad: NativePadInput? = null
+    private val gameInputRouter = GameInputRouter(object : GameInputRouter.Callbacks {
+        override fun onEmulatorButton(label: String, pressed: Boolean, device: Map<String, String>?) {
+            sendGamepadButton(label, pressed, device)
+        }
+
+        override fun onEmulatorKeyboard(keyCode: Int) = sendEmulatorKeyboardKey(keyCode)
+
+        override fun onNavigate(axis: String, direction: String) = sendGamepadNavigate(axis, direction)
+    })
     private var watchNextChannel: MethodChannel? = null
     private var watchNextPublisher: WatchNextPublisher? = null
     private var previewChannelPublisher: PreviewChannelPublisher? = null
     private var pendingDeepLink: String? = null
-    private var gameActive = false
-    private var hatX = 0
-    private var hatY = 0
-
-    // Kept separate from hatX/hatY on purpose. Sharing them would let a
-    // UI-navigation value leak into the emulator's edge detector, which would
-    // then read the first in-game press as a hold already in progress and
-    // never send its matching button-up.
-    private var navX = 0
-    private var navY = 0
     private var pipEnabled = false
     private val handler = Handler(Looper.getMainLooper())
     private var dismissRunnable: Runnable? = null
@@ -234,7 +240,17 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        libretroBridge = LibretroBridge(flutterEngine)
+        val bridge = LibretroBridge(flutterEngine) { active -> nativePad?.setActive(active) }
+        libretroBridge = bridge
+        nativePad = NativePadInput(
+            bridge,
+            handler,
+            this,
+            object : NativePadInput.Callbacks {
+                override fun onControllerMappingKey(keyCode: Int, device: Map<String, String>) =
+                    sendControllerMappingKey(keyCode, device)
+            },
+        )
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -284,16 +300,29 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         gamepadChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "setActive" -> {
-                    gameActive = call.argument<Boolean>("active") ?: false
-                    // Reset on every transition, in both directions. Otherwise
-                    // the first press after the switch reads as a hold already
-                    // in progress and gets dropped.
-                    hatX = 0
-                    hatY = 0
-                    navX = 0
-                    navY = 0
+                    gameInputRouter.setGameActive(call.argument<Boolean>("active") ?: false)
                     result.success(true)
                 }
+                "setEmulatorControlsActive" -> {
+                    gameInputRouter.setEmulatorControlsActive(call.argument<Boolean>("active") ?: false)
+                    result.success(true)
+                }
+                "setControllerMapping" -> {
+                    nativePad?.setControllerMappings(call.argument<String>("mapping") ?: "{}")
+                    result.success(true)
+                }
+                "setControllerMappingCapture" -> {
+                    nativePad?.setCapture(
+                        call.argument<Boolean>("active") ?: false,
+                        call.argument<String>("deviceId"),
+                    )
+                    result.success(true)
+                }
+                "setOverlayOpen" -> {
+                    libretroBridge?.overlayOpen = call.argument<Boolean>("open") ?: false
+                    result.success(true)
+                }
+                "getGamepadDevices" -> result.success(gameInputRouter.gamepadDevices())
                 else -> result.notImplemented()
             }
         }
@@ -623,127 +652,40 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         }
     }
 
-    // While a game is running, the emulator lives in a WebView that owns key focus and the
-    // System WebView does not reliably expose the Gamepad API. Capture the pad at the Activity
-    // level (top of the dispatch chain, before any view) and forward RetroPad buttons to Dart,
-    // which injects them into the core. Consumed only while active so app navigation is intact
-    // otherwise; button events are also consumed in-game so they never reach Flutter focus.
+    // Native libretro sessions are checked first and own the pad end-to-end:
+    // no binder IPC, no boxing, no Dart channel crossing per event (see
+    // NativePadInput). Everything else -- home screen navigation and
+    // EmulatorJS's WebView, which owns key focus but can't reliably read the
+    // Gamepad API -- goes through GameInputRouter, captured here at the top
+    // of the dispatch chain before any view sees it.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (gameActive || libretroBridge?.isActive == true) {
-            if (libretroBridge?.isActive == true &&
-                event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0 &&
-                (event.keyCode == KeyEvent.KEYCODE_MENU ||
-                    event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE)
-            ) {
-                libretroBridge?.onMenu()
-                return true
-            }
-            val index = retroPadIndex(event.keyCode)
-            if (index != null) {
-                if (event.repeatCount == 0 &&
-                    (event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.ACTION_UP)
-                ) {
-                    sendGamepadButton(index, event.action == KeyEvent.ACTION_DOWN)
-                }
-                return true
-            }
-        }
-        keyHandler?.invoke(event)
+        val pad = nativePad
+        if (pad != null && pad.active && pad.onKey(event)) return true
+        if (gameInputRouter.onKeyEvent(event)) return true
+        // keyHandler is the gamepads_android plugin's registration
+        // (GamepadsCompatibleActivity.registerKeyEventHandler), which forwards
+        // to the xyz.luan/gamepads channel's Gamepads.normalizedEvents stream.
+        // Verified before deleting the call: nothing in this app subscribes to
+        // that stream on Android -- GamepadNavigationScope.isSupported and
+        // native_game_player_screen's _readsGamepadsInDart both exclude
+        // Android (that path is Windows/Linux only; Android reads pad buttons
+        // as real key events here and the stick via registerMotionEventHandler
+        // below, whose return value IS consulted). Its own return value was
+        // already discarded unconditionally, so invoking it per key event was
+        // pure dead work. The registration method itself stays: the plugin
+        // casts this Activity to GamepadsCompatibleActivity and calls it
+        // unconditionally, so the interface member must remain implemented.
         return super.dispatchKeyEvent(event)
     }
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
-        if ((gameActive || libretroBridge?.isActive == true) &&
-            event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK &&
-            event.action == MotionEvent.ACTION_MOVE
-        ) {
-            val x = axisDirection(event, MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_X)
-            if (x != hatX) {
-                if (hatX == -1) sendGamepadButton(6, false)
-                if (hatX == 1) sendGamepadButton(7, false)
-                if (x == -1) sendGamepadButton(6, true)
-                if (x == 1) sendGamepadButton(7, true)
-                hatX = x
-            }
-            val y = axisDirection(event, MotionEvent.AXIS_HAT_Y, MotionEvent.AXIS_Y)
-            if (y != hatY) {
-                if (hatY == -1) sendGamepadButton(4, false)
-                if (hatY == 1) sendGamepadButton(5, false)
-                if (y == -1) sendGamepadButton(4, true)
-                if (y == 1) sendGamepadButton(5, true)
-                hatY = y
-            }
-            return true
-        }
-
-        // Outside a game the left stick drives UI focus. The d-pad needs no
-        // help, because Android already turns the hat into KEYCODE_DPAD_* key
-        // events. Only the stick is invisible to Flutter, arriving as motion.
-        if (!gameActive &&
-            event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK &&
-            event.action == MotionEvent.ACTION_MOVE
-        ) {
-            val x = stickDirection(event, MotionEvent.AXIS_X)
-            if (x != navX) {
-                navX = x
-                sendGamepadNavigate("h", if (x == -1) "left" else if (x == 1) "right" else "none")
-            }
-            val y = stickDirection(event, MotionEvent.AXIS_Y)
-            if (y != navY) {
-                navY = y
-                sendGamepadNavigate("v", if (y == -1) "up" else if (y == 1) "down" else "none")
-            }
-            // Not consumed, since other views may still want the motion event.
-        }
+        val pad = nativePad
+        if (pad != null && pad.active && pad.onMotion(event)) return true
+        if (gameInputRouter.onMotionEvent(event)) return true
         if (motionHandler?.invoke(event) == true) {
             return true
         }
         return super.dispatchGenericMotionEvent(event)
-    }
-
-    // Hardware keycode -> libretro RetroPad index. Face-button positions map by layout
-    // (bottom=B0, right=A8, left=Y1, top=X9). D-pad keycodes and keyboard arrows both count so
-    // controllers and keyboards drive gameplay.
-    private fun retroPadIndex(keyCode: Int): Int? = when (keyCode) {
-        KeyEvent.KEYCODE_DPAD_UP -> 4
-        KeyEvent.KEYCODE_DPAD_DOWN -> 5
-        KeyEvent.KEYCODE_DPAD_LEFT -> 6
-        KeyEvent.KEYCODE_DPAD_RIGHT -> 7
-        // Remote OK button; acts as the primary action in-game and select in the overlay.
-        KeyEvent.KEYCODE_DPAD_CENTER -> 0
-        KeyEvent.KEYCODE_ENTER -> 0
-        KeyEvent.KEYCODE_BUTTON_A -> 0
-        KeyEvent.KEYCODE_BUTTON_B -> 8
-        KeyEvent.KEYCODE_BUTTON_X -> 1
-        KeyEvent.KEYCODE_BUTTON_Y -> 9
-        KeyEvent.KEYCODE_BUTTON_START -> 3
-        KeyEvent.KEYCODE_BUTTON_SELECT -> 2
-        KeyEvent.KEYCODE_BUTTON_L1 -> 10
-        KeyEvent.KEYCODE_BUTTON_R1 -> 11
-        KeyEvent.KEYCODE_BUTTON_THUMBL -> 14
-        KeyEvent.KEYCODE_BUTTON_THUMBR -> 15
-        else -> null
-    }
-
-    // -1 / 0 / +1 from a HAT axis, falling back to the analog stick past a deadzone.
-    private fun axisDirection(event: MotionEvent, hatAxis: Int, stickAxis: Int): Int {
-        val hat = event.getAxisValue(hatAxis)
-        if (hat <= -0.5f) return -1
-        if (hat >= 0.5f) return 1
-        val stick = event.getAxisValue(stickAxis)
-        if (stick <= -0.5f) return -1
-        if (stick >= 0.5f) return 1
-        return 0
-    }
-
-    // -1 / 0 / +1 from an analog stick axis alone. Separate from axisDirection,
-    // which falls back from the hat to the stick. UI navigation has to ignore
-    // the hat, or every d-pad press would move focus twice.
-    private fun stickDirection(event: MotionEvent, stickAxis: Int): Int {
-        val stick = event.getAxisValue(stickAxis)
-        if (stick <= -0.5f) return -1
-        if (stick >= 0.5f) return 1
-        return 0
     }
 
     // The axis is "h" or "v" so Dart can tell which one a "none" recentre came
@@ -757,14 +699,34 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         }
     }
 
-    private fun sendGamepadButton(index: Int, pressed: Boolean) {
-        val bridge = libretroBridge
-        if (bridge?.isActive == true) {
-            bridge.onButton(index, pressed)
-            return
-        }
+    private fun sendGamepadButton(label: String, pressed: Boolean, device: Map<String, String>?) {
         runOnUiThread {
-            gamepadChannel?.invokeMethod("onButton", mapOf("index" to index, "pressed" to pressed))
+            gamepadChannel?.invokeMethod(
+                "onButton",
+                mapOf(
+                    "label" to label,
+                    "pressed" to pressed,
+                    "device" to device,
+                ),
+            )
+        }
+    }
+
+    private fun sendControllerMappingKey(keyCode: Int, device: Map<String, String>) {
+        runOnUiThread {
+            gamepadChannel?.invokeMethod(
+                "onControllerMappingKey",
+                mapOf(
+                    "keyCode" to keyCode,
+                    "device" to device,
+                ),
+            )
+        }
+    }
+
+    private fun sendEmulatorKeyboardKey(keyCode: Int) {
+        runOnUiThread {
+            gamepadChannel?.invokeMethod("onKeyboard", mapOf("keyCode" to keyCode))
         }
     }
 
@@ -867,6 +829,16 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
     override fun onDestroy() {
         val shouldTerminateProcess = isFinishing && !isChangingConfigurations
+        // A native game may still be running. When the process also dies below
+        // this is redundant but harmless; when it doesn't - e.g. the system
+        // destroys this stopped activity to reclaim memory while a foreground
+        // service (AudioService) keeps the process alive, or "Don't keep
+        // activities" is on - stop() is the only path that reaches teardown()
+        // and joins the render/audio threads. Without it they leak into the
+        // next activity instance. stop() is idempotent, so calling it here even
+        // when nothing is loaded, or when killProcess() runs moments later, is
+        // safe.
+        libretroBridge?.stop()
         dismissRunnable?.let { handler.removeCallbacks(it) }
         pendingCastTimeout?.let { handler.removeCallbacks(it) }
         val castContext = runCatching { CastContext.getSharedInstance(this) }.getOrNull()

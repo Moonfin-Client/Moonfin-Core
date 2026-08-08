@@ -16,9 +16,16 @@ class MoonbaseGamesApi implements GamesApi {
   final String Function() _baseUrlProvider;
   final String? Function() _tokenProvider;
   final ServerType _serverType;
+  static final Object _defaultArtworkRequestOwner = Object();
+  final Map<Object, Set<CancelToken>> _artworkRequestTokens =
+      <Object, Set<CancelToken>>{};
 
   MoonbaseGamesApi(
-      this._dio, this._baseUrlProvider, this._tokenProvider, this._serverType);
+    this._dio,
+    this._baseUrlProvider,
+    this._tokenProvider,
+    this._serverType,
+  );
 
   String get _base => _baseUrlProvider().replaceAll(RegExp(r'/+$'), '');
 
@@ -32,18 +39,126 @@ class MoonbaseGamesApi implements GamesApi {
   @override
   Future<List<GameLibrary>> getLibraries() async {
     final response = await _dio.get('/Moonfin/Games/Libraries');
-    return _asList(response.data)
-        .map((m) => GameLibrary.fromJson(m))
-        .toList(growable: false);
+    return _asList(
+      response.data,
+    ).map((m) => GameLibrary.fromJson(m)).toList(growable: false);
   }
 
   @override
   Future<List<GameSystem>> getSystems(String libraryId) async {
-    final response =
-        await _dio.get('/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Systems');
-    return _asList(response.data)
-        .map((m) => GameSystem.fromJson(m))
-        .toList(growable: false);
+    final response = await _dio.get(
+      '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Systems',
+    );
+    return _asList(
+      response.data,
+    ).map((m) => GameSystem.fromJson(m)).toList(growable: false);
+  }
+
+  @override
+  Future<GameArtworkCapabilities?> getArtworkCapabilities() async {
+    try {
+      final response = await _dio.get('/Moonfin/Games/ArtworkCapabilities');
+      final data = response.data;
+      if (data is! Map) return null;
+      return GameArtworkCapabilities.fromJson(data.cast<String, dynamic>());
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
+  @override
+  Future<GameArtworkManifest?> getArtworkManifest(
+    String libraryId, {
+    required String systemId,
+    String? knownGeneration,
+    Object? cancellationOwner,
+  }) async {
+    final owner = cancellationOwner ?? _defaultArtworkRequestOwner;
+    final cancelToken = _beginArtworkRequest(owner);
+    try {
+      final response = await _dio.get(
+        '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/ArtworkManifest',
+        queryParameters: {
+          'system': systemId,
+          if (knownGeneration != null && knownGeneration.isNotEmpty)
+            'generation': knownGeneration,
+        },
+        cancelToken: cancelToken,
+        options: Options(
+          validateStatus: (status) => status == 200 || status == 304,
+        ),
+      );
+      if (response.statusCode == 304 || response.data is! Map) return null;
+      return GameArtworkManifest.fromJson(
+        (response.data as Map).cast<String, dynamic>(),
+      );
+    } finally {
+      _endArtworkRequest(owner, cancelToken);
+    }
+  }
+
+  @override
+  Future<void> submitArtworkPriority(
+    String libraryId,
+    GameArtworkPriorityRequest request, {
+    Object? cancellationOwner,
+  }) async {
+    final owner = cancellationOwner ?? _defaultArtworkRequestOwner;
+    final cancelToken = _beginArtworkRequest(owner);
+    try {
+      await _dio.post(
+        '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/ArtworkPriority',
+        data: request.toJson(),
+        cancelToken: cancelToken,
+      );
+    } finally {
+      _endArtworkRequest(owner, cancelToken);
+    }
+  }
+
+  @override
+  void cancelArtworkRequests({Object? cancellationOwner}) {
+    final active = cancellationOwner == null
+        ? <CancelToken>[
+            for (final tokens in _artworkRequestTokens.values) ...tokens,
+          ]
+        : _artworkRequestTokens[cancellationOwner]?.toList(growable: false) ??
+              const <CancelToken>[];
+    if (cancellationOwner == null) {
+      _artworkRequestTokens.clear();
+    } else {
+      _artworkRequestTokens.remove(cancellationOwner);
+    }
+    for (final token in active) {
+      if (!token.isCancelled) {
+        token.cancel('Retro artwork activity was blocked');
+      }
+    }
+  }
+
+  CancelToken _beginArtworkRequest(Object owner) {
+    final cancelToken = CancelToken();
+    (_artworkRequestTokens[owner] ??= <CancelToken>{}).add(cancelToken);
+    return cancelToken;
+  }
+
+  void _endArtworkRequest(Object owner, CancelToken cancelToken) {
+    final tokens = _artworkRequestTokens[owner];
+    tokens?.remove(cancelToken);
+    if (tokens?.isEmpty ?? false) _artworkRequestTokens.remove(owner);
+  }
+
+  @override
+  String artworkUrl(String path) {
+    if (path.isEmpty) return path;
+    final uri = Uri.tryParse(path);
+    final absolute = uri?.hasScheme == true
+        ? path
+        : path.startsWith('/')
+        ? '$_base$path'
+        : '$_base/$path';
+    return _withApiKey(absolute);
   }
 
   @override
@@ -53,15 +168,49 @@ class MoonbaseGamesApi implements GamesApi {
       queryParameters:
           (system != null && system.isNotEmpty) ? {'system': system} : null,
     );
-    return _asList(response.data)
-        .map((m) => GameSummary.fromJson(m))
-        .toList(growable: false);
+    return _asList(
+      response.data,
+    ).map((m) => GameSummary.fromJson(m)).toList(growable: false);
   }
 
   @override
   Future<GameDetail?> getGame(String libraryId, String gameId) async {
     final response = await _dio.get(
       '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Games/${Uri.encodeComponent(gameId)}',
+    );
+    final data = response.data;
+    if (data is Map) {
+      return GameDetail.fromJson(data.cast<String, dynamic>());
+    }
+    return null;
+  }
+
+  @override
+  Future<GameDetail?> setGameCoreOverride(
+    String libraryId,
+    String gameId, {
+    String? core,
+  }) async {
+    final response = await _dio.put(
+      '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Games/${Uri.encodeComponent(gameId)}/Core',
+      data: {'core': core},
+    );
+    final data = response.data;
+    if (data is Map) {
+      return GameDetail.fromJson(data.cast<String, dynamic>());
+    }
+    return null;
+  }
+
+  @override
+  Future<GameDetail?> setGameBackendOverride(
+    String libraryId,
+    String gameId, {
+    String? backend,
+  }) async {
+    final response = await _dio.put(
+      '/Moonfin/Games/${Uri.encodeComponent(libraryId)}/Games/${Uri.encodeComponent(gameId)}/Backend',
+      data: {'backend': backend},
     );
     final data = response.data;
     if (data is Map) {
@@ -80,15 +229,21 @@ class MoonbaseGamesApi implements GamesApi {
     final id = Uri.encodeComponent(gameId);
     // The image loader requests this without Dio, so the token rides in the query the
     // same way it does for ROMs.
+    // artVersion=2 is a client-side cache-buster for CachedNetworkImage; the server ignores
+    // it. It was added after the Phase 2 TryGetCached thumbnail-resolution change so
+    // previously-cached (pre-change) art gets invalidated. Do not remove as dead/unused.
     return _withApiKey(
-      '$_base/Moonfin/Games/$lib/Thumb/$id?type=${Uri.encodeQueryComponent(kind)}',
+      '$_base/Moonfin/Games/$lib/Thumb/$id?type=${Uri.encodeQueryComponent(kind)}&artVersion=2',
     );
   }
 
-  String _romUrl(String libraryId, String gameId) {
+  String _romUrl(String libraryId, String gameId, {String? fileName}) {
     final lib = Uri.encodeComponent(libraryId);
     final id = Uri.encodeComponent(gameId);
-    return _withApiKey('$_base/Moonfin/Games/$lib/Rom/$id');
+    final suffix = fileName == null || fileName.isEmpty
+        ? ''
+        : '/${Uri.encodeComponent(fileName)}';
+    return _withApiKey('$_base/Moonfin/Games/$lib/Rom/$id$suffix');
   }
 
   String _biosUrl(String libraryId, String biosId) {
@@ -115,7 +270,10 @@ class MoonbaseGamesApi implements GamesApi {
 
   @override
   Future<void> downloadBios(
-      String libraryId, String biosId, String destPath) async {
+    String libraryId,
+    String biosId,
+    String destPath,
+  ) async {
     final lib = Uri.encodeComponent(libraryId);
     final id = Uri.encodeComponent(biosId);
     await _dio.download('/Moonfin/Games/$lib/Bios/$id', destPath);
@@ -126,13 +284,21 @@ class MoonbaseGamesApi implements GamesApi {
     required String libraryId,
     required String gameId,
     required String core,
+    String? romFileName,
     String? biosId,
     String? gameName,
     bool includeSaveUrl = false,
+    String? saveId,
   }) {
     final params = <String, String>{
       'core': core,
-      'rom': _romUrl(libraryId, gameId),
+      // Arcade cores identify a set by its ZIP filename. Other systems retain
+      // the legacy token-only route so their request behavior does not change.
+      'rom': _romUrl(
+        libraryId,
+        gameId,
+        fileName: core == 'mame' || core == 'arcade' ? romFileName : null,
+      ),
     };
     if (biosId != null && biosId.isNotEmpty) {
       params['bios'] = _biosUrl(libraryId, biosId);
@@ -142,7 +308,7 @@ class MoonbaseGamesApi implements GamesApi {
     }
     if (includeSaveUrl) {
       params['save'] = _withApiKey(
-        '$_base/Moonfin/Games/Saves/${Uri.encodeComponent(gameId)}?kind=state',
+        '$_base/Moonfin/Games/Saves/${Uri.encodeComponent(saveId ?? gameId)}?kind=state',
       );
     }
     final query = params.entries
@@ -167,8 +333,11 @@ class MoonbaseGamesApi implements GamesApi {
   }
 
   @override
-  Future<void> putSave(String gameId, List<int> data,
-      {String kind = 'state'}) async {
+  Future<void> putSave(
+    String gameId,
+    List<int> data, {
+    String kind = 'state',
+  }) async {
     await _dio.put(
       '/Moonfin/Games/Saves/${Uri.encodeComponent(gameId)}',
       queryParameters: {'kind': kind},

@@ -3,21 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
+import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/game_library.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
-import '../bounded_network_image.dart';
 import 'game_card_focus_frame.dart';
+import 'retro_artwork_image.dart';
 
 /// A focusable, artwork-backed platform tile used at the root of a retro-game
 /// library.
 class GameSystemCard extends StatefulWidget {
   const GameSystemCard({
     super.key,
-    required this.libraryId,
     required this.system,
-    required this.games,
     required this.gameCount,
     required this.onTap,
     this.autofocus = false,
@@ -26,11 +26,13 @@ class GameSystemCard extends StatefulWidget {
     this.suppressFocusGlow = false,
     this.focusNode,
     this.onKeyEvent,
+    this.retroArtworkTransport,
+    this.retroArtworkActivityGate,
+    this.libraryId,
+    this.serverIdentity,
   });
 
-  final String libraryId;
   final GameSystem system;
-  final List<GameSummary> games;
   final int? gameCount;
   final VoidCallback onTap;
   final bool autofocus;
@@ -39,6 +41,10 @@ class GameSystemCard extends StatefulWidget {
   final bool suppressFocusGlow;
   final FocusNode? focusNode;
   final FocusOnKeyEventCallback? onKeyEvent;
+  final RetroArtworkTransport? retroArtworkTransport;
+  final RetroArtworkActivityGate? retroArtworkActivityGate;
+  final String? libraryId;
+  final String? serverIdentity;
 
   @override
   State<GameSystemCard> createState() => _GameSystemCardState();
@@ -74,9 +80,11 @@ class _GameSystemCardState extends State<GameSystemCard> {
             fit: StackFit.expand,
             children: [
               _SystemArtworkStrip(
+                system: widget.system,
+                transport: widget.retroArtworkTransport,
+                activityGate: widget.retroArtworkActivityGate,
                 libraryId: widget.libraryId,
-                games: widget.games,
-                fallbackColor: seedColor,
+                serverIdentity: widget.serverIdentity,
               ),
               DecoratedBox(
                 decoration: BoxDecoration(
@@ -241,33 +249,43 @@ class _GameSystemCardState extends State<GameSystemCard> {
   }
 }
 
+/// Renders the four server-selected preview panels for a system card.
+///
+/// Missing, pending, and failed descriptors remain deterministic local
+/// placeholders. The client deliberately does not discover alternatives.
 class _SystemArtworkStrip extends StatelessWidget {
   const _SystemArtworkStrip({
+    required this.system,
+    required this.transport,
+    required this.activityGate,
     required this.libraryId,
-    required this.games,
-    required this.fallbackColor,
+    required this.serverIdentity,
   });
 
-  final String libraryId;
-  final List<GameSummary> games;
-  final Color fallbackColor;
+  final GameSystem system;
+  final RetroArtworkTransport? transport;
+  final RetroArtworkActivityGate? activityGate;
+  final String? libraryId;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context) {
-    if (games.isEmpty) {
-      return ColoredBox(
-        color: Color.lerp(fallbackColor, AppColorScheme.background, 0.28)!,
-      );
-    }
-
+    final panels = system.previewArtwork?.panels ?? const [];
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final game in games)
+        for (var index = 0; index < 4; index++)
           Expanded(
-            child: _SystemGameArtwork(
-              imageUrl: gameThumbUrl(libraryId, game.id),
-              fallbackColor: gameFallbackColor(game.id),
+            child: _SystemPreviewArtwork(
+              panel: index < panels.length ? panels[index] : null,
+              fallbackSeed:
+                  index < panels.length && panels[index].gameId.isNotEmpty
+                  ? panels[index].gameId
+                  : '${system.id}:$index',
+              transport: transport,
+              activityGate: activityGate,
+              libraryId: libraryId,
+              serverIdentity: serverIdentity,
             ),
           ),
       ],
@@ -275,31 +293,68 @@ class _SystemArtworkStrip extends StatelessWidget {
   }
 }
 
-class _SystemGameArtwork extends StatelessWidget {
-  const _SystemGameArtwork({
-    required this.imageUrl,
-    required this.fallbackColor,
+class _SystemPreviewArtwork extends StatelessWidget {
+  const _SystemPreviewArtwork({
+    required this.panel,
+    required this.fallbackSeed,
+    required this.transport,
+    required this.activityGate,
+    required this.libraryId,
+    required this.serverIdentity,
   });
 
-  final String? imageUrl;
-  final Color fallbackColor;
+  final GameSystemPreviewPanel? panel;
+  final String fallbackSeed;
+  final RetroArtworkTransport? transport;
+  final RetroArtworkActivityGate? activityGate;
+  final String? libraryId;
+  final String? serverIdentity;
 
   @override
   Widget build(BuildContext context) {
-    final url = imageUrl;
-    if (url == null) return _fallback();
+    final descriptor = panel?.artwork;
+    if (descriptor == null || !descriptor.isRenderable) return _fallback();
 
-    return BoundedNetworkImage(
-      imageUrl: url,
-      fit: BoxFit.cover,
-      maxWidth: 320,
-      errorBuilder: (_, _, _) => _fallback(),
-    );
+    // A revision-bearing preview is protocol 2. It must use the screen-owned
+    // cancellable transport rather than CachedNetworkImage's request queue.
+    RetroArtworkSource? source;
+    if (transport != null &&
+        activityGate != null &&
+        libraryId != null &&
+        serverIdentity != null &&
+        panel!.gameId.isNotEmpty) {
+      try {
+        source = RetroArtworkSource.fromDescriptor(
+          serverIdentity: serverIdentity!,
+          libraryId: libraryId!,
+          gameId: panel!.gameId,
+          role: 'boxart',
+          descriptor: descriptor,
+        );
+      } on FormatException {
+        source = null;
+      }
+    }
+    if (source != null) {
+      return RetroArtworkImage(
+        source: source,
+        transport: transport!,
+        activityGate: activityGate!,
+        maxDecodeWidth: 320,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _) => _fallback(),
+      );
+    }
+
+    // Preview panels exist only in protocol 2. Missing transport context or a
+    // malformed/unversioned descriptor is therefore a placeholder, never a
+    // fallback request through CachedNetworkImage.
+    return _fallback();
   }
 
   Widget _fallback() {
     return ColoredBox(
-      color: fallbackColor,
+      color: gameFallbackColor(fallbackSeed),
       child: const Center(
         child: Icon(Icons.videogame_asset, color: Colors.white54, size: 26),
       ),

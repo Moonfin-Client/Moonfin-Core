@@ -1,9 +1,12 @@
 import Foundation
 import GameController
+import libretro_host
 
-// Maps connected controllers to per-port RetroPad bitmasks, read by the host on
-// its run loop. Button changes on port 0 also mirror to Flutter so the in-game
-// overlay can be driven with the same controller, and the Menu button opens it.
+// Maps connected controllers to per-port RetroPad bitmasks and reports every
+// change to the host's input latch (lh_set_input) as it happens, so a press
+// shorter than one core frame still lands. Button changes on port 0 also
+// mirror to Flutter so the in-game overlay can be driven with the same
+// controller, and the Menu button opens it.
 final class GameInputController {
   private enum Pad {
     static let b: UInt16 = 1 << 0
@@ -33,6 +36,14 @@ final class GameInputController {
 
   // RetroPad mask supplied from Dart (keyboard play and the deferred Start).
   private var dartMask: UInt16 = 0
+
+  // Set by attach(host:) once GameSession has created the C host, cleared by
+  // stop(). Every mutation below reports its combined mask to the host's
+  // input latch immediately, rather than the host reading an instantaneous
+  // level whenever the core happens to poll - the level-sampling approach
+  // dropped presses shorter than one core frame. See lh_set_input's comment
+  // in libretro_host.h.
+  private var host: OpaquePointer?
 
   var onButton: ((Int, Bool) -> Void)?
   var onControllersChanged: ((Int) -> Void)?
@@ -76,12 +87,27 @@ final class GameInputController {
     maskLock.lock()
     pulseMask = 0
     portMasks = [0, 0, 0, 0]
+    pushAllLocked()
+    host = nil
+    maskLock.unlock()
+  }
+
+  // Called once, right after GameSession creates the C host and before
+  // input.start() can produce any events, so every push below always has
+  // somewhere to land.
+  func attach(host: OpaquePointer?) {
+    maskLock.lock()
+    self.host = host
     maskLock.unlock()
   }
 
   func mask(forPort port: Int) -> UInt16 {
     maskLock.lock()
     defer { maskLock.unlock() }
+    return maskLocked(forPort: port)
+  }
+
+  private func maskLocked(forPort port: Int) -> UInt16 {
     guard port >= 0, port < portMasks.count else { return 0 }
     guard port == 0 else { return portMasks[port] }
     // Start is withheld from the physical pad because Dart owns it: a quick
@@ -90,9 +116,23 @@ final class GameInputController {
     return (portMasks[0] & ~Pad.start) | pulseMask | dartMask
   }
 
+  // Reports port's combined mask to the host's input latch. Must be called
+  // with maskLock already held, so the read of portMasks/pulseMask/dartMask
+  // and the read of host that produce the pushed value are from one
+  // consistent snapshot.
+  private func pushLocked(_ port: Int) {
+    guard let host, port >= 0, port < portMasks.count else { return }
+    lh_set_input(host, Int32(port), maskLocked(forPort: port))
+  }
+
+  private func pushAllLocked() {
+    for port in 0..<portMasks.count { pushLocked(port) }
+  }
+
   func setDartMask(_ mask: UInt16) {
     maskLock.lock()
     dartMask = mask
+    pushLocked(0)
     maskLock.unlock()
   }
 
@@ -101,12 +141,14 @@ final class GameInputController {
     let bit = UInt16(1) << UInt16(index)
     maskLock.lock()
     pulseMask |= bit
+    pushLocked(0)
     maskLock.unlock()
     pulseWork[index]?.cancel()
     let work = DispatchWorkItem { [weak self] in
       guard let self else { return }
       self.maskLock.lock()
       self.pulseMask &= ~bit
+      self.pushLocked(0)
       self.maskLock.unlock()
     }
     pulseWork[index] = work
@@ -131,6 +173,7 @@ final class GameInputController {
     maskLock.lock()
     for port in pads.count..<portMasks.count {
       portMasks[port] = 0
+      pushLocked(port)
     }
     maskLock.unlock()
   }
@@ -161,6 +204,7 @@ final class GameInputController {
     maskLock.lock()
     let old = portMasks[port]
     portMasks[port] = mask
+    pushLocked(port)
     maskLock.unlock()
     guard port == 0, old != mask, let onButton else { return }
     for bit in 0..<16 where (old ^ mask) & (1 << bit) != 0 {

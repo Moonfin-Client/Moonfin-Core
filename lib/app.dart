@@ -21,6 +21,7 @@ import 'data/services/connectivity_service.dart';
 import 'data/services/download_service.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
+import 'data/services/retro_artwork/retro_artwork_data_source.dart';
 import 'data/services/theme_music_service.dart';
 import 'data/services/topshelf_service.dart';
 import 'data/services/watch_next_service.dart';
@@ -142,11 +143,13 @@ class _MoonfinAppState extends State<MoonfinApp> {
 
   void _onGlassQualityChanged(GlassQuality from, GlassQuality to) {
     GlassCapability.onAdaptiveQualityChanged(from, to);
-    unawaited(_prefs.set(UserPreferences.glassSettledQuality, switch (to) {
-      GlassQuality.minimal => GlassSettledQuality.minimal,
-      GlassQuality.standard => GlassSettledQuality.standard,
-      GlassQuality.premium => GlassSettledQuality.premium,
-    }));
+    unawaited(
+      _prefs.set(UserPreferences.glassSettledQuality, switch (to) {
+        GlassQuality.minimal => GlassSettledQuality.minimal,
+        GlassQuality.standard => GlassSettledQuality.standard,
+        GlassQuality.premium => GlassSettledQuality.premium,
+      }),
+    );
     // GlassBackdrop reads GlassSettings.cheapBackdrop in build, so a
     // throttle step needs a shell rebuild to collapse or restore the bloom.
     if (mounted) setState(() {});
@@ -955,6 +958,7 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       _backgroundAwareSession?.onAppBackgrounded();
     } else if (state == AppLifecycleState.resumed) {
       coordinator.appDidBecomeActive();
+      RetroArtworkDataSourceFactory.notifyAppResumed();
       _backgroundAwareSession?.onAppResumed();
       if (GetIt.instance.isRegistered<ConnectivityService>()) {
         GetIt.instance<ConnectivityService>().onAppResumed();

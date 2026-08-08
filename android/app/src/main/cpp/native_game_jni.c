@@ -24,10 +24,10 @@ typedef struct {
   ANativeWindow *window;
   int window_width;
   int window_height;
-  atomic_uint mask[4];
   JavaVM *vm;
   jobject bridge;
   jmethodID on_geometry;
+  jmethodID on_error;
   jmethodID on_core_message;
   jmethodID on_core_shutdown;
   pthread_t render_thread;
@@ -108,58 +108,88 @@ static void frame_ready(void *user) {
   atomic_store(&c->frame_dirty, 1);
 }
 
-static uint16_t poll_input(void *user, int port) {
-  native_ctx *c = (native_ctx *)user;
-  if (port < 0 || port >= 4) return 0;
-  return (uint16_t)atomic_load(&c->mask[port]);
-}
-
 static int controller_count(void *user) {
   (void)user;
   return 1;
 }
 
-// Host callbacks arrive on the emulation thread once the game runs, and on the
-// platform thread while the core is still loading. Only an attach we made is
-// ours to undo, since detaching the platform thread would break every later JNI
-// call on it.
-static JNIEnv *jni_enter(native_ctx *c, int *attached) {
-  JNIEnv *env = NULL;
-  *attached = 0;
-  if ((*c->vm)->GetEnv(c->vm, (void **)&env, JNI_VERSION_1_6) == JNI_OK) {
-    return env;
-  }
-  if ((*c->vm)->AttachCurrentThread(c->vm, &env, NULL) != JNI_OK) return NULL;
-  *attached = 1;
-  return env;
+// Detaches the calling native thread from the JVM when that thread exits.
+// Registered as the destructor for g_geometry_thread_key below, so a thread
+// that attached via get_geometry_thread_env never has to detach explicitly -
+// pthread runs this automatically as part of thread teardown.
+static void detach_on_thread_exit(void *value) {
+  (void)value;
+  if (g_ctx.vm) (*g_ctx.vm)->DetachCurrentThread(g_ctx.vm);
 }
 
-static void jni_leave(native_ctx *c, int attached) {
-  if (attached) (*c->vm)->DetachCurrentThread(c->vm);
+static pthread_key_t g_geometry_thread_key;
+static pthread_once_t g_geometry_thread_key_once = PTHREAD_ONCE_INIT;
+
+static void make_geometry_thread_key(void) {
+  pthread_key_create(&g_geometry_thread_key, detach_on_thread_exit);
+}
+
+// Returns a JNIEnv* for the calling thread, attaching as a daemon thread at
+// most once per native thread rather than once per call. Cores can call
+// SET_GEOMETRY every frame; attaching/detaching a java.lang.Thread on every
+// one of those (up to 60x/second) is wasted work the JVM has to do and undo.
+// The thread stays attached until it exits, at which point
+// detach_on_thread_exit runs via the pthread key destructor.
+static JNIEnv *get_geometry_thread_env(void) {
+  if (!g_ctx.vm) return NULL;
+  JNIEnv *env = NULL;
+  jint state = (*g_ctx.vm)->GetEnv(g_ctx.vm, (void **)&env, JNI_VERSION_1_6);
+  if (state == JNI_OK) return env;
+  if (state != JNI_EDETACHED) return NULL;
+
+  pthread_once(&g_geometry_thread_key_once, make_geometry_thread_key);
+  if ((*g_ctx.vm)->AttachCurrentThreadAsDaemon(g_ctx.vm, &env, NULL) != JNI_OK) {
+    return NULL;
+  }
+  // Any non-NULL value marks this thread as attached for the key's
+  // destructor; the value itself is never read back.
+  pthread_setspecific(g_geometry_thread_key, (void *)1);
+  return env;
 }
 
 static void geometry_changed(void *user, int width, int height, double aspect) {
   native_ctx *c = (native_ctx *)user;
   if (!c->vm || !c->bridge || !c->on_geometry) return;
-  int attached;
-  JNIEnv *env = jni_enter(c, &attached);
+  JNIEnv *env = get_geometry_thread_env();
   if (!env) return;
   (*env)->CallVoidMethod(env, c->bridge, c->on_geometry, width, height, aspect);
-  jni_leave(c, attached);
+}
+
+
+static void fatal_error(void *user, const char *message) {
+  native_ctx *c = (native_ctx *)user;
+  if (message) LOGE("fatal: %s", message);
+  if (!c->vm || !c->bridge || !c->on_error) return;
+  JNIEnv *env = NULL;
+  int attached_here = 0;
+  jint state = (*c->vm)->GetEnv(c->vm, (void **)&env, JNI_VERSION_1_6);
+  if (state == JNI_EDETACHED) {
+    if ((*c->vm)->AttachCurrentThread(c->vm, &env, NULL) != JNI_OK) return;
+    attached_here = 1;
+  } else if (state != JNI_OK) {
+    return;
+  }
+  jstring jmessage = (*env)->NewStringUTF(env, message ? message : "");
+  (*env)->CallVoidMethod(env, c->bridge, c->on_error, jmessage);
+  (*env)->DeleteLocalRef(env, jmessage);
+  if (attached_here) (*c->vm)->DetachCurrentThread(c->vm);
 }
 
 static void core_message(void *user, const char *text) {
   native_ctx *c = (native_ctx *)user;
   if (!c->vm || !c->bridge || !c->on_core_message || !text) return;
-  int attached;
-  JNIEnv *env = jni_enter(c, &attached);
+  JNIEnv *env = get_geometry_thread_env();
   if (!env) return;
   jstring message = (*env)->NewStringUTF(env, text);
   if (message) {
     (*env)->CallVoidMethod(env, c->bridge, c->on_core_message, message);
     (*env)->DeleteLocalRef(env, message);
   }
-  jni_leave(c, attached);
 }
 
 // Kotlin ends the session from the main thread, since this runs on the
@@ -167,11 +197,9 @@ static void core_message(void *user, const char *text) {
 static void core_shutdown(void *user) {
   native_ctx *c = (native_ctx *)user;
   if (!c->vm || !c->bridge || !c->on_core_shutdown) return;
-  int attached;
-  JNIEnv *env = jni_enter(c, &attached);
+  JNIEnv *env = get_geometry_thread_env();
   if (!env) return;
   (*env)->CallVoidMethod(env, c->bridge, c->on_core_shutdown);
-  jni_leave(c, attached);
 }
 
 static void teardown(JNIEnv *env) {
@@ -196,6 +224,7 @@ static void teardown(JNIEnv *env) {
     g_ctx.bridge = NULL;
   }
   g_ctx.on_geometry = NULL;
+  g_ctx.on_error = NULL;
   g_ctx.on_core_message = NULL;
   g_ctx.on_core_shutdown = NULL;
 }
@@ -209,6 +238,27 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return JNI_VERSION_1_6;
 }
 
+// Releases everything nativeLoad may have partially collected for the option
+// arrays and clears any pending exception, so every early-return path below
+// can share one cleanup instead of duplicating it. Safe to call with any
+// prefix of the arrays populated: unfilled slots are NULL/zero because keys/
+// vals/key_refs/val_refs are all calloc'd, and ReleaseStringUTFChars/
+// DeleteLocalRef on a NULL jstring/pointer is a no-op per the JNI spec.
+static void release_options(JNIEnv *env, int count, const char **keys,
+                            const char **vals, jstring *key_refs,
+                            jstring *val_refs) {
+  for (int i = 0; i < count; i++) {
+    if (keys && keys[i]) (*env)->ReleaseStringUTFChars(env, key_refs[i], keys[i]);
+    if (vals && vals[i]) (*env)->ReleaseStringUTFChars(env, val_refs[i], vals[i]);
+    if (key_refs && key_refs[i]) (*env)->DeleteLocalRef(env, key_refs[i]);
+    if (val_refs && val_refs[i]) (*env)->DeleteLocalRef(env, val_refs[i]);
+  }
+  free((void *)keys);
+  free((void *)vals);
+  free(key_refs);
+  free(val_refs);
+}
+
 JNI(jdoubleArray, nativeLoad)(
     JNIEnv *env, jobject thiz, jstring core, jstring corePath, jstring romPath,
     jstring systemDir, jstring saveDir, jstring gameId, jobjectArray optKeys,
@@ -216,42 +266,165 @@ JNI(jdoubleArray, nativeLoad)(
   (void)core;
   teardown(env);
 
+  // optVals is indexed below with the same loop bound derived from optKeys.
+  // A caller passing arrays of different lengths would make
+  // GetObjectArrayElement throw ArrayIndexOutOfBoundsException partway
+  // through that loop and return NULL; the old code went on to call
+  // GetStringUTFChars on that NULL jstring anyway, which is illegal with an
+  // exception already pending. Reject the mismatch up front so the loop
+  // below never has to discover it mid-iteration.
+  jsize opt_count = optKeys ? (*env)->GetArrayLength(env, optKeys) : 0;
+  jsize val_count = optVals ? (*env)->GetArrayLength(env, optVals) : 0;
+  if (opt_count != val_count) {
+    LOGE("nativeLoad: optKeys/optVals length mismatch (%d vs %d)",
+        (int)opt_count, (int)val_count);
+    return NULL;
+  }
+
   lh_callbacks cb;
   memset(&cb, 0, sizeof(cb));
   cb.user = &g_ctx;
   cb.frame_ready = frame_ready;
-  cb.poll_input = poll_input;
   cb.controller_count = controller_count;
   cb.geometry_changed = geometry_changed;
   cb.message = core_message;
   cb.core_shutdown = core_shutdown;
+  cb.fatal_error = fatal_error;
 
   g_ctx.host = lh_create(LH_FORMAT_RGBA8888, cb);
-  for (int i = 0; i < 4; i++) atomic_store(&g_ctx.mask[i], 0);
+  if (!g_ctx.host) {
+    LOGE("Could not allocate libretro host");
+    return NULL;
+  }
   g_ctx.bridge = (*env)->NewGlobalRef(env, thiz);
+  if (!g_ctx.bridge) {
+    // NewGlobalRef returns NULL (and throws OutOfMemoryError) rather than
+    // failing loudly; every callback below dereferences g_ctx.bridge, so
+    // bail out before any further JNI call runs with that exception pending.
+    LOGE("nativeLoad: NewGlobalRef(thiz) failed");
+    (*env)->ExceptionClear(env);
+    teardown(env);
+    return NULL;
+  }
   jclass cls = (*env)->GetObjectClass(env, thiz);
   g_ctx.on_geometry = (*env)->GetMethodID(env, cls, "onGeometry", "(IID)V");
+  if ((*env)->ExceptionCheck(env)) {
+    // GetMethodID throws NoSuchMethodError on failure; clear it before the
+    // next JNI call rather than letting it ride into GetStringUTFChars below.
+    (*env)->ExceptionClear(env);
+    LOGE("nativeLoad: GetMethodID(onGeometry) failed");
+    (*env)->DeleteLocalRef(env, cls);
+    teardown(env);
+    return NULL;
+  }
+  g_ctx.on_error =
+      (*env)->GetMethodID(env, cls, "onError", "(Ljava/lang/String;)V");
+  if ((*env)->ExceptionCheck(env)) {
+    (*env)->ExceptionClear(env);
+    LOGE("nativeLoad: GetMethodID(onError) failed");
+    (*env)->DeleteLocalRef(env, cls);
+    teardown(env);
+    return NULL;
+  }
   g_ctx.on_core_message =
       (*env)->GetMethodID(env, cls, "onCoreMessage", "(Ljava/lang/String;)V");
   g_ctx.on_core_shutdown =
       (*env)->GetMethodID(env, cls, "onCoreShutdown", "()V");
+  (*env)->DeleteLocalRef(env, cls);
 
   const char *c_core_path = (*env)->GetStringUTFChars(env, corePath, NULL);
   const char *c_rom = (*env)->GetStringUTFChars(env, romPath, NULL);
   const char *c_sys = (*env)->GetStringUTFChars(env, systemDir, NULL);
   const char *c_save = (*env)->GetStringUTFChars(env, saveDir, NULL);
   const char *c_id = (*env)->GetStringUTFChars(env, gameId, NULL);
+  // GetStringUTFChars returns NULL and throws OutOfMemoryError if the JVM
+  // can't allocate the UTF-8 copy. Walking into lh_load with a NULL path
+  // would segfault inside strlen/lh_strdup, and making any further JNI call
+  // (including the option-array loop below) with the exception still
+  // pending is illegal per the JNI spec, so check and clear it here, before
+  // anything else touches env.
+  if ((*env)->ExceptionCheck(env)) {
+    (*env)->ExceptionClear(env);
+    LOGE("nativeLoad: GetStringUTFChars failed for one of the load paths");
+    if (c_core_path) (*env)->ReleaseStringUTFChars(env, corePath, c_core_path);
+    if (c_rom) (*env)->ReleaseStringUTFChars(env, romPath, c_rom);
+    if (c_sys) (*env)->ReleaseStringUTFChars(env, systemDir, c_sys);
+    if (c_save) (*env)->ReleaseStringUTFChars(env, saveDir, c_save);
+    if (c_id) (*env)->ReleaseStringUTFChars(env, gameId, c_id);
+    teardown(env);
+    return NULL;
+  }
 
-  int opt_count = optKeys ? (*env)->GetArrayLength(env, optKeys) : 0;
   const char **keys = opt_count ? calloc(opt_count, sizeof(char *)) : NULL;
   const char **vals = opt_count ? calloc(opt_count, sizeof(char *)) : NULL;
   jstring *key_refs = opt_count ? calloc(opt_count, sizeof(jstring)) : NULL;
   jstring *val_refs = opt_count ? calloc(opt_count, sizeof(jstring)) : NULL;
-  for (int i = 0; i < opt_count; i++) {
+  if (opt_count && (!keys || !vals || !key_refs || !val_refs)) {
+    LOGE("nativeLoad: could not allocate option arrays");
+    release_options(env, opt_count, keys, vals, key_refs, val_refs);
+    (*env)->ReleaseStringUTFChars(env, corePath, c_core_path);
+    (*env)->ReleaseStringUTFChars(env, romPath, c_rom);
+    (*env)->ReleaseStringUTFChars(env, systemDir, c_sys);
+    (*env)->ReleaseStringUTFChars(env, saveDir, c_save);
+    (*env)->ReleaseStringUTFChars(env, gameId, c_id);
+    teardown(env);
+    return NULL;
+  }
+  // Each JNI call below is checked individually, not batched at the end of
+  // the iteration: GetObjectArrayElement/GetStringUTFChars can each throw
+  // (GetObjectArrayElement can throw ArrayIndexOutOfBoundsException,
+  // GetStringUTFChars can throw OutOfMemoryError), and making the *next* JNI
+  // call while an earlier one left an exception pending is itself illegal
+  // per the JNI spec - so the check has to happen before that next call, not
+  // after the whole group. A legitimately-null string element (no exception,
+  // just a null array entry) is also rejected here, since passing NULL to
+  // GetStringUTFChars is undefined behavior rather than a documented no-op.
+  int opts_ok = 1;
+  for (int i = 0; i < opt_count && opts_ok; i++) {
     key_refs[i] = (jstring)(*env)->GetObjectArrayElement(env, optKeys, i);
+    if ((*env)->ExceptionCheck(env)) {
+      (*env)->ExceptionClear(env);
+      LOGE("nativeLoad: GetObjectArrayElement(optKeys, %d) failed", i);
+      opts_ok = 0;
+      break;
+    }
     val_refs[i] = (jstring)(*env)->GetObjectArrayElement(env, optVals, i);
+    if ((*env)->ExceptionCheck(env)) {
+      (*env)->ExceptionClear(env);
+      LOGE("nativeLoad: GetObjectArrayElement(optVals, %d) failed", i);
+      opts_ok = 0;
+      break;
+    }
+    if (!key_refs[i] || !val_refs[i]) {
+      LOGE("nativeLoad: null option key/value at %d", i);
+      opts_ok = 0;
+      break;
+    }
     keys[i] = (*env)->GetStringUTFChars(env, key_refs[i], NULL);
+    if ((*env)->ExceptionCheck(env)) {
+      (*env)->ExceptionClear(env);
+      LOGE("nativeLoad: GetStringUTFChars(optKeys[%d]) failed", i);
+      opts_ok = 0;
+      break;
+    }
     vals[i] = (*env)->GetStringUTFChars(env, val_refs[i], NULL);
+    if ((*env)->ExceptionCheck(env)) {
+      (*env)->ExceptionClear(env);
+      LOGE("nativeLoad: GetStringUTFChars(optVals[%d]) failed", i);
+      opts_ok = 0;
+      break;
+    }
+  }
+
+  if (!opts_ok) {
+    release_options(env, opt_count, keys, vals, key_refs, val_refs);
+    (*env)->ReleaseStringUTFChars(env, corePath, c_core_path);
+    (*env)->ReleaseStringUTFChars(env, romPath, c_rom);
+    (*env)->ReleaseStringUTFChars(env, systemDir, c_sys);
+    (*env)->ReleaseStringUTFChars(env, saveDir, c_save);
+    (*env)->ReleaseStringUTFChars(env, gameId, c_id);
+    teardown(env);
+    return NULL;
   }
 
   lh_av_info info;
@@ -259,14 +432,7 @@ JNI(jdoubleArray, nativeLoad)(
   int rc = lh_load(g_ctx.host, c_core_path, c_rom, c_sys, c_save, c_id, keys,
                    vals, opt_count, &info);
 
-  for (int i = 0; i < opt_count; i++) {
-    (*env)->ReleaseStringUTFChars(env, key_refs[i], keys[i]);
-    (*env)->ReleaseStringUTFChars(env, val_refs[i], vals[i]);
-  }
-  free(keys);
-  free(vals);
-  free(key_refs);
-  free(val_refs);
+  release_options(env, opt_count, keys, vals, key_refs, val_refs);
   (*env)->ReleaseStringUTFChars(env, corePath, c_core_path);
   (*env)->ReleaseStringUTFChars(env, romPath, c_rom);
   (*env)->ReleaseStringUTFChars(env, systemDir, c_sys);
@@ -305,6 +471,7 @@ JNI(void, nativeStart)(JNIEnv *env, jobject thiz) {
   (void)env;
   (void)thiz;
   if (!g_ctx.host) return;
+  if (g_ctx.has_render_thread) return;  // already started; see lh_start's guard
   lh_set_audio_paced(g_ctx.host, 1);
   atomic_store(&g_ctx.frame_dirty, 0);
   atomic_store(&g_ctx.render_running, 1);
@@ -326,10 +493,12 @@ JNI(void, nativeResume)(JNIEnv *env, jobject thiz) {
   if (g_ctx.host) lh_resume(g_ctx.host);
 }
 
-JNI(void, nativeReset)(JNIEnv *env, jobject thiz) {
+JNI(jboolean, nativeReset)(JNIEnv *env, jobject thiz) {
   (void)env;
   (void)thiz;
-  if (g_ctx.host) lh_reset(g_ctx.host);
+  if (g_ctx.host && lh_restart_async(g_ctx.host) == 0) return JNI_TRUE;
+  LOGE("Could not schedule libretro restart");
+  return JNI_FALSE;
 }
 
 JNI(void, nativeStop)(JNIEnv *env, jobject thiz) {
@@ -346,14 +515,34 @@ JNI(void, nativeSetFastForward)(JNIEnv *env, jobject thiz, jint factor) {
 JNI(void, nativeSetMask)(JNIEnv *env, jobject thiz, jint port, jint mask) {
   (void)env;
   (void)thiz;
-  if (port >= 0 && port < 4) atomic_store(&g_ctx.mask[port], (unsigned)mask);
+  if (g_ctx.host) lh_set_input(g_ctx.host, (int)port, (uint16_t)mask);
 }
 
 JNI(jint, nativeReadAudio)(JNIEnv *env, jobject thiz, jshortArray buffer,
                            jint frames) {
   (void)thiz;
-  if (!g_ctx.host) return 0;
+  // The g_ctx.host read here is NOT synchronized against teardown's
+  // lh_destroy, so it cannot by itself make a concurrent teardown safe. What
+  // makes it safe is the caller: LibretroBridge.stopAudio() stops the
+  // AudioTrack (unblocking any in-flight write), then joins the audio thread
+  // unbounded, and only then does stop() call nativeStop(). Keep that
+  // ordering - a bounded join would put this function back in a race with
+  // lh_destroy over a freed ring buffer and a destroyed mutex.
+  if (!g_ctx.host || !buffer) return 0;
+  // lh_read_audio always writes frame_count*2 shorts to dst, including its
+  // silence fill for any shortfall (see libretro_host.h) - it has no way to
+  // know how big the caller's buffer actually is. The current Kotlin caller
+  // (LibretroBridge.kt) always sizes buffer correctly and passes a matching
+  // frames, so this is defense in depth against a future or buggy caller
+  // rather than a fix for an observed bug: clamp frames to what buffer can
+  // actually hold (2 shorts per frame, interleaved stereo) so a mismatched
+  // call can't write past the end of a JNI-pinned array.
+  jsize buffer_len = (*env)->GetArrayLength(env, buffer);
+  jint max_frames = (jint)(buffer_len / 2);
+  if (frames > max_frames) frames = max_frames;
+  if (frames <= 0) return 0;
   jshort *data = (*env)->GetShortArrayElements(env, buffer, NULL);
+  if (!data) return 0;
   int read = lh_read_audio(g_ctx.host, (int16_t *)data, frames);
   (*env)->ReleaseShortArrayElements(env, buffer, data, 0);
   return read;
@@ -365,11 +554,19 @@ JNI(jbyteArray, nativeSaveState)(JNIEnv *env, jobject thiz) {
   size_t size = lh_serialize_size(g_ctx.host);
   if (size == 0) return NULL;
   void *buf = malloc(size);
+  if (!buf) {
+    LOGE("nativeSaveState: could not allocate %zu bytes", size);
+    return NULL;
+  }
   int ok = lh_serialize(g_ctx.host, buf, size) == 0;
   jbyteArray result = NULL;
   if (ok) {
     result = (*env)->NewByteArray(env, (jsize)size);
-    (*env)->SetByteArrayRegion(env, result, 0, (jsize)size, (const jbyte *)buf);
+    if (result) {
+      (*env)->SetByteArrayRegion(env, result, 0, (jsize)size, (const jbyte *)buf);
+    } else {
+      LOGE("nativeSaveState: NewByteArray(%zu) failed", size);
+    }
   }
   free(buf);
   return result;
@@ -377,9 +574,18 @@ JNI(jbyteArray, nativeSaveState)(JNIEnv *env, jobject thiz) {
 
 JNI(jboolean, nativeLoadState)(JNIEnv *env, jobject thiz, jbyteArray data) {
   (void)thiz;
-  if (!g_ctx.host) return JNI_FALSE;
+  if (!g_ctx.host || !data) return JNI_FALSE;
   jsize size = (*env)->GetArrayLength(env, data);
   jbyte *bytes = (*env)->GetByteArrayElements(env, data, NULL);
+  if (!bytes) {
+    // GetByteArrayElements returns NULL (and throws OutOfMemoryError) on
+    // failure; without this check a NULL/size pair would reach
+    // lh_unserialize, and the pending exception would ride into the next
+    // JNI call.
+    LOGE("nativeLoadState: GetByteArrayElements failed");
+    (*env)->ExceptionClear(env);
+    return JNI_FALSE;
+  }
   int ok = lh_unserialize(g_ctx.host, bytes, (size_t)size) == 0;
   (*env)->ReleaseByteArrayElements(env, data, bytes, JNI_ABORT);
   return ok ? JNI_TRUE : JNI_FALSE;
@@ -390,33 +596,78 @@ JNI(jobjectArray, nativeOptions)(JNIEnv *env, jobject thiz) {
   jclass string_cls = (*env)->FindClass(env, "java/lang/String");
   if (!g_ctx.host) return (*env)->NewObjectArray(env, 0, string_cls, NULL);
 
+  // lh_option_count and lh_get_option are separate locked calls, so a restart
+  // on the emulation thread can shrink the definition list in between. Skipping
+  // a failed index would leave a null element in an array Kotlin types as
+  // Array<String>, which NPEs on the platform thread the moment it is iterated.
+  // Stop at the first failure instead and hand back only what was filled - a
+  // short list of live options is correct, a list with a hole in it is not.
   int count = lh_option_count(g_ctx.host);
   jobjectArray result = (*env)->NewObjectArray(env, count, string_cls, NULL);
+  if (!result) return NULL;
+  int filled = 0;
   for (int i = 0; i < count; i++) {
     lh_option opt;
-    if (lh_get_option(g_ctx.host, i, &opt) != 0) continue;
+    if (lh_get_option(g_ctx.host, i, &opt) != 0) break;
     // Tab-joined: id, label, current, then each choice.
     size_t len = strlen(opt.id) + strlen(opt.label) + strlen(opt.current) + 3;
     for (int c = 0; c < opt.choice_count; c++) len += strlen(opt.choices[c]) + 1;
     char *joined = malloc(len + 1);
+    if (!joined) break;
     int n = snprintf(joined, len + 1, "%s\t%s\t%s", opt.id, opt.label,
                      opt.current);
+    // A negative or truncated result would make len + 1 - n underflow into a
+    // huge size_t on the next snprintf, so abandon the entry instead.
+    if (n < 0 || (size_t)n > len) {
+      free(joined);
+      break;
+    }
     for (int c = 0; c < opt.choice_count; c++) {
-      n += snprintf(joined + n, len + 1 - n, "\t%s", opt.choices[c]);
+      int w = snprintf(joined + n, len + 1 - (size_t)n, "\t%s", opt.choices[c]);
+      if (w < 0 || (size_t)(n + w) > len) break;
+      n += w;
     }
     jstring entry = (*env)->NewStringUTF(env, joined);
-    (*env)->SetObjectArrayElement(env, result, i, entry);
-    (*env)->DeleteLocalRef(env, entry);
     free(joined);
+    if (!entry) break;
+    (*env)->SetObjectArrayElement(env, result, filled++, entry);
+    (*env)->DeleteLocalRef(env, entry);
   }
-  return result;
+  if (filled == count) return result;
+
+  // Something cut the enumeration short. Re-pack into an array with no
+  // trailing nulls rather than returning one Kotlin cannot safely iterate.
+  jobjectArray trimmed = (*env)->NewObjectArray(env, filled, string_cls, NULL);
+  if (!trimmed) return NULL;
+  for (int i = 0; i < filled; i++) {
+    jobject entry = (*env)->GetObjectArrayElement(env, result, i);
+    (*env)->SetObjectArrayElement(env, trimmed, i, entry);
+    (*env)->DeleteLocalRef(env, entry);
+  }
+  (*env)->DeleteLocalRef(env, result);
+  return trimmed;
 }
 
 JNI(void, nativeSetOption)(JNIEnv *env, jobject thiz, jstring id, jstring value) {
   (void)thiz;
   if (!g_ctx.host) return;
   const char *c_id = (*env)->GetStringUTFChars(env, id, NULL);
+  if (!c_id) {
+    // GetStringUTFChars throws OutOfMemoryError on failure; a NULL id would
+    // flow into lh_set_option -> vars_set -> strcmp(key, NULL). Clear the
+    // exception and bail before the next JNI call (GetStringUTFChars(value))
+    // runs with it pending.
+    LOGE("nativeSetOption: GetStringUTFChars(id) failed");
+    (*env)->ExceptionClear(env);
+    return;
+  }
   const char *c_value = (*env)->GetStringUTFChars(env, value, NULL);
+  if (!c_value) {
+    LOGE("nativeSetOption: GetStringUTFChars(value) failed");
+    (*env)->ExceptionClear(env);
+    (*env)->ReleaseStringUTFChars(env, id, c_id);
+    return;
+  }
   lh_set_option(g_ctx.host, c_id, c_value);
   (*env)->ReleaseStringUTFChars(env, id, c_id);
   (*env)->ReleaseStringUTFChars(env, value, c_value);

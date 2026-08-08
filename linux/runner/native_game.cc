@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -14,13 +15,30 @@ namespace {
 lh_host* g_host = nullptr;
 FlTextureRegistrar* g_textures = nullptr;
 FlTexture* g_texture = nullptr;
+FlEventChannel* g_events = nullptr;
 std::atomic<uint16_t> g_mask{0};
 std::atomic<uint16_t> g_pulse{0};
 
-uint16_t OnPollInput(void* user, int port) {
-  (void)user;
-  if (port != 0) return 0;
-  return static_cast<uint16_t>(g_mask.load() | g_pulse.load());
+// Guards g_host against the race between moonfin_game_texture_copy_pixels
+// (called by Flutter on its render thread) and Teardown() destroying the
+// host (called on the main loop thread from HandleMethod). Unregistering the
+// texture is not a barrier against a copy_pixels call already in flight, so
+// the pointer itself has to be protected, not just the texture registration
+// - otherwise the render thread can read g_host and call into lh_get_frame
+// after Teardown() has freed it. Held only across the pointer check plus
+// lh_get_frame's front/back pointer swap (not the pixel copy Flutter
+// performs afterwards with the returned buffer), and across lh_destroy in
+// Teardown(), so it adds negligible per-frame contention.
+std::mutex g_host_mutex;
+
+// Pushes the combined Dart + pulse mask into the host's input latch. Called
+// on every write to either half, not once per frame: the host OR-latches
+// whatever it's told between polls, so it needs every edge, not a level
+// sampled only when the core happens to poll (see lh_set_input's comment).
+void PushInput() {
+  if (g_host) {
+    lh_set_input(g_host, 0, static_cast<uint16_t>(g_mask.load() | g_pulse.load()));
+  }
 }
 
 int OnControllerCount(void* user) {
@@ -33,6 +51,39 @@ void OnFrameReady(void* user) {
   if (g_textures && g_texture) {
     fl_texture_registrar_mark_texture_frame_available(g_textures, g_texture);
   }
+}
+
+// Heap-allocated so it survives the hop from the emulation thread to the
+// main-loop idle callback below.
+struct FatalErrorPayload {
+  gchar* message;
+};
+
+// Runs on the main loop thread. g_events is only ever written on this
+// thread, so reading it here (unlike from OnFatalError) needs no lock.
+gboolean DeliverFatalError(gpointer data) {
+  auto* payload = static_cast<FatalErrorPayload*>(data);
+  if (g_events) {
+    g_autoptr(FlValue) event = fl_value_new_map();
+    fl_value_set_string_take(event, "event", fl_value_new_string("error"));
+    fl_value_set_string_take(event, "message",
+                             fl_value_new_string(payload->message));
+    g_autoptr(GError) error = nullptr;
+    fl_event_channel_send(g_events, event, nullptr, &error);
+  }
+  g_free(payload->message);
+  delete payload;
+  return G_SOURCE_REMOVE;
+}
+
+// The emulation thread is dying from an unrecoverable error (e.g. a failed
+// core restart). Called from the run-loop thread. The Flutter/GLib embedder
+// requires event-channel access on the main loop thread, so the send is
+// marshaled via g_idle_add instead of happening here.
+void OnFatalError(void* user, const char* message) {
+  (void)user;
+  auto* payload = new FatalErrorPayload{g_strdup(message ? message : "")};
+  g_idle_add(DeliverFatalError, payload);
 }
 
 // Nothing listens on the desktop event channel, so a core that complains or
@@ -65,6 +116,22 @@ static gboolean moonfin_game_texture_copy_pixels(
     uint32_t* height, GError** error) {
   (void)texture;
   (void)error;
+  // Runs on Flutter's render thread. Pairs with the lock in Teardown():
+  // guarantees g_host is either the live pointer Teardown() hasn't started
+  // tearing down yet, or nullptr after Teardown() has fully destroyed it -
+  // never a pointer lh_destroy is mid-free on. lh_get_frame only swaps the
+  // front/back frame pointers under its own internal lock, so holding
+  // g_host_mutex across the call does not serialize the actual per-frame
+  // pixel copy, which Flutter performs after this function returns.
+  //
+  // KNOWN REMAINING HOLE: the buffer handed back below points directly at
+  // host-owned memory (lh_get_frame returns h->front.data), and Flutter reads
+  // it after this function returns, i.e. after the lock is released. A
+  // Teardown() landing in that window frees the framebuffer while the render
+  // thread is still reading it. Narrower than the dangling-g_host race this
+  // lock fixes, but the same class. Closing it needs a staging copy taken
+  // under the lock.
+  std::lock_guard<std::mutex> lock(g_host_mutex);
   const void* data;
   int w, h, stride;
   if (!g_host || !lh_get_frame(g_host, &data, &w, &h, &stride)) return FALSE;
@@ -99,16 +166,27 @@ int LookupInt(FlValue* args, const char* key, int fallback) {
 
 void Teardown() {
   lh_audio_stop();
-  if (g_host) {
-    lh_stop(g_host);
-    lh_destroy(g_host);
-    g_host = nullptr;
+  {
+    // Pairs with the lock in moonfin_game_texture_copy_pixels: while this
+    // block runs, the render thread either already finished reading g_host
+    // before we got here, or blocks on g_host_mutex until we're done and
+    // then observes g_host == nullptr - it can never see a pointer
+    // lh_destroy is mid-free on. lh_stop joins the host's own worker thread,
+    // not the render or main loop thread, so holding the lock across it
+    // cannot deadlock.
+    std::lock_guard<std::mutex> lock(g_host_mutex);
+    if (g_host) {
+      lh_stop(g_host);
+      lh_destroy(g_host);
+      g_host = nullptr;
+    }
   }
   if (g_textures && g_texture) {
     fl_texture_registrar_unregister_texture(g_textures, g_texture);
     g_clear_object(&g_texture);
   }
   g_mask = 0;
+  g_pulse = 0;
 }
 
 FlValue* Load(FlValue* args) {
@@ -132,12 +210,16 @@ FlValue* Load(FlValue* args) {
 
   lh_callbacks cb = {};
   cb.frame_ready = OnFrameReady;
-  cb.poll_input = OnPollInput;
   cb.controller_count = OnControllerCount;
+  cb.fatal_error = OnFatalError;
   cb.message = OnCoreMessage;
   cb.core_shutdown = OnCoreShutdown;
 
   g_host = lh_create(LH_FORMAT_RGBA8888, cb);
+  if (!g_host) {
+    // calloc failure inside lh_create; nothing to load into.
+    return fl_value_new_null();
+  }
   lh_av_info info = {};
   int rc = lh_load(g_host, core_path, rom_path, system_dir, save_dir, game_id,
                    keys.data(), values.data(), static_cast<int>(keys.size()),
@@ -170,7 +252,10 @@ FlValue* Options(bool current_only) {
   int count = lh_option_count(g_host);
   for (int i = 0; i < count; i++) {
     lh_option opt;
-    if (lh_get_option(g_host, i, &opt) != 0) continue;
+    // A restart on the emulation thread can shrink the list between the count
+    // and this read, so a failure means "no more options", not "skip this one".
+    // opt is a self-contained copy; nothing below borrows from the host.
+    if (lh_get_option(g_host, i, &opt) != 0) break;
     if (current_only) {
       fl_value_set_string_take(result, opt.id, fl_value_new_string(opt.current));
       continue;
@@ -215,8 +300,12 @@ void HandleMethod(FlMethodChannel* channel, FlMethodCall* call,
     if (g_host) lh_resume(g_host);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if (g_strcmp0(method, "restart") == 0) {
-    if (g_host) lh_reset(g_host);
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+    if (g_host && lh_restart_async(g_host) == 0) {
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+    } else {
+      response = FL_METHOD_RESPONSE(fl_method_error_response_new(
+          "restart_unavailable", "The emulator is not running.", nullptr));
+    }
   } else if (g_strcmp0(method, "stop") == 0) {
     Teardown();
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
@@ -225,6 +314,7 @@ void HandleMethod(FlMethodChannel* channel, FlMethodCall* call,
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if (g_strcmp0(method, "setInput") == 0) {
     g_mask = static_cast<uint16_t>(LookupInt(args, "mask", 0));
+    PushInput();
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
   } else if (g_strcmp0(method, "pulseButton") == 0) {
     int index = LookupInt(args, "index", -1);
@@ -232,9 +322,11 @@ void HandleMethod(FlMethodChannel* channel, FlMethodCall* call,
     if (index >= 0 && index < 16) {
       uint16_t bit = static_cast<uint16_t>(1 << index);
       g_pulse |= bit;
+      PushInput();
       std::thread([bit, duration]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(duration));
         g_pulse &= static_cast<uint16_t>(~bit);
+        PushInput();
       }).detach();
     }
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
@@ -310,4 +402,5 @@ void moonfin_game_register(FlEngine* engine) {
       messenger, "moonfin/native_game_events", FL_METHOD_CODEC(codec));
   fl_event_channel_set_stream_handlers(events, OnListen, OnCancel, nullptr,
                                        nullptr);
+  g_events = events;
 }

@@ -10,4 +10,4 @@ app. The binaries are not committed. Populate it before a build:
 
 Both leave `*.framework` bundles here, which `moonfin_game_host.podspec`
 embeds. The set matches `appleBundledCores` in `lib/util/game_cores.dart`:
-fceumm, snes9x, gambatte, mgba, genesis_plus_gx, pcsx_rearmed.
+fceumm, snes9x, gambatte, mgba, genesis_plus_gx, pcsx_rearmed, fbneo.

@@ -42,15 +42,16 @@ final class GameSession {
     callbacks.frame_ready = { user in
       GameSession.from(user)?.video?.frameAvailable()
     }
-    callbacks.poll_input = { user, port in
-      GameSession.from(user)?.input.mask(forPort: Int(port)) ?? 0
-    }
     callbacks.controller_count = { user in
       Int32(GameSession.from(user)?.input.controllerCount ?? 0)
     }
     callbacks.geometry_changed = { user, width, height, aspect in
       GameSession.from(user)?.emitGeometry(
         width: Int(width), height: Int(height), aspect: aspect)
+    }
+    callbacks.fatal_error = { user, message in
+      let text = message.map { String(cString: $0) } ?? "Unknown error"
+      GameSession.from(user)?.emitError(text)
     }
     callbacks.message = { user, text in
       guard let text else { return }
@@ -62,6 +63,11 @@ final class GameSession {
 
     guard let host = lh_create(LH_FORMAT_BGRA8888, callbacks) else { return nil }
     self.host = host
+    // The input latch now lives inside the C host (lh_set_input), so
+    // GameInputController needs the host pointer to report every mask change
+    // to it directly, rather than the host calling back into this class once
+    // per poll (see the callbacks removed above).
+    input.attach(host: host)
 
     let (keys, values, count, cleanup) = Self.cStrings(options)
     var info = lh_av_info()
@@ -70,6 +76,7 @@ final class GameSession {
       Int32(count), &info)
     cleanup()
     guard rc == 0 else {
+      input.attach(host: nil)
       lh_destroy(host)
       self.host = nil
       return nil
@@ -103,9 +110,15 @@ final class GameSession {
     audio?.setPaused(paused)
   }
 
+  // Fully recreates the core rather than lh_reset's soft reset, so core
+  // options that are only read during initialization actually apply. Matches
+  // the other platforms, which schedule this on the run loop instead of
+  // blocking the caller.
   func reset() {
     guard let host else { return }
-    lh_reset(host)
+    if lh_restart_async(host) != 0 {
+      emitError("Could not schedule libretro restart")
+    }
   }
 
   func setFastForward(_ factor: Int) {
@@ -131,23 +144,38 @@ final class GameSession {
     }
   }
 
+  // lh_option's fields are fixed C char arrays, which Swift imports as tuples.
+  // lh_get_option NUL-terminates every one of them, so each can be read as a C
+  // string straight out of its own storage.
+  private static func cString<T>(_ chars: T) -> String {
+    withUnsafeBytes(of: chars) { raw in
+      guard let base = raw.baseAddress else { return "" }
+      return String(cString: base.assumingMemoryBound(to: CChar.self))
+    }
+  }
+
   func options() -> [[String: Any]] {
     guard let host else { return [] }
     var result: [[String: Any]] = []
     for i in 0..<lh_option_count(host) {
       var opt = lh_option()
-      guard lh_get_option(host, i, &opt) == 0, let idPtr = opt.id else { continue }
-      var choices: [[String: String]] = []
-      for c in 0..<Int(opt.choice_count) {
-        if let choice = opt.choices?[c] {
-          let value = String(cString: choice)
-          choices.append(["value": value, "label": value])
+      // A restart on the emulation thread rebuilds the definition list, so it
+      // can shrink between lh_option_count and this read. A failure means "no
+      // more options", not "skip this index".
+      guard lh_get_option(host, i, &opt) == 0 else { break }
+      let choiceStride = Int(LH_OPTION_VALUE_MAX)
+      let choices: [[String: String]] = withUnsafeBytes(of: opt.choices) { raw in
+        guard let base = raw.baseAddress else { return [] }
+        return (0..<Int(opt.choice_count)).map { c in
+          let value = String(cString: (base + c * choiceStride)
+            .assumingMemoryBound(to: CChar.self))
+          return ["value": value, "label": value]
         }
       }
       result.append([
-        "id": String(cString: idPtr),
-        "label": opt.label.map { String(cString: $0) } ?? "",
-        "current": opt.current.map { String(cString: $0) } ?? "",
+        "id": Self.cString(opt.id),
+        "label": Self.cString(opt.label),
+        "current": Self.cString(opt.current),
         "choices": choices,
       ])
     }
@@ -177,6 +205,14 @@ final class GameSession {
       "event": "videoGeometry", "width": width, "height": height,
       "aspect": aspect,
     ]
+    DispatchQueue.main.async { [weak self] in self?.onEvent?(payload) }
+  }
+
+  // The emulation thread is terminating because of an unrecoverable error
+  // (e.g. a failed core restart), or a caller-visible action (like restart)
+  // could not even be scheduled. Called from the run-loop thread.
+  private func emitError(_ message: String) {
+    let payload: [String: Any] = ["event": "error", "message": message]
     DispatchQueue.main.async { [weak self] in self?.onEvent?(payload) }
   }
 
