@@ -523,6 +523,11 @@ class Media3VideoView(
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val STREAMING_MAX_BUFFER_MS = 120_000
         private const val MAX_TARGET_BUFFER_BYTES = 384L * 1024 * 1024
+        // Fraction of the app heap the sample buffer may occupy. A third leaves
+        // room for decoder buffers, the Flutter engine and the extractor on a
+        // roomy heap; low RAM boxes get a sixth of a heap that is already small.
+        private const val HEAP_DIVISOR = 3L
+        private const val HEAP_DIVISOR_LOW_RAM = 6L
         // Broadcast captions ride inside the video as CEA-608 messages rather
         // than as their own stream, and the extractor only looks for them when
         // the transport stream announces them in a caption service descriptor.
@@ -1366,13 +1371,19 @@ class Media3VideoView(
     // the byte budget to the app heap and stretch the streaming time
     // ceiling so direct play keeps a real runway, leaving local playback
     // durations at their defaults.
+    //
+    // The byte budget must stay strictly below the heap: it is the only brake
+    // that tracks bitrate, and once it is unreachable the loader never pauses.
+    // DEFAULT_MUXED_BUFFER_SIZE is 137.6 MiB, which is larger than the whole
+    // heap on a 128 MiB device, so it must never be used as a lower bound.
+    // DEFAULT_MIN_BUFFER_SIZE (12.5 MiB) is the floor instead. The same applies
+    // to the stock load control, whose derived target is the same 137.6 MiB,
+    // so low RAM devices need a smaller budget rather than the defaults.
     private fun buildLoadControl(): DefaultLoadControl {
-        // Low RAM boxes cant spare a third of the heap for runway on top of
-        // decode buffers, so they keep the stock budgets.
-        if (isLowRamDevice) return DefaultLoadControl.Builder().build()
-        val targetBufferBytes = (Runtime.getRuntime().maxMemory() / 3)
+        val divisor = if (isLowRamDevice) HEAP_DIVISOR_LOW_RAM else HEAP_DIVISOR
+        val targetBufferBytes = (Runtime.getRuntime().maxMemory() / divisor)
             .coerceAtMost(MAX_TARGET_BUFFER_BYTES)
-            .coerceAtLeast(DefaultLoadControl.DEFAULT_MUXED_BUFFER_SIZE.toLong())
+            .coerceAtLeast(DefaultLoadControl.DEFAULT_MIN_BUFFER_SIZE.toLong())
             .toInt()
         return DefaultLoadControl.Builder()
             .setTargetBufferBytes(targetBufferBytes)
