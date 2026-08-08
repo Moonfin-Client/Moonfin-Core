@@ -4946,7 +4946,7 @@ class _ContentRowsState extends State<_ContentRows>
                           UserPreferences.showRatingBadges,
                         ),
                       ),
-                    if (overview.isNotEmpty)
+                    if (overview.isNotEmpty && !widget.prefs.get(UserPreferences.hideHomeMediaDescription))
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(

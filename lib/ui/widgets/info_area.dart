@@ -600,18 +600,20 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
               showLabels: _prefs.get(UserPreferences.showRatingLabels),
               showBadges: _prefs.get(UserPreferences.showRatingBadges),
             ),
-          SizedBox(height: overviewTopSpacing),
-          Expanded(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                cleanOverview(item.overview),
-                style: overviewStyle,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+          if (!_prefs.get(UserPreferences.hideHomeMediaDescription)) ...[
+            SizedBox(height: overviewTopSpacing),
+            Expanded(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  cleanOverview(item.overview),
+                  style: overviewStyle,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

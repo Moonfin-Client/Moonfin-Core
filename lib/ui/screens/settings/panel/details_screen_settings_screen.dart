@@ -35,6 +35,7 @@ class _DetailsScreenSettingsScreenState
           builder: (context, _) => ListView(
             padding: EdgeInsets.only(bottom: bottomPad),
             children: [
+              _SectionHeader(l10n.display),
               adaptiveListSection(
                 children: [
                   EnumPreferenceTile<DetailScreenStyle>(
@@ -86,6 +87,19 @@ class _DetailsScreenSettingsScreenState
                       labelOf: (v) => '$v',
                       onChangeEnd: _pushPersonalizationSync,
                     ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.smart_button_outlined),
+                    title: Text(l10n.detailButtons),
+                    subtitle: Text(l10n.detailButtonsDescription),
+                    onTap: () => context.pushSettingsScreen(
+                      const _DetailButtonsScreen(),
+                    ),
+                  ),
+                ],
+              ),
+              _SectionHeader(l10n.mediaDetailsAndSpoilers),
+              adaptiveListSection(
+                children: [
                   if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
                     SwitchPreferenceTile(
                       preference: UserPreferences.detailExpandedTabs,
@@ -94,41 +108,53 @@ class _DetailsScreenSettingsScreenState
                       icon: Icons.tab,
                       onChanged: _pushPersonalizationSync,
                     ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.detailShowTechnicalDetails,
+                    title: l10n.showTechnicalDetails,
+                    subtitle: l10n.showTechnicalDetailsSubtitle,
+                    icon: Icons.info_outline,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.hideDetailsMediaDescription,
+                    title: l10n.hideDetailsMediaDescription,
+                    subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
+                    icon: Icons.description_outlined,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.classic)
                     SwitchPreferenceTile(
-                      preference: UserPreferences.detailShowTechnicalDetails,
-                      title: l10n.showTechnicalDetails,
-                      subtitle: l10n.showTechnicalDetailsSubtitle,
-                      icon: Icons.info_outline,
+                      preference: UserPreferences.detailUseSeriesThumbnails,
+                      title: l10n.detailUseSeriesThumbnails,
+                      subtitle: l10n.detailUseSeriesThumbnailsSubtitle,
+                      icon: Icons.image_outlined,
                       onChanged: _pushPersonalizationSync,
                     ),
-                    EnumPreferenceTile<RecommendationSystemSource>(
-                      preference: UserPreferences.recommendationSystemSource,
-                      title: l10n.recommendationSystem,
-                      description: l10n.recommendationSystemSubtitle,
-                      icon: Icons.auto_awesome,
-                      labelOf: (v) => switch (v) {
-                        RecommendationSystemSource.local =>
-                          l10n.recommendationSystemMoonfin,
-                        RecommendationSystemSource.online =>
-                          l10n.recommendationSystemTmdb,
-                      },
-                      onChanged: _pushPersonalizationSync,
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.recommendationsApplyParentalRatingCap,
-                      title: l10n.recommendationsApplyParentalRatingCap,
-                      subtitle: l10n.recommendationsApplyParentalRatingCapSubtitle,
-                      icon: Icons.family_restroom,
-                      onChanged: _pushPersonalizationSync,
-                    ),
-                    _TvSettingsListTile(
-                      leading: const Icon(Icons.smart_button_outlined),
-                      title: Text(l10n.detailButtons),
-                      subtitle: Text(l10n.detailButtonsDescription),
-                      onTap: () => context.pushSettingsScreen(
-                        const _DetailButtonsScreen(),
-                      ),
-                    ),
+                ],
+              ),
+              _SectionHeader(l10n.recommendations),
+              adaptiveListSection(
+                children: [
+                  EnumPreferenceTile<RecommendationSystemSource>(
+                    preference: UserPreferences.recommendationSystemSource,
+                    title: l10n.recommendationSystem,
+                    description: l10n.recommendationSystemSubtitle,
+                    icon: Icons.auto_awesome,
+                    labelOf: (v) => switch (v) {
+                      RecommendationSystemSource.local =>
+                        l10n.recommendationSystemMoonfin,
+                      RecommendationSystemSource.online =>
+                        l10n.recommendationSystemTmdb,
+                    },
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.recommendationsApplyParentalRatingCap,
+                    title: l10n.recommendationsApplyParentalRatingCap,
+                    subtitle: l10n.recommendationsApplyParentalRatingCapSubtitle,
+                    icon: Icons.family_restroom,
+                    onChanged: _pushPersonalizationSync,
+                  ),
                 ],
               ),
             ],

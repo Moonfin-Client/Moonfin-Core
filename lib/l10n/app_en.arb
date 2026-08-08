@@ -188,7 +188,7 @@
   "@settingsAppearanceTheme": {
     "description": "Title for the theme selection screen and theme settings entry"
   },
-  "detailScreenStyle": "Detail screen style",
+  "detailScreenStyle": "Details Screen Style",
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
@@ -9548,5 +9548,37 @@
   "scrollSensitivitySubtitle": "How far one mouse wheel notch scrolls",
   "@scrollSensitivitySubtitle": {
     "description": "Explains the desktop scroll sensitivity slider."
+  },
+  "mediaDetailsAndSpoilers": "Media Details and Spoilers",
+  "@mediaDetailsAndSpoilers": {
+    "description": "Section header for media details and spoiler settings"
+  },
+  "hideDetailsMediaDescription": "Hide Media Description on Details Page",
+  "@hideDetailsMediaDescription": {
+    "description": "Setting title to hide media description on details screen"
+  },
+  "hideDetailsMediaDescriptionSubtitle": "Hide the movie or episode descriptive text.",
+  "@hideDetailsMediaDescriptionSubtitle": {
+    "description": "Description for setting to hide media description on details page"
+  },
+  "detailUseSeriesThumbnails": "Use Series Thumbnails on Details Page",
+  "@detailUseSeriesThumbnails": {
+    "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
+  },
+  "detailUseSeriesThumbnailsSubtitle": "Replace all thumbnails on Classic details page with series thumbnail",
+  "@detailUseSeriesThumbnailsSubtitle": {
+    "description": "Description for setting to use series thumbnails on Classic details page"
+  },
+  "hideHomeMediaDescription": "Hide Media Description on Home Screen",
+  "@hideHomeMediaDescription": {
+    "description": "Setting title to hide media description on home screen"
+  },
+  "hideHomeMediaDescriptionSubtitle": "Hide the movie or episode descriptive text.",
+  "@hideHomeMediaDescriptionSubtitle": {
+    "description": "Description for setting to hide media description on home screen"
+  },
+  "continueWatchingAndNextUpHeader": "Continue Watching and Next Up",
+  "@continueWatchingAndNextUpHeader": {
+    "description": "Header for settings section containing Continue Watching and Next Up options"
   }
 }

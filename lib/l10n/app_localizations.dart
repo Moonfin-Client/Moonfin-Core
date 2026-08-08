@@ -463,7 +463,7 @@ abstract class AppLocalizations {
   /// Label for the media detail screen layout style setting
   ///
   /// In en, this message translates to:
-  /// **'Detail screen style'**
+  /// **'Details Screen Style'**
   String get detailScreenStyle;
 
   /// Explanation under the detail screen style setting
@@ -19029,6 +19029,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How far one mouse wheel notch scrolls'**
   String get scrollSensitivitySubtitle;
+
+  /// Section header for media details and spoiler settings
+  ///
+  /// In en, this message translates to:
+  /// **'Media Details and Spoilers'**
+  String get mediaDetailsAndSpoilers;
+
+  /// Setting title to hide media description on details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Media Description on Details Page'**
+  String get hideDetailsMediaDescription;
+
+  /// Description for setting to hide media description on details page
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the movie or episode descriptive text.'**
+  String get hideDetailsMediaDescriptionSubtitle;
+
+  /// Setting title to replace thumbnails on Classic details page with series thumbnail
+  ///
+  /// In en, this message translates to:
+  /// **'Use Series Thumbnails on Details Page'**
+  String get detailUseSeriesThumbnails;
+
+  /// Description for setting to use series thumbnails on Classic details page
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all thumbnails on Classic details page with series thumbnail'**
+  String get detailUseSeriesThumbnailsSubtitle;
+
+  /// Setting title to hide media description on home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Media Description on Home Screen'**
+  String get hideHomeMediaDescription;
+
+  /// Description for setting to hide media description on home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the movie or episode descriptive text.'**
+  String get hideHomeMediaDescriptionSubtitle;
+
+  /// Header for settings section containing Continue Watching and Next Up options
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Watching and Next Up'**
+  String get continueWatchingAndNextUpHeader;
 }
 
 class _AppLocalizationsDelegate

@@ -620,6 +620,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['codec', 'bitrate info'],
     ),
     details.leaf(
+      'pref_hide_details_media_description',
+      l10n.hideDetailsMediaDescription,
+      subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
+      keywords: ['spoiler', 'description', 'overview'],
+    ),
+    details.leaf(
+      'pref_detail_use_series_thumbnails',
+      l10n.detailUseSeriesThumbnails,
+      subtitle: l10n.detailUseSeriesThumbnailsSubtitle,
+      keywords: ['spoiler', 'thumbnails', 'series artwork'],
+    ),
+    details.leaf(
       'pref_recommendation_system_source',
       l10n.recommendationSystem,
       keywords: ['similar', 'suggestions'],
@@ -754,6 +766,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.homeRowInfoOverlay,
         subtitle: l10n.showTitleMetadataOnHomeRows,
       ),
+    home.leaf(
+      'pref_hide_home_media_description',
+      l10n.hideHomeMediaDescription,
+      subtitle: l10n.hideHomeMediaDescriptionSubtitle,
+      keywords: ['spoiler', 'description', 'overview'],
+    ),
     home.leaf('home_rows_padding', l10n.homeRowsPadding, keywords: [
       'spacing',
       'gap',

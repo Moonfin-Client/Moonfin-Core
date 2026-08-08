@@ -864,6 +864,9 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
+    if (prefs.get(UserPreferences.hideDetailsMediaDescription)) {
+      return null;
+    }
     final overview = item.overview?.trim();
     if (overview == null || overview.isEmpty) {
       return null;
@@ -3992,7 +3995,9 @@ class _HeaderSection extends StatelessWidget {
             textAlign: isMobile ? TextAlign.center : null,
           ),
         ],
-        if (item.overview != null && item.overview!.isNotEmpty) ...[
+        if (item.overview != null &&
+            item.overview!.isNotEmpty &&
+            !prefs.get(UserPreferences.hideDetailsMediaDescription)) ...[
           const SizedBox(height: 8),
           _OverviewText(
             text: item.overview!,
@@ -4295,6 +4300,51 @@ class DetailPosterImage extends StatelessWidget {
   }
 }
 
+String? _resolveSeriesLandscapeThumbnailUrl(
+  AggregatedItem item,
+  ImageApi imageApi, {
+  required int maxWidth,
+}) {
+  final sId = item.seriesId ?? item.parentPrimaryImageItemId ?? item.parentId;
+  if (sId == null || sId.isEmpty) return null;
+
+  final seriesThumbTag = item.seriesThumbImageTag ?? item.parentThumbImageTag;
+  if (seriesThumbTag != null && seriesThumbTag.isNotEmpty) {
+    return imageApi.getThumbImageUrl(sId, maxWidth: maxWidth, tag: seriesThumbTag);
+  }
+
+  if (item.parentThumbItemId != null &&
+      item.parentThumbItemId!.isNotEmpty &&
+      item.parentThumbImageTag != null &&
+      item.parentThumbImageTag!.isNotEmpty) {
+    return imageApi.getThumbImageUrl(
+      item.parentThumbItemId!,
+      maxWidth: maxWidth,
+      tag: item.parentThumbImageTag!,
+    );
+  }
+
+  final backdropTags = item.parentBackdropImageTags.isNotEmpty
+      ? item.parentBackdropImageTags
+      : item.backdropImageTags;
+  final backdropId = item.parentBackdropItemId ?? sId;
+  if (backdropTags.isNotEmpty) {
+    return imageApi.getBackdropImageUrl(
+      backdropId,
+      maxWidth: maxWidth,
+      index: 0,
+      tag: backdropTags.first,
+    );
+  }
+
+  final sPrimaryTag = item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
+  if (sPrimaryTag != null && sPrimaryTag.isNotEmpty) {
+    return imageApi.getPrimaryImageUrl(sId, maxWidth: maxWidth, tag: sPrimaryTag);
+  }
+
+  return imageApi.getPrimaryImageUrl(sId, maxWidth: maxWidth);
+}
+
 class _EpisodeThumbnail extends StatelessWidget {
   final AggregatedItem item;
   final ImageApi imageApi;
@@ -4307,8 +4357,24 @@ class _EpisodeThumbnail extends StatelessWidget {
     final desktopScale = _desktopUiScale();
     final w = isMobile ? 200.0 : 280.0 * desktopScale;
     final h = isMobile ? 113.0 : 158.0 * desktopScale;
+    final maxW = isMobile ? 400 : (560 * desktopScale).round();
 
-    if (item.primaryImageTag == null) return SizedBox(width: w, height: h);
+    final prefs = GetIt.instance<UserPreferences>();
+    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
+    final seriesThumbUrl = useSeriesThumb
+        ? _resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: maxW)
+        : null;
+
+    final imageUrl = seriesThumbUrl ??
+        (item.primaryImageTag != null
+            ? imageApi.getPrimaryImageUrl(
+                item.id,
+                maxWidth: maxW,
+                tag: item.primaryImageTag,
+              )
+            : null);
+
+    if (imageUrl == null) return SizedBox(width: w, height: h);
 
     return SizedBox(
       width: w,
@@ -4318,11 +4384,7 @@ class _EpisodeThumbnail extends StatelessWidget {
           ClipRRect(
             borderRadius: AppRadius.circular(8),
             child: OfflineAwareImage(
-              imageUrl: imageApi.getPrimaryImageUrl(
-                item.id,
-                maxWidth: isMobile ? 400 : (560 * desktopScale).round(),
-                tag: item.primaryImageTag,
-              ),
+              imageUrl: imageUrl,
               width: w,
               height: h,
               fit: BoxFit.cover,
@@ -11782,12 +11844,19 @@ class DetailChaptersRow extends StatelessWidget {
               ? (chapter['Name'] as String)
               : AppLocalizations.of(context).chapterNumber(index + 1);
           final imageTag = chapter['ImageTag'] as String?;
-          final chapterImageUrl = imageApi.getChapterImageUrl(
-            item.id,
-            index: index,
-            maxWidth: chapterImageWidth,
-            tag: imageTag,
-          );
+          final prefs = GetIt.instance<UserPreferences>();
+          final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
+          final seriesThumbUrl = useSeriesThumb
+              ? _resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: chapterImageWidth)
+              : null;
+
+          final chapterImageUrl = seriesThumbUrl ??
+              imageApi.getChapterImageUrl(
+                item.id,
+                index: index,
+                maxWidth: chapterImageWidth,
+                tag: imageTag,
+              );
 
           return _ChapterListCard(
             chapterName: name,
@@ -12993,6 +13062,22 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
           .colorValue,
     );
 
+    final prefs = GetIt.instance<UserPreferences>();
+    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
+    final maxW = widget.isMobile ? 250 : (250 * desktopScale).round();
+    final seriesThumbUrl = useSeriesThumb
+        ? _resolveSeriesLandscapeThumbnailUrl(ep, widget.imageApi, maxWidth: maxW)
+        : null;
+
+    final epImageUrl = seriesThumbUrl ??
+        (ep.primaryImageTag != null
+            ? widget.imageApi.getPrimaryImageUrl(
+                ep.id,
+                maxWidth: maxW,
+                tag: ep.primaryImageTag,
+              )
+            : null);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setHovered(true),
@@ -13036,15 +13121,9 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          if (ep.primaryImageTag != null)
+                          if (epImageUrl != null)
                             OfflineAwareImage(
-                              imageUrl: widget.imageApi.getPrimaryImageUrl(
-                                ep.id,
-                                maxHeight: widget.isMobile
-                                    ? 250
-                                    : (250 * desktopScale).round(),
-                                tag: ep.primaryImageTag,
-                              ),
+                              imageUrl: epImageUrl,
                               fit: BoxFit.cover,
                               errorWidget: (_, _, _) => Container(
                                 color: Colors.white.withValues(alpha: 0.05),
@@ -13215,9 +13294,23 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
           .get(UserPreferences.focusColor)
           .colorValue,
     );
-    final cardExpansion = GetIt.instance<UserPreferences>().get(
-      UserPreferences.cardFocusExpansion,
-    );
+    final prefs = GetIt.instance<UserPreferences>();
+    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
+    final maxW = isMobile ? 240 : (240 * desktopScale).round();
+    final seriesThumbUrl = useSeriesThumb
+        ? _resolveSeriesLandscapeThumbnailUrl(episode, widget.imageApi, maxWidth: maxW)
+        : null;
+
+    final epThumbTag = episode.primaryImageTag;
+    final epImageUrl = seriesThumbUrl ??
+        (epThumbTag != null
+            ? widget.imageApi.getPrimaryImageUrl(
+                episode.id,
+                maxHeight: maxW,
+                tag: epThumbTag,
+              )
+            : null);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -13261,15 +13354,9 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            if (episode.primaryImageTag != null)
+                            if (epImageUrl != null)
                               OfflineAwareImage(
-                                imageUrl: widget.imageApi.getPrimaryImageUrl(
-                                  episode.id,
-                                  maxHeight: isMobile
-                                      ? 240
-                                      : (240 * desktopScale).round(),
-                                  tag: episode.primaryImageTag,
-                                ),
+                                imageUrl: epImageUrl,
                                 fit: BoxFit.cover,
                                 errorWidget: (_, _, _) => const SizedBox.shrink(),
                               ),
@@ -13426,6 +13513,22 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
       UserPreferences.cardFocusExpansion,
     );
     final isMobile = _isCompact(context);
+    final prefs = GetIt.instance<UserPreferences>();
+    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
+    final maxW = isMobile ? 220 : (220 * desktopScale).round();
+    final seriesThumbUrl = useSeriesThumb
+        ? _resolveSeriesLandscapeThumbnailUrl(episode, widget.imageApi, maxWidth: maxW)
+        : null;
+
+    final epThumbTag = episode.primaryImageTag;
+    final epImageUrl = seriesThumbUrl ??
+        (epThumbTag != null
+            ? widget.imageApi.getPrimaryImageUrl(
+                episode.id,
+                maxHeight: maxW,
+                tag: epThumbTag,
+              )
+            : null);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -13478,15 +13581,9 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              if (episode.primaryImageTag != null)
+                              if (epImageUrl != null)
                                 OfflineAwareImage(
-                                  imageUrl: widget.imageApi.getPrimaryImageUrl(
-                                    episode.id,
-                                    maxHeight: isMobile
-                                        ? 220
-                                        : (220 * desktopScale).round(),
-                                    tag: episode.primaryImageTag,
-                                  ),
+                                  imageUrl: epImageUrl,
                                   fit: BoxFit.cover,
                                   errorWidget: (_, _, _) => Container(
                                     color: Colors.white.withValues(alpha: 0.05),

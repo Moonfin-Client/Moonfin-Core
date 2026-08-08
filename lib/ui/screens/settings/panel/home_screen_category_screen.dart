@@ -55,6 +55,49 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                   setState(() {});
                 },
               ),
+              EnumPreferenceTile<PosterSize>(
+                preference: UserPreferences.posterSize,
+                title: l10n.cardSize,
+                icon: Icons.photo_size_select_large,
+                labelOf: (v) => switch (v) {
+                  PosterSize.small => l10n.small,
+                  PosterSize.medium => l10n.medium,
+                  PosterSize.large => l10n.large,
+                  PosterSize.extraLarge => l10n.extraLarge,
+                },
+                onChanged: _pushPersonalizationSync,
+              ),
+              SliderPreferenceTile(
+                preference: rowsStyle == HomeRowsStyle.v2
+                    ? UserPreferences.modernHomeRowsPadding
+                    : UserPreferences.classicHomeRowsPadding,
+                title: l10n.homeRowsPadding,
+                description: l10n.homeRowsPaddingDescription,
+                icon: Icons.unfold_more,
+                min: rowsStyle == HomeRowsStyle.v2 ? 360 : 10,
+                max: rowsStyle == HomeRowsStyle.v2 ? 560 : 130,
+                divisions: rowsStyle == HomeRowsStyle.v2 ? 10 : 6,
+                enabled: isPaddingEnabled,
+                onChangeEnd: _pushPersonalizationSync,
+              ),
+              if (!PlatformDetection.useMobileUi)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.fullScreenRows,
+                  title: l10n.fullScreenRows,
+                  subtitle: l10n.fullScreenRowsDescription,
+                  icon: Icons.image_aspect_ratio,
+                  onChanged: () {
+                    _pushPersonalizationSync();
+                    if (!mounted) return;
+                    setState(() {});
+                  },
+                ),
+            ],
+          ),
+
+          _SectionHeader(l10n.continueWatchingAndNextUpHeader),
+          adaptiveListSection(
+            children: [
               SwitchPreferenceTile(
                 preference: UserPreferences.mergeContinueWatchingNextUp,
                 title: l10n.mergeContinueWatchingAndNextUp,
@@ -80,6 +123,12 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                   _reloadHomeRows();
                 },
               ),
+            ],
+          ),
+
+          _SectionHeader(l10n.mediaDetailsAndSpoilers),
+          adaptiveListSection(
+            children: [
               SwitchPreferenceTile(
                 preference: UserPreferences.seriesThumbnailsEnabled,
                 title: l10n.seriesThumbnails,
@@ -111,31 +160,14 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                     setState(() {});
                   },
                 ),
-              SliderPreferenceTile(
-                preference: rowsStyle == HomeRowsStyle.v2
-                    ? UserPreferences.modernHomeRowsPadding
-                    : UserPreferences.classicHomeRowsPadding,
-                title: l10n.homeRowsPadding,
-                description: l10n.homeRowsPaddingDescription,
-                icon: Icons.unfold_more,
-                min: rowsStyle == HomeRowsStyle.v2 ? 360 : 10,
-                max: rowsStyle == HomeRowsStyle.v2 ? 560 : 130,
-                divisions: rowsStyle == HomeRowsStyle.v2 ? 10 : 6,
-                enabled: isPaddingEnabled,
-                onChangeEnd: _pushPersonalizationSync,
-              ),
-              EnumPreferenceTile<PosterSize>(
-                preference: UserPreferences.posterSize,
-                title: l10n.cardSize,
-                icon: Icons.photo_size_select_large,
-                labelOf: (v) => switch (v) {
-                  PosterSize.small => l10n.small,
-                  PosterSize.medium => l10n.medium,
-                  PosterSize.large => l10n.large,
-                  PosterSize.extraLarge => l10n.extraLarge,
-                },
-                onChanged: _pushPersonalizationSync,
-              ),
+              if (rowsStyle == HomeRowsStyle.v2)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.hideHomeMediaDescription,
+                  title: l10n.hideHomeMediaDescription,
+                  subtitle: l10n.hideHomeMediaDescriptionSubtitle,
+                  icon: Icons.description_outlined,
+                  onChanged: _pushPersonalizationSync,
+                ),
             ],
           ),
 

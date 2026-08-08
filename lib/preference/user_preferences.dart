@@ -344,6 +344,9 @@ class UserPreferences extends ChangeNotifier {
     'pref_detail_screen_style',
     'pref_detail_expanded_tabs',
     'pref_detail_show_technical_details',
+    'pref_hide_details_media_description',
+    'pref_detail_use_series_thumbnails',
+    'pref_hide_home_media_description',
     'pref_display_audio_rows',
     'pref_display_since_you_watched_rows',
     'pref_since_you_watched_source',
@@ -1230,6 +1233,24 @@ class UserPreferences extends ChangeNotifier {
   /// server like [detailScreenStyle].
   static final detailShowTechnicalDetails = Preference(
     key: 'pref_detail_show_technical_details',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on the details page is hidden.
+  static final hideDetailsMediaDescription = Preference(
+    key: 'pref_hide_details_media_description',
+    defaultValue: false,
+  );
+
+  /// When on, thumbnails on Classic details page are replaced with series thumbnail.
+  static final detailUseSeriesThumbnails = Preference(
+    key: 'pref_detail_use_series_thumbnails',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on the Home screen is hidden.
+  static final hideHomeMediaDescription = Preference(
+    key: 'pref_hide_home_media_description',
     defaultValue: false,
   );
 
