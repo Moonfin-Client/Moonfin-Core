@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../focus/focusable_wrapper.dart';
 import '../track_selector_dialog.dart';
+import 'seerr_status_dot.dart';
 
 // D-pad friendly form controls for the Seerr request and issue dialogs. Plain
 // Material toggles, chips, and dropdowns don't react to the remote's select
@@ -126,6 +127,9 @@ class SeerrChoiceChip extends StatelessWidget {
   final String label;
   final bool selected;
   final ValueChanged<bool>? onSelected;
+
+  /// Marks a season the library already holds with a check, so a disabled
+  /// chip can say why it is off the table.
   final bool isAvailable;
 
   const SeerrChoiceChip({
@@ -151,10 +155,10 @@ class SeerrChoiceChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isAvailable) ...[
-            const Icon(
+            Icon(
               Icons.check_circle,
               size: 14,
-              color: Color(0xFF10B981),
+              color: seerrStatusColor(SeerrMediaStatus.available),
             ),
             const SizedBox(width: 6),
           ],
@@ -183,7 +187,6 @@ class SeerrChoiceChip extends StatelessWidget {
     );
   }
 }
-
 
 /// A dialog action button (Cancel / primary submit) that works with d-pad.
 class SeerrDialogButton extends StatelessWidget {

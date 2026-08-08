@@ -4031,8 +4031,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get allSeasons => '올 시즌';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => '고급 옵션';

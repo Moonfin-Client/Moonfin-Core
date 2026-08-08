@@ -4151,8 +4151,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get allSeasons => 'Tüm Sezonlar';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'Gelişmiş Seçenekler';

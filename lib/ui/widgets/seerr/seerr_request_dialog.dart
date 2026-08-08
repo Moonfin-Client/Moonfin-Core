@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
@@ -6,6 +7,7 @@ import '../../../l10n/app_localizations.dart';
 import 'seerr_advanced_request_options.dart';
 import 'seerr_quota_row.dart';
 import 'seerr_request_action.dart';
+import 'seerr_status_dot.dart';
 import 'seerr_tv_controls.dart';
 import '../track_selector_dialog.dart';
 
@@ -34,6 +36,8 @@ void showSeerrRequestDialog({
   final type = s.isTv ? l10n.series : l10n.movie;
   showStyledPlayerDialog<void>(
     context,
+    // With a switch on the sheet the title stays neutral, since either track
+    // can end up being the one asked for. Without one it has to say which.
     title: is4k && !_hasQualityToggle(vm, qualityToggle)
         ? l10n.requestSeriesOrMovie4k(type)
         : l10n.requestSeriesOrMovie(type),
@@ -81,7 +85,6 @@ class SeerrRequestDialog extends StatefulWidget {
   State<SeerrRequestDialog> createState() => _SeerrRequestDialogState();
 }
 
-
 class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   late bool _allSeasons = widget.season == null;
   late bool _is4k = widget.is4k;
@@ -89,11 +92,9 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   late final Set<int> _selectedSeasons = {?widget.season};
   late final SeerrAdvancedRequestController _advanced;
 
-  /// The seasons already available in the library or spoken for in requests,
-  /// so flipping the switch redraws the chips against the track being asked for.
-  Set<int> get _requestedSeasons =>
-      widget.vm.state.quality(is4k: _is4k).unavailableOrRequestedSeasons;
-
+  /// The track being asked for, so flipping the switch redraws the sheet
+  /// against the one the request will actually go out on.
+  SeerrQualityStatus get _quality => widget.vm.state.quality(is4k: _is4k);
 
   @override
   void initState() {
@@ -151,7 +152,8 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
     if (!widget.isTv) return 0;
     if (_allSeasons) {
       final total = _seasonNumbers.length;
-      return (total - _requestedSeasons.length).clamp(1, total);
+      return (total - _quality.unavailableOrRequestedSeasons.length)
+          .clamp(1, total);
     }
     return _selectedSeasons.length;
   }
@@ -199,28 +201,24 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
 
     final showToggle = _hasQualityToggle(widget.vm, widget.qualityToggle);
     final children = <Widget>[];
-    if (widget.isTv &&
-        widget.isContinuing &&
-        widget.vm.state.quality(is4k: _is4k).isFullyAvailable) {
+    if (widget.isTv && widget.isContinuing && _quality.isFullyAvailable) {
+      final green = seerrStatusColor(SeerrMediaStatus.available);
       children.add(
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: const Color(0xFF10B981).withValues(alpha: 0.4),
-            ),
+            color: green.withValues(alpha: 0.15),
+            borderRadius: AppRadius.circular(8),
+            border: Border.all(color: green.withValues(alpha: 0.4)),
           ),
-
           child: Row(
             children: [
-              const Icon(Icons.autorenew, color: Color(0xFF10B981), size: 20),
+              Icon(Icons.autorenew, color: green, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  l10n.seriesContinuingFutureSeasonsMonitored,
+                  l10n.seerrSeriesContinuing,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
@@ -230,7 +228,6 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
               ),
             ],
           ),
-
         ),
       );
     }
@@ -247,7 +244,6 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
         ),
       );
     }
-
     if (widget.isTv) {
       children.add(const Divider(color: Colors.white12));
       children.add(_buildSeasonSelector(autofocusAll: !showToggle));
@@ -311,7 +307,9 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
   Widget _buildSeasonSelector({bool autofocusAll = false}) {
     final l10n = AppLocalizations.of(context);
     final seasonNumbers = _seasonNumbers;
-    final requested = _requestedSeasons;
+    final quality = _quality;
+    final unselectable = quality.unavailableOrRequestedSeasons;
+    final available = quality.availableSeasons;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -332,13 +330,13 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
               spacing: 8,
               runSpacing: 8,
               children: seasonNumbers.map((seasonNumber) {
-                final alreadyRequested = requested.contains(seasonNumber);
+                final taken = unselectable.contains(seasonNumber);
                 final selected = _selectedSeasons.contains(seasonNumber);
                 return SeerrChoiceChip(
                   label: l10n.seasonChip(seasonNumber),
                   selected: selected,
-                  isAvailable: alreadyRequested,
-                  onSelected: alreadyRequested
+                  isAvailable: available.contains(seasonNumber),
+                  onSelected: taken
                       ? null
                       : (v) => setState(() {
                           if (v) {
@@ -348,12 +346,10 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
                           }
                         }),
                 );
-
               }).toList(),
             ),
           ),
       ],
     );
   }
-
 }

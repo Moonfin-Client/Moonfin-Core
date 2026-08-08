@@ -124,9 +124,9 @@ void main() {
       );
 
       expect(hd.requestedSeasons, {2});
+      expect(hd.availableSeasons, {3});
       expect(hd.unavailableOrRequestedSeasons, {2, 3});
     });
-
 
     test('declined and failed requests are not active and free their seasons',
         () {

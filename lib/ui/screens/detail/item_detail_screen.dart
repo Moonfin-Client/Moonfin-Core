@@ -12354,13 +12354,13 @@ Widget? _seerrRequestButton(
   bool isPrimary = false,
   FocusNode? focusNode,
   bool autofocus = false,
-  String? itemStatus,
 }) {
   if (seerr == null) return null;
-  final statusStr = (seerr.state.tv?.status ?? itemStatus ?? '').toLowerCase();
-  final isContinuing = statusStr.isNotEmpty &&
-      statusStr != 'ended' &&
-      statusStr != 'canceled';
+  // A series counts as continuing until it has settled. An unknown status
+  // stays false, so a lookup that found nothing never opens the button.
+  final status = (seerr.state.tv?.status ?? '').toLowerCase();
+  final isContinuing =
+      status.isNotEmpty && status != 'ended' && status != 'canceled';
   final action = seerrRequestActionFor(
     seerr.state.quality(is4k: is4k),
     l10n,
@@ -12384,7 +12384,6 @@ Widget? _seerrRequestButton(
     ),
   );
 }
-
 
 /// Takes this track's open request back. Rides in the same arrangement slot
 /// as the track's request button, so an open request on a partially available

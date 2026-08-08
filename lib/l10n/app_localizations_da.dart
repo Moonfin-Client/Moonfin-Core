@@ -4137,8 +4137,8 @@ class AppLocalizationsDa extends AppLocalizations {
   String get allSeasons => 'Alle årstider';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'Avancerede indstillinger';

@@ -4162,8 +4162,8 @@ class AppLocalizationsBg extends AppLocalizations {
   String get allSeasons => 'Всички сезони';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'Разширени опции';

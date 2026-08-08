@@ -4117,8 +4117,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allSeasons => 'All Seasons';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'Advanced Options';

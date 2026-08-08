@@ -98,8 +98,34 @@ void main() {
       expect(action.kind, SeerrRequestActionKind.request);
       expect(action.label, _l10n.requestMore);
     });
-  });
 
+    test('a fully available ended series has nothing left to offer', () {
+      final q = _track(status: 5);
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: true,
+        isContinuing: false,
+      );
+      expect(action.kind, SeerrRequestActionKind.none);
+    });
+
+    test('a continuing series still processing reads requested', () {
+      final q = _track(
+        status: 3,
+        requests: [_request(status: SeerrRequest.statusApproved)],
+      );
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: true,
+        isContinuing: true,
+      );
+      expect(action.kind, SeerrRequestActionKind.requested);
+    });
+  });
 
   group('seerrCancelLabelFor', () {
     test('offers a viewer their own pending request back', () {

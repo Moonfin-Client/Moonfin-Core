@@ -4275,8 +4275,8 @@ class AppLocalizationsSr extends AppLocalizations {
   String get allSeasons => 'Сва годишња доба';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'Напредне опције';

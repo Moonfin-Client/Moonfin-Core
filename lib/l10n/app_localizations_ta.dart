@@ -4174,8 +4174,8 @@ class AppLocalizationsTa extends AppLocalizations {
   String get allSeasons => 'அனைத்து பருவங்களும்';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'மேம்பட்ட விருப்பங்கள்';

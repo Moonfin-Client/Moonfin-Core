@@ -24,6 +24,10 @@ class SeerrRequestAction {
 /// request still offers Request More rather than only reporting the request.
 /// Taking a request back is a separate control, from [seerrCancelLabelFor],
 /// so the two can sit side by side.
+///
+/// Full availability is only final for a movie or an ended series. A
+/// continuing series can always grow another season, so it keeps offering
+/// Request More even with every aired season in the library.
 SeerrRequestAction seerrRequestActionFor(
   SeerrQualityStatus q,
   AppLocalizations l10n, {
@@ -31,17 +35,19 @@ SeerrRequestAction seerrRequestActionFor(
   bool isTv = false,
   bool isContinuing = false,
 }) {
-  final isContinuingTv = isTv && isContinuing;
+  final continuingFullyAvailable = isTv && isContinuing && q.isFullyAvailable;
   final canShowRequest = allowed &&
-      (!q.isFullyAvailable || isContinuingTv) &&
-      (!q.hasExistingRequest || q.isPartiallyAvailable || isContinuingTv);
-  final hasOpenRequest =
-      q.activeRequests.isNotEmpty && (!q.isFullyAvailable || isContinuingTv);
+      (!q.isFullyAvailable || continuingFullyAvailable) &&
+      (!q.hasExistingRequest ||
+          q.isPartiallyAvailable ||
+          continuingFullyAvailable);
+  final hasOpenRequest = q.activeRequests.isNotEmpty &&
+      (!q.isFullyAvailable || continuingFullyAvailable);
 
   if (canShowRequest) {
     return SeerrRequestAction(
       SeerrRequestActionKind.request,
-      (q.isPartiallyAvailable || (q.isFullyAvailable && isContinuingTv))
+      q.isPartiallyAvailable || continuingFullyAvailable
           ? (q.is4k ? l10n.requestMore4k : l10n.requestMore)
           : (q.is4k ? l10n.request4k : l10n.request),
     );
@@ -54,7 +60,6 @@ SeerrRequestAction seerrRequestActionFor(
   }
   return SeerrRequestAction.none;
 }
-
 
 /// The label for taking this track's open request back, or null when there is
 /// nothing the viewer may cancel.

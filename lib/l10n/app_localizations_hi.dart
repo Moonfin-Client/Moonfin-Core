@@ -4129,8 +4129,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get allSeasons => 'सभी मौसम';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'उन्नत विकल्प';

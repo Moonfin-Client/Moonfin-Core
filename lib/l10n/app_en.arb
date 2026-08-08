@@ -5630,11 +5630,10 @@
   "@allSeasons": {
     "description": "Checkbox label for selecting all seasons"
   },
-  "seriesContinuingFutureSeasonsMonitored": "Series Continuing · Future Seasons Monitored",
-  "@seriesContinuingFutureSeasonsMonitored": {
-    "description": "Status banner shown in Seerr request dialog for continuing series when currently aired seasons are in library"
+  "seerrSeriesContinuing": "Series Continuing · Future Seasons Can Be Requested",
+  "@seerrSeriesContinuing": {
+    "description": "Banner in the Seerr request dialog for a continuing series whose aired seasons are all in the library"
   },
-
   "advancedOptions": "Advanced Options",
   "@advancedOptions": {
     "description": "Expansion tile for advanced request options"

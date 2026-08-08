@@ -4126,8 +4126,8 @@ class AppLocalizationsPa extends AppLocalizations {
   String get allSeasons => 'ਸਾਰੇ ਸੀਜ਼ਨ';
 
   @override
-  String get seriesContinuingFutureSeasonsMonitored =>
-      'Series Continuing · Future Seasons Monitored';
+  String get seerrSeriesContinuing =>
+      'Series Continuing · Future Seasons Can Be Requested';
 
   @override
   String get advancedOptions => 'ਉੱਨਤ ਵਿਕਲਪ';

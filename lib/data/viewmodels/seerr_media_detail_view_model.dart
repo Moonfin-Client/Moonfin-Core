@@ -125,28 +125,24 @@ class SeerrQualityStatus {
     return seasons;
   }
 
-  /// Season numbers that are either already available in the library (status 4 or 5)
-  /// or have active/approved requests, so their chips should be greyed out.
-  Set<int> get unavailableOrRequestedSeasons {
-    final seasons = Set<int>.from(requestedSeasons);
-    for (final s in seasonAvailability) {
-      final statusVal = (is4k ? s.status4k : s.status) ?? 0;
-      if (statusVal >= 4) {
-        seasons.add(s.seasonNumber);
-      }
-    }
-    return seasons;
-  }
+  /// Seasons the library already holds for this track, fully or partially.
+  Set<int> get availableSeasons => {
+        for (final s in seasonAvailability)
+          if (((is4k ? s.status4k : s.status) ?? 0) >= 4) s.seasonNumber,
+      };
 
+  /// Seasons the request sheet may not offer: already in the library or
+  /// already spoken for by an open request.
+  Set<int> get unavailableOrRequestedSeasons =>
+      {...requestedSeasons, ...availableSeasons};
 
   /// Season number to media status (2 pending, 3 processing, 4 partial,
   /// 5 available) for this quality track, so a series can show where it stands
   /// season by season rather than only as a whole.
   ///
-  /// Deliberately separate from [requestedSeasons], which answers the narrower
-  /// "may this season still be requested" question the request sheet asks.
-  /// Folding availability into that would quietly change which seasons a user
-  /// can tick.
+  /// Deliberately separate from [unavailableOrRequestedSeasons], which answers
+  /// the narrower "may this season still be requested" question the request
+  /// sheet asks.
   Map<int, int> get seasonStatus {
     final byNumber = <int, int>{};
 
