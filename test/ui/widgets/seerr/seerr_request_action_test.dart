@@ -125,6 +125,58 @@ void main() {
       );
       expect(action.kind, SeerrRequestActionKind.requested);
     });
+
+    test(
+        'a plain-pending track (status 2) with an unrequested season still '
+        'offers request more, even though nothing is partially available yet',
+        () {
+      final q = _track(
+        status: 2,
+        requests: [_request(status: SeerrRequest.statusPending)],
+      );
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: true,
+        hasUnrequestedSeasons: true,
+      );
+      expect(action.kind, SeerrRequestActionKind.request);
+      expect(action.label, _l10n.requestMore);
+    });
+
+    test(
+        'a plain-pending track with nothing left unrequested still just '
+        'reads requested (unchanged from before hasUnrequestedSeasons existed)',
+        () {
+      final q = _track(
+        status: 2,
+        requests: [_request(status: SeerrRequest.statusPending)],
+      );
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: true,
+        hasUnrequestedSeasons: false,
+      );
+      expect(action.kind, SeerrRequestActionKind.requested);
+    });
+
+    test('hasUnrequestedSeasons is ignored for movies (isTv: false)', () {
+      final q = _track(
+        status: 2,
+        requests: [_request(status: SeerrRequest.statusPending)],
+      );
+      final action = seerrRequestActionFor(
+        q,
+        _l10n,
+        allowed: true,
+        isTv: false,
+        hasUnrequestedSeasons: true,
+      );
+      expect(action.kind, SeerrRequestActionKind.requested);
+    });
   });
 
   group('seerrCancelLabelFor', () {

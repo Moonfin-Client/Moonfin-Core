@@ -12569,12 +12569,23 @@ Widget? _seerrRequestButton(
   final status = (seerr.state.tv?.status ?? '').toLowerCase();
   final isContinuing =
       status.isNotEmpty && status != 'ended' && status != 'canceled';
+  final quality = seerr.state.quality(is4k: is4k);
+  // A season nobody has requested (or that isn't already in the library)
+  // stays requestable even while another season on this track is still
+  // pending - Seerr's own aggregate status only reflects what was already
+  // asked for, not the whole show.
+  final hasUnrequestedSeasons = seerr.state.isTv &&
+      seerrSeasonNumbersOf(
+        seerr.state.tv?.seasons ?? const [],
+        seerr.state.numberOfSeasons ?? 0,
+      ).any((s) => !quality.unavailableOrRequestedSeasons.contains(s));
   final action = seerrRequestActionFor(
-    seerr.state.quality(is4k: is4k),
+    quality,
     l10n,
     allowed: is4k ? seerr.canRequest4k : seerr.canRequest,
     isTv: seerr.state.isTv,
     isContinuing: isContinuing,
+    hasUnrequestedSeasons: hasUnrequestedSeasons,
   );
   if (action.kind != SeerrRequestActionKind.request) return null;
   return _DetailActionButton(

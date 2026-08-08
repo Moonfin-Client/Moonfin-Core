@@ -27,27 +27,33 @@ class SeerrRequestAction {
 ///
 /// Full availability is only final for a movie or an ended series. A
 /// continuing series can always grow another season, so it keeps offering
-/// Request More even with every aired season in the library.
+/// Request More even with every aired season in the library. Likewise,
+/// [hasUnrequestedSeasons] (a season nobody has asked for at all, computed
+/// from [SeerrQualityStatus.unavailableOrRequestedSeasons] against the show's
+/// real season list) keeps Request More available even while the *rest* of
+/// the track sits at plain "pending" (status 2, not yet 4/partial) - Seerr's
+/// aggregate status only reflects what was already requested, so a season
+/// that was never part of any request must not be gated on it.
 SeerrRequestAction seerrRequestActionFor(
   SeerrQualityStatus q,
   AppLocalizations l10n, {
   required bool allowed,
   bool isTv = false,
   bool isContinuing = false,
+  bool hasUnrequestedSeasons = false,
 }) {
-  final continuingFullyAvailable = isTv && isContinuing && q.isFullyAvailable;
+  final hasMoreToRequest = (isTv && isContinuing && q.isFullyAvailable) ||
+      (isTv && hasUnrequestedSeasons);
   final canShowRequest = allowed &&
-      (!q.isFullyAvailable || continuingFullyAvailable) &&
-      (!q.hasExistingRequest ||
-          q.isPartiallyAvailable ||
-          continuingFullyAvailable);
-  final hasOpenRequest = q.activeRequests.isNotEmpty &&
-      (!q.isFullyAvailable || continuingFullyAvailable);
+      (!q.isFullyAvailable || hasMoreToRequest) &&
+      (!q.hasExistingRequest || q.isPartiallyAvailable || hasMoreToRequest);
+  final hasOpenRequest =
+      q.activeRequests.isNotEmpty && (!q.isFullyAvailable || hasMoreToRequest);
 
   if (canShowRequest) {
     return SeerrRequestAction(
       SeerrRequestActionKind.request,
-      q.isPartiallyAvailable || continuingFullyAvailable
+      q.isPartiallyAvailable || hasMoreToRequest
           ? (q.is4k ? l10n.requestMore4k : l10n.requestMore)
           : (q.is4k ? l10n.request4k : l10n.request),
     );
