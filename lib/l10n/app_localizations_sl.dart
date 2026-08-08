@@ -4166,6 +4166,10 @@ class AppLocalizationsSl extends AppLocalizations {
   String get allSeasons => 'Vsi letni časi';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Napredne možnosti';
 
   @override

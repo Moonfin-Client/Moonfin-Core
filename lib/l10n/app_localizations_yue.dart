@@ -4004,6 +4004,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get allSeasons => '所有季節';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => '進階選項';
 
   @override

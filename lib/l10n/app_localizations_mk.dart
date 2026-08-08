@@ -4160,6 +4160,10 @@ class AppLocalizationsMk extends AppLocalizations {
   String get allSeasons => 'Сите годишни времиња';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Напредни опции';
 
   @override

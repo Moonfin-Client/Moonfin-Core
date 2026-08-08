@@ -4159,6 +4159,10 @@ class AppLocalizationsBe extends AppLocalizations {
   String get allSeasons => 'Усе сезоны';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Дадатковыя параметры';
 
   @override

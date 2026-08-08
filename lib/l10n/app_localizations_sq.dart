@@ -4173,6 +4173,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get allSeasons => 'Të gjitha stinët';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Opsione të avancuara';
 
   @override

@@ -4163,6 +4163,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get allSeasons => 'ಎಲ್ಲಾ ಋತುಗಳು';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'ಸುಧಾರಿತ ಆಯ್ಕೆಗಳು';
 
   @override

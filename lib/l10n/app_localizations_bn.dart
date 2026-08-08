@@ -4130,6 +4130,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get allSeasons => 'সব ঋতু';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'উন্নত বিকল্প';
 
   @override

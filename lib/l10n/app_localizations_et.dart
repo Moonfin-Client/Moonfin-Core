@@ -4142,6 +4142,10 @@ class AppLocalizationsEt extends AppLocalizations {
   String get allSeasons => 'Kõik aastaajad';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Täpsemad suvandid';
 
   @override

@@ -4142,6 +4142,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get allSeasons => 'Tất cả các mùa';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Tùy chọn nâng cao';
 
   @override

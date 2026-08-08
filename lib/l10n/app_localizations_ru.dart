@@ -4172,6 +4172,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get allSeasons => 'Все сезоны';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Дополнительные параметры';
 
   @override

@@ -4173,6 +4173,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get allSeasons => 'Toate anotimpurile';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Opțiuni avansate';
 
   @override

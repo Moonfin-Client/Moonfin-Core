@@ -214,14 +214,14 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
             ),
           ),
 
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.autorenew, color: Color(0xFF10B981), size: 20),
-              SizedBox(width: 10),
+              const Icon(Icons.autorenew, color: Color(0xFF10B981), size: 20),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Series Continuing · Future Seasons Monitored',
-                  style: TextStyle(
+                  l10n.seriesContinuingFutureSeasonsMonitored,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -230,6 +230,7 @@ class _SeerrRequestDialogState extends State<SeerrRequestDialog> {
               ),
             ],
           ),
+
         ),
       );
     }

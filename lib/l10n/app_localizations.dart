@@ -7474,6 +7474,12 @@ abstract class AppLocalizations {
   /// **'All Seasons'**
   String get allSeasons;
 
+  /// Status banner shown in Seerr request dialog for continuing series when currently aired seasons are in library
+  ///
+  /// In en, this message translates to:
+  /// **'Series Continuing · Future Seasons Monitored'**
+  String get seriesContinuingFutureSeasonsMonitored;
+
   /// Expansion tile for advanced request options
   ///
   /// In en, this message translates to:

@@ -4274,6 +4274,10 @@ class AppLocalizationsHr extends AppLocalizations {
   String get allSeasons => 'Sva godišnja doba';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Napredne opcije';
 
   @override

@@ -4163,6 +4163,10 @@ class AppLocalizationsSk extends AppLocalizations {
   String get allSeasons => 'Všetky ročné obdobia';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Rozšírené možnosti';
 
   @override

@@ -4150,6 +4150,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get allSeasons => 'Бүх улирал';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Нарийвчилсан сонголтууд';
 
   @override

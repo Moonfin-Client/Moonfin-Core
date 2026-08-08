@@ -4136,6 +4136,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get allSeasons => 'Ĉiuj Sezonoj';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Altnivelaj Opcioj';
 
   @override

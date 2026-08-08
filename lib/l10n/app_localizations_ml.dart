@@ -4168,6 +4168,10 @@ class AppLocalizationsMl extends AppLocalizations {
   String get allSeasons => 'എല്ലാ സീസണുകളും';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'വിപുലമായ ഓപ്ഷനുകൾ';
 
   @override

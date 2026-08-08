@@ -3985,6 +3985,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get allSeasons => '所有季';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => '高级选项';
 
   @override

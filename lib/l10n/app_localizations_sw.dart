@@ -4169,6 +4169,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get allSeasons => 'Misimu Yote';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Chaguzi za Juu';
 
   @override

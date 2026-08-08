@@ -4106,6 +4106,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get allSeasons => 'ทุกฤดูกาล';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'ตัวเลือกขั้นสูง';
 
   @override

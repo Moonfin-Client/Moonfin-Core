@@ -4165,6 +4165,10 @@ class AppLocalizationsCy extends AppLocalizations {
   String get allSeasons => 'Pob Tymhorau';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Dewisiadau Uwch';
 
   @override

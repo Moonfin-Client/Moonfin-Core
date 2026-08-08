@@ -4150,6 +4150,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get allSeasons => 'Všechna roční období';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Pokročilé možnosti';
 
   @override

@@ -4146,6 +4146,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get allSeasons => 'بارلىق پەسىللەر';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'ئالىي تاللانمىلار';
 
   @override

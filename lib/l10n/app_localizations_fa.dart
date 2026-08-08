@@ -4117,6 +4117,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get allSeasons => 'تمام فصول';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'گزینه های پیشرفته';
 
   @override

@@ -4172,6 +4172,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get allSeasons => 'Todas las temporadas';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Opciones avanzadas';
 
   @override

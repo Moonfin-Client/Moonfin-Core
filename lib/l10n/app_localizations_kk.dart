@@ -4157,6 +4157,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get allSeasons => 'Барлық маусымдар';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Қосымша опциялар';
 
   @override

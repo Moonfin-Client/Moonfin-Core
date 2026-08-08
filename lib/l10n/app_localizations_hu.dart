@@ -4171,6 +4171,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get allSeasons => 'Minden évad';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Speciális beállítások';
 
   @override

@@ -4141,6 +4141,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get allSeasons => 'Alla årstider';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Avancerade alternativ';
 
   @override

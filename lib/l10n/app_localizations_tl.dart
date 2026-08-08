@@ -4180,6 +4180,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get allSeasons => 'Lahat ng Panahon';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'Mga Advanced na Opsyon';
 
   @override

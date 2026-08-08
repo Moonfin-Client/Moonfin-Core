@@ -4141,6 +4141,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get allSeasons => 'كل المواسم';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'خيارات متقدمة';
 
   @override

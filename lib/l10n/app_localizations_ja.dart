@@ -4038,6 +4038,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get allSeasons => 'オールシーズン';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => '詳細オプション';
 
   @override

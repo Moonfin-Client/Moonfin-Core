@@ -4138,6 +4138,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get allSeasons => 'සියලුම වාර';
 
   @override
+  String get seriesContinuingFutureSeasonsMonitored =>
+      'Series Continuing · Future Seasons Monitored';
+
+  @override
   String get advancedOptions => 'උසස් විකල්ප';
 
   @override
