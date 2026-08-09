@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../util/server_image_cache.dart';
 import '../theme/vibrance.dart';
 import 'image_source.dart';
 
@@ -81,7 +82,10 @@ class BoundedNetworkImage extends StatelessWidget {
       ResizeImage.resizeIfNeeded(
         cacheW,
         null,
-        CachedNetworkImageProvider(imageUrl),
+        CachedNetworkImageProvider(
+          imageUrl,
+          cacheManager: serverImageCacheManager,
+        ),
       ),
       context,
     );
@@ -128,6 +132,7 @@ class BoundedNetworkImage extends StatelessWidget {
         }
         return CachedNetworkImage(
           imageUrl: imageUrl,
+          cacheManager: serverImageCacheManager,
           fit: fit,
           alignment: alignment,
           fadeInDuration: fadeInDuration,

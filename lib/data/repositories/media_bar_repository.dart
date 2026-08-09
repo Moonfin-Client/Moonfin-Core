@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
+import '../../util/server_image_cache.dart';
 import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 
@@ -299,12 +300,24 @@ class MediaBarRepository {
   void precacheImages(BuildContext context, List<MediaBarSlideItem> items) {
     for (final item in items.take(_precacheBackdropCount)) {
       if (item.backdropUrl != null) {
-        precacheImage(CachedNetworkImageProvider(item.backdropUrl!), context);
+        precacheImage(
+          CachedNetworkImageProvider(
+            item.backdropUrl!,
+            cacheManager: serverImageCacheManager,
+          ),
+          context,
+        );
       }
     }
     for (final item in items.take(_precacheLogoCount)) {
       if (item.logoUrl != null) {
-        precacheImage(CachedNetworkImageProvider(item.logoUrl!), context);
+        precacheImage(
+          CachedNetworkImageProvider(
+            item.logoUrl!,
+            cacheManager: serverImageCacheManager,
+          ),
+          context,
+        );
       }
     }
   }
