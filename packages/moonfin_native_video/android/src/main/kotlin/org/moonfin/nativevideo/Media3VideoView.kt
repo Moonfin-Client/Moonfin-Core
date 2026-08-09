@@ -1114,6 +1114,10 @@ class Media3VideoView(
             ) {
                 cancelPendingSubtitleCue(clearView = true)
                 scheduleAudioRekickAfterSeek()
+                // Otherwise Dart only learns the seek landed from the next
+                // 250ms ticker tick, which can still report the pre-seek
+                // position if it fires just before ExoPlayer applies this.
+                emitState()
             }
         }
 

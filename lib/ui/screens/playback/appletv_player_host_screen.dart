@@ -592,9 +592,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     PlaybackManager manager,
   ) {
     try {
-      if (!GetIt.instance<UserPreferences>().get(
-        UserPreferences.trickPlayEnabled,
-      )) {
+      if (GetIt.instance<UserPreferences>().get(
+            UserPreferences.trickPlayMode,
+          ) ==
+          TrickplayMode.disabled) {
         return null;
       }
     } catch (_) {

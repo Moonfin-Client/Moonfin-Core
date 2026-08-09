@@ -1118,10 +1118,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['music', 'song', 'track'],
     ),
     video.leaf(
-      'trick_play_enabled',
+      'trickplay_mode',
       l10n.trickPlay,
       subtitle: l10n.showPreviewThumbnailsWhenSeeking,
-      keywords: ['scrubbing', 'seek thumbnails'],
+      keywords: [
+        'scrubbing',
+        'seek thumbnails',
+        'preview size',
+        'distance from seekbar',
+        'follow scrub',
+      ],
     ),
     if (PlatformDetection.useDesktopUi)
       video.leaf(

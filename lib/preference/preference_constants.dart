@@ -320,6 +320,16 @@ const double kBannerAspectRatio = 1000 / 185;
 /// keep resizing banners with no way to change them.
 const double kBannerCardHeight = 110;
 
+/// [strip] shows a Netflix-style filmstrip spanning the scrub position.
+/// [full] temporarily replaces the video with the trickplay image while
+/// scrubbing.
+enum TrickplayMode {
+  disabled,
+  single,
+  strip,
+  full,
+}
+
 enum ImageType {
   poster,
   thumb,

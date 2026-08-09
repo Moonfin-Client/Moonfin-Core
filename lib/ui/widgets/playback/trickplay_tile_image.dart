@@ -53,7 +53,11 @@ class TrickplayTileImage extends StatelessWidget {
           child: Image(
             image: sheet,
             fit: BoxFit.fill,
-            filterQuality: FilterQuality.medium,
+            // High rather than medium: this tile can be upscaled a lot
+            // (e.g. the Full Screen mode's video cover), and a better
+            // resampling filter is the only lever available for that - the
+            // source pixels are still a low-res thumbnail.
+            filterQuality: FilterQuality.high,
             errorBuilder: (_, _, _) => Container(
               color: Colors.white.withValues(alpha: 0.08),
               alignment: Alignment.center,

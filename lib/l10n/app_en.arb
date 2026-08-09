@@ -3451,6 +3451,38 @@
   "@showPreviewThumbnailsWhenSeeking": {
     "description": "Description for trick play"
   },
+  "trickplayDisplayStyleSingle": "Single Thumbnail",
+  "@trickplayDisplayStyleSingle": {
+    "description": "Trickplay display style option: one thumbnail at the scrub position"
+  },
+  "trickplayDisplayStyleStrip": "Filmstrip",
+  "@trickplayDisplayStyleStrip": {
+    "description": "Trickplay display style option: a row of 5 thumbnails around the scrub position"
+  },
+  "trickplayModeFull": "Full Screen",
+  "@trickplayModeFull": {
+    "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
+  },
+  "trickplaySettingsPreviewHint": "Drag the slider to preview scrubbing",
+  "@trickplaySettingsPreviewHint": {
+    "description": "Hint shown below the live trickplay settings preview"
+  },
+  "trickplayPreviewScale": "Preview Size",
+  "@trickplayPreviewScale": {
+    "description": "Setting for the size of the trickplay seek preview"
+  },
+  "trickplayVerticalOffset": "Distance From Seekbar",
+  "@trickplayVerticalOffset": {
+    "description": "Setting for the vertical position of the trickplay seek preview relative to the seekbar"
+  },
+  "trickplayFollowScrubPosition": "Follow Scrub Position",
+  "@trickplayFollowScrubPosition": {
+    "description": "Setting for whether the trickplay preview horizontally tracks the scrub handle"
+  },
+  "trickplayFollowScrubPositionSubtitle": "Preview slides along the seekbar as you scrub, instead of staying centered",
+  "@trickplayFollowScrubPositionSubtitle": {
+    "description": "Description for the trickplay follow-scrub-position setting"
+  },
   "showDescriptionOnPause": "Show Description on Pause",
   "@showDescriptionOnPause": {
     "description": "Setting for showing description on pause"

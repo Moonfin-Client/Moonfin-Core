@@ -1594,8 +1594,24 @@ class UserPreferences extends ChangeNotifier {
     values: DesktopScrollWheelAction.values,
   );
 
-  static final trickPlayEnabled = Preference(
-    key: 'trick_play_enabled',
+  static final trickPlayMode = EnumPreference(
+    key: 'trickplay_mode',
+    defaultValue: TrickplayMode.single,
+    values: TrickplayMode.values,
+  );
+
+  static final trickPlayPreviewScalePercent = Preference<int>(
+    key: 'trickplay_preview_scale_percent',
+    defaultValue: 30,
+  );
+
+  static final trickPlayVerticalPositionPercent = Preference<int>(
+    key: 'trickplay_vertical_position_percent',
+    defaultValue: 0,
+  );
+
+  static final trickPlayFollowScrubPosition = Preference<bool>(
+    key: 'trickplay_follow_scrub_position',
     defaultValue: true,
   );
 

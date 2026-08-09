@@ -41,12 +41,6 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   const _PlaybackTimeLayoutScreen(),
                 ),
               ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.trickPlayEnabled,
-                title: l10n.trickPlay,
-                subtitle: l10n.showPreviewThumbnailsWhenSeeking,
-                icon: Icons.image_search,
-              ),
               if (PlatformDetection.useDesktopUi)
                 EnumPreferenceTile<DesktopScrollWheelAction>(
                   preference: UserPreferences.desktopScrollWheelAction,
@@ -138,6 +132,49 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 subtitle: Text(l10n.osdButtonsDescription),
                 onTap: () =>
                     context.pushSettingsScreen(const _OsdButtonsScreen()),
+              ),
+            ],
+          ),
+
+          _SectionHeader(l10n.trickPlay),
+          adaptiveListSection(
+            children: [
+              const TrickplaySettingsPreview(),
+              EnumPreferenceTile<TrickplayMode>(
+                preference: UserPreferences.trickPlayMode,
+                title: l10n.trickPlay,
+                description: l10n.showPreviewThumbnailsWhenSeeking,
+                icon: Icons.image_search,
+                labelOf: (v) => switch (v) {
+                  TrickplayMode.disabled => l10n.disabled,
+                  TrickplayMode.single => l10n.trickplayDisplayStyleSingle,
+                  TrickplayMode.strip => l10n.trickplayDisplayStyleStrip,
+                  TrickplayMode.full => l10n.trickplayModeFull,
+                },
+              ),
+              SliderPreferenceTile(
+                preference: UserPreferences.trickPlayPreviewScalePercent,
+                title: l10n.trickplayPreviewScale,
+                icon: Icons.photo_size_select_large_outlined,
+                min: 10,
+                max: 100,
+                divisions: 18,
+                labelOf: (v) => l10n.percentValue(v),
+              ),
+              SliderPreferenceTile(
+                preference: UserPreferences.trickPlayVerticalPositionPercent,
+                title: l10n.trickplayVerticalOffset,
+                icon: Icons.height,
+                min: 0,
+                max: 100,
+                divisions: 20,
+                labelOf: (v) => l10n.percentValue(v),
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.trickPlayFollowScrubPosition,
+                title: l10n.trickplayFollowScrubPosition,
+                subtitle: l10n.trickplayFollowScrubPositionSubtitle,
+                icon: Icons.swipe,
               ),
             ],
           ),

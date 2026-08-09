@@ -1,3 +1,5 @@
+import 'dart:ui' show Rect;
+
 class TrickplayInfo {
   final int width;
   final int height;
@@ -21,6 +23,33 @@ class TrickplayInfo {
       interval > 0;
 
   int get tilesPerImage => tileWidth * tileHeight;
+
+  TrickplayTileResolution resolveTile(Duration position) {
+    final positionMs = position.inMilliseconds;
+    final tileIndex = positionMs ~/ interval;
+    final perImage = tilesPerImage;
+    final tileOffset = tileIndex % perImage;
+    final imageIndex = tileIndex ~/ perImage;
+
+    final col = tileOffset % tileWidth;
+    final row = tileOffset ~/ tileWidth;
+    final offsetX = (col * width).toDouble();
+    final offsetY = (row * height).toDouble();
+
+    return TrickplayTileResolution(
+      imageIndex: imageIndex,
+      sourceRect: Rect.fromLTWH(
+        offsetX,
+        offsetY,
+        width.toDouble(),
+        height.toDouble(),
+      ),
+      thumbWidth: width.toDouble(),
+      thumbHeight: height.toDouble(),
+      tileWidth: tileWidth,
+      tileHeight: tileHeight,
+    );
+  }
 
   static TrickplayInfo? fromItemData(
     Map<String, dynamic> rawData, {
@@ -50,4 +79,40 @@ class TrickplayInfo {
       interval: (info['Interval'] as num?)?.toInt() ?? 0,
     );
   }
+}
+
+class TrickplayTileResolution {
+  final int imageIndex;
+  final Rect sourceRect;
+  final double thumbWidth;
+  final double thumbHeight;
+  final int tileWidth;
+  final int tileHeight;
+
+  const TrickplayTileResolution({
+    required this.imageIndex,
+    required this.sourceRect,
+    required this.thumbWidth,
+    required this.thumbHeight,
+    required this.tileWidth,
+    required this.tileHeight,
+  });
+}
+
+class TrickplayTile {
+  final String url;
+  final Map<String, String> headers;
+  final TrickplayTileResolution resolution;
+
+  const TrickplayTile({
+    required this.url,
+    required this.headers,
+    required this.resolution,
+  });
+
+  Rect get sourceRect => resolution.sourceRect;
+  double get thumbWidth => resolution.thumbWidth;
+  double get thumbHeight => resolution.thumbHeight;
+  int get tileWidth => resolution.tileWidth;
+  int get tileHeight => resolution.tileHeight;
 }

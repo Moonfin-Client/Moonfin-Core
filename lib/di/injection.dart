@@ -362,6 +362,67 @@ Future<void> migrateAudioPassthroughMode(PreferenceStore store) async {
   await store.setBool(UserPreferences.audioModeMigrated.key, true);
 }
 
+const _legacyTrickPlayEnabledKey = 'trick_play_enabled';
+const _legacyTrickPlayDisplayStyleKey = 'trickplay_display_style';
+const _legacyTrickPlayReplaceVideoWhileScrubbingKey =
+    'trickplay_replace_video_while_scrubbing';
+const _legacyTrickPlayVerticalOffsetPxKey = 'trickplay_vertical_offset_px';
+
+/// Consolidates the legacy trickPlayEnabled/trickPlayDisplayStyle/
+/// trickPlayReplaceVideoWhileScrubbing prefs into the single trickPlayMode
+/// enum, and converts the vertical offset from px into the 0-100 percent
+/// Vertical Position now uses. Public (like [migrateAudioPreferenceSplit])
+/// so its mapping logic is unit-testable.
+Future<void> migrateTrickplayPreferenceConsolidation(
+  PreferenceStore store,
+) async {
+  const migrationKey = 'pref_trickplay_consolidation_v1';
+  if (store.getBool(migrationKey) == true) {
+    return;
+  }
+
+  if (!store.containsKey(UserPreferences.trickPlayMode.key)) {
+    final TrickplayMode migratedMode;
+    if (store.containsKey(_legacyTrickPlayEnabledKey) &&
+        store.getBool(_legacyTrickPlayEnabledKey) == false) {
+      // Only an explicit legacy "off" overrides the new default (single/on).
+      migratedMode = TrickplayMode.disabled;
+    } else if (store.getString(_legacyTrickPlayDisplayStyleKey) == 'strip') {
+      // Checked ahead of the legacy replace-video-while-scrubbing bool: if
+      // a user had both set, strip wins (issue #143's filmstrip was the
+      // primary display choice; replace-video was the secondary one).
+      migratedMode = TrickplayMode.strip;
+    } else if (store.getBool(_legacyTrickPlayReplaceVideoWhileScrubbingKey) ==
+        true) {
+      migratedMode = TrickplayMode.full;
+    } else {
+      migratedMode = TrickplayMode.single;
+    }
+    await store.setString(UserPreferences.trickPlayMode.key, migratedMode.name);
+  }
+
+  if (!store.containsKey(
+    UserPreferences.trickPlayVerticalPositionPercent.key,
+  )) {
+    final legacyOffsetPx = store.getInt(_legacyTrickPlayVerticalOffsetPxKey);
+    if (legacyOffsetPx != null) {
+      // Old range was -80..80px; negatives clamp to the new 0% floor (the
+      // default), so only a positive travel is worth writing.
+      final migratedPercent = (legacyOffsetPx / 80.0 * 100)
+          .clamp(0, 100)
+          .round();
+      if (migratedPercent > 0) {
+        await store.setInt(
+          UserPreferences.trickPlayVerticalPositionPercent.key,
+          migratedPercent,
+        );
+      }
+    }
+  }
+
+  await store.setBool(migrationKey, true);
+}
+
 // Minimal DI for background isolates like the Watch Next worker. This must not
 // call registerPlaybackModule: constructing Media3PlayerBackend subscribes to
 // the process-global moonfin/media3_video_events channel and would hijack the
@@ -400,6 +461,7 @@ Future<void> configureDependencies() async {
   await _migrateAndroidMobileAudioDefaults(preferenceStore);
   await migrateAudioPreferenceSplit(preferenceStore);
   await migrateAudioPassthroughMode(preferenceStore);
+  await migrateTrickplayPreferenceConsolidation(preferenceStore);
 
   var deviceId = preferenceStore.getString('device_id');
   if (deviceId == null) {

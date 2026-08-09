@@ -63,6 +63,7 @@ import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/support_dialog.dart';
+import '../../widgets/trickplay_settings_preview.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../home/home_view_model.dart';
 import 'appearance_theme_screen.dart';

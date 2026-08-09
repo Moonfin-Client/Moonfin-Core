@@ -4456,6 +4456,54 @@ abstract class AppLocalizations {
   /// **'Show preview thumbnails when seeking'**
   String get showPreviewThumbnailsWhenSeeking;
 
+  /// Trickplay display style option: one thumbnail at the scrub position
+  ///
+  /// In en, this message translates to:
+  /// **'Single Thumbnail'**
+  String get trickplayDisplayStyleSingle;
+
+  /// Trickplay display style option: a row of 5 thumbnails around the scrub position
+  ///
+  /// In en, this message translates to:
+  /// **'Filmstrip'**
+  String get trickplayDisplayStyleStrip;
+
+  /// Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing
+  ///
+  /// In en, this message translates to:
+  /// **'Full Screen'**
+  String get trickplayModeFull;
+
+  /// Hint shown below the live trickplay settings preview
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the slider to preview scrubbing'**
+  String get trickplaySettingsPreviewHint;
+
+  /// Setting for the size of the trickplay seek preview
+  ///
+  /// In en, this message translates to:
+  /// **'Preview Size'**
+  String get trickplayPreviewScale;
+
+  /// Setting for the vertical position of the trickplay seek preview relative to the seekbar
+  ///
+  /// In en, this message translates to:
+  /// **'Distance From Seekbar'**
+  String get trickplayVerticalOffset;
+
+  /// Setting for whether the trickplay preview horizontally tracks the scrub handle
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Scrub Position'**
+  String get trickplayFollowScrubPosition;
+
+  /// Description for the trickplay follow-scrub-position setting
+  ///
+  /// In en, this message translates to:
+  /// **'Preview slides along the seekbar as you scrub, instead of staying centered'**
+  String get trickplayFollowScrubPositionSubtitle;
+
   /// Setting for showing description on pause
   ///
   /// In en, this message translates to:
