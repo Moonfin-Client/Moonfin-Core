@@ -125,7 +125,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
 
     try {
       final response = await client.itemsApi.getItems(
-        includeItemTypes: ['BoxSet'],
+        includeItemTypes: ['BoxSet', 'Playlist', 'CollectionFolder'],
         sortBy: 'SortName',
         sortOrder: 'Ascending',
         recursive: true,
