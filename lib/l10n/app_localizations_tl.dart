@@ -9272,6 +9272,15 @@ class AppLocalizationsTl extends AppLocalizations {
       'Pinapanatili ng Classic ang per-row na uri ng larawan at info overlay. Gumagamit ang Modern ng mga portrait-to-backdrop na row.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Ipakita ang Mga Favorites Row';
 
   @override
@@ -9286,6 +9295,10 @@ class AppLocalizationsTl extends AppLocalizations {
       'I-sort ang mga Favorites row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Ipakita ang Mga Collections Row';
 
   @override
@@ -9298,6 +9311,10 @@ class AppLocalizationsTl extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'I-sort ang mga Collections row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9321,6 +9338,10 @@ class AppLocalizationsTl extends AppLocalizations {
       'I-sort ang mga Genres row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Mga Item ng Genres Row';
 
   @override
@@ -9342,6 +9363,10 @@ class AppLocalizationsTl extends AppLocalizations {
       'I-sort ang mga Playlist row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9361,6 +9386,10 @@ class AppLocalizationsTl extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'I-sort ang mga Audio row ayon sa petsang idinagdag, petsa ng paglabas, alpabetiko, at higit pa.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Mga Audio Playlist';

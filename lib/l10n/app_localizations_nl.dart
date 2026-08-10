@@ -9222,6 +9222,15 @@ class AppLocalizationsNl extends AppLocalizations {
       'Klassiek behoudt per rij het afbeeldingstype en de info-overlay. Modern gebruikt rijen die van portret naar achtergrond lopen.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Favorietenrijen weergeven';
 
   @override
@@ -9236,6 +9245,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Sorteer favorietenrijen op datum toegevoegd, releasedatum, alfabetisch en meer.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Collectierijen weergeven';
 
   @override
@@ -9248,6 +9261,10 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Sorteer collectierijen op datum toegevoegd, releasedatum, alfabetisch en meer.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Laat individuele afleveringen zien';
@@ -9268,6 +9285,10 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Sorteer genrerijen op datum toegevoegd, releasedatum, alfabetisch en meer.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Items in genrerijen';
@@ -9291,6 +9312,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Sorteer afspeellijstrijen op datum toegevoegd, releasedatum, alfabetisch en meer.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Laat individuele afleveringen zien';
 
   @override
@@ -9309,6 +9334,10 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Sorteer audiorijen op datum toegevoegd, releasedatum, alfabetisch en meer.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Audio-afspeellijsten';

@@ -9192,6 +9192,15 @@ class AppLocalizationsFi extends AppLocalizations {
       'Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan ​​-rivejä.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Näytä suosikkirivit';
 
   @override
@@ -9206,6 +9215,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lajittele Suosikit-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Näytä kokoelmarivit';
 
   @override
@@ -9218,6 +9231,10 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Lajittele kokoelmien rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9238,6 +9255,10 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Lajittele Genres-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Genret rivikohdat';
@@ -9261,6 +9282,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Järjestä soittolistarivit lisäyspäivän, julkaisupäivän, aakkosten ja muiden perusteiden mukaan.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9280,6 +9305,10 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Järjestä äänirivit lisäyspäivän, julkaisupäivän, aakkosten ja muiden perusteiden mukaan.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Äänisoittolistat';

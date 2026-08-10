@@ -9136,6 +9136,15 @@ class AppLocalizationsHi extends AppLocalizations {
       'क्लासिक में हर पंक्ति का इमेज टाइप और इन्फ़ो ओवरले बना रहता है। मॉडर्न पोर्ट्रेट-से-बैकड्रॉप पंक्तियों का उपयोग करता है।';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'पसंदीदा पंक्तियाँ दिखाएँ';
 
   @override
@@ -9150,6 +9159,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'पसंदीदा पंक्तियों को जोड़ने की तारीख़, रिलीज़ तारीख़, वर्णक्रम और अन्य आधार पर क्रमबद्ध करें।';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'कलेक्शन पंक्तियाँ दिखाएँ';
 
   @override
@@ -9162,6 +9175,10 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'कलेक्शन पंक्तियों को जोड़ने की तारीख़, रिलीज़ तारीख़, वर्णक्रम और अन्य आधार पर क्रमबद्ध करें।';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9185,6 +9202,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'शैली पंक्तियों को जोड़ने की तारीख़, रिलीज़ तारीख़, वर्णक्रम और अन्य आधार पर क्रमबद्ध करें।';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'शैली पंक्ति आइटम';
 
   @override
@@ -9206,6 +9227,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'प्लेलिस्ट पंक्तियों को जोड़ने की तारीख़, रिलीज़ तारीख़, वर्णक्रम और अन्य आधार पर क्रमबद्ध करें।';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9225,6 +9250,10 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'ऑडियो पंक्तियों को जोड़ने की तारीख़, रिलीज़ तारीख़, वर्णक्रम और अन्य आधार पर क्रमबद्ध करें।';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'ऑडियो प्लेलिस्ट';

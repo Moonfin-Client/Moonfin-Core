@@ -9224,6 +9224,15 @@ class AppLocalizationsBe extends AppLocalizations {
       'Classic захоўвае тып выявы і накладанне інфармацыі для кожнага радка. У Modern выкарыстоўваюцца радкі з партрэтам на фон.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Адлюстраванне радкоў абранага';
 
   @override
@@ -9238,6 +9247,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Сартуйце радкі \"Выбранае\" па даце дадання, даце выпуску, у алфавітным парадку і іншым.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Адлюстраванне радкоў калекцый';
 
   @override
@@ -9250,6 +9263,10 @@ class AppLocalizationsBe extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Сартуйце радкі калекцый па даце дадання, даце выпуску, у алфавітным парадку і іншым.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9273,6 +9290,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Сартуйце радкі жанраў па даце дадання, даце выпуску, у алфавітным парадку і г.д.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Элементы радка жанраў';
 
   @override
@@ -9294,6 +9315,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Сартуйце радкі плэйлістоў па даце дадання, даце выхаду, алфавіце і іншым.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9313,6 +9338,10 @@ class AppLocalizationsBe extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Сартуйце радкі аўдыё па даце дадання, даце выхаду, алфавіце і іншым.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Аўдыяплэйлісты';

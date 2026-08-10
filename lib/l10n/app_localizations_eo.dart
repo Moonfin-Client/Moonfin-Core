@@ -9151,6 +9151,15 @@ class AppLocalizationsEo extends AppLocalizations {
       'Klasika konservas po-vican bildspecon kaj informan tegmenton. Modernaj uzoj portret-al-fono vicoj.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Montru Favoritajn Vicojn';
 
   @override
@@ -9165,6 +9174,10 @@ class AppLocalizationsEo extends AppLocalizations {
       'Ordigu la Vicojn de Ŝtatatoj laŭ dato de aldonita, eldondato, alfabete kaj pli.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Vidigu Kolektoj Vicoj';
 
   @override
@@ -9177,6 +9190,10 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Ordigi la vicojn de Kolektoj laŭ dato de aldonita, eldondato, alfabete kaj pli.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9200,6 +9217,10 @@ class AppLocalizationsEo extends AppLocalizations {
       'Ordigu Ĝenrajn vicojn laŭ dato de aldonita, eldondato, alfabete kaj pli.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Ĝenroj Vico Eroj';
 
   @override
@@ -9221,6 +9242,10 @@ class AppLocalizationsEo extends AppLocalizations {
       'Ordigi vicojn de ludlistoj laŭ aldondato, eldondato, alfabete kaj pli.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9240,6 +9265,10 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Ordigi aŭdiajn vicojn laŭ aldondato, eldondato, alfabete kaj pli.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Aŭdiaj ludlistoj';

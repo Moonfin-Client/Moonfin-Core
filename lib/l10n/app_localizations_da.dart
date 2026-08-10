@@ -9159,6 +9159,15 @@ class AppLocalizationsDa extends AppLocalizations {
       'Classic beholder billedtype og infooverlejring pr. række. Moderne bruger portræt-til-bagtæppe rækker.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Vis favoritrækker';
 
   @override
@@ -9173,6 +9182,10 @@ class AppLocalizationsDa extends AppLocalizations {
       'Sorter favoritrækker efter tilføjet dato, udgivelsesdato, alfabetisk og mere.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Vis samlingsrækker';
 
   @override
@@ -9185,6 +9198,10 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Sorter samlingsrækker efter tilføjet dato, udgivelsesdato, alfabetisk og mere.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9205,6 +9222,10 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Sorter genrerrækker efter tilføjet dato, udgivelsesdato, alfabetisk og mere.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Genrer Rækkeelementer';
@@ -9228,6 +9249,10 @@ class AppLocalizationsDa extends AppLocalizations {
       'Sortér afspilningslisterækker efter tilføjelsesdato, udgivelsesdato, alfabetisk og mere.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9247,6 +9272,10 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Sortér lydrækker efter tilføjelsesdato, udgivelsesdato, alfabetisk og mere.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Lydafspilningslister';

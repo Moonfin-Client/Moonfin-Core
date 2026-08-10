@@ -8818,6 +8818,15 @@ class AppLocalizationsYue extends AppLocalizations {
   String get rowsTypeDescription => '「經典」保留逐行嘅圖片類型同資訊覆蓋層。「現代」用直度轉背景圖嘅列表。';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => '顯示我的最愛列表';
 
   @override
@@ -8830,6 +8839,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get favoritesRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序我的最愛列表。';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => '顯示合輯列表';
 
   @override
@@ -8840,6 +8853,10 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get collectionsRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序合輯列表。';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -8861,6 +8878,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get genresRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序類型列表。';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => '類型列表項目';
 
   @override
@@ -8877,6 +8898,10 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get playlistsRowSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序播放清單列表。';
+
+  @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
 
   @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
@@ -8896,6 +8921,10 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get audioRowsSortingDescription => '用加入日期、上映日期、字母順序等等嚟排序音訊列表。';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => '音訊播放清單';

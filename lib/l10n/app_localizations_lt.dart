@@ -9223,6 +9223,15 @@ class AppLocalizationsLt extends AppLocalizations {
       '„Classic“ išlaiko kiekvienos eilutės vaizdo tipą ir informacijos perdangą. Modernus naudoja portreto ir fono eilutes.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Rodyti mėgstamiausių eilutes';
 
   @override
@@ -9237,6 +9246,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rūšiuoti parankinių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Rodyti kolekcijų eilutes';
 
   @override
@@ -9249,6 +9262,10 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Rūšiuoti kolekcijų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9272,6 +9289,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rūšiuoti žanrų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Žanrai Eilutės elementai';
 
   @override
@@ -9293,6 +9314,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rikiuokite grojaraščių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9312,6 +9337,10 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Rikiuokite garso eilutes pagal pridėjimo datą, išleidimo datą, abėcėlę ir kitus kriterijus.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Garso grojaraščiai';

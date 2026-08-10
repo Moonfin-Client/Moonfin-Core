@@ -16282,6 +16282,24 @@ abstract class AppLocalizations {
   /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.'**
   String get rowsTypeDescription;
 
+  /// No description provided for @sortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Order'**
+  String get sortOrder;
+
+  /// No description provided for @ascending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get ascending;
+
+  /// No description provided for @descending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get descending;
+
   /// No description provided for @displayFavoritesRows.
   ///
   /// In en, this message translates to:
@@ -16306,6 +16324,12 @@ abstract class AppLocalizations {
   /// **'Sort Favorites rows by date added, release date, alphabetically, and more.'**
   String get favoritesRowSortingDescription;
 
+  /// No description provided for @favoritesRowSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Favorites rows in ascending or descending order.'**
+  String get favoritesRowSortOrderDescription;
+
   /// No description provided for @displayCollectionsRows.
   ///
   /// In en, this message translates to:
@@ -16329,6 +16353,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sort Collections rows by date added, release date, alphabetically, and more.'**
   String get collectionsRowSortingDescription;
+
+  /// No description provided for @collectionsRowSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Collections rows in ascending or descending order.'**
+  String get collectionsRowSortOrderDescription;
 
   /// No description provided for @collectionsRowShowEpisodes.
   ///
@@ -16366,6 +16396,12 @@ abstract class AppLocalizations {
   /// **'Sort Genres rows by date added, release date, alphabetically, and more.'**
   String get genresRowSortingDescription;
 
+  /// No description provided for @genresRowSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Genres rows in ascending or descending order.'**
+  String get genresRowSortOrderDescription;
+
   /// No description provided for @genresRowItems.
   ///
   /// In en, this message translates to:
@@ -16402,6 +16438,12 @@ abstract class AppLocalizations {
   /// **'Sort Playlist rows by date added, release date, alphabetically, and more.'**
   String get playlistsRowSortingDescription;
 
+  /// No description provided for @playlistsRowSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Playlist rows in ascending or descending order.'**
+  String get playlistsRowSortOrderDescription;
+
   /// No description provided for @playlistsRowShowEpisodes.
   ///
   /// In en, this message translates to:
@@ -16437,6 +16479,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sort Audio rows by date added, release date, alphabetically, and more.'**
   String get audioRowsSortingDescription;
+
+  /// No description provided for @audioRowsSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Audio rows in ascending or descending order.'**
+  String get audioRowsSortOrderDescription;
 
   /// No description provided for @audioPlaylists.
   ///

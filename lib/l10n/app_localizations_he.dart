@@ -9034,6 +9034,15 @@ class AppLocalizationsHe extends AppLocalizations {
       'קלאסי שומר על סוג תמונה ושכבת מידע לכל שורה. מודרני משתמש בשורות מפוסטר לתמונת רקע.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'הצג שורות מועדפים';
 
   @override
@@ -9048,6 +9057,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'מיין את שורות המועדפים לפי תאריך הוספה, תאריך יציאה, סדר אלפביתי ועוד.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'הצג שורות אוספים';
 
   @override
@@ -9059,6 +9072,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'מיין את שורות האוספים לפי תאריך הוספה, תאריך יציאה, סדר אלפביתי ועוד.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9079,6 +9096,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'מיין את שורות הז\'אנרים לפי תאריך הוספה, תאריך יציאה, סדר אלפביתי ועוד.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'פריטים בשורות הז\'אנרים';
@@ -9102,6 +9123,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'מיין את שורות רשימות ההשמעה לפי תאריך הוספה, תאריך יציאה, סדר אלפביתי ועוד.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9120,6 +9145,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'מיין את שורות השמע לפי תאריך הוספה, תאריך יציאה, סדר אלפביתי ועוד.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'רשימות השמעה של שמע';

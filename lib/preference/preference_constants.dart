@@ -477,6 +477,15 @@ enum SortDirection {
   descending,
 }
 
+enum SortOrder {
+  ascending('Ascending', 'Ascending'),
+  descending('Descending', 'Descending');
+
+  const SortOrder(this.apiValue, this.displayName);
+  final String apiValue;
+  final String displayName;
+}
+
 enum PlayedStatusFilter {
   all,
   watched,

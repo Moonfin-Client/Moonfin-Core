@@ -9210,6 +9210,15 @@ class AppLocalizationsKk extends AppLocalizations {
       '«Классикалық» әр жолдың кескін түрі мен ақпарат қабатын сақтайды. «Заманауи» тік бағыттан фондық кескінге өтетін жолдарды пайдаланады.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Таңдаулылар жолдарын көрсету';
 
   @override
@@ -9224,6 +9233,10 @@ class AppLocalizationsKk extends AppLocalizations {
       'Таңдаулылар жолдарын қосылған күні, шығу күні, әліпби бойынша және басқаша сұрыптаңыз.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Жинақтар жолдарын көрсету';
 
   @override
@@ -9236,6 +9249,10 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Жинақтар жолдарын қосылған күні, шығу күні, әліпби бойынша және басқаша сұрыптаңыз.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9259,6 +9276,10 @@ class AppLocalizationsKk extends AppLocalizations {
       'Жанрлар жолдарын қосылған күні, шығу күні, әліпби бойынша және басқаша сұрыптаңыз.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Жанрлар жолының элементтері';
 
   @override
@@ -9280,6 +9301,10 @@ class AppLocalizationsKk extends AppLocalizations {
       'Ойнату тізімі жолдарын қосылған күні, шығу күні, әліпби бойынша және басқаша сұрыптаңыз.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9299,6 +9324,10 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Аудио жолдарын қосылған күні, шығу күні, әліпби бойынша және басқаша сұрыптаңыз.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Аудио ойнату тізімдері';

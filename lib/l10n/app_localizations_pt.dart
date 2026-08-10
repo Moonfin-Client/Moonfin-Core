@@ -9237,6 +9237,15 @@ class AppLocalizationsPt extends AppLocalizations {
       'Classic mantém o tipo de imagem por linha e a sobreposição de informações. Moderno usa linhas do retrato ao pano de fundo.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Exibir linhas de favoritos';
 
   @override
@@ -9251,6 +9260,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Classifique as linhas de Favoritos por data de adição, data de lançamento, em ordem alfabética e muito mais.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Exibir linhas de coleções';
 
   @override
@@ -9263,6 +9276,10 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Classifique as linhas das coleções por data de adição, data de lançamento, em ordem alfabética e muito mais.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9284,6 +9301,10 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Classifique as linhas de gêneros por data de adição, data de lançamento, em ordem alfabética e muito mais.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Itens de linha de gêneros';
@@ -9308,6 +9329,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Ordene as linhas de listas de reprodução por data de adição, data de lançamento, ordem alfabética e mais.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9327,6 +9352,10 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Ordene as linhas de áudio por data de adição, data de lançamento, ordem alfabética e mais.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Listas de Reprodução de Áudio';

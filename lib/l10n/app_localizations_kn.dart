@@ -9230,6 +9230,15 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಕ್ಲಾಸಿಕ್ ಪ್ರತಿ-ಸಾಲಿನ ಚಿತ್ರ ಪ್ರಕಾರ ಮತ್ತು ಮಾಹಿತಿ ಓವರ್‌ಲೇ ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳುತ್ತದೆ. ಮಾಡರ್ನ್ ಪೋರ್ಟ್ರೇಟ್-ನಿಂದ-ಬ್ಯಾಕ್‌ಡ್ರಾಪ್ ಸಾಲುಗಳನ್ನು ಬಳಸುತ್ತದೆ.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'ಮೆಚ್ಚಿನವುಗಳ ಸಾಲುಗಳನ್ನು ತೋರಿಸಿ';
 
   @override
@@ -9244,6 +9253,10 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಮೆಚ್ಚಿನವುಗಳ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಿದ ದಿನಾಂಕ, ಬಿಡುಗಡೆ ದಿನಾಂಕ, ವರ್ಣಮಾಲೆಯ ಪ್ರಕಾರ ಮತ್ತು ಇನ್ನಷ್ಟು ವಿಂಗಡಿಸಿ.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'ಸಂಗ್ರಹಣೆಗಳ ಸಾಲುಗಳನ್ನು ತೋರಿಸಿ';
 
   @override
@@ -9256,6 +9269,10 @@ class AppLocalizationsKn extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'ಸಂಗ್ರಹಣೆಗಳ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಿದ ದಿನಾಂಕ, ಬಿಡುಗಡೆ ದಿನಾಂಕ, ವರ್ಣಮಾಲೆಯ ಪ್ರಕಾರ ಮತ್ತು ಇನ್ನಷ್ಟು ವಿಂಗಡಿಸಿ.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9279,6 +9296,10 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಪ್ರಕಾರಗಳ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಿದ ದಿನಾಂಕ, ಬಿಡುಗಡೆ ದಿನಾಂಕ, ವರ್ಣಮಾಲೆಯ ಪ್ರಕಾರ ಮತ್ತು ಇನ್ನಷ್ಟು ವಿಂಗಡಿಸಿ.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'ಪ್ರಕಾರಗಳ ಸಾಲಿನ ಐಟಂಗಳು';
 
   @override
@@ -9300,6 +9321,10 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಪ್ಲೇಪಟ್ಟಿ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಿದ ದಿನಾಂಕ, ಬಿಡುಗಡೆ ದಿನಾಂಕ, ವರ್ಣಮಾಲೆಯ ಪ್ರಕಾರ ಮತ್ತು ಇನ್ನಷ್ಟು ವಿಂಗಡಿಸಿ.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9319,6 +9344,10 @@ class AppLocalizationsKn extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'ಆಡಿಯೋ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಿದ ದಿನಾಂಕ, ಬಿಡುಗಡೆ ದಿನಾಂಕ, ವರ್ಣಮಾಲೆಯ ಪ್ರಕಾರ ಮತ್ತು ಇನ್ನಷ್ಟು ವಿಂಗಡಿಸಿ.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'ಆಡಿಯೋ ಪ್ಲೇಪಟ್ಟಿಗಳು';

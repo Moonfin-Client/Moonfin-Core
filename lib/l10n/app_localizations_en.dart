@@ -9086,6 +9086,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Display Favorites Rows';
 
   @override
@@ -9100,6 +9109,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sort Favorites rows by date added, release date, alphabetically, and more.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Display Collections Rows';
 
   @override
@@ -9112,6 +9125,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Sort Collections rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9132,6 +9149,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Sort Genres rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Genres Row Items';
@@ -9155,6 +9176,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9173,6 +9198,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Audio Playlists';

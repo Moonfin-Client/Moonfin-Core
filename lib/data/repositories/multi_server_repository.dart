@@ -540,11 +540,14 @@ class MultiServerRepository {
               final sortBy =
                   prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
                   _defaultSortBy;
+              final sortOrder =
+                  prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ??
+                  'Ascending';
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['Playlist'],
                 sortBy: sortBy,
-                sortOrder: 'Ascending',
+                sortOrder: sortOrder,
                 recursive: true,
                 startIndex: targetStartIndex,
                 limit: _defaultLimit,
@@ -633,12 +636,15 @@ class MultiServerRepository {
               final sortBy =
                   prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
                   _defaultSortBy;
+              final sortOrder =
+                  prefs?.get(UserPreferences.favoritesRowSortOrder).apiValue ??
+                  'Ascending';
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: favoriteFilter.itemTypes,
                 sortBy: sortBy,
-                sortOrder: 'Ascending',
+                sortOrder: sortOrder,
                 recursive: true,
                 startIndex: startIndex,
                 limit: _defaultLimit,
@@ -655,12 +661,15 @@ class MultiServerRepository {
               final sortBy =
                   prefs?.get(UserPreferences.collectionsRowSortBy).apiValue ??
                   _defaultSortBy;
+              final sortOrder =
+                  prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
+                  'Ascending';
               _rowOffsets[cacheKey] = startIndex + _defaultLimit;
 
               final response = await session.client.itemsApi.getItems(
                 includeItemTypes: const ['BoxSet'],
                 sortBy: sortBy,
-                sortOrder: 'Ascending',
+                sortOrder: sortOrder,
                 recursive: true,
                 startIndex: startIndex,
                 limit: _defaultLimit,
@@ -676,6 +685,9 @@ class MultiServerRepository {
               final sortBy =
                   prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
                   _defaultSortBy;
+              final sortOrder =
+                  prefs?.get(UserPreferences.genresRowSortOrder).apiValue ??
+                  'Ascending';
               final includeItemTypes = prefs
                   ?.get(UserPreferences.genresRowItemFilter)
                   .includeItemTypes;
@@ -689,7 +701,7 @@ class MultiServerRepository {
 
                 final response = await session.client.itemsApi.getGenres(
                   sortBy: sortBy,
-                  sortOrder: 'Ascending',
+                  sortOrder: sortOrder,
                   recursive: true,
                   startIndex: targetStartIndex,
                   limit: _defaultLimit,
@@ -710,7 +722,7 @@ class MultiServerRepository {
                 final response = await session.client.itemsApi.getItems(
                   genreIds: [row.id],
                   sortBy: sortBy,
-                  sortOrder: 'Ascending',
+                  sortOrder: sortOrder,
                   recursive: true,
                   startIndex: startIndex,
                   limit: _defaultLimit,
@@ -785,13 +797,20 @@ class MultiServerRepository {
         final sortBy = row.rowType == HomeRowType.audioPlaylists
             ? (prefs?.get(UserPreferences.audioRowsSortBy).apiValue ?? _defaultSortBy)
             : (prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy);
+        final sortOrder = row.rowType == HomeRowType.audioPlaylists
+            ? (prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ?? 'Ascending')
+            : (prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ?? 'Ascending');
         if (sortBy == 'SortName') {
-          uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
+          if (sortOrder == 'Ascending') {
+            uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
+          } else {
+            uniqueCombined.sort((a, b) => b.name.compareTo(a.name));
+          }
         } else {
           _sortAggregatedItems(
             uniqueCombined,
             sortBy: sortBy,
-            sortOrder: 'Ascending',
+            sortOrder: sortOrder,
           );
         }
       }
@@ -824,11 +843,27 @@ class MultiServerRepository {
                 _defaultSortBy,
           _ => _defaultSortBy,
         };
+        final sortOrder = switch (row.rowType) {
+          HomeRowType.favorites =>
+            prefs?.get(UserPreferences.favoritesRowSortOrder).apiValue ??
+                'Ascending',
+          HomeRowType.collections =>
+            prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
+                'Ascending',
+          HomeRowType.genres =>
+            prefs?.get(UserPreferences.genresRowSortOrder).apiValue ??
+                'Ascending',
+          HomeRowType.audioArtists ||
+          HomeRowType.audioAlbums =>
+            prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
+                'Ascending',
+          _ => 'Ascending',
+        };
 
         sortedCombined = _sortAggregatedItems(
           uniqueCombined,
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: sortOrder,
         );
       }
     }

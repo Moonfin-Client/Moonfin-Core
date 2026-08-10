@@ -9161,6 +9161,15 @@ class AppLocalizationsNb extends AppLocalizations {
       'Klassisk beholder bildetype og infooverlegg per rad. Moderne bruker rader fra portrett til bakgrunnsbilde.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Vis favorittrader';
 
   @override
@@ -9175,6 +9184,10 @@ class AppLocalizationsNb extends AppLocalizations {
       'Sorter favorittrader etter lagt til-dato, utgivelsesdato, alfabetisk og mer.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Vis samlingsrader';
 
   @override
@@ -9187,6 +9200,10 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Sorter samlingsrader etter lagt til-dato, utgivelsesdato, alfabetisk og mer.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9207,6 +9224,10 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Sorter sjangerrader etter lagt til-dato, utgivelsesdato, alfabetisk og mer.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Elementer i sjangerrader';
@@ -9230,6 +9251,10 @@ class AppLocalizationsNb extends AppLocalizations {
       'Sorter spillelisterader etter lagt til-dato, utgivelsesdato, alfabetisk og mer.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9248,6 +9273,10 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Sorter lydrader etter lagt til-dato, utgivelsesdato, alfabetisk og mer.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Lydspillelister';

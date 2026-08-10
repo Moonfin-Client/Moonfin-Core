@@ -9123,6 +9123,15 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਕਲਾਸਿਕ ਪ੍ਰਤੀ-ਕਤਾਰ ਚਿੱਤਰ ਕਿਸਮ ਅਤੇ ਜਾਣਕਾਰੀ ਓਵਰਲੇ ਰੱਖਦਾ ਹੈ। ਮਾਡਰਨ ਪੋਰਟਰੇਟ-ਤੋਂ-ਪਿਛੋਕੜ ਕਤਾਰਾਂ ਵਰਤਦਾ ਹੈ।';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'ਮਨਪਸੰਦ ਕਤਾਰਾਂ ਦਿਖਾਓ';
 
   @override
@@ -9137,6 +9146,10 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਮਿਤੀ, ਰਿਲੀਜ਼ ਮਿਤੀ, ਵਰਣਮਾਲਾ ਅਨੁਸਾਰ ਅਤੇ ਹੋਰ ਦੁਆਰਾ ਮਨਪਸੰਦ ਕਤਾਰਾਂ ਕ੍ਰਮਬੱਧ ਕਰੋ।';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'ਸੰਗ੍ਰਹਿ ਕਤਾਰਾਂ ਦਿਖਾਓ';
 
   @override
@@ -9149,6 +9162,10 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਮਿਤੀ, ਰਿਲੀਜ਼ ਮਿਤੀ, ਵਰਣਮਾਲਾ ਅਨੁਸਾਰ ਅਤੇ ਹੋਰ ਦੁਆਰਾ ਸੰਗ੍ਰਹਿ ਕਤਾਰਾਂ ਕ੍ਰਮਬੱਧ ਕਰੋ।';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9169,6 +9186,10 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਮਿਤੀ, ਰਿਲੀਜ਼ ਮਿਤੀ, ਵਰਣਮਾਲਾ ਅਨੁਸਾਰ ਅਤੇ ਹੋਰ ਦੁਆਰਾ ਸ਼ੈਲੀ ਕਤਾਰਾਂ ਕ੍ਰਮਬੱਧ ਕਰੋ।';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'ਸ਼ੈਲੀ ਕਤਾਰ ਆਈਟਮਾਂ';
@@ -9192,6 +9213,10 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਮਿਤੀ, ਰਿਲੀਜ਼ ਮਿਤੀ, ਵਰਣਮਾਲਾ ਅਨੁਸਾਰ ਅਤੇ ਹੋਰ ਦੁਆਰਾ ਪਲੇਲਿਸਟ ਕਤਾਰਾਂ ਕ੍ਰਮਬੱਧ ਕਰੋ।';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9210,6 +9235,10 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਮਿਤੀ, ਰਿਲੀਜ਼ ਮਿਤੀ, ਵਰਣਮਾਲਾ ਅਨੁਸਾਰ ਅਤੇ ਹੋਰ ਦੁਆਰਾ ਆਡੀਓ ਕਤਾਰਾਂ ਕ੍ਰਮਬੱਧ ਕਰੋ।';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'ਆਡੀਓ ਪਲੇਲਿਸਟਸ';

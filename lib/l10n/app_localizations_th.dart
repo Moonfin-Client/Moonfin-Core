@@ -9093,6 +9093,15 @@ class AppLocalizationsTh extends AppLocalizations {
       'Classic เก็บประเภทรูปภาพต่อแถวและการซ้อนทับข้อมูล สมัยใหม่ใช้แถวแนวตั้งเป็นฉากหลัง';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'แสดงแถวรายการโปรด';
 
   @override
@@ -9107,6 +9116,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'จัดเรียงแถวรายการโปรดตามวันที่เพิ่ม วันที่วางจำหน่าย ตามลำดับตัวอักษร และอื่นๆ';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'แสดงแถวคอลเลกชัน';
 
   @override
@@ -9118,6 +9131,10 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'จัดเรียงแถวคอลเลกชันตามวันที่เพิ่ม วันที่วางจำหน่าย ตามลำดับตัวอักษร และอื่นๆ';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9138,6 +9155,10 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'จัดเรียงแถวประเภทตามวันที่เพิ่ม วันที่วางจำหน่าย ตามลำดับตัวอักษร และอื่นๆ';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'รายการแถวประเภท';
@@ -9161,6 +9182,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'เรียงแถวเพลย์ลิสต์ตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9179,6 +9204,10 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'เรียงแถวเสียงตามวันที่เพิ่ม วันที่ออกฉาย ตามตัวอักษร และอื่นๆ';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'เพลย์ลิสต์เสียง';

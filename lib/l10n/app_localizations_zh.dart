@@ -8793,6 +8793,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowsTypeDescription => '经典模式保留每行的图片类型和信息浮层。现代模式使用竖版图到背景图的行布局。';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => '显示收藏行';
 
   @override
@@ -8805,6 +8814,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get favoritesRowSortingDescription => '按添加日期、发布日期、字母顺序等对收藏行进行排序。';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => '显示合集行';
 
   @override
@@ -8815,6 +8828,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get collectionsRowSortingDescription => '按添加日期、发布日期、字母顺序等方式排序合集行。';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => '显示单集';
@@ -8835,6 +8852,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get genresRowSortingDescription => '按添加日期、发布日期、字母顺序等对类型行进行排序。';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => '类型行媒体项';
 
   @override
@@ -8853,6 +8874,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playlistsRowSortingDescription => '按添加日期、发布日期、字母顺序等方式排序播放列表行。';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => '显示单集';
 
   @override
@@ -8869,6 +8894,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get audioRowsSortingDescription => '按添加日期、发布日期、字母顺序等方式排序音频行。';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => '音频播放列表';

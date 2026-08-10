@@ -9217,6 +9217,15 @@ class AppLocalizationsLv extends AppLocalizations {
       'Classic saglabā katras rindas attēla veidu un informācijas pārklājumu. Modern izmanto rindas no portreta uz fonu.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Parādīt izlases rindas';
 
   @override
@@ -9231,6 +9240,10 @@ class AppLocalizationsLv extends AppLocalizations {
       'Kārtot izlases rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Parādīt kolekciju rindas';
 
   @override
@@ -9243,6 +9256,10 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Kārtot kolekciju rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9263,6 +9280,10 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Kārtot Žanru rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Žanri Rindas vienumi';
@@ -9286,6 +9307,10 @@ class AppLocalizationsLv extends AppLocalizations {
       'Kārtojiet atskaņošanas sarakstu rindas pēc pievienošanas datuma, izdošanas datuma, alfabēta un citiem kritērijiem.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9305,6 +9330,10 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Kārtojiet audio rindas pēc pievienošanas datuma, izdošanas datuma, alfabēta un citiem kritērijiem.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Audio atskaņošanas saraksti';

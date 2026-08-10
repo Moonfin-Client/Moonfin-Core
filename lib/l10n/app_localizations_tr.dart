@@ -9173,6 +9173,15 @@ class AppLocalizationsTr extends AppLocalizations {
       'Klasik mod, satır başına görsel türünü ve bilgi katmanını korur. Modern mod ise dikey görsellerden yatay arka planlara uzanan satırlar kullanır.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Favoriler Satırlarını Görüntüle';
 
   @override
@@ -9187,6 +9196,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Favori satırlarını eklenme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Koleksiyon Satırlarını Göster';
 
   @override
@@ -9199,6 +9212,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Koleksiyonlar satırlarını ekleme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Tekil Bölümleri Göster';
@@ -9222,6 +9239,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Türler satırlarını ekleme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Türler Satırı Ögeleri';
 
   @override
@@ -9243,6 +9264,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Oynatma listesi satırlarını ekleme tarihi, yayınlanma tarihi, alfabetik ve daha fazlasına göre sıralayın.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Tekil Bölümleri Göster';
 
   @override
@@ -9262,6 +9287,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Ses satırlarını eklenme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Ses Oynatma Listeleri';

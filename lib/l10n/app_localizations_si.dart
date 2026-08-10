@@ -9155,6 +9155,15 @@ class AppLocalizationsSi extends AppLocalizations {
       'සම්භාව්‍ය මඟින් පේළියකට රූප වර්ගය සහ තොරතුරු උඩැතිරිය තබා ගනී. නවීන මඟින් සිරස්-සිට-පසුබිම පේළි භාවිත කරයි.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'ප්‍රියතම පේළි පෙන්වන්න';
 
   @override
@@ -9169,6 +9178,10 @@ class AppLocalizationsSi extends AppLocalizations {
       'එක් කළ දිනය, නිකුත් වූ දිනය, අකාරාදී ලෙස සහ තවත් ක්‍රම අනුව ප්‍රියතම පේළි වර්ග කරන්න.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'එකතු පේළි පෙන්වන්න';
 
   @override
@@ -9181,6 +9194,10 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'එක් කළ දිනය, නිකුත් වූ දිනය, අකාරාදී ලෙස සහ තවත් ක්‍රම අනුව එකතු පේළි වර්ග කරන්න.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9204,6 +9221,10 @@ class AppLocalizationsSi extends AppLocalizations {
       'එක් කළ දිනය, නිකුත් වූ දිනය, අකාරාදී ලෙස සහ තවත් ක්‍රම අනුව ප්‍රභේද පේළි වර්ග කරන්න.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'ප්‍රභේද පේළි අයිතම';
 
   @override
@@ -9225,6 +9246,10 @@ class AppLocalizationsSi extends AppLocalizations {
       'එක් කළ දිනය, නිකුත් වූ දිනය, අකාරාදී ලෙස සහ තවත් ක්‍රම අනුව ධාවන ලැයිස්තු පේළි වර්ග කරන්න.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9244,6 +9269,10 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'එක් කළ දිනය, නිකුත් වූ දිනය, අකාරාදී ලෙස සහ තවත් ක්‍රම අනුව ශ්‍රව්‍ය පේළි වර්ග කරන්න.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'ශ්‍රව්‍ය ධාවන ලැයිස්තු';

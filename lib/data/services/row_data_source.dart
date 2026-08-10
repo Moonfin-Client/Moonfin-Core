@@ -1059,10 +1059,11 @@ class RowDataSource {
               limit: _defaultLimit,
             );
           } else {
+            final sortOrder = prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ?? 'Ascending';
             response = await _getItemsWithFallback(
               parentId: playlistId,
               sortBy: sortPref.apiValue,
-              sortOrder: 'Ascending',
+              sortOrder: sortOrder,
               recursive: false,
               startIndex: currentOffset,
               limit: _defaultLimit,
@@ -1090,10 +1091,13 @@ class RowDataSource {
         final sortBy =
             prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ??
             _defaultSortBy;
+        final sortOrder =
+            prefs?.get(UserPreferences.favoritesRowSortOrder).apiValue ??
+            'Ascending';
         response = await _getItemsWithFallback(
           includeItemTypes: FavoriteTypeFilter.fromRowId(row.id).itemTypes,
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: sortOrder,
           recursive: true,
           startIndex: currentOffset,
           limit: _defaultLimit,
@@ -1119,11 +1123,14 @@ class RowDataSource {
         final effectiveSortBy = (sortPref.usesDedicatedEndpoint && parentId != null)
             ? null
             : sortPref.apiValue;
+        final sortOrder =
+            prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
+            'Ascending';
         response = await _getItemsWithFallback(
           parentId: parentId,
           includeItemTypes: includeItemTypes,
           sortBy: effectiveSortBy,
-          sortOrder: 'Ascending',
+          sortOrder: sortOrder,
           // A pinned collection pages through its own children, the way its
           // first page was read. Walking it would hand back the episodes inside
           // each series instead.
@@ -1135,10 +1142,13 @@ class RowDataSource {
         final sortBy =
             prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
             _defaultSortBy;
+        final audioSortOrder =
+            prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
+            'Ascending';
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicArtist'],
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: audioSortOrder,
           recursive: true,
           startIndex: currentOffset,
           limit: _defaultLimit,
@@ -1147,10 +1157,13 @@ class RowDataSource {
         final sortBy =
             prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
             _defaultSortBy;
+        final audioSortOrder =
+            prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
+            'Ascending';
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicAlbum'],
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: audioSortOrder,
           recursive: true,
           startIndex: currentOffset,
           limit: _defaultLimit,
@@ -1159,12 +1172,15 @@ class RowDataSource {
         final sortBy =
             prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
             _defaultSortBy;
+        final audioSortOrder =
+            prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
+            'Ascending';
         final pageCount = (currentOffset / _defaultLimit).ceil();
         final startIndex = pageCount * _defaultLimit;
         response = await _getItemsWithFallback(
           includeItemTypes: const ['Playlist'],
           sortBy: sortBy,
-          sortOrder: 'Ascending',
+          sortOrder: audioSortOrder,
           recursive: true,
           startIndex: startIndex,
           limit: _defaultLimit,
@@ -1174,6 +1190,9 @@ class RowDataSource {
         final sortBy =
             prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
             _defaultSortBy;
+        final genresSortOrder =
+            prefs?.get(UserPreferences.genresRowSortOrder).apiValue ??
+            'Ascending';
         final includeItemTypes = prefs
             ?.get(UserPreferences.genresRowItemFilter)
             .includeItemTypes;
@@ -1187,7 +1206,7 @@ class RowDataSource {
           try {
             response = await _client.itemsApi.getGenres(
               sortBy: sortBy,
-              sortOrder: 'Ascending',
+              sortOrder: genresSortOrder,
               recursive: true,
               startIndex: startIndex,
               limit: _defaultLimit,
@@ -1199,7 +1218,7 @@ class RowDataSource {
             if (statusCode < 500) rethrow;
             response = await _client.itemsApi.getGenres(
               sortBy: sortBy,
-              sortOrder: 'Ascending',
+              sortOrder: genresSortOrder,
               recursive: true,
               startIndex: startIndex,
               limit: _defaultLimit,
@@ -1714,6 +1733,9 @@ class RowDataSource {
               : null;
           final sortPref = prefs?.get(UserPreferences.collectionsRowSortBy) ??
               LibrarySortBy.playlistOrder;
+          final collectionsSortOrder =
+              prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
+              _defaultSortOrder;
           final usePlaylistOrder = sortPref.usesDedicatedEndpoint;
           final showEpisodes =
               prefs?.get(UserPreferences.collectionsRowShowEpisodes) ?? false;
@@ -1723,7 +1745,7 @@ class RowDataSource {
             title: title,
             rowId: rowId,
             sortBy: usePlaylistOrder ? _defaultSortBy : sortPref.apiValue,
-            sortOrder: _defaultSortOrder,
+            sortOrder: collectionsSortOrder,
             usePlaylistOrder: usePlaylistOrder,
             showEpisodes: showEpisodes,
           );
@@ -1742,10 +1764,12 @@ class RowDataSource {
         }
         try {
           var sortBy = _defaultSortBy;
+          var sortOrder = _defaultSortOrder;
           List<String>? includeItemTypes;
           if (GetIt.instance.isRegistered<UserPreferences>()) {
             final prefs = GetIt.instance<UserPreferences>();
             sortBy = prefs.get(UserPreferences.genresRowSortBy).apiValue;
+            sortOrder = prefs.get(UserPreferences.genresRowSortOrder).apiValue;
             includeItemTypes = prefs
                 .get(UserPreferences.genresRowItemFilter)
                 .includeItemTypes;
@@ -1756,7 +1780,7 @@ class RowDataSource {
             title: title,
             rowId: rowId,
             sortBy: sortBy,
-            sortOrder: _defaultSortOrder,
+            sortOrder: sortOrder,
             includeItemTypes: includeItemTypes,
           );
           return row;
@@ -1778,6 +1802,9 @@ class RowDataSource {
               : null;
           final sortPref = prefs?.get(UserPreferences.playlistsRowSortBy) ??
               LibrarySortBy.playlistOrder;
+          final playlistsSortOrder =
+              prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ??
+              _defaultSortOrder;
           final usePlaylistOrder = sortPref.usesDedicatedEndpoint;
           final showEpisodes =
               prefs?.get(UserPreferences.playlistsRowShowEpisodes) ?? false;
@@ -1787,7 +1814,7 @@ class RowDataSource {
             title: title,
             rowId: rowId,
             sortBy: usePlaylistOrder ? _defaultSortBy : sortPref.apiValue,
-            sortOrder: _defaultSortOrder,
+            sortOrder: playlistsSortOrder,
             usePlaylistOrder: usePlaylistOrder,
             showEpisodes: showEpisodes,
           );

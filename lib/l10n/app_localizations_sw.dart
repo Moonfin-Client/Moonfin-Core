@@ -9240,6 +9240,15 @@ class AppLocalizationsSw extends AppLocalizations {
       'Klasiki huhifadhi aina ya picha ya kila safu na kifuniko cha maelezo. Kisasa hutumia safu za wima hadi mandharinyuma.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Onyesha Safu za Vipendwa';
 
   @override
@@ -9254,6 +9263,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Panga safu za Vipendwa kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Onyesha Safu za Makusanyo';
 
   @override
@@ -9266,6 +9279,10 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Panga safu za Makusanyo kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9289,6 +9306,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Panga safu za Aina kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Vipengee vya Safu za Aina';
 
   @override
@@ -9310,6 +9331,10 @@ class AppLocalizationsSw extends AppLocalizations {
       'Panga safu za Orodha za Kucheza kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9329,6 +9354,10 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Panga safu za Sauti kwa tarehe ya kuongezwa, tarehe ya kutolewa, kialfabeti, na zaidi.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Orodha za Kucheza za Sauti';

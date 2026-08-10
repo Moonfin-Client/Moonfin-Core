@@ -9234,6 +9234,15 @@ class AppLocalizationsTe extends AppLocalizations {
       'క్లాసిక్ ప్రతి వరుస చిత్ర రకాన్ని మరియు సమాచార అతివ్యాప్తిని ఉంచుతుంది. ఆధునిక పోర్ట్రెయిట్-టు-బ్యాక్‌డ్రాప్ అడ్డు వరుసలను ఉపయోగిస్తుంది.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'ఇష్టమైన వరుసలను ప్రదర్శించు';
 
   @override
@@ -9248,6 +9257,10 @@ class AppLocalizationsTe extends AppLocalizations {
       'జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ద్వారా ఇష్టమైన వరుసలను క్రమబద్ధీకరించండి.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'సేకరణల వరుసలను ప్రదర్శించు';
 
   @override
@@ -9260,6 +9273,10 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ఆధారంగా సేకరణల వరుసలను క్రమబద్ధీకరించండి.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9283,6 +9300,10 @@ class AppLocalizationsTe extends AppLocalizations {
       'జోడించిన తేదీ, విడుదల తేదీ, అక్షరక్రమం మరియు మరిన్నింటి ఆధారంగా జెనర్‌ల అడ్డు వరుసలను క్రమబద్ధీకరించండి.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'జానర్స్ వరుస అంశాలు';
 
   @override
@@ -9304,6 +9325,10 @@ class AppLocalizationsTe extends AppLocalizations {
       'ప్లేజాబితా వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9323,6 +9348,10 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'ఆడియో వరుసలను జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమం మరియు మరిన్నింటి ప్రకారం క్రమబద్ధీకరించండి.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'ఆడియో ప్లేజాబితాలు';

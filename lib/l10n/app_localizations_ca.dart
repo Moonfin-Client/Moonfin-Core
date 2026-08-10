@@ -9315,6 +9315,15 @@ class AppLocalizationsCa extends AppLocalizations {
       'El clàssic manté el tipus d\'imatge per fila i la superposició d\'informació. Modern utilitza files de retrat a fons.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Mostra les files de preferits';
 
   @override
@@ -9329,6 +9338,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'Ordena les files de Preferits per data afegida, data de llançament, alfabèticament i molt més.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Mostra les files de les col·leccions';
 
   @override
@@ -9341,6 +9354,10 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Ordena les files de les col·leccions per data afegida, data de llançament, alfabèticament i molt més.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -9362,6 +9379,10 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get genresRowSortingDescription =>
       'Ordena les files de gèneres per data afegida, data de llançament, alfabèticament i molt més.';
+
+  @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
 
   @override
   String get genresRowItems => 'Gèneres Elements de fila';
@@ -9387,6 +9408,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'Ordena les files de llistes de reproducció per data d\'addició, data d\'estrena, alfabèticament i més.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
 
   @override
@@ -9406,6 +9431,10 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Ordena les files d\'àudio per data d\'addició, data d\'estrena, alfabèticament i més.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Llistes de reproducció d\'àudio';

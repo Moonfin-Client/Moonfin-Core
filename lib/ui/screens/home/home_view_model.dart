@@ -1091,14 +1091,22 @@ class HomeViewModel extends ChangeNotifier {
     final favoritesSortBy = _prefs
         .get(UserPreferences.favoritesRowSortBy)
         .apiValue;
+    final favoritesSortOrder = _prefs
+        .get(UserPreferences.favoritesRowSortOrder)
+        .apiValue;
     final collectionsSortBy = _prefs
         .get(UserPreferences.collectionsRowSortBy)
         .apiValue;
+    final collectionsSortOrder = _prefs
+        .get(UserPreferences.collectionsRowSortOrder)
+        .apiValue;
     final genresSortBy = _prefs.get(UserPreferences.genresRowSortBy).apiValue;
+    final genresSortOrder = _prefs
+        .get(UserPreferences.genresRowSortOrder)
+        .apiValue;
     final genresItemFilter = _prefs
         .get(UserPreferences.genresRowItemFilter)
         .includeItemTypes;
-    const sortOrder = 'Ascending';
     switch (section) {
       case HomeSectionType.resume:
         final row = _multiServerEnabled
@@ -1123,64 +1131,76 @@ class HomeViewModel extends ChangeNotifier {
         final playlistsSortBy = _prefs
             .get(UserPreferences.playlistsRowSortBy)
             .apiValue;
+        final playlistsSortOrder = _prefs
+            .get(UserPreferences.playlistsRowSortOrder)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedPlaylists(
                   sortBy: playlistsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: playlistsSortOrder,
                 )
               : await _dataSource.loadPlaylists(
                   _serverId,
                   sortBy: playlistsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: playlistsSortOrder,
                 ),
         ];
       case HomeSectionType.audioArtists:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
             .apiValue;
+        final audioSortOrder = _prefs
+            .get(UserPreferences.audioRowsSortOrder)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioArtists(
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 )
               : await _dataSource.loadAudioArtists(
                   _serverId,
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 ),
         ];
       case HomeSectionType.audioAlbums:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
             .apiValue;
+        final audioSortOrder = _prefs
+            .get(UserPreferences.audioRowsSortOrder)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioAlbums(
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 )
               : await _dataSource.loadAudioAlbums(
                   _serverId,
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 ),
         ];
       case HomeSectionType.audioPlaylists:
         final audioSortBy = _prefs
             .get(UserPreferences.audioRowsSortBy)
             .apiValue;
+        final audioSortOrder = _prefs
+            .get(UserPreferences.audioRowsSortOrder)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioPlaylists(
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 )
               : await _dataSource.loadAudioPlaylists(
                   _serverId,
                   sortBy: audioSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: audioSortOrder,
                 ),
         ];
       case HomeSectionType.favoriteMovies:
@@ -1201,7 +1221,7 @@ class HomeViewModel extends ChangeNotifier {
                   title: title,
                   includeItemTypes: favoriteFilter.itemTypes,
                   sortBy: favoritesSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: favoritesSortOrder,
                 )
               : await _dataSource.loadFavorites(
                   _serverId,
@@ -1209,7 +1229,7 @@ class HomeViewModel extends ChangeNotifier {
                   title: title,
                   includeItemTypes: favoriteFilter.itemTypes,
                   sortBy: favoritesSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: favoritesSortOrder,
                 ),
         ];
       case HomeSectionType.collections:
@@ -1217,12 +1237,12 @@ class HomeViewModel extends ChangeNotifier {
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedCollections(
                   sortBy: collectionsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: collectionsSortOrder,
                 )
               : await _dataSource.loadCollections(
                   _serverId,
                   sortBy: collectionsSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: collectionsSortOrder,
                 ),
         ];
       case HomeSectionType.genres:
@@ -1230,13 +1250,13 @@ class HomeViewModel extends ChangeNotifier {
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedGenres(
                   sortBy: genresSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: genresSortOrder,
                   includeItemTypes: genresItemFilter,
                 )
               : await _dataSource.loadGenres(
                   _serverId,
                   sortBy: genresSortBy,
-                  sortOrder: sortOrder,
+                  sortOrder: genresSortOrder,
                   includeItemTypes: genresItemFilter,
                 ),
         ];

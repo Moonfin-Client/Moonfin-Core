@@ -8881,6 +8881,15 @@ class AppLocalizationsKo extends AppLocalizations {
       '클래식은 행별 이미지 유형과 정보 오버레이를 유지합니다. 모던은 세로형에서 가로형으로 이어지는 행을 사용합니다.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => '즐겨찾기 행 표시';
 
   @override
@@ -8894,6 +8903,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '즐겨찾기 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => '컬렉션 행 표시';
 
   @override
@@ -8905,6 +8918,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       '컬렉션 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Show Individual Episodes';
@@ -8927,6 +8944,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '장르 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => '장르 행 항목';
 
   @override
@@ -8944,6 +8965,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       '재생목록 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
+
+  @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
 
   @override
   String get playlistsRowShowEpisodes => 'Show Individual Episodes';
@@ -8964,6 +8989,10 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       '오디오 행을 추가된 날짜, 공개일, 가나다순 등으로 정렬합니다.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => '오디오 재생목록';

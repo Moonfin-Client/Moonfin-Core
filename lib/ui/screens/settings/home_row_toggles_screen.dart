@@ -363,7 +363,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     icon: Icons.music_note,
                     onChanged: _onAudioRowsToggleChanged,
                   ),
-                  if (showAudioRows)
+                  if (showAudioRows) ...[
                     EnumPreferenceTile<LibrarySortBy>(
                       preference: UserPreferences.audioRowsSortBy,
                       title: l10n.audioRowsSorting,
@@ -384,6 +384,17 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                           : v.displayName,
                       onChanged: _onAudioSortChanged,
                     ),
+                    EnumPreferenceTile<SortOrder>(
+                      preference: UserPreferences.audioRowsSortOrder,
+                      title: l10n.sortOrder,
+                      description: l10n.audioRowsSortOrderDescription,
+                      icon: Icons.swap_vert,
+                      labelOf: (v) => v == SortOrder.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
+                      onChanged: _onAudioSortChanged,
+                    ),
+                  ],
                 ],
               ),
 
@@ -397,7 +408,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     icon: Icons.collections,
                     onChanged: _onCollectionsRowsToggleChanged,
                   ),
-                  if (showCollectionsRows)
+                  if (showCollectionsRows) ...[
                     EnumPreferenceTile<LibrarySortBy>(
                       preference: UserPreferences.collectionsRowSortBy,
                       title: l10n.collectionsRowSorting,
@@ -406,7 +417,16 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onCollectionsSortChanged,
                     ),
-                  if (showCollectionsRows)
+                    EnumPreferenceTile<SortOrder>(
+                      preference: UserPreferences.collectionsRowSortOrder,
+                      title: l10n.sortOrder,
+                      description: l10n.collectionsRowSortOrderDescription,
+                      icon: Icons.swap_vert,
+                      labelOf: (v) => v == SortOrder.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
+                      onChanged: _onCollectionsSortChanged,
+                    ),
                     SwitchPreferenceTile(
                       preference: UserPreferences.collectionsRowShowEpisodes,
                       title: l10n.collectionsRowShowEpisodes,
@@ -414,6 +434,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       icon: Icons.video_library_outlined,
                       onChanged: _onCollectionsEpisodesChanged,
                     ),
+                  ],
                 ],
               ),
 
@@ -427,7 +448,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     icon: Icons.favorite,
                     onChanged: _onFavoritesRowsToggleChanged,
                   ),
-                  if (showFavoritesRows)
+                  if (showFavoritesRows) ...[
                     EnumPreferenceTile<LibrarySortBy>(
                       preference: UserPreferences.favoritesRowSortBy,
                       title: l10n.favoritesRowSorting,
@@ -437,6 +458,17 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onFavoritesSortChanged,
                     ),
+                    EnumPreferenceTile<SortOrder>(
+                      preference: UserPreferences.favoritesRowSortOrder,
+                      title: l10n.sortOrder,
+                      description: l10n.favoritesRowSortOrderDescription,
+                      icon: Icons.swap_vert,
+                      labelOf: (v) => v == SortOrder.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
+                      onChanged: _onFavoritesSortChanged,
+                    ),
+                  ],
                 ],
               ),
 
@@ -458,6 +490,16 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       icon: Icons.sort,
                       values: LibrarySortBy.itemsApiValues,
                       labelOf: (v) => v.displayName,
+                      onChanged: _onGenresSortChanged,
+                    ),
+                    EnumPreferenceTile<SortOrder>(
+                      preference: UserPreferences.genresRowSortOrder,
+                      title: l10n.sortOrder,
+                      description: l10n.genresRowSortOrderDescription,
+                      icon: Icons.swap_vert,
+                      labelOf: (v) => v == SortOrder.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
                       onChanged: _onGenresSortChanged,
                     ),
                     EnumPreferenceTile<GenresRowItemFilter>(
@@ -482,7 +524,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     icon: Icons.playlist_play,
                     onChanged: _onPlaylistsRowsToggleChanged,
                   ),
-                  if (showPlaylistsRows)
+                  if (showPlaylistsRows) ...[
                     EnumPreferenceTile<LibrarySortBy>(
                       preference: UserPreferences.playlistsRowSortBy,
                       title: l10n.playlistsRowSorting,
@@ -491,7 +533,16 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onPlaylistsSortChanged,
                     ),
-                  if (showPlaylistsRows)
+                    EnumPreferenceTile<SortOrder>(
+                      preference: UserPreferences.playlistsRowSortOrder,
+                      title: l10n.sortOrder,
+                      description: l10n.playlistsRowSortOrderDescription,
+                      icon: Icons.swap_vert,
+                      labelOf: (v) => v == SortOrder.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
+                      onChanged: _onPlaylistsSortChanged,
+                    ),
                     SwitchPreferenceTile(
                       preference: UserPreferences.playlistsRowShowEpisodes,
                       title: l10n.playlistsRowShowEpisodes,
@@ -499,6 +550,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       icon: Icons.video_library_outlined,
                       onChanged: _onPlaylistsEpisodesChanged,
                     ),
+                  ],
                 ],
               ),
 
