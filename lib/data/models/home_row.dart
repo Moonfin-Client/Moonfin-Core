@@ -9,6 +9,7 @@ enum HomeRowType {
   favorites,
   collections,
   genres,
+  studios,
   libraryTiles,
   libraryTilesSmall,
   playlists,

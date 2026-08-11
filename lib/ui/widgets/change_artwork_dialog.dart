@@ -76,7 +76,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       _item.type?.toLowerCase() == 'userview' ||
       _item.type?.toLowerCase() == 'folder' ||
       _item.type?.toLowerCase() == 'genre' ||
-      _item.type?.toLowerCase() == 'musicgenre';
+      _item.type?.toLowerCase() == 'musicgenre' ||
+      _item.type?.toLowerCase() == 'studio' ||
+      _item.type?.toLowerCase() == 'network';
 
   final Map<String, ScrollController> _scrollControllers = {};
   final Map<String, FocusNode> _headerFocusNodes = {};
@@ -356,7 +358,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       case 'userview':
       case 'genre':
       case 'musicgenre':
-        return const ['Primary', 'Backdrop', 'Thumb'];
+      case 'studio':
+      case 'network':
+        return const ['Primary', 'Thumb', 'Backdrop', 'Logo'];
       default:
         return const ['Primary', 'Backdrop'];
     }

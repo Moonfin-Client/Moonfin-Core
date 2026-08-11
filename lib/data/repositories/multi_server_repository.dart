@@ -503,6 +503,68 @@ class MultiServerRepository {
     );
   }
 
+  Future<HomeRow> getAggregatedStudios({
+    int limit = _defaultLimit,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+    String selectedIds = '',
+    String? title,
+  }) async {
+    const cacheKeyPrefix = 'studios';
+    const rowType = HomeRowType.studios;
+
+    final sessions = await getLoggedInServers();
+    final perServer = (limit * 3).clamp(1, 100);
+
+    final selectedSet = selectedIds
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toSet();
+
+    final fetchLimit = selectedSet.isNotEmpty ? null : perServer;
+
+    final results = await Future.wait(
+      sessions.map(
+        (session) => _withTimeout(() async {
+          final response = await session.client.itemsApi.getStudios(
+            userId: session.client.userId,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            recursive: true,
+            limit: fetchLimit,
+            fields: 'ItemCounts,PrimaryImageAspectRatio',
+          );
+          var items = _parseItems(response, session.server.id);
+          if (selectedSet.isNotEmpty) {
+            items = items.where((item) => selectedSet.contains(item.id)).toList();
+          }
+          _rowTotals['${cacheKeyPrefix}_${session.server.id}'] = items.length;
+          return items;
+        }, label: '$cacheKeyPrefix from ${session.server.name}'),
+      ),
+    );
+
+    final all = _sortAggregatedItems(
+      results.expand((e) => e).toList(growable: false),
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+
+    final takenItems = all.take(limit).toList();
+    final totalCount = sessions.fold<int>(0, (sum, session) {
+      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
+    });
+
+    return HomeRow(
+      id: cacheKeyPrefix,
+      title: title ?? _l10n.studios,
+      items: takenItems,
+      rowType: rowType,
+      totalCount: totalCount,
+    );
+  }
+
   Future<(List<AggregatedItem>, int)> loadMore({required HomeRow row}) async {
     if (!row.hasMore || row.items.length >= _maxItems) {
       return (row.items, row.totalCount);

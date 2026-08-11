@@ -16414,6 +16414,102 @@ abstract class AppLocalizations {
   /// **'Show Movies, Series, or both in Genres rows.'**
   String get genresRowItemsDescription;
 
+  /// No description provided for @displayStudiosRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Studio Row'**
+  String get displayStudiosRows;
+
+  /// No description provided for @displayStudiosRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Studio row in Home Sections.'**
+  String get displayStudiosRowsSubtitle;
+
+  /// No description provided for @studiosRowSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio Row Sorting'**
+  String get studiosRowSorting;
+
+  /// No description provided for @studiosRowSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio row by name, recently added, and more.'**
+  String get studiosRowSortingDescription;
+
+  /// No description provided for @studiosRowSortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Studio Row Sort Order'**
+  String get studiosRowSortOrder;
+
+  /// No description provided for @studiosRowSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Ascending or Descending sort order.'**
+  String get studiosRowSortOrderDescription;
+
+  /// No description provided for @selectStudiosToInclude.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Studios to Include'**
+  String get selectStudiosToInclude;
+
+  /// No description provided for @selectStudiosToIncludeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select which studios should be included on the home row.'**
+  String get selectStudiosToIncludeDescription;
+
+  /// No description provided for @selectAllStudios.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAllStudios;
+
+  /// No description provided for @deselectAllStudios.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAllStudios;
+
+  /// No description provided for @tvStudiosFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'TV Studios'**
+  String get tvStudiosFilter;
+
+  /// No description provided for @movieStudiosFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Studios'**
+  String get movieStudiosFilter;
+
+  /// No description provided for @selectedStudiosFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Studios'**
+  String get selectedStudiosFilter;
+
+  /// No description provided for @unselectedStudiosFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Unselected Studios'**
+  String get unselectedStudiosFilter;
+
+  /// No description provided for @filtersHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'FILTERS'**
+  String get filtersHeader;
+
+  /// No description provided for @showHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'SHOW'**
+  String get showHeader;
+
   /// No description provided for @displayPlaylistsRows.
   ///
   /// In en, this message translates to:

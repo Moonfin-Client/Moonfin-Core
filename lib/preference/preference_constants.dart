@@ -357,6 +357,7 @@ enum HomeSectionType {
   favoriteSongs('favoritesongs'),
   collections('collections'),
   genres('genres'),
+  studios('studios'),
   liveTv('livetv'),
   seerrRecentRequests('seerr_recent_requests'),
   seerrWatchlist('seerr_watchlist'),
@@ -443,6 +444,14 @@ enum LibrarySortBy {
   /// The options a row can offer when it only ever sorts through the Items API.
   static List<LibrarySortBy> get itemsApiValues =>
       values.where((v) => !v.usesDedicatedEndpoint).toList();
+}
+
+enum SortOrder {
+  ascending('Ascending'),
+  descending('Descending');
+
+  const SortOrder(this.apiValue);
+  final String apiValue;
 }
 
 enum LibraryGroupBy {

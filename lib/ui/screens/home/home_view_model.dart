@@ -394,6 +394,7 @@ class HomeViewModel extends ChangeNotifier {
       final showSinceYouWatched = _prefs.get(UserPreferences.displaySinceYouWatchedRows);
       final sinceYouWatchedNum = _prefs.get(UserPreferences.sinceYouWatchedNumRows).value;
       final showRewatch = _prefs.get(UserPreferences.displayRewatchRow);
+      final showStudiosRows = _prefs.get(UserPreferences.displayStudiosRows);
 
       final offline = _isOffline;
       final visibleConfigsRaw = configs
@@ -414,6 +415,7 @@ class HomeViewModel extends ChangeNotifier {
                         (c.isPluginDynamic &&
                             c.pluginSource ==
                                 HomeSectionPluginSource.genres))) &&
+                (showStudiosRows || c.type != HomeSectionType.studios) &&
                 (showPlaylistsRows ||
                     !((c.isBuiltin && _isPlaylistsSectionType(c.type)) ||
                         (c.isPluginDynamic &&
@@ -688,6 +690,9 @@ class HomeViewModel extends ChangeNotifier {
             !row.id.startsWith('pluginDynamic:');
       case HomeSectionType.genres:
         return row.rowType == HomeRowType.genres &&
+            !row.id.startsWith('pluginDynamic:');
+      case HomeSectionType.studios:
+        return row.rowType == HomeRowType.studios &&
             !row.id.startsWith('pluginDynamic:');
       case HomeSectionType.libraryTilesSmall:
         return row.rowType == HomeRowType.libraryTiles;
@@ -994,6 +999,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'collections'};
       case HomeSectionType.genres:
         return const {'genres'};
+      case HomeSectionType.studios:
+        return const {'studios'};
       case HomeSectionType.activeRecordings:
         return const {'activeRecordings'};
       case HomeSectionType.seerrRecentRequests:
@@ -1258,6 +1265,26 @@ class HomeViewModel extends ChangeNotifier {
                   sortBy: genresSortBy,
                   sortOrder: genresSortOrder,
                   includeItemTypes: genresItemFilter,
+                ),
+        ];
+      case HomeSectionType.studios:
+        final studiosSortBy = _prefs.get(UserPreferences.studiosRowSortBy).apiValue;
+        final studiosSortOrder = _prefs.get(UserPreferences.studiosRowSortOrder).apiValue;
+        final selectedIds = _prefs.get(UserPreferences.studiosRowSelectedIds);
+        return [
+          _multiServerEnabled
+              ? await _multiServerRepo.getAggregatedStudios(
+                  sortBy: studiosSortBy,
+                  sortOrder: studiosSortOrder,
+                  selectedIds: selectedIds,
+                  title: l10n.studios,
+                )
+              : await _dataSource.loadStudios(
+                  _serverId,
+                  sortBy: studiosSortBy,
+                  sortOrder: studiosSortOrder,
+                  selectedIds: selectedIds,
+                  title: l10n.studios,
                 ),
         ];
       case HomeSectionType.libraryTilesSmall:
@@ -1697,6 +1724,13 @@ class HomeViewModel extends ChangeNotifier {
           id: 'genres',
           title: l10n.genres,
           rowType: HomeRowType.genres,
+          isLoading: true,
+        );
+      case HomeSectionType.studios:
+        return HomeRow(
+          id: 'studios',
+          title: l10n.studios,
+          rowType: HomeRowType.studios,
           isLoading: true,
         );
       case HomeSectionType.libraryTilesSmall:

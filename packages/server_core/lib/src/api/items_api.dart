@@ -181,6 +181,18 @@ abstract class ItemsApi {
     List<String>? includeItemTypes,
   });
 
+  Future<Map<String, dynamic>> getStudios({
+    String? parentId,
+    String? userId,
+    String? sortBy,
+    String? sortOrder,
+    int? startIndex,
+    int? limit,
+    bool? recursive,
+    String? fields,
+    List<String>? includeItemTypes,
+  });
+
   Future<Map<String, dynamic>> getLyrics(String itemId);
 
   Future<List<Map<String, dynamic>>> getLocalTrailers(String itemId);

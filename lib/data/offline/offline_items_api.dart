@@ -961,6 +961,54 @@ class OfflineItemsApi implements ItemsApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getStudios({
+    String? parentId,
+    String? userId,
+    String? sortBy,
+    String? sortOrder,
+    int? startIndex,
+    int? limit,
+    bool? recursive,
+    String? fields,
+    List<String>? includeItemTypes,
+  }) async {
+    var scope = _scopeIncludingChildren(parentId);
+    if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
+      scope = scope.where((e) => includeItemTypes.contains(e.type)).toList();
+    }
+
+    final studiosByName = <String, Map<String, dynamic>>{};
+    for (final e in scope) {
+      final studioItems = ((e.metadata['Studios'] as List?) ?? const [])
+          .whereType<Map>()
+          .toList();
+      if (studioItems.isNotEmpty) {
+        for (final s in studioItems) {
+          final name = s['Name'] as String?;
+          if (name == null || name.isEmpty) continue;
+          studiosByName.putIfAbsent(
+            name.toLowerCase(),
+            () => {
+              'Id': s['Id']?.toString() ?? 'offline-studio:$name',
+              'Name': name,
+              'Type': 'Studio',
+              'ServerId': e.row.serverId,
+            },
+          );
+        }
+      }
+    }
+
+    final result = studiosByName.values.toList()
+      ..sort(
+        (a, b) => (a['Name'] as String).toLowerCase().compareTo(
+          (b['Name'] as String).toLowerCase(),
+        ),
+      );
+    return _envelope(result, startIndex: startIndex, limit: limit);
+  }
+
+  @override
   Future<Map<String, dynamic>> getLyrics(String itemId) async {
     try {
       final imageDir = await _storagePath.getImageCacheDir();

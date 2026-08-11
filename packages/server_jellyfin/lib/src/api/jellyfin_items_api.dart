@@ -569,6 +569,36 @@ class JellyfinItemsApi implements ItemsApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getStudios({
+    String? parentId,
+    String? userId,
+    String? sortBy,
+    String? sortOrder,
+    int? startIndex,
+    int? limit,
+    bool? recursive,
+    String? fields,
+    List<String>? includeItemTypes,
+  }) async {
+    final response = await _dio.get(
+      '/Studios',
+      queryParameters: {
+        'ParentId': ?parentId,
+        'UserId': ?userId,
+        'SortBy': ?sortBy,
+        'SortOrder': ?sortOrder,
+        'StartIndex': ?startIndex,
+        'Limit': ?limit,
+        'Recursive': ?recursive,
+        'Fields': ?fields,
+        if (includeItemTypes != null && includeItemTypes.isNotEmpty)
+          'IncludeItemTypes': includeItemTypes.join(','),
+      },
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  @override
   Future<Map<String, dynamic>> getLyrics(String itemId) async {
     final response = await _dio.get('/Audio/$itemId/Lyrics');
     return response.data as Map<String, dynamic>;

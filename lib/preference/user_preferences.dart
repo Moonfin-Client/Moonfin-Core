@@ -282,6 +282,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_audio_rows_sort_by',
     'pref_audio_rows_sort_order',
     'pref_diagnostic_logging_enabled',
+    'pref_display_studios_rows',
     'pref_epg_mobile_view',
     'pref_favorites_view_style',
     'pref_group_items_into_collections',
@@ -302,6 +303,9 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_mode',
     'pref_screensaver_require_rating',
     'pref_screensaver_timeout',
+    'pref_studios_row_selected_ids',
+    'pref_studios_row_sort_by',
+    'pref_studios_row_sort_order',
     'pref_syncplay_enabled',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
@@ -920,6 +924,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final displayStudiosRows = Preference(
+    key: 'pref_display_studios_rows',
+    defaultValue: false,
+  );
+
   static final displayPlaylistsRows = Preference(
     key: 'pref_display_playlists_rows',
     defaultValue: false,
@@ -1082,6 +1091,23 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_audio_rows_sort_order',
     defaultValue: SortDirection.ascending,
     values: SortDirection.values,
+  );
+
+  static final studiosRowSortBy = EnumPreference(
+    key: 'pref_studios_row_sort_by',
+    defaultValue: LibrarySortBy.name,
+    values: LibrarySortBy.values,
+  );
+
+  static final studiosRowSortOrder = EnumPreference(
+    key: 'pref_studios_row_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
+  static final studiosRowSelectedIds = Preference<String>(
+    key: 'pref_studios_row_selected_ids',
+    defaultValue: '',
   );
 
   static final genresRowItemFilter = EnumPreference(

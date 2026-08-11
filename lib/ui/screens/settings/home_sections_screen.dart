@@ -235,6 +235,19 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
               } catch (_) {}
             }());
             break;
+          case HomeSectionType.studios:
+            tasks.add(() async {
+              try {
+                final response = await client.itemsApi.getStudios(
+                  userId: userId,
+                  recursive: true,
+                  limit: 1,
+                );
+                final total = response['TotalRecordCount'] as int? ?? 0;
+                setEmpty(stableId, total == 0);
+              } catch (_) {}
+            }());
+            break;
           case HomeSectionType.audioArtists:
             tasks.add(() async {
               try {
@@ -473,6 +486,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       return 3;
     }
     if (section.type == HomeSectionType.genres) {
+      return 4;
+    }
+    if (section.type == HomeSectionType.studios) {
       return 4;
     }
     if (section.type == HomeSectionType.playlists) {
@@ -1626,6 +1642,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           'Favorite ${FavoriteTypeFilter.audio.displayName}',
         HomeSectionType.collections => l10n.collections,
         HomeSectionType.genres => l10n.genres,
+        HomeSectionType.studios => l10n.studios,
         HomeSectionType.liveTv => l10n.liveTV,
         HomeSectionType.seerrRecentRequests => l10n.recentRequests,
         HomeSectionType.seerrWatchlist => l10n.yourWatchlist,

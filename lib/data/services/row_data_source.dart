@@ -473,6 +473,80 @@ class RowDataSource {
     return row.copyWith(totalCount: totalCount);
   }
 
+  Future<HomeRow> loadStudios(
+    String serverId, {
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+    String selectedIds = '',
+    String? title,
+    String? parentId,
+  }) async {
+    final rowTitle = title ?? _l10n.studios;
+    if (_isAccessDenied(parentId)) {
+      return _buildRow(
+        id: 'studios',
+        title: rowTitle,
+        response: const <String, dynamic>{'Items': <dynamic>[]},
+        serverId: serverId,
+        rowType: HomeRowType.studios,
+      );
+    }
+    final selectedSet = selectedIds
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toSet();
+
+    Map<String, dynamic> response;
+    try {
+      response = await _client.itemsApi.getStudios(
+        parentId: parentId,
+        userId: _client.userId,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: selectedSet.isNotEmpty ? null : _defaultLimit,
+        fields: 'ItemCounts,PrimaryImageAspectRatio',
+      );
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode ?? 0;
+      _recordIfAccessDenied(statusCode, parentId);
+      if (statusCode < 500) rethrow;
+      response = await _client.itemsApi.getStudios(
+        parentId: parentId,
+        userId: _client.userId,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: selectedSet.isNotEmpty ? null : _defaultLimit,
+      );
+    }
+
+    var items = (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+
+    if (selectedSet.isNotEmpty) {
+      items = items.where((item) {
+        final id = item['Id']?.toString() ?? '';
+        return selectedSet.contains(id);
+      }).toList();
+    }
+
+    final filteredResponse = <String, dynamic>{
+      ...response,
+      'Items': items,
+      'TotalRecordCount': items.length,
+    };
+
+    final row = _buildRow(
+      id: 'studios',
+      title: rowTitle,
+      response: filteredResponse,
+      serverId: serverId,
+      rowType: HomeRowType.studios,
+    );
+    return row.copyWith(totalCount: items.length);
+  }
+
   Future<Map<String, dynamic>> _enrichGenreResponseForBrowse(
     Map<String, dynamic> response, {
     required List<String> includeItemTypes,
@@ -1253,6 +1327,56 @@ class RowDataSource {
             excludeItemTypes: const ['Episode'],
           );
         }
+      case HomeRowType.studios:
+        final sortBy =
+            prefs?.get(UserPreferences.studiosRowSortBy).apiValue ??
+            _defaultSortBy;
+        final sortOrder =
+            prefs?.get(UserPreferences.studiosRowSortOrder).apiValue ??
+            _defaultSortOrder;
+        final selectedIds =
+            prefs?.get(UserPreferences.studiosRowSelectedIds) ?? '';
+        final pageCount = (currentOffset / _defaultLimit).ceil();
+        final startIndex = pageCount * _defaultLimit;
+        try {
+          response = await _client.itemsApi.getStudios(
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            recursive: true,
+            startIndex: startIndex,
+            limit: _defaultLimit,
+            fields: 'ItemCounts',
+          );
+        } on DioException catch (e) {
+          final statusCode = e.response?.statusCode ?? 0;
+          if (statusCode < 500) rethrow;
+          response = await _client.itemsApi.getStudios(
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            recursive: true,
+            startIndex: startIndex,
+            limit: _defaultLimit,
+          );
+        }
+        var rawItems = (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+        final selectedSet = selectedIds
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toSet();
+        if (selectedSet.isNotEmpty) {
+          rawItems = rawItems.where((item) {
+            final id = item['Id']?.toString() ?? '';
+            return selectedSet.contains(id);
+          }).toList();
+        }
+        final filteredResponse = <String, dynamic>{
+          ...response,
+          'Items': rawItems,
+        };
+        final newItems = _parseItems(filteredResponse, serverId);
+        final totalCount = rawItems.length + row.items.length;
+        return ([...row.items, ...newItems], totalCount);
       case HomeRowType.latestMedia:
         // Stitched from several libraries at load time, so the id names a media
         // kind rather than a parent the server would recognise.

@@ -626,6 +626,17 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       includeTypes = ['MusicAlbum'];
     }
 
+    if (isStudioBrowse && includeItemTypes == null) {
+      if (groupCollections) {
+        includeTypes = ['Movie', 'Series', 'BoxSet'];
+        collapseBoxSets = true;
+      } else {
+        includeTypes = ['Movie', 'Series'];
+        collapseBoxSets = false;
+      }
+      excludeTypes = ['Playlist', 'Episode', 'Season'];
+    }
+
     if (isFilterBrowse && includeItemTypes == null) {
       final currentExclude = excludeTypes ?? const <String>[];
       if (!currentExclude.contains('Episode')) {

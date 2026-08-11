@@ -262,7 +262,9 @@ List<ItemContextAction> contextActionsFor(
           type == 'CollectionFolder' ||
           type == 'UserView' ||
           type == 'Genre' ||
-          type == 'MusicGenre') &&
+          type == 'MusicGenre' ||
+          type == 'Studio' ||
+          type == 'Network') &&
       client.serverType == ServerType.jellyfin &&
       isAdminUser;
 

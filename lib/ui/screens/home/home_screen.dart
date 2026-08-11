@@ -4543,6 +4543,8 @@ class _ContentRowsState extends State<_ContentRows>
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
+          } else if (row.rowType == HomeRowType.studios && row.id == 'studios') {
+            context.push(Destinations.studio(item.name));
           } else if (item.serverId == 'seerr') {
             _navigateToSeerrItem(context, item);
           } else {
@@ -5467,6 +5469,7 @@ class _ContentRowsState extends State<_ContentRows>
       },
       HomeRowType.collections => HomeSectionType.collections,
       HomeRowType.genres => HomeSectionType.genres,
+      HomeRowType.studios => HomeSectionType.studios,
       HomeRowType.libraryTiles => HomeSectionType.libraryTilesSmall,
       HomeRowType.playlists => HomeSectionType.playlists,
       HomeRowType.liveTv => HomeSectionType.liveTv,
@@ -5515,6 +5518,7 @@ class _ContentRowsState extends State<_ContentRows>
         'Audio' ||
         'Playlist' ||
         'Person' => 1.0,
+        'Studio' || 'Network' => 16 / 9,
         _ => 2 / 3,
       },
     };
@@ -5534,6 +5538,16 @@ class _ContentRowsState extends State<_ContentRows>
       if (primaryAr != null && primaryAr >= 1.0) {
         return null;
       }
+    }
+
+    if (item.type == 'Studio' || item.type == 'Network') {
+      final primaryUrl = _resolvePrimaryImageUrl(
+        item,
+        imageApi,
+        maxHeight: (height * requestScale).toInt(),
+        maxWidth: (height * 16 / 9 * requestScale).toInt(),
+      );
+      if (primaryUrl != null) return primaryUrl;
     }
 
     if (item.serverId == 'seerr') {
