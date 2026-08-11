@@ -2017,18 +2017,7 @@ class _ContentRowsState extends State<_ContentRows>
     final screenWidth = size.width;
 
     if (_isBannerMode()) {
-      if (PlatformDetection.isTV) {
-        // Backdrop images are ~16:9. The banner previously used a flat
-        // 320px height regardless of screen width, which on TV-sized
-        // screens made the container far wider than 16:9 and caused
-        // BoxFit.cover to crop the top and bottom of every backdrop.
-        // Deriving the height from the actual screen width keeps the
-        // container close to the source aspect ratio so little to no
-        // cropping is needed. Clamped to a sane range so extreme screen
-        // sizes don't produce an unreasonably short or tall banner.
-        final targetHeight = screenWidth * 9 / 16;
-        return targetHeight.clamp(280.0, 480.0);
-      }
+      if (PlatformDetection.isTV) return 320.0;
       if (!PlatformDetection.useMobileUi) return 240.0;
       return 200.0;
     }
