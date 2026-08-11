@@ -9001,5 +9001,13 @@
     "imdbMostPopularMovies": "IMDb: самые популярные фильмы",
     "imdbMostPopularTvShows": "IMDb: самые популярные сериалы",
     "imdbLowestRatedMovies": "IMDb: фильмы с худшим рейтингом",
-    "imdbTopEnglishMovies": "IMDb: лучшие англоязычные фильмы"
+    "imdbTopEnglishMovies": "IMDb: лучшие англоязычные фильмы",
+    "oledMode": "Режим OLED",
+    "@oledMode": {
+        "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+    },
+    "oledModeSubtitle": "Перевод: Углубляет чёрный цвет и делает изображение насыщеннее. Лучше всего работает на OLED-дисплеях.",
+    "@oledModeSubtitle": {
+        "description": "Explanation under the OLED Mode setting"
+    }
 }
