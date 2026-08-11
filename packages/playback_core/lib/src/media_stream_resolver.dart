@@ -98,8 +98,9 @@ abstract class MediaStreamResolver {
     required String? path,
     required String serverBaseUrl,
   }) {
-    if (!enableDirectPlay || isWebPlatform) return false;
-    if (!isRemote || !supportsDirectPlay || isManagedLiveStream) return false;
+    if (!enableDirectPlay || isWebPlatform || isManagedLiveStream) {
+      return false;
+    }
     if (protocol?.toLowerCase() != 'http') return false;
     if (path == null ||
         !(path.startsWith('http://') || path.startsWith('https://'))) {
@@ -108,10 +109,28 @@ abstract class MediaStreamResolver {
 
     final host = Uri.tryParse(path)?.host.toLowerCase() ?? '';
     if (host.isEmpty || _isLoopbackHost(host)) return false;
-    if (!_isPrivateHost(host)) return true;
 
     final serverHost = Uri.tryParse(serverBaseUrl)?.host.toLowerCase() ?? '';
-    return _isPrivateHost(serverHost);
+    final isForeignHost = host != serverHost && !_isPrivateHost(host);
+
+    // Standard path: the server explicitly told us this source is a remote,
+    // direct-playable URL. Trusted regardless of host shape.
+    if (isRemote && supportsDirectPlay) {
+      if (!_isPrivateHost(host)) return true;
+      return _isPrivateHost(serverHost);
+    }
+
+    // Lenient fallback: some third-party Jellyfin-compatible backends (e.g.
+    // Stremio-addon bridges serving debrid/cloud sources) omit or
+    // under-report `IsRemote`/`SupportsDirectPlay` on their MediaSource even
+    // though the `Path` is a genuine absolute HTTP(S) URL to an external
+    // host. A local library file never has protocol `http` pointing at a
+    // foreign, non-private host, so that combination alone is a safe signal
+    // this is a remote source meant to be fetched directly rather than
+    // proxied through the server. Private/loopback hosts are excluded here
+    // since those can't be reliably distinguished from a mis-tagged local
+    // path without the server's explicit flags.
+    return isForeignHost;
   }
 
   static final RegExp _privateIpv6 = RegExp(r'^(f[cd]|fe[89ab])');

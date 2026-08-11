@@ -69,16 +69,16 @@ jobs:
       - name: Resolve dependencies
         run: flutter-tvos pub get
 
-      - name: Import App Store Connect API key
-        env:
-          ASC_KEY_BASE64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
-        run: |
-          if [ -z "$ASC_KEY_BASE64" ]; then
-            echo "::error::APPLE_ASC_API_KEY_BASE64 secret is missing" && exit 1
-          fi
-          mkdir -p "$RUNNER_TEMP/asc"
-          echo "$ASC_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/asc/AuthKey.p8"
-          echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey.p8" >> "$GITHUB_ENV"
+#      - name: Import App Store Connect API key
+#        env:
+#          ASC_KEY_BASE64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
+#        run: |
+#          if [ -z "$ASC_KEY_BASE64" ]; then
+#            echo "::error::APPLE_ASC_API_KEY_BASE64 secret is missing" && exit 1
+#          fi
+#          mkdir -p "$RUNNER_TEMP/asc"
+#          echo "$ASC_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/asc/AuthKey.p8"
+#          echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey.p8" >> "$GITHUB_ENV"
 
       - name: Prepare Flutter build settings and pods
         run: |
@@ -111,7 +111,7 @@ jobs:
             || { echo "::error::AssetManifest.bin missing from staged flutter_assets"; exit 1; }
           echo "Staged flutter_assets:" && ls "$DEST"
 
-      - name: Build signed app for device
+      - name: Build unsigned tvOS app
         if: ${{ inputs.distribution == 'dev' }}
         run: |
           xcodebuild \
@@ -120,14 +120,26 @@ jobs:
             -configuration Release \
             -sdk appletvos \
             -derivedDataPath "$RUNNER_TEMP/dd" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
-            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}" \
-            CODE_SIGNING_ALLOWED=YES \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+            CODE_SIGNING_ALLOWED=NO \
             build
+
+#      - name: Build signed app for device
+#        if: ${{ inputs.distribution == 'dev' }}
+#        run: |
+#          xcodebuild \
+#            -workspace tvos/Runner.xcworkspace \
+#            -scheme Runner \
+#            -configuration Release \
+#            -sdk appletvos \
+#            -derivedDataPath "$RUNNER_TEMP/dd" \
+#            -allowProvisioningUpdates \
+#            -authenticationKeyPath "$ASC_KEY_PATH" \
+#            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
+#            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}" \
+#            CODE_SIGNING_ALLOWED=YES \
+#            CODE_SIGN_STYLE=Automatic \
+#            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+#            build
 
       - name: Package IPA
         if: ${{ inputs.distribution == 'dev' }}
