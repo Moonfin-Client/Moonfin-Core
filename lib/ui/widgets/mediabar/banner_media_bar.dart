@@ -256,74 +256,82 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
           if (mounted) setState(() => _focused = f);
         },
         onKeyEvent: (node, event) => _handleKey(event, item),
-        child: AnimatedContainer(
-          width: containerWidth,
-          duration: const Duration(milliseconds: 180),
-          decoration: BoxDecoration(
-            borderRadius: AppRadius.circular(16),
-            border: Border.all(
-              // Always draw border; white when focused, subtle when not.
-              color: _focused
-                  ? Colors.white
-                  : AppColorScheme.onSurface.withValues(alpha: 0.12),
-              width: 2.5,
+        // The Focus widget sits inside a ListView.builder item, which hands
+        // its child tight width constraints matching the viewport. Without
+        // an Align to loosen those constraints, the AnimatedContainer's
+        // `width` below is overridden and it stretches to fill the screen
+        // instead of sizing to the 32:9 banner width.
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: AnimatedContainer(
+            width: containerWidth,
+            duration: const Duration(milliseconds: 180),
+            decoration: BoxDecoration(
+              borderRadius: AppRadius.circular(16),
+              border: Border.all(
+                // Always draw border; white when focused, subtle when not.
+                color: _focused
+                    ? Colors.white
+                    : AppColorScheme.onSurface.withValues(alpha: 0.12),
+                width: 2.5,
+              ),
+              boxShadow: _focused
+                  ? [
+                      BoxShadow(
+                        color: AppColorScheme.accent.withValues(alpha: 0.4),
+                        blurRadius: 18,
+                      ),
+                    ]
+                  : null,
             ),
-            boxShadow: _focused
-                ? [
-                    BoxShadow(
-                      color: AppColorScheme.accent.withValues(alpha: 0.4),
-                      blurRadius: 18,
-                    ),
-                  ]
-                : null,
-          ),
-          child: ClipRRect(
-            borderRadius: AppRadius.circular(14),
-            child: Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: containerWidth,
-                height: widget.height,
-                child: GestureDetector(
-                  onTap: () => widget.onOpen(item),
-                  onHorizontalDragEnd: items.length > 1
-                      ? (details) {
-                          final v = details.primaryVelocity ?? 0;
-                          if (v < -300) {
-                            _setIndex(_index + 1);
-                          } else if (v > 300) {
-                            _setIndex(
-                              _index == 0 ? items.length - 1 : _index - 1,
-                            );
+            child: ClipRRect(
+              borderRadius: AppRadius.circular(14),
+              child: Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: containerWidth,
+                  height: widget.height,
+                  child: GestureDetector(
+                    onTap: () => widget.onOpen(item),
+                    onHorizontalDragEnd: items.length > 1
+                        ? (details) {
+                            final v = details.primaryVelocity ?? 0;
+                            if (v < -300) {
+                              _setIndex(_index + 1);
+                            } else if (v > 300) {
+                              _setIndex(
+                                _index == 0 ? items.length - 1 : _index - 1,
+                              );
+                            }
                           }
-                        }
-                      : null,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      _backdrop(item),
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [Color(0xE6000000), Color(0x00000000)],
+                        : null,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        _backdrop(item),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [Color(0xE6000000), Color(0x00000000)],
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: 20,
-                        right: 20,
-                        bottom: 16,
-                        child: _content(context, item),
-                      ),
-                      if (items.length > 1)
                         Positioned(
-                          top: 12,
-                          right: 16,
-                          child: _Dots(count: items.length, active: index),
+                          left: 20,
+                          right: 20,
+                          bottom: 16,
+                          child: _content(context, item),
                         ),
-                    ],
+                        if (items.length > 1)
+                          Positioned(
+                            top: 12,
+                            right: 16,
+                            child: _Dots(count: items.length, active: index),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
