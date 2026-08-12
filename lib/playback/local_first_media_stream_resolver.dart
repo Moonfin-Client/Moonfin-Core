@@ -1,5 +1,6 @@
 import 'package:playback_core/playback_core.dart';
 
+import '../data/offline/connectivity_aware_media_server_client.dart';
 import 'offline_stream_resolver.dart';
 
 /// Resolver that serves a completed download's local file instead of a
@@ -39,6 +40,14 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
     if (enableDirectPlay) {
       final local = await _tryResolveLocal(mediaItem, mediaSourceId);
       if (local != null) return local;
+      // With no local copy and no server, the network resolve below just
+      // burns through its timeouts before failing anyway. TV never reaches
+      // this: it has no downloads, and shouldUseOfflineCatalog is false there.
+      if (shouldUseOfflineCatalog()) {
+        throw StateError(
+          'No playable downloaded copy and the server is unreachable',
+        );
+      }
     }
     return _inner.resolve(
       mediaItem,

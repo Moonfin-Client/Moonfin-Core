@@ -50,6 +50,19 @@ void main() {
 
     expect(game.revocations, isEmpty);
     expect(video.revocations, isEmpty);
-    expect(preview.revocations, [RevokeReason.exclusive]);
+    expect(preview.revocations, [RevokeReason.ambientHandoff]);
+  });
+
+  test('an ambient acquire hands off softly, a non-ambient one does not',
+      () async {
+    await arbiter.acquire(AudioProducer.mediaBarTrailer);
+    expect(themeMusic.revocations, [RevokeReason.ambientHandoff]);
+
+    await arbiter.acquire(AudioProducer.mainPlayback);
+    expect(
+      themeMusic.revocations,
+      [RevokeReason.ambientHandoff, RevokeReason.exclusive],
+    );
+    expect(trailer.revocations, [RevokeReason.exclusive]);
   });
 }

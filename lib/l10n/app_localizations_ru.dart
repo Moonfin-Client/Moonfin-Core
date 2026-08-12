@@ -208,11 +208,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get glassQuality => 'Качество стекла';
 
   @override
-  String get oledMode => 'OLED Mode';
+  String get oledMode => 'Режим OLED';
 
   @override
   String get oledModeSubtitle =>
-      'Deepen blacks and enrich artwork. Best on OLED displays.';
+      'Перевод: Углубляет чёрный цвет и делает изображение насыщеннее. Лучше всего работает на OLED-дисплеях.';
 
   @override
   String get oledModeSubtle => 'Subtle';

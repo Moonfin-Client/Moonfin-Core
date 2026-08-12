@@ -781,7 +781,11 @@ class PlaybackManager implements AudioOwnable {
       _suppressNextGenericBackendError = true;
       try {
         await _reResolveAtCurrentPosition(isErrorRecovery: true);
-      } catch (_) {}
+      } catch (_) {
+        // A recovery that dies quietly leaves the bring-up phase parked at
+        // resolving and the player screen spinning with no way out.
+        emitFailedBringupState('Playback failed.');
+      }
     }
 
     if (eventType == 'error') {
@@ -813,6 +817,20 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    // Every recovery below re-resolves against the server, and none of that
+    // preserves a local file: re-resolving with direct play disabled skips
+    // the downloaded copy and streams instead, or hangs when the server is
+    // unreachable. An error on local media is a real failure the user should
+    // see. Media3's in-player audio offload retry is the one recovery that
+    // stays on the file, so it is left to run.
+    if (resolution != null &&
+        resolution.isLocalMedia &&
+        event['audioOffloadRetryTriggered'] != true) {
+      _suppressNextGenericBackendError = true;
+      emitFailedBringupState('Playback failed.');
+      return;
+    }
+
     bool canReResolve() =>
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
@@ -825,6 +843,7 @@ class PlaybackManager implements AudioOwnable {
       try {
         await _reResolveAtCurrentPosition(forceTranscode: true);
       } catch (_) {
+        emitFailedBringupState('Playback failed.');
       } finally {
         _unsupportedAudioRecoveryInFlight = false;
       }
@@ -840,7 +859,9 @@ class PlaybackManager implements AudioOwnable {
       _suppressNextGenericBackendError = true;
       try {
         await _reResolveAtCurrentPosition(isErrorRecovery: true);
-      } catch (_) {}
+      } catch (_) {
+        emitFailedBringupState('Playback failed.');
+      }
       return;
     }
 
@@ -1486,8 +1507,10 @@ class PlaybackManager implements AudioOwnable {
       }
 
       if (allowStartupRecovery) {
+        // A transcode retry asks the server, which abandons a local file.
         final forceTranscodeFallback =
             enableTranscoding &&
+            !resolution.isLocalMedia &&
             resolution.playMethod != StreamPlayMethod.transcode;
         if (forceTranscodeFallback) {
           var decision = PlaybackStartupRecoveryDecision.retryWithTranscode;

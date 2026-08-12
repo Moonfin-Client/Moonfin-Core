@@ -77,6 +77,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var forceSubtitlesDisabledOnStart = false
     private var didEmitLoadError = false
     private var lastErrorMessage: String?
+
+    /// Ties the load watchdog and the load's own continuation to the load
+    /// that started them, so neither acts after a newer load has taken over.
+    private var loadGeneration: UInt64 = 0
+    private static let loadWatchdogNanoseconds: UInt64 = 30_000_000_000
     private var baseSubtitlePosition: Int = 100
 
     // Track mapping: Dart speaks 1-based per-type ordinals while the engine
@@ -525,12 +530,24 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             state = .error
             return
         }
+        // A load from a healthy or just ended session goes straight to
+        // engine.load, whose internal supersede keeps the AVPlayer instance
+        // and current item alive across the seam for PiP and Control Center.
+        // The states below have no session worth keeping: a fresh engine, a
+        // load that never finished, or a failure. Resetting first is what a
+        // stop before play has always done, and skipping it here is what left
+        // the first tap of a session spinning while the second tap worked.
+        if state == .idle || state == .opening || state == .error {
+            engine.stop(resetDisplayCriteria: false)
+        }
         isAudioOnlySession = audioOnly
         isLiveSession = sourceConfiguration.isLive
         didEmitLoadError = false
         resetAssState()
         subtitleOverlay.clear()
         state = .opening
+        loadGeneration &+= 1
+        let generation = loadGeneration
 
         if !audioOnly {
             await waitForSurface()
@@ -557,16 +574,37 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             autoplay: sourceConfiguration.autoPlay
         )
 
+        // Nothing else bounds the open. A load wedged on the network keeps
+        // the wrapper at opening, which the state poll reports as buffering
+        // forever, and the host shows a spinner with no way out.
+        let watchdog = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: Self.loadWatchdogNanoseconds)
+            guard !Task.isCancelled, let self, self.loadGeneration == generation,
+                self.state == .opening
+            else { return }
+            self.didEmitLoadError = true
+            self.state = .error
+            Self.sharedEngine()?.stop(resetDisplayCriteria: false)
+            self.emitError(
+                kind: "startup_timeout", recoverable: false,
+                message: "The stream did not start in time")
+        }
+        defer { watchdog.cancel() }
+
         do {
             _ = try await engine.load(
                 url: url,
                 startPosition: startPosition > 0 ? startPosition : nil,
                 options: options,
                 audioSourceStreamIndex: sourceConfiguration.audioStreamIndex)
+            // A load that outlived its watchdog or was superseded finished
+            // against an engine that has already been stopped or reloaded.
+            guard loadGeneration == generation, !didEmitLoadError else { return }
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()
             }
         } catch {
+            guard loadGeneration == generation, !didEmitLoadError else { return }
             didEmitLoadError = true
             state = .error
             let (kind, message) = Self.classifyLoadError(error)

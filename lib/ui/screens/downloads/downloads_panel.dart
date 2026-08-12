@@ -16,6 +16,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/download_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_slider.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -144,6 +145,23 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
   Widget build(BuildContext context) =>
       RequestInitialFocus(child: _buildContent(context));
 
+  void _closePanel() {
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    if (rootNavigator.canPop()) {
+      rootNavigator.pop();
+    }
+  }
+
+  /// Opens the item with autoplay rather than starting playback here, so the
+  /// detail screen still decides the resume position and the track selection,
+  /// and playback stays local first and picks up the downloaded copy.
+  void _playItem(DownloadedItem item) {
+    _closePanel();
+    context.navigateTopLevel(
+      Destinations.item(item.itemId, serverId: item.serverId, autoPlay: true),
+    );
+  }
+
   Widget _buildContent(BuildContext context) {
     final storage = ref.watch(storageUsedProvider);
     final prefs = ref.watch(userPreferencesProvider);
@@ -154,6 +172,18 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        // This is the first route of the panel's own navigator, so the app bar
+        // has nothing to imply a leading button from, and on a phone or tablet
+        // the panel covers the barrier that would otherwise dismiss it. Without
+        // this the only way out is to kill the app. A TV closes with the remote
+        // and needs no button.
+        leading: PlatformDetection.isTV
+            ? null
+            : IconButton(
+                onPressed: _closePanel,
+                icon: const Icon(Icons.close),
+              ),
+        automaticallyImplyLeading: false,
         title: Text(l10n.savedMedia),
         actions: [
           const SyncIndicator(),
@@ -274,11 +304,12 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
   }
 
   Widget _buildItemsSection() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppLocalizations.of(context).downloadedItems,
+          l10n.downloadedItems,
           style: TextStyle(
             color: AppColorScheme.onSurface,
             fontSize: 16,
@@ -288,6 +319,8 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
         const SizedBox(height: 8),
         ..._itemsBySize!.map((item) {
           final isSelected = _selected.contains(item.itemId);
+          // A book opens a reader rather than a player.
+          final isBook = item.type == 'Book';
           return ListTile(
             contentPadding: EdgeInsets.zero,
             leading: _selectMode
@@ -317,11 +350,23 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
                 fontSize: 12,
               ),
             ),
-            trailing: Text(
-              formatBytes(item.fileSizeBytes),
-              style: TextStyle(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.54),
-              ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  formatBytes(item.fileSizeBytes),
+                  style: TextStyle(
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.54),
+                  ),
+                ),
+                // While selecting, a tap belongs to the selection.
+                if (!_selectMode && !isBook)
+                  IconButton(
+                    icon: const Icon(Icons.play_arrow),
+                    tooltip: l10n.play,
+                    onPressed: () => _playItem(item),
+                  ),
+              ],
             ),
             onTap: _selectMode
                 ? () => setState(() {
@@ -329,7 +374,9 @@ class _DownloadsPanelState extends ConsumerState<DownloadsPanel> {
                         ? _selected.remove(item.itemId)
                         : _selected.add(item.itemId);
                   })
-                : null,
+                : isBook
+                ? null
+                : () => _playItem(item),
           );
         }),
       ],

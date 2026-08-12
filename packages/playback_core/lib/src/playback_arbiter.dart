@@ -8,7 +8,12 @@ enum AudioProducer {
   themeMusic,
 }
 
-enum RevokeReason { exclusive, background }
+/// Why an owner is losing audio. An ambient handoff is one ambient source
+/// giving way to another, where a soft transition like a crossfade is fine.
+/// An exclusive revoke means main playback or a game needs the session now,
+/// and the acquire is awaited on the playback start path, so owners should
+/// release immediately rather than fade.
+enum RevokeReason { exclusive, ambientHandoff, background }
 
 abstract class AudioOwnable {
   AudioProducer get audioProducerId;
@@ -31,11 +36,14 @@ class PlaybackArbiter {
 
   Future<void> acquire(AudioProducer who) async {
     final ambient = _isAmbient(who);
+    final reason = ambient
+        ? RevokeReason.ambientHandoff
+        : RevokeReason.exclusive;
     for (final entry in _owners.entries.toList()) {
       if (entry.key == who) continue;
       // Ambient sound never interrupts what the user is watching or playing.
       if (ambient && !_isAmbient(entry.key)) continue;
-      await _revoke(entry.value, RevokeReason.exclusive);
+      await _revoke(entry.value, reason);
     }
   }
 

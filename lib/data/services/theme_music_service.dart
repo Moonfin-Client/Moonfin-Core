@@ -64,7 +64,14 @@ class ThemeMusicService implements AudioOwnable {
 
   @override
   Future<void> onAudioRevoked(RevokeReason reason) {
-    return fadeOutAndStop();
+    // The crossfade is for one ambient sound giving way to another, like a
+    // trailer reveal. Main playback awaits this revoke before it can start,
+    // and holding it for the two second fade delayed every first play.
+    if (reason == RevokeReason.ambientHandoff) {
+      return fadeOutAndStop();
+    }
+    stop();
+    return Future.value();
   }
 
   void registerDetailScreen(Object token) {

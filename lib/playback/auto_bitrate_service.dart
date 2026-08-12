@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import '../data/offline/connectivity_aware_media_server_client.dart';
 import '../data/services/media_server_client_factory.dart';
 
 /// Measures what the link to the active server can carry, so an Auto bitrate
@@ -32,6 +33,9 @@ class AutoBitrateService {
   /// could be measured, which leaves the request uncapped as before.
   Future<int?> measuredBpsForActiveServer() {
     if (_clientFactory.clients.isEmpty) return Future.value(null);
+    // Offline playback would otherwise wait out the probe's timeout before
+    // the local file starts.
+    if (shouldUseOfflineCatalog()) return Future.value(null);
     final client = _clientFactory.getActiveClient();
 
     final key = client.baseUrl;

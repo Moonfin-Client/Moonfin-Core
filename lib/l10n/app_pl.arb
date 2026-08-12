@@ -4,11 +4,11 @@
     "@appTitle": {
         "description": "The application title"
     },
-    "signIn": "Logowanie",
+    "signIn": "Zaloguj się",
     "@signIn": {
         "description": "Sign in heading and button label"
     },
-    "connectingToServer": "Połącz z {serverName}",
+    "connectingToServer": "Połącz z{serverName}",
     "@connectingToServer": {
         "description": "Subtitle showing which server the user is connecting to",
         "placeholders": {
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "Wstecz",
+    "back": "Cofnij",
     "@back": {
         "description": "Back button label"
     },
@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect niedostępny: {detail}",
+    "quickConnectUnavailable": "Szybkie Łączenie niedostępne: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -7318,11 +7318,11 @@
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Zgodnie z systemem",
+    "systemLanguageDefault": "Ustawienia domyślne",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
-    "empty": "Brak",
+    "empty": "Pusto",
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
@@ -9509,5 +9509,131 @@
     "playbackTimeVideoSection": "Odtwarzacz wideo",
     "@playbackTimeVideoSection": {
         "description": "Section header above the video progress bar time slots"
+    },
+    "playbackTimeMusicSection": "Odtwarzacz muzyki",
+    "@playbackTimeMusicSection": {
+        "description": "Section header above the music progress bar time option"
+    },
+    "playbackTimeSlotDescription": "Wybierz, co ma być tutaj wyświetlane, lub ukryj tę pozycję.",
+    "@playbackTimeSlotDescription": {
+        "description": "Setting description for a single progress bar time slot"
+    },
+    "playbackTimeAboveBarLeft": "Nad paskiem, po lewej",
+    "@playbackTimeAboveBarLeft": {
+        "description": "Progress bar time slot above the bar on the left"
+    },
+    "playbackTimeAboveBarCenter": "Nad paskiem, na środku",
+    "@playbackTimeAboveBarCenter": {
+        "description": "Progress bar time slot above the bar in the center"
+    },
+    "playbackTimeAboveBarRight": "Nad paskiem, po prawej",
+    "@playbackTimeAboveBarRight": {
+        "description": "Progress bar time slot above the bar on the right"
+    },
+    "playbackTimeBelowBarLeft": "Pod paskiem, po lewej",
+    "@playbackTimeBelowBarLeft": {
+        "description": "Progress bar time slot below the bar on the left"
+    },
+    "playbackTimeBelowBarCenter": "Pod paskiem, na środku",
+    "@playbackTimeBelowBarCenter": {
+        "description": "Progress bar time slot below the bar in the center"
+    },
+    "playbackTimeBelowBarRight": "Pod paskiem, po prawej",
+    "@playbackTimeBelowBarRight": {
+        "description": "Progress bar time slot below the bar on the right"
+    },
+    "settingsMusicPlaybackTimeDescription": "Wybierz, co ma być wyświetlane po prawej stronie paska postępu muzyki.",
+    "@settingsMusicPlaybackTimeDescription": {
+        "description": "Setting description for the music progress bar time option"
+    },
+    "groupByTitle": "Grupuj według",
+    "@groupByTitle": {
+        "description": "Dialog title and button label for library group by options"
+    },
+    "groupByDecade": "Dekada (rok)",
+    "@groupByDecade": {
+        "description": "Option to group library items by release decade"
+    },
+    "groupByParentalRating": "Ograniczenie wiekowe",
+    "@groupByParentalRating": {
+        "description": "Option to group library items by parental rating"
+    },
+    "groupByStudio": "Studio",
+    "@groupByStudio": {
+        "description": "Option to group library items by production studio"
+    },
+    "showAlphabeticalFilters": "Pokaż alfabet",
+    "@showAlphabeticalFilters": {
+        "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
+    },
+    "personalRatingStyle": "Styl ocen użytkownika",
+    "@personalRatingStyle": {
+        "description": "Selects how personal ratings are displayed and entered on media details."
+    },
+    "personalRatingThumbs": "Lubię / Nie lubię",
+    "@personalRatingThumbs": {
+        "description": "Personal rating style using like and dislike actions."
+    },
+    "personalRatingStars": "5 gwiazdek",
+    "@personalRatingStars": {
+        "description": "Personal rating style using a five-star scale."
+    },
+    "personalRatingNumeric": "Ocena w skali 1 - 10",
+    "@personalRatingNumeric": {
+        "description": "Personal rating style using a numeric score out of ten."
+    },
+    "rate": "Oceń",
+    "@rate": {
+        "description": "Action that opens the personal rating control."
+    },
+    "like": "Lubię",
+    "@like": {
+        "description": "Personal rating action for a positive rating."
+    },
+    "dislike": "Nie lubię",
+    "@dislike": {
+        "description": "Personal rating action for a negative rating."
+    },
+    "personalRatingClear": "Usuń ocenę",
+    "@personalRatingClear": {
+        "description": "Action that removes the personal rating from the media item."
+    },
+    "personalRatingRated": "Oceniono",
+    "@personalRatingRated": {
+        "description": "Tooltip for a media item that has a numeric personal rating."
+    },
+    "personalRatingSaveFailed": "Nie udało się zapisać oceny",
+    "@personalRatingSaveFailed": {
+        "description": "Error shown when saving a personal rating fails."
+    },
+    "increase": "Zwiększ",
+    "@increase": {
+        "description": "Action that increases a numeric personal rating."
+    },
+    "decrease": "Zmniejsz",
+    "@decrease": {
+        "description": "Action that decreases a numeric personal rating."
+    },
+    "personalRatingOutOfTen": "{rating} / 10",
+    "@personalRatingOutOfTen": {
+        "description": "Numeric personal rating displayed on a scale out of ten.",
+        "placeholders": {
+            "rating": {
+                "type": "String"
+            }
+        }
+    },
+    "personalRatingOutOfFive": "{rating} / 5",
+    "@personalRatingOutOfFive": {
+        "description": "Personal rating displayed on a five-star scale.",
+        "placeholders": {
+            "rating": {
+                "type": "String"
+            }
+        }
+    },
+    "adminReplaceImages": "Zastąp istniejące obrazy",
+    "@adminReplaceImages": {
+        "description": "Checkbox label in the confirmation dialog shown before applying an identified metadata match"
     }
 }
