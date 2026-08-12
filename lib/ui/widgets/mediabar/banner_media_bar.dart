@@ -91,7 +91,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
 
   void _startAutoAdvance() {
     _autoAdvance?.cancel();
-    if (widget.externallyPaused) return;
+    // Auto-advance should run regardless of external pause state.
     if (!widget.prefs.get(UserPreferences.mediaBarAutoAdvance)) return;
     final intervalMs = widget.prefs.get(UserPreferences.mediaBarIntervalMs);
     _autoAdvance = Timer.periodic(Duration(milliseconds: intervalMs), (_) {
@@ -244,6 +244,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
         ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
         : 0.0;
 
+    final aspect = PlatformDetection.isTV ? 32 / 9 : 16 / 9;
+    final containerWidth = widget.height * aspect;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
       child: Focus(
@@ -258,7 +261,10 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
           decoration: BoxDecoration(
             borderRadius: AppRadius.circular(16),
             border: Border.all(
-              color: _focused ? AppColorScheme.accent : Colors.transparent,
+              // Always draw border; white when focused, subtle when not.
+              color: _focused
+                  ? Colors.white
+                  : AppColorScheme.onSurface.withValues(alpha: 0.12),
               width: 2.5,
             ),
             boxShadow: _focused
@@ -275,50 +281,48 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             child: Align(
               alignment: Alignment.center,
               child: SizedBox(
+                width: containerWidth,
                 height: widget.height,
-                child: AspectRatio(
-                  aspectRatio: PlatformDetection.isTV ? 32 / 9 : 16 / 9,
-                  child: GestureDetector(
-                    onTap: () => widget.onOpen(item),
-                    onHorizontalDragEnd: items.length > 1
-                        ? (details) {
-                            final v = details.primaryVelocity ?? 0;
-                            if (v < -300) {
-                              _setIndex(_index + 1);
-                            } else if (v > 300) {
-                              _setIndex(
-                                _index == 0 ? items.length - 1 : _index - 1,
-                              );
-                            }
+                child: GestureDetector(
+                  onTap: () => widget.onOpen(item),
+                  onHorizontalDragEnd: items.length > 1
+                      ? (details) {
+                          final v = details.primaryVelocity ?? 0;
+                          if (v < -300) {
+                            _setIndex(_index + 1);
+                          } else if (v > 300) {
+                            _setIndex(
+                              _index == 0 ? items.length - 1 : _index - 1,
+                            );
                           }
-                        : null,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        _backdrop(item),
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [Color(0xE6000000), Color(0x00000000)],
-                            ),
+                        }
+                      : null,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _backdrop(item),
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [Color(0xE6000000), Color(0x00000000)],
                           ),
                         ),
+                      ),
+                      Positioned(
+                        left: 20,
+                        right: 20,
+                        bottom: 16,
+                        child: _content(context, item),
+                      ),
+                      if (items.length > 1)
                         Positioned(
-                          left: 20,
-                          right: 20,
-                          bottom: 16,
-                          child: _content(context, item),
+                          top: 12,
+                          right: 16,
+                          child: _Dots(count: items.length, active: index),
                         ),
-                        if (items.length > 1)
-                          Positioned(
-                            top: 12,
-                            right: 16,
-                            child: _Dots(count: items.length, active: index),
-                          ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -337,8 +341,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     return BoundedNetworkImage(
       imageUrl: url,
       fit: BoxFit.cover,
-      alignment: Alignment
-          .topCenter, // crop from the bottom only, keep top of image visible
+      // Bias cropping so trimmed pixels are 1/3 from top and 2/3 from bottom.
+      // Alignment.y of -1 is top, 1 is bottom; -0.333 biases toward the top.
+      alignment: const Alignment(0, -0.3333333),
       minWidth: 640,
       maxWidth: 1280,
       errorBuilder: (_, _, _) => ColoredBox(color: AppColorScheme.surface),
