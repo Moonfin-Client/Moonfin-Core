@@ -120,7 +120,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
       if (event is KeyUpEvent) {
         final downTime = _keyDownTime;
         _keyDownTime = null;
-        final longPress = downTime != null && DateTime.now().difference(downTime) >= _keyLongPressThreshold;
+        final longPress =
+            downTime != null &&
+            DateTime.now().difference(downTime) >= _keyLongPressThreshold;
         if (longPress) {
           widget.onPlay(item);
         } else {
@@ -176,12 +178,17 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
       if (state is! MediaBarLoading && state is! MediaBarError) {
         return const SizedBox.shrink();
       }
-      final navbarAtTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+      final navbarAtTop =
+          widget.prefs.get(UserPreferences.navbarPosition) ==
+          NavbarPosition.top;
       final topInset = PlatformDetection.useMobileUi
           ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
           : 0.0;
       if (state is MediaBarLoading) {
-        final loadingHeight = (widget.height - topInset - 12.0).clamp(0.0, double.infinity);
+        final loadingHeight = (widget.height - topInset - 12.0).clamp(
+          0.0,
+          double.infinity,
+        );
         return Padding(
           padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
           child: _wrapStatusFocus(
@@ -210,11 +217,14 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                     message,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColorScheme.onSurface),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColorScheme.onSurface,
+                    ),
                   ),
                 ),
                 TextButton(
-                  onPressed: () => widget.viewModel.load(context: context, force: true),
+                  onPressed: () =>
+                      widget.viewModel.load(context: context, force: true),
                   child: const Icon(Icons.refresh),
                 ),
               ],
@@ -228,8 +238,11 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     final item = items[index];
 
     final isMobile = PlatformDetection.useMobileUi;
-    final navbarAtTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
-    final topInset = isMobile ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0) : 0.0;
+    final navbarAtTop =
+        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final topInset = isMobile
+        ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
+        : 0.0;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
@@ -244,9 +257,17 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
           duration: const Duration(milliseconds: 180),
           decoration: BoxDecoration(
             borderRadius: AppRadius.circular(16),
-            border: Border.all(color: _focused ? AppColorScheme.accent : Colors.transparent, width: 2.5),
+            border: Border.all(
+              color: _focused ? AppColorScheme.accent : Colors.transparent,
+              width: 2.5,
+            ),
             boxShadow: _focused
-                ? [BoxShadow(color: AppColorScheme.accent.withValues(alpha: 0.4), blurRadius: 18)]
+                ? [
+                    BoxShadow(
+                      color: AppColorScheme.accent.withValues(alpha: 0.4),
+                      blurRadius: 18,
+                    ),
+                  ]
                 : null,
           ),
           child: ClipRRect(
@@ -256,7 +277,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
               child: SizedBox(
                 height: widget.height,
                 child: AspectRatio(
-                  aspectRatio: 16 / 9,
+                  aspectRatio: PlatformDetection.isTV ? 32 / 9 : 16 / 9,
                   child: GestureDetector(
                     onTap: () => widget.onOpen(item),
                     onHorizontalDragEnd: items.length > 1
@@ -265,7 +286,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                             if (v < -300) {
                               _setIndex(_index + 1);
                             } else if (v > 300) {
-                              _setIndex(_index == 0 ? items.length - 1 : _index - 1);
+                              _setIndex(
+                                _index == 0 ? items.length - 1 : _index - 1,
+                              );
                             }
                           }
                         : null,
@@ -282,7 +305,12 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                             ),
                           ),
                         ),
-                        Positioned(left: 20, right: 20, bottom: 16, child: _content(context, item)),
+                        Positioned(
+                          left: 20,
+                          right: 20,
+                          bottom: 16,
+                          child: _content(context, item),
+                        ),
                         if (items.length > 1)
                           Positioned(
                             top: 12,
@@ -308,6 +336,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     }
     return BoundedNetworkImage(
       imageUrl: url,
+      fit: BoxFit.cover,
+      alignment: Alignment
+          .topCenter, // crop from the bottom only, keep top of image visible
       minWidth: 640,
       maxWidth: 1280,
       errorBuilder: (_, _, _) => ColoredBox(color: AppColorScheme.surface),
@@ -316,15 +347,24 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
 
   Widget _content(BuildContext context, MediaBarSlideItem item) {
     final theme = Theme.of(context);
-    final shadows = <Shadow>[Shadow(blurRadius: 10, color: AppColorScheme.scrim.withValues(alpha: 0.8))];
+    final shadows = <Shadow>[
+      Shadow(
+        blurRadius: 10,
+        color: AppColorScheme.scrim.withValues(alpha: 0.8),
+      ),
+    ];
     final meta = <String>[
       if (item.year != null) '${item.year}',
-      if (item.itemType != 'Series' && item.runtime != null) _formatRuntime(item.runtime!),
+      if (item.itemType != 'Series' && item.runtime != null)
+        _formatRuntime(item.runtime!),
       if (item.officialRating != null) item.officialRating!,
     ].join('  ·  ');
 
     final ratingsMap = widget.viewModel.ratingsFor(item.itemId);
-    final hasRatings = ratingsMap.isNotEmpty || item.communityRating != null || item.criticRating != null;
+    final hasRatings =
+        ratingsMap.isNotEmpty ||
+        item.communityRating != null ||
+        item.criticRating != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +381,8 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
                 fit: BoxFit.contain,
                 alignment: Alignment.centerLeft,
                 fadeInDuration: Duration.zero,
-                errorWidget: (_, _, _) => MediaBarTitle(title: item.title, shadows: shadows),
+                errorWidget: (_, _, _) =>
+                    MediaBarTitle(title: item.title, shadows: shadows),
               ),
             ),
           )
@@ -366,7 +407,9 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             ratings: ratingsMap,
             communityRating: item.communityRating,
             criticRating: item.criticRating,
-            enableAdditionalRatings: widget.prefs.get(UserPreferences.enableAdditionalRatings),
+            enableAdditionalRatings: widget.prefs.get(
+              UserPreferences.enableAdditionalRatings,
+            ),
             enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
             showLabels: false,
             showBadges: false,
@@ -392,7 +435,10 @@ class _Dots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shown = count > 7 ? 7 : count;
-    final start = (active - shown ~/ 2).clamp(0, count - shown < 0 ? 0 : count - shown);
+    final start = (active - shown ~/ 2).clamp(
+      0,
+      count - shown < 0 ? 0 : count - shown,
+    );
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -403,7 +449,9 @@ class _Dots extends StatelessWidget {
             width: i == active ? 16 : 6,
             height: 6,
             decoration: BoxDecoration(
-              color: i == active ? AppColorScheme.onSurface : AppColorScheme.onSurface.withValues(alpha: 0.4),
+              color: i == active
+                  ? AppColorScheme.onSurface
+                  : AppColorScheme.onSurface.withValues(alpha: 0.4),
               borderRadius: AppRadius.circular(3),
             ),
           ),
