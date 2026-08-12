@@ -2832,6 +2832,31 @@ class Media3VideoView(
         applyVideoLayout()
     }
 
+    // The Dart side only reports a codec when it drives the selection itself.
+    // Media3 picks the track on its own for a preferred text language or a
+    // closed caption, so the selected track's mime type is the reliable test
+    // and the codec hint is only a fallback for a track not selected yet.
+    private val selectedSubtitleIsAss: Boolean
+        get() = codecToMimeType(selectedSubtitleCodec) == MimeTypes.TEXT_SSA ||
+            selectedTextTrackIsAss()
+
+    private fun selectedTextTrackIsAss(): Boolean {
+        for (group in player.currentTracks.groups) {
+            if (group.type != C.TRACK_TYPE_TEXT) {
+                continue
+            }
+            for (index in 0 until group.length) {
+                if (!group.isTrackSelected(index)) {
+                    continue
+                }
+                if (MimeTypes.TEXT_SSA.equals(group.getTrackFormat(index).sampleMimeType, true)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     private fun applyVideoLayout() {
         val videoLayoutParams = videoView.layoutParams as? FrameLayout.LayoutParams
             ?: FrameLayout.LayoutParams(
@@ -2847,20 +2872,23 @@ class Media3VideoView(
             )
 
         // ASS is positioned against the video picture, so its overlay tracks
-        // the video box. PGS and VOBSUB cues instead carry positions relative
-        // to their own full-frame plane, so pinning them to a letterboxed box
-        // would push them toward the center. Keep bitmap cues on the full frame.
+        // the video box. Everything else belongs on the full frame: PGS and
+        // VOBSUB cues carry positions relative to their own full-frame plane,
+        // and text cues have no relationship to the picture at all. The
+        // vertical offset is a fraction of this view's height, so pinning text
+        // to a letterboxed box would make one setting land at a different
+        // on-screen position for every aspect ratio.
         fun applyBounds(width: Int, height: Int) {
             applyLayoutBounds(videoView, videoLayoutParams, width, height)
-            if (selectedSubtitleIsBitmap) {
+            if (selectedSubtitleIsAss) {
+                applyLayoutBounds(subtitleView, subtitleLayoutParams, width, height)
+            } else {
                 applyLayoutBounds(
                     subtitleView,
                     subtitleLayoutParams,
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT,
                 )
-            } else {
-                applyLayoutBounds(subtitleView, subtitleLayoutParams, width, height)
             }
         }
 
