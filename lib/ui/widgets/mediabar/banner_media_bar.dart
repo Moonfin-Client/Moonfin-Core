@@ -244,7 +244,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
         ? MediaQuery.paddingOf(context).top + (navbarAtTop ? 60.0 : 0.0)
         : 0.0;
 
-    final aspect = PlatformDetection.isTV ? 32 / 9 : 16 / 9;
+    final aspect = (PlatformDetection.isTV || PlatformDetection.isLinux) ? 32 / 9 : 16 / 9;
     final containerWidth = widget.height * aspect;
 
     return Padding(
@@ -257,6 +257,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
         },
         onKeyEvent: (node, event) => _handleKey(event, item),
         child: AnimatedContainer(
+          width: containerWidth,
           duration: const Duration(milliseconds: 180),
           decoration: BoxDecoration(
             borderRadius: AppRadius.circular(16),

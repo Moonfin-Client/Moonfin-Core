@@ -2092,7 +2092,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (_isBannerMode()) {
       // For TV, prefer a wider cinematic banner (32:9) but cap the height
       // so it doesn't dominate the screen. Use 280 as the max height on TV.
-      if (PlatformDetection.isTV) return 280.0;
+      if (PlatformDetection.isTV || PlatformDetection.isLinux) return 280.0;
       if (!PlatformDetection.useMobileUi) return 240.0;
       return 200.0;
     }
@@ -5011,8 +5011,10 @@ class _ContentRowsState extends State<_ContentRows>
                             cardWidth: width,
                             extendedWidth: v2ExtendedWidth,
                             isAudioRow: row.isAudio,
-                          )
-                        : null;
+                                                // Hide ratings/overview when the focused image is a banner
+                                                hideMetaWhenBanner: ar == kBannerAspectRatio,
+                                              )
+                                            : null;
                     return AnimatedSize(
                       duration: const Duration(milliseconds: 150),
                       curve: Curves.easeInOutCubic,
@@ -5049,7 +5051,8 @@ class _ContentRowsState extends State<_ContentRows>
     required double cardWidth,
     required double extendedWidth,
     required bool isAudioRow,
-  }) {
+      bool hideMetaWhenBanner = false,
+    }) {
     return ValueListenableBuilder<Map<String, Map<String, double>>>(
       valueListenable: _v2AdditionalRatingsNotifier,
       builder: (context, ratingsByKey, _) {
@@ -5087,7 +5090,7 @@ class _ContentRowsState extends State<_ContentRows>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (hasAnyRating)
+                                if (!hideMetaWhenBanner && hasAnyRating)
                       RatingsRow(
                         ratings: additionalRatings,
                         communityRating: item.communityRating,
@@ -5105,7 +5108,7 @@ class _ContentRowsState extends State<_ContentRows>
                           UserPreferences.showRatingBadges,
                         ),
                       ),
-                    if (overview.isNotEmpty)
+                                if (!hideMetaWhenBanner && overview.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
