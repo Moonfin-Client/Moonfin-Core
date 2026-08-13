@@ -72,6 +72,8 @@ class LogService extends ChangeNotifier {
 
   static const int _maxEntries = 2000;
 
+  static final _redactRegex = RegExp(r'(https?://)[^/\s]*(?=/|$)');
+
   final UserPreferences _prefs;
   final MediaServerClientFactory _clientFactory;
   final DeviceInfo _deviceInfo;
@@ -143,8 +145,8 @@ class LogService extends ChangeNotifier {
       time: DateTime.now(),
       level: level,
       category: category,
-      message: message,
-      error: error?.toString(),
+      message: _redact(message),
+      error: error != null ? _redact(error.toString()) : null,
     );
     _entries.addLast(entry);
     while (_entries.length > _maxEntries) {
@@ -251,4 +253,13 @@ class LogService extends ChangeNotifier {
     LogLevel.warning => 900,
     LogLevel.error => 1000,
   };
+
+  String _redact(String text) {
+    if (text.isEmpty || !text.contains('://')) {
+      return text;
+    }
+    return text.replaceAllMapped(_redactRegex, (match) {
+      return '${match.group(1)}[REDACTED]';
+    });
+  }
 }
