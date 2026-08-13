@@ -384,12 +384,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                           : v.displayName,
                       onChanged: _onAudioSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.audioRowsSortOrder,
                       title: l10n.sortOrder,
                       description: l10n.audioRowsSortOrderDescription,
                       icon: Icons.swap_vert,
-                      labelOf: (v) => v == SortOrder.ascending
+                      labelOf: (v) => v == SortDirection.ascending
                           ? l10n.ascending
                           : l10n.descending,
                       onChanged: _onAudioSortChanged,
@@ -417,12 +417,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onCollectionsSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.collectionsRowSortOrder,
                       title: l10n.sortOrder,
                       description: l10n.collectionsRowSortOrderDescription,
                       icon: Icons.swap_vert,
-                      labelOf: (v) => v == SortOrder.ascending
+                      labelOf: (v) => v == SortDirection.ascending
                           ? l10n.ascending
                           : l10n.descending,
                       onChanged: _onCollectionsSortChanged,
@@ -458,12 +458,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onFavoritesSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.favoritesRowSortOrder,
                       title: l10n.sortOrder,
                       description: l10n.favoritesRowSortOrderDescription,
                       icon: Icons.swap_vert,
-                      labelOf: (v) => v == SortOrder.ascending
+                      labelOf: (v) => v == SortDirection.ascending
                           ? l10n.ascending
                           : l10n.descending,
                       onChanged: _onFavoritesSortChanged,
@@ -492,12 +492,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onGenresSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.genresRowSortOrder,
                       title: l10n.sortOrder,
                       description: l10n.genresRowSortOrderDescription,
                       icon: Icons.swap_vert,
-                      labelOf: (v) => v == SortOrder.ascending
+                      labelOf: (v) => v == SortDirection.ascending
                           ? l10n.ascending
                           : l10n.descending,
                       onChanged: _onGenresSortChanged,
@@ -533,12 +533,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onPlaylistsSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.playlistsRowSortOrder,
                       title: l10n.sortOrder,
                       description: l10n.playlistsRowSortOrderDescription,
                       icon: Icons.swap_vert,
-                      labelOf: (v) => v == SortOrder.ascending
+                      labelOf: (v) => v == SortDirection.ascending
                           ? l10n.ascending
                           : l10n.descending,
                       onChanged: _onPlaylistsSortChanged,

@@ -473,17 +473,12 @@ enum GenresRowItemFilter {
 }
 
 enum SortDirection {
-  ascending,
-  descending,
-}
+  ascending('Ascending'),
+  descending('Descending');
 
-enum SortOrder {
-  ascending('Ascending', 'Ascending'),
-  descending('Descending', 'Descending');
+  const SortDirection(this.apiValue);
 
-  const SortOrder(this.apiValue, this.displayName);
   final String apiValue;
-  final String displayName;
 }
 
 enum PlayedStatusFilter {

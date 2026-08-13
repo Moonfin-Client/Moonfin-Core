@@ -9217,6 +9217,15 @@ class AppLocalizationsPl extends AppLocalizations {
       'Klasyczny zachowuje typ obrazu na wiersz i nakładkę informacyjną. Nowoczesny używa wierszy portret–tło.';
 
   @override
+  String get sortOrder => 'Sort Order';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
   String get displayFavoritesRows => 'Pokaż wiersze ulubionych';
 
   @override
@@ -9231,6 +9240,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Sortuj wiersze ulubionych według daty dodania, daty wydania, alfabetycznie i nie tylko.';
 
   @override
+  String get favoritesRowSortOrderDescription =>
+      'Sort Favorites rows in ascending or descending order.';
+
+  @override
   String get displayCollectionsRows => 'Pokaż wiersze kolekcji';
 
   @override
@@ -9243,6 +9256,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get collectionsRowSortingDescription =>
       'Sortuj wiersze kolekcji według daty dodania, daty wydania, alfabetycznie i nie tylko.';
+
+  @override
+  String get collectionsRowSortOrderDescription =>
+      'Sort Collections rows in ascending or descending order.';
 
   @override
   String get collectionsRowShowEpisodes => 'Pokaż poszczególne odcinki';
@@ -9266,6 +9283,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Sortuj wiersze gatunków według daty dodania, daty wydania, alfabetycznie i nie tylko.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Sort Genres rows in ascending or descending order.';
+
+  @override
   String get genresRowItems => 'Elementy wierszy gatunków';
 
   @override
@@ -9287,6 +9308,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Sortuj wiersze playlist według daty dodania, daty wydania, alfabetycznie i nie tylko.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Sort Playlist rows in ascending or descending order.';
+
+  @override
   String get playlistsRowShowEpisodes => 'Pokaż poszczególne odcinki';
 
   @override
@@ -9306,6 +9331,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get audioRowsSortingDescription =>
       'Sortuj wiersze audio według daty dodania, daty wydania, alfabetycznie i nie tylko.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Sort Audio rows in ascending or descending order.';
 
   @override
   String get audioPlaylists => 'Playlisty audio';

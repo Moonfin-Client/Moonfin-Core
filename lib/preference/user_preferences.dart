@@ -1022,8 +1022,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final favoritesRowSortOrder = EnumPreference(
     key: 'pref_favorites_row_sort_order',
-    defaultValue: SortOrder.ascending,
-    values: SortOrder.values,
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final collectionsRowSortBy = EnumPreference(
@@ -1034,8 +1034,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final collectionsRowSortOrder = EnumPreference(
     key: 'pref_collections_row_sort_order',
-    defaultValue: SortOrder.ascending,
-    values: SortOrder.values,
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final collectionsRowShowEpisodes = Preference(
@@ -1051,8 +1051,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final genresRowSortOrder = EnumPreference(
     key: 'pref_genres_row_sort_order',
-    defaultValue: SortOrder.ascending,
-    values: SortOrder.values,
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final playlistsRowSortBy = EnumPreference(
@@ -1063,8 +1063,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final playlistsRowSortOrder = EnumPreference(
     key: 'pref_playlists_row_sort_order',
-    defaultValue: SortOrder.ascending,
-    values: SortOrder.values,
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final playlistsRowShowEpisodes = Preference(
@@ -1080,8 +1080,8 @@ class UserPreferences extends ChangeNotifier {
 
   static final audioRowsSortOrder = EnumPreference(
     key: 'pref_audio_rows_sort_order',
-    defaultValue: SortOrder.ascending,
-    values: SortOrder.values,
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final genresRowItemFilter = EnumPreference(

@@ -1059,7 +1059,9 @@ class RowDataSource {
               limit: _defaultLimit,
             );
           } else {
-            final sortOrder = prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ?? 'Ascending';
+            final sortOrder =
+                prefs?.get(UserPreferences.playlistsRowSortOrder).apiValue ??
+                _defaultSortOrder;
             response = await _getItemsWithFallback(
               parentId: playlistId,
               sortBy: sortPref.apiValue,
@@ -1093,7 +1095,7 @@ class RowDataSource {
             _defaultSortBy;
         final sortOrder =
             prefs?.get(UserPreferences.favoritesRowSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         response = await _getItemsWithFallback(
           includeItemTypes: FavoriteTypeFilter.fromRowId(row.id).itemTypes,
           sortBy: sortBy,
@@ -1125,7 +1127,7 @@ class RowDataSource {
             : sortPref.apiValue;
         final sortOrder =
             prefs?.get(UserPreferences.collectionsRowSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         response = await _getItemsWithFallback(
           parentId: parentId,
           includeItemTypes: includeItemTypes,
@@ -1144,7 +1146,7 @@ class RowDataSource {
             _defaultSortBy;
         final audioSortOrder =
             prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicArtist'],
           sortBy: sortBy,
@@ -1159,7 +1161,7 @@ class RowDataSource {
             _defaultSortBy;
         final audioSortOrder =
             prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         response = await _getItemsWithFallback(
           includeItemTypes: const ['MusicAlbum'],
           sortBy: sortBy,
@@ -1174,7 +1176,7 @@ class RowDataSource {
             _defaultSortBy;
         final audioSortOrder =
             prefs?.get(UserPreferences.audioRowsSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         final pageCount = (currentOffset / _defaultLimit).ceil();
         final startIndex = pageCount * _defaultLimit;
         response = await _getItemsWithFallback(
@@ -1192,7 +1194,7 @@ class RowDataSource {
             _defaultSortBy;
         final genresSortOrder =
             prefs?.get(UserPreferences.genresRowSortOrder).apiValue ??
-            'Ascending';
+            _defaultSortOrder;
         final includeItemTypes = prefs
             ?.get(UserPreferences.genresRowItemFilter)
             .includeItemTypes;
@@ -1243,7 +1245,7 @@ class RowDataSource {
           response = await _getItemsWithFallback(
             genreIds: [genreId],
             sortBy: sortBy,
-            sortOrder: 'Ascending',
+            sortOrder: genresSortOrder,
             recursive: true,
             startIndex: currentOffset,
             limit: _defaultLimit,
