@@ -72,7 +72,10 @@ class LogService extends ChangeNotifier {
 
   static const int _maxEntries = 2000;
 
-  static final _redactRegex = RegExp(r'(https?://)[^/\s]*(?=/|$)');
+  static final _redactRegex = RegExp(
+    r'((?:https?|wss?)://)[A-Za-z0-9._~%\-:@\[\]]+',
+    caseSensitive: false,
+  );
 
   final UserPreferences _prefs;
   final MediaServerClientFactory _clientFactory;
@@ -255,7 +258,7 @@ class LogService extends ChangeNotifier {
   };
 
   String _redact(String text) {
-    if (text.isEmpty || !text.contains('://')) {
+    if (!text.contains('://')) {
       return text;
     }
     return text.replaceAllMapped(_redactRegex, (match) {
