@@ -262,7 +262,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
         // `width` below is overridden and it stretches to fill the screen
         // instead of sizing to the 32:9 banner width.
         child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: AnimatedContainer(
             width: containerWidth,
             duration: const Duration(milliseconds: 180),
