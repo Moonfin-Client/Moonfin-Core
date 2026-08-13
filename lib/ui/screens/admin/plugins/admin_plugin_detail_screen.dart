@@ -605,6 +605,7 @@ class _PluginImage extends StatelessWidget {
       borderRadius: AppRadius.circular(12),
       child: Image.network(
         imageUrl!,
+        headers: serverImageHeaders,
         width: size,
         height: size,
         fit: BoxFit.cover,

@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/clock_format.dart';
-import '../../util/server_image_cache.dart';
 import 'bouncing_box.dart';
 import 'screensaver_content_service.dart';
 
@@ -85,10 +84,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
   void _precacheNext() {
     if (_index + 1 < _items.length) {
       precacheImage(
-        CachedNetworkImageProvider(
-          _items[_index + 1].backdropUrl,
-          cacheManager: serverImageCacheManager,
-        ),
+        CachedNetworkImageProvider(_items[_index + 1].backdropUrl),
         context,
       );
     }
@@ -184,7 +180,6 @@ class _SlideViewState extends State<_SlideView>
           scale: Tween<double>(begin: 1.0, end: 1.1).animate(_kenBurns),
           child: CachedNetworkImage(
             imageUrl: widget.item.backdropUrl,
-            cacheManager: serverImageCacheManager,
             fit: BoxFit.cover,
             fadeInDuration: const Duration(milliseconds: 500),
             placeholder: (_, _) => const ColoredBox(color: Colors.black),
@@ -206,7 +201,6 @@ class _SlideViewState extends State<_SlideView>
             child: widget.item.logoUrl != null
                 ? CachedNetworkImage(
                     imageUrl: widget.item.logoUrl!,
-                    cacheManager: serverImageCacheManager,
                     width: 400,
                     height: 120,
                     fit: BoxFit.contain,

@@ -1118,6 +1118,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
                 aspectRatio: aspectRatio,
                 child: Image.network(
                   url,
+                  headers: serverImageHeaders,
                   fit: BoxFit.contain,
                   errorBuilder:
                       (_, _, _) => Container(
@@ -1705,6 +1706,8 @@ class _RemoteImagePickerDialogState extends State<_RemoteImagePickerDialog> {
                                                     )
                                                     : Image.network(
                                                       previewUrl,
+                                                      headers:
+                                                          serverImageHeaders,
                                                       width: double.infinity,
                                                       fit: BoxFit.cover,
                                                     ),

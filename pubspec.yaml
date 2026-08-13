@@ -66,6 +66,8 @@ dependencies:
   # Image Loading
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1
+  # Direct because the image cache wraps the cache manager's file service in a
+  # client of its own. Keep in step with what flutter_cache_manager resolves.
   http: ^1.6.0
   flutter_svg: ^2.2.1
 

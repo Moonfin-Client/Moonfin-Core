@@ -532,6 +532,7 @@ class _InstalledPluginTile extends StatelessWidget {
                   padding: const EdgeInsets.all(2),
                   child: Image.network(
                     imageUrl!,
+                    headers: serverImageHeaders,
                     fit: BoxFit.contain,
                     errorBuilder: (_, _, _) => Icon(
                       Icons.extension,

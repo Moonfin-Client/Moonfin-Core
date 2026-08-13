@@ -11889,6 +11889,7 @@ class _ChapterListCardState extends State<_ChapterListCard>
                           width: double.infinity,
                           child: Image.network(
                             widget.chapterImageUrl,
+                            headers: serverImageHeaders,
                             fit: BoxFit.cover,
                             filterQuality: FilterQuality.high,
                             errorBuilder: (_, _, _) => Container(

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:server_core/server_core.dart';
 
 import 'platform_detection.dart';
 
@@ -19,6 +21,13 @@ Future<void> configureImageDiskCache() async {
     final key = DefaultCacheManager.key;
     const stalePeriod = Duration(days: 14);
     const maxObjects = 600;
+    // Images fetch through the cache manager's own client rather than Dio, so
+    // this is the one place they can pick up the server User-Agent. Without it
+    // a proxy that filters on the agent blocks every image while API calls
+    // still succeed.
+    final fileService = HttpFileService(
+      httpClient: _ServerUserAgentHttpClient(http.Client()),
+    );
     Config config;
     if (PlatformDetection.isAppleTV) {
       final cacheDir = await getApplicationCacheDirectory();
@@ -26,6 +35,7 @@ Future<void> configureImageDiskCache() async {
         key,
         stalePeriod: stalePeriod,
         maxNrOfCacheObjects: maxObjects,
+        fileService: fileService,
         repo: JsonCacheInfoRepository.withFile(
           File('${cacheDir.path}/$key.json'),
         ),
@@ -35,6 +45,7 @@ Future<void> configureImageDiskCache() async {
         key,
         stalePeriod: stalePeriod,
         maxNrOfCacheObjects: maxObjects,
+        fileService: fileService,
       );
     }
     // Deliberately a plain CacheManager: nothing asks the disk layer to resize,
@@ -98,4 +109,16 @@ Future<void> clearImageDiskCache() async {
   try {
     await CachedNetworkImageProvider.defaultCacheManager.emptyCache();
   } catch (_) {}
+}
+
+class _ServerUserAgentHttpClient extends http.BaseClient {
+  _ServerUserAgentHttpClient(this._inner);
+
+  final http.Client _inner;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['User-Agent'] = serverUserAgent;
+    return _inner.send(request);
+  }
 }

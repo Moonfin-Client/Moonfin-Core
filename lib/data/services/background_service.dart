@@ -5,7 +5,6 @@ import 'package:flutter/painting.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/models/aggregated_item.dart';
-import '../../util/server_image_cache.dart';
 import 'connectivity_service.dart';
 import 'media_server_client_factory.dart';
 
@@ -177,10 +176,7 @@ class BackgroundService {
   void _evictBackgrounds(Iterable<String> urls) {
     final imageCache = PaintingBinding.instance.imageCache;
     for (final url in urls) {
-      final provider = CachedNetworkImageProvider(
-        url,
-        cacheManager: serverImageCacheManager,
-      );
+      final provider = CachedNetworkImageProvider(url);
       // memCacheWidth wraps the provider in a ResizeImage, so evicting the bare
       // provider alone would miss the key the backdrop actually inserted.
       imageCache.evict(provider);

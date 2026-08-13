@@ -4023,6 +4023,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (logoUrl != null) ...[
           Image.network(
             logoUrl,
+            headers: serverImageHeaders,
             height: 64,
             fit: BoxFit.contain,
             alignment: Alignment.centerLeft,
@@ -4581,6 +4582,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
     final token = trickplayClient.accessToken;
     final headers = <String, String>{
+      ...serverImageHeaders,
       if (token != null && token.isNotEmpty)
         'Authorization': 'MediaBrowser Token="$token"',
     };
@@ -7090,7 +7092,10 @@ class _CastPersonTileState extends State<_CastPersonTile> {
                     radius: 48,
                     backgroundColor: Colors.white.withValues(alpha: 0.1),
                     backgroundImage: widget.imageUrl != null
-                        ? NetworkImage(widget.imageUrl!)
+                        ? NetworkImage(
+                            widget.imageUrl!,
+                            headers: serverImageHeaders,
+                          )
                         : null,
                     child: widget.imageUrl == null
                         ? const AdaptiveIcon(

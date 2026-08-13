@@ -838,6 +838,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               child: _userImageUrl != null
                   ? Image.network(
                       _userImageUrl!,
+                      headers: serverImageHeaders,
                       fit: BoxFit.cover,
                       width: avatarSize,
                       height: avatarSize,

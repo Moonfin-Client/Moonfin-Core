@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../util/server_image_cache.dart';
 import '../theme/vibrance.dart';
 import 'image_source.dart';
 
@@ -98,7 +97,6 @@ class OfflineAwareImage extends StatelessWidget {
     }
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      cacheManager: serverImageCacheManager,
       httpHeaders: httpHeaders,
       imageBuilder: imageBuilder,
       placeholder: placeholder,

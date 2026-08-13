@@ -4,8 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../util/server_image_cache.dart';
-
 /// When offline, the image API resolves to downloaded local file paths
 /// instead of server URLs. These helpers let network-image widgets render
 /// either one transparently.
@@ -35,7 +33,6 @@ ImageProvider offlineAwareImageProvider(
     url,
     cacheKey: cacheKey,
     headers: headers,
-    cacheManager: serverImageCacheManager,
   );
   if (maxWidth != null || maxHeight != null) {
     return ResizeImage.resizeIfNeeded(maxWidth, maxHeight, provider);

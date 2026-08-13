@@ -1171,6 +1171,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
                             child: imageUrl != null && imageUrl.isNotEmpty
                                 ? Image.network(
                                     imageUrl,
+                                    headers: serverImageHeaders,
                                     width: 50,
                                     height: 75,
                                     fit: BoxFit.cover,

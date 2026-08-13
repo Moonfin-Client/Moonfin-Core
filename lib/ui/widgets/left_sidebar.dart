@@ -1204,6 +1204,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
         child: _userImageUrl != null
             ? Image.network(
                 _userImageUrl!,
+                headers: serverImageHeaders,
                 fit: BoxFit.cover,
                 width: 40,
                 height: 40,

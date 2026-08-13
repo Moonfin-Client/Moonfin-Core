@@ -840,6 +840,7 @@ class _AccountCardState extends State<_AccountCard> {
                           )
                         : Image.network(
                             widget.avatarUrl!,
+                            headers: serverImageHeaders,
                             fit: BoxFit.cover,
                             errorBuilder: (_, _, _) {
                               if (!_avatarFailed) {

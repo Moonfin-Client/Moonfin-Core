@@ -150,6 +150,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
               child: Image.network(
                 url,
                 key: ValueKey(_splashVersion),
+                headers: serverImageHeaders,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stack) => Center(
                   child: Column(

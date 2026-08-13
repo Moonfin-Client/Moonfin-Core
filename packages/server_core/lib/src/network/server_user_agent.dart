@@ -15,6 +15,11 @@ String _version = _fallbackVersion;
 /// The `User-Agent` value for all media-server traffic.
 String get serverUserAgent => 'Mozilla/5.0 (compatible; Moonfin/$_version)';
 
+/// For `Image.network` and `NetworkImage`, which fetch through a shared client
+/// of Flutter's own that nothing can configure, so each call site passes the
+/// agent as a header instead.
+Map<String, String> get serverImageHeaders => {'User-Agent': serverUserAgent};
+
 /// Records the running app version so it shows up in server access logs.
 ///
 /// Called once during startup. Anything sent before that falls back to an

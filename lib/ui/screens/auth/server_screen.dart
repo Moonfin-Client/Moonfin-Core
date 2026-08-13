@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../auth/models/login_state.dart';
 import '../../../auth/models/server.dart';
@@ -493,7 +494,10 @@ class _ServerScreenState extends State<ServerScreen> {
                           radius: 36,
                           backgroundColor: Colors.white.withValues(alpha: 0.1),
                           backgroundImage: user.imageTag != null
-                              ? NetworkImage(_userImageUrl(user))
+                              ? NetworkImage(
+                                  _userImageUrl(user),
+                                  headers: serverImageHeaders,
+                                )
                               : null,
                           child: user.imageTag == null
                               ? Icon(

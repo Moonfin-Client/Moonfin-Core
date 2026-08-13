@@ -493,6 +493,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
           child: _userImageUrl != null
               ? Image.network(
                   _userImageUrl!,
+                  headers: serverImageHeaders,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => _avatarFallback(initial),
                 )

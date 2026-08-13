@@ -199,7 +199,11 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 CircleAvatar(
                                   radius: 21,
                                   backgroundImage: user.primaryImageTag != null
-                                      ? NetworkImage(client.imageApi.getUserImageUrl(user.id))
+                                      ? NetworkImage(
+                                          client.imageApi
+                                              .getUserImageUrl(user.id),
+                                          headers: serverImageHeaders,
+                                        )
                                       : null,
                                   child: user.primaryImageTag == null
                                       ? Text(
