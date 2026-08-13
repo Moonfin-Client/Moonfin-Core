@@ -12570,10 +12570,7 @@ Widget? _seerrRequestButton(
   final isContinuing =
       status.isNotEmpty && status != 'ended' && status != 'canceled';
   final quality = seerr.state.quality(is4k: is4k);
-  // A season nobody has requested (or that isn't already in the library)
-  // stays requestable even while another season on this track is still
-  // pending - Seerr's own aggregate status only reflects what was already
-  // asked for, not the whole show.
+  // The same set the request sheet reads to decide which seasons it may offer.
   final hasUnrequestedSeasons = seerr.state.isTv &&
       seerrSeasonNumbersOf(
         seerr.state.tv?.seasons ?? const [],

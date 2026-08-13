@@ -27,13 +27,13 @@ class SeerrRequestAction {
 ///
 /// Full availability is only final for a movie or an ended series. A
 /// continuing series can always grow another season, so it keeps offering
-/// Request More even with every aired season in the library. Likewise,
-/// [hasUnrequestedSeasons] (a season nobody has asked for at all, computed
-/// from [SeerrQualityStatus.unavailableOrRequestedSeasons] against the show's
-/// real season list) keeps Request More available even while the *rest* of
-/// the track sits at plain "pending" (status 2, not yet 4/partial) - Seerr's
-/// aggregate status only reflects what was already requested, so a season
-/// that was never part of any request must not be gated on it.
+/// Request More even with every aired season in the library.
+///
+/// [hasUnrequestedSeasons] says a season is still there for the asking. The
+/// track status only describes what was already requested, so on its own it
+/// hides the button once any request is open, even for a season nobody has
+/// touched. The flag relaxes that one gate and nothing else, since a season
+/// left to ask for says nothing about whether the show is complete.
 SeerrRequestAction seerrRequestActionFor(
   SeerrQualityStatus q,
   AppLocalizations l10n, {
@@ -42,18 +42,22 @@ SeerrRequestAction seerrRequestActionFor(
   bool isContinuing = false,
   bool hasUnrequestedSeasons = false,
 }) {
-  final hasMoreToRequest = (isTv && isContinuing && q.isFullyAvailable) ||
-      (isTv && hasUnrequestedSeasons);
+  final continuingFullyAvailable = isTv && isContinuing && q.isFullyAvailable;
+  final seasonsLeftToAsk = isTv && hasUnrequestedSeasons;
   final canShowRequest = allowed &&
-      (!q.isFullyAvailable || hasMoreToRequest) &&
-      (!q.hasExistingRequest || q.isPartiallyAvailable || hasMoreToRequest);
-  final hasOpenRequest =
-      q.activeRequests.isNotEmpty && (!q.isFullyAvailable || hasMoreToRequest);
+      (!q.isFullyAvailable || continuingFullyAvailable) &&
+      (!q.hasExistingRequest ||
+          q.isPartiallyAvailable ||
+          continuingFullyAvailable ||
+          seasonsLeftToAsk);
+  final hasOpenRequest = q.activeRequests.isNotEmpty &&
+      (!q.isFullyAvailable || continuingFullyAvailable);
 
   if (canShowRequest) {
     return SeerrRequestAction(
       SeerrRequestActionKind.request,
-      q.isPartiallyAvailable || hasMoreToRequest
+      // Without the existing request test the first ask would read More.
+      q.isPartiallyAvailable || continuingFullyAvailable || q.hasExistingRequest
           ? (q.is4k ? l10n.requestMore4k : l10n.requestMore)
           : (q.is4k ? l10n.request4k : l10n.request),
     );
