@@ -199,11 +199,6 @@ class PlatformDetection {
       );
   }
 
-  /// The capability map as last set, for callers that need to inspect or
-  /// repair it as a whole rather than read one key at a time.
-  static Map<String, dynamic> get mediaCodecCapabilities =>
-      Map<String, dynamic>.unmodifiable(_mediaCodecCapabilities);
-
   static void setMediaCodecCapabilities(Map<String, dynamic>? values) {
     _mediaCodecCapabilities
       ..clear()

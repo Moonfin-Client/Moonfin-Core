@@ -1094,10 +1094,8 @@ void main() {
 
     test('caps reporting no AVC advertise no h264 profiles at all, which is '
         'what makes the server unable to pick any encoder', () {
-      // Guards the failure this exists to prevent: with an empty profile set
-      // the request reaches the server as `h264-profile=none`, every encoder
-      // fails the client-profile match, and each transcode segment 500s.
-      // main.dart applies an AVC floor so this state never ships.
+      // Pins the state the AVC floor exists to keep from shipping, since an
+      // empty profile list is what reaches the server as `h264-profile=none`.
       final profile = DeviceProfileBuilder.build(
         supportsAvc: false,
         avcMainLevel: 0,
@@ -1108,8 +1106,8 @@ void main() {
   });
 }
 
-// The VideoProfile values the server reads to decide which encoder profiles the
-// client accepts; these become the `h264-profile=` request parameter.
+// The VideoProfile values the server reads to decide which encoder profiles
+// the client accepts. These become the `h264-profile=` request parameter.
 Set<String> _h264ApplyProfiles(Map<String, dynamic> profile) {
   final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
   final values = <String>{};
