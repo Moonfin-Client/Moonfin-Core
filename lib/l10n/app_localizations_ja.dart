@@ -8973,9 +8973,6 @@ class AppLocalizationsJa extends AppLocalizations {
       'Studio row by name, recently added, and more.';
 
   @override
-  String get studiosRowSortOrder => 'Studio Row Sort Order';
-
-  @override
   String get studiosRowSortOrderDescription =>
       'Choose Ascending or Descending sort order.';
 
@@ -9005,10 +9002,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unselectedStudiosFilter => 'Unselected Studios';
 
   @override
-  String get filtersHeader => 'FILTERS';
+  String get filtersHeader => 'Filters';
 
   @override
-  String get showHeader => 'SHOW';
+  String get showHeader => 'Show';
 
   @override
   String get displayPlaylistsRows => 'プレイリストの行を表示';

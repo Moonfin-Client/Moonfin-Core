@@ -446,14 +446,6 @@ enum LibrarySortBy {
       values.where((v) => !v.usesDedicatedEndpoint).toList();
 }
 
-enum SortOrder {
-  ascending('Ascending'),
-  descending('Descending');
-
-  const SortOrder(this.apiValue);
-  final String apiValue;
-}
-
 enum LibraryGroupBy {
   none,
   genres,

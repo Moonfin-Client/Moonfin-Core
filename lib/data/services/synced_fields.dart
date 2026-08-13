@@ -108,7 +108,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('displayGenresRows', UserPreferences.displayGenresRows, SyncCodec.boolean),
   SyncedField('displayStudiosRows', UserPreferences.displayStudiosRows, SyncCodec.boolean),
   SyncedField('studiosRowSortBy', UserPreferences.studiosRowSortBy, SyncCodec.enumName, enumValues: prefs.LibrarySortBy.values),
-  SyncedField('studiosRowSortOrder', UserPreferences.studiosRowSortOrder, SyncCodec.enumName, enumValues: prefs.SortOrder.values),
+  SyncedField('studiosRowSortOrder', UserPreferences.studiosRowSortOrder, SyncCodec.enumName, enumValues: prefs.SortDirection.values),
   SyncedField('studiosRowSelectedIds', UserPreferences.studiosRowSelectedIds, SyncCodec.text),
   SyncedField('displayAudioRows', UserPreferences.displayAudioRows, SyncCodec.boolean),
   SyncedField('displaySinceYouWatchedRows', UserPreferences.displaySinceYouWatchedRows, SyncCodec.boolean),

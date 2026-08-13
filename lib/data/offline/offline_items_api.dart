@@ -999,13 +999,20 @@ class OfflineItemsApi implements ItemsApi {
       }
     }
 
+    // A downloaded item records nothing about its studio beyond the name, so
+    // name is the only thing there is to sort on and sortBy has nothing to act
+    // on offline.
     final result = studiosByName.values.toList()
       ..sort(
         (a, b) => (a['Name'] as String).toLowerCase().compareTo(
           (b['Name'] as String).toLowerCase(),
         ),
       );
-    return _envelope(result, startIndex: startIndex, limit: limit);
+    return _envelope(
+      sortOrder == 'Descending' ? result.reversed.toList() : result,
+      startIndex: startIndex,
+      limit: limit,
+    );
   }
 
   @override

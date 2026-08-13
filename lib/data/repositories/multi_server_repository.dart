@@ -61,6 +61,7 @@ class MultiServerRepository {
   static const _maxItems = 100;
   static const _defaultSortBy = 'SortName';
   static const _defaultSortOrder = 'Ascending';
+  static const _studioPageSize = 200;
   static const _genreArtworkConcurrency = 6;
 
   List<ServerUserSession>? _cachedSessions;
@@ -522,25 +523,25 @@ class MultiServerRepository {
         .where((s) => s.isNotEmpty)
         .toSet();
 
-    final fetchLimit = selectedSet.isNotEmpty ? null : perServer;
-
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
-          final response = await session.client.itemsApi.getStudios(
-            userId: session.client.userId,
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            recursive: true,
-            limit: fetchLimit,
-            fields: 'ItemCounts,PrimaryImageAspectRatio',
-          );
-          var items = _parseItems(response, session.server.id);
-          if (selectedSet.isNotEmpty) {
-            items = items.where((item) => selectedSet.contains(item.id)).toList();
+          Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) =>
+              session.client.itemsApi.getStudios(
+                userId: session.client.userId,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+                recursive: true,
+                startIndex: startIndex,
+                limit: limit,
+                fields: 'ItemCounts,PrimaryImageAspectRatio',
+              );
+
+          if (selectedSet.isEmpty) {
+            final response = await fetchPage(0, perServer);
+            return _parseItems(response, session.server.id);
           }
-          _rowTotals['${cacheKeyPrefix}_${session.server.id}'] = items.length;
-          return items;
+          return _collectStudios(selectedSet, session.server.id, fetchPage);
         }, label: '$cacheKeyPrefix from ${session.server.name}'),
       ),
     );
@@ -551,18 +552,47 @@ class MultiServerRepository {
       sortOrder: sortOrder,
     );
 
-    final takenItems = all.take(limit).toList();
-    final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
-    });
+    // The row arrives complete either way, so the count has to match what it
+    // holds or it will claim a next page that no one can serve.
+    final items = selectedSet.isEmpty ? all.take(limit).toList() : all;
 
     return HomeRow(
       id: cacheKeyPrefix,
       title: title ?? _l10n.studios,
-      items: takenItems,
+      items: items,
       rowType: rowType,
-      totalCount: totalCount,
+      totalCount: items.length,
     );
+  }
+
+  /// Walks one server's studio list a page at a time until every id in
+  /// [wanted] has turned up.
+  ///
+  /// The endpoint has no way to ask for particular studios and a library can
+  /// report well over a thousand of them, so reading the lot to keep a handful
+  /// is a heavy call to make on every home load, once per server. Stopping once
+  /// the selection is accounted for usually means one page.
+  Future<List<AggregatedItem>> _collectStudios(
+    Set<String> wanted,
+    String serverId,
+    Future<Map<String, dynamic>> Function(int startIndex, int limit) fetchPage,
+  ) async {
+    final outstanding = wanted.toSet();
+    final found = <AggregatedItem>[];
+    var startIndex = 0;
+
+    while (outstanding.isNotEmpty) {
+      final response = await fetchPage(startIndex, _studioPageSize);
+      final page = _parseItems(response, serverId);
+      if (page.isEmpty) break;
+      for (final studio in page) {
+        if (outstanding.remove(studio.id)) found.add(studio);
+      }
+      if (page.length < _studioPageSize) break;
+      startIndex += _studioPageSize;
+    }
+
+    return found;
   }
 
   Future<(List<AggregatedItem>, int)> loadMore({required HomeRow row}) async {

@@ -16438,12 +16438,6 @@ abstract class AppLocalizations {
   /// **'Studio row by name, recently added, and more.'**
   String get studiosRowSortingDescription;
 
-  /// No description provided for @studiosRowSortOrder.
-  ///
-  /// In en, this message translates to:
-  /// **'Studio Row Sort Order'**
-  String get studiosRowSortOrder;
-
   /// No description provided for @studiosRowSortOrderDescription.
   ///
   /// In en, this message translates to:
@@ -16501,13 +16495,13 @@ abstract class AppLocalizations {
   /// No description provided for @filtersHeader.
   ///
   /// In en, this message translates to:
-  /// **'FILTERS'**
+  /// **'Filters'**
   String get filtersHeader;
 
   /// No description provided for @showHeader.
   ///
   /// In en, this message translates to:
-  /// **'SHOW'**
+  /// **'Show'**
   String get showHeader;
 
   /// No description provided for @displayPlaylistsRows.

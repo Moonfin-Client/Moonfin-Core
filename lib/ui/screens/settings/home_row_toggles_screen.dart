@@ -752,13 +752,14 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       labelOf: (v) => v.displayName,
                       onChanged: _onStudiosSortChanged,
                     ),
-                    EnumPreferenceTile<SortOrder>(
+                    EnumPreferenceTile<SortDirection>(
                       preference: UserPreferences.studiosRowSortOrder,
-                      title: l10n.studiosRowSortOrder,
+                      title: l10n.sortOrder,
                       description: l10n.studiosRowSortOrderDescription,
                       icon: Icons.swap_vert,
-                      values: SortOrder.values,
-                      labelOf: (v) => v.apiValue,
+                      labelOf: (v) => v == SortDirection.ascending
+                          ? l10n.ascending
+                          : l10n.descending,
                       onChanged: _onStudiosSortChanged,
                     ),
                   ],
@@ -1155,7 +1156,7 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
                                   const Divider(height: 1),
                                   const SizedBox(height: 8),
                                   Text(
-                                    l10n.filtersHeader,
+                                    l10n.filtersHeader.toUpperCase(),
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.bold,
@@ -1191,7 +1192,7 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    l10n.showHeader,
+                                    l10n.showHeader.toUpperCase(),
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.bold,

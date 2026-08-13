@@ -33,6 +33,7 @@ class RowDataSource {
   static const _maxItems = 100;
   static const _defaultSortBy = 'SortName';
   static const _defaultSortOrder = 'Ascending';
+  static const _studioPageSize = 200;
   static const _genreArtworkConcurrency = 6;
 
   static const _fields =
@@ -497,54 +498,81 @@ class RowDataSource {
         .where((s) => s.isNotEmpty)
         .toSet();
 
-    Map<String, dynamic> response;
-    try {
-      response = await _client.itemsApi.getStudios(
-        parentId: parentId,
-        userId: _client.userId,
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-        recursive: true,
-        limit: selectedSet.isNotEmpty ? null : _defaultLimit,
-        fields: 'ItemCounts,PrimaryImageAspectRatio',
-      );
-    } on DioException catch (e) {
-      final statusCode = e.response?.statusCode ?? 0;
-      _recordIfAccessDenied(statusCode, parentId);
-      if (statusCode < 500) rethrow;
-      response = await _client.itemsApi.getStudios(
-        parentId: parentId,
-        userId: _client.userId,
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-        recursive: true,
-        limit: selectedSet.isNotEmpty ? null : _defaultLimit,
-      );
+    Future<Map<String, dynamic>> fetchPage(int startIndex, int limit) async {
+      try {
+        return await _client.itemsApi.getStudios(
+          parentId: parentId,
+          userId: _client.userId,
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          recursive: true,
+          startIndex: startIndex,
+          limit: limit,
+          fields: 'ItemCounts,PrimaryImageAspectRatio',
+        );
+      } on DioException catch (e) {
+        final statusCode = e.response?.statusCode ?? 0;
+        _recordIfAccessDenied(statusCode, parentId);
+        if (statusCode < 500) rethrow;
+        return _client.itemsApi.getStudios(
+          parentId: parentId,
+          userId: _client.userId,
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          recursive: true,
+          startIndex: startIndex,
+          limit: limit,
+        );
+      }
     }
 
-    var items = (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
-
-    if (selectedSet.isNotEmpty) {
-      items = items.where((item) {
-        final id = item['Id']?.toString() ?? '';
-        return selectedSet.contains(id);
-      }).toList();
+    final List<Map<String, dynamic>> items;
+    if (selectedSet.isEmpty) {
+      final page = await fetchPage(0, _defaultLimit);
+      items = (page['Items'] as List? ?? []).cast<Map<String, dynamic>>();
+    } else {
+      items = await _collectStudios(selectedSet, fetchPage);
     }
 
-    final filteredResponse = <String, dynamic>{
-      ...response,
-      'Items': items,
-      'TotalRecordCount': items.length,
-    };
-
-    final row = _buildRow(
+    return _buildRow(
       id: 'studios',
       title: rowTitle,
-      response: filteredResponse,
+      response: {'Items': items},
       serverId: serverId,
       rowType: HomeRowType.studios,
     );
-    return row.copyWith(totalCount: items.length);
+  }
+
+  /// Walks the studio list a page at a time until every id in [wanted] has
+  /// turned up.
+  ///
+  /// The endpoint has no way to ask for particular studios and a library can
+  /// report well over a thousand of them, so reading the lot to keep a handful
+  /// is a heavy call to make on every home load. Stopping once the selection is
+  /// accounted for usually means one page.
+  Future<List<Map<String, dynamic>>> _collectStudios(
+    Set<String> wanted,
+    Future<Map<String, dynamic>> Function(int startIndex, int limit) fetchPage,
+  ) async {
+    final outstanding = wanted.toSet();
+    final found = <Map<String, dynamic>>[];
+    var startIndex = 0;
+
+    while (outstanding.isNotEmpty) {
+      final response = await fetchPage(startIndex, _studioPageSize);
+      final page = (response['Items'] as List? ?? [])
+          .cast<Map<String, dynamic>>();
+      if (page.isEmpty) break;
+      for (final studio in page) {
+        if (outstanding.remove(studio['Id']?.toString() ?? '')) {
+          found.add(studio);
+        }
+      }
+      if (page.length < _studioPageSize) break;
+      startIndex += _studioPageSize;
+    }
+
+    return found;
   }
 
   Future<Map<String, dynamic>> _enrichGenreResponseForBrowse(
@@ -1328,55 +1356,9 @@ class RowDataSource {
           );
         }
       case HomeRowType.studios:
-        final sortBy =
-            prefs?.get(UserPreferences.studiosRowSortBy).apiValue ??
-            _defaultSortBy;
-        final sortOrder =
-            prefs?.get(UserPreferences.studiosRowSortOrder).apiValue ??
-            _defaultSortOrder;
-        final selectedIds =
-            prefs?.get(UserPreferences.studiosRowSelectedIds) ?? '';
-        final pageCount = (currentOffset / _defaultLimit).ceil();
-        final startIndex = pageCount * _defaultLimit;
-        try {
-          response = await _client.itemsApi.getStudios(
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            recursive: true,
-            startIndex: startIndex,
-            limit: _defaultLimit,
-            fields: 'ItemCounts',
-          );
-        } on DioException catch (e) {
-          final statusCode = e.response?.statusCode ?? 0;
-          if (statusCode < 500) rethrow;
-          response = await _client.itemsApi.getStudios(
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            recursive: true,
-            startIndex: startIndex,
-            limit: _defaultLimit,
-          );
-        }
-        var rawItems = (response['Items'] as List? ?? []).cast<Map<String, dynamic>>();
-        final selectedSet = selectedIds
-            .split(',')
-            .map((s) => s.trim())
-            .where((s) => s.isNotEmpty)
-            .toSet();
-        if (selectedSet.isNotEmpty) {
-          rawItems = rawItems.where((item) {
-            final id = item['Id']?.toString() ?? '';
-            return selectedSet.contains(id);
-          }).toList();
-        }
-        final filteredResponse = <String, dynamic>{
-          ...response,
-          'Items': rawItems,
-        };
-        final newItems = _parseItems(filteredResponse, serverId);
-        final totalCount = rawItems.length + row.items.length;
-        return ([...row.items, ...newItems], totalCount);
+        // The row holds exactly the studios the viewer picked, so it arrives
+        // complete and there is no next page to ask the server for.
+        return (row.items, row.totalCount);
       case HomeRowType.latestMedia:
         // Stitched from several libraries at load time, so the id names a media
         // kind rather than a parent the server would recognise.
