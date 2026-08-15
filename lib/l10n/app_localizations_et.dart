@@ -3468,7 +3468,8 @@ class AppLocalizationsEt extends AppLocalizations {
   String get recentlyReleased => 'Hiljuti välja antud';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

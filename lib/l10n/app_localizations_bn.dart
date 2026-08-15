@@ -3454,7 +3454,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get recentlyReleased => 'সম্প্রতি মুক্তি পেয়েছে';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

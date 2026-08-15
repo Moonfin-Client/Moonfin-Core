@@ -3486,7 +3486,8 @@ class AppLocalizationsTa extends AppLocalizations {
   String get recentlyReleased => 'சமீபத்தில் வெளியானது';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

@@ -34,6 +34,13 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 icon: Icons.library_books,
                 onChanged: _pushPersonalizationSync,
               ),
+              EnumPreferenceTile<RecentlyReleasedSeriesType>(
+                preference: UserPreferences.recentlyReleasedSeriesType,
+                title: l10n.recentlyReleasedSeriesType,
+                description: l10n.recentlyReleasedSeriesTypeDescription,
+                icon: Icons.ondemand_video,
+                labelOf: (v) => v.displayName,
+              ),
             ],
           ),
           _SectionHeader(l10n.libraryView),

@@ -3586,7 +3586,8 @@ class AppLocalizationsSr extends AppLocalizations {
   String get recentlyReleased => 'Недавно објављено';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

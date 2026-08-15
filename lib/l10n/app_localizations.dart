@@ -6277,7 +6277,7 @@ abstract class AppLocalizations {
   /// Setting for filtering series in recently released row
   ///
   /// In en, this message translates to:
-  /// **'Recently Released Series Type'**
+  /// **'Recently Released Series Filter Type'**
   String get recentlyReleasedSeriesType;
 
   /// Description for recently released series type setting

@@ -3384,7 +3384,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recentlyReleased => '최근 출시됨';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

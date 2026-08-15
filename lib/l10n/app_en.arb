@@ -4715,7 +4715,7 @@
   "@recentlyReleased": {
     "description": "Home section: recently released"
   },
-  "recentlyReleasedSeriesType": "Recently Released Series Type",
+  "recentlyReleasedSeriesType": "Recently Released Series Filter Type",
   "@recentlyReleasedSeriesType": {
     "description": "Setting for filtering series in recently released row"
   },

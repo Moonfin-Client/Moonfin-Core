@@ -3441,7 +3441,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get recentlyReleased => 'เพิ่งเปิดตัว';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

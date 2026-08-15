@@ -3483,7 +3483,8 @@ class AppLocalizationsMl extends AppLocalizations {
   String get recentlyReleased => 'അടുത്തിടെ പുറത്തിറങ്ങിയത്';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

@@ -3481,7 +3481,8 @@ class AppLocalizationsBe extends AppLocalizations {
   String get recentlyReleased => 'Нядаўна выпушчаны';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

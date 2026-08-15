@@ -3486,7 +3486,8 @@ class AppLocalizationsSw extends AppLocalizations {
   String get recentlyReleased => 'Iliyotolewa Hivi Karibuni';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>

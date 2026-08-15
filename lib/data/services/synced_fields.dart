@@ -177,6 +177,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('tmdbApiKey', UserPreferences.tmdbApiKey, SyncCodec.text, receiveOnly: true),
   SyncedField('seerrEnabled', UserPreferences.seerrEnabled, SyncCodec.boolean),
   SyncedField('seerrBlockNsfw', UserPreferences.seerrBlockNsfw, SyncCodec.boolean),
+  SyncedField('recentlyReleasedSeriesType', UserPreferences.recentlyReleasedSeriesType, SyncCodec.enumName, enumValues: prefs.RecentlyReleasedSeriesType.values),
 
   // Settings that previously stayed on the device. Grouped roughly by the screen they
   // appear on rather than by codec, so a missing one is easier to spot.

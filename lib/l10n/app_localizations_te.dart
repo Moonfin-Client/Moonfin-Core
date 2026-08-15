@@ -3481,7 +3481,8 @@ class AppLocalizationsTe extends AppLocalizations {
   String get recentlyReleased => 'ఇటీవలే విడుదలైంది';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+  String get recentlyReleasedSeriesType =>
+      'Recently Released Series Filter Type';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>
