@@ -3481,12 +3481,11 @@ class AppLocalizationsKn extends AppLocalizations {
   String get recentlyReleased => 'ಇತ್ತೀಚೆಗೆ ಬಿಡುಗಡೆಯಾಗಿದೆ';
 
   @override
-  String get recentlyReleasedSeriesType =>
-      'Recently Released Series Filter Type';
+  String get recentlyReleasedSeriesType => 'Recently Released Series Sort By';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>
-      'What to show in recently released row for tv show libraries';
+      'Sort Recently Released Series home rows by series, latest season, or latest episode air date';
 
   @override
   String get myMedia => 'ನನ್ನ ಮಾಧ್ಯಮ';

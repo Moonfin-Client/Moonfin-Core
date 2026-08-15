@@ -3501,12 +3501,11 @@ class AppLocalizationsGl extends AppLocalizations {
   String get recentlyReleased => 'Lanzado recentemente';
 
   @override
-  String get recentlyReleasedSeriesType =>
-      'Recently Released Series Filter Type';
+  String get recentlyReleasedSeriesType => 'Recently Released Series Sort By';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>
-      'What to show in recently released row for tv show libraries';
+      'Sort Recently Released Series home rows by series, latest season, or latest episode air date';
 
   @override
   String get myMedia => 'Os meus medios';

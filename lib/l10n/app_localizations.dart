@@ -6274,16 +6274,16 @@ abstract class AppLocalizations {
   /// **'Recently Released'**
   String get recentlyReleased;
 
-  /// Setting for filtering series in recently released row
+  /// Setting for sorting series in recently released series row
   ///
   /// In en, this message translates to:
-  /// **'Recently Released Series Filter Type'**
+  /// **'Recently Released Series Sort By'**
   String get recentlyReleasedSeriesType;
 
   /// Description for recently released series type setting
   ///
   /// In en, this message translates to:
-  /// **'What to show in recently released row for tv show libraries'**
+  /// **'Sort Recently Released Series home rows by series, latest season, or latest episode air date'**
   String get recentlyReleasedSeriesTypeDescription;
 
   /// Home section: my media

@@ -4715,11 +4715,11 @@
   "@recentlyReleased": {
     "description": "Home section: recently released"
   },
-  "recentlyReleasedSeriesType": "Recently Released Series Filter Type",
+  "recentlyReleasedSeriesType": "Recently Released Series Sort By",
   "@recentlyReleasedSeriesType": {
-    "description": "Setting for filtering series in recently released row"
+    "description": "Setting for sorting series in recently released series row"
   },
-  "recentlyReleasedSeriesTypeDescription": "What to show in recently released row for tv show libraries",
+  "recentlyReleasedSeriesTypeDescription": "Sort Recently Released Series home rows by series, latest season, or latest episode air date",
   "@recentlyReleasedSeriesTypeDescription": {
     "description": "Description for recently released series type setting"
   },
