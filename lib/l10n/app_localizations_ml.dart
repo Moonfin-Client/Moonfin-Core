@@ -3483,6 +3483,13 @@ class AppLocalizationsMl extends AppLocalizations {
   String get recentlyReleased => 'അടുത്തിടെ പുറത്തിറങ്ങിയത്';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'എൻ്റെ മീഡിയ';
 
   @override

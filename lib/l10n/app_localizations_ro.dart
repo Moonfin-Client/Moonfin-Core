@@ -3487,6 +3487,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get recentlyReleased => 'Lansat recent';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'Media mea';
 
   @override

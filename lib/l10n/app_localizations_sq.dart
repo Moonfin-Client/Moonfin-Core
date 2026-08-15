@@ -3488,6 +3488,13 @@ class AppLocalizationsSq extends AppLocalizations {
   String get recentlyReleased => 'Lëshuar së fundi';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'Media ime';
 
   @override

@@ -4715,6 +4715,14 @@
   "@recentlyReleased": {
     "description": "Home section: recently released"
   },
+  "recentlyReleasedSeriesType": "Recently Released Series Type",
+  "@recentlyReleasedSeriesType": {
+    "description": "Setting for filtering series in recently released row"
+  },
+  "recentlyReleasedSeriesTypeDescription": "What to show in recently released row for tv show libraries",
+  "@recentlyReleasedSeriesTypeDescription": {
+    "description": "Description for recently released series type setting"
+  },
   "myMedia": "My Media",
   "@myMedia": {
     "description": "Home section: my media"

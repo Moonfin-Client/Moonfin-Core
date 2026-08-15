@@ -3391,6 +3391,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recentlyReleased => '最近リリースされた';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => '私のメディア';
 
   @override

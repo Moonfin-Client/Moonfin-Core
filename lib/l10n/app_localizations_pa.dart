@@ -3452,6 +3452,13 @@ class AppLocalizationsPa extends AppLocalizations {
   String get recentlyReleased => 'ਹਾਲ ਹੀ ਵਿੱਚ ਰਿਲੀਜ਼ ਹੋਈ';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'ਮੇਰਾ ਮੀਡੀਆ';
 
   @override

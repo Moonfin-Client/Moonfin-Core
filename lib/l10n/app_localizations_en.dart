@@ -3445,6 +3445,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentlyReleased => 'Recently Released';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'My Media';
 
   @override

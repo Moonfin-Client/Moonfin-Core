@@ -410,6 +410,15 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 ),
               ),
 
+              _SectionHeader(l10n.recentlyReleased),
+              EnumPreferenceTile<RecentlyReleasedSeriesType>(
+                preference: UserPreferences.recentlyReleasedSeriesType,
+                title: l10n.recentlyReleasedSeriesType,
+                description: l10n.recentlyReleasedSeriesTypeDescription,
+                icon: Icons.ondemand_video,
+                labelOf: (v) => v.displayName,
+              ),
+
               _SectionHeader(l10n.audio),
               adaptiveListSection(
                 children: [

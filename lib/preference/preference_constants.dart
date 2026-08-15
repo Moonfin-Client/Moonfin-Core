@@ -692,3 +692,17 @@ enum RewatchSortBy {
 
   String get displayName => this == recentlyWatched ? 'Recently Watched' : 'Random';
 }
+
+enum RecentlyReleasedSeriesType {
+  series,
+  season,
+  episode;
+
+  String get displayName {
+    switch (this) {
+      case series: return 'Series';
+      case season: return 'Season';
+      case episode: return 'Episode';
+    }
+  }
+}

@@ -500,6 +500,7 @@ class UserPreferences extends ChangeNotifier {
     'last_radarr_calendar_fetch_time',
     'last_sonarr_calendar_fetch_time',
     'merge_radarr_sonarr_calendars',
+    'recently_released_series_type',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -2221,6 +2222,12 @@ class UserPreferences extends ChangeNotifier {
   static final mergeRadarrSonarrCalendars = Preference(
     key: 'merge_radarr_sonarr_calendars',
     defaultValue: false,
+  );
+
+  static final recentlyReleasedSeriesType = EnumPreference(
+    key: 'recently_released_series_type',
+    defaultValue: RecentlyReleasedSeriesType.series,
+    values: RecentlyReleasedSeriesType.values,
   );
 
   List<HomeSectionConfig> get homeSectionsConfig {

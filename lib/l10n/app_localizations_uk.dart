@@ -3487,6 +3487,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get recentlyReleased => 'Нещодавно випущений';
 
   @override
+  String get recentlyReleasedSeriesType => 'Recently Released Series Type';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'What to show in recently released row for tv show libraries';
+
+  @override
   String get myMedia => 'Мої медіа';
 
   @override
