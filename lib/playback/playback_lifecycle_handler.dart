@@ -12,6 +12,7 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   // right after the app goes to the background. _restoreState runs the same
   // correction on resume, so ten seconds of ticks is enough.
   static const int _maxBgCorrectionTicks = 40;
+  static const Duration _videoBackgroundGracePeriod = Duration(seconds: 3);
 
   final PlaybackManager _manager;
   Duration? _savedPosition;
@@ -20,6 +21,8 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   int _bgCorrectionTicks = 0;
   bool _bgSeekInFlight = false;
   bool _screenLocked = false;
+  Timer? _videoStopTimer;
+  AggregatedItem? _videoStopItem;
 
   void setScreenLocked(bool locked) {
     _screenLocked = locked;
@@ -31,6 +34,10 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _cancelVideoStop();
+    }
+
     final currentItem = _manager.queueService.currentItem;
     bool isAudio = false;
     if (currentItem is AggregatedItem) {
@@ -40,7 +47,8 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
       if (meta != null) {
         final type = meta['Type']?.toString();
         final mediaType = meta['MediaType']?.toString();
-        isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+        isAudio =
+            type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
       }
     }
     if (isAudio) {
@@ -57,6 +65,7 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
         if (backend is Media3PlayerBackend) {
           unawaited(backend.appPaused());
         }
+        _scheduleVideoStop(currentItem);
         break;
       case AppLifecycleState.resumed:
         final backend = _manager.backend;
@@ -68,6 +77,33 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
       default:
         break;
     }
+  }
+
+  void _scheduleVideoStop(dynamic currentItem) {
+    if (!PlatformDetection.isAndroid ||
+        !PlatformDetection.isTV ||
+        currentItem is! AggregatedItem) {
+      return;
+    }
+
+    if (identical(_videoStopItem, currentItem)) return;
+
+    _videoStopTimer?.cancel();
+    _videoStopItem = currentItem;
+    _videoStopTimer = Timer(_videoBackgroundGracePeriod, () {
+      _videoStopTimer = null;
+      if (!identical(_videoStopItem, currentItem) ||
+          !identical(_manager.queueService.currentItem, currentItem)) {
+        return;
+      }
+      unawaited(_manager.stop(userInitiated: false));
+    });
+  }
+
+  void _cancelVideoStop() {
+    _videoStopTimer?.cancel();
+    _videoStopTimer = null;
+    _videoStopItem = null;
   }
 
   void _saveState() {
@@ -89,16 +125,13 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
 
     _bgCorrectionTimer?.cancel();
     _bgCorrectionTicks = 0;
-    _bgCorrectionTimer = Timer.periodic(
-      const Duration(milliseconds: 250),
-      (_) {
-        if (++_bgCorrectionTicks > _maxBgCorrectionTicks) {
-          _stopBgCorrection();
-          return;
-        }
-        _bgCorrect();
-      },
-    );
+    _bgCorrectionTimer = Timer.periodic(const Duration(milliseconds: 250), (_) {
+      if (++_bgCorrectionTicks > _maxBgCorrectionTicks) {
+        _stopBgCorrection();
+        return;
+      }
+      _bgCorrect();
+    });
     unawaited(_bgCorrect());
   }
 

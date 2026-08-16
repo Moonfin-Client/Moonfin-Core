@@ -2350,6 +2350,11 @@ class Media3VideoView(
     }
 
     private fun stopPlaybackAndRestoreDisplayMode() {
+        // A canonical stop ends ownership of this source. Clear it before
+        // touching the player because appPaused may already have released it,
+        // and an immediately queued appResumed must not restore stale media.
+        lastSourceArguments = null
+        lastPlaybackPositionMs = 0L
         player.stop()
         player.clearMediaItems()
         restorePreferredDisplayMode()
