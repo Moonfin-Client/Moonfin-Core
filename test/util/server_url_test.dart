@@ -41,25 +41,31 @@ void main() {
 
     test('converts internationalized hostnames to IDNA ASCII', () {
       expect(
-        normalizeServerBaseUrl('https://föda.se'),
-        'https://xn--fda-sna.se',
-      );
-      expect(normalizeServerBaseUrl('föda.se'), 'xn--fda-sna.se');
-      expect(
-        normalizeServerBaseUrl('https://yarrr.föda.se:8443/jellyfin/'),
-        'https://yarrr.xn--fda-sna.se:8443/jellyfin',
+        normalizeServerBaseUrl('https://éxâmplê.example'),
+        'https://xn--xmpl-boa4bm.example',
       );
       expect(
-        normalizeServerBaseUrl('https://xn--fda-sna.se'),
-        'https://xn--fda-sna.se',
+        normalizeServerBaseUrl('éxâmplê.example'),
+        'xn--xmpl-boa4bm.example',
+      );
+      expect(
+        normalizeServerBaseUrl('https://media.éxâmplê.example:8443/jellyfin/'),
+        'https://media.xn--xmpl-boa4bm.example:8443/jellyfin',
+      );
+      expect(
+        normalizeServerBaseUrl('https://xn--xmpl-boa4bm.example'),
+        'https://xn--xmpl-boa4bm.example',
       );
     });
 
     test('renders Punycode hostnames as Unicode for display', () {
-      expect(displayServerBaseUrl('https://xn--fda-sna.se'), 'https://föda.se');
       expect(
-        displayServerBaseUrl('yarrr.xn--fda-sna.se:8443/jellyfin'),
-        'yarrr.föda.se:8443/jellyfin',
+        displayServerBaseUrl('https://xn--xmpl-boa4bm.example'),
+        'https://éxâmplê.example',
+      );
+      expect(
+        displayServerBaseUrl('media.xn--xmpl-boa4bm.example:8443/jellyfin'),
+        'media.éxâmplê.example:8443/jellyfin',
       );
       expect(
         displayServerBaseUrl('https://media.example.com'),
