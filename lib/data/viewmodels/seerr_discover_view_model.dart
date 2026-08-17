@@ -56,7 +56,9 @@ class SeerrDiscoverRow {
   bool get isGenreRow => type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
   bool get isStudioRow => type == SeerrRowType.studios;
-  bool get isMediaRow => !isGenreRow && !isNetworkRow && !isStudioRow;
+  bool get isShortcutsRow => type == SeerrRowType.shortcuts;
+  bool get isMediaRow =>
+      !isGenreRow && !isNetworkRow && !isStudioRow && !isShortcutsRow;
 }
 
 class SeerrDiscoverViewModel extends ChangeNotifier {
@@ -256,6 +258,8 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     final row = _rows[index];
     try {
       switch (row.type) {
+        case SeerrRowType.shortcuts:
+          await _loadShortcutArtwork(index);
         case SeerrRowType.recentRequests:
           await _loadRecentRequests(index);
         case SeerrRowType.yourWatchlist:
@@ -292,6 +296,21 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('[SeerrDiscover] Failed to load row ${row.type}: $e');
+      _updateRow(index, row.copyWith(isLoading: false));
+    }
+  }
+
+  /// Artwork for the shortcut tiles. One trending read covers every tile, and
+  /// a failure just leaves them on their plain background.
+  Future<void> _loadShortcutArtwork(int index) async {
+    final row = _rows[index];
+    try {
+      final page = await _repo.getTrending(limit: _localRowsFetchLimit);
+      // Shuffled here rather than at render time, so the tiles keep the same
+      // stills until the next load instead of changing on every rebuild.
+      final items = _filterItems(page.results)..shuffle();
+      _updateRow(index, row.copyWith(items: items, isLoading: false));
+    } catch (_) {
       _updateRow(index, row.copyWith(isLoading: false));
     }
   }
@@ -503,6 +522,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   }
 
   static String _titleForRowType(SeerrRowType type) => switch (type) {
+    SeerrRowType.shortcuts => 'Seerr Browse',
     SeerrRowType.recentRequests => 'Recent Requests',
     SeerrRowType.yourWatchlist => 'Your Watchlist',
     SeerrRowType.recentlyAdded => 'Recently Added',

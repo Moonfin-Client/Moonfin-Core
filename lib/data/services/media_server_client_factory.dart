@@ -6,6 +6,8 @@ import 'package:server_jellyfin/server_jellyfin.dart';
 import '../../util/server_url.dart';
 import '../offline/connectivity_aware_media_server_client.dart';
 import '../offline/offline_catalog.dart';
+import '../repositories/offline_repository.dart';
+import 'pending_rating_store.dart';
 import 'storage_path_service.dart';
 
 class MediaServerClientFactory {
@@ -69,7 +71,8 @@ class MediaServerClientFactory {
     // Background isolates skip the offline stack, so there's nothing to route
     // to and the raw client is all they need.
     if (!getIt.isRegistered<OfflineCatalog>() ||
-        !getIt.isRegistered<StoragePathService>()) {
+        !getIt.isRegistered<StoragePathService>() ||
+        !getIt.isRegistered<PendingRatingStore>()) {
       return raw;
     }
     return ConnectivityAwareMediaServerClient(
@@ -77,6 +80,8 @@ class MediaServerClientFactory {
       useOffline: shouldUseOfflineCatalog,
       catalog: getIt<OfflineCatalog>(),
       storagePath: getIt<StoragePathService>(),
+      pendingRatings: getIt<PendingRatingStore>(),
+      offlineRepo: getIt<OfflineRepository>(),
     );
   }
 

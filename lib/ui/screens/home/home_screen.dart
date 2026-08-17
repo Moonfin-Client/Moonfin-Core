@@ -24,6 +24,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
+import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/background_service.dart';
 import '../../widgets/rating_display.dart';
 import '../../../data/services/theme_music_service.dart';
@@ -4927,6 +4928,7 @@ class _ContentRowsState extends State<_ContentRows>
                         ratings: additionalRatings,
                         communityRating: item.communityRating,
                         criticRating: item.criticRating,
+                        personalRating: item.personalRating,
                         enableAdditionalRatings: widget.prefs.get(
                           UserPreferences.enableAdditionalRatings,
                         ),
@@ -5122,6 +5124,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static bool _isSeerrFilterRow(HomeRow row) =>
+      row.id == 'seerr_shortcuts' ||
       row.id == 'seerr_movie_genres' ||
       row.id == 'seerr_series_genres' ||
       row.id == 'seerr_studios' ||
@@ -5134,6 +5137,13 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static void _navigateToSeerrItem(BuildContext context, AggregatedItem item) {
+    final shortcut = SeerrShortcut.fromName(
+      item.rawData['SeerrShortcut'] as String?,
+    );
+    if (shortcut != null) {
+      shortcut.open(context);
+      return;
+    }
     final filterType = item.rawData['FilterType'] as String?;
     if (filterType != null) {
       final mediaType = item.rawData['MediaType'] as String? ?? 'movie';
@@ -5499,6 +5509,9 @@ class _ContentRowsState extends State<_ContentRows>
     if (row.isAudio) {
       return 1.0;
     }
+    if (row.rowType == HomeRowType.liveTvFavorites) {
+      return 1.0;
+    }
     if (_isSeerrFilterRow(row)) {
       return 16 / 9;
     }
@@ -5564,6 +5577,18 @@ class _ContentRowsState extends State<_ContentRows>
       }
       return poster ?? backdrop;
     }
+
+    if (Destinations.isLiveTvChannelType(item.type)) {
+      final logoTag = item.logoImageTag;
+      if (logoTag != null) {
+        return imageApi.getLogoImageUrl(
+          item.id,
+          maxWidth: (height * requestScale).toInt(),
+          tag: logoTag,
+        );
+      }
+    }
+
     final itemThumbTag = _tagForType(item, 'Thumb');
     final itemBannerTag = _tagForType(item, 'Banner');
     final parentThumbItemId = item.rawData['ParentThumbItemId']?.toString();

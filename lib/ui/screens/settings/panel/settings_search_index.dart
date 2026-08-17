@@ -566,6 +566,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'scaling',
     ]),
     style.leaf(
+      'pref_desktop_scroll_sensitivity',
+      l10n.scrollSensitivity,
+      subtitle: l10n.scrollSensitivitySubtitle,
+      keywords: ['mouse', 'wheel', 'speed', 'scrolling'],
+    ),
+    style.leaf(
       'pref_show_backdrop',
       l10n.backgroundBackdrops,
       subtitle: l10n.showBackdropImages,
@@ -955,6 +961,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     mediaBar.leaf('mediaBarContentType', l10n.contentType, keywords: [
       'movies',
       'shows',
+    ]),
+    mediaBar.leaf('mediaBarSourceType', l10n.mediaBarSourceType, keywords: [
+      'random',
+      'recently added',
+      'recently released',
+      'newest',
     ]),
     mediaBar.leaf('mediaBarItemCount', l10n.itemCount),
     mediaBar.leaf('mediaBarLibraryIds', l10n.sourceLibraries),

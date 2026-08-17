@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/services/rating_icon_provider.dart';
+import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 
 final _textShadows = [
   Shadow(blurRadius: 4, color: AppColors.black.withValues(alpha: 0.54)),
 ];
-const _coreRatingSources = {'tomatoes', 'stars'};
+const _coreRatingSources = {'tomatoes', 'stars', 'personal'};
 
 String _normalizeRatingSource(String source) {
   return source == 'popcorn' ? 'tomatoes_audience' : source;
@@ -22,6 +25,10 @@ class RatingsRow extends StatelessWidget {
   final Map<String, double> ratings;
   final double? communityRating;
   final int? criticRating;
+
+  /// The viewer's own rating for this item, out of 10, shown under the
+  /// 'personal' source. Null hides the slot, so an unrated item costs nothing.
+  final double? personalRating;
   final bool enableAdditionalRatings;
   final String enabledRatings;
   final bool showLabels;
@@ -32,11 +39,27 @@ class RatingsRow extends StatelessWidget {
     required this.ratings,
     this.communityRating,
     this.criticRating,
+    this.personalRating,
     this.enableAdditionalRatings = false,
     this.enabledRatings = 'stars,imdb,tmdb,tomatoes,metacritic',
     this.showLabels = true,
     this.showBadges = true,
   });
+
+  /// The viewer picked how ratings read on the detail screen, so the row
+  /// speaks the same dialect: five-star users see their score out of five.
+  static String _formatPersonal(double value) {
+    var style = PersonalRatingStyle.numeric;
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      style = GetIt.instance<UserPreferences>().get(
+        UserPreferences.personalRatingStyle,
+      );
+    }
+    if (style == PersonalRatingStyle.stars) {
+      return '${(value / 2).toStringAsFixed(1)}/5';
+    }
+    return value.toStringAsFixed(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +71,10 @@ class RatingsRow extends StatelessWidget {
         .toSet();
 
     final allRatings = <String, double>{};
+
+    if (personalRating != null) {
+      allRatings['personal'] = personalRating!;
+    }
 
     if (communityRating != null) {
       allRatings['stars'] = communityRating!;
@@ -84,11 +111,14 @@ class RatingsRow extends StatelessWidget {
     final enabledOrder = {
       for (var i = 0; i < enabledList.length; i++) enabledList[i]: i,
     };
-    filtered.sort((a, b) {
-      final ai = enabledOrder[_selectionSource(a.key)] ?? 999;
-      final bi = enabledOrder[_selectionSource(b.key)] ?? 999;
-      return ai.compareTo(bi);
-    });
+    // A personal rating outside the picker order leads the row rather than
+    // trailing it, since the viewer's own score is the one they chose to set.
+    int orderOf(String key) {
+      final source = _selectionSource(key);
+      return enabledOrder[source] ?? (source == 'personal' ? -1 : 999);
+    }
+
+    filtered.sort((a, b) => orderOf(a.key).compareTo(orderOf(b.key)));
 
     if (filtered.isEmpty) return const SizedBox.shrink();
 
@@ -101,6 +131,9 @@ class RatingsRow extends StatelessWidget {
           _SingleRating(
             source: item.key,
             value: item.value,
+            valueText: item.key == 'personal'
+                ? _formatPersonal(item.value)
+                : null,
             showLabel: showLabels,
             showBadge: showBadges,
           ),
@@ -112,12 +145,17 @@ class RatingsRow extends StatelessWidget {
 class _SingleRating extends StatelessWidget {
   final String source;
   final double value;
+
+  /// Pre-formatted display text, for sources whose format depends on more
+  /// than the value. Null falls back to the standard per-source format.
+  final String? valueText;
   final bool showLabel;
   final bool showBadge;
 
   const _SingleRating({
     required this.source,
     required this.value,
+    this.valueText,
     this.showLabel = true,
     this.showBadge = true,
   });
@@ -127,7 +165,8 @@ class _SingleRating extends StatelessWidget {
     final media = MediaQuery.of(context);
     final isLargeLayout = media.size.width >= 1000 ||
         (media.orientation == Orientation.landscape && media.size.width >= 700);
-    final valueText = RatingIconProvider.formatRating(source, value);
+    final valueText =
+        this.valueText ?? RatingIconProvider.formatRating(source, value);
     final labelText = RatingIconProvider.sourceDisplayName(source);
     final valueFontSize = 14.0;
     final labelFontSize = isLargeLayout ? 9.0 : 8.0;
@@ -141,11 +180,15 @@ class _SingleRating extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (source == 'stars') ...[
+            if (source == 'stars' || source == 'personal') ...[
               Text(
                 '\u2605',
                 style: TextStyle(
-                  color: const Color(0xFFFFC107),
+                  // The viewer's own star wears the accent so it never reads
+                  // as another community score.
+                  color: source == 'personal'
+                      ? AppColorScheme.accent
+                      : const Color(0xFFFFC107),
                   fontSize: starSize,
                   height: 1,
                   shadows: _textShadows,

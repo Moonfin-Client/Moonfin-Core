@@ -2651,6 +2651,22 @@
   "@unableToCreateRecording": {
     "description": "Error when creating a live TV recording fails"
   },
+  "recordSeries": "Record Series",
+  "@recordSeries": {
+    "description": "Button label to record every showing of a live TV series"
+  },
+  "seriesSetToRecord": "Series set to record",
+  "@seriesSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV series recording"
+  },
+  "seriesRecordingCancelled": "Series recording cancelled",
+  "@seriesRecordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV series recording"
+  },
+  "unableToCreateSeriesRecording": "Unable to create series recording",
+  "@unableToCreateSeriesRecording": {
+    "description": "Error when creating a live TV series recording fails"
+  },
   "watch": "Watch",
   "@watch": {
     "description": "Button label to start watching a channel"
@@ -4619,6 +4635,14 @@
   "@contentType": {
     "description": "Setting for content type"
   },
+  "mediaBarSourceType": "Source",
+  "@mediaBarSourceType": {
+    "description": "Setting for which titles the media bar draws from"
+  },
+  "mediaBarSourceRandom": "Random",
+  "@mediaBarSourceRandom": {
+    "description": "Media bar source: any eligible title"
+  },
   "moviesAndTvShows": "Movies & TV Shows",
   "@moviesAndTvShows": {
     "description": "Content type: movies and TV shows"
@@ -4758,6 +4782,10 @@
   "liveTV": "Live TV",
   "@liveTV": {
     "description": "Home section: live TV"
+  },
+  "favoriteChannels": "Favorite Channels",
+  "@favoriteChannels": {
+    "description": "Home row: favourited live TV channels"
   },
   "homeSections": "Home Sections",
   "@homeSections": {
@@ -9419,6 +9447,10 @@
   "@personalRatingRated": {
     "description": "Tooltip for a media item that has a numeric personal rating."
   },
+  "personalRatingMine": "My Rating",
+  "@personalRatingMine": {
+    "description": "Label under the viewer's own rating in the ratings row."
+  },
   "personalRatingSaveFailed": "Could not save rating",
   "@personalRatingSaveFailed": {
     "description": "Error shown when saving a personal rating fails."
@@ -9440,5 +9472,89 @@
   "@personalRatingOutOfFive": {
     "description": "Personal rating displayed on a five-star scale.",
     "placeholders": { "rating": { "type": "String" } }
+  },
+  "filterInProgress": "In Progress",
+  "@filterInProgress": {
+    "description": "Library filter for items the viewer has started but not finished."
+  },
+  "filterUnreleased": "Unreleased",
+  "@filterUnreleased": {
+    "description": "Series status filter for shows that have not started airing."
+  },
+  "filterTrailers": "Trailers",
+  "@filterTrailers": {
+    "description": "Library filter for items that have a trailer."
+  },
+  "filterExtras": "Extras",
+  "@filterExtras": {
+    "description": "Library filter for items that have bonus features."
+  },
+  "filterThemeSongs": "Theme Songs",
+  "@filterThemeSongs": {
+    "description": "Library filter for items that have a theme song."
+  },
+  "filterThemeVideos": "Theme Videos",
+  "@filterThemeVideos": {
+    "description": "Library filter for items that have a theme video."
+  },
+  "source": "Source",
+  "@source": {
+    "description": "Heading for the disc source filters in the library filter picker."
+  },
+  "years": "Years",
+  "@years": {
+    "description": "Heading for the release year filters in the library filter picker."
+  },
+  "audioLanguage": "Audio Language",
+  "@audioLanguage": {
+    "description": "Heading for the audio language filters in the library filter picker."
+  },
+  "subtitleLanguage": "Subtitle Language",
+  "@subtitleLanguage": {
+    "description": "Heading for the subtitle language filters in the library filter picker."
+  },
+  "clearFilters": "Clear Filters",
+  "@clearFilters": {
+    "description": "Action that turns every library filter back off."
+  },
+  "seerrShortcutsRow": "Seerr Browse",
+  "@seerrShortcutsRow": {
+    "description": "Title of the Seerr shortcuts row that jumps to Discover, Movies, Series, Requests and Issues."
+  },
+  "seerrReleased": "Released",
+  "@seerrReleased": {
+    "description": "Heading for the release window filter in the Seerr browse dialog."
+  },
+  "seerrMinRating": "Minimum Rating",
+  "@seerrMinRating": {
+    "description": "Heading for the TMDB score floor filter in the Seerr browse dialog."
+  },
+  "seerrMinVotes": "Minimum Votes",
+  "@seerrMinVotes": {
+    "description": "Heading for the TMDB vote count floor filter in the Seerr browse dialog."
+  },
+  "seerrOriginalLanguage": "Original Language",
+  "@seerrOriginalLanguage": {
+    "description": "Heading for the original language filter in the Seerr browse dialog."
+  },
+  "seerrRuntime": "Runtime",
+  "@seerrRuntime": {
+    "description": "Heading for the runtime window filter in the Seerr browse dialog."
+  },
+  "subtitleHdrSeparate": "Separate HDR Style",
+  "@subtitleHdrSeparate": {
+    "description": "Toggle for a second subtitle appearance used only while HDR is playing."
+  },
+  "subtitleHdrSeparateSubtitle": "White is much brighter in HDR than in SDR, so a dimmer style here avoids the glare",
+  "@subtitleHdrSeparateSubtitle": {
+    "description": "Explains why a separate HDR subtitle style is worth setting."
+  },
+  "scrollSensitivity": "Scroll Sensitivity",
+  "@scrollSensitivity": {
+    "description": "Title of the desktop setting that scales mouse wheel scrolling."
+  },
+  "scrollSensitivitySubtitle": "How far one mouse wheel notch scrolls",
+  "@scrollSensitivitySubtitle": {
+    "description": "Explains the desktop scroll sensitivity slider."
   }
 }

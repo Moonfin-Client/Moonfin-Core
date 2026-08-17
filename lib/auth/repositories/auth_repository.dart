@@ -96,11 +96,10 @@ class AuthRepository {
         ((userJson?['ImageTags'] as Map<String, dynamic>?)?['Primary']
             as String?);
     final policyJson = userJson?['Policy'] as Map<String, dynamic>?;
-    final isAdmin = policyJson?['IsAdministrator'] as bool? ?? false;
-    final canManageSubtitles =
-        policyJson?['EnableSubtitleManagement'] as bool? ?? false;
-    final canManageCollections =
-        policyJson?['EnableCollectionManagement'] as bool? ?? false;
+    final policy = policyJson == null ? null : UserPolicy.fromJson(policyJson);
+    final isAdmin = policy?.isAdministrator ?? false;
+    final canManageSubtitles = policy?.canFetchRemoteSubtitles ?? false;
+    final canManageCollections = policy?.enableCollectionManagement ?? false;
 
     if (accessToken == null || userId == null) {
       const state = ApiClientError(error: 'Invalid auth response');

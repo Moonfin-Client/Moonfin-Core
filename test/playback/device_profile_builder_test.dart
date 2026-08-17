@@ -40,6 +40,35 @@ String? _videoProfileCondition(Map<String, dynamic> profile, String codec) {
   return null;
 }
 
+// An excluded profile shows up as a condition asking that the stream not
+// carry it.
+bool _excludesVideoProfile(
+  Map<String, dynamic> profile,
+  String codec,
+  String videoProfile,
+) {
+  final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
+
+  for (final rawProfile in codecProfiles) {
+    final codecProfile = rawProfile as Map<dynamic, dynamic>;
+    if (codecProfile['Type'] != 'Video' || codecProfile['Codec'] != codec) {
+      continue;
+    }
+
+    final conditions = codecProfile['Conditions'] as List<dynamic>? ?? const [];
+    for (final rawCondition in conditions) {
+      final condition = rawCondition as Map<dynamic, dynamic>;
+      if (condition['Property'] == 'VideoProfile' &&
+          condition['Condition'] == 'NotEquals' &&
+          condition['Value'] == videoProfile) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 Set<String> _codecUnsupportedRangeTypes(
   Map<String, dynamic> profile,
   String codec,
@@ -284,6 +313,29 @@ AudioCapabilityProfile _capabilityProfile({
 }
 
 void main() {
+  group('DeviceProfileBuilder AVC High 10', () {
+    test('a device without a 10 bit AVC decoder transcodes Hi10p, since the '
+        'decoder rejects the format once playback has already started', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAvc: true,
+        avcMainLevel: 51,
+      );
+
+      expect(_excludesVideoProfile(profile, 'h264', 'high 10'), isTrue);
+    });
+
+    test('a device with one keeps Hi10p direct playable', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAvc: true,
+        avcMainLevel: 51,
+        supportsAvcHigh10: true,
+        avcHigh10Level: 51,
+      );
+
+      expect(_excludesVideoProfile(profile, 'h264', 'high 10'), isFalse);
+    });
+  });
+
   group('DeviceProfileBuilder HEVC range filtering', () {
     test(
       'does not exclude DoVi HDR10+ only because profile 8 is unsupported',

@@ -100,7 +100,46 @@ void main() {
       expect(segments, isEmpty);
     });
 
-    test('skips an intro with no end to bound it', () async {
+    test('ends an unmarked intro at the chapter after it', () async {
+      final segments = await _api(
+        _ItemAdapter([
+          _chapter('Chapter', 0),
+          _chapter('IntroStart', 300000000),
+          _chapter('Chapter', 900000000),
+          _chapter('Chapter', 1800000000),
+        ]),
+      ).getMediaSegments('ep1');
+
+      expect(segments.single['Type'], 'Intro');
+      expect(segments.single['StartTicks'], 300000000);
+      expect(segments.single['EndTicks'], 900000000);
+    });
+
+    test('takes the nearest chapter when they arrive out of order', () async {
+      final segments = await _api(
+        _ItemAdapter([
+          _chapter('Chapter', 1800000000),
+          _chapter('IntroStart', 300000000),
+          _chapter('Chapter', 900000000),
+        ]),
+      ).getMediaSegments('ep1');
+
+      expect(segments.single['EndTicks'], 900000000);
+    });
+
+    test('prefers a real end marker over the next chapter', () async {
+      final segments = await _api(
+        _ItemAdapter([
+          _chapter('IntroStart', 300000000),
+          _chapter('Chapter', 600000000),
+          _chapter('IntroEnd', 900000000),
+        ]),
+      ).getMediaSegments('ep1');
+
+      expect(segments.single['EndTicks'], 900000000);
+    });
+
+    test('skips an intro with nothing after it to bound it', () async {
       final segments = await _api(
         _ItemAdapter([_chapter('IntroStart', 300000000)]),
       ).getMediaSegments('ep1');

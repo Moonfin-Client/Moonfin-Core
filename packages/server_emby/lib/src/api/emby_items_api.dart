@@ -67,6 +67,19 @@ class EmbyItemsApi implements ItemsApi {
     String? maxOfficialRating,
     bool? hasParentalRating,
     String? anyProviderIdEquals,
+    List<String>? officialRatings,
+    List<int>? years,
+    List<String>? videoTypes,
+    List<String>? audioLanguages,
+    List<String>? subtitleLanguages,
+    bool? hasSubtitles,
+    bool? hasTrailer,
+    bool? hasSpecialFeature,
+    bool? hasThemeSong,
+    bool? hasThemeVideo,
+    bool? isHd,
+    bool? is4K,
+    bool? is3D,
   }) async {
     final queryParams = {
       'ParentId': ?parentId,
@@ -89,7 +102,26 @@ class EmbyItemsApi implements ItemsApi {
       'NameStartsWith': ?nameStartsWith,
       'NameLessThan': ?nameLessThan,
       if (genreIds != null) 'GenreIds': genreIds.join(','),
-      if (genres != null) 'Genres': genres.join(','),
+      // Genres, ratings and tags are pipe delimited so a value holding a comma
+      // still arrives whole.
+      if (genres != null && genres.isNotEmpty) 'Genres': genres.join('|'),
+      if (officialRatings != null && officialRatings.isNotEmpty)
+        'OfficialRatings': officialRatings.join('|'),
+      if (years != null && years.isNotEmpty) 'Years': years.join(','),
+      if (videoTypes != null && videoTypes.isNotEmpty)
+        'VideoTypes': videoTypes.join(','),
+      if (audioLanguages != null && audioLanguages.isNotEmpty)
+        'AudioLanguages': audioLanguages.join(','),
+      if (subtitleLanguages != null && subtitleLanguages.isNotEmpty)
+        'SubtitleLanguages': subtitleLanguages.join(','),
+      'HasSubtitles': ?hasSubtitles,
+      'HasTrailer': ?hasTrailer,
+      'HasSpecialFeature': ?hasSpecialFeature,
+      'HasThemeSong': ?hasThemeSong,
+      'HasThemeVideo': ?hasThemeVideo,
+      'IsHD': ?isHd,
+      'Is4K': ?is4K,
+      'Is3D': ?is3D,
       'IsFavorite': ?isFavorite,
       'CollapseBoxSetItems': ?collapseBoxSetItems,
       'EnableTotalRecordCount': ?enableTotalRecordCount,
@@ -116,6 +148,17 @@ class EmbyItemsApi implements ItemsApi {
     );
     return response.data as Map<String, dynamic>;
   }
+
+  @override
+  Future<QueryFilterValues> getQueryFilters({
+    String? parentId,
+    List<String>? includeItemTypes,
+  }) => readQueryFilters(
+    _dio,
+    userId: _getUserId(),
+    parentId: parentId,
+    includeItemTypes: includeItemTypes,
+  );
 
   @override
   Future<Map<String, dynamic>> getPersons({
@@ -704,6 +747,7 @@ class EmbyItemsApi implements ItemsApi {
     final chapters = (item['Chapters'] as List?) ?? const [];
     if (chapters.isEmpty) return const [];
 
+    final chapterStarts = <int>[];
     int? introStart;
     int? introEnd;
     int? creditsStart;
@@ -711,6 +755,7 @@ class EmbyItemsApi implements ItemsApi {
       if (raw is! Map) continue;
       final ticks = (raw['StartPositionTicks'] as num?)?.toInt();
       if (ticks == null) continue;
+      chapterStarts.add(ticks);
       switch (_markerType(raw['MarkerType'])) {
         case 'introstart':
           introStart ??= ticks;
@@ -719,6 +764,19 @@ class EmbyItemsApi implements ItemsApi {
         case 'creditsstart':
           creditsStart ??= ticks;
       }
+    }
+
+    // Plenty of episodes carry a start marker and never an end one. The
+    // chapter that follows is where the intro handed over to the episode, so
+    // it stands in for the missing marker. One with nothing after it stays
+    // unbounded rather than guessing a length.
+    if (introStart != null && introEnd == null) {
+      final start = introStart;
+      int? next;
+      for (final ticks in chapterStarts) {
+        if (ticks > start && (next == null || ticks < next)) next = ticks;
+      }
+      introEnd = next;
     }
 
     final segments = <Map<String, dynamic>>[];
@@ -777,15 +835,18 @@ class EmbyItemsApi implements ItemsApi {
     required String language,
     bool? isPerfectMatch,
   }) async {
-    throw UnsupportedError(
-      'Remote subtitle search is only supported for Jellyfin servers.',
+    final response = await _dio.get(
+      '/Items/$itemId/RemoteSearch/Subtitles/$language',
+      queryParameters: {'IsPerfectMatch': ?isPerfectMatch},
     );
+    return ((response.data as List?) ?? const [])
+        .whereType<Map>()
+        .map((e) => e.cast<String, dynamic>())
+        .toList(growable: false);
   }
 
   @override
   Future<void> downloadRemoteSubtitle(String itemId, String subtitleId) async {
-    throw UnsupportedError(
-      'Remote subtitle download is only supported for Jellyfin servers.',
-    );
+    await _dio.post('/Items/$itemId/RemoteSearch/Subtitles/$subtitleId');
   }
 }

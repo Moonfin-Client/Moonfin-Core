@@ -32,6 +32,7 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/custom_external_lists_service.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
+import '../../data/services/pending_rating_store.dart';
 import '../../data/services/sync_service.dart';
 import '../../data/services/theme_music_service.dart';
 import '../../data/viewmodels/media_bar_view_model.dart';
@@ -128,8 +129,11 @@ void registerAppModule() {
       _getIt<SessionRepository>(),
     ),
   );
+  _getIt.registerLazySingleton<PendingRatingStore>(
+    () => PendingRatingStore(_getIt<PreferenceStore>()),
+  );
   _getIt.registerLazySingleton<SyncService>(
-    () => SyncService(_getIt<OfflineRepository>()),
+    () => SyncService(_getIt<OfflineRepository>(), _getIt<PendingRatingStore>()),
   );
   _getIt.registerLazySingleton(() => const ExternalPlayerService());
 

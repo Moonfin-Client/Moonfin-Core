@@ -1896,6 +1896,19 @@ class AppLocalizationsSw extends AppLocalizations {
   String get unableToCreateRecording => 'Imeshindwa kuunda rekodi';
 
   @override
+  String get recordSeries => 'Record Series';
+
+  @override
+  String get seriesSetToRecord => 'Series set to record';
+
+  @override
+  String get seriesRecordingCancelled => 'Series recording cancelled';
+
+  @override
+  String get unableToCreateSeriesRecording =>
+      'Unable to create series recording';
+
+  @override
   String get watch => 'Tazama';
 
   @override
@@ -3410,6 +3423,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get contentType => 'Aina ya Maudhui';
 
   @override
+  String get mediaBarSourceType => 'Source';
+
+  @override
+  String get mediaBarSourceRandom => 'Random';
+
+  @override
   String get moviesAndTvShows => 'Filamu na Vipindi vya Televisheni';
 
   @override
@@ -3515,6 +3534,9 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get liveTV => 'TV ya moja kwa moja';
+
+  @override
+  String get favoriteChannels => 'Favorite Channels';
 
   @override
   String get homeSections => 'Sehemu za Nyumbani';
@@ -10688,6 +10710,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get personalRatingRated => 'Rated';
 
   @override
+  String get personalRatingMine => 'My Rating';
+
+  @override
   String get personalRatingSaveFailed => 'Could not save rating';
 
   @override
@@ -10705,4 +10730,69 @@ class AppLocalizationsSw extends AppLocalizations {
   String personalRatingOutOfFive(String rating) {
     return '$rating / 5';
   }
+
+  @override
+  String get filterInProgress => 'In Progress';
+
+  @override
+  String get filterUnreleased => 'Unreleased';
+
+  @override
+  String get filterTrailers => 'Trailers';
+
+  @override
+  String get filterExtras => 'Extras';
+
+  @override
+  String get filterThemeSongs => 'Theme Songs';
+
+  @override
+  String get filterThemeVideos => 'Theme Videos';
+
+  @override
+  String get source => 'Source';
+
+  @override
+  String get years => 'Years';
+
+  @override
+  String get audioLanguage => 'Audio Language';
+
+  @override
+  String get subtitleLanguage => 'Subtitle Language';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get seerrShortcutsRow => 'Seerr Browse';
+
+  @override
+  String get seerrReleased => 'Released';
+
+  @override
+  String get seerrMinRating => 'Minimum Rating';
+
+  @override
+  String get seerrMinVotes => 'Minimum Votes';
+
+  @override
+  String get seerrOriginalLanguage => 'Original Language';
+
+  @override
+  String get seerrRuntime => 'Runtime';
+
+  @override
+  String get subtitleHdrSeparate => 'Separate HDR Style';
+
+  @override
+  String get subtitleHdrSeparateSubtitle =>
+      'White is much brighter in HDR than in SDR, so a dimmer style here avoids the glare';
+
+  @override
+  String get scrollSensitivity => 'Scroll Sensitivity';
+
+  @override
+  String get scrollSensitivitySubtitle =>
+      'How far one mouse wheel notch scrolls';
 }

@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/appletv_backend.dart';
@@ -148,13 +149,17 @@ class _AppleTvLiveTvPlayerHostScreenState
     final backend = _backend;
     if (backend == null) return;
     try {
+      final style = SubtitleStyle.forResolution(
+        _prefs,
+        _manager.currentResolution,
+      );
       backend.configureSubtitleStyle(
-        textColor: _prefs.get(UserPreferences.subtitlesTextColor),
-        backgroundColor: _prefs.get(UserPreferences.subtitlesBackgroundColor),
-        strokeColor: _prefs.get(UserPreferences.subtitleTextStrokeColor),
-        fontSize: _prefs.get(UserPreferences.subtitlesTextSize),
-        fontWeight: _prefs.get(UserPreferences.subtitlesTextWeight),
-        verticalOffset: _prefs.get(UserPreferences.subtitlesOffsetPosition),
+        textColor: style.textColor,
+        backgroundColor: style.backgroundColor,
+        strokeColor: style.strokeColor,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        verticalOffset: style.verticalOffset,
       );
     } catch (_) {}
   }

@@ -238,6 +238,9 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
       transcodingReasons: reasons,
       hybridAudioUrl: hybridAudioUrl,
+      serverOfferedDirectPlay: source.supportsDirectPlay,
+      directPlayRequested: enableDirectPlay,
+      sourceBitrate: source.bitrate,
     );
   }
 

@@ -376,6 +376,20 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   onChanged: _pushSync,
                 ),
                 StringPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarSourceType,
+                  title: l10n.mediaBarSourceType,
+                  icon: Icons.auto_awesome_motion,
+                  options: {
+                    UserPreferences.mediaBarSourceRandom:
+                        l10n.mediaBarSourceRandom,
+                    UserPreferences.mediaBarSourceRecentlyAdded:
+                        l10n.recentlyAdded,
+                    UserPreferences.mediaBarSourceRecentlyReleased:
+                        l10n.recentlyReleased,
+                  },
+                  onChanged: _pushSync,
+                ),
+                StringPickerPreferenceTile(
                   preference: UserPreferences.mediaBarItemCount,
                   title: l10n.itemCount,
                   icon: Icons.format_list_numbered,

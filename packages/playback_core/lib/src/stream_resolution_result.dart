@@ -38,6 +38,17 @@ class StreamResolutionResult {
   final List<String> transcodingReasons;
   final String? hybridAudioUrl;
 
+  /// Whether the server offered this source for direct play, and whether this
+  /// resolve asked for it. A transcode that names no reason was declined by
+  /// one of these two, and without them a report can't say which. Null where
+  /// the source never went through a server decision.
+  final bool? serverOfferedDirectPlay;
+  final bool? directPlayRequested;
+
+  /// Source bitrate as the server reported it, the figure the streaming
+  /// ceiling is weighed against.
+  final int? sourceBitrate;
+
   /// True when [streamUrl] is a local file path served from the downloads
   /// store rather than a server stream URL.
   final bool isLocalMedia;
@@ -59,6 +70,9 @@ class StreamResolutionResult {
     this.selectedSubtitleStreamIndex,
     this.transcodingReasons = const [],
     this.hybridAudioUrl,
+    this.serverOfferedDirectPlay,
+    this.directPlayRequested,
+    this.sourceBitrate,
     this.isLocalMedia = false,
   });
 

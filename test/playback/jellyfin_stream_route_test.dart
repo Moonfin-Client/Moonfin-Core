@@ -133,5 +133,20 @@ void main() {
         JellyfinStreamRoute.terminalDirectPlay,
       );
     });
+
+    test('a source the server withholds remuxes before it transcodes', () {
+      // A remux copies the video through, so a server that only refuses direct
+      // play still avoids a re-encode. Reaching the transcode takes losing the
+      // remux too, which is what a server withholds when the objection is the
+      // video codec itself.
+      expect(
+        route(supportsDirectPlay: false),
+        JellyfinStreamRoute.directStream,
+      );
+      expect(
+        route(supportsDirectPlay: false, supportsDirectStream: false),
+        JellyfinStreamRoute.transcode,
+      );
+    });
   });
 }

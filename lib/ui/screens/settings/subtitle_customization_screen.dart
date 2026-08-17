@@ -29,12 +29,21 @@ class _SubtitleCustomizationScreenState
     extends State<SubtitleCustomizationScreen> {
   late final PreferenceBinding<double> _sizeBind;
   late final PreferenceBinding<double> _offsetBind;
+  late final PreferenceBinding<double> _hdrSizeBind;
+  late final PreferenceBinding<double> _hdrOffsetBind;
+  late final PreferenceBinding<bool> _hdrSeparateBind;
   late final FocusNode _sizeOuterNode;
   late final FocusNode _sizeInnerNode;
   late final FocusNode _offsetOuterNode;
   late final FocusNode _offsetInnerNode;
+  late final FocusNode _hdrSizeOuterNode;
+  late final FocusNode _hdrSizeInnerNode;
+  late final FocusNode _hdrOffsetOuterNode;
+  late final FocusNode _hdrOffsetInnerNode;
   bool _sizeFocused = false;
   bool _offsetFocused = false;
+  bool _hdrSizeFocused = false;
+  bool _hdrOffsetFocused = false;
 
   @override
   void initState() {
@@ -54,6 +63,30 @@ class _SubtitleCustomizationScreenState
     _offsetOuterNode = FocusNode(debugLabel: 'SubtitleOffsetOuter');
     _offsetInnerNode = FocusNode(
       debugLabel: 'SubtitleOffsetInner',
+      canRequestFocus: false,
+      skipTraversal: true,
+    );
+    _hdrSizeBind = PreferenceBinding(
+      store,
+      UserPreferences.subtitlesHdrTextSize,
+    );
+    _hdrOffsetBind = PreferenceBinding(
+      store,
+      UserPreferences.subtitlesHdrOffsetPosition,
+    );
+    _hdrSeparateBind = PreferenceBinding(
+      store,
+      UserPreferences.subtitlesHdrSeparate,
+    );
+    _hdrSizeOuterNode = FocusNode(debugLabel: 'SubtitleHdrSizeOuter');
+    _hdrSizeInnerNode = FocusNode(
+      debugLabel: 'SubtitleHdrSizeInner',
+      canRequestFocus: false,
+      skipTraversal: true,
+    );
+    _hdrOffsetOuterNode = FocusNode(debugLabel: 'SubtitleHdrOffsetOuter');
+    _hdrOffsetInnerNode = FocusNode(
+      debugLabel: 'SubtitleHdrOffsetInner',
       canRequestFocus: false,
       skipTraversal: true,
     );
@@ -105,8 +138,15 @@ class _SubtitleCustomizationScreenState
     _sizeInnerNode.dispose();
     _offsetOuterNode.dispose();
     _offsetInnerNode.dispose();
+    _hdrSizeOuterNode.dispose();
+    _hdrSizeInnerNode.dispose();
+    _hdrOffsetOuterNode.dispose();
+    _hdrOffsetInnerNode.dispose();
     _sizeBind.dispose();
     _offsetBind.dispose();
+    _hdrSizeBind.dispose();
+    _hdrOffsetBind.dispose();
+    _hdrSeparateBind.dispose();
     super.dispose();
   }
 
@@ -185,6 +225,80 @@ class _SubtitleCustomizationScreenState
               step: 0.01,
               swallowDown: true,
               labelBuilder: (v) => l10n.percentValue((v * 100).round()),
+            ),
+            SwitchPreferenceTile(
+              preference: UserPreferences.subtitlesHdrSeparate,
+              title: l10n.subtitleHdrSeparate,
+              subtitle: l10n.subtitleHdrSeparateSubtitle,
+              icon: Icons.hdr_on,
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: _hdrSeparateBind,
+              builder: (context, separate, _) => separate
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _ColorPickerTile(
+                          title: l10n.textFillColor,
+                          icon: Icons.format_color_text,
+                          preference: UserPreferences.subtitlesHdrTextColor,
+                          allowTransparent: false,
+                        ),
+                        _ColorPickerTile(
+                          title: l10n.textStrokeColor,
+                          icon: Icons.border_color,
+                          preference:
+                              UserPreferences.subtitlesHdrTextStrokeColor,
+                        ),
+                        _ColorPickerTile(
+                          title: l10n.backgroundColor,
+                          icon: Icons.format_color_fill,
+                          preference:
+                              UserPreferences.subtitlesHdrBackgroundColor,
+                        ),
+                        _sliderTile(
+                          context: context,
+                          icon: Icons.format_size,
+                          label: l10n.subtitleSize,
+                          binding: _hdrSizeBind,
+                          outerNode: _hdrSizeOuterNode,
+                          innerNode: _hdrSizeInnerNode,
+                          focused: _hdrSizeFocused,
+                          onFocusChange: (f) {
+                            if (_hdrSizeFocused != f && mounted) {
+                              setState(() => _hdrSizeFocused = f);
+                            }
+                          },
+                          min: 12,
+                          max: 48,
+                          divisions: 18,
+                          step: 2,
+                          labelBuilder: (v) => l10n.pixelValue(v.round()),
+                        ),
+                        _sliderTile(
+                          context: context,
+                          icon: Icons.vertical_align_bottom,
+                          label: l10n.verticalOffset,
+                          binding: _hdrOffsetBind,
+                          outerNode: _hdrOffsetOuterNode,
+                          innerNode: _hdrOffsetInnerNode,
+                          focused: _hdrOffsetFocused,
+                          onFocusChange: (f) {
+                            if (_hdrOffsetFocused != f && mounted) {
+                              setState(() => _hdrOffsetFocused = f);
+                            }
+                          },
+                          min: 0.0,
+                          max: 0.5,
+                          divisions: 50,
+                          step: 0.01,
+                          swallowDown: true,
+                          labelBuilder: (v) =>
+                              l10n.percentValue((v * 100).round()),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),

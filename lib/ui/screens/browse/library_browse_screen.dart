@@ -898,9 +898,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
-  bool get _isSongsBrowse =>
-      _vm.includeItemTypes != null &&
-      _vm.includeItemTypes!.contains('Audio');
+  bool get _isSongsBrowse => _vm.isSongsBrowse;
 
   Future<void> _playSongFromIndex(int index) async {
     final manager = GetIt.instance<PlaybackManager>();
@@ -2083,6 +2081,7 @@ class _FocusedItemHud extends StatelessWidget {
                     ratings: ratings,
                     communityRating: item!.communityRating,
                     criticRating: item!.criticRating,
+                    personalRating: item!.personalRating,
                     enableAdditionalRatings: enableAdditionalRatings,
                     enabledRatings: enabledRatings,
                     showLabels: showLabels,
@@ -2329,10 +2328,15 @@ class _FilterSortDialog extends StatefulWidget {
 }
 
 class _FilterSortDialogState extends State<_FilterSortDialog> {
+  /// A library can hold hundreds of tags or years, so the facet sections start
+  /// closed and only the ones opened take up the dialog.
+  final _expandedFacets = <String>{};
+
   @override
   void initState() {
     super.initState();
     widget.vm.addListener(_rebuild);
+    unawaited(widget.vm.ensureFacetValuesLoaded());
   }
 
   @override
@@ -2349,8 +2353,6 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   Widget build(BuildContext context) {
     final vm = widget.vm;
     final isBookBrowse = vm.isBookLibrary;
-    final isSongsBrowse =
-        vm.includeItemTypes != null && vm.includeItemTypes!.contains('Audio');
     final accent = _jellyfinBlue;
     final l10n = AppLocalizations.of(context);
     final surfaceColor = AppColorScheme.surface.withValues(alpha: 0.92);
@@ -2402,46 +2404,15 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             Divider(color: dividerColor),
             _sectionHeader(l10n.sortBy, sectionColor),
-            for (final option in () {
-              if (vm.isHomeVideosLibrary || vm.isMixedContentLibrary) {
-                return const [
-                  LibrarySortBy.name,
-                  LibrarySortBy.dateAdded,
-                  LibrarySortBy.random,
-                ];
-              }
-              if (isSongsBrowse) {
-                return const [
-                  LibrarySortBy.name,
-                  LibrarySortBy.dateAdded,
-                  LibrarySortBy.albumArtist,
-                  LibrarySortBy.album,
-                  LibrarySortBy.premiereDate,
-                  LibrarySortBy.runtime,
-                  LibrarySortBy.random,
-                ];
-              }
-              return LibrarySortBy.itemsApiValues.where((o) =>
-                  (!vm.isMusicBrowse ||
-                      (o != LibrarySortBy.rating &&
-                          o != LibrarySortBy.criticRating &&
-                          o != LibrarySortBy.communityRating)) &&
-                  // Group By covers parental rating better than a sort does, so
-                  // the libraries that offer it drop the duplicate.
-                  (!vm.isMovieOrSeriesLibrary || o != LibrarySortBy.rating) &&
-                  (vm.isMusicBrowse ||
-                      (o != LibrarySortBy.albumArtist &&
-                          o != LibrarySortBy.album &&
-                          o != LibrarySortBy.genre)));
-            }())
+            for (final option in vm.sortOptions)
               _DialogRadioTile(
                 label: () {
                   if (option == LibrarySortBy.runtime &&
-                      (vm.isMusicBrowse || isSongsBrowse)) {
+                      (vm.isMusicBrowse || vm.isSongsBrowse)) {
                     return 'Length';
                   }
                   if (option == LibrarySortBy.premiereDate &&
-                      (vm.isMusicBrowse || isSongsBrowse)) {
+                      (vm.isMusicBrowse || vm.isSongsBrowse)) {
                     return 'Release Date';
                   }
                   return option.displayName;
@@ -2494,6 +2465,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                       isBookBrowse ? l10n.readStatus : l10n.watched,
                     PlayedStatusFilter.unwatched =>
                       isBookBrowse ? l10n.unread : l10n.unwatched,
+                    PlayedStatusFilter.inProgress => l10n.filterInProgress,
                 },
                 selected: vm.playedFilter == status,
                 onTap: () => vm.setPlayedFilter(status),
@@ -2501,21 +2473,174 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 onSurface: onSurface,
               ),
             ],
+            Divider(color: dividerColor),
+            _sectionHeader(l10n.personalRatingMine, sectionColor),
+            for (final status in LikedStatusFilter.values)
+              _DialogRadioTile(
+                label: switch (status) {
+                  LikedStatusFilter.all => l10n.all,
+                  LikedStatusFilter.liked => l10n.like,
+                  LikedStatusFilter.disliked => l10n.dislike,
+                },
+                selected: vm.likedFilter == status,
+                onTap: () => vm.setLikedFilter(status),
+                accent: accent,
+                onSurface: onSurface,
+              ),
             if (vm.isSeriesLibrary) ...[
               Divider(color: dividerColor),
               _sectionHeader(l10n.seriesStatus, sectionColor),
               for (final status in SeriesStatusFilter.values)
-                _DialogRadioTile(
-                  label: switch (status) {
-                    SeriesStatusFilter.all => l10n.all,
-                    SeriesStatusFilter.continuing => l10n.continuing,
-                    SeriesStatusFilter.ended => l10n.ended,
+                if (status != SeriesStatusFilter.unreleased ||
+                    vm.supportsUnreleasedSeriesFilter)
+                  _DialogRadioTile(
+                    label: switch (status) {
+                      SeriesStatusFilter.all => l10n.all,
+                      SeriesStatusFilter.continuing => l10n.continuing,
+                      SeriesStatusFilter.ended => l10n.ended,
+                      SeriesStatusFilter.unreleased => l10n.filterUnreleased,
+                    },
+                    selected: vm.seriesFilter == status,
+                    onTap: () => vm.setSeriesFilter(status),
+                    accent: accent,
+                    onSurface: onSurface,
+                  ),
+            ],
+            if (vm.supportsVideoFilters) ...[
+              Divider(color: dividerColor),
+              _sectionHeader(l10n.features, sectionColor),
+              for (final option in LibraryFeatureFilter.values)
+                _DialogCheckboxTile(
+                  label: switch (option) {
+                    LibraryFeatureFilter.subtitles => l10n.subtitles,
+                    LibraryFeatureFilter.trailer => l10n.filterTrailers,
+                    LibraryFeatureFilter.extras => l10n.filterExtras,
+                    LibraryFeatureFilter.themeSong => l10n.filterThemeSongs,
+                    LibraryFeatureFilter.themeVideo => l10n.filterThemeVideos,
                   },
-                  selected: vm.seriesFilter == status,
-                  onTap: () => vm.setSeriesFilter(status),
+                  checked: vm.featureFilters.contains(option),
+                  onTap: () => vm.toggleFeatureFilter(option),
                   accent: accent,
                   onSurface: onSurface,
                 ),
+              Divider(color: dividerColor),
+              _sectionHeader(l10n.quality, sectionColor),
+              for (final option in LibraryVideoQualityFilter.values)
+                if (option != LibraryVideoQualityFilter.uhd ||
+                    vm.supportsUhdFilter)
+                  _DialogCheckboxTile(
+                    label: switch (option) {
+                      LibraryVideoQualityFilter.sd => 'SD',
+                      LibraryVideoQualityFilter.hd => 'HD',
+                      LibraryVideoQualityFilter.uhd => '4K',
+                      LibraryVideoQualityFilter.threeD => '3D',
+                    },
+                    checked: vm.videoQualityFilters.contains(option),
+                    onTap: () => vm.toggleVideoQualityFilter(option),
+                    accent: accent,
+                    onSurface: onSurface,
+                  ),
+              Divider(color: dividerColor),
+              _sectionHeader(l10n.source, sectionColor),
+              for (final option in LibraryVideoSourceFilter.values)
+                _DialogCheckboxTile(
+                  label: option.displayName,
+                  checked: vm.videoSourceFilters.contains(option),
+                  onTap: () => vm.toggleVideoSourceFilter(option),
+                  accent: accent,
+                  onSurface: onSurface,
+                ),
+            ],
+            ..._facetSection(
+              key: 'genres',
+              title: l10n.genres,
+              values: vm.facetValues.genres,
+              selected: vm.genreFilters,
+              onToggle: vm.toggleGenreFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            ..._facetSection(
+              key: 'ratings',
+              title: l10n.groupByParentalRating,
+              values: vm.facetValues.officialRatings,
+              selected: vm.officialRatingFilters,
+              onToggle: vm.toggleOfficialRatingFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            ..._facetSection(
+              key: 'tags',
+              title: l10n.tags,
+              values: vm.facetValues.tags,
+              selected: vm.tagFilters,
+              onToggle: vm.toggleTagFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            ..._facetSection(
+              key: 'years',
+              title: l10n.years,
+              values: vm.facetValues.years.map((e) => e.toString()).toList(),
+              selected: vm.yearFilters,
+              onToggle: vm.toggleYearFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            ..._facetSection(
+              key: 'audio',
+              title: l10n.audioLanguage,
+              values: vm.facetValues.audioLanguages
+                  .map((e) => e.value)
+                  .toList(),
+              labels: {
+                for (final e in vm.facetValues.audioLanguages) e.value: e.name,
+              },
+              selected: vm.audioLanguageFilters,
+              onToggle: vm.toggleAudioLanguageFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            ..._facetSection(
+              key: 'subtitles',
+              title: l10n.subtitleLanguage,
+              values: vm.facetValues.subtitleLanguages
+                  .map((e) => e.value)
+                  .toList(),
+              labels: {
+                for (final e in vm.facetValues.subtitleLanguages)
+                  e.value: e.name,
+              },
+              selected: vm.subtitleLanguageFilters,
+              onToggle: vm.toggleSubtitleLanguageFilter,
+              dividerColor: dividerColor,
+              sectionColor: sectionColor,
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            if (vm.hasActiveFilters) ...[
+              Divider(color: dividerColor),
+              // Closing hands focus back to the grid. Leaving the dialog open
+              // would drop the remote on a tile that just removed itself.
+              _DialogActionTile(
+                label: l10n.clearFilters,
+                icon: Icons.filter_alt_off,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  vm.clearFilters();
+                },
+                accent: accent,
+              ),
             ],
             if (vm.isGenreBrowse && vm.libraries.isNotEmpty) ...[
               Divider(color: dividerColor),
@@ -2540,6 +2665,48 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
         ),
       ),
     );
+  }
+
+  /// One collapsible group per facet, left out entirely when the library holds
+  /// no values for it. The key tracks what is open, so a translated title
+  /// never closes a section behind the user.
+  List<Widget> _facetSection({
+    required String key,
+    required String title,
+    required List<String> values,
+    required Set<String> selected,
+    required Future<void> Function(String) onToggle,
+    required Color dividerColor,
+    required Color sectionColor,
+    required Color accent,
+    required Color onSurface,
+    Map<String, String> labels = const {},
+  }) {
+    if (values.isEmpty) return const [];
+    final expanded = _expandedFacets.contains(key);
+    final chosen = values.where(selected.contains).length;
+    return [
+      Divider(color: dividerColor),
+      _DialogExpanderTile(
+        label: title,
+        selectedCount: chosen,
+        expanded: expanded,
+        onTap: () => setState(() {
+          if (!_expandedFacets.remove(key)) _expandedFacets.add(key);
+        }),
+        sectionColor: sectionColor,
+        accent: accent,
+      ),
+      if (expanded)
+        for (final value in values)
+          _DialogCheckboxTile(
+            label: labels[value] ?? value,
+            checked: selected.contains(value),
+            onTap: () => onToggle(value),
+            accent: accent,
+            onSurface: onSurface,
+          ),
+    ];
   }
 
   Widget _sectionHeader(String title, Color sectionColor) {
@@ -2736,6 +2903,155 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> with FocusStat
                     fontSize: 15,
                     color: widget.checked ? color : color.withValues(alpha: 0.72),
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogExpanderTile extends StatefulWidget {
+  final String label;
+  final int selectedCount;
+  final bool expanded;
+  final VoidCallback onTap;
+  final Color sectionColor;
+  final Color accent;
+
+  const _DialogExpanderTile({
+    required this.label,
+    required this.selectedCount,
+    required this.expanded,
+    required this.onTap,
+    required this.sectionColor,
+    required this.accent,
+  });
+
+  @override
+  State<_DialogExpanderTile> createState() => _DialogExpanderTileState();
+}
+
+class _DialogExpanderTileState extends State<_DialogExpanderTile>
+    with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final showActive = focused || hovered;
+    final color = showActive ? focusColor : widget.sectionColor;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setHovered(true),
+      onExit: (_) => setHovered(false),
+      child: Focus(
+        onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            color: showActive
+                ? focusColor.withValues(alpha: 0.12)
+                : Colors.transparent,
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: color,
+                    ),
+                  ),
+                ),
+                if (widget.selectedCount > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Text(
+                      '${widget.selectedCount}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: widget.accent,
+                      ),
+                    ),
+                  ),
+                Icon(
+                  widget.expanded ? Icons.expand_less : Icons.expand_more,
+                  size: 18,
+                  color: color,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogActionTile extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color accent;
+
+  const _DialogActionTile({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    required this.accent,
+  });
+
+  @override
+  State<_DialogActionTile> createState() => _DialogActionTileState();
+}
+
+class _DialogActionTileState extends State<_DialogActionTile>
+    with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final showActive = focused || hovered;
+    final color = showActive ? focusColor : widget.accent;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setHovered(true),
+      onExit: (_) => setHovered(false),
+      child: Focus(
+        onFocusChange: (f) => setFocused(f),
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            color: showActive
+                ? focusColor.withValues(alpha: 0.12)
+                : Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              children: [
+                Icon(widget.icon, size: 18, color: color),
+                const SizedBox(width: 12),
+                Text(
+                  widget.label,
+                  style: TextStyle(fontSize: 15, color: color),
                 ),
               ],
             ),

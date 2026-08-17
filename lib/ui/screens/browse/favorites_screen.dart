@@ -975,6 +975,7 @@ class _FocusedItemHud extends StatelessWidget {
                     ratings: ratings,
                     communityRating: item!.communityRating,
                     criticRating: item!.criticRating,
+                    personalRating: item!.personalRating,
                     enableAdditionalRatings: enableAdditionalRatings,
                     enabledRatings: enabledRatings,
                     showLabels: showLabels,

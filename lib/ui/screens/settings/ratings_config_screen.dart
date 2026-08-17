@@ -21,8 +21,10 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/scroll_utils.dart';
 
 // The rating sources MDBList actually returns, plus the Jellyfin community
-// rating ('stars'). Stored selections with unknown sources are ignored.
+// rating ('stars') and the viewer's own rating ('personal'). Stored
+// selections with unknown sources are ignored.
 const _allSources = [
+  'personal',
   'tomatoes',
   'tomatoes_audience',
   'imdb',

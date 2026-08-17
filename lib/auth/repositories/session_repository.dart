@@ -70,6 +70,7 @@ class SessionRepository {
   SessionState _state = SessionState.ready;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
+  StreamSubscription<void>? _socketConnectionSubscription;
   double _lastUnmutedVolume = 100;
   bool _remoteMuted = false;
   bool _hasCheckedWriteAccess = false;
@@ -221,6 +222,7 @@ class SessionRepository {
       _socketHandler.connectTo(client);
     }
     _bindRemoteCommandHandling();
+    _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
     _refreshCarBrowseTree(signedIn: true);
 
@@ -271,7 +273,7 @@ class SessionRepository {
       final isAdmin = serverUser.policy?.isAdministrator ?? false;
       final canDownload = serverUser.policy?.enableContentDownloading ?? false;
       final canManageSubtitles =
-          serverUser.policy?.enableSubtitleManagement ?? false;
+          serverUser.policy?.canFetchRemoteSubtitles ?? false;
       final canManageCollections =
           serverUser.policy?.enableCollectionManagement ?? false;
 
@@ -343,7 +345,12 @@ class SessionRepository {
   /// if it was dropped while backgrounded.
   void onAppResumed() {
     _cancelSocketIdleTimer();
-    if (!_socketSuspended) return;
+    if (!_socketSuspended) {
+      // A socket that dropped while the app sat idle is waiting out its
+      // backoff, and the user is here now, so do not make them wait for it.
+      _socketHandler.retryNow();
+      return;
+    }
     _socketSuspended = false;
     final serverId = _activeServerId;
     if (serverId == null) return;
@@ -351,6 +358,13 @@ class SessionRepository {
     if (client != null) {
       _socketHandler.connectTo(client);
     }
+  }
+
+  /// Called when the device regains a network, so a socket part way through
+  /// its backoff reconnects now rather than at the end of the wait.
+  void onNetworkRegained() {
+    if (_socketSuspended) return;
+    _socketHandler.retryNow();
   }
 
   void _evaluateSocketIdle() {
@@ -430,6 +444,8 @@ class SessionRepository {
     _remoteCommandSubscription = null;
     _pluginEventSubscription?.cancel();
     _pluginEventSubscription = null;
+    _socketConnectionSubscription?.cancel();
+    _socketConnectionSubscription = null;
     _socketHandler.disconnect();
 
     if (serverId != null) {
@@ -489,6 +505,17 @@ class SessionRepository {
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = _socketHandler.events.listen(
       (event) => unawaited(_handleRemoteCommand(event)),
+    );
+  }
+
+  /// A server that restarts forgets every session it held, and the one it
+  /// builds for the next request carries no capabilities, which is what makes
+  /// it refuse remote control. Saying them again on each connect is what puts
+  /// the session back in a controllable state.
+  void _bindCapabilityReporting(MediaServerClient client) {
+    _socketConnectionSubscription?.cancel();
+    _socketConnectionSubscription = _socketHandler.connections.listen(
+      (_) => unawaited(_reportRemoteCapabilities(client)),
     );
   }
 

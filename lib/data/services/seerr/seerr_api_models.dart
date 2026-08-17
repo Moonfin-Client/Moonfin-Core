@@ -1339,3 +1339,22 @@ class SeerrIssueListResponse {
 
   Map<String, dynamic> toJson() => _$SeerrIssueListResponseToJson(this);
 }
+
+/// One language from seerr's languages endpoint. Parsed by hand since the
+/// endpoint's field names come straight from TMDB.
+class SeerrLanguage {
+  final String code;
+  final String name;
+
+  const SeerrLanguage({required this.code, required this.name});
+
+  factory SeerrLanguage.fromJson(Map<String, dynamic> json) {
+    final code = json['iso_639_1']?.toString() ?? '';
+    final english = json['english_name']?.toString() ?? '';
+    final native = json['name']?.toString() ?? '';
+    return SeerrLanguage(
+      code: code,
+      name: english.isNotEmpty ? english : (native.isNotEmpty ? native : code),
+    );
+  }
+}

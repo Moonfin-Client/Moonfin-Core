@@ -48,6 +48,7 @@ class GuideProgram {
   final bool isKids;
   final bool isPremiere;
   final bool hasTimer;
+  final bool hasSeriesTimer;
   final Map<String, dynamic> rawData;
 
   const GuideProgram({
@@ -65,6 +66,7 @@ class GuideProgram {
     this.isKids = false,
     this.isPremiere = false,
     this.hasTimer = false,
+    this.hasSeriesTimer = false,
     required this.rawData,
   });
 
@@ -332,6 +334,23 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     await _reloadPrograms();
   }
 
+  /// Records every showing of this program's series, or drops the rule if one
+  /// is already in place.
+  Future<void> toggleSeriesRecording(GuideProgram program) async {
+    if (program.hasSeriesTimer) {
+      final seriesTimerId = program.rawData['SeriesTimerId']?.toString();
+      if (seriesTimerId == null || seriesTimerId.isEmpty) {
+        throw StateError(
+          'SeriesTimerId missing for scheduled series ${program.id}',
+        );
+      }
+      await _client.liveTvApi.cancelSeriesTimer(seriesTimerId);
+    } else {
+      await _client.liveTvApi.createSeriesTimer(program.id);
+    }
+    await _reloadPrograms();
+  }
+
   Future<void> load({int? windowHours}) async {
     if (windowHours != null) _guideWindowHours = windowHours;
     _state = GuideState.loading;
@@ -532,6 +551,7 @@ class LiveTvGuideViewModel extends ChangeNotifier {
         isKids: raw['IsKids'] == true,
         isPremiere: raw['IsPremiere'] == true,
         hasTimer: raw['TimerId'] != null,
+        hasSeriesTimer: raw['SeriesTimerId'] != null,
         rawData: raw,
       );
 

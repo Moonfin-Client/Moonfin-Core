@@ -57,6 +57,7 @@ class RatingIconProvider {
       'rogerebert' => 'Roger Ebert',
       'myanimelist' => 'MyAnimeList',
       'stars' => l10n.communityRating,
+      'personal' => l10n.personalRatingMine,
       _ => source,
     };
   }

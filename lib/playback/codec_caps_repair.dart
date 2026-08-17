@@ -12,6 +12,16 @@ bool codecCapsLookDegenerate(Map<String, dynamic> caps) {
   return !supportsAvc || avcMainLevel is! int || avcMainLevel <= 0;
 }
 
+/// Whether a probe result that cleared the AVC check still reports no HEVC.
+/// The same enumeration race can drop only part of the codec list, and a
+/// result like this ships as it is because devices without an HEVC decoder
+/// really exist. It is grounds to probe again in the background, never to
+/// invent a decoder, so a wrong guess costs a few probes rather than a
+/// stream the device cant play.
+bool codecCapsLookIncomplete(Map<String, dynamic> caps) {
+  return caps['supportsHevc'] != true;
+}
+
 /// Repairs a degenerate probe result so the device profile still advertises
 /// H264. Without this the profile carries no h264 codec profiles at all, the
 /// server receives `h264-profile=none`, no encoder it owns can match the

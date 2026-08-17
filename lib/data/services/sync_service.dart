@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../database/offline_database.dart';
 import '../repositories/offline_repository.dart';
+import 'pending_rating_store.dart';
 
 enum SyncState { idle, syncing, done, error }
 
@@ -18,13 +19,53 @@ class SyncResult {
 
 class SyncService extends ChangeNotifier {
   final OfflineRepository _offlineRepo;
+  final PendingRatingStore _pendingRatings;
 
   SyncState _state = SyncState.idle;
   SyncState get state => _state;
 
   Timer? _doneResetTimer;
 
-  SyncService(this._offlineRepo);
+  SyncService(this._offlineRepo, this._pendingRatings);
+
+  /// Pushes ratings queued while offline through [client]. Item ids are only
+  /// unique within one server, so [serverId] scopes the replay to the server
+  /// the client talks to and everything else waits for its own reconnect.
+  ///
+  /// Runs before the metadata refresh on reconnect, so the refreshed items
+  /// come back carrying the rating that was just pushed.
+  Future<SyncResult> syncPendingRatings(
+    MediaServerClient client, {
+    required String? serverId,
+  }) async {
+    if (serverId == null) return const SyncResult(synced: 0, failed: 0);
+
+    var synced = 0, failed = 0;
+    for (final entry in _pendingRatings.all) {
+      if (entry.serverId != serverId) continue;
+      try {
+        if (entry.clear) {
+          await client.userLibraryApi.deleteUserRating(entry.itemId);
+        } else if (entry.rating != null) {
+          await client.userLibraryApi.updateNumericUserRating(
+            entry.itemId,
+            rating: entry.rating!,
+          );
+        } else if (entry.likes != null) {
+          await client.userLibraryApi.updateUserRating(
+            entry.itemId,
+            likes: entry.likes!,
+          );
+        }
+        await _pendingRatings.remove(entry.serverId, entry.itemId);
+        synced++;
+      } catch (e) {
+        debugPrint('[Sync] Failed to push rating for ${entry.itemId}: $e');
+        failed++;
+      }
+    }
+    return SyncResult(synced: synced, failed: failed);
+  }
 
   Future<SyncResult> syncPlaybackProgress(MediaServerClient client) async {
     if (_state == SyncState.syncing) {

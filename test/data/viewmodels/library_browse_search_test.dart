@@ -55,6 +55,19 @@ class _FakeItemsApi implements ItemsApi {
     String? maxOfficialRating,
     bool? hasParentalRating,
     String? anyProviderIdEquals,
+    List<String>? officialRatings,
+    List<int>? years,
+    List<String>? videoTypes,
+    List<String>? audioLanguages,
+    List<String>? subtitleLanguages,
+    bool? hasSubtitles,
+    bool? hasTrailer,
+    bool? hasSpecialFeature,
+    bool? hasThemeSong,
+    bool? hasThemeVideo,
+    bool? isHd,
+    bool? is4K,
+    bool? is3D,
   }) async {
     pageRequests++;
     searchTerms.add(searchTerm);

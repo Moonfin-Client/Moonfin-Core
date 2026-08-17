@@ -276,6 +276,11 @@ class HomeSectionConfig {
       order: 21,
     ),
     HomeSectionConfig(
+      type: HomeSectionType.seerrShortcuts,
+      enabled: false,
+      order: 22,
+    ),
+    HomeSectionConfig(
       type: HomeSectionType.seerrRecentRequests,
       enabled: false,
       order: 21,

@@ -34,6 +34,7 @@ import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
+import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -181,7 +182,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   static bool _isSeerrSectionType(HomeSectionType type) {
-    return type == HomeSectionType.seerrRecentRequests ||
+    return type == HomeSectionType.seerrShortcuts ||
+        type == HomeSectionType.seerrRecentRequests ||
         type == HomeSectionType.seerrWatchlist ||
         type == HomeSectionType.seerrRecentlyAdded ||
         type == HomeSectionType.seerrPopularMovies ||
@@ -716,6 +718,8 @@ class HomeViewModel extends ChangeNotifier {
             row.rowType == HomeRowType.liveTvOnNow;
       case HomeSectionType.activeRecordings:
         return row.rowType == HomeRowType.activeRecordings;
+      case HomeSectionType.seerrShortcuts:
+        return row.id == 'seerr_shortcuts';
       case HomeSectionType.seerrRecentRequests:
         return row.id == 'seerr_recent_requests';
       case HomeSectionType.seerrWatchlist:
@@ -1016,6 +1020,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'studios'};
       case HomeSectionType.activeRecordings:
         return const {'activeRecordings'};
+      case HomeSectionType.seerrShortcuts:
+        return const {'seerrShortcuts'};
       case HomeSectionType.seerrRecentRequests:
         return const {'seerrRecentRequests'};
       case HomeSectionType.seerrWatchlist:
@@ -1339,6 +1345,8 @@ class HomeViewModel extends ChangeNotifier {
         try {
           final onNow = await _dataSource.loadOnNow(_serverId);
           if (onNow.items.isNotEmpty) rows.add(onNow);
+          final favorites = await _dataSource.loadFavoritesChannels(_serverId);
+          if (favorites.items.isNotEmpty) rows.add(favorites);
         } catch (_) {}
         return rows;
       case HomeSectionType.activeRecordings:
@@ -1352,6 +1360,8 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.mediaBar:
         _mediaBarViewModel.load();
         return [];
+      case HomeSectionType.seerrShortcuts:
+        return [await _loadSeerrShortcutsRow(l10n)];
       case HomeSectionType.seerrRecentRequests:
         return _loadSeerrRow(
           SeerrRowType.recentRequests,
@@ -1809,6 +1819,8 @@ class HomeViewModel extends ChangeNotifier {
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );
+      case HomeSectionType.seerrShortcuts:
+        return _seerrShortcutsRow(l10n);
       case HomeSectionType.seerrTrending:
         return HomeRow(
           id: 'seerr_trending',
@@ -2523,6 +2535,62 @@ class HomeViewModel extends ChangeNotifier {
       items: items,
       totalCount: totalCount,
     );
+  }
+
+  /// Jump tiles with no fetch behind them, so the row renders complete on the
+  /// first frame while the artwork catches up.
+  HomeRow _seerrShortcutsRow(
+    AppLocalizations l10n, {
+    Map<SeerrShortcut, String> backdrops = const {},
+  }) => _seerrRow(
+    'seerr_shortcuts',
+    l10n.seerrShortcutsRow,
+    [
+      for (final shortcut in SeerrShortcut.values)
+        AggregatedItem(
+          id: 'seerr_shortcut_${shortcut.name}',
+          serverId: 'seerr',
+          rawData: {
+            'Name': shortcut.label(l10n),
+            'Type': 'Folder',
+            'Overview': '',
+            'SeerrShortcut': shortcut.name,
+            'BackdropPath': backdrops[shortcut] ?? '',
+          },
+        ),
+    ],
+  );
+
+  /// One trending read dresses every tile. Artwork is the only thing it adds,
+  /// so a failure still leaves a usable row.
+  Future<HomeRow> _loadSeerrShortcutsRow(AppLocalizations l10n) async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return _seerrShortcutsRow(l10n);
+
+      final page = await repo.getTrending(
+        limit: GetIt.instance<SeerrPreferences>().fetchLimit.limit,
+      );
+      final items = page.results.toList()..shuffle();
+      List<String> pathsFor(String mediaType) => [
+        for (final item in items)
+          if (item.mediaType == mediaType &&
+              (item.backdropPath?.isNotEmpty ?? false))
+            item.backdropPath!,
+      ];
+
+      return _seerrShortcutsRow(
+        l10n,
+        backdrops: pickShortcutBackdrops(
+          shortcuts: SeerrShortcut.values,
+          movieBackdrops: pathsFor('movie'),
+          tvBackdrops: pathsFor('tv'),
+        ),
+      );
+    } catch (_) {
+      return _seerrShortcutsRow(l10n);
+    }
   }
 
   AggregatedItem _seerrFilterItem({

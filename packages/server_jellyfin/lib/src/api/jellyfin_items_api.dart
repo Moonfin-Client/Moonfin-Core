@@ -49,6 +49,19 @@ class JellyfinItemsApi implements ItemsApi {
     String? maxOfficialRating,
     bool? hasParentalRating,
     String? anyProviderIdEquals,
+    List<String>? officialRatings,
+    List<int>? years,
+    List<String>? videoTypes,
+    List<String>? audioLanguages,
+    List<String>? subtitleLanguages,
+    bool? hasSubtitles,
+    bool? hasTrailer,
+    bool? hasSpecialFeature,
+    bool? hasThemeSong,
+    bool? hasThemeVideo,
+    bool? isHd,
+    bool? is4K,
+    bool? is3D,
   }) async {
     final queryParams = {
       'ParentId': ?parentId,
@@ -71,7 +84,26 @@ class JellyfinItemsApi implements ItemsApi {
       'NameStartsWith': ?nameStartsWith,
       'NameLessThan': ?nameLessThan,
       if (genreIds != null) 'GenreIds': genreIds.join(','),
-      if (genres != null) 'Genres': genres.join(','),
+      // Genres, ratings and tags are pipe delimited so a value holding a comma
+      // still arrives whole.
+      if (genres != null && genres.isNotEmpty) 'Genres': genres.join('|'),
+      if (officialRatings != null && officialRatings.isNotEmpty)
+        'OfficialRatings': officialRatings.join('|'),
+      if (years != null && years.isNotEmpty) 'Years': years.join(','),
+      if (videoTypes != null && videoTypes.isNotEmpty)
+        'VideoTypes': videoTypes.join(','),
+      if (audioLanguages != null && audioLanguages.isNotEmpty)
+        'AudioLanguages': audioLanguages.join(','),
+      if (subtitleLanguages != null && subtitleLanguages.isNotEmpty)
+        'SubtitleLanguages': subtitleLanguages.join(','),
+      'HasSubtitles': ?hasSubtitles,
+      'HasTrailer': ?hasTrailer,
+      'HasSpecialFeature': ?hasSpecialFeature,
+      'HasThemeSong': ?hasThemeSong,
+      'HasThemeVideo': ?hasThemeVideo,
+      'IsHd': ?isHd,
+      'Is4K': ?is4K,
+      'Is3D': ?is3D,
       'IsFavorite': ?isFavorite,
       'CollapseBoxSetItems': ?collapseBoxSetItems,
       'EnableTotalRecordCount': ?enableTotalRecordCount,
@@ -98,6 +130,17 @@ class JellyfinItemsApi implements ItemsApi {
     );
     return response.data as Map<String, dynamic>;
   }
+
+  @override
+  Future<QueryFilterValues> getQueryFilters({
+    String? parentId,
+    List<String>? includeItemTypes,
+  }) => readQueryFilters(
+    _dio,
+    userId: _getUserId(),
+    parentId: parentId,
+    includeItemTypes: includeItemTypes,
+  );
 
   @override
   Future<Map<String, dynamic>> getPersons({

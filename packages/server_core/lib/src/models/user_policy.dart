@@ -21,6 +21,7 @@ class UserPolicy {
   final bool enableSharedDeviceControl;
   final bool enableCollectionManagement;
   final bool enableSubtitleManagement;
+  final bool enableSubtitleDownloading;
   final bool enableLyricManagement;
   final bool forceRemoteSourceTranscoding;
   final int? remoteClientBitrateLimit;
@@ -59,6 +60,7 @@ class UserPolicy {
     this.enableSharedDeviceControl = false,
     this.enableCollectionManagement = false,
     this.enableSubtitleManagement = false,
+    this.enableSubtitleDownloading = false,
     this.enableLyricManagement = false,
     this.forceRemoteSourceTranscoding = false,
     this.remoteClientBitrateLimit,
@@ -112,6 +114,8 @@ class UserPolicy {
             json['EnableCollectionManagement'] as bool? ?? false,
         enableSubtitleManagement:
             json['EnableSubtitleManagement'] as bool? ?? false,
+        enableSubtitleDownloading:
+            json['EnableSubtitleDownloading'] as bool? ?? false,
         enableLyricManagement:
             json['EnableLyricManagement'] as bool? ?? false,
         forceRemoteSourceTranscoding:
@@ -157,6 +161,7 @@ class UserPolicy {
         'EnableSharedDeviceControl': enableSharedDeviceControl,
         'EnableCollectionManagement': enableCollectionManagement,
         'EnableSubtitleManagement': enableSubtitleManagement,
+        'EnableSubtitleDownloading': enableSubtitleDownloading,
         'EnableLyricManagement': enableLyricManagement,
         'ForceRemoteSourceTranscoding': forceRemoteSourceTranscoding,
         if (remoteClientBitrateLimit != null)
@@ -176,6 +181,14 @@ class UserPolicy {
         'AuthenticationProviderId': authenticationProviderId,
         'PasswordResetProviderId': passwordResetProviderId,
       };
+
+  /// Whether the user may search for and pull in subtitles from a provider.
+  ///
+  /// Two flags mean the same thing here and servers disagree on which to
+  /// grant. Emby hands out downloading by default and leaves management off,
+  /// so reading management alone locks out every ordinary Emby account.
+  bool get canFetchRemoteSubtitles =>
+      enableSubtitleManagement || enableSubtitleDownloading;
 
   static List<String> _stringList(dynamic value) {
     if (value is List) return value.cast<String>();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -950,11 +952,14 @@ class _SeerrSortDialog extends StatefulWidget {
 
 class _SeerrSortDialogState extends State<_SeerrSortDialog> {
   bool _popped = false;
+  bool _genresExpanded = false;
+  bool _languagesExpanded = false;
 
   @override
   void initState() {
     super.initState();
     widget.vm.addListener(_rebuild);
+    unawaited(widget.vm.ensureFilterOptionsLoaded());
   }
 
   @override
@@ -991,7 +996,7 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Text(
-                l10n.sortBy,
+                l10n.sortAndFilter,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -1031,6 +1036,230 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
                 },
               );
             }),
+            ..._filterSections(l10n, vm, s),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _filterSections(
+    AppLocalizations l10n,
+    SeerrBrowseViewModel vm,
+    SeerrBrowseState s,
+  ) {
+    final divider = Divider(color: AppColorScheme.onSurface.withAlpha(20));
+    return [
+      if (vm.filterGenres.isNotEmpty) ...[
+        divider,
+        _expanderTile(
+          label: l10n.genres,
+          count: s.genreIds.length,
+          expanded: _genresExpanded,
+          onTap: () => setState(() => _genresExpanded = !_genresExpanded),
+        ),
+        if (_genresExpanded)
+          for (final genre in vm.filterGenres)
+            _checkTile(
+              label: genre.name,
+              checked: s.genreIds.contains(genre.id),
+              onTap: () => vm.toggleGenre(genre.id),
+            ),
+      ],
+      if (vm.mediaType == 'tv') ...[
+        divider,
+        _sectionHeader(l10n.seriesStatus),
+        for (final status in SeerrTvStatus.values)
+          _checkTile(
+            label: status.displayName,
+            checked: s.tvStatuses.contains(status),
+            onTap: () => vm.toggleTvStatus(status),
+          ),
+      ],
+      divider,
+      _sectionHeader(l10n.seerrReleased),
+      for (final window in SeerrReleaseWindow.values)
+        _radioTile(
+          label: window.displayName,
+          selected: s.released == window,
+          onTap: () => vm.setReleased(window),
+        ),
+      divider,
+      _sectionHeader(l10n.seerrMinRating),
+      for (final rating in SeerrMinRating.values)
+        _radioTile(
+          label: rating.displayName,
+          selected: s.minRating == rating,
+          onTap: () => vm.setMinRating(rating),
+        ),
+      divider,
+      _sectionHeader(l10n.seerrMinVotes),
+      for (final votes in SeerrMinVotes.values)
+        _radioTile(
+          label: votes.displayName,
+          selected: s.minVotes == votes,
+          onTap: () => vm.setMinVotes(votes),
+        ),
+      divider,
+      _sectionHeader(l10n.seerrRuntime),
+      for (final runtime in SeerrRuntimeFilter.values)
+        _radioTile(
+          label: runtime.displayName,
+          selected: s.runtime == runtime,
+          onTap: () => vm.setRuntime(runtime),
+        ),
+      if (vm.filterLanguages.isNotEmpty) ...[
+        divider,
+        _expanderTile(
+          label: l10n.seerrOriginalLanguage,
+          count: s.languageCode.isEmpty ? 0 : 1,
+          expanded: _languagesExpanded,
+          onTap: () => setState(() => _languagesExpanded = !_languagesExpanded),
+        ),
+        if (_languagesExpanded) ...[
+          _radioTile(
+            label: l10n.all,
+            selected: s.languageCode.isEmpty,
+            onTap: () => vm.setLanguage(''),
+          ),
+          for (final language in vm.filterLanguages)
+            _radioTile(
+              label: language.name,
+              selected: s.languageCode == language.code,
+              onTap: () => vm.setLanguage(language.code),
+            ),
+        ],
+      ],
+      if (s.hasDiscoverFilters) ...[
+        divider,
+        InkWell(
+          onTap: () {
+            if (_popped) return;
+            _popped = true;
+            vm.clearDiscoverFilters();
+            Navigator.of(context).pop();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              children: [
+                Icon(Icons.filter_alt_off, size: 18, color: _seerrAccent),
+                const SizedBox(width: 12),
+                Text(
+                  l10n.clearFilters,
+                  style: TextStyle(fontSize: 15, color: _seerrAccent),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ];
+  }
+
+  Widget _sectionHeader(String title) => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+    child: Text(
+      title,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        color: AppColorScheme.onSurface.withValues(alpha: 0.72),
+      ),
+    ),
+  );
+
+  Widget _expanderTile({
+    required String label,
+    required int count,
+    required bool expanded,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColorScheme.onSurface.withValues(alpha: 0.72),
+                ),
+              ),
+            ),
+            if (count > 0)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: _seerrAccent,
+                  ),
+                ),
+              ),
+            Icon(
+              expanded ? Icons.expand_less : Icons.expand_more,
+              size: 18,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.72),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _checkTile({
+    required String label,
+    required bool checked,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(4),
+                border: Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: checked
+                        ? _seerrAccent
+                        : AppColorScheme.onSurface.withAlpha(128),
+                    width: 2,
+                  ),
+                ),
+                color: checked ? _seerrAccent : Colors.transparent,
+              ),
+              child: checked
+                  ? Icon(
+                      Icons.check,
+                      size: 14,
+                      color: AppColorScheme.onSurface,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppColorScheme.onSurface.withValues(
+                    alpha: checked ? 1 : 0.72,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

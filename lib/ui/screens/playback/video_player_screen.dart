@@ -16,7 +16,9 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../../playback/subtitle_style.dart';
 import '../../../util/fullscreen_helper.dart';
+import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/seek_icons.dart';
 import '../../widgets/playback/trickplay_tile_image.dart';
@@ -160,12 +162,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   final GlobalKey _videoSurfaceKey = GlobalKey();
   bool _forcedLandscape = false;
   double _playerVolume = 100.0;
+  static const double _scrollWheelNotch = 40.0;
+  double _scrollWheelAccumulated = 0.0;
   double _volumeBeforeMute = 1.0;
   int _media3VolumeBoostLevel = 0;
   bool _didRequestIosPiPForBackground = false;
   bool _isStartingIosPiPForBackground = false;
   bool _didHandleBackgroundSuspend = false;
-  bool _videoWasDisabledByLifecycle = false;
   bool _videoNeedsReattachAfterScreenOff = false;
   Timer? _tvBackgroundExitTimer;
   Timer? _tvTemporarySpeedHoldTimer;
@@ -383,7 +386,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   bool _canDownloadRemoteSubtitles(AggregatedItem item) {
-    final client = _clientForItem(item);
     final user = GetIt.instance<UserRepository>().currentUser;
     final mediaType = item.rawData['MediaType'] as String?;
     final isAudio =
@@ -392,8 +394,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    return client.serverType == ServerType.jellyfin &&
-        (user?.canManageSubtitles ?? false) &&
+    return (user?.canManageSubtitles ?? false) &&
         item.mediaSources.isNotEmpty &&
         item.type != 'Photo' &&
         item.type != 'Book' &&
@@ -1265,23 +1266,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     switch (lifecycleState) {
       case AppLifecycleState.inactive:
         // iOS reports inactive for system UI like the AirPlay picker or
-        // Control Center, not just for backgrounding, and starting PiP there
-        // pulls the player out from under whatever just opened. Real
-        // backgrounding still gets PiP from the paused case below and from
-        // the automatic inline start.
-        if (PlatformDetection.isIOS) return;
-        if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
-          return;
-        }
-        if (PlatformDetection.isTV ||
-            PlatformDetection.isDesktop ||
-            PlatformDetection.isWeb) {
-          return;
-        }
-        if (_isInPiP || _isStopping || _pipService.isScreenLocked) return;
-        _videoWasDisabledByLifecycle = true;
-        _capturePositionBeforeVideoDisable();
-        _activeMediaKitBackend?.setVideoEnabled(false);
+        // Control Center, and desktops report it whenever the window loses
+        // focus, so nothing should react this early.
+        break;
       case AppLifecycleState.paused:
       case AppLifecycleState.hidden:
         if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
@@ -1300,10 +1287,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _tryStartIosPiPForBackground();
           return;
         }
-        if (_isInPiP || _isStopping || _pipService.isScreenLocked) return;
-        _videoWasDisabledByLifecycle = true;
-        _capturePositionBeforeVideoDisable();
-        _activeMediaKitBackend?.setVideoEnabled(false);
+        // Desktop reaches here, and it keeps the video track running while
+        // the window is hidden. Turning it off makes mpv reopen the source on
+        // restore, which rewinds server transcodes to the start of their own
+        // stream, and window moves and fullscreen toggles on some compositors
+        // report hidden long enough to trip that.
+        break;
       case AppLifecycleState.resumed:
         _didHandleBackgroundSuspend = false;
         _cancelTvBackgroundExit();
@@ -1311,13 +1300,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (PlatformDetection.isIOS && _isInPiP) {
           _pipService.enableAutoPiP(false);
         }
-        final needsReattach = _videoNeedsReattachAfterScreenOff;
-        _videoNeedsReattachAfterScreenOff = false;
-        if (_videoWasDisabledByLifecycle) {
-          _videoWasDisabledByLifecycle = false;
-          _activeMediaKitBackend?.setVideoEnabled(true);
-          _restorePositionAfterScreenLock();
-        } else if (needsReattach) {
+        if (_videoNeedsReattachAfterScreenOff) {
+          _videoNeedsReattachAfterScreenOff = false;
           unawaited(_reattachVideoOutput());
         }
         _ensureDesktopOverlayFocus();
@@ -1358,15 +1342,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     await backend.setVideoEnabled(false);
     if (!mounted || _isStopping) return;
     await backend.setVideoEnabled(true);
-  }
-
-  /// Notes where playback is before the video track is turned off, which is
-  /// what the restore on resume compares against. Turning the track back on
-  /// reopens the source, and a server side transcode reopens at the start of
-  /// its own stream rather than where the viewer was.
-  void _capturePositionBeforeVideoDisable() {
-    _positionBeforeScreenLock = _activeBackend?.position ?? _state.position;
-    _wasPlayingBeforeScreenLock = _state.isPlaying;
   }
 
   void _onScreenLock(bool locked) {
@@ -2933,14 +2908,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   SubtitleViewConfiguration _buildSubtitleConfig() {
-    final textColor = Color(_prefs.get(UserPreferences.subtitlesTextColor));
-    final bgColor = Color(_prefs.get(UserPreferences.subtitlesBackgroundColor));
-    final strokeColor = Color(
-      _prefs.get(UserPreferences.subtitleTextStrokeColor),
+    final style = SubtitleStyle.forResolution(
+      _prefs,
+      _manager.currentResolution,
     );
-    final prefSize = _prefs.get(UserPreferences.subtitlesTextSize);
-    final fontWeight = _prefs.get(UserPreferences.subtitlesTextWeight);
-    final offset = _prefs.get(UserPreferences.subtitlesOffsetPosition);
+    final textColor = Color(style.textColor);
+    final bgColor = Color(style.backgroundColor);
+    final strokeColor = Color(style.strokeColor);
+    final prefSize = style.fontSize;
+    final fontWeight = style.fontWeight;
+    final offset = style.verticalOffset;
 
     final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
     final fontSize = (prefSize / 24.0) * baseSize;
@@ -2986,14 +2963,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final backend = _activeBackend;
     if (backend == null) return;
 
-    final textColor = _prefs.get(UserPreferences.subtitlesTextColor);
-    final backgroundColor = _prefs.get(
-      UserPreferences.subtitlesBackgroundColor,
+    final style = SubtitleStyle.forResolution(
+      _prefs,
+      _manager.currentResolution,
     );
-    final strokeColor = _prefs.get(UserPreferences.subtitleTextStrokeColor);
-    final fontSize = _prefs.get(UserPreferences.subtitlesTextSize);
-    final fontWeight = _prefs.get(UserPreferences.subtitlesTextWeight);
-    final verticalOffset = _prefs.get(UserPreferences.subtitlesOffsetPosition);
+    final textColor = style.textColor;
+    final backgroundColor = style.backgroundColor;
+    final strokeColor = style.strokeColor;
+    final fontSize = style.fontSize;
+    final fontWeight = style.fontWeight;
+    final verticalOffset = style.verticalOffset;
 
     // Embedded-style overrides are Media3-specific (Android only) and live on
     // the Media3PlayerBackend's wider signature, not the base PlayerBackend.
@@ -5244,8 +5223,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final dy = event.scrollDelta.dy;
     if (dy == 0) return;
     final action = _prefs.get(UserPreferences.desktopScrollWheelAction);
+    if (action == DesktopScrollWheelAction.off) return;
+    // A mouse wheel notch arrives as one event of forty to sixty logical
+    // pixels depending on the platform, but a trackpad spreads the same
+    // motion over a stream of tiny ones, and stepping on every event slams
+    // the volume to an end stop on a single swipe. Deltas pool until they
+    // add up to a notch, and each notch is one step.
+    if (dy.sign != _scrollWheelAccumulated.sign) {
+      _scrollWheelAccumulated = 0.0;
+    }
+    _scrollWheelAccumulated += dy;
+    // Scroll sensitivity scales mouse deltas but leaves a trackpad alone, so
+    // the notch follows the same rule. Without it a turned down setting would
+    // take several turns to move one step, and a turned up one would make a
+    // trackpad swipe a long way for the same.
+    final notch = event.kind == PointerDeviceKind.mouse
+        ? _scrollWheelNotch * ScrollSensitivityBinding.current
+        : _scrollWheelNotch;
+    if (_scrollWheelAccumulated.abs() < notch) return;
     // scrollDelta.dy is negative when scrolling up / away from the user.
-    final scrollingUp = dy < 0;
+    final scrollingUp = _scrollWheelAccumulated < 0;
+    _scrollWheelAccumulated = 0.0;
     switch (action) {
       case DesktopScrollWheelAction.off:
         return;

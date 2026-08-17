@@ -89,6 +89,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         HomeSectionType.genres => l10n.genres,
         HomeSectionType.studios => l10n.studios,
         HomeSectionType.liveTv => l10n.liveTV,
+        HomeSectionType.seerrShortcuts => l10n.seerrShortcutsRow,
         HomeSectionType.seerrRecentRequests => l10n.recentRequests,
         HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
         HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,

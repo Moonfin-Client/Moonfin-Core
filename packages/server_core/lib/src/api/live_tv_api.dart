@@ -44,6 +44,9 @@ abstract class LiveTvApi {
 
   Future<void> createTimer(String programId);
 
+  /// Records every showing of a program's series, not just this one.
+  Future<void> createSeriesTimer(String programId);
+
   Future<void> cancelTimer(String timerId);
 
   Future<void> cancelSeriesTimer(String seriesTimerId);

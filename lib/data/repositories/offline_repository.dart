@@ -100,6 +100,39 @@ class OfflineRepository {
     ));
   }
 
+  /// Merges [patch] into the stored item's UserData, with a null value
+  /// removing the key, so the offline UI shows a queued rating right away.
+  Future<void> patchUserData(String itemId, Map<String, dynamic> patch) async {
+    final item = await getItem(itemId);
+    if (item == null) return;
+
+    Map<String, dynamic> metadata;
+    try {
+      final decoded = jsonDecode(item.metadataJson);
+      metadata = decoded is Map<String, dynamic>
+          ? decoded
+          : <String, dynamic>{};
+    } catch (_) {
+      metadata = <String, dynamic>{};
+    }
+
+    final userData =
+        (metadata['UserData'] as Map?)?.cast<String, dynamic>() ??
+        <String, dynamic>{};
+    patch.forEach((key, value) {
+      if (value == null) {
+        userData.remove(key);
+      } else {
+        userData[key] = value;
+      }
+    });
+    metadata['UserData'] = userData;
+
+    await (_db.update(_db.downloadedItems)
+          ..where((t) => t.itemId.equals(itemId)))
+        .write(DownloadedItemsCompanion(metadataJson: Value(jsonEncode(metadata))));
+  }
+
   Future<void> deleteItem(String itemId) async {
     await (_db.delete(_db.downloadedItems)
           ..where((t) => t.itemId.equals(itemId)))

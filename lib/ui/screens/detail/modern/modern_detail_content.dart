@@ -3954,6 +3954,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ratings: _vm.ratings,
               communityRating: item.communityRating,
               criticRating: item.criticRating,
+              personalRating: item.personalRating,
               enableAdditionalRatings:
                   widget.prefs.get(UserPreferences.enableAdditionalRatings),
               enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
@@ -4725,6 +4726,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   ratings: _vm.ratings,
                   communityRating: item.communityRating,
                   criticRating: item.criticRating,
+                  personalRating: item.personalRating,
                   enableAdditionalRatings:
                       widget.prefs.get(UserPreferences.enableAdditionalRatings),
                   enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),

@@ -1198,6 +1198,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     final channel = _vm.channelForId(program.channelId);
     final isFavoriteChannel = channel?.isFavorite ?? false;
     final hasTimer = program.hasTimer;
+    final hasSeriesTimer = program.hasSeriesTimer;
     final l10n = AppLocalizations.of(context);
     var dialogActionInProgress = false;
 
@@ -1281,6 +1282,44 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
             },
             child: Text(hasTimer ? l10n.cancelRecordingAction : l10n.record),
           ),
+          if (program.isSeries)
+            adaptiveDialogAction(
+              onPressed: () async {
+                if (dialogActionInProgress) return;
+                dialogActionInProgress = true;
+                try {
+                  await _vm.toggleSeriesRecording(program);
+                  if (!pageContext.mounted) return;
+                  Navigator.of(dialogContext).pop();
+                  ScaffoldMessenger.of(pageContext).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        hasSeriesTimer
+                            ? l10n.seriesRecordingCancelled
+                            : l10n.seriesSetToRecord,
+                      ),
+                    ),
+                  );
+                } catch (_) {
+                  dialogActionInProgress = false;
+                  if (!pageContext.mounted) return;
+                  ScaffoldMessenger.of(pageContext).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        hasSeriesTimer
+                            ? l10n.failedToCancelSeriesRecording
+                            : l10n.unableToCreateSeriesRecording,
+                      ),
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                hasSeriesTimer
+                    ? l10n.cancelSeriesRecording
+                    : l10n.recordSeries,
+              ),
+            ),
           adaptiveDialogAction(
             onPressed: channel == null
                 ? null

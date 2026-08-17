@@ -304,6 +304,19 @@ class OfflineItemsApi implements ItemsApi {
     String? maxOfficialRating,
     bool? hasParentalRating,
     String? anyProviderIdEquals,
+    List<String>? officialRatings,
+    List<int>? years,
+    List<String>? videoTypes,
+    List<String>? audioLanguages,
+    List<String>? subtitleLanguages,
+    bool? hasSubtitles,
+    bool? hasTrailer,
+    bool? hasSpecialFeature,
+    bool? hasThemeSong,
+    bool? hasThemeVideo,
+    bool? isHd,
+    bool? is4K,
+    bool? is3D,
   }) async {
     List<OfflineEntry> result;
     if (ids != null && ids.isNotEmpty) {
@@ -399,6 +412,14 @@ class OfflineItemsApi implements ItemsApi {
       limit: limit,
     );
   }
+
+  /// Downloads carry no facet index, so the picker offers nothing rather than
+  /// a list the offline catalog cant honour.
+  @override
+  Future<QueryFilterValues> getQueryFilters({
+    String? parentId,
+    List<String>? includeItemTypes,
+  }) async => QueryFilterValues.empty;
 
   @override
   Future<Map<String, dynamic>> getPersons({

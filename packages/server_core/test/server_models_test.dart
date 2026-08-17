@@ -39,4 +39,30 @@ void main() {
       expect(item.userData, isNull);
     });
   });
+
+  group('UserPolicy remote subtitles', () {
+    test('an Emby account granted only downloading may still fetch', () {
+      final policy = UserPolicy.fromJson({
+        'EnableSubtitleManagement': false,
+        'EnableSubtitleDownloading': true,
+      });
+
+      expect(policy.canFetchRemoteSubtitles, isTrue);
+    });
+
+    test('a Jellyfin account granted only management may fetch', () {
+      final policy = UserPolicy.fromJson({'EnableSubtitleManagement': true});
+
+      expect(policy.canFetchRemoteSubtitles, isTrue);
+    });
+
+    test('an account granted neither may not', () {
+      final policy = UserPolicy.fromJson({
+        'EnableSubtitleManagement': false,
+        'EnableSubtitleDownloading': false,
+      });
+
+      expect(policy.canFetchRemoteSubtitles, isFalse);
+    });
+  });
 }

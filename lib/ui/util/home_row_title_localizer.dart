@@ -36,6 +36,8 @@ String localizeHomeRowTitle({
       return l10n.liveTv;
     case 'liveTvOnNow':
       return l10n.onNow;
+    case 'liveTvFavorites':
+      return l10n.favoriteChannels;
     case 'activeRecordings':
       return l10n.activeRecordings;
     case 'radarr_calendar':
@@ -54,6 +56,8 @@ String localizeHomeRowTitle({
       return l10n.popularSeries;
     case 'seerr_upcoming_series':
       return l10n.upcomingSeries;
+    case 'seerr_shortcuts':
+      return l10n.seerrShortcutsRow;
     case 'seerr_trending':
       return l10n.trending;
     case 'seerr_movie_genres':

@@ -475,6 +475,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    // The sign in button goes dead once this is running, but the flag only
+    // reaches it on the next build, and the password field submits straight
+    // here, so one remote select can sign in twice.
+    if (_isLoading) return;
     final username = _usernameController.text.trim();
     if (username.isEmpty || _client == null || _server == null) return;
 
@@ -518,7 +522,11 @@ class _LoginScreenState extends State<LoginScreen> {
               );
 
               if (!verified) {
-                if (mounted) context.go('${Destinations.login}?serverId=${_server!.id}');
+                // Lands back on a screen that has to take another attempt.
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                  context.go('${Destinations.login}?serverId=${_server!.id}');
+                }
                 return;
               }
             }
@@ -534,6 +542,8 @@ class _LoginScreenState extends State<LoginScreen> {
             statusCode: statusCode,
             message: error,
           )) {
+            // Returns without reporting an error, so nothing else clears this.
+            setState(() => _isLoading = false);
             return;
           }
           _finishLoginWithError(error);

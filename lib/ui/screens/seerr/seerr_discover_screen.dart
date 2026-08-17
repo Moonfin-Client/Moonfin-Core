@@ -24,6 +24,7 @@ import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/locked_focus_row.dart';
+import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/quick_return_wrapper.dart';
 
@@ -264,6 +265,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   }
 
   bool _rowHasFocusableContent(SeerrDiscoverRow row) {
+    if (row.isShortcutsRow) return true;
     if (row.isGenreRow) return row.genres.isNotEmpty;
     if (row.isNetworkRow) return row.networks.isNotEmpty;
     if (row.isStudioRow) return row.studios.isNotEmpty;
@@ -433,7 +435,14 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         final autofocusRow = isFirstFocusableRow && _wantsInitialFocus;
         final firstNode = autofocusRow ? _initialFocusNode : null;
         Widget rowWidget;
-        if (row.isGenreRow) {
+        if (row.isShortcutsRow) {
+          rowWidget = _buildShortcutsRow(
+            row,
+            index,
+            autofocusFirst: autofocusRow,
+            firstFocusNode: firstNode,
+          );
+        } else if (row.isGenreRow) {
           rowWidget = _buildGenreRow(
             row,
             index,
@@ -644,6 +653,86 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       child: child,
     );
   }
+
+  Widget _buildShortcutsRow(
+    SeerrDiscoverRow row,
+    int rowIndex, {
+    bool autofocusFirst = false,
+    FocusNode? firstFocusNode,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final desktopScale = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.desktopUiScale)
+        .scaleFactor;
+    final shortcuts = SeerrShortcut.withoutDiscover;
+    final backdrops = pickShortcutBackdrops(
+      shortcuts: shortcuts,
+      movieBackdrops: _backdropPathsFor(row.items, 'movie'),
+      tvBackdrops: _backdropPathsFor(row.items, 'tv'),
+    );
+
+    final focusKey = _getRowKey(rowIndex);
+    final child = LockedFocusRow<SeerrShortcut>(
+      key: focusKey,
+      items: shortcuts,
+      hubKey: 'seerr_discover_shortcuts_$rowIndex',
+      controller: _getRowScroll(rowIndex),
+      itemExtent: 180,
+      itemSpacing: 12 * desktopScale,
+      height: 90 * desktopScale,
+      clipBehavior: Clip.none,
+      padding: EdgeInsets.fromLTRB(
+        20 * desktopScale,
+        5 * desktopScale,
+        20 * desktopScale,
+        5 * desktopScale,
+      ),
+      onLeftEdge: _onRowLeftEdge,
+      onVerticalNavigation: (isUp) => _onRowVerticalNavigation(rowIndex, isUp),
+      onTap: (index, shortcut) => shortcut.open(context),
+      onIndexChanged: (index, shortcut) {
+        if (rowIndex == 0) {
+          _setFirstRowFocused(true);
+          _restoreNavbarToNormalPosition();
+        }
+      },
+      onFocusChange: (has) {
+        if (rowIndex == 0) {
+          _setFirstRowFocused(has);
+        }
+      },
+      autofocus: autofocusFirst,
+      focusNode: autofocusFirst ? firstFocusNode : null,
+      itemBuilder: (context, shortcut, index, isFocused) {
+        final backdrop = backdrops[shortcut];
+        return _GenreCard(
+          name: shortcut.label(l10n),
+          imageUrl: backdrop == null ? null : '$_tmdbBackdropBase$backdrop',
+          icon: shortcut.icon,
+          externalIsFocused: isFocused,
+          onTap: () => shortcut.open(context),
+        );
+      },
+    );
+
+    return _buildRowContainer(
+      title: row.title,
+      rowHeight: 100 * desktopScale,
+      isLoading: false,
+      hasItems: true,
+      scrollController: _getRowScroll(rowIndex),
+      child: child,
+    );
+  }
+
+  List<String> _backdropPathsFor(
+    List<SeerrDiscoverItem> items,
+    String mediaType,
+  ) => [
+    for (final item in items)
+      if (item.mediaType == mediaType && (item.backdropPath?.isNotEmpty ?? false))
+        item.backdropPath!,
+  ];
 
   Widget _buildGenreRow(
     SeerrDiscoverRow row,
@@ -1067,12 +1156,14 @@ class _InfoPanel extends StatelessWidget {
 class _GenreCard extends StatefulWidget {
   final String name;
   final String? imageUrl;
+  final IconData? icon;
   final VoidCallback? onTap;
   final bool? externalIsFocused;
 
   const _GenreCard({
     required this.name,
     this.imageUrl,
+    this.icon,
     this.onTap,
     this.externalIsFocused,
   });
@@ -1129,6 +1220,14 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                       ),
                     ),
                   ),
+                  if (widget.icon != null)
+                    Center(
+                      child: Icon(
+                        widget.icon,
+                        size: 32,
+                        color: AppColorScheme.onSurface.withValues(alpha: 0.8),
+                      ),
+                    ),
                   Positioned(
                     bottom: 8,
                     left: 8,

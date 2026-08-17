@@ -35,6 +35,13 @@ class UserPreferences extends ChangeNotifier {
     mediaBarModeOff,
   };
 
+  // Where the bar draws its titles from. Every source still passes through the
+  // library, collection, content type and genre filters, and still picks its
+  // slides at random out of what comes back.
+  static const mediaBarSourceRandom = 'random';
+  static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
+  static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
+
   final PreferenceStore _store;
 
   UserPreferences(this._store) {
@@ -363,6 +370,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_language_override',
     'pref_media_segment_countdown',
     'pref_media_segment_auto_hide',
+    'pref_desktop_scroll_sensitivity',
     'pref_desktop_ui_scale',
     'poster_size_library',
     'poster_size_playlist',
@@ -389,6 +397,13 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_size',
     'subtitles_offset_position',
     'subtitles_default_to_none',
+    'subtitles_hdr_separate',
+    'subtitles_hdr_background_color',
+    'subtitles_hdr_text_weight',
+    'subtitles_hdr_text_color',
+    'subtitles_hdr_text_stroke_color',
+    'subtitles_hdr_text_size',
+    'subtitles_hdr_offset_position',
     'subtitles_use_embedded_styles',
     'subtitles_use_embedded_font_sizes',
     'prefer_sdh_subtitles',
@@ -431,6 +446,7 @@ class UserPreferences extends ChangeNotifier {
     'mediaBarEnabled',
     'mediaBarMode',
     'mediaBarContentType',
+    'mediaBarSourceType',
     'mediaBarItemCount',
     'mediaBarOverlayOpacity',
     'mediaBarOverlayColor',
@@ -869,6 +885,13 @@ class UserPreferences extends ChangeNotifier {
   static final classicHomeRowsPadding = Preference<int>(
     key: 'pref_classic_home_rows_padding',
     defaultValue: 30,
+  );
+
+  /// How far a mouse wheel notch scrolls, as a percentage of what the platform
+  /// reports.
+  static final desktopScrollSensitivity = Preference(
+    key: 'pref_desktop_scroll_sensitivity',
+    defaultValue: 100,
   );
 
   static final desktopUiScale = EnumPreference(
@@ -1737,6 +1760,43 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.04,
   );
 
+  /// A second appearance used only while HDR reaches the screen, defaulting to
+  /// grey text since white reads far brighter in HDR than in SDR.
+  static final subtitlesHdrSeparate = Preference(
+    key: 'subtitles_hdr_separate',
+    defaultValue: false,
+  );
+
+  static final subtitlesHdrBackgroundColor = Preference(
+    key: 'subtitles_hdr_background_color',
+    defaultValue: 0x00000000,
+  );
+
+  static final subtitlesHdrTextWeight = Preference(
+    key: 'subtitles_hdr_text_weight',
+    defaultValue: 400,
+  );
+
+  static final subtitlesHdrTextColor = Preference(
+    key: 'subtitles_hdr_text_color',
+    defaultValue: 0xFF808080,
+  );
+
+  static final subtitlesHdrTextStrokeColor = Preference(
+    key: 'subtitles_hdr_text_stroke_color',
+    defaultValue: 0xFF000000,
+  );
+
+  static final subtitlesHdrTextSize = Preference(
+    key: 'subtitles_hdr_text_size',
+    defaultValue: 20.0,
+  );
+
+  static final subtitlesHdrOffsetPosition = Preference(
+    key: 'subtitles_hdr_offset_position',
+    defaultValue: 0.04,
+  );
+
   static final subtitleMode = EnumPreference(
     key: 'pref_subtitle_mode',
     defaultValue: SubtitleMode.flagged,
@@ -1908,6 +1968,11 @@ class UserPreferences extends ChangeNotifier {
   static final mediaBarContentType = Preference(
     key: 'mediaBarContentType',
     defaultValue: 'both',
+  );
+
+  static final mediaBarSourceType = Preference(
+    key: 'mediaBarSourceType',
+    defaultValue: mediaBarSourceRandom,
   );
 
   static final mediaBarItemCount = Preference(
@@ -2421,6 +2486,14 @@ class UserPreferences extends ChangeNotifier {
     values: PlayedStatusFilter.values,
   );
 
+  static EnumPreference<LikedStatusFilter> libraryLikedFilter(
+    String libraryId,
+  ) => EnumPreference(
+    key: 'library_liked_filter_$libraryId',
+    defaultValue: LikedStatusFilter.all,
+    values: LikedStatusFilter.values,
+  );
+
   static EnumPreference<SeriesStatusFilter> librarySeriesFilter(
     String libraryId,
   ) => EnumPreference(
@@ -2431,6 +2504,63 @@ class UserPreferences extends ChangeNotifier {
 
   static Preference<bool> libraryFavoriteFilter(String libraryId) =>
       Preference(key: 'library_fav_filter_$libraryId', defaultValue: false);
+
+  /// The multi choice filters, each held as the selected enum names or the
+  /// selected facet values so a library reopens the way it was left.
+  static Preference<List<String>> libraryFeatureFilters(String libraryId) =>
+      Preference(
+        key: 'library_feature_filters_$libraryId',
+        defaultValue: const [],
+      );
+
+  static Preference<List<String>> libraryVideoQualityFilters(
+    String libraryId,
+  ) => Preference(
+    key: 'library_video_quality_filters_$libraryId',
+    defaultValue: const [],
+  );
+
+  static Preference<List<String>> libraryVideoSourceFilters(String libraryId) =>
+      Preference(
+        key: 'library_video_source_filters_$libraryId',
+        defaultValue: const [],
+      );
+
+  static Preference<List<String>> libraryGenreFilters(String libraryId) =>
+      Preference(
+        key: 'library_genre_filters_$libraryId',
+        defaultValue: const [],
+      );
+
+  static Preference<List<String>> libraryOfficialRatingFilters(
+    String libraryId,
+  ) => Preference(
+    key: 'library_official_rating_filters_$libraryId',
+    defaultValue: const [],
+  );
+
+  static Preference<List<String>> libraryTagFilters(String libraryId) =>
+      Preference(key: 'library_tag_filters_$libraryId', defaultValue: const []);
+
+  static Preference<List<String>> libraryYearFilters(String libraryId) =>
+      Preference(
+        key: 'library_year_filters_$libraryId',
+        defaultValue: const [],
+      );
+
+  static Preference<List<String>> libraryAudioLanguageFilters(
+    String libraryId,
+  ) => Preference(
+    key: 'library_audio_language_filters_$libraryId',
+    defaultValue: const [],
+  );
+
+  static Preference<List<String>> librarySubtitleLanguageFilters(
+    String libraryId,
+  ) => Preference(
+    key: 'library_subtitle_language_filters_$libraryId',
+    defaultValue: const [],
+  );
 
   static EnumPreference<ImageType> libraryImageType(String libraryId) =>
       EnumPreference(

@@ -5,6 +5,91 @@ import '../services/seerr/seerr_api_models.dart';
 
 enum SeerrBrowseFilter { all, available, requested }
 
+/// The six states TMDB files a series under, sent to seerr pipe joined the
+/// way its own filter panel does.
+enum SeerrTvStatus {
+  returningSeries(0, 'Returning'),
+  planned(1, 'Planned'),
+  inProduction(2, 'In Production'),
+  ended(3, 'Ended'),
+  canceled(4, 'Canceled'),
+  pilot(5, 'Pilot');
+
+  const SeerrTvStatus(this.apiValue, this.displayName);
+
+  final int apiValue;
+  final String displayName;
+}
+
+/// Score floor choices standing in for seerr's rating slider, since a slider
+/// is no good to a remote.
+enum SeerrMinRating {
+  any(null),
+  five(5),
+  six(6),
+  seven(7),
+  eight(8),
+  nine(9);
+
+  const SeerrMinRating(this.value);
+
+  final int? value;
+
+  String get displayName => this == any ? 'Any' : '$value+';
+}
+
+/// Vote count floors, standing in for seerr's vote count slider.
+enum SeerrMinVotes {
+  any(null),
+  fifty(50),
+  oneHundred(100),
+  twoFifty(250),
+  fiveHundred(500),
+  oneThousand(1000);
+
+  const SeerrMinVotes(this.value);
+
+  final int? value;
+
+  String get displayName => this == any ? 'Any' : '$value+';
+}
+
+/// Runtime windows standing in for seerr's runtime slider, in minutes.
+enum SeerrRuntimeFilter {
+  any(null, null, 'Any'),
+  underHalfHour(null, 30, 'Under 30m'),
+  halfToFullHour(30, 60, '30m to 1h'),
+  oneToTwoHours(60, 120, '1h to 2h'),
+  overTwoHours(120, null, 'Over 2h');
+
+  const SeerrRuntimeFilter(this.gte, this.lte, this.displayName);
+
+  final int? gte;
+  final int? lte;
+  final String displayName;
+}
+
+/// Release windows standing in for seerr's date pickers. Each maps to the
+/// first day of its first year through the last day of its last year.
+enum SeerrReleaseWindow {
+  any(null, null, 'Any'),
+  twenties(2020, null, '2020s'),
+  tens(2010, 2019, '2010s'),
+  aughts(2000, 2009, '2000s'),
+  nineties(1990, 1999, '1990s'),
+  eighties(1980, 1989, '1980s'),
+  older(null, 1979, 'Before 1980');
+
+  const SeerrReleaseWindow(this.fromYear, this.toYear, this.displayName);
+
+  final int? fromYear;
+  final int? toYear;
+  final String displayName;
+
+  String? get dateGte => fromYear == null ? null : '$fromYear-01-01';
+  String? get dateLte => toYear == null ? null : '$toYear-12-31';
+}
+
 class SeerrSortOption {
   final String label;
   final String value;
@@ -39,6 +124,13 @@ class SeerrBrowseState {
   final SeerrSortOption sortBy;
   final SeerrBrowseFilter filter;
   final String letterFilter;
+  final Set<int> genreIds;
+  final Set<SeerrTvStatus> tvStatuses;
+  final String languageCode;
+  final SeerrMinRating minRating;
+  final SeerrMinVotes minVotes;
+  final SeerrRuntimeFilter runtime;
+  final SeerrReleaseWindow released;
 
   const SeerrBrowseState({
     this.isLoading = false,
@@ -50,9 +142,25 @@ class SeerrBrowseState {
     this.sortBy = const SeerrSortOption('Popularity', 'popularity.desc'),
     this.filter = SeerrBrowseFilter.all,
     this.letterFilter = '',
+    this.genreIds = const {},
+    this.tvStatuses = const {},
+    this.languageCode = '',
+    this.minRating = SeerrMinRating.any,
+    this.minVotes = SeerrMinVotes.any,
+    this.runtime = SeerrRuntimeFilter.any,
+    this.released = SeerrReleaseWindow.any,
   });
 
   bool get canLoadMore => currentPage < totalPages && !isLoadingMore;
+
+  bool get hasDiscoverFilters =>
+      genreIds.isNotEmpty ||
+      tvStatuses.isNotEmpty ||
+      languageCode.isNotEmpty ||
+      minRating != SeerrMinRating.any ||
+      minVotes != SeerrMinVotes.any ||
+      runtime != SeerrRuntimeFilter.any ||
+      released != SeerrReleaseWindow.any;
 
   SeerrBrowseState copyWith({
     bool? isLoading,
@@ -64,6 +172,13 @@ class SeerrBrowseState {
     SeerrSortOption? sortBy,
     SeerrBrowseFilter? filter,
     String? letterFilter,
+    Set<int>? genreIds,
+    Set<SeerrTvStatus>? tvStatuses,
+    String? languageCode,
+    SeerrMinRating? minRating,
+    SeerrMinVotes? minVotes,
+    SeerrRuntimeFilter? runtime,
+    SeerrReleaseWindow? released,
   }) =>
       SeerrBrowseState(
         isLoading: isLoading ?? this.isLoading,
@@ -75,6 +190,13 @@ class SeerrBrowseState {
         sortBy: sortBy ?? this.sortBy,
         filter: filter ?? this.filter,
         letterFilter: letterFilter ?? this.letterFilter,
+        genreIds: genreIds ?? this.genreIds,
+        tvStatuses: tvStatuses ?? this.tvStatuses,
+        languageCode: languageCode ?? this.languageCode,
+        minRating: minRating ?? this.minRating,
+        minVotes: minVotes ?? this.minVotes,
+        runtime: runtime ?? this.runtime,
+        released: released ?? this.released,
       );
 }
 
@@ -115,6 +237,13 @@ class SeerrBrowseViewModel extends ChangeNotifier {
       sortBy: _state.sortBy,
       filter: _state.filter,
       letterFilter: _state.letterFilter,
+      genreIds: _state.genreIds,
+      tvStatuses: _state.tvStatuses,
+      languageCode: _state.languageCode,
+      minRating: _state.minRating,
+      minVotes: _state.minVotes,
+      runtime: _state.runtime,
+      released: _state.released,
     );
     notifyListeners();
 
@@ -204,23 +333,139 @@ class SeerrBrowseViewModel extends ChangeNotifier {
     load();
   }
 
+  void toggleGenre(int genreId) {
+    final ids = Set<int>.of(_state.genreIds);
+    if (!ids.remove(genreId)) ids.add(genreId);
+    _state = _state.copyWith(genreIds: ids);
+    load();
+  }
+
+  void toggleTvStatus(SeerrTvStatus status) {
+    final statuses = Set<SeerrTvStatus>.of(_state.tvStatuses);
+    if (!statuses.remove(status)) statuses.add(status);
+    _state = _state.copyWith(tvStatuses: statuses);
+    load();
+  }
+
+  void setLanguage(String code) {
+    if (code == _state.languageCode) return;
+    _state = _state.copyWith(languageCode: code);
+    load();
+  }
+
+  void setMinRating(SeerrMinRating value) {
+    if (value == _state.minRating) return;
+    _state = _state.copyWith(minRating: value);
+    load();
+  }
+
+  void setMinVotes(SeerrMinVotes value) {
+    if (value == _state.minVotes) return;
+    _state = _state.copyWith(minVotes: value);
+    load();
+  }
+
+  void setRuntime(SeerrRuntimeFilter value) {
+    if (value == _state.runtime) return;
+    _state = _state.copyWith(runtime: value);
+    load();
+  }
+
+  void setReleased(SeerrReleaseWindow value) {
+    if (value == _state.released) return;
+    _state = _state.copyWith(released: value);
+    load();
+  }
+
+  void clearDiscoverFilters() {
+    if (!_state.hasDiscoverFilters) return;
+    _state = _state.copyWith(
+      genreIds: const {},
+      tvStatuses: const {},
+      languageCode: '',
+      minRating: SeerrMinRating.any,
+      minVotes: SeerrMinVotes.any,
+      runtime: SeerrRuntimeFilter.any,
+      released: SeerrReleaseWindow.any,
+    );
+    load();
+  }
+
+  /// The genres and languages the filter dialog offers, read once on first
+  /// open. Genres come scoped to the media type this browse shows.
+  List<SeerrGenre> _filterGenres = const [];
+  List<SeerrGenre> get filterGenres => _filterGenres;
+
+  List<SeerrLanguage> _filterLanguages = const [];
+  List<SeerrLanguage> get filterLanguages => _filterLanguages;
+
+  bool _filterOptionsRequested = false;
+
+  Future<void> ensureFilterOptionsLoaded() async {
+    if (_filterOptionsRequested) return;
+    _filterOptionsRequested = true;
+    try {
+      final (genres, languages) = await (
+        mediaType == 'tv'
+            ? _repo.getGenreSliderTv()
+            : _repo.getGenreSliderMovies(),
+        _repo.getLanguages(),
+      ).wait;
+      languages.sort((a, b) => a.name.compareTo(b.name));
+      _filterGenres = genres;
+      _filterLanguages = languages;
+      notifyListeners();
+    } catch (_) {
+      // The dialog just shows the static sections when the lists fail.
+    }
+  }
+
   Future<SeerrDiscoverPage> _fetchPage(int page) {
     final id = filterId != null ? int.tryParse(filterId!) : null;
+    // A genre this browse was opened on and genres picked in the dialog ride
+    // the same parameter, comma joined the way seerr's own panel sends them.
+    final genreIds = {
+      if (filterType == 'genre' && id != null) id,
+      ..._state.genreIds,
+    };
+    final genre = genreIds.isEmpty ? null : genreIds.join(',');
+    final language = _state.languageCode.isEmpty ? null : _state.languageCode;
+    final voteAverageGte = _state.minRating.value?.toDouble();
+    final voteCountGte = _state.minVotes.value;
+    final runtime = _state.runtime;
+    final released = _state.released;
     if (mediaType == 'tv') {
       return _repo.discoverTv(
         page: page,
         sortBy: _state.sortBy.value,
-        genre: filterType == 'genre' ? id : null,
+        genre: genre,
         network: filterType == 'network' ? id : null,
         keywords: filterType == 'keyword' ? id : null,
+        language: language,
+        status: _state.tvStatuses.isEmpty
+            ? null
+            : _state.tvStatuses.map((s) => s.apiValue).join('|'),
+        voteAverageGte: voteAverageGte,
+        voteCountGte: voteCountGte,
+        withRuntimeGte: runtime.gte,
+        withRuntimeLte: runtime.lte,
+        firstAirDateGte: released.dateGte,
+        firstAirDateLte: released.dateLte,
       );
     }
     return _repo.discoverMovies(
       page: page,
       sortBy: _state.sortBy.value,
-      genre: filterType == 'genre' ? id : null,
+      genre: genre,
       studio: filterType == 'studio' ? id : null,
       keywords: filterType == 'keyword' ? id : null,
+      language: language,
+      voteAverageGte: voteAverageGte,
+      voteCountGte: voteCountGte,
+      withRuntimeGte: runtime.gte,
+      withRuntimeLte: runtime.lte,
+      primaryReleaseDateGte: released.dateGte,
+      primaryReleaseDateLte: released.dateLte,
     );
   }
 

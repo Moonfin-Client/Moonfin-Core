@@ -51,6 +51,11 @@ class PlaybackProfileDiagnostics {
       'mediaSourceId': resolution.mediaSourceId,
       'playMethod': resolution.playMethod.name,
       'transcodingReasons': List<String>.from(resolution.transcodingReasons),
+      'directPlayVerdict': <String, dynamic>{
+        'requestedByClient': resolution.directPlayRequested,
+        'offeredByServer': resolution.serverOfferedDirectPlay,
+        'sourceBitrate': resolution.sourceBitrate,
+      },
       'selectedAudioStreamIndex': context.audioStreamIndex,
       'selectedSubtitleStreamIndex': context.subtitleStreamIndex,
       'container': (resolution.container ?? '').toUpperCase(),

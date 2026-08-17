@@ -4,6 +4,8 @@ import 'package:server_core/server_core.dart';
 import '../../util/platform_detection.dart';
 import '../services/connectivity_service.dart';
 import '../services/storage_path_service.dart';
+import '../repositories/offline_repository.dart';
+import '../services/pending_rating_store.dart';
 import 'offline_catalog.dart';
 import 'offline_image_api.dart';
 import 'offline_items_api.dart';
@@ -46,11 +48,17 @@ class ConnectivityAwareMediaServerClient implements MediaServerClient {
     required bool Function() useOffline,
     required OfflineCatalog catalog,
     required StoragePathService storagePath,
+    required PendingRatingStore pendingRatings,
+    required OfflineRepository offlineRepo,
   }) : _useOffline = useOffline,
        _offlineItems = OfflineItemsApi(catalog, storagePath),
        _offlineImages = OfflineImageApi(catalog, _online.imageApi),
        _offlineViews = OfflineUserViewsApi(catalog),
-       _offlineUserLibrary = OfflineUserLibraryApi(catalog);
+       _offlineUserLibrary = OfflineUserLibraryApi(
+         catalog,
+         pendingRatings: pendingRatings,
+         offlineRepo: offlineRepo,
+       );
 
   /// The wrapped online client, for callers that must never be routed
   /// offline (downloads, sockets, resolvers).

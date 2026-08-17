@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/services/log_service.dart';
@@ -184,14 +185,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final backend = _backend;
     if (backend == null) return;
     try {
-      final prefs = GetIt.instance<UserPreferences>();
+      final style = SubtitleStyle.forResolution(
+        GetIt.instance<UserPreferences>(),
+        _manager?.currentResolution,
+      );
       backend.configureSubtitleStyle(
-        textColor: prefs.get(UserPreferences.subtitlesTextColor),
-        backgroundColor: prefs.get(UserPreferences.subtitlesBackgroundColor),
-        strokeColor: prefs.get(UserPreferences.subtitleTextStrokeColor),
-        fontSize: prefs.get(UserPreferences.subtitlesTextSize),
-        fontWeight: prefs.get(UserPreferences.subtitlesTextWeight),
-        verticalOffset: prefs.get(UserPreferences.subtitlesOffsetPosition),
+        textColor: style.textColor,
+        backgroundColor: style.backgroundColor,
+        strokeColor: style.strokeColor,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        verticalOffset: style.verticalOffset,
       );
     } catch (_) {}
   }

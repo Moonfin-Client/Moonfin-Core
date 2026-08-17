@@ -127,12 +127,16 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             player?.setAudioTrack((args["index"] as? NSNumber)?.int32Value ?? -1)
         case "setSubtitleTrack":
             let isExternal = (args["isExternalSubtitle"] as? Bool) == true
+            let externalUrl = isExternal ? args["externalSubtitleUrl"] as? String : nil
+            // The player keys its external tracks by the url addExternalSubtitle
+            // built, so a selection takes the same conversion or the lookup misses
+            // and selection falls back to guessing by position.
             player?.selectSubtitleTrack(
                 (args["index"] as? NSNumber)?.int32Value ?? -1,
-                externalUrl: isExternal ? args["externalSubtitleUrl"] as? String : nil
+                externalUrl: externalUrl.flatMap { urlFrom($0)?.absoluteString } ?? externalUrl
             )
         case "addExternalSubtitle":
-            addExternalSubtitle(args["url"])
+            addExternalSubtitle(args)
         case "setClosedCaptionTrack":
             player?.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
@@ -152,12 +156,21 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         ((value as? NSNumber)?.doubleValue ?? 0) / 1000.0
     }
 
+    private func urlFrom(_ string: String) -> URL? {
+        string.hasPrefix("/") ? URL(fileURLWithPath: string) : URL(string: string)
+    }
+
     @discardableResult
-    private func addExternalSubtitle(_ value: Any?) -> Bool {
-        guard let urlString = value as? String, let url = URL(string: urlString) else {
+    private func addExternalSubtitle(_ args: [String: Any]) -> Bool {
+        guard let urlString = args["url"] as? String, let url = urlFrom(urlString) else {
             return false
         }
-        player?.addSubtitle(url: url)
+        // The name and language ride along, or the track lists as a bare entry
+        // and nothing can match it by language.
+        player?.addSubtitle(
+            url: url,
+            title: args["title"] as? String,
+            language: args["language"] as? String)
         return true
     }
 

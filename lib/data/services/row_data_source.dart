@@ -23,6 +23,7 @@ import '../repositories/seerr_repository.dart';
 import '../repositories/user_views_repository.dart';
 import '../../preference/seerr_preferences.dart';
 import '../viewmodels/seerr_discover_view_model.dart';
+import '../viewmodels/live_tv_guide_view_model.dart';
 import 'custom_external_lists_service.dart';
 import 'plugin_sync_service.dart';
 
@@ -107,6 +108,33 @@ class RowDataSource {
     );
     final total = response['TotalRecordCount'] as int? ?? 0;
     return total > 0;
+  }
+
+  /// Ordered the same way as the guide, so a channel sits where the user
+  /// expects to find it.
+  Future<HomeRow> loadFavoritesChannels(String serverId) async {
+    final response = await _client.liveTvApi.getChannels(
+      fields: 'ImageTags,UserData',
+    );
+    final pairs = <(GuideChannel, AggregatedItem)>[];
+    for (final item in _parseItems(response, serverId)) {
+      if (!item.isFavorite) continue;
+      pairs.add((GuideChannel.fromRawItem(item.rawData), item));
+    }
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      final prefs = GetIt.instance<UserPreferences>();
+      final sortBy = prefs.get(UserPreferences.liveTvChannelSortBy);
+      final channelCompare = LiveTvGuideViewModel.comparatorFor(sortBy);
+      pairs.sort((a, b) => channelCompare(a.$1, b.$1));
+    }
+    final items = [for (final pair in pairs) pair.$2];
+    return HomeRow(
+      id: 'liveTvFavorites',
+      title: _l10n.favoriteChannels,
+      items: items,
+      rowType: HomeRowType.liveTvFavorites,
+      totalCount: items.length,
+    );
   }
 
   Future<HomeRow> loadOnNow(String serverId) async {
@@ -1517,6 +1545,7 @@ class RowDataSource {
       case HomeRowType.libraryTilesSmall:
       case HomeRowType.liveTv:
       case HomeRowType.liveTvOnNow:
+      case HomeRowType.liveTvFavorites:
       case HomeRowType.activeRecordings:
       case HomeRowType.mediaBar:
       case HomeRowType.pluginDynamic:

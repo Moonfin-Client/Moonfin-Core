@@ -3,6 +3,8 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
+import '../../data/repositories/offline_repository.dart';
+import '../../data/services/pending_rating_store.dart';
 import '../../data/services/background_download_coordinator.dart';
 import '../../data/services/download_notification_service.dart';
 import '../../data/services/download_service.dart';
@@ -66,6 +68,8 @@ void setActiveServerClient(MediaServerClient client) {
     useOffline: shouldUseOfflineCatalog,
     catalog: _getIt<OfflineCatalog>(),
     storagePath: _getIt<StoragePathService>(),
+    pendingRatings: _getIt<PendingRatingStore>(),
+    offlineRepo: _getIt<OfflineRepository>(),
   );
 
   if (_getIt.isRegistered<MediaServerClient>()) {

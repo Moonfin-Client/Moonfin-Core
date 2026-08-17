@@ -151,6 +151,18 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                     },
                     onChanged: _pushPersonalizationSync,
                   ),
+                  if (PlatformDetection.useDesktopUi)
+                    SliderPreferenceTile(
+                      preference: UserPreferences.desktopScrollSensitivity,
+                      title: l10n.scrollSensitivity,
+                      description: l10n.scrollSensitivitySubtitle,
+                      icon: Icons.mouse,
+                      min: 50,
+                      max: 300,
+                      divisions: 25,
+                      labelOf: (v) => '${(v / 100).toStringAsFixed(1)}x',
+                      onChangeEnd: _pushPersonalizationSync,
+                    ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.backdropEnabled,
                     title: l10n.backgroundBackdrops,

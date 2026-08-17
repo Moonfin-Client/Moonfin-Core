@@ -13,7 +13,6 @@ Future<T?> showStyledPlayerDialog<T>(
   required String title,
   String? subtitle,
   required Widget Function(BuildContext ctx) builder,
-  Widget? footer,
   bool showCancel = false,
   double maxWidth = 440,
   bool useRootNavigator = true,
@@ -80,7 +79,6 @@ Future<T?> showStyledPlayerDialog<T>(
               Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
               const SizedBox(height: 8),
               Flexible(child: builder(dialogContext)),
-              if (footer != null) ...[const SizedBox(height: 4), footer],
               if (showCancel) ...[
                 const SizedBox(height: 4),
                 Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
@@ -140,18 +138,23 @@ class TrackSelectorDialog {
     return showStyledPlayerDialog<int>(
       context,
       title: title,
-      footer: footer,
       showCancel: true,
       useRootNavigator: useRootNavigator,
+      // The footer rides along as the last row rather than sitting under the
+      // list, so a long track list keeps the full height and the footer is
+      // something you scroll down to instead of something in the way.
       builder: (dialogCtx) => ListView.builder(
         shrinkWrap: true,
-        itemCount: options.length,
-        itemBuilder: (_, i) => _TrackRow(
-          option: options[i],
-          isSelected: selectedIndex == i,
-          autofocus: selectedIndex == i || (selectedIndex == null && i == 0),
-          onTap: () => Navigator.pop(dialogCtx, i),
-        ),
+        itemCount: options.length + (footer == null ? 0 : 1),
+        itemBuilder: (_, i) => i == options.length
+            ? footer!
+            : _TrackRow(
+                option: options[i],
+                isSelected: selectedIndex == i,
+                autofocus:
+                    selectedIndex == i || (selectedIndex == null && i == 0),
+                onTap: () => Navigator.pop(dialogCtx, i),
+              ),
       ),
     );
   }

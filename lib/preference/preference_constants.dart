@@ -359,6 +359,7 @@ enum HomeSectionType {
   genres('genres'),
   studios('studios'),
   liveTv('livetv'),
+  seerrShortcuts('seerr_shortcuts'),
   seerrRecentRequests('seerr_recent_requests'),
   seerrWatchlist('seerr_watchlist'),
   seerrRecentlyAdded('seerr_recently_added'),
@@ -412,19 +413,33 @@ enum HomeSectionType {
   }
 }
 
+/// Every sort ends on SortName so items the server ranks equally keep a stable
+/// order between pages, which a bare key leaves to whatever the database
+/// returns.
 enum LibrarySortBy {
   playlistOrder('SortName', 'Playlist Order', usesDedicatedEndpoint: true),
   name('SortName', 'Name'),
-  dateAdded('DateCreated', 'Date Added'),
-  premiereDate('PremiereDate', 'Premiere Date'),
-  rating('OfficialRating', 'Rating'),
-  runtime('Runtime', 'Runtime'),
+  dateAdded('DateCreated,SortName', 'Date Added'),
+  dateEpisodeAdded('DateLastContentAdded,SortName', 'Date Episode Added'),
+  premiereDate('PremiereDate,SortName', 'Premiere Date'),
+  rating('OfficialRating,SortName', 'Rating'),
+  runtime('Runtime,SortName', 'Runtime'),
   random('Random', 'Random'),
-  criticRating('CriticRating', 'Critic Rating'),
-  communityRating('CommunityRating', 'Community Rating'),
+  criticRating('CriticRating,SortName', 'Critic Rating'),
+  communityRating('CommunityRating,SortName', 'Community Rating'),
+
+  /// Served by the Moonfin plugin rather than the Items API, since neither
+  /// server sorts on the user's own rating. The api value is the fallback for
+  /// consumers without the dedicated path.
+  myRating('SortName', 'My Rating', usesDedicatedEndpoint: true),
+  datePlayed('DatePlayed,SortName', 'Last Played'),
+  playCount('PlayCount,SortName', 'Play Count'),
   albumArtist('AlbumArtist,Album,SortName', 'Album Artist'),
   album('Album,SortName', 'Album'),
-  genre('Genre,SortName', 'Genre');
+  artist('Artist,Album,SortName', 'Artist'),
+  trackNumber('IndexNumber,SortName', 'Number'),
+  genre('Genre,SortName', 'Genre'),
+  foldersFirst('IsFolder,SortName', 'Folders First');
 
   const LibrarySortBy(
     this.apiValue,
@@ -444,6 +459,68 @@ enum LibrarySortBy {
   /// The options a row can offer when it only ever sorts through the Items API.
   static List<LibrarySortBy> get itemsApiValues =>
       values.where((v) => !v.usesDedicatedEndpoint).toList();
+
+  /// What a library offers, since a sort is only worth showing when the items
+  /// carry the field it reads. Album and track ordering belong to music,
+  /// episode dates to series, and folders to the libraries that show them.
+  static List<LibrarySortBy> optionsFor({
+    bool isSongsBrowse = false,
+    bool isMusicBrowse = false,
+    bool isSeriesLibrary = false,
+    bool isBookLibrary = false,
+    bool isFolderyLibrary = false,
+    bool isMovieOrSeriesLibrary = false,
+    bool supportsMyRating = false,
+  }) {
+    if (isFolderyLibrary) {
+      return const [
+        name,
+        dateAdded,
+        datePlayed,
+        playCount,
+        runtime,
+        random,
+        foldersFirst,
+      ];
+    }
+
+    if (isSongsBrowse) {
+      return const [
+        name,
+        dateAdded,
+        albumArtist,
+        album,
+        artist,
+        trackNumber,
+        premiereDate,
+        datePlayed,
+        playCount,
+        runtime,
+        random,
+      ];
+    }
+
+    return [
+      if (supportsMyRating) myRating,
+      name,
+      dateAdded,
+      if (isSeriesLibrary) dateEpisodeAdded,
+      premiereDate,
+      // Group By covers parental rating better than a sort does, so the
+      // libraries offering it drop the duplicate.
+      if (!isMovieOrSeriesLibrary && !isMusicBrowse) rating,
+      datePlayed,
+      if (!isMusicBrowse) playCount,
+      if (isBookLibrary) trackNumber,
+      if (!isMusicBrowse) criticRating,
+      if (!isMusicBrowse) communityRating,
+      if (isMusicBrowse) albumArtist,
+      if (isMusicBrowse) album,
+      if (isMusicBrowse) genre,
+      runtime,
+      random,
+    ];
+  }
 }
 
 enum LibraryGroupBy {
@@ -486,12 +563,54 @@ enum PlayedStatusFilter {
   all,
   watched,
   unwatched,
+  inProgress,
+}
+
+/// Filters a library on the viewer's own like or dislike, which both server
+/// types expose as the Likes and Dislikes item filters.
+enum LikedStatusFilter {
+  all,
+  liked,
+  disliked,
 }
 
 enum SeriesStatusFilter {
   all,
   continuing,
   ended,
+  unreleased,
+}
+
+/// Extras an item can carry, each its own flag on the items query rather than
+/// a value in the shared Filters list.
+enum LibraryFeatureFilter {
+  subtitles,
+  trailer,
+  extras,
+  themeSong,
+  themeVideo,
+}
+
+/// Picture qualities, which the servers answer with a plain flag each. SD is
+/// the same flag as HD asked the other way round, so the two cancel out and
+/// selecting both is the same as selecting neither.
+enum LibraryVideoQualityFilter {
+  sd,
+  hd,
+  uhd,
+  threeD,
+}
+
+/// What the file was ripped from, passed through as the server's VideoType.
+enum LibraryVideoSourceFilter {
+  dvd('Dvd', 'DVD'),
+  bluray('BluRay', 'Blu-ray'),
+  iso('Iso', 'ISO');
+
+  const LibraryVideoSourceFilter(this.apiValue, this.displayName);
+
+  final String apiValue;
+  final String displayName;
 }
 
 enum LibraryScrollDirection {
@@ -563,6 +682,7 @@ enum SeerrFetchLimit {
 }
 
 enum SeerrRowType {
+  shortcuts('shortcuts'),
   recentRequests('recent_requests'),
   yourWatchlist('watchlist'),
   recentlyAdded('recently_added'),
@@ -588,6 +708,7 @@ enum SeerrRowType {
 
 extension SeerrRowTypeHomeSection on SeerrRowType {
   HomeSectionType get homeSectionType => switch (this) {
+        SeerrRowType.shortcuts => HomeSectionType.seerrShortcuts,
         SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
         SeerrRowType.yourWatchlist => HomeSectionType.seerrWatchlist,
         SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
@@ -605,6 +726,7 @@ extension SeerrRowTypeHomeSection on SeerrRowType {
 
 extension HomeSectionTypeSeerrRow on HomeSectionType {
   SeerrRowType? get seerrRowType => switch (this) {
+        HomeSectionType.seerrShortcuts => SeerrRowType.shortcuts,
         HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
         HomeSectionType.seerrWatchlist => SeerrRowType.yourWatchlist,
         HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,

@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 import 'package:volume_controller/volume_controller.dart';
 
+import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -1315,27 +1316,33 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void _applySubtitleStyle() {
     final backend = _manager.backend;
     if (backend == null) return;
+    final style = SubtitleStyle.forResolution(
+      _prefs,
+      _manager.currentResolution,
+    );
     unawaited(
       backend.configureSubtitleStyle(
-        textColor: _prefs.get(UserPreferences.subtitlesTextColor),
-        backgroundColor: _prefs.get(UserPreferences.subtitlesBackgroundColor),
-        strokeColor: _prefs.get(UserPreferences.subtitleTextStrokeColor),
-        fontSize: _prefs.get(UserPreferences.subtitlesTextSize),
-        fontWeight: _prefs.get(UserPreferences.subtitlesTextWeight),
-        verticalOffset: _prefs.get(UserPreferences.subtitlesOffsetPosition),
+        textColor: style.textColor,
+        backgroundColor: style.backgroundColor,
+        strokeColor: style.strokeColor,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        verticalOffset: style.verticalOffset,
       ),
     );
   }
 
   SubtitleViewConfiguration _buildSubtitleConfig() {
-    final textColor = Color(_prefs.get(UserPreferences.subtitlesTextColor));
-    final bgColor = Color(_prefs.get(UserPreferences.subtitlesBackgroundColor));
-    final strokeColor = Color(
-      _prefs.get(UserPreferences.subtitleTextStrokeColor),
+    final style = SubtitleStyle.forResolution(
+      _prefs,
+      _manager.currentResolution,
     );
-    final prefSize = _prefs.get(UserPreferences.subtitlesTextSize);
-    final fontWeight = _prefs.get(UserPreferences.subtitlesTextWeight);
-    final offset = _prefs.get(UserPreferences.subtitlesOffsetPosition);
+    final textColor = Color(style.textColor);
+    final bgColor = Color(style.backgroundColor);
+    final strokeColor = Color(style.strokeColor);
+    final prefSize = style.fontSize;
+    final fontWeight = style.fontWeight;
+    final offset = style.verticalOffset;
 
     final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
     final fontSize = (prefSize / 24.0) * baseSize;

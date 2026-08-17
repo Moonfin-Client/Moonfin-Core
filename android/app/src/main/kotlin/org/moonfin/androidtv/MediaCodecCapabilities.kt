@@ -31,6 +31,16 @@ object MediaCodecCapabilities {
             name.startsWith("c2.android.", ignoreCase = true)
     }
 
+    // No MediaTek AVC decoder decodes High 10, but OMX.MTK.VIDEO.DECODER.AVC
+    // lists the profile anyway. Taking it at its word advertises Hi10p for
+    // direct play, and playback then dies at the decoder, which the viewer
+    // sees as a black screen rather than a transcode.
+    private fun overstatesAvcHigh10(info: MediaCodecInfo): Boolean {
+        val name = info.name
+        return name.startsWith("OMX.MTK.", ignoreCase = true) ||
+            name.startsWith("c2.mtk.", ignoreCase = true)
+    }
+
     private object DolbyVisionProfiles {
         val profile5: Int by lazy {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -165,12 +175,13 @@ object MediaCodecCapabilities {
         // Google's software decoder advertises AVC High 10 on every device, so
         // counting it here would have a box claim 10-bit H264 that only its
         // CPU can decode, and the server would direct play media that stutters.
-        // A query that excluded software decoders has to exclude them here too.
-        val avcHigh10Infos = if (includeSoftwareDecoders) {
-            codecInfos
-        } else {
-            codecInfos.filterNot(::isSoftwareDecoder).toTypedArray()
-        }
+        // A query that excluded software decoders has to exclude them here too,
+        // and the decoders that claim the profile without decoding it go with
+        // them either way.
+        val avcHigh10Infos = codecInfos.filter { info ->
+            (includeSoftwareDecoders || !isSoftwareDecoder(info)) &&
+                !overstatesAvcHigh10(info)
+        }.toTypedArray()
         val supportsAvcHigh10 = hasDecoder(
             MediaFormat.MIMETYPE_VIDEO_AVC,
             CodecProfileLevel.AVCProfileHigh10,

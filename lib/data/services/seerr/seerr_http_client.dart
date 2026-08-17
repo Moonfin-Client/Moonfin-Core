@@ -466,9 +466,16 @@ class SeerrHttpClient {
   Future<Map<String, dynamic>> discoverMovies({
     int page = 1,
     String sortBy = 'popularity.desc',
-    int? genre,
+    String? genre,
     int? studio,
     int? keywords,
+    String? language,
+    double? voteAverageGte,
+    int? voteCountGte,
+    int? withRuntimeGte,
+    int? withRuntimeLte,
+    String? primaryReleaseDateGte,
+    String? primaryReleaseDateLte,
   }) async {
     final response = await _dio.get(
       _apiUrl('discover/movies'),
@@ -478,6 +485,13 @@ class SeerrHttpClient {
         'genre': ?genre,
         'studio': ?studio,
         'keywords': ?keywords,
+        'language': ?language,
+        'voteAverageGte': ?voteAverageGte?.toString(),
+        'voteCountGte': ?voteCountGte?.toString(),
+        'withRuntimeGte': ?withRuntimeGte?.toString(),
+        'withRuntimeLte': ?withRuntimeLte?.toString(),
+        'primaryReleaseDateGte': ?primaryReleaseDateGte,
+        'primaryReleaseDateLte': ?primaryReleaseDateLte,
       },
       options: _authOptions(),
     );
@@ -488,9 +502,17 @@ class SeerrHttpClient {
   Future<Map<String, dynamic>> discoverTv({
     int page = 1,
     String sortBy = 'popularity.desc',
-    int? genre,
+    String? genre,
     int? network,
     int? keywords,
+    String? language,
+    String? status,
+    double? voteAverageGte,
+    int? voteCountGte,
+    int? withRuntimeGte,
+    int? withRuntimeLte,
+    String? firstAirDateGte,
+    String? firstAirDateLte,
   }) async {
     final response = await _dio.get(
       _apiUrl('discover/tv'),
@@ -500,11 +522,30 @@ class SeerrHttpClient {
         'genre': ?genre,
         'network': ?network,
         'keywords': ?keywords,
+        'language': ?language,
+        'status': ?status,
+        'voteAverageGte': ?voteAverageGte?.toString(),
+        'voteCountGte': ?voteCountGte?.toString(),
+        'withRuntimeGte': ?withRuntimeGte?.toString(),
+        'withRuntimeLte': ?withRuntimeLte?.toString(),
+        'firstAirDateGte': ?firstAirDateGte,
+        'firstAirDateLte': ?firstAirDateLte,
       },
       options: _authOptions(),
     );
     _requireSuccess(response, 'discoverTv');
     return response.data as Map<String, dynamic>;
+  }
+
+  /// The languages TMDB knows, served by seerr so the filter list matches
+  /// what the discover queries accept.
+  Future<List<dynamic>> getLanguages() async {
+    final response = await _dio.get(
+      _apiUrl('languages'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getLanguages');
+    return response.data as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> search(

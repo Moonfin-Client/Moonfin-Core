@@ -31,6 +31,34 @@ void main() {
     });
   });
 
+  group('codecCapsLookIncomplete', () {
+    test('a result carrying HEVC is complete', () {
+      expect(
+        codecCapsLookIncomplete({
+          'supportsAvc': true,
+          'avcMainLevel': 52,
+          'supportsHevc': true,
+        }),
+        isFalse,
+      );
+    });
+
+    test('a result that cleared the AVC check but lost HEVC is incomplete', () {
+      expect(
+        codecCapsLookIncomplete({'supportsAvc': true, 'avcMainLevel': 52}),
+        isTrue,
+      );
+      expect(
+        codecCapsLookIncomplete({
+          'supportsAvc': true,
+          'avcMainLevel': 52,
+          'supportsHevc': false,
+        }),
+        isTrue,
+      );
+    });
+  });
+
   group('withAvcFloor', () {
     test('fills in the AVC floor and leaves every other field untouched', () {
       final repaired = withAvcFloor({

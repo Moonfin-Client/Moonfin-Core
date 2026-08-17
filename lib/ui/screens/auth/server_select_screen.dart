@@ -244,7 +244,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
         imageTag: currentUser.primaryImageTag,
         isAdministrator: currentUser.policy?.isAdministrator ?? false,
         canDownload: currentUser.policy?.enableContentDownloading ?? false,
-        canManageSubtitles: currentUser.policy?.enableSubtitleManagement ??
+        canManageSubtitles: currentUser.policy?.canFetchRemoteSubtitles ??
             false,
         canManageCollections:
           currentUser.policy?.enableCollectionManagement ?? false,

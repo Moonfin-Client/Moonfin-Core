@@ -435,9 +435,16 @@ class SeerrRepository {
   Future<SeerrDiscoverPage> discoverMovies({
     int page = 1,
     String sortBy = 'popularity.desc',
-    int? genre,
+    String? genre,
     int? studio,
     int? keywords,
+    String? language,
+    double? voteAverageGte,
+    int? voteCountGte,
+    int? withRuntimeGte,
+    int? withRuntimeLte,
+    String? primaryReleaseDateGte,
+    String? primaryReleaseDateLte,
   }) => _withClient(
     (c) async => SeerrDiscoverPage.fromJson(
       await c.discoverMovies(
@@ -446,6 +453,13 @@ class SeerrRepository {
         genre: genre,
         studio: studio,
         keywords: keywords,
+        language: language,
+        voteAverageGte: voteAverageGte,
+        voteCountGte: voteCountGte,
+        withRuntimeGte: withRuntimeGte,
+        withRuntimeLte: withRuntimeLte,
+        primaryReleaseDateGte: primaryReleaseDateGte,
+        primaryReleaseDateLte: primaryReleaseDateLte,
       ),
     ),
   );
@@ -453,9 +467,17 @@ class SeerrRepository {
   Future<SeerrDiscoverPage> discoverTv({
     int page = 1,
     String sortBy = 'popularity.desc',
-    int? genre,
+    String? genre,
     int? network,
     int? keywords,
+    String? language,
+    String? status,
+    double? voteAverageGte,
+    int? voteCountGte,
+    int? withRuntimeGte,
+    int? withRuntimeLte,
+    String? firstAirDateGte,
+    String? firstAirDateLte,
   }) => _withClient(
     (c) async => SeerrDiscoverPage.fromJson(
       await c.discoverTv(
@@ -464,8 +486,24 @@ class SeerrRepository {
         genre: genre,
         network: network,
         keywords: keywords,
+        language: language,
+        status: status,
+        voteAverageGte: voteAverageGte,
+        voteCountGte: voteCountGte,
+        withRuntimeGte: withRuntimeGte,
+        withRuntimeLte: withRuntimeLte,
+        firstAirDateGte: firstAirDateGte,
+        firstAirDateLte: firstAirDateLte,
       ),
     ),
+  );
+
+  Future<List<SeerrLanguage>> getLanguages() => _withClient(
+    (c) async => (await c.getLanguages())
+        .whereType<Map>()
+        .map((e) => SeerrLanguage.fromJson(e.cast<String, dynamic>()))
+        .where((l) => l.code.isNotEmpty)
+        .toList(),
   );
 
   Future<SeerrDiscoverPage> search(

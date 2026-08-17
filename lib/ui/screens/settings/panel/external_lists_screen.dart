@@ -1204,6 +1204,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   }
 
   String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
+    SeerrRowType.shortcuts => l10n.seerrShortcutsRow,
     SeerrRowType.recentRequests => l10n.recentRequests,
     SeerrRowType.yourWatchlist => l10n.yourWatchlist,
     SeerrRowType.recentlyAdded => l10n.recentlyAdded,

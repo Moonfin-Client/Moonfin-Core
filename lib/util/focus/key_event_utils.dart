@@ -30,6 +30,23 @@ KeyEventResult handleOneShotSelect(KeyEvent event, VoidCallback onSelect) {
   return KeyEventResult.ignored;
 }
 
+/// Activates whatever holds focus, for a scope that sees enter and select
+/// before the framework's own shortcut for them.
+///
+/// Finding an enabled action is the only thing that says the press landed. A
+/// material button activates through a callback that returns nothing, so the
+/// invoke result is null even when it fired, and reporting that as ignored
+/// lets the framework activate the same widget a second time.
+KeyEventResult activateFocusedTarget(BuildContext context) {
+  final target = FocusManager.instance.primaryFocus?.context ?? context;
+  final action = Actions.maybeFind<ActivateIntent>(target);
+  if (action == null || !action.isActionEnabled) {
+    return KeyEventResult.ignored;
+  }
+  Actions.maybeInvoke(target, const ActivateIntent());
+  return KeyEventResult.handled;
+}
+
 KeyEventResult handleBackKeyAction(KeyEvent event, VoidCallback onBack) {
   if (!event.logicalKey.isBackKey) return KeyEventResult.ignored;
   if (event is KeyDownEvent) {

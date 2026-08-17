@@ -581,6 +581,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       return true;
     }
     if (DialogBackSuppressor.consume()) return true;
+    if (CustomTVTextField.closeTopKeyboard()) return true;
     if (OverlaySheetController.closeTopSheet()) return true;
     if (InlineBackInterceptor.handleBack()) return true;
     if (_isPlayerRoute()) return false;
@@ -649,6 +650,9 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
       // key handling of its own, so without it the route pops out from under
       // an open keyboard.
       if (CustomTVTextField.closeTopKeyboard()) {
+        if (PlatformDetection.isAndroid && key == LogicalKeyboardKey.goBack) {
+          DialogBackSuppressor.markDismissed();
+        }
         return true;
       }
       if (OverlaySheetController.closeTopSheet()) {
@@ -870,15 +874,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         keys.contains(LogicalKeyboardKey.altRight);
 
     if ((key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) && !altPressed) {
-      final targetContext =
-          FocusManager.instance.primaryFocus?.context ?? context;
-      final activated = Actions.maybeInvoke(
-        targetContext,
-        const ActivateIntent(),
-      );
-      return activated == null
-          ? KeyEventResult.ignored
-          : KeyEventResult.handled;
+      return activateFocusedTarget(context);
     }
 
     return KeyEventResult.ignored;
