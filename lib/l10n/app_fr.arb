@@ -82,7 +82,7 @@
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
-    "appVersionFooter": "Moonfin version {version}",
+    "appVersionFooter": "Version de Moonfin {version}",
     "@appVersionFooter": {
         "description": "App version shown in footer",
         "placeholders": {
@@ -180,7 +180,7 @@
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
-    "themeNeonPulse": "Neon Pulse",
+    "themeNeonPulse": "Pulsation néon",
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
@@ -2752,7 +2752,7 @@
     "@themeMusicVolume": {
         "description": "Setting for theme music volume"
     },
-    "percentValue": "{value}%",
+    "percentValue": "{value} %",
     "@percentValue": {
         "description": "Percentage display",
         "placeholders": {
@@ -2773,7 +2773,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value}px",
+    "pixelValue": "{value} px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -2938,8 +2938,8 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "Passthrough AC3",
-    "@ac3Passthrough": {
+    "ac3Transmission directe": "Transmission directe AC3",
+    "@ac3Transmission directe": {
         "description": "Setting for AC3 passthrough"
     },
     "trueHdSupport": "Prise en charge de TrueHD",
@@ -3006,7 +3006,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value} s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3445,6 +3445,18 @@
     "showLibrariesFromAllServers": "Afficher les bibliothèques de tous les serveurs connectés",
     "@showLibrariesFromAllServers": {
         "description": "Description for multi-server libraries"
+    },
+    "mergeRecentRowsByType": "Regrouper les rangées récentes par type",
+    "@mergeRecentRowsByType": {
+        "description": "Paramètre permettant de regrouper les bibliothèques récemment ajoutées et récemment sorties par type de média"
+    },
+    "mergeRecentRowsByTypeDescription": "Combiner les bibliothèques distinctes du même type dans les rangées d’accueil « Ajouts récents » et « Sorties récentes ».",
+    "@mergeRecentRowsByTypeDescription": {
+        "description": "Description du regroupement des rangées récentes par type de média"
+    },
+    "libraryView": "Vue des bibliothèques",
+    "@libraryView": {
+        "description": "Titre de section pour les paramètres d’affichage des bibliothèques"
     },
     "enableFolderView": "Activer la vue dossiers",
     "@enableFolderView": {
@@ -5910,7 +5922,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6248,7 +6260,7 @@
     "@scanWithYourPhone": {
         "description": "Instruction shown above a QR code"
     },
-    "delayMinusMs": "-{value}ms",
+    "delayMinusMs": "-{value} ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -6257,7 +6269,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value}ms",
+    "delayPlusMs": "+{value} ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -6275,12 +6287,12 @@
             }
         }
     },
-    "dtsPassthrough": "Passthrough DTS",
-    "@dtsPassthrough": {
+    "dtsTransmission directe": "Transmission directe DTS",
+    "@dtsTransmission directe": {
         "description": "Setting for DTS passthrough"
     },
-    "enableDtsPassthrough": "Audio Bitstream DTS vers AVR uniquement ; nécessite la piste source DTS et sa prise en charge par l'AVR",
-    "@enableDtsPassthrough": {
+    "enableDtsTransmission directe": "Audio Bitstream DTS vers AVR uniquement ; nécessite la piste source DTS et sa prise en charge par l'AVR",
+    "@enableDtsTransmission directe": {
         "description": "Description for DTS passthrough"
     },
     "unpauseRewind": "Retour en arrière après la pause",
@@ -6635,7 +6647,7 @@
     "settingsNextUpDisplayDescription": "Étendu affiche la notification détaillée, avec le visuel et la description de l'épisode. Minimal affiche une notification compacte avec compte à rebours. Désactivé masque entièrement la notification.",
     "settingsShort": "Court",
     "settingsLong": "Long",
-    "settingsVeryLong": "Très longtemps",
+    "settingsVeryLong": "Très long",
     "settingsVideoStartDelay": "Délai de démarrage de la vidéo",
     "settingsMillisecondsValue": "{value} ms",
     "@settingsMillisecondsValue": {
@@ -6787,48 +6799,48 @@
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "Passthrough AVR",
-    "@settingsAudioOutputModeAvrPassthrough": {
+    "settingsAudioOutputModeAvrTransmission directe": "Transmission directe AVR",
+    "@settingsAudioOutputModeAvrTransmission directe": {
         "description": "Audio output mode option for AVR passthrough"
     },
     "settingsAudioFallbackCodec": "Codec audio de secours",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioPassthroughAdvanced": "Passthrough (avancé)",
-    "@settingsAudioPassthroughAdvanced": {
+    "settingsAudioTransmission directeAdvanced": "Transmission directe (avancé)",
+    "@settingsAudioTransmission directeAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Passthrough de codecs",
-    "@settingsAudioCodecPassthrough": {
+    "settingsAudioCodecTransmission directe": "Transmission directe de codecs",
+    "@settingsAudioCodecTransmission directe": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Activez uniquement les formats pris en charge par votre récepteur AVR ou HDMI.",
-    "@settingsAudioCodecPassthroughDescription": {
+    "settingsAudioCodecTransmission directeDescription": "Activez uniquement les formats pris en charge par votre récepteur AVR ou HDMI.",
+    "@settingsAudioCodecTransmission directeDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "Passthrough EAC3",
-    "@settingsAudioEac3Passthrough": {
+    "settingsAudioEac3Transmission directe": "Transmission directe EAC3",
+    "@settingsAudioEac3Transmission directe": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "Passthrough EAC3 JOC (Atmos)",
-    "@settingsAudioEac3JocPassthrough": {
+    "settingsAudioEac3JocTransmission directe": "Transmission directe EAC3 JOC (Atmos)",
+    "@settingsAudioEac3JocTransmission directe": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "Passthrough DTS Core",
-    "@settingsAudioDtsCorePassthrough": {
+    "settingsAudioDtsCoreTransmission directe": "Transmission directe DTS Core",
+    "@settingsAudioDtsCoreTransmission directe": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "Passthrough DTS-HD MA",
-    "@settingsAudioDtsHdPassthrough": {
+    "settingsAudioDtsHdTransmission directe": "Transmission directe DTS-HD MA",
+    "@settingsAudioDtsHdTransmission directe": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "Passthrough TrueHD",
-    "@settingsAudioTrueHdPassthrough": {
+    "settingsAudioTrueHdTransmission directe": "Transmission directe TrueHD",
+    "@settingsAudioTrueHdTransmission directe": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "Passthrough TrueHD Atmos",
-    "@settingsAudioTrueHdAtmosPassthrough": {
+    "settingsAudioTrueHdAtmosTransmission directe": "Transmission directe TrueHD Atmos",
+    "@settingsAudioTrueHdAtmosTransmission directe": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
     "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) vers un décodeur externe.",
@@ -6863,8 +6875,8 @@
     "@settingsAudioDecodeLabel": {
         "description": "Label for audio decode capability row"
     },
-    "settingsAudioPassthroughLabel": "Passthrough",
-    "@settingsAudioPassthroughLabel": {
+    "settingsAudioTransmission directeLabel": "Transmission directe",
+    "@settingsAudioTransmission directeLabel": {
         "description": "Label for audio passthrough capability row"
     },
     "settingsAudioHdRoute": "Sortie audio HD",
@@ -6928,8 +6940,8 @@
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "Passthrough audio-SPDIF",
-    "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "settingsAudioDiagnosticsAudioSpdifTransmission directe": "Transmission directe audio-SPDIF",
+    "@settingsAudioDiagnosticsAudioSpdifTransmission directe": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
     "settingsAudioDiagnosticsActiveAudioRoute": "Sortie audio active",
@@ -7081,9 +7093,9 @@
     "passthrough": "Passage",
     "supportedOnThisDevice": "Pris en charge sur cet appareil",
     "notSupportedOnThisDevice": "Non pris en charge sur cet appareil",
-    "settingsAudioDtsXPassthrough": "Passage DTS:X (DTS UHD)",
+    "settingsAudioDtsXTransmission directe": "Passage DTS:X (DTS UHD)",
     "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) vers un décodeur externe.",
-    "settingsAudioTrueHdJocPassthrough": "Passthrough TrueHD avec Atmos (JOC)",
+    "settingsAudioTrueHdJocTransmission directe": "Transmission directe TrueHD avec Atmos (JOC)",
     "mediaPlayerBehavior": "Comportement du lecteur",
     "playbackEnhancements": "Améliorations de la lecture",
     "alwaysOn": "Toujours allumé.",
@@ -7178,7 +7190,7 @@
     "adminShutdownServerConfirmation": "Êtes-vous sûr de vouloir arrêter le serveur ? Vous devrez le redémarrer manuellement.",
     "internal": "Interne",
     "idle": "Inactif",
-    "os": "OS",
+    "os": "Système d’exploitation",
     "adminNoUsersFound": "Aucun utilisateur trouvé",
     "adminNoUsersMatchSearch": "Aucun utilisateur ne correspond à votre recherche",
     "adminNoDevicesFound": "Aucun appareil trouvé",
@@ -7334,7 +7346,7 @@
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "themeGlass": "Glass",
+    "themeGlass": "Verre",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
@@ -7351,7 +7363,7 @@
     "@playerTooltipVolume": {
         "description": "Tooltip for the volume control button in the player OSD"
     },
-    "settingsAudioOutputModeDescription": "Choisissez comment l'audio est décodé. AVR Passthrough envoie les flux Dolby/DTS directement à votre ampli sans traitements ; Auto ou Downmix décode localement.",
+    "settingsAudioOutputModeDescription": "Choisissez comment l'audio est décodé. AVR Transmission directe envoie les flux Dolby/DTS directement à votre ampli sans traitements ; Auto ou mixage réducteur décode localement.",
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
@@ -7885,7 +7897,7 @@
     },
     "audiobookAddNote": "Ajouter une note",
     "audiobookSleepEndOfChapter": "Fin du chapitre",
-    "audiobookSleepCustom": "Personalisé",
+    "audiobookSleepCustom": "Personnalisé",
     "audiobookNoChapters": "Pas de chapitre",
     "transcodeVideoProfileNotSupported": "Le profil vidéo n'est pas supporté.",
     "detailScreenStyleMoonfin": "Classique",
@@ -7896,7 +7908,7 @@
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "theme8BitHero": "8-bit Hero",
+    "theme8BitHero": "Héros 8 bits",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
@@ -7909,7 +7921,7 @@
             }
         }
     },
-    "audiobookSpeedReset": "Réinitialiser a 1.0x",
+    "audiobookSpeedReset": "Réinitialiser à 1,0×",
     "forced": "Forcé",
     "transcodeSubtitleCodecNotSupported": "Le format de sous-titre n'est pas supporté (burn-in requis).",
     "glassQualityFull": "Complète",
@@ -7930,7 +7942,7 @@
         "description": "Glass quality option: per-device default"
     },
     "audiobookCancel": "Annuler",
-    "extras": "Extras",
+    "extras": "Bonus",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
@@ -7943,7 +7955,7 @@
             }
         }
     },
-    "guideHoursLeft": "{hours}h restantes",
+    "guideHoursLeft": "{hours} h restantes",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7952,7 +7964,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "{hours}h {minutes}min restantes",
+    "guideHoursMinutesLeft": "{hours} h {minutes} min restantes",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -8191,7 +8203,7 @@
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Featurettes",
+    "featurettes": "Bonus vidéo",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
@@ -8725,7 +8737,7 @@
     "adminTunerFileOrUrl": "Fichier ou URL",
     "adminTunerIpAddress": "Adresse IP du tuner",
     "adminTunerFriendlyName": "Nom convivial",
-    "adminTunerUserAgent": "User agent",
+    "adminTunerUserAgent": "Agent utilisateur",
     "adminTunerCount": "Limite de connexions simultanées",
     "adminTunerCountHelp": "Nombre maximal de flux que le tuner autorise simultanément. Réglez sur 0 pour un nombre illimité.",
     "adminTunerFallbackBitrate": "Débit de streaming maximal de secours",
@@ -8823,8 +8835,8 @@
     "adminPlaybackDeinterlaceDoubleRate": "Doubler la fréquence d'images lors du désentrelacement",
     "adminPlaybackAudioSection": "Audio",
     "adminPlaybackEnableAudioVbr": "Activer l'encodage audio VBR",
-    "adminPlaybackDownmixBoost": "Amplification du downmix audio",
-    "adminPlaybackDownmixAlgorithm": "Algorithme de downmix stéréo",
+    "adminPlaybackmixage réducteurBoost": "Amplification du downmix audio",
+    "adminPlaybackmixage réducteurAlgorithm": "Algorithme de downmix stéréo",
     "adminPlaybackMaxMuxingQueue": "Taille maximale de la file de multiplexage",
     "adminPlaybackAutoOption": "Auto",
     "adminRunningTasks": "Tâches en cours",
@@ -9380,5 +9392,149 @@
     "mixedPlaylistsSection": "Playlists mixtes",
     "@mixedPlaylistsSection": {
         "description": "Section header above mixed playlists when Group by Type is enabled"
-    }
+    },
+    "ascending": "Croissant",
+    "audioLanguage": "Langue audio",
+    "clearFilters": "Effacer les filtres",
+    "collectionsRowShowEpisodes": "Afficher les épisodes individuellement",
+    "collectionsRowShowEpisodesSubtitle": "Développer les séries pour afficher chaque épisode séparément.",
+    "collectionsRowSortOrderDescription": "Trier les rangées de collections par ordre croissant ou décroissant.",
+    "decrease": "Diminuer",
+    "descending": "Décroissant",
+    "deselectAllStudios": "Tout désélectionner",
+    "dislike": "Je n’aime pas",
+    "displayStudiosRows": "Afficher la rangée des studios",
+    "displayStudiosRowsSubtitle": "Afficher la rangée des studios dans les sections d’accueil.",
+    "favoriteChannels": "Chaînes favorites",
+    "favoritesRowSortOrderDescription": "Trier les rangées des favoris par ordre croissant ou décroissant.",
+    "filterExtras": "Bonus",
+    "filterInProgress": "En cours",
+    "filterThemeSongs": "Musiques de générique",
+    "filterThemeVideos": "Vidéos de générique",
+    "filterTrailers": "Bandes-annonces",
+    "filterUnreleased": "Non sorti",
+    "filtersHeader": "Filtres",
+    "genresAndTags": "Genres et étiquettes",
+    "genresRowSortOrderDescription": "Trier les rangées de genres par ordre croissant ou décroissant.",
+    "groupByDecade": "Décennie (année)",
+    "groupByParentalRating": "Classification",
+    "groupByStudio": "Studio",
+    "groupByTitle": "Regrouper par",
+    "increase": "Augmenter",
+    "like": "J’aime",
+    "manageRequests": "Gérer les demandes",
+    "mediaBarSourceRandom": "Aléatoire",
+    "mediaBarSourceType": "Source",
+    "movieStudiosFilter": "Studios de films",
+    "onWatchlist": "Dans la liste de suivi",
+    "rate": "Noter",
+    "recordSeries": "Enregistrer la série",
+    "scrollDirection": "Direction du défilement",
+    "scrollDirectionHorizontal": "Horizontale",
+    "scrollDirectionVertical": "Verticale",
+    "scrollSensitivity": "Sensibilité du défilement",
+    "scrollSensitivitySubtitle": "Distance parcourue à chaque cran de la molette",
+    "scrollToTop": "Retourner en haut",
+    "sdCard": "Carte SD",
+    "seerrMinRating": "Note minimale",
+    "seerrMinVotes": "Nombre minimal de votes",
+    "seerrOriginalLanguage": "Langue originale",
+    "seerrReleased": "Sorti",
+    "seerrRuntime": "Durée",
+    "seerrSeriesContinuing": "Série en cours · De futures saisons peuvent être demandées",
+    "seerrShortcutsRow": "Parcourir Seerr",
+    "selectAllStudios": "Tout sélectionner",
+    "selectStudiosToInclude": "Sélectionner les studios à inclure",
+    "selectStudiosToIncludeDescription": "Sélectionnez les studios à inclure dans la rangée d’accueil.",
+    "selectedStudiosFilter": "Studios sélectionnés",
+    "seriesRecordingCancelled": "Enregistrement de la série annulé",
+    "seriesSetToRecord": "Série programmée pour l’enregistrement",
+    "showAlphabeticalFilters": "Afficher l’alphabet",
+    "showHeader": "Afficher",
+    "sortOrder": "Ordre de tri",
+    "source": "Source",
+    "studiosRowSortOrderDescription": "Choisissez un ordre de tri croissant ou décroissant.",
+    "studiosRowSorting": "Tri de la rangée des studios",
+    "studiosRowSortingDescription": "Trier la rangée des studios par nom, date d’ajout, etc.",
+    "subtitleLanguage": "Langue des sous-titres",
+    "tags": "Étiquettes",
+    "tvStudiosFilter": "Studios de séries",
+    "unableToCreateSeriesRecording": "Impossible de créer l’enregistrement de la série",
+    "unselectedStudiosFilter": "Studios non sélectionnés",
+    "watchlist": "Liste de suivi",
+    "years": "Années",
+    "ac3Passthrough": "Transmission directe AC3",
+    "adminPlaybackDownmixAlgorithm": "Algorithme de mixage réducteur stéréo",
+    "adminPlaybackDownmixBoost": "Amplification du mixage audio",
+    "audioRowsSortOrderDescription": "Trier les rangées audio par ordre croissant ou décroissant.",
+    "downloadLocationLimitedByAndroid": "Android autorise Moonfin à écrire uniquement dans les dossiers qui lui appartiennent, et cet appareil ne possède aucun stockage amovible. Activez l’enregistrement dans le dossier Téléchargements pour que les fichiers soient accessibles aux autres applications.",
+    "dtsPassthrough": "Transmission directe DTS",
+    "enableDtsPassthrough": "Transmettre l’audio DTS au récepteur A/V uniquement ; nécessite un récepteur compatible et une piste source DTS",
+    "oledMode": "Mode OLED",
+    "oledModeSubtitle": "Approfondit les noirs et enrichit les illustrations. Recommandé pour les écrans OLED.",
+    "oledModeSubtle": "Discret",
+    "oledModeVivid": "Vif",
+    "personalRatingClear": "Effacer la note",
+    "personalRatingMine": "Ma note",
+    "personalRatingNumeric": "Note numérique sur 10",
+    "personalRatingOutOfFive": "{rating} / 5",
+    "personalRatingOutOfTen": "{rating} / 10",
+    "personalRatingRated": "Noté",
+    "personalRatingSaveFailed": "Impossible d’enregistrer la note",
+    "personalRatingStars": "5 étoiles",
+    "personalRatingStyle": "Style de note personnelle",
+    "personalRatingThumbs": "J’aime / Je n’aime pas",
+    "playbackTimeAboveBarCenter": "Au-dessus de la barre, au centre",
+    "playbackTimeAboveBarLeft": "Au-dessus de la barre, à gauche",
+    "playbackTimeAboveBarRight": "Au-dessus de la barre, à droite",
+    "playbackTimeBelowBarCenter": "Sous la barre, au centre",
+    "playbackTimeBelowBarLeft": "Sous la barre, à gauche",
+    "playbackTimeBelowBarRight": "Sous la barre, à droite",
+    "playbackTimeDisplay": "Temps de la barre de progression",
+    "playbackTimeElapsed": "Temps écoulé",
+    "playbackTimeEndsAt": "Se termine à",
+    "playbackTimeMusicSection": "Lecteur audio",
+    "playbackTimeRemaining": "Temps restant",
+    "playbackTimeSlotDescription": "Choisissez ce qui est affiché ici ou masquez-le.",
+    "playbackTimeTotal": "Durée totale",
+    "playbackTimeVideoSection": "Lecteur vidéo",
+    "playerSwipeGestures": "Glissements pour le volume et la luminosité",
+    "playerSwipeGesturesDescription": "Faites glisser vers le haut ou le bas dans le lecteur pour modifier la luminosité à gauche et le volume à droite.",
+    "playlistsRowShowEpisodes": "Afficher les épisodes individuellement",
+    "playlistsRowShowEpisodesSubtitle": "Développer les séries pour afficher chaque épisode séparément.",
+    "playlistsRowSortOrderDescription": "Trier les rangées de playlists par ordre croissant ou décroissant.",
+    "settingsAudioCodecPassthrough": "Transmission directe du codec",
+    "settingsAudioCodecPassthroughDescription": "Activez uniquement les formats pris en charge par votre récepteur A/V ou votre sortie HDMI.",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "Transmission directe audio SPDIF",
+    "settingsAudioDtsCorePassthrough": "Transmission directe du cœur DTS",
+    "settingsAudioDtsHdIncludesDtsX": "Transmettre le DTS-HD, y compris le DTS:X.",
+    "settingsAudioDtsHdPassthrough": "Transmission directe DTS-HD MA",
+    "settingsAudioEac3IncludesAtmos": "Transmettre l’E-AC-3, y compris le Dolby Atmos (JOC).",
+    "settingsAudioEac3Passthrough": "Transmission directe EAC3",
+    "settingsAudioPassthroughAdvanced": "Transmission directe (avancé)",
+    "settingsAudioPassthroughLabel": "Transmission directe",
+    "settingsAudioPassthroughMode": "Mode de transmission directe",
+    "settingsAudioPassthroughModeAuto": "Automatique (selon les capacités détectées de l’appareil)",
+    "settingsAudioPassthroughModeDescription": "Détermine comment le son surround compressé atteint votre téléviseur ou votre récepteur.",
+    "settingsAudioPassthroughModeDisabled": "Désactivé (toujours décoder sur cet appareil)",
+    "settingsAudioPassthroughModeManual": "Manuel (choisir les formats ci-dessous)",
+    "settingsAudioTrueHdIncludesAtmos": "Transmettre le TrueHD, y compris le Dolby Atmos.",
+    "settingsAudioTrueHdPassthrough": "Transmission directe TrueHD",
+    "settingsCinemaModeEpisodes": "Mode cinéma pour les épisodes",
+    "settingsCinemaModeEpisodesSubtitle": "Lire également les bandes-annonces avant les épisodes de séries",
+    "settingsDownmixToStereoDescription": "Réduire tout l’audio décodé à deux canaux.",
+    "settingsMusicPlaybackTimeDescription": "Choisissez ce qui est affiché à droite de la barre de progression musicale.",
+    "settingsPlaybackTimeDisplayDescription": "Choisissez les indicateurs de temps affichés autour de la barre de progression.",
+    "settingsSkipButtonAutoHide": "Masquage automatique du bouton Ignorer",
+    "settingsSkipButtonAutoHideDescription": "Masquer automatiquement le bouton d’introduction ou de générique après quelques secondes.",
+    "subtitleHdrSeparate": "Style HDR séparé",
+    "subtitleHdrSeparateSubtitle": "Le blanc est beaucoup plus lumineux en HDR qu’en SDR ; un style moins lumineux évite donc l’éblouissement.",
+    "homeRadarrUpcomingMovies": "Films à venir (Radarr)",
+    "homeSonarrUpcomingSeries": "Séries à venir (Sonarr)",
+    "homeSinceYouWatchedRow1": "Depuis votre dernière lecture — rangée 1",
+    "homeSinceYouWatchedRow2": "Depuis votre dernière lecture — rangée 2",
+    "homeSinceYouWatchedRow3": "Depuis votre dernière lecture — rangée 3",
+    "homeSinceYouWatchedRow4": "Depuis votre dernière lecture — rangée 4",
+    "homeSinceYouWatchedRow5": "Depuis votre dernière lecture — rangée 5",
+    "homeRewatch": "À revoir"
 }
