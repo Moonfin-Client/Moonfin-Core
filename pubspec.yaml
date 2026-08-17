@@ -103,6 +103,7 @@ dependencies:
   json_annotation: ^4.9.0
   logger: ^2.7.0
   intl: ^0.20.2
+  punycoder: ^0.3.0
   collection: ^1.19.1
   package_info_plus: ^8.3.1
   uuid: ^4.5.3

@@ -39,6 +39,38 @@ void main() {
       );
     });
 
+    test('converts internationalized hostnames to IDNA ASCII', () {
+      expect(
+        normalizeServerBaseUrl('https://föda.se'),
+        'https://xn--fda-sna.se',
+      );
+      expect(normalizeServerBaseUrl('föda.se'), 'xn--fda-sna.se');
+      expect(
+        normalizeServerBaseUrl('https://yarrr.föda.se:8443/jellyfin/'),
+        'https://yarrr.xn--fda-sna.se:8443/jellyfin',
+      );
+      expect(
+        normalizeServerBaseUrl('https://xn--fda-sna.se'),
+        'https://xn--fda-sna.se',
+      );
+    });
+
+    test('renders Punycode hostnames as Unicode for display', () {
+      expect(displayServerBaseUrl('https://xn--fda-sna.se'), 'https://föda.se');
+      expect(
+        displayServerBaseUrl('yarrr.xn--fda-sna.se:8443/jellyfin'),
+        'yarrr.föda.se:8443/jellyfin',
+      );
+      expect(
+        displayServerBaseUrl('https://media.example.com'),
+        'https://media.example.com',
+      );
+      expect(
+        displayServerBaseUrl('http://192.168.1.5:8096'),
+        'http://192.168.1.5:8096',
+      );
+    });
+
     test('keeps a reverse proxy path prefix', () {
       expect(
         normalizeServerBaseUrl('https://example.com/jellyfin/'),
