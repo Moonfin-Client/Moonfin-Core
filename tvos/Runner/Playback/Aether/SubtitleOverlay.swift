@@ -413,12 +413,27 @@ final class SubtitleOverlay: PlatformView {
         PlatformFont.systemFont(ofSize: appliedFontSize, weight: subtitleFontWeight)
     }
 
+    /// A label's own alignment is ignored once it holds an attributed string,
+    /// so the centring lives here. Line height is pinned to the glyph box
+    /// because the background only fills ascent and descent, leaving the
+    /// font's leading as a gap between stacked lines.
+    private func paragraphStyle(for font: PlatformFont) -> NSParagraphStyle {
+        let style = NSMutableParagraphStyle()
+        style.alignment = .center
+        let glyphBox = font.ascender - font.descender
+        style.minimumLineHeight = glyphBox
+        style.maximumLineHeight = glyphBox
+        return style
+    }
+
     private func fillText(_ text: String) -> NSAttributedString {
-        NSAttributedString(
+        let font = labelFont()
+        return NSAttributedString(
             string: text,
             attributes: [
-                .font: labelFont(),
+                .font: font,
                 .foregroundColor: subtitleTextColor,
+                .paragraphStyle: paragraphStyle(for: font),
             ])
     }
 
@@ -429,11 +444,14 @@ final class SubtitleOverlay: PlatformView {
     /// across them. The fill on top covers those, leaving only the half of the
     /// line that falls outside the letter.
     private func outlineText(_ text: String) -> NSAttributedString {
+        let font = labelFont()
         var attrs: [NSAttributedString.Key: Any] = [
-            .font: labelFont(),
+            .font: font,
             // Nothing to fill here, or this copy shows through as a second set
             // of glyphs whenever there is no outline to draw.
             .foregroundColor: PlatformColor.clear,
+            // Must match the fill, or the outline drifts off the letters.
+            .paragraphStyle: paragraphStyle(for: font),
         ]
         if subtitleStrokeWidth > 0 {
             attrs[.strokeColor] = subtitleStrokeColor
