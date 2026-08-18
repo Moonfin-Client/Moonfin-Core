@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:moonfin/ui/widgets/top_toolbar.dart';
+
 import 'offline_aware_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -2619,6 +2621,44 @@ class _MediaBarState extends State<MediaBar>
     );
   }
 
+  EdgeInsets _ayaMediaBarInsets() {
+    final navbarIsTop =
+        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final isTvTopNavbar =
+        navbarIsTop &&
+            PlatformDetection.isTV &&
+            !PlatformDetection.useMobileUi;
+    final hasDesktopSidebar =
+        !navbarIsTop && !PlatformDetection.useMobileUi;
+
+    final safeTop = MediaQuery.paddingOf(context).top;
+
+    const contentPadding = 32.0;
+    const tvTopNavbarHorizontalInset = 48.0;
+    const desktopSidebarInset = 56.0;
+    const desktopToolbarVerticalPadding = 10.0;
+
+    final navigationLeftInset = isTvTopNavbar
+        ? tvTopNavbarHorizontalInset
+        : hasDesktopSidebar
+        ? desktopSidebarInset
+        : 0.0;
+
+    final topInset = navbarIsTop
+        ? safeTop +
+        TopToolbar.heightFor(context) -
+        desktopToolbarVerticalPadding +
+        contentPadding
+        : contentPadding;
+
+    return EdgeInsets.fromLTRB(
+      navigationLeftInset + contentPadding,
+      topInset,
+      contentPadding,
+      contentPadding,
+    );
+  }
+
   Widget _buildAyaSlideshow(
       BuildContext context,
       List<MediaBarSlideItem> items,
@@ -2645,6 +2685,7 @@ class _MediaBarState extends State<MediaBar>
             items: items,
             activeIndex: clampedIndex,
             height: widget.height,
+            padding: _ayaMediaBarInsets(),
           ),
         ),
       ),
