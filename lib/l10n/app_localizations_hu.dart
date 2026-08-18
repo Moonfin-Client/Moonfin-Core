@@ -3448,6 +3448,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Médiasáv engedélyezése';
 
   @override

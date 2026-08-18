@@ -3468,6 +3468,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Activa la barra multimèdia';
 
   @override

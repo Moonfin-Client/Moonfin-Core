@@ -3312,6 +3312,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => '启用媒体栏';
 
   @override

@@ -3426,6 +3426,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Aktifkan Bar Media';
 
   @override

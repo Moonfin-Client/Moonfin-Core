@@ -3450,6 +3450,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Aktivizo shiritin e medias';
 
   @override

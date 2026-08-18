@@ -3415,6 +3415,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'मीडिया बार सक्षम करें';
 
   @override

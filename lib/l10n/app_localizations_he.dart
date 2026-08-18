@@ -3399,6 +3399,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'הפעל את סרגל המדיה';
 
   @override

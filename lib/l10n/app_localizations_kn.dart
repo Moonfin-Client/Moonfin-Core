@@ -3443,6 +3443,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'ಮೀಡಿಯಾ ಬಾರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ';
 
   @override

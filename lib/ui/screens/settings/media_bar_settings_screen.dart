@@ -361,6 +361,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                         l10n.mediaBarModeBookshelf,
                     UserPreferences.mediaBarModeGallery: l10n.mediaBarModeGallery,
                     UserPreferences.mediaBarModeBanner: l10n.mediaBarModeBanner,
+                    UserPreferences.mediaBarModeAya: l10n.mediaBarModeAya,
                     UserPreferences.mediaBarModeOff: l10n.mediaBarModeOff,
                   },
                   onChanged: _pushSync,

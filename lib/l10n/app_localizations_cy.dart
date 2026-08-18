@@ -3452,6 +3452,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Galluogi Media Bar';
 
   @override

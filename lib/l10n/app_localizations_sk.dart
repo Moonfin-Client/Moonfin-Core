@@ -3449,6 +3449,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Povoliť panel médií';
 
   @override

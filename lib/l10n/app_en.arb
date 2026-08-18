@@ -4667,6 +4667,10 @@
   "@mediaBarModeBanner": {
     "description": "Media bar style option: Banner"
   },
+  "mediaBarModeAya": "Aya",
+  "@mediaBarModeAya": {
+    "description": "Media bar style option: Aya"
+  },
   "enableMediaBar": "Enable Media Bar",
   "@enableMediaBar": {
     "description": "Setting for enabling media bar"

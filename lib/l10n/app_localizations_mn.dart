@@ -3429,6 +3429,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Медиа мөрийг идэвхжүүлнэ үү';
 
   @override

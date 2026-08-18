@@ -3350,6 +3350,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => '미디어 바 활성화';
 
   @override

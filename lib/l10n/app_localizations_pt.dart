@@ -3441,6 +3441,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Habilitar Barra de Mídia';
 
   @override

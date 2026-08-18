@@ -3441,6 +3441,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Ota Media Bar käyttöön';
 
   @override

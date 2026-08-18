@@ -3549,6 +3549,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Омогући траку медија';
 
   @override

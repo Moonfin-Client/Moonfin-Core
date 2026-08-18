@@ -3443,6 +3443,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Įgalinti medijos juostą';
 
   @override

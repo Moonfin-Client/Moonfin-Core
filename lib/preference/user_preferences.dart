@@ -25,6 +25,7 @@ class UserPreferences extends ChangeNotifier {
   static const mediaBarModeBookshelf = 'bookshelf';
   static const mediaBarModeGallery = 'gallery';
   static const mediaBarModeBanner = 'banner';
+  static const mediaBarModeAya = 'aya';
   static const mediaBarModeOff = 'off';
   static const mediaBarModeValues = <String>{
     mediaBarModeMoonfin,
@@ -32,6 +33,7 @@ class UserPreferences extends ChangeNotifier {
     mediaBarModeBookshelf,
     mediaBarModeGallery,
     mediaBarModeBanner,
+    mediaBarModeAya,
     mediaBarModeOff,
   };
 

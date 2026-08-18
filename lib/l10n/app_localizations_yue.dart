@@ -3327,6 +3327,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => '啟用媒體欄';
 
   @override

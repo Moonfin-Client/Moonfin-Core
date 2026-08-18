@@ -3428,6 +3428,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Bật thanh phương tiện';
 
   @override

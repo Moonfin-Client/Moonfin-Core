@@ -3445,6 +3445,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'മീഡിയ ബാർ പ്രവർത്തനക്ഷമമാക്കുക';
 
   @override

@@ -3463,6 +3463,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Ενεργοποιήστε τη γραμμή πολυμέσων';
 
   @override

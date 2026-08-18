@@ -3422,6 +3422,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'මාධ්‍ය තීරුව සබල කරන්න';
 
   @override

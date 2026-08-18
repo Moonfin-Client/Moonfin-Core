@@ -3447,6 +3447,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Washa Upau wa Midia';
 
   @override

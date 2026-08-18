@@ -3433,6 +3433,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Medya Çubuğunu Etkinleştir';
 
   @override

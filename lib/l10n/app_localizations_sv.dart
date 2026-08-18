@@ -3431,6 +3431,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Aktivera Media Bar';
 
   @override

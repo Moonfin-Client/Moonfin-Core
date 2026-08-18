@@ -3444,6 +3444,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Уключыць медыяпанэль';
 
   @override

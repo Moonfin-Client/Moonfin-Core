@@ -3437,6 +3437,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get mediaBarModeBanner => 'Banner';
 
   @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Медиа жолағын қосыңыз';
 
   @override

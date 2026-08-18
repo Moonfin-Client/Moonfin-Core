@@ -6208,6 +6208,12 @@ abstract class AppLocalizations {
   /// **'Banner'**
   String get mediaBarModeBanner;
 
+  /// Media bar style option: Aya
+  ///
+  /// In en, this message translates to:
+  /// **'Aya'**
+  String get mediaBarModeAya;
+
   /// Setting for enabling media bar
   ///
   /// In en, this message translates to:

@@ -1813,6 +1813,7 @@ class _MediaBarState extends State<MediaBar>
     final useMakdStyle = mode == UserPreferences.mediaBarModeMakd;
     final useBookshelfStyle = mode == UserPreferences.mediaBarModeBookshelf;
     final useGalleryStyle = mode == UserPreferences.mediaBarModeGallery;
+    final useAyaStyle = mode == UserPreferences.mediaBarModeAya;
 
     return switch (state) {
       MediaBarLoading() => _wrapStatusFocus(
@@ -1834,15 +1835,17 @@ class _MediaBarState extends State<MediaBar>
           onSelect: () => widget.viewModel.load(context: context, force: true),
         ),
       MediaBarReady(items: final items) =>
-        items.isEmpty
-            ? const SizedBox.shrink()
-            : (useGalleryStyle
+      items.isEmpty
+          ? const SizedBox.shrink()
+          : (useAyaStyle
+              ? _buildAyaSlideshow(context, items)
+              : (useGalleryStyle
                   ? _buildGallerySlideshow(context, items)
                   : (useBookshelfStyle
-                        ? _buildBookshelfSlideshow(context, items)
-                        : (useMakdStyle
-                              ? _buildMakdSlideshow(context, items)
-                              : _buildSlideshow(context, items)))),
+                      ? _buildBookshelfSlideshow(context, items)
+                      : (useMakdStyle
+                          ? _buildMakdSlideshow(context, items)
+                          : _buildSlideshow(context, items))))),
     };
   }
 
@@ -2613,6 +2616,13 @@ class _MediaBarState extends State<MediaBar>
         ),
       ),
     );
+  }
+
+  Widget _buildAyaSlideshow(
+      BuildContext context,
+      List<MediaBarSlideItem> items,
+      ) {
+    return _buildSlideshow(context, items);
   }
 
   void _selectGalleryIndex(int index) {
