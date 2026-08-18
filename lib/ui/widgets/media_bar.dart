@@ -43,6 +43,7 @@ import 'bounded_network_image.dart';
 import 'fullscreen_backdrop_switcher.dart';
 import 'navigation_layout.dart';
 import 'mediabar/bookshelf_layout.dart';
+import 'mediabar/aya_media_bar.dart';
 import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
 import 'mediabar/media_bar_status_focus.dart';
@@ -2622,7 +2623,10 @@ class _MediaBarState extends State<MediaBar>
       BuildContext context,
       List<MediaBarSlideItem> items,
       ) {
-    return _buildSlideshow(context, items);
+    return AyaMediaBar(
+      items: items,
+      height: widget.height,
+    );
   }
 
   void _selectGalleryIndex(int index) {
