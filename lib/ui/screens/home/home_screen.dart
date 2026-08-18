@@ -2079,6 +2079,10 @@ class _ContentRowsState extends State<_ContentRows>
       return 200.0;
     }
 
+    if (_isAyaMode()) {
+      return screenHeight * 0.65;
+    }
+
     if (!PlatformDetection.useMobileUi) {
       return screenHeight;
     }
@@ -2111,6 +2115,13 @@ class _ContentRowsState extends State<_ContentRows>
       widget.prefs.get(UserPreferences.mediaBarMode),
     );
     return mode == UserPreferences.mediaBarModeBanner;
+  }
+
+  bool _isAyaMode() {
+    final mode = UserPreferences.normalizeMediaBarMode(
+      widget.prefs.get(UserPreferences.mediaBarMode),
+    );
+    return mode == UserPreferences.mediaBarModeAya;
   }
 
   double _pinnedInfoCollapseOffset() {

@@ -2623,9 +2623,31 @@ class _MediaBarState extends State<MediaBar>
       BuildContext context,
       List<MediaBarSlideItem> items,
       ) {
-    return AyaMediaBar(
-      items: items,
-      height: widget.height,
+    final clampedIndex = _currentIndex.clamp(0, items.length - 1);
+
+    if (clampedIndex != _currentIndex) {
+      _currentIndex = clampedIndex;
+    }
+
+    return MouseRegion(
+      onEnter: (_) => _setPaused(true),
+      onExit: (_) => _setPaused(false),
+      child: Focus(
+        focusNode: widget.focusNode,
+        autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
+        skipTraversal: true,
+        onFocusChange: _handleFocusChange,
+        onKeyEvent: (node, event) => _handleKeyEvent(event, items),
+        child: GestureDetector(
+          onTap: () => _navigateToItem(context, items),
+          onLongPress: () => _navigateToItemAndPlay(context, items),
+          child: AyaMediaBar(
+            items: items,
+            activeIndex: clampedIndex,
+            height: widget.height,
+          ),
+        ),
+      ),
     );
   }
 
