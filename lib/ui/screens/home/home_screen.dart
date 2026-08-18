@@ -2420,8 +2420,12 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
+    final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
     final fullScreenRows = _fullScreenRowsEnabled(prefs);
-    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+    double platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+    if (isWideRowsV2) {
+      platformScale = platformScale * 2.5;
+    }
 
     double childHeight = 0.0;
     if (row.isLoading) {
@@ -3449,15 +3453,18 @@ class _ContentRowsState extends State<_ContentRows>
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
       final isSeerrRowOverride = _isSeerrFilterRow(row);
-      final isRowsV2 =
-          prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-          !_isWideArtworkRow(row);
+      final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
+      final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
+
       final rowImageType = isSeerrRowOverride
           ? ImageType.thumb
           : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
-      final platformScale = PlatformDetection.isTV
+      double platformScale = PlatformDetection.isTV
           ? 0.8 * desktopScale
           : desktopScale;
+      if (isWideRowsV2) {
+        platformScale = platformScale * 2.5;
+      }
       var maxCardHeight = 0.0;
       if (isRowsV2) {
         final imageHeight =
@@ -3831,7 +3838,7 @@ class _ContentRowsState extends State<_ContentRows>
         : prefs.get(UserPreferences.posterSize);
     final watchedBehavior = prefs.get(UserPreferences.watchedIndicatorBehavior);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
-    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion) && !_isHomeRowsStyleV2();
     final useSeriesThumbs = prefs.get(UserPreferences.seriesThumbnailsEnabled);
 
     if (widget.viewModel.isLoading && rows.isEmpty) {
@@ -4407,17 +4414,19 @@ class _ContentRowsState extends State<_ContentRows>
   }) {
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
     final isSeerrRowOverride = _isSeerrFilterRow(row);
-    final isRowsV2 =
-        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-        !_isWideArtworkRow(row);
+    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
+    final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
         : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    final platformScale = PlatformDetection.isTV
+    double platformScale = PlatformDetection.isTV
         ? 0.8 * desktopScale
         : desktopScale;
+    if (isWideRowsV2) {
+      platformScale = platformScale * 2.5;
+    }
     final v2ImageHeight =
         posterSize.portraitHeight.toDouble() * platformScale * 2;
     final v2MetadataHeightBudget = _v2MetadataBudgetFor(row, prefs);
@@ -4759,7 +4768,7 @@ class _ContentRowsState extends State<_ContentRows>
                     focusColor: (row.rowType == HomeRowType.genres && row.id == 'genres')
                         ? ThemeRegistry.active.borders.focusBorder.color
                         : focusColor,
-                    cardFocusExpansion: isRowsV2 ? false : cardExpansion && !showPreviewVideo,
+                    cardFocusExpansion: _isHomeRowsStyleV2() ? false : cardExpansion && !showPreviewVideo,
                     externalIsFocused: effectiveV2Focused,
                     suppressImageFocusBorder: showPreviewVideo,
                     suppressFocusGlow: suppressFocusGlow,
