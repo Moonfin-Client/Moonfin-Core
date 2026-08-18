@@ -24,9 +24,16 @@ class AyaMediaBar extends StatelessWidget {
   static const _indicatorInactiveWidth = 10.0;
   static const _indicatorHeight = 2.0;
   static const _indicatorInactiveOpacity = 0.30;
-  static const _indicatorAnimationDuration = Duration(
-    milliseconds: 250,
+
+  static const _slideTransitionDuration = Duration(
+    milliseconds: 900,
   );
+
+  static const _indicatorAnimationDuration = Duration(
+    milliseconds: 280,
+  );
+
+  static const _slideScaleBegin = 1.006;
 
   final List<MediaBarSlideItem> items;
   final int activeIndex;
@@ -49,20 +56,99 @@ class AyaMediaBar extends StatelessWidget {
     return Padding(
       padding: padding,
       child: ClipRRect(
-        borderRadius: AppRadius.circular(_cornerRadius),
+        borderRadius: AppRadius.circular(
+          _cornerRadius,
+        ),
         child: SizedBox(
           height: height,
           width: double.infinity,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _buildBackdrop(item),
-              _buildContent(theme, item),
+              _buildAnimatedSlide(
+                theme,
+                item,
+              ),
               if (items.length > 1) _buildIndicators(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAnimatedSlide(
+      ThemeData theme,
+      MediaBarSlideItem item,
+      ) {
+    return AnimatedSwitcher(
+      duration: _slideTransitionDuration,
+      reverseDuration: _slideTransitionDuration,
+      switchInCurve: Curves.easeInOutCubic,
+      switchOutCurve: Curves.easeInOutCubic,
+      layoutBuilder: (
+          Widget? currentChild,
+          List<Widget> previousChildren,
+          ) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            ...previousChildren,
+            if (currentChild != null) currentChild,
+          ],
+        );
+      },
+      transitionBuilder: (
+          Widget child,
+          Animation<double> animation,
+          ) {
+        final opacity = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOutCubic,
+          reverseCurve: Curves.easeInOutCubic,
+        );
+
+        final scale = Tween<double>(
+          begin: _slideScaleBegin,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          ),
+        );
+
+        return FadeTransition(
+          opacity: opacity,
+          child: ScaleTransition(
+            scale: scale,
+            child: child,
+          ),
+        );
+      },
+      child: KeyedSubtree(
+        key: ValueKey(activeIndex),
+        child: _buildSlide(
+          theme,
+          item,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSlide(
+      ThemeData theme,
+      MediaBarSlideItem item,
+      ) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildBackdrop(item),
+        _buildContent(
+          theme,
+          item,
+        ),
+      ],
     );
   }
 
@@ -172,7 +258,7 @@ class AyaMediaBar extends StatelessWidget {
 
             return AnimatedContainer(
               duration: _indicatorAnimationDuration,
-              curve: Curves.easeOut,
+              curve: Curves.easeOutCubic,
               margin: const EdgeInsets.only(
                 left: _indicatorSpacing,
               ),
