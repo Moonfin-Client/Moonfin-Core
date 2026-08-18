@@ -127,7 +127,7 @@ bool _shouldRedirectVideoToExternalPlayer(String path) {
     return false;
   }
 
-  if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) {
+  if (!PlatformDetection.isAndroid) {
     return false;
   }
 

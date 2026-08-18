@@ -496,7 +496,7 @@ void registerPlaybackModule() {
     );
   });
   manager.setExternalPlaybackDecider((items) {
-    if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) {
+    if (!PlatformDetection.isAndroid) {
       return false;
     }
 

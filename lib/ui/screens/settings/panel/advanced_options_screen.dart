@@ -84,42 +84,43 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                 ],
               ),
             ],
-            if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
+            if (PlatformDetection.isAndroid) ...[
               _SectionHeader(l10n.playerRouting),
               adaptiveListSection(
                 children: [
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.preferExoPlayerFfmpeg,
-                    title: l10n.preferSoftwareDecoders,
-                    subtitle: l10n.preferSoftwareDecodersSubtitle,
-                    icon: Icons.memory,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.media3SkipSilence,
-                    title: l10n.skipSilenceTitle,
-                    subtitle: l10n.skipSilenceSubtitle,
-                    icon: Icons.graphic_eq,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.media3AllowExternalAudioEffects,
-                    title: l10n.allowExternalAudioEffectsTitle,
-                    subtitle: l10n.allowExternalAudioEffectsSubtitle,
-                    icon: Icons.equalizer,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.media3TunnelingDisabled,
-                    inverted: true,
-                    title: l10n.enableTunnelingTitle,
-                    subtitle: l10n.enableTunnelingSubtitle,
-                    icon: Icons.tv,
-                  ),
-                  SwitchPreferenceTile(
-                    preference:
-                        UserPreferences.media3MapDolbyVisionProfile7ToHevc,
-                    title: l10n.mapDolbyVisionP7Title,
-                    subtitle: l10n.mapDolbyVisionP7Subtitle,
-                    icon: Icons.hdr_strong,
-                  ),
+                  if (PlatformDetection.isTV) ...[
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.preferExoPlayerFfmpeg,
+                      title: l10n.preferSoftwareDecoders,
+                      subtitle: l10n.preferSoftwareDecodersSubtitle,
+                      icon: Icons.memory,
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.media3SkipSilence,
+                      title: l10n.skipSilenceTitle,
+                      subtitle: l10n.skipSilenceSubtitle,
+                      icon: Icons.graphic_eq,
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.media3AllowExternalAudioEffects,
+                      title: l10n.allowExternalAudioEffectsTitle,
+                      subtitle: l10n.allowExternalAudioEffectsSubtitle,
+                      icon: Icons.equalizer,
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.media3TunnelingDisabled,
+                      inverted: true,
+                      title: l10n.enableTunnelingTitle,
+                      subtitle: l10n.enableTunnelingSubtitle,
+                      icon: Icons.tv,
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.media3MapDolbyVisionProfile7ToHevc,
+                      title: l10n.mapDolbyVisionP7Title,
+                      subtitle: l10n.mapDolbyVisionP7Subtitle,
+                      icon: Icons.hdr_strong,
+                    ),
+                  ],
                   SwitchPreferenceTile(
                     preference: UserPreferences.useExternalPlayer,
                     title: l10n.useExternalPlayer,

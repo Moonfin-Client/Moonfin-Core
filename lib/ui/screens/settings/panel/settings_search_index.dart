@@ -1415,6 +1415,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.enableTunnelingTitle,
         subtitle: l10n.enableTunnelingSubtitle,
       ),
+    ],
+    if (PlatformDetection.isAndroid) ...[
       advanced.leaf(
         'external_player',
         l10n.useExternalPlayer,
