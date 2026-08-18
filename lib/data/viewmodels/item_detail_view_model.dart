@@ -1032,6 +1032,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
+      recursive: true,
+      includeItemTypes: ['Movie', 'Series', 'Video', 'MusicVideo', 'Audio'],
       fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
@@ -1098,6 +1100,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       final allData = await _client.itemsApi.getItems(
         parentId: itemId,
         limit: _indexScanLimit,
+        recursive: true,
         fields: 'BasicSyncInfo',
       );
       final allTopLevel = _mapItems((allData['Items'] as List?) ?? []);
@@ -1283,6 +1286,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         fetchFutures.add(() async {
           final data = await _client.itemsApi.getItems(
             parentId: boxSetId,
+            recursive: true,
             sortBy: 'PremiereDate,SortName',
             sortOrder: 'Ascending',
             fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
@@ -1316,6 +1320,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     try {
       final membership = await _client.itemsApi.getItems(
         parentId: boxSetId,
+        recursive: true,
         fields: 'BasicSyncInfo',
       );
       final members = (membership['Items'] as List?) ?? const [];
@@ -1368,6 +1373,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           await Future.wait(batch.map((candidate) async {
             final membership = await _client.itemsApi.getItems(
               parentId: candidate.key,
+              recursive: true,
               fields: 'BasicSyncInfo',
             );
             final members = (membership['Items'] as List?) ?? const [];
