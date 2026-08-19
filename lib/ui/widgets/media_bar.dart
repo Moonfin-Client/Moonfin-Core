@@ -2675,7 +2675,7 @@ class _MediaBarState extends State<MediaBar>
       child: Focus(
         focusNode: widget.focusNode,
         autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
-        skipTraversal: true,
+        skipTraversal: false,
         onFocusChange: _handleFocusChange,
         onKeyEvent: (node, event) => _handleKeyEvent(event, items),
         child: GestureDetector(

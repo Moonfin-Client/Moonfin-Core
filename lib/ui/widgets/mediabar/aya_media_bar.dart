@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../data/models/media_bar_slide_item.dart';
+import '../focus/glass_focus_halo.dart';
 import '../offline_aware_image.dart';
 
-class AyaMediaBar extends StatelessWidget {
+class AyaMediaBar extends StatefulWidget {
   static const _cornerRadius = 18.0;
 
   static const _contentLeftPadding = 44.0;
@@ -24,6 +25,9 @@ class AyaMediaBar extends StatelessWidget {
   static const _indicatorInactiveWidth = 10.0;
   static const _indicatorHeight = 2.0;
   static const _indicatorInactiveOpacity = 0.30;
+
+  static const _focusInset = 3.5;
+  static const _focusBorderWidth = 3.0;
 
   static const _slideTransitionDuration = Duration(
     milliseconds: 900,
@@ -49,29 +53,100 @@ class AyaMediaBar extends StatelessWidget {
   });
 
   @override
+  State<AyaMediaBar> createState() => _AyaMediaBarState();
+}
+
+class _AyaMediaBarState extends State<AyaMediaBar> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    final item = items[activeIndex];
+    final item = widget.items[widget.activeIndex];
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: padding,
-      child: ClipRRect(
-        borderRadius: AppRadius.circular(
-          _cornerRadius,
-        ),
-        child: SizedBox(
-          height: height,
-          width: double.infinity,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _buildAnimatedSlide(
-                theme,
-                item,
+    final isFocused = Focus.of(context).hasFocus;
+    final isHighlighted = isFocused || _isHovered;
+
+    final borders = ThemeRegistry.active.borders;
+    final borderColor = GlassFocusHalo.appleStyleActive
+        ? Colors.white
+        : theme.colorScheme.primary;
+
+    final showGlow =
+        isHighlighted && borders.focusGlow.isNotEmpty;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Padding(
+        padding: widget.padding,
+        child: Stack(
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
+          children: [
+            if (showGlow)
+              Positioned(
+                top: -AyaMediaBar._focusInset,
+                bottom: -AyaMediaBar._focusInset,
+                left: -AyaMediaBar._focusInset,
+                right: -AyaMediaBar._focusInset,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: AppRadius.circular(
+                        AyaMediaBar._cornerRadius +
+                            AyaMediaBar._focusInset,
+                      ),
+                      boxShadow: borders.focusGlow,
+                    ),
+                  ),
+                ),
               ),
-              if (items.length > 1) _buildIndicators(),
-            ],
-          ),
+            ClipRRect(
+              borderRadius: AppRadius.circular(
+                AyaMediaBar._cornerRadius,
+              ),
+              child: SizedBox(
+                height: widget.height,
+                width: double.infinity,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _buildAnimatedSlide(
+                      theme,
+                      item,
+                    ),
+                    if (widget.items.length > 1)
+                      _buildIndicators(),
+                  ],
+                ),
+              ),
+            ),
+            if (isHighlighted)
+              Positioned(
+                top: -AyaMediaBar._focusInset,
+                bottom: -AyaMediaBar._focusInset,
+                left: -AyaMediaBar._focusInset,
+                right: -AyaMediaBar._focusInset,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: AppRadius.circular(
+                        AyaMediaBar._cornerRadius +
+                            AyaMediaBar._focusInset,
+                      ),
+                      border: Border.fromBorderSide(
+                        borders.focusBorder.copyWith(
+                          color: borderColor,
+                          width: AyaMediaBar._focusBorderWidth,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -82,8 +157,8 @@ class AyaMediaBar extends StatelessWidget {
       MediaBarSlideItem item,
       ) {
     return AnimatedSwitcher(
-      duration: _slideTransitionDuration,
-      reverseDuration: _slideTransitionDuration,
+      duration: AyaMediaBar._slideTransitionDuration,
+      reverseDuration: AyaMediaBar._slideTransitionDuration,
       switchInCurve: Curves.easeInOutCubic,
       switchOutCurve: Curves.easeInOutCubic,
       layoutBuilder: (
@@ -109,7 +184,7 @@ class AyaMediaBar extends StatelessWidget {
         );
 
         final scale = Tween<double>(
-          begin: _slideScaleBegin,
+          begin: AyaMediaBar._slideScaleBegin,
           end: 1.0,
         ).animate(
           CurvedAnimation(
@@ -127,7 +202,7 @@ class AyaMediaBar extends StatelessWidget {
         );
       },
       child: KeyedSubtree(
-        key: ValueKey(activeIndex),
+        key: ValueKey(widget.activeIndex),
         child: _buildSlide(
           theme,
           item,
@@ -177,8 +252,8 @@ class AyaMediaBar extends StatelessWidget {
       MediaBarSlideItem item,
       ) {
     return Positioned(
-      left: _contentLeftPadding,
-      top: _contentTopPadding,
+      left: AyaMediaBar._contentLeftPadding,
+      top: AyaMediaBar._contentTopPadding,
       child: _buildLogoOrTitle(
         theme,
         item,
@@ -200,8 +275,8 @@ class AyaMediaBar extends StatelessWidget {
     }
 
     return SizedBox(
-      width: _logoWidth,
-      height: _logoHeight,
+      width: AyaMediaBar._logoWidth,
+      height: AyaMediaBar._logoHeight,
       child: OfflineAwareImage(
         imageUrl: logoUrl,
         fit: BoxFit.contain,
@@ -221,7 +296,7 @@ class AyaMediaBar extends StatelessWidget {
       ) {
     return ConstrainedBox(
       constraints: const BoxConstraints(
-        maxWidth: _titleMaxWidth,
+        maxWidth: AyaMediaBar._titleMaxWidth,
       ),
       child: Text(
         title,
@@ -235,9 +310,9 @@ class AyaMediaBar extends StatelessWidget {
           shadows: [
             Shadow(
               color: AppColorScheme.scrim.withValues(
-                alpha: _titleShadowOpacity,
+                alpha: AyaMediaBar._titleShadowOpacity,
               ),
-              blurRadius: _titleShadowBlurRadius,
+              blurRadius: AyaMediaBar._titleShadowBlurRadius,
             ),
           ],
         ),
@@ -247,33 +322,33 @@ class AyaMediaBar extends StatelessWidget {
 
   Widget _buildIndicators() {
     return Positioned(
-      top: _indicatorTopInset,
-      right: _indicatorRightInset,
+      top: AyaMediaBar._indicatorTopInset,
+      right: AyaMediaBar._indicatorRightInset,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: List.generate(
-          items.length,
+          widget.items.length,
               (index) {
-            final isActive = index == activeIndex;
+            final isActive = index == widget.activeIndex;
 
             return AnimatedContainer(
-              duration: _indicatorAnimationDuration,
+              duration: AyaMediaBar._indicatorAnimationDuration,
               curve: Curves.easeOutCubic,
               margin: const EdgeInsets.only(
-                left: _indicatorSpacing,
+                left: AyaMediaBar._indicatorSpacing,
               ),
               width: isActive
-                  ? _indicatorActiveWidth
-                  : _indicatorInactiveWidth,
-              height: _indicatorHeight,
+                  ? AyaMediaBar._indicatorActiveWidth
+                  : AyaMediaBar._indicatorInactiveWidth,
+              height: AyaMediaBar._indicatorHeight,
               decoration: BoxDecoration(
                 color: isActive
                     ? AppColorScheme.onSurface
                     : AppColorScheme.onSurface.withValues(
-                  alpha: _indicatorInactiveOpacity,
+                  alpha: AyaMediaBar._indicatorInactiveOpacity,
                 ),
                 borderRadius: AppRadius.circular(
-                  _indicatorHeight,
+                  AyaMediaBar._indicatorHeight,
                 ),
               ),
             );
