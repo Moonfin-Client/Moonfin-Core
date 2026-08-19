@@ -558,6 +558,14 @@ class _MediaBarState extends State<MediaBar>
     return mode == UserPreferences.mediaBarModeMakd;
   }
 
+  bool _isAyaMobileMode() {
+    if (!PlatformDetection.useMobileUi) return false;
+    final mode = UserPreferences.normalizeMediaBarMode(
+      widget.prefs.get(UserPreferences.mediaBarMode),
+    );
+    return mode == UserPreferences.mediaBarModeAya;
+  }
+
   void _prefetchAllInBackground(
     List<MediaBarSlideItem> items,
     int centerIndex,
@@ -639,7 +647,7 @@ class _MediaBarState extends State<MediaBar>
     if (!mounted) return;
     setState(() {});
 
-    if (_isMakdMobileMode()) {
+    if (_isMakdMobileMode() || _isAyaMobileMode()) {
       _cancelTrailerPreview();
       return;
     }
@@ -853,7 +861,7 @@ class _MediaBarState extends State<MediaBar>
   }
 
   void _scheduleTrailerPreview(MediaBarSlideItem item) {
-    if (_isMakdMobileMode() || _isBookshelfMode()) {
+    if (_isMakdMobileMode() || _isBookshelfMode() || _isAyaMobileMode()) {
       _cancelTrailerPreview();
       return;
     }
@@ -2624,19 +2632,35 @@ class _MediaBarState extends State<MediaBar>
   EdgeInsets _ayaMediaBarInsets() {
     final navbarIsTop =
         widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+
+    final isMobile = PlatformDetection.useMobileUi;
     final isTvTopNavbar =
-        navbarIsTop &&
-            PlatformDetection.isTV &&
-            !PlatformDetection.useMobileUi;
+        navbarIsTop && PlatformDetection.isTV && !isMobile;
     final hasDesktopSidebar =
-        !navbarIsTop && !PlatformDetection.useMobileUi;
+        !navbarIsTop && !isMobile;
 
     final safeTop = MediaQuery.paddingOf(context).top;
 
     const contentPadding = 32.0;
+    const mobileHorizontalPadding = 16.0;
+    const mobileBottomPadding = 16.0;
     const tvTopNavbarHorizontalInset = 48.0;
     const desktopSidebarInset = 56.0;
     const desktopToolbarVerticalPadding = 10.0;
+
+    if (isMobile) {
+      final topInset = safeTop +
+          (navbarIsTop
+              ? TopToolbar.heightFor(context) + 12.0
+              : 16.0);
+
+      return EdgeInsets.fromLTRB(
+        mobileHorizontalPadding,
+        topInset,
+        mobileHorizontalPadding,
+        mobileBottomPadding - 16.0,
+      );
+    }
 
     final leftInset = isTvTopNavbar
         ? tvTopNavbarHorizontalInset + contentPadding
@@ -2706,6 +2730,17 @@ class _MediaBarState extends State<MediaBar>
         child: GestureDetector(
           onTap: () => _navigateToItem(context, items),
           onLongPress: () => _navigateToItemAndPlay(context, items),
+          onHorizontalDragEnd: PlatformDetection.useMobileUi
+              ? (details) {
+            final velocity = details.primaryVelocity ?? 0;
+
+            if (velocity < -300 && _currentIndex < items.length - 1) {
+              _goToPage(_currentIndex + 1);
+            } else if (velocity > 300 && _currentIndex > 0) {
+              _goToPage(_currentIndex - 1);
+            }
+          }
+              : null,
           child: AyaMediaBar(
             items: items,
             activeIndex: clampedIndex,

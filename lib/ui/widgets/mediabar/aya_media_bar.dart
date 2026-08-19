@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../data/models/media_bar_slide_item.dart';
+import '../../../util/platform_detection.dart';
 import '../focus/glass_focus_halo.dart';
 import '../offline_aware_image.dart';
 
@@ -155,6 +156,22 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     );
   }
 
+  bool _usesMobilePoster(MediaBarSlideItem item) {
+    final posterUrl = item.posterUrl;
+
+    return PlatformDetection.useMobileUi &&
+        posterUrl != null &&
+        posterUrl.isNotEmpty;
+  }
+
+  String? _artworkUrl(MediaBarSlideItem item) {
+    if (_usesMobilePoster(item)) {
+      return item.posterUrl;
+    }
+
+    return item.backdropUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = widget.items[widget.activeIndex];
@@ -268,7 +285,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       child: KeyedSubtree(
         key: ValueKey('aya_backdrop_slide_${item.itemId}'),
         child: _AyaBackdrop(
-          item: item,
+          artworkUrl: _artworkUrl(item),
           highlighted: _isHighlighted,
           depthScale: AyaMediaBar._backdropDepthScale,
           depthInDuration: AyaMediaBar._backdropDepthInDuration,
@@ -291,7 +308,9 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       transitionBuilder: _buildSlideTransition,
       child: KeyedSubtree(
         key: ValueKey('aya_content_${item.itemId}'),
-        child: _buildContent(theme, item),
+        child: _usesMobilePoster(item)
+            ? const SizedBox.expand()
+            : _buildContent(theme, item),
       ),
     );
   }
@@ -450,14 +469,14 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 }
 
 class _AyaBackdrop extends StatefulWidget {
-  final MediaBarSlideItem item;
+  final String? artworkUrl;
   final bool highlighted;
   final double depthScale;
   final Duration depthInDuration;
   final Duration depthOutDuration;
 
   const _AyaBackdrop({
-    required this.item,
+    required this.artworkUrl,
     required this.highlighted,
     required this.depthScale,
     required this.depthInDuration,
@@ -556,9 +575,9 @@ class _AyaBackdropState extends State<_AyaBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    final backdropUrl = widget.item.backdropUrl;
+    final artworkUrl = widget.artworkUrl;
 
-    if (backdropUrl == null || backdropUrl.isEmpty) {
+    if (artworkUrl == null || artworkUrl.isEmpty) {
       return ColoredBox(
         color: AppColorScheme.background,
       );
@@ -567,7 +586,7 @@ class _AyaBackdropState extends State<_AyaBackdrop>
     return AnimatedBuilder(
       animation: _depthController,
       child: OfflineAwareImage(
-        imageUrl: backdropUrl,
+        imageUrl: artworkUrl,
         fit: BoxFit.cover,
         alignment: Alignment.center,
         fadeInDuration: Duration.zero,
