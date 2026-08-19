@@ -39,7 +39,12 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 title: l10n.recentlyReleasedSeriesType,
                 description: l10n.recentlyReleasedSeriesTypeDescription,
                 icon: Icons.ondemand_video,
-                labelOf: (v) => v.displayName,
+                labelOf: (v) => switch (v) {
+                  RecentlyReleasedSeriesType.series => l10n.series,
+                  RecentlyReleasedSeriesType.season => l10n.season,
+                  RecentlyReleasedSeriesType.episode => l10n.episode,
+                },
+                onChanged: _pushPersonalizationSync,
               ),
             ],
           ),

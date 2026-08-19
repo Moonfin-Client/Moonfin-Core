@@ -815,16 +815,7 @@ enum RewatchSortBy {
   String get displayName => this == recentlyWatched ? 'Recently Watched' : 'Random';
 }
 
-enum RecentlyReleasedSeriesType {
-  series,
-  season,
-  episode;
-
-  String get displayName {
-    switch (this) {
-      case series: return 'Series';
-      case season: return 'Season';
-      case episode: return 'Episode';
-    }
-  }
-}
+/// Which record dates a show in the recently released row of a TV library. A
+/// series carries its first episode's date, so a long running show stops
+/// surfacing. The row shows series cards whichever of these is picked.
+enum RecentlyReleasedSeriesType { series, season, episode }

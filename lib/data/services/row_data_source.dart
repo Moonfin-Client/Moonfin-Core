@@ -307,16 +307,19 @@ class RowDataSource {
       defaultLimit: _defaultLimit,
       maxLimit: _maxItems,
     );
-    var seriesType = null;
+    List<String>? seriesType;
     var recursive = false;
     if (collectionType == 'tvshows') {
-      final prefSeriesType = GetIt.instance<UserPreferences>().get(UserPreferences.recentlyReleasedSeriesType);
-      seriesType = switch(prefSeriesType) {
+      final prefSeriesType = GetIt.instance<UserPreferences>().get(
+        UserPreferences.recentlyReleasedSeriesType,
+      );
+      seriesType = switch (prefSeriesType) {
         RecentlyReleasedSeriesType.series => const ['Series'],
         RecentlyReleasedSeriesType.season => const ['Season'],
         RecentlyReleasedSeriesType.episode => const ['Episode'],
       };
-      recursive = (prefSeriesType == RecentlyReleasedSeriesType.series) ? false : true;
+      // Seasons and episodes sit below the library rather than directly in it.
+      recursive = prefSeriesType != RecentlyReleasedSeriesType.series;
     }
     final response = await _getRecentlyReleasedItemsWithFallback(
       parentId: parentId,
@@ -1863,7 +1866,7 @@ class RowDataSource {
     required String parentId,
     required int limit,
     List<String>? includeItemTypes,
-    bool recursive = false
+    bool recursive = false,
   }) async {
     try {
       final response = await _client.itemsApi.getRecentlyReleasedItems(
