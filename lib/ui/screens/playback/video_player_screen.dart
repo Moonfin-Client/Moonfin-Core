@@ -3475,9 +3475,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             onVerticalDragUpdate: swipeGestures ? _onVerticalDragUpdate : null,
             onVerticalDragEnd: swipeGestures ? _onVerticalDragEnd : null,
             onVerticalDragCancel: swipeGestures ? _onVerticalDragCancel : null,
-            onPanDown: PlatformDetection.useDesktopUi
-                ? (_) => _showControls()
-                : null,
             behavior: HitTestBehavior.opaque,
             child: Listener(
               onPointerSignal: PlatformDetection.useDesktopUi
@@ -3503,6 +3500,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       child: ColoredBox(color: Colors.black),
                     ),
                     _buildVideoSurface(),
+                    if (PlatformDetection.isWeb)
+                      const Positioned.fill(
+                        child: ColoredBox(color: Colors.transparent),
+                      ), // Workaround for a Flutter web issue where the video surface can block pointer events.
                     _buildBringupOverlay(context),
                     if (_isRestoringPosition)
                       const Positioned.fill(
