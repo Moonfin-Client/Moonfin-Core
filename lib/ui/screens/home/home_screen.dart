@@ -644,6 +644,11 @@ class _ContentRows extends StatefulWidget {
 class _ContentRowsState extends State<_ContentRows>
     with WidgetsBindingObserver, WindowListener
     implements AudioOwnable {
+  /// A wide artwork row has no modern variant, so beside rows drawing at twice
+  /// the poster height it reads as a band of undersized cards. This brings the
+  /// two back to roughly the same height.
+  static const double _wideArtworkModernScale = 2.5;
+
   static const double _kHomeRowLabelInset = 16.0;
   static const double _focusedRowExtraSpacing = 20.0;
   static const Duration _focusedRowSpacingDuration = Duration(
@@ -2420,12 +2425,8 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
-    final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
     final fullScreenRows = _fullScreenRowsEnabled(prefs);
-    double platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
-    if (isWideRowsV2) {
-      platformScale = platformScale * 2.5;
-    }
+    final platformScale = _rowPlatformScale(row, desktopScale);
 
     double childHeight = 0.0;
     if (row.isLoading) {
@@ -3426,6 +3427,14 @@ class _ContentRowsState extends State<_ContentRows>
     return widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 
+  double _rowPlatformScale(HomeRow row, double desktopScale) {
+    final base = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+    if (_isHomeRowsStyleV2() && _isWideArtworkRow(row)) {
+      return base * _wideArtworkModernScale;
+    }
+    return base;
+  }
+
   double _squarePosterSide(PosterSize posterSize) {
     final scaleFactor = _desktopUiScaleFactor();
     final platformScale = PlatformDetection.isTV
@@ -3453,18 +3462,13 @@ class _ContentRowsState extends State<_ContentRows>
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
       final isSeerrRowOverride = _isSeerrFilterRow(row);
-      final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
-      final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
-
+      final isRowsV2 =
+          prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
+          !_isWideArtworkRow(row);
       final rowImageType = isSeerrRowOverride
           ? ImageType.thumb
           : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
-      double platformScale = PlatformDetection.isTV
-          ? 0.8 * desktopScale
-          : desktopScale;
-      if (isWideRowsV2) {
-        platformScale = platformScale * 2.5;
-      }
+      final platformScale = _rowPlatformScale(row, desktopScale);
       var maxCardHeight = 0.0;
       if (isRowsV2) {
         final imageHeight =
@@ -3838,7 +3842,7 @@ class _ContentRowsState extends State<_ContentRows>
         : prefs.get(UserPreferences.posterSize);
     final watchedBehavior = prefs.get(UserPreferences.watchedIndicatorBehavior);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
-    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion) && !_isHomeRowsStyleV2();
+    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final useSeriesThumbs = prefs.get(UserPreferences.seriesThumbnailsEnabled);
 
     if (widget.viewModel.isLoading && rows.isEmpty) {
@@ -4414,19 +4418,15 @@ class _ContentRowsState extends State<_ContentRows>
   }) {
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
     final isSeerrRowOverride = _isSeerrFilterRow(row);
-    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
-    final isWideRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && _isWideArtworkRow(row);
+    final isRowsV2 =
+        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
+        !_isWideArtworkRow(row);
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
         : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    double platformScale = PlatformDetection.isTV
-        ? 0.8 * desktopScale
-        : desktopScale;
-    if (isWideRowsV2) {
-      platformScale = platformScale * 2.5;
-    }
+    final platformScale = _rowPlatformScale(row, desktopScale);
     final v2ImageHeight =
         posterSize.portraitHeight.toDouble() * platformScale * 2;
     final v2MetadataHeightBudget = _v2MetadataBudgetFor(row, prefs);
