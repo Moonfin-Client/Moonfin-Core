@@ -57,6 +57,12 @@ class AudiobookNote {
 
 /// Persists notes per server+item using [SharedPreferences] and syncs with Moonbase server.
 class AudiobookNotesService {
+  /// Set while a local edit hasn't reached the server. It decides which side
+  /// wins the next sync, so an edit made offline isn't replaced by the older
+  /// list the server still holds.
+  static String _dirtyKey(String serverId, String itemId) =>
+      'audiobook_notes_dirty_${serverId}_$itemId';
+
   static String _key(String serverId, String itemId) =>
       'audiobook_notes_${serverId}_$itemId';
 
@@ -64,8 +70,9 @@ class AudiobookNotesService {
 
   MediaServerClient? _resolveClient(String serverId) {
     try {
-      final factory = GetIt.instance<MediaServerClientFactory>();
-      return factory.getClientIfExists(serverId) ?? GetIt.instance<MediaServerClient>();
+      return GetIt.instance<MediaServerClientFactory>().getClientIfExists(
+        serverId,
+      );
     } catch (_) {
       return null;
     }
@@ -84,10 +91,6 @@ class AudiobookNotesService {
       }
     }
     localList.sort((a, b) => a.positionMs.compareTo(b.positionMs));
-
-    // Background sync from Moonbase server
-    unawaited(_syncFromMoonbase(serverId, itemId, localList));
-
     return localList;
   }
 
@@ -100,6 +103,7 @@ class AudiobookNotesService {
     Future.microtask(() async {
       final value = await load(serverId, itemId);
       if (!controller.isClosed) controller.add(value);
+      await syncFromServer(serverId, itemId);
     });
     return controller.stream;
   }
@@ -155,17 +159,30 @@ class AudiobookNotesService {
     final controller = _controllers[_key(serverId, itemId)];
     if (controller != null && !controller.isClosed) controller.add(notes);
 
+    unawaited(_pushToServer(serverId, itemId, notes));
+  }
+
+  Future<void> _pushToServer(
+    String serverId,
+    String itemId,
+    List<AudiobookNote> list,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_dirtyKey(serverId, itemId), true);
     final client = _resolveClient(serverId);
-    if (client != null) {
-      unawaited(_syncToMoonbase(client, itemId, notes));
+    if (client == null) return;
+    if (await _syncToMoonbase(client, itemId, list)) {
+      await prefs.remove(_dirtyKey(serverId, itemId));
     }
   }
 
-  Future<void> _syncFromMoonbase(
-    String serverId,
-    String itemId,
-    List<AudiobookNote> localList,
-  ) async {
+  /// Reconciles this device with the server for one item.
+  ///
+  /// The server holds a whole list per item, so what it returns is the state
+  /// every device agreed on. Taking it as it stands is what lets a note deleted
+  /// elsewhere stay deleted, which merging the two lists could never express.
+  /// Local wins only while it holds an edit the server hasn't taken.
+  Future<void> syncFromServer(String serverId, String itemId) async {
     final client = _resolveClient(serverId);
     if (client == null) return;
     final token = client.accessToken;
@@ -204,30 +221,22 @@ class AudiobookNotesService {
         }
       }
 
-      final mergedMap = <String, AudiobookNote>{};
-      for (final n in localList) {
-        mergedMap[n.id] = n;
-      }
-      for (final n in serverNotes) {
-        if (!mergedMap.containsKey(n.id)) {
-          mergedMap[n.id] = n;
-        }
-      }
-
-      final mergedList = mergedMap.values.toList()
-        ..sort((a, b) => a.positionMs.compareTo(b.positionMs));
-
       final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool(_dirtyKey(serverId, itemId)) ?? false) {
+        final localList = await load(serverId, itemId);
+        if (await _syncToMoonbase(client, itemId, localList)) {
+          await prefs.remove(_dirtyKey(serverId, itemId));
+        }
+        return;
+      }
+
+      serverNotes.sort((a, b) => a.positionMs.compareTo(b.positionMs));
       await prefs.setStringList(
         _key(serverId, itemId),
-        mergedList.map((n) => jsonEncode(n.toJson())).toList(),
+        serverNotes.map((n) => jsonEncode(n.toJson())).toList(),
       );
       final controller = _controllers[_key(serverId, itemId)];
-      if (controller != null && !controller.isClosed) controller.add(mergedList);
-
-      if (mergedList.length > serverNotes.length) {
-        await _syncToMoonbase(client, itemId, mergedList);
-      }
+      if (controller != null && !controller.isClosed) controller.add(serverNotes);
     } catch (_) {
       // Gracefully ignore network errors
     } finally {
@@ -235,13 +244,13 @@ class AudiobookNotesService {
     }
   }
 
-  Future<void> _syncToMoonbase(
+  Future<bool> _syncToMoonbase(
     MediaServerClient client,
     String itemId,
     List<AudiobookNote> notes,
   ) async {
     final token = client.accessToken;
-    if (token == null || token.isEmpty) return;
+    if (token == null || token.isEmpty) return false;
 
     final dio = Dio(
       BaseOptions(
@@ -264,7 +273,9 @@ class AudiobookNotesService {
         '${client.baseUrl}/Moonfin/Bookmarks/$itemId/Notes',
         data: notes.map((n) => n.toServerJson()).toList(),
       );
+      return true;
     } catch (_) {
+      return false;
     } finally {
       dio.close();
     }
