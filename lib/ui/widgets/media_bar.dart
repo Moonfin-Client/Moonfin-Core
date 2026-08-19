@@ -1846,17 +1846,17 @@ class _MediaBarState extends State<MediaBar>
           onSelect: () => widget.viewModel.load(context: context, force: true),
         ),
       MediaBarReady(items: final items) =>
-      items.isEmpty
-          ? const SizedBox.shrink()
-          : (useAyaStyle
-              ? _buildAyaSlideshow(context, items)
-              : (useGalleryStyle
-                  ? _buildGallerySlideshow(context, items)
-                  : (useBookshelfStyle
-                      ? _buildBookshelfSlideshow(context, items)
-                      : (useMakdStyle
-                          ? _buildMakdSlideshow(context, items)
-                          : _buildSlideshow(context, items))))),
+        items.isEmpty
+            ? const SizedBox.shrink()
+            : (useAyaStyle
+                  ? _buildAyaSlideshow(context, items)
+                  : (useGalleryStyle
+                        ? _buildGallerySlideshow(context, items)
+                        : (useBookshelfStyle
+                              ? _buildBookshelfSlideshow(context, items)
+                              : (useMakdStyle
+                                    ? _buildMakdSlideshow(context, items)
+                                    : _buildSlideshow(context, items))))),
     };
   }
 
@@ -2634,10 +2634,8 @@ class _MediaBarState extends State<MediaBar>
         widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
 
     final isMobile = PlatformDetection.useMobileUi;
-    final isTvTopNavbar =
-        navbarIsTop && PlatformDetection.isTV && !isMobile;
-    final hasDesktopSidebar =
-        !navbarIsTop && !isMobile;
+    final isTvTopNavbar = navbarIsTop && PlatformDetection.isTV && !isMobile;
+    final hasDesktopSidebar = !navbarIsTop && !isMobile;
 
     final safePadding = MediaQuery.paddingOf(context);
 
@@ -2649,10 +2647,9 @@ class _MediaBarState extends State<MediaBar>
     const desktopToolbarVerticalPadding = 10.0;
 
     if (isMobile) {
-      final topInset = safePadding.top +
-          (navbarIsTop
-              ? TopToolbar.heightFor(context) + 12.0
-              : 16.0);
+      final topInset =
+          safePadding.top +
+          (navbarIsTop ? TopToolbar.heightFor(context) + 12.0 : 16.0);
 
       return EdgeInsets.fromLTRB(
         mobileHorizontalPadding + safePadding.left,
@@ -2674,32 +2671,25 @@ class _MediaBarState extends State<MediaBar>
 
     final topInset = navbarIsTop
         ? safePadding.top +
-        TopToolbar.heightFor(context) -
-        desktopToolbarVerticalPadding +
-        contentPadding
+              TopToolbar.heightFor(context) -
+              desktopToolbarVerticalPadding +
+              contentPadding
         : contentPadding;
 
-    return EdgeInsets.fromLTRB(
-      leftInset,
-      topInset,
-      rightInset,
-      contentPadding,
-    );
+    return EdgeInsets.fromLTRB(leftInset, topInset, rightInset, contentPadding);
   }
 
   Widget _buildAyaSlideshow(
-      BuildContext context,
-      List<MediaBarSlideItem> items,
-      ) {
+    BuildContext context,
+    List<MediaBarSlideItem> items,
+  ) {
     final clampedIndex = _currentIndex.clamp(0, items.length - 1);
 
     if (clampedIndex != _currentIndex) {
       _currentIndex = clampedIndex;
     }
 
-    final trailerOverlays = _buildVideoOverlays(
-      allowPersistentMedia3: true,
-    );
+    final trailerOverlays = _buildVideoOverlays(allowPersistentMedia3: true);
 
     return MouseRegion(
       onEnter: (_) => _setPaused(true),
@@ -2732,14 +2722,14 @@ class _MediaBarState extends State<MediaBar>
           onLongPress: () => _navigateToItemAndPlay(context, items),
           onHorizontalDragEnd: PlatformDetection.useMobileUi
               ? (details) {
-            final velocity = details.primaryVelocity ?? 0;
+                  final velocity = details.primaryVelocity ?? 0;
 
-            if (velocity < -300 && _currentIndex < items.length - 1) {
-              _goToPage(_currentIndex + 1);
-            } else if (velocity > 300 && _currentIndex > 0) {
-              _goToPage(_currentIndex - 1);
-            }
-          }
+                  if (velocity < -300 && _currentIndex < items.length - 1) {
+                    _goToPage(_currentIndex + 1);
+                  } else if (velocity > 300 && _currentIndex > 0) {
+                    _goToPage(_currentIndex - 1);
+                  }
+                }
               : null,
           child: AyaMediaBar(
             items: items,
@@ -2751,20 +2741,17 @@ class _MediaBarState extends State<MediaBar>
             ),
             trailerOverlay: trailerOverlays.isEmpty
                 ? null
-                : Stack(
-              fit: StackFit.expand,
-              children: trailerOverlays,
-            ),
-              onAmbientArtworkChanged: (artworkUrl) {
-                if (artworkUrl == null || artworkUrl.isEmpty) {
-                  return;
-                }
+                : Stack(fit: StackFit.expand, children: trailerOverlays),
+            onAmbientArtworkChanged: (artworkUrl) {
+              if (artworkUrl == null || artworkUrl.isEmpty) {
+                return;
+              }
 
-                _backgroundService.setBackgroundUrl(
-                  artworkUrl,
-                  context: BlurContext.browsing,
-                );
-              },
+              _backgroundService.setBackgroundUrl(
+                artworkUrl,
+                context: BlurContext.browsing,
+              );
+            },
           ),
         ),
       ),

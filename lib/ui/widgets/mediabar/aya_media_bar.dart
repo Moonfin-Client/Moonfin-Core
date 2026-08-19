@@ -168,15 +168,10 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     final item = widget.items[widget.activeIndex];
 
-    widget.onAmbientArtworkChanged?.call(
-      _artworkUrl(context, item),
-    );
+    widget.onAmbientArtworkChanged?.call(_artworkUrl(context, item));
   }
 
-  bool _usesMobilePoster(
-      BuildContext context,
-      MediaBarSlideItem item,
-      ) {
+  bool _usesMobilePoster(BuildContext context, MediaBarSlideItem item) {
     final posterUrl = item.posterUrl;
     final isPortrait =
         MediaQuery.orientationOf(context) == Orientation.portrait;
@@ -187,10 +182,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         posterUrl.isNotEmpty;
   }
 
-  String? _artworkUrl(
-      BuildContext context,
-      MediaBarSlideItem item,
-      ) {
+  String? _artworkUrl(BuildContext context, MediaBarSlideItem item) {
     if (_usesMobilePoster(context, item)) {
       return item.posterUrl;
     }
@@ -205,15 +197,13 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     final borders = ThemeRegistry.active.borders;
 
     final isHighlighted = _isHighlighted;
-    final shouldExpand =
-        widget.focusExpansionEnabled && isHighlighted;
+    final shouldExpand = widget.focusExpansionEnabled && isHighlighted;
 
     final borderColor = GlassFocusHalo.appleStyleActive
         ? Colors.white
         : borders.focusBorder.color;
 
-    final showGlow =
-        isHighlighted && borders.focusGlow.isNotEmpty;
+    final showGlow = isHighlighted && borders.focusGlow.isNotEmpty;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -263,8 +253,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: AppRadius.circular(
-                          AyaMediaBar._cornerRadius +
-                              AyaMediaBar._focusInset,
+                          AyaMediaBar._cornerRadius + AyaMediaBar._focusInset,
                         ),
                         boxShadow: borders.focusGlow,
                       ),
@@ -272,24 +261,16 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                   ),
                 ),
               ClipRRect(
-                borderRadius: AppRadius.circular(
-                  AyaMediaBar._cornerRadius,
-                ),
+                borderRadius: AppRadius.circular(AyaMediaBar._cornerRadius),
                 child: SizedBox(
                   height: widget.height,
                   width: double.infinity,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      _buildAnimatedSlide(
-                        context,
-                        theme,
-                        item,
-                      ),
-                      if (widget.trailerOverlay != null)
-                        widget.trailerOverlay!,
-                      if (widget.items.length > 1)
-                        _buildIndicators(),
+                      _buildAnimatedSlide(context, theme, item),
+                      if (widget.trailerOverlay != null) widget.trailerOverlay!,
+                      if (widget.items.length > 1) _buildIndicators(),
                     ],
                   ),
                 ),
@@ -304,8 +285,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: AppRadius.circular(
-                          AyaMediaBar._cornerRadius +
-                              AyaMediaBar._focusInset,
+                          AyaMediaBar._cornerRadius + AyaMediaBar._focusInset,
                         ),
                         border: Border.fromBorderSide(
                           borders.focusBorder.copyWith(
@@ -325,10 +305,10 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
   }
 
   Widget _buildAnimatedSlide(
-      BuildContext context,
-      ThemeData theme,
-      MediaBarSlideItem item,
-      ) {
+    BuildContext context,
+    ThemeData theme,
+    MediaBarSlideItem item,
+  ) {
     return _AyaSlideTransition(
       item: item,
       artworkUrl: _artworkUrl(context, item),
@@ -340,18 +320,12 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       transitionDuration: AyaMediaBar._slideTransitionDuration,
       slideScaleBegin: AyaMediaBar._slideScaleBegin,
       contentBuilder: (slideItem) {
-        return _buildContent(
-          theme,
-          slideItem,
-        );
+        return _buildContent(theme, slideItem);
       },
     );
   }
 
-  Widget _buildContent(
-      ThemeData theme,
-      MediaBarSlideItem item,
-      ) {
+  Widget _buildContent(ThemeData theme, MediaBarSlideItem item) {
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -364,10 +338,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     );
   }
 
-  Widget _buildLogoOrTitle(
-      ThemeData theme,
-      MediaBarSlideItem item,
-      ) {
+  Widget _buildLogoOrTitle(ThemeData theme, MediaBarSlideItem item) {
     final logoUrl = item.logoUrl;
 
     if (logoUrl == null || logoUrl.isEmpty) {
@@ -382,22 +353,14 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         fit: BoxFit.contain,
         alignment: Alignment.topLeft,
         fadeInDuration: Duration.zero,
-        errorWidget: (_, _, _) => _buildTitle(
-          theme,
-          item.title,
-        ),
+        errorWidget: (_, _, _) => _buildTitle(theme, item.title),
       ),
     );
   }
 
-  Widget _buildTitle(
-      ThemeData theme,
-      String title,
-      ) {
+  Widget _buildTitle(ThemeData theme, String title) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxWidth: AyaMediaBar._titleMaxWidth,
-      ),
+      constraints: const BoxConstraints(maxWidth: AyaMediaBar._titleMaxWidth),
       child: Text(
         title,
         maxLines: 2,
@@ -426,34 +389,27 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       right: AyaMediaBar._indicatorRightInset,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-          widget.items.length,
-              (index) {
-            final isActive = index == widget.activeIndex;
+        children: List.generate(widget.items.length, (index) {
+          final isActive = index == widget.activeIndex;
 
-            return AnimatedContainer(
-              duration: AyaMediaBar._indicatorAnimationDuration,
-              curve: Curves.easeOutCubic,
-              margin: const EdgeInsets.only(
-                left: AyaMediaBar._indicatorSpacing,
-              ),
-              width: isActive
-                  ? AyaMediaBar._indicatorActiveWidth
-                  : AyaMediaBar._indicatorInactiveWidth,
-              height: AyaMediaBar._indicatorHeight,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? AppColorScheme.onSurface
-                    : AppColorScheme.onSurface.withValues(
-                  alpha: AyaMediaBar._indicatorInactiveOpacity,
-                ),
-                borderRadius: AppRadius.circular(
-                  AyaMediaBar._indicatorHeight,
-                ),
-              ),
-            );
-          },
-        ),
+          return AnimatedContainer(
+            duration: AyaMediaBar._indicatorAnimationDuration,
+            curve: Curves.easeOutCubic,
+            margin: const EdgeInsets.only(left: AyaMediaBar._indicatorSpacing),
+            width: isActive
+                ? AyaMediaBar._indicatorActiveWidth
+                : AyaMediaBar._indicatorInactiveWidth,
+            height: AyaMediaBar._indicatorHeight,
+            decoration: BoxDecoration(
+              color: isActive
+                  ? AppColorScheme.onSurface
+                  : AppColorScheme.onSurface.withValues(
+                      alpha: AyaMediaBar._indicatorInactiveOpacity,
+                    ),
+              borderRadius: AppRadius.circular(AyaMediaBar._indicatorHeight),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -497,8 +453,7 @@ class _AyaSlideTransition extends StatefulWidget {
   });
 
   @override
-  State<_AyaSlideTransition> createState() =>
-      _AyaSlideTransitionState();
+  State<_AyaSlideTransition> createState() => _AyaSlideTransitionState();
 }
 
 class _AyaSlideTransitionState extends State<_AyaSlideTransition>
@@ -534,9 +489,7 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
       duration: widget.transitionDuration,
     );
 
-    _transitionController.addStatusListener(
-      _handleTransitionStatus,
-    );
+    _transitionController.addStatusListener(_handleTransitionStatus);
   }
 
   @override
@@ -565,10 +518,7 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
     super.dispose();
   }
 
-  bool _sameSlide(
-      _AyaSlideVisual first,
-      _AyaSlideVisual second,
-      ) {
+  bool _sameSlide(_AyaSlideVisual first, _AyaSlideVisual second) {
     return first.item.itemId == second.item.itemId &&
         first.artworkUrl == second.artworkUrl &&
         first.showContent == second.showContent;
@@ -587,26 +537,18 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
   void _prepareSlide(_AyaSlideVisual slide) {
     final generation = ++_prepareGeneration;
 
-    unawaited(
-      _prepareAndStartSlide(
-        slide,
-        generation,
-      ),
-    );
+    unawaited(_prepareAndStartSlide(slide, generation));
   }
 
   Future<void> _prepareAndStartSlide(
-      _AyaSlideVisual slide,
-      int generation,
-      ) async {
+    _AyaSlideVisual slide,
+    int generation,
+  ) async {
     final artworkUrl = slide.artworkUrl;
 
     if (artworkUrl != null && artworkUrl.isNotEmpty) {
       try {
-        await precacheImage(
-          offlineAwareImageProvider(artworkUrl),
-          context,
-        );
+        await precacheImage(offlineAwareImageProvider(artworkUrl), context);
       } catch (_) {}
     }
 
@@ -671,10 +613,7 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
           depthInDuration: widget.depthInDuration,
           depthOutDuration: widget.depthOutDuration,
         ),
-        if (slide.showContent)
-          widget.contentBuilder(
-            slide.item,
-          ),
+        if (slide.showContent) widget.contentBuilder(slide.item),
       ],
     );
   }
@@ -686,15 +625,13 @@ class _AyaSlideTransitionState extends State<_AyaSlideTransition>
       curve: Curves.easeOutCubic,
     );
 
-    final incomingScale = Tween<double>(
-      begin: widget.slideScaleBegin,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _transitionController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    final incomingScale = Tween<double>(begin: widget.slideScaleBegin, end: 1.0)
+        .animate(
+          CurvedAnimation(
+            parent: _transitionController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     final incomingSlide = _incomingSlide;
 
@@ -740,8 +677,7 @@ class _AyaBackdropState extends State<_AyaBackdrop>
   late final AnimationController _depthController;
 
   double get _scale {
-    return 1.0 +
-        ((widget.depthScale - 1.0) * _depthController.value);
+    return 1.0 + ((widget.depthScale - 1.0) * _depthController.value);
   }
 
   @override
@@ -826,9 +762,7 @@ class _AyaBackdropState extends State<_AyaBackdrop>
     final artworkUrl = widget.artworkUrl;
 
     if (artworkUrl == null || artworkUrl.isEmpty) {
-      return ColoredBox(
-        color: AppColorScheme.background,
-      );
+      return ColoredBox(color: AppColorScheme.background);
     }
 
     return AnimatedBuilder(
@@ -838,15 +772,10 @@ class _AyaBackdropState extends State<_AyaBackdrop>
         fit: BoxFit.cover,
         alignment: Alignment.center,
         fadeInDuration: Duration.zero,
-        errorWidget: (_, _, _) => ColoredBox(
-          color: AppColorScheme.background,
-        ),
+        errorWidget: (_, _, _) => ColoredBox(color: AppColorScheme.background),
       ),
       builder: (context, child) {
-        return Transform.scale(
-          scale: _scale,
-          child: child,
-        );
+        return Transform.scale(scale: _scale, child: child);
       },
     );
   }
