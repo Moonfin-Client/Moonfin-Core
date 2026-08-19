@@ -27,6 +27,8 @@ import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/quick_return_wrapper.dart';
+import '../../../util/seerr_genre_art.dart';
+import '../../widgets/seerr/seerr_genre_label.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w300';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -790,9 +792,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       autofocus: autofocusFirst,
       focusNode: autofocusFirst ? firstFocusNode : null,
       itemBuilder: (context, genre, index, isFocused) {
-        final backdrop = genre.backdrops.isNotEmpty
-            ? '$_tmdbBackdropBase${genre.backdrops.first}'
-            : null;
+        final backdrop = seerrGenreBackdropUrl(genre.id, genre.backdrops);
         return _GenreCard(
           name: genre.name,
           imageUrl: backdrop,
@@ -1208,18 +1208,22 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                     )
                   else
                     Container(color: AppColorScheme.surfaceVariant),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColorScheme.scrim.withValues(alpha: 0),
-                          AppColorScheme.scrim.withValues(alpha: 0.73),
-                        ],
+                  // A genre card carries its name across the middle. A
+                  // shortcut keeps the bottom gradient its lower-left label
+                  // needs, under the icon it shows instead.
+                  if (widget.icon != null)
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppColorScheme.scrim.withValues(alpha: 0),
+                            AppColorScheme.scrim.withValues(alpha: 0.73),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   if (widget.icon != null)
                     Center(
                       child: Icon(
@@ -1228,27 +1232,30 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                         color: AppColorScheme.onSurface.withValues(alpha: 0.8),
                       ),
                     ),
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    right: 8,
-                    child: Text(
-                      widget.name,
-                      style: TextStyle(
-                        color: AppColorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 4,
-                            color: AppColorScheme.scrim,
-                          ),
-                        ],
+                  if (widget.icon == null)
+                    SeerrGenreLabel(name: widget.name)
+                  else
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      child: Text(
+                        widget.name,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 4,
+                              color: AppColorScheme.scrim,
+                            ),
+                          ],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
                   if (effectiveFocused)
                     Container(
                       decoration: BoxDecoration(

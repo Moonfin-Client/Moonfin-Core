@@ -72,6 +72,7 @@ import '../../navigation/route_lifecycle_observer.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../../util/game_library.dart';
 import 'home_view_model.dart';
+import '../../widgets/seerr/seerr_genre_label.dart';
 
 Color get _homeBackground => AppColorScheme.background;
 
@@ -3607,8 +3608,12 @@ class _ContentRowsState extends State<_ContentRows>
     double requestScale, {
     bool isMyMediaRow = false,
   }) {
+    // MediaType belongs in the key: a Seerr genre card takes the TMDB genre id
+    // as its item id, and a genre in both the movie row and the series row has
+    // the same id in each, so the second row would reuse the first row's image.
     final key =
-        '${item.serverId}|${item.id}|${imageType.index}|${height.round()}'
+        '${item.serverId}|${item.id}|${item.rawData['MediaType']}'
+        '|${imageType.index}|${height.round()}'
         '|$useSeriesThumbs|${requestScale.toStringAsFixed(2)}|$isMyMediaRow';
     final cached = _rowImageUrlCache[key];
     if (cached != null || _rowImageUrlCache.containsKey(key)) {
@@ -4746,8 +4751,15 @@ class _ContentRowsState extends State<_ContentRows>
             cardSubtitleWidget = null;
           }
 
+                  // Seerr genre cards print their name across the artwork,
+                  // the way the Jellyfin genre row does.
+                  final isSeerrGenreCard =
+                      _isSeerrFilterRow(row) && item.type == 'Genre';
                   final card = MediaCard(
                     title: cardTitle,
+                    imageOverlays: isSeerrGenreCard
+                        ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
+                        : const <Widget>[],
                     subtitle: cardSubtitle,
                     subtitleWidget: cardSubtitleWidget,
                     imageUrl: imageUrl,

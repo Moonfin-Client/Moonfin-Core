@@ -36,6 +36,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/custom_external_lists_service.dart';
+import '../../../util/seerr_genre_art.dart';
 
 class HomeViewModel extends ChangeNotifier {
   /// Cards in a merged row, matching what a single library row shows.
@@ -2249,7 +2250,7 @@ class HomeViewModel extends ChangeNotifier {
               _seerrFilterItem(
                 id: g.id.toString(),
                 name: g.name,
-                imagePath: g.backdrops.isNotEmpty ? g.backdrops.first : '',
+                imagePath: seerrGenreBackdropUrl(g.id, g.backdrops) ?? '',
                 type: 'Genre',
                 mediaType: 'movie',
                 filterType: 'genre',
@@ -2264,7 +2265,7 @@ class HomeViewModel extends ChangeNotifier {
               _seerrFilterItem(
                 id: g.id.toString(),
                 name: g.name,
-                imagePath: g.backdrops.isNotEmpty ? g.backdrops.first : '',
+                imagePath: seerrGenreBackdropUrl(g.id, g.backdrops) ?? '',
                 type: 'Genre',
                 mediaType: 'tv',
                 filterType: 'genre',
