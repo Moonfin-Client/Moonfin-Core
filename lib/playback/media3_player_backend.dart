@@ -309,6 +309,12 @@ class Media3PlayerBackend extends PlayerBackend {
               ? LogLevel.warning
               : LogLevel.debug,
         );
+      case 'nativeErrorRetry':
+        _diag(
+          'Media3: retrying in place after ${map['errorCodeName'] ?? ''} '
+          '${map['message'] ?? ''}',
+          level: LogLevel.warning,
+        );
       case 'audioSinkError':
         _diag(
           'Media3: audio sink error: ${map['message'] ?? ''}',

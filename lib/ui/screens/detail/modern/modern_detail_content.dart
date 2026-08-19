@@ -18,8 +18,6 @@ import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
-import '../../../../util/audio_track_logic.dart';
-import '../../../../util/subtitle_track_logic.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
@@ -2742,63 +2740,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       return code.toUpperCase();
     }
 
-    final prefs = GetIt.instance<UserPreferences>();
-    final manager = GetIt.instance<PlaybackManager>();
-
-    final computedAudioIndex = audioStreams.isNotEmpty
-        ? computeEffectiveAudioIndex(
-            audioStreams: audioStreams,
-            preferredAudioLanguage: manager.lastExplicitAudioLanguage ??
-                (prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto'),
-            fallbackAudioLanguage:
-                prefs.get(UserPreferences.fallbackAudioLanguage) as String? ?? '',
-            preferDefaultAudioTrack:
-                prefs.get(UserPreferences.preferDefaultAudioTrack) as bool? ?? false,
-            preferAudioDescription:
-                prefs.get(UserPreferences.preferAudioDescription) as bool? ?? false,
-            explicitAudioIndex: null,
-            lastExplicitAudioIndex: manager.lastExplicitAudioIndex,
-            lastExplicitAudioTitle: manager.lastExplicitAudioTitle,
-          )
-        : null;
-
-    final resolvedActiveAudioIndex = _vm.selectedAudioIndex ??
-        computedAudioIndex ??
-        (audioStreams.isNotEmpty
-            ? (audioStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => audioStreams.first)['Index'] as int?)
-            : null);
-
-    final activeAudioStream = audioStreams.firstWhere(
-      (s) => s['Index'] == resolvedActiveAudioIndex,
-      orElse: () => const <String, dynamic>{},
-    );
-    final activeAudioLang = activeAudioStream['Language'] as String?;
-
-    final computedSubtitleIndex = subtitleStreams.isNotEmpty
-        ? computeEffectiveSubtitleIndex(
-            subtitleStreams: subtitleStreams,
-            selectedSubtitleIndex: null,
-            activePlaybackSubtitleIndex: null,
-            subtitleMode: prefs.get(UserPreferences.subtitleMode),
-            preferredLanguage:
-                prefs.get(UserPreferences.defaultSubtitleLanguage) as String? ?? 'eng',
-            fallbackLanguage:
-                prefs.get(UserPreferences.fallbackSubtitleLanguage) as String? ?? '',
-            preferSdh: prefs.get(UserPreferences.preferSdhSubtitles) as bool? ?? false,
-            pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay) as bool? ?? false,
-            assDirectPlay: prefs.get(UserPreferences.assDirectPlay) as bool? ?? false,
-            preferredAudioLanguage:
-                prefs.get(UserPreferences.defaultAudioLanguage) as String? ?? 'auto',
-            activeAudioLanguage: activeAudioLang,
-          )
-        : -1;
-
-    final resolvedActiveSubtitleIndex = _vm.selectedSubtitleIndex ??
-        (computedSubtitleIndex != -1 ? computedSubtitleIndex : null) ??
-        (subtitleStreams.isNotEmpty
-            ? (subtitleStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => subtitleStreams.first)['Index'] as int?)
-            : null);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2869,10 +2810,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                       .map((entry) {
                     final idx = entry.key;
                     final a = entry.value;
+                    final activeAudioIndex = _vm.selectedAudioIndex ??
+                        audioStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => audioStreams.first)['Index'] as int?;
                     final title = a['DisplayTitle'] ?? a['Codec']?.toString().toUpperCase();
                     final lang = formatLang(a['Language']);
                     final isDefault = a['IsDefault'] == true ? ' [${l10n.defaultLabel}]' : '';
-                    final isSelected = a['Index'] == resolvedActiveAudioIndex;
+                    final isSelected = a['Index'] == activeAudioIndex;
 
                     return [
                       if (idx > 0) const TextSpan(text: '\n'),
@@ -2937,11 +2880,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                       .map((entry) {
                     final idx = entry.key;
                     final s = entry.value;
+                    final activeSubtitleIndex = _vm.selectedSubtitleIndex ??
+                        subtitleStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => subtitleStreams.first)['Index'] as int?;
                     final title = s['DisplayTitle'] ?? s['Codec']?.toString().toUpperCase();
                     final lang = formatLang(s['Language']);
                     final isDefault = s['IsDefault'] == true ? ' [${l10n.defaultLabel}]' : '';
                     final isForced = s['IsForced'] == true ? ' [${l10n.forced}]' : '';
-                    final isSelected = s['Index'] == resolvedActiveSubtitleIndex;
+                    final isSelected = s['Index'] == activeSubtitleIndex;
 
                     return [
                       if (idx > 0) const TextSpan(text: '\n'),

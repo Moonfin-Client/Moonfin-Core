@@ -634,7 +634,6 @@ class Media3VideoView(
     private var lastPlaybackPositionMs: Long = 0L
     private var displayModeSwitchPending = false
     private var wasPlayingBeforeDisplayModeSwitch = false
-    private var lastAutoPlay = false
     private var displayModeSwitchRetryAttemptedForCurrentSource = false
 
     private fun newVideoView(): View =
@@ -973,6 +972,13 @@ class Media3VideoView(
                 retryAudioWithoutTunnelingIfNeeded(error) ||
                 retryAudioWithStereoDownmixIfNeeded(error)
             if (nativeRetryTriggered) {
+                Media3Bridge.emitEvent(
+                    mapOf(
+                        "event" to "nativeErrorRetry",
+                        "errorCodeName" to error.errorCodeName,
+                        "message" to (error.localizedMessage ?: ""),
+                    ),
+                )
                 return
             }
             emitRecoverablePlayerError(error, nativeRetryTriggered)
@@ -2116,7 +2122,6 @@ class Media3VideoView(
         val url = args["url"]?.toString() ?: return
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
         val autoPlay = args["autoPlay"] as? Boolean ?: false
-        lastAutoPlay = autoPlay
         displayModeSwitchRetryAttemptedForCurrentSource = false
 
         restorePreferredDisplayMode()
@@ -2407,7 +2412,7 @@ class Media3VideoView(
         }
 
         displayModeSwitchPending = true
-        wasPlayingBeforeDisplayModeSwitch = player.playWhenReady || lastAutoPlay
+        wasPlayingBeforeDisplayModeSwitch = player.playWhenReady
 
         val updatedLayoutParams = window.attributes
         updatedLayoutParams.preferredDisplayModeId = preferredModeId
@@ -2432,6 +2437,8 @@ class Media3VideoView(
 
     private fun restorePreferredDisplayMode() {
         clearSurfaceFrameRateHint()
+        displayModeSwitchPending = false
+        wasPlayingBeforeDisplayModeSwitch = false
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
@@ -2445,8 +2452,6 @@ class Media3VideoView(
         }
 
         val restoredLayoutParams = window.attributes
-        displayModeSwitchPending = false
-        wasPlayingBeforeDisplayModeSwitch = false
         restoredLayoutParams.preferredDisplayModeId = originalModeId
         window.attributes = restoredLayoutParams
         activePreferredDisplayModeId = null
@@ -2500,9 +2505,6 @@ class Media3VideoView(
     }
 
     private fun resolveSelectedVideoFrameRate(): Float? {
-        if (sourceFrameRateHint != null && sourceFrameRateHint!! > 0f) {
-            return sourceFrameRateHint
-        }
         for (group in player.currentTracks.groups) {
             if (group.type != C.TRACK_TYPE_VIDEO) {
                 continue
@@ -2517,7 +2519,7 @@ class Media3VideoView(
                 }
             }
         }
-        return null
+        return sourceFrameRateHint
     }
 
     private fun emitFrameRateState(
@@ -3519,9 +3521,6 @@ class Media3VideoView(
         player.setMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
-        if (playWhenReady) {
-            player.play()
-        }
         return true
     }
 
