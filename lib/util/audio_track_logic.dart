@@ -63,20 +63,12 @@ int? computeEffectiveAudioIndex({
     }
   }
 
-  // 4. Prefer Default Audio Track
-  if (preferDefaultAudioTrack) {
-    final defaultTracks = candidates.where((s) => s['IsDefault'] == true).toList();
-    if (defaultTracks.isNotEmpty) {
-      return _rankAudioCandidates(defaultTracks, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
-    }
-  }
-
   final normTitle = lastExplicitAudioTitle?.trim().toLowerCase();
 
-  // 5. Match preferred language
+  // 4. Match preferred language
   final preferredMatches = candidates.where((s) => matchLang(s['Language'], preferredAudioLanguage)).toList();
   if (preferredMatches.isNotEmpty) {
-    // 5a. Prefer exact same track index.
+    // 4a. Prefer exact same track index.
     if (lastExplicitAudioIndex != null) {
       final m = preferredMatches.firstWhere(
         (s) => s['Index'] == lastExplicitAudioIndex,
@@ -84,7 +76,7 @@ int? computeEffectiveAudioIndex({
       );
       if (m.isNotEmpty) return m['Index'] as int?;
     }
-    // 5b. Prefer same track name (handles position shifts).
+    // 4b. Prefer same track name (handles position shifts).
     if (normTitle != null && normTitle.isNotEmpty) {
       final m = preferredMatches.firstWhere(
         (s) => _trackTitle(s)?.trim().toLowerCase() == normTitle,
@@ -93,6 +85,14 @@ int? computeEffectiveAudioIndex({
       if (m.isNotEmpty) return m['Index'] as int?;
     }
     return _rankAudioCandidates(preferredMatches, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
+  }
+
+  // 5. Prefer Default Audio Track if preferred language was not matched or not set
+  if (preferDefaultAudioTrack) {
+    final defaultTracks = candidates.where((s) => s['IsDefault'] == true).toList();
+    if (defaultTracks.isNotEmpty) {
+      return _rankAudioCandidates(defaultTracks, preferDefaultAudioTrack, preferAudioDescription)['Index'] as int?;
+    }
   }
 
   // 6. Match fallback language

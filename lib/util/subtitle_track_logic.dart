@@ -139,6 +139,8 @@ int? computeEffectiveSubtitleIndex({
     } else if (subtitleMode == SubtitleMode.flagged) {
       if (stream['IsDefault'] == true ||
           stream['IsForced'] == true ||
+          matchLang(stream['Language'], preferredLanguage) ||
+          matchLang(stream['Language'], fallbackLanguage) ||
           (bothUnavailable && matchLang(stream['Language'], 'eng'))) {
         candidates.add(stream);
       }
