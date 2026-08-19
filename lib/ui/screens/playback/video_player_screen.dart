@@ -187,6 +187,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   MediaSegment? _skipSegment;
   Duration? _skipTo;
+  /// True when the auto-hide setting is on for the current segment.
+  bool _skipSegmentAutoHideEnabled = false;
+  /// True while the auto-hide cooldown is still running.
+  bool _skipSegmentAutoHidePending = false;
+  Timer? _skipSegmentAutoHideTimer;
   bool _showNextUp = false;
   AggregatedItem? _nextUpItem;
   bool _nextUpDismissed = false;
@@ -879,6 +884,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _syncMedia3VolumeBoostLevel();
       unawaited(_syncAutoHdrSwitching());
       final isPreroll = _isCurrentPreroll;
+      _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
         _showNextUp = false;
@@ -963,6 +969,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _cancelTvTemporarySpeedHold();
     _hideTimer?.cancel();
+    _skipSegmentAutoHideTimer?.cancel();
     _displayPlayingDebounce?.cancel();
     _endsAtTicker?.cancel();
     _scrubSeekDebounceTimer?.cancel();
@@ -2183,6 +2190,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final hadNextUpPrompt = _showNextUp;
     if (!hadSkipPrompt && !hadNextUpPrompt) return;
 
+    if (hadSkipPrompt) {
+      _resetSkipSegmentAutoHide();
+    }
     setState(() {
       if (hadSkipPrompt) {
         _skipSegment = null;
@@ -2240,6 +2250,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _controlsVisible = false;
       });
       _hideTimer?.cancel();
+      _scheduleSkipSegmentAutoHide();
       _focusTvSkipSegment();
     } else if (result.isNone && _skipSegment != null) {
       _clearSkipSegment();
@@ -2343,6 +2354,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (nextItem == null) return;
 
     _manager.suppressAutoNext = true;
+    _resetSkipSegmentAutoHide();
     setState(() {
       _showNextUp = true;
       _nextUpItem = nextItem;
@@ -2473,6 +2485,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_skipTo != null) {
       _manager.seekTo(_skipTo!);
     }
+    _resetSkipSegmentAutoHide();
     setState(() {
       _skipSegment = null;
       _skipTo = null;
@@ -2486,9 +2499,48 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _clearSkipSegment() {
+    _resetSkipSegmentAutoHide();
     setState(() {
       _skipSegment = null;
       _skipTo = null;
+    });
+  }
+
+  void _resetSkipSegmentAutoHide() {
+    _skipSegmentAutoHideTimer?.cancel();
+    _skipSegmentAutoHideTimer = null;
+    _skipSegmentAutoHideEnabled = false;
+    _skipSegmentAutoHidePending = false;
+  }
+
+  /// Whether the skip button is currently drawn. While the auto-hide cooldown
+  /// runs it stays up on its own; afterwards it rides along with the OSD.
+  /// With auto-hide off it stays up until the segment ends.
+  bool get _isSkipSegmentButtonVisible =>
+      _skipSegment != null &&
+      (!_skipSegmentAutoHideEnabled ||
+          _skipSegmentAutoHidePending ||
+          _controlsVisible);
+
+  /// Hides the skip button after the user-configured cooldown. Once it has
+  /// elapsed the button no longer clears the segment outright: it only hides
+  /// while the OSD is up, and reappears whenever the OSD reappears.
+  void _scheduleSkipSegmentAutoHide() {
+    _skipSegmentAutoHideTimer?.cancel();
+    _skipSegmentAutoHideTimer = null;
+    _skipSegmentAutoHideEnabled = false;
+    _skipSegmentAutoHidePending = false;
+    final seconds = _prefs.get(UserPreferences.mediaSegmentAutoHide).seconds;
+    if (seconds <= 0) return;
+    _skipSegmentAutoHideEnabled = true;
+    _skipSegmentAutoHidePending = true;
+    _skipSegmentAutoHideTimer = Timer(Duration(seconds: seconds), () {
+      _skipSegmentAutoHideTimer = null;
+      if (!mounted || _skipSegment == null) return;
+      _skipSegmentAutoHidePending = false;
+      // If the OSD is hidden the button hides with it; if the OSD is up it
+      // stays, and from now on it follows the OSD visibility.
+      setState(() {});
     });
   }
 
@@ -2644,7 +2696,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _focusTvNextUpPlay();
       return;
     }
-    if (_skipSegment != null) {
+    if (_isSkipSegmentButtonVisible) {
       _focusTvSkipSegment();
       return;
     }
@@ -3149,7 +3201,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final isBoundaryFocus =
             primaryFocus == _tvTransportLastFocus ||
             primaryFocus == _tvSeekbarFocus;
-        if (isBoundaryFocus && _skipSegment != null) {
+        if (isBoundaryFocus && _isSkipSegmentButtonVisible) {
           _focusTvSkipSegment();
           return KeyEventResult.handled;
         }
@@ -3186,7 +3238,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             _handleNextUpDismiss();
             return KeyEventResult.handled;
           }
-          if (_skipSegment != null) {
+          if (_isSkipSegmentButtonVisible) {
             _dismissSkipSegment();
             return KeyEventResult.handled;
           }
@@ -3440,7 +3492,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _handleNextUpDismiss();
           return;
         }
-        if (_skipSegment != null) {
+        if (_isSkipSegmentButtonVisible) {
           _dismissSkipSegment();
           return;
         }
@@ -3528,7 +3580,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       _buildDoubleTapSkipOverlay(),
                     if (_isOsdLocked && !hideOsdForPreroll)
                       _buildLockedOverlay(),
-                    if (_skipSegment != null)
+                    if (_isSkipSegmentButtonVisible)
                       SkipSegmentOverlay(
                         segment: _skipSegment!,
                         onSkip: _skipCurrentSegment,
@@ -3537,9 +3589,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             : null,
                         onDismiss: _clearSkipSegment,
                         positionStream: _state.positionStream,
-                        autoHideSeconds: _prefs
-                            .get(UserPreferences.mediaSegmentAutoHide)
-                            .seconds,
+                        initialPosition: _state.position,
                       ),
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(

@@ -20,9 +20,10 @@ class SkipSegmentOverlay extends StatefulWidget {
   final FocusNode? focusNode;
   final Stream<Duration>? positionStream;
 
-  /// Hides the button after this many seconds. Zero leaves it up until the
-  /// segment ends.
-  final int autoHideSeconds;
+  /// Current playback position at build time, so a freshly created widget
+  /// starts in sync instead of flashing the segment start until the next
+  /// stream tick arrives.
+  final Duration? initialPosition;
 
   const SkipSegmentOverlay({
     super.key,
@@ -31,7 +32,7 @@ class SkipSegmentOverlay extends StatefulWidget {
     required this.onDismiss,
     this.focusNode,
     this.positionStream,
-    this.autoHideSeconds = 0,
+    this.initialPosition,
   });
 
   @override
@@ -41,14 +42,12 @@ class SkipSegmentOverlay extends StatefulWidget {
 class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
   StreamSubscription<Duration>? _positionSubscription;
   Duration _currentPosition = Duration.zero;
-  Timer? _autoHideTimer;
 
   @override
   void initState() {
     super.initState();
-    _currentPosition = widget.segment.start;
+    _currentPosition = widget.initialPosition ?? widget.segment.start;
     _subscribe();
-    _scheduleAutoHide();
   }
 
   @override
@@ -58,26 +57,22 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
         oldWidget.segment != widget.segment) {
       _unsubscribe();
       if (widget.segment != oldWidget.segment) {
-        _currentPosition = widget.segment.start;
-        _scheduleAutoHide();
+        _currentPosition = widget.initialPosition ?? widget.segment.start;
       }
       _subscribe();
+    }
+    // Keep the countdown in sync when the parent rebuilds with a fresh
+    // position (e.g. after a seek) before the next stream tick arrives.
+    final initial = widget.initialPosition;
+    if (initial != null && initial != oldWidget.initialPosition) {
+      _currentPosition = initial;
     }
   }
 
   @override
   void dispose() {
-    _autoHideTimer?.cancel();
     _unsubscribe();
     super.dispose();
-  }
-
-  void _scheduleAutoHide() {
-    _autoHideTimer?.cancel();
-    if (widget.autoHideSeconds <= 0) return;
-    _autoHideTimer = Timer(Duration(seconds: widget.autoHideSeconds), () {
-      if (mounted) widget.onDismiss();
-    });
   }
 
   void _subscribe() {
