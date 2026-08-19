@@ -58,22 +58,13 @@ void main() {
       );
     });
 
-    test('renders Punycode hostnames as Unicode for display', () {
+    // Punycode is what the user sees as well as what we store. This one
+    // decodes to a Cyrillic lookalike of apple.com, and the address sits on
+    // the screen where someone picks which server to sign in to.
+    test('leaves a Punycode hostname encoded', () {
       expect(
-        displayServerBaseUrl('https://xn--xmpl-boa4bm.example'),
-        'https://éxâmplê.example',
-      );
-      expect(
-        displayServerBaseUrl('media.xn--xmpl-boa4bm.example:8443/jellyfin'),
-        'media.éxâmplê.example:8443/jellyfin',
-      );
-      expect(
-        displayServerBaseUrl('https://media.example.com'),
-        'https://media.example.com',
-      );
-      expect(
-        displayServerBaseUrl('http://192.168.1.5:8096'),
-        'http://192.168.1.5:8096',
+        normalizeServerBaseUrl('https://xn--80ak6aa92e.com'),
+        'https://xn--80ak6aa92e.com',
       );
     });
 

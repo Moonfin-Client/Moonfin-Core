@@ -41,38 +41,6 @@ String normalizeServerBaseUrl(String input) {
   );
 }
 
-/// Returns a human-readable form of a normalized server URL.
-///
-/// Network/storage paths remain in IDNA ASCII form; only Punycode hostname
-/// labels are decoded for presentation.
-String displayServerBaseUrl(String input) {
-  final normalized = normalizeServerBaseUrl(input);
-  if (normalized.isEmpty) return '';
-
-  final hasScheme = _schemeRegex.hasMatch(normalized);
-  final parseTarget = hasScheme ? normalized : 'https://$normalized';
-
-  Uri uri;
-  try {
-    uri = Uri.parse(parseTarget);
-  } catch (_) {
-    return normalized;
-  }
-
-  final host = uri.host;
-  if (host.isEmpty ||
-      !host.toLowerCase().split('.').any((label) => label.startsWith('xn--'))) {
-    return normalized;
-  }
-
-  try {
-    final displayHost = domainToUnicode(host);
-    return normalized.replaceFirst(host, displayHost);
-  } on FormatException {
-    return normalized;
-  }
-}
-
 String _normalizeServerHost(String host) {
   if (host.isEmpty) return host;
 

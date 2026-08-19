@@ -635,7 +635,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     ),
                   ),
                   Text(
-                    '${displayServerBaseUrl(server.address)} • ${server.version}',
+                    '${server.address} • ${server.version}',
                     style: TextStyle(
                       fontSize: 13,
                       color: _loginForeground(0.5),
@@ -675,7 +675,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     ),
                   ),
                   Text(
-                    displayServerBaseUrl(server.address),
+                    server.address,
                     style: TextStyle(
                       fontSize: 13,
                       color: _loginForeground(0.5),
@@ -696,7 +696,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     if (_isAddDialogOpen) return;
     _isAddDialogOpen = true;
     final defaultAddress = _webDefaultServerUrl;
-    _addressController.text = displayServerBaseUrl(defaultAddress ?? '');
+    _addressController.text = defaultAddress ?? '';
     _addressController.selection = TextSelection.collapsed(
       offset: _addressController.text.length,
     );
@@ -876,7 +876,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
   List<String> get _recentServerAddresses {
     final servers = [...widget.serverRepo.servers]
       ..sort((a, b) => b.dateLastAccessed.compareTo(a.dateLastAccessed));
-    return [for (final server in servers) displayServerBaseUrl(server.address)];
+    return [for (final server in servers) server.address];
   }
 
   Color _dialogForeground(double alpha) {
