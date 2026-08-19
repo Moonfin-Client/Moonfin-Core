@@ -2639,7 +2639,7 @@ class _MediaBarState extends State<MediaBar>
     final hasDesktopSidebar =
         !navbarIsTop && !isMobile;
 
-    final safeTop = MediaQuery.paddingOf(context).top;
+    final safePadding = MediaQuery.paddingOf(context);
 
     const contentPadding = 32.0;
     const mobileHorizontalPadding = 16.0;
@@ -2649,16 +2649,16 @@ class _MediaBarState extends State<MediaBar>
     const desktopToolbarVerticalPadding = 10.0;
 
     if (isMobile) {
-      final topInset = safeTop +
+      final topInset = safePadding.top +
           (navbarIsTop
               ? TopToolbar.heightFor(context) + 12.0
               : 16.0);
 
       return EdgeInsets.fromLTRB(
-        mobileHorizontalPadding,
+        mobileHorizontalPadding + safePadding.left,
         topInset,
-        mobileHorizontalPadding,
-        mobileBottomPadding - 16.0,
+        mobileHorizontalPadding + safePadding.right,
+        mobileBottomPadding,
       );
     }
 
@@ -2673,7 +2673,7 @@ class _MediaBarState extends State<MediaBar>
         : contentPadding;
 
     final topInset = navbarIsTop
-        ? safeTop +
+        ? safePadding.top +
         TopToolbar.heightFor(context) -
         desktopToolbarVerticalPadding +
         contentPadding
@@ -2755,18 +2755,16 @@ class _MediaBarState extends State<MediaBar>
               fit: StackFit.expand,
               children: trailerOverlays,
             ),
-            onAmbientItemChanged: (item) {
-              final backdropUrl = item.backdropUrl;
+              onAmbientArtworkChanged: (artworkUrl) {
+                if (artworkUrl == null || artworkUrl.isEmpty) {
+                  return;
+                }
 
-              if (backdropUrl == null || backdropUrl.isEmpty) {
-                return;
-              }
-
-              _backgroundService.setBackgroundUrl(
-                backdropUrl,
-                context: BlurContext.browsing,
-              );
-            },
+                _backgroundService.setBackgroundUrl(
+                  artworkUrl,
+                  context: BlurContext.browsing,
+                );
+              },
           ),
         ),
       ),

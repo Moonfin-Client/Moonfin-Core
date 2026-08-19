@@ -36,7 +36,7 @@ class AyaMediaBar extends StatefulWidget {
   static const _backdropDepthScale = 1.012;
   static const _slideScaleBegin = 1.006;
 
-  static const _slideTransitionDuration = Duration(milliseconds: 900);
+  static const _slideTransitionDuration = Duration(milliseconds: 420);
   static const _indicatorAnimationDuration = Duration(milliseconds: 280);
   static const _focusScaleDuration = Duration(milliseconds: 220);
   static const _backdropDepthInDuration = Duration(milliseconds: 320);
@@ -48,7 +48,7 @@ class AyaMediaBar extends StatefulWidget {
   final EdgeInsets padding;
   final bool focusExpansionEnabled;
   final Widget? trailerOverlay;
-  final ValueChanged<MediaBarSlideItem>? onAmbientItemChanged;
+  final ValueChanged<String?>? onAmbientArtworkChanged;
 
   const AyaMediaBar({
     super.key,
@@ -58,7 +58,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.padding,
     required this.focusExpansionEnabled,
     this.trailerOverlay,
-    this.onAmbientItemChanged,
+    this.onAmbientArtworkChanged,
   });
 
   @override
@@ -67,6 +67,7 @@ class AyaMediaBar extends StatefulWidget {
 
 class _AyaMediaBarState extends State<AyaMediaBar> {
   FocusNode? _parentFocusNode;
+  Orientation? _lastOrientation;
 
   bool _isFocused = false;
   bool _isHovered = false;
@@ -79,16 +80,30 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     final focusNode = Focus.maybeOf(context);
 
-    if (identical(_parentFocusNode, focusNode)) {
-      return;
+    if (!identical(_parentFocusNode, focusNode)) {
+      _parentFocusNode?.removeListener(_handleFocusChanged);
+
+      _parentFocusNode = focusNode;
+      _isFocused = focusNode?.hasFocus ?? false;
+
+      _parentFocusNode?.addListener(_handleFocusChanged);
     }
 
-    _parentFocusNode?.removeListener(_handleFocusChanged);
+    final orientation = MediaQuery.orientationOf(context);
+    final orientationChanged =
+        _lastOrientation != null && _lastOrientation != orientation;
 
-    _parentFocusNode = focusNode;
-    _isFocused = focusNode?.hasFocus ?? false;
+    _lastOrientation = orientation;
 
-    _parentFocusNode?.addListener(_handleFocusChanged);
+    if (orientationChanged && _isHighlighted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_isHighlighted) {
+          return;
+        }
+
+        _notifyAmbientArtwork();
+      });
+    }
   }
 
   @override
@@ -104,7 +119,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         return;
       }
 
-      _notifyAmbientItem();
+      _notifyAmbientArtwork();
     });
   }
 
@@ -140,32 +155,43 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     });
 
     if (_isHighlighted) {
-      _notifyAmbientItem();
+      _notifyAmbientArtwork();
     }
   }
 
-  void _notifyAmbientItem() {
+  void _notifyAmbientArtwork() {
     if (widget.items.isEmpty ||
         widget.activeIndex < 0 ||
         widget.activeIndex >= widget.items.length) {
       return;
     }
 
-    widget.onAmbientItemChanged?.call(
-      widget.items[widget.activeIndex],
+    final item = widget.items[widget.activeIndex];
+
+    widget.onAmbientArtworkChanged?.call(
+      _artworkUrl(context, item),
     );
   }
 
-  bool _usesMobilePoster(MediaBarSlideItem item) {
+  bool _usesMobilePoster(
+      BuildContext context,
+      MediaBarSlideItem item,
+      ) {
     final posterUrl = item.posterUrl;
+    final isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
 
     return PlatformDetection.useMobileUi &&
+        isPortrait &&
         posterUrl != null &&
         posterUrl.isNotEmpty;
   }
 
-  String? _artworkUrl(MediaBarSlideItem item) {
-    if (_usesMobilePoster(item)) {
+  String? _artworkUrl(
+      BuildContext context,
+      MediaBarSlideItem item,
+      ) {
+    if (_usesMobilePoster(context, item)) {
       return item.posterUrl;
     }
 
@@ -184,7 +210,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     final borderColor = GlassFocusHalo.appleStyleActive
         ? Colors.white
-        : theme.colorScheme.primary;
+        : borders.focusBorder.color;
 
     final showGlow =
         isHighlighted && borders.focusGlow.isNotEmpty;
@@ -203,6 +229,30 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
             fit: StackFit.passthrough,
             clipBehavior: Clip.none,
             children: [
+              if (isHighlighted)
+                Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: AppRadius.circular(
+                          AyaMediaBar._cornerRadius,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.22),
+                            blurRadius: 28,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               if (showGlow)
                 Positioned(
                   top: -AyaMediaBar._focusInset,
@@ -231,13 +281,13 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      _buildAnimatedBackdrop(item),
-
+                      _buildAnimatedSlide(
+                        context,
+                        theme,
+                        item,
+                      ),
                       if (widget.trailerOverlay != null)
                         widget.trailerOverlay!,
-
-                      _buildAnimatedContent(theme, item),
-
                       if (widget.items.length > 1)
                         _buildIndicators(),
                     ],
@@ -274,86 +324,27 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     );
   }
 
-  Widget _buildAnimatedBackdrop(MediaBarSlideItem item) {
-    return AnimatedSwitcher(
-      duration: AyaMediaBar._slideTransitionDuration,
-      reverseDuration: AyaMediaBar._slideTransitionDuration,
-      switchInCurve: Curves.easeInOutCubic,
-      switchOutCurve: Curves.easeInOutCubic,
-      layoutBuilder: _buildAnimatedLayout,
-      transitionBuilder: _buildSlideTransition,
-      child: KeyedSubtree(
-        key: ValueKey('aya_backdrop_slide_${item.itemId}'),
-        child: _AyaBackdrop(
-          artworkUrl: _artworkUrl(item),
-          highlighted: _isHighlighted,
-          depthScale: AyaMediaBar._backdropDepthScale,
-          depthInDuration: AyaMediaBar._backdropDepthInDuration,
-          depthOutDuration: AyaMediaBar._backdropDepthOutDuration,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnimatedContent(
+  Widget _buildAnimatedSlide(
+      BuildContext context,
       ThemeData theme,
       MediaBarSlideItem item,
       ) {
-    return AnimatedSwitcher(
-      duration: AyaMediaBar._slideTransitionDuration,
-      reverseDuration: AyaMediaBar._slideTransitionDuration,
-      switchInCurve: Curves.easeInOutCubic,
-      switchOutCurve: Curves.easeInOutCubic,
-      layoutBuilder: _buildAnimatedLayout,
-      transitionBuilder: _buildSlideTransition,
-      child: KeyedSubtree(
-        key: ValueKey('aya_content_${item.itemId}'),
-        child: _usesMobilePoster(item)
-            ? const SizedBox.expand()
-            : _buildContent(theme, item),
-      ),
-    );
-  }
-
-  Widget _buildAnimatedLayout(
-      Widget? currentChild,
-      List<Widget> previousChildren,
-      ) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        ...previousChildren,
-        if (currentChild != null) currentChild,
-      ],
-    );
-  }
-
-  Widget _buildSlideTransition(
-      Widget child,
-      Animation<double> animation,
-      ) {
-    final opacity = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    );
-
-    final scale = Tween<double>(
-      begin: AyaMediaBar._slideScaleBegin,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-      ),
-    );
-
-    return FadeTransition(
-      opacity: opacity,
-      child: ScaleTransition(
-        scale: scale,
-        child: child,
-      ),
+    return _AyaSlideTransition(
+      item: item,
+      artworkUrl: _artworkUrl(context, item),
+      showContent: !_usesMobilePoster(context, item),
+      highlighted: _isHighlighted,
+      depthScale: AyaMediaBar._backdropDepthScale,
+      depthInDuration: AyaMediaBar._backdropDepthInDuration,
+      depthOutDuration: AyaMediaBar._backdropDepthOutDuration,
+      transitionDuration: AyaMediaBar._slideTransitionDuration,
+      slideScaleBegin: AyaMediaBar._slideScaleBegin,
+      contentBuilder: (slideItem) {
+        return _buildContent(
+          theme,
+          slideItem,
+        );
+      },
     );
   }
 
@@ -468,6 +459,262 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
   }
 }
 
+class _AyaSlideVisual {
+  final MediaBarSlideItem item;
+  final String? artworkUrl;
+  final bool showContent;
+
+  const _AyaSlideVisual({
+    required this.item,
+    required this.artworkUrl,
+    required this.showContent,
+  });
+}
+
+class _AyaSlideTransition extends StatefulWidget {
+  final MediaBarSlideItem item;
+  final String? artworkUrl;
+  final bool showContent;
+  final bool highlighted;
+  final double depthScale;
+  final Duration depthInDuration;
+  final Duration depthOutDuration;
+  final Duration transitionDuration;
+  final double slideScaleBegin;
+  final Widget Function(MediaBarSlideItem item) contentBuilder;
+
+  const _AyaSlideTransition({
+    required this.item,
+    required this.artworkUrl,
+    required this.showContent,
+    required this.highlighted,
+    required this.depthScale,
+    required this.depthInDuration,
+    required this.depthOutDuration,
+    required this.transitionDuration,
+    required this.slideScaleBegin,
+    required this.contentBuilder,
+  });
+
+  @override
+  State<_AyaSlideTransition> createState() =>
+      _AyaSlideTransitionState();
+}
+
+class _AyaSlideTransitionState extends State<_AyaSlideTransition>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _transitionController;
+
+  late _AyaSlideVisual _baseSlide;
+  _AyaSlideVisual? _incomingSlide;
+  late _AyaSlideVisual _desiredSlide;
+
+  bool _isTransitioning = false;
+  int _prepareGeneration = 0;
+
+  _AyaSlideVisual get _widgetSlide {
+    return _AyaSlideVisual(
+      item: widget.item,
+      artworkUrl: widget.artworkUrl,
+      showContent: widget.showContent,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initialSlide = _widgetSlide;
+
+    _baseSlide = initialSlide;
+    _desiredSlide = initialSlide;
+
+    _transitionController = AnimationController(
+      vsync: this,
+      duration: widget.transitionDuration,
+    );
+
+    _transitionController.addStatusListener(
+      _handleTransitionStatus,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _AyaSlideTransition oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.transitionDuration != widget.transitionDuration) {
+      _transitionController.duration = widget.transitionDuration;
+    }
+
+    final nextSlide = _widgetSlide;
+
+    if (!_sameSlide(_desiredSlide, nextSlide)) {
+      _requestSlide(nextSlide);
+    }
+  }
+
+  @override
+  void dispose() {
+    _prepareGeneration++;
+
+    _transitionController
+      ..removeStatusListener(_handleTransitionStatus)
+      ..dispose();
+
+    super.dispose();
+  }
+
+  bool _sameSlide(
+      _AyaSlideVisual first,
+      _AyaSlideVisual second,
+      ) {
+    return first.item.itemId == second.item.itemId &&
+        first.artworkUrl == second.artworkUrl &&
+        first.showContent == second.showContent;
+  }
+
+  void _requestSlide(_AyaSlideVisual slide) {
+    _desiredSlide = slide;
+
+    if (_isTransitioning || _sameSlide(slide, _baseSlide)) {
+      return;
+    }
+
+    _prepareSlide(slide);
+  }
+
+  void _prepareSlide(_AyaSlideVisual slide) {
+    final generation = ++_prepareGeneration;
+
+    unawaited(
+      _prepareAndStartSlide(
+        slide,
+        generation,
+      ),
+    );
+  }
+
+  Future<void> _prepareAndStartSlide(
+      _AyaSlideVisual slide,
+      int generation,
+      ) async {
+    final artworkUrl = slide.artworkUrl;
+
+    if (artworkUrl != null && artworkUrl.isNotEmpty) {
+      try {
+        await precacheImage(
+          offlineAwareImageProvider(artworkUrl),
+          context,
+        );
+      } catch (_) {}
+    }
+
+    if (!mounted ||
+        generation != _prepareGeneration ||
+        !_sameSlide(slide, _desiredSlide) ||
+        _isTransitioning ||
+        _sameSlide(slide, _baseSlide)) {
+      return;
+    }
+
+    setState(() {
+      _incomingSlide = slide;
+      _isTransitioning = true;
+    });
+
+    _transitionController
+      ..duration = widget.transitionDuration
+      ..value = 0.0
+      ..forward();
+  }
+
+  void _handleTransitionStatus(AnimationStatus status) {
+    if (status != AnimationStatus.completed || !_isTransitioning) {
+      return;
+    }
+
+    final completedSlide = _incomingSlide;
+
+    if (completedSlide == null) {
+      return;
+    }
+
+    setState(() {
+      _baseSlide = completedSlide;
+      _incomingSlide = null;
+      _isTransitioning = false;
+    });
+
+    _transitionController
+      ..stop()
+      ..value = 0.0;
+
+    final desiredSlide = _desiredSlide;
+
+    if (!_sameSlide(desiredSlide, _baseSlide)) {
+      _prepareSlide(desiredSlide);
+    }
+  }
+
+  Widget _buildSlide(_AyaSlideVisual slide) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _AyaBackdrop(
+          key: ValueKey(
+            'aya_backdrop_${slide.item.itemId}_${slide.artworkUrl}',
+          ),
+          artworkUrl: slide.artworkUrl,
+          highlighted: widget.highlighted,
+          depthScale: widget.depthScale,
+          depthInDuration: widget.depthInDuration,
+          depthOutDuration: widget.depthOutDuration,
+        ),
+        if (slide.showContent)
+          widget.contentBuilder(
+            slide.item,
+          ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final incomingOpacity = CurvedAnimation(
+      parent: _transitionController,
+      curve: Curves.easeOutCubic,
+    );
+
+    final incomingScale = Tween<double>(
+      begin: widget.slideScaleBegin,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _transitionController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    final incomingSlide = _incomingSlide;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildSlide(_baseSlide),
+        if (_isTransitioning && incomingSlide != null)
+          FadeTransition(
+            opacity: incomingOpacity,
+            child: ScaleTransition(
+              scale: incomingScale,
+              child: _buildSlide(incomingSlide),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _AyaBackdrop extends StatefulWidget {
   final String? artworkUrl;
   final bool highlighted;
@@ -476,6 +723,7 @@ class _AyaBackdrop extends StatefulWidget {
   final Duration depthOutDuration;
 
   const _AyaBackdrop({
+    super.key,
     required this.artworkUrl,
     required this.highlighted,
     required this.depthScale,
