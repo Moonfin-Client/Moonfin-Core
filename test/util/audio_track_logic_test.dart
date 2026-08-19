@@ -224,7 +224,7 @@ void main() {
       expect(index, 1); // default track Index 1
     });
 
-    test('preferDefaultAudioTrack = true prioritizes preferred language match over non-matching IsDefault track', () {
+    test('preferDefaultAudioTrack = true prioritizes IsDefault track regardless of language match', () {
       final index = computeEffectiveAudioIndex(
         audioStreams: testStreams,
         preferredAudioLanguage: 'spa',
@@ -232,7 +232,7 @@ void main() {
         preferDefaultAudioTrack: true,
         preferAudioDescription: false,
       );
-      expect(index, 2); // Spanish (Index 2) preferred language takes precedence over French default (Index 0)
+      expect(index, 0); // fre has IsDefault == true, SPA does not.
     });
 
     test('preferDefaultAudioTrack = false prioritizes language match over default track', () {
