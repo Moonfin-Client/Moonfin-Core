@@ -2676,7 +2676,24 @@ class _MediaBarState extends State<MediaBar>
         focusNode: widget.focusNode,
         autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
         skipTraversal: false,
-        onFocusChange: _handleFocusChange,
+        onFocusChange: (focused) {
+          _handleFocusChange(focused);
+
+          if (!focused) {
+            return;
+          }
+
+          final backdropUrl = items[clampedIndex].backdropUrl;
+
+          if (backdropUrl == null || backdropUrl.isEmpty) {
+            return;
+          }
+
+          _backgroundService.setBackgroundUrl(
+            backdropUrl,
+            context: BlurContext.browsing,
+          );
+        },
         onKeyEvent: (node, event) => _handleKeyEvent(event, items),
         child: GestureDetector(
           onTap: () => _navigateToItem(context, items),
@@ -2689,6 +2706,18 @@ class _MediaBarState extends State<MediaBar>
             focusExpansionEnabled: widget.prefs.get(
               UserPreferences.cardFocusExpansion,
             ),
+            onAmbientItemChanged: (item) {
+              final backdropUrl = item.backdropUrl;
+
+              if (backdropUrl == null || backdropUrl.isEmpty) {
+                return;
+              }
+
+              _backgroundService.setBackgroundUrl(
+                backdropUrl,
+                context: BlurContext.browsing,
+              );
+            },
           ),
         ),
       ),

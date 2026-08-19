@@ -310,7 +310,10 @@ class _HomeShellState extends State<_HomeShell>
     setState(() {});
   }
 
-  void onItemSelected(AggregatedItem? item) {
+  void onItemSelected(
+      AggregatedItem? item, {
+        bool preserveBackground = false,
+      }) {
     _selectionDebounce?.cancel();
     _selectionDebounce = Timer(_selectionDelay, () {
       if (!mounted) return;
@@ -323,9 +326,15 @@ class _HomeShellState extends State<_HomeShell>
       });
 
       _backdropDebounce?.cancel();
-      _backdropDebounce = Timer(_backdropDelay, () {
-        _backgroundService.setBackground(item, context: BlurContext.browsing);
-      });
+
+      if (!preserveBackground) {
+        _backdropDebounce = Timer(_backdropDelay, () {
+          _backgroundService.setBackground(
+            item,
+            context: BlurContext.browsing,
+          );
+        });
+      }
 
       _maybePlayThemeMusic(item);
     });
@@ -621,7 +630,10 @@ class _ContentRows extends StatefulWidget {
   final MediaBarViewModel mediaBarViewModel;
   final UserPreferences prefs;
   final ValueNotifier<AggregatedItem?> selectedItemNotifier;
-  final ValueChanged<AggregatedItem?> onItemSelected;
+  final void Function(
+      AggregatedItem? item, {
+      bool preserveBackground,
+      }) onItemSelected;
   final ValueNotifier<bool> isHoverPausedNotifier;
   final ValueNotifier<bool> isScrolledToTopNotifier;
   final ValueChanged<bool>? onScrolledToTopChanged;
@@ -2307,7 +2319,10 @@ class _ContentRowsState extends State<_ContentRows>
     _verticalNavInFlight = true;
     try {
       _finishSharedPreview(releaseResources: true);
-      widget.onItemSelected(null);
+      widget.onItemSelected(
+          null,
+          preserveBackground: _isAyaMode(),
+      );
       if (mounted) {
         setState(() {
           _infoRevealedNotifier.value = false;

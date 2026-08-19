@@ -30,25 +30,18 @@ class AyaMediaBar extends StatefulWidget {
   static const _focusBorderWidth = 3.0;
   static const _focusScale = 1.006;
 
-  static const _slideTransitionDuration = Duration(
-    milliseconds: 900,
-  );
-
-  static const _indicatorAnimationDuration = Duration(
-    milliseconds: 280,
-  );
-
-  static const _focusScaleDuration = Duration(
-    milliseconds: 220,
-  );
-
   static const _slideScaleBegin = 1.006;
+
+  static const _slideTransitionDuration = Duration(milliseconds: 900);
+  static const _indicatorAnimationDuration = Duration(milliseconds: 280);
+  static const _focusScaleDuration = Duration(milliseconds: 220);
 
   final List<MediaBarSlideItem> items;
   final int activeIndex;
   final double height;
   final EdgeInsets padding;
   final bool focusExpansionEnabled;
+  final ValueChanged<MediaBarSlideItem>? onAmbientItemChanged;
 
   const AyaMediaBar({
     super.key,
@@ -57,6 +50,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.height,
     required this.padding,
     required this.focusExpansionEnabled,
+    this.onAmbientItemChanged,
   });
 
   @override
@@ -64,19 +58,106 @@ class AyaMediaBar extends StatefulWidget {
 }
 
 class _AyaMediaBarState extends State<AyaMediaBar> {
+  FocusNode? _parentFocusNode;
+
+  bool _isFocused = false;
   bool _isHovered = false;
+
+  bool get _isHighlighted => _isFocused || _isHovered;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final focusNode = Focus.maybeOf(context);
+
+    if (identical(_parentFocusNode, focusNode)) {
+      return;
+    }
+
+    _parentFocusNode?.removeListener(_handleFocusChanged);
+
+    _parentFocusNode = focusNode;
+    _isFocused = focusNode?.hasFocus ?? false;
+
+    _parentFocusNode?.addListener(_handleFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant AyaMediaBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.activeIndex == widget.activeIndex || !_isHighlighted) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_isHighlighted) {
+        return;
+      }
+
+      _notifyAmbientItem();
+    });
+  }
+
+  @override
+  void dispose() {
+    _parentFocusNode?.removeListener(_handleFocusChanged);
+    super.dispose();
+  }
+
+  void _handleFocusChanged() {
+    if (!mounted) {
+      return;
+    }
+
+    final isFocused = _parentFocusNode?.hasFocus ?? false;
+
+    if (_isFocused == isFocused) {
+      return;
+    }
+
+    setState(() {
+      _isFocused = isFocused;
+    });
+  }
+
+  void _setHovered(bool hovered) {
+    if (_isHovered == hovered) {
+      return;
+    }
+
+    setState(() {
+      _isHovered = hovered;
+    });
+
+    if (_isHighlighted) {
+      _notifyAmbientItem();
+    }
+  }
+
+  void _notifyAmbientItem() {
+    if (widget.items.isEmpty ||
+        widget.activeIndex < 0 ||
+        widget.activeIndex >= widget.items.length) {
+      return;
+    }
+
+    widget.onAmbientItemChanged?.call(
+      widget.items[widget.activeIndex],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final item = widget.items[widget.activeIndex];
     final theme = Theme.of(context);
+    final borders = ThemeRegistry.active.borders;
 
-    final isFocused = Focus.of(context).hasFocus;
-    final isHighlighted = isFocused || _isHovered;
+    final isHighlighted = _isHighlighted;
     final shouldExpand =
         widget.focusExpansionEnabled && isHighlighted;
 
-    final borders = ThemeRegistry.active.borders;
     final borderColor = GlassFocusHalo.appleStyleActive
         ? Colors.white
         : theme.colorScheme.primary;
@@ -86,8 +167,8 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) => _setHovered(true),
+      onExit: (_) => _setHovered(false),
       child: AnimatedScale(
         scale: shouldExpand ? AyaMediaBar._focusScale : 1.0,
         duration: AyaMediaBar._focusScaleDuration,
@@ -126,10 +207,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      _buildAnimatedSlide(
-                        theme,
-                        item,
-                      ),
+                      _buildAnimatedSlide(theme, item),
                       if (widget.items.length > 1)
                         _buildIndicators(),
                     ],
@@ -217,10 +295,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       },
       child: KeyedSubtree(
         key: ValueKey(widget.activeIndex),
-        child: _buildSlide(
-          theme,
-          item,
-        ),
+        child: _buildSlide(theme, item),
       ),
     );
   }
@@ -233,10 +308,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       fit: StackFit.expand,
       children: [
         _buildBackdrop(item),
-        _buildContent(
-          theme,
-          item,
-        ),
+        _buildContent(theme, item),
       ],
     );
   }
@@ -268,10 +340,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     return Positioned(
       left: AyaMediaBar._contentLeftPadding,
       top: AyaMediaBar._contentTopPadding,
-      child: _buildLogoOrTitle(
-        theme,
-        item,
-      ),
+      child: _buildLogoOrTitle(theme, item),
     );
   }
 
@@ -282,10 +351,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     final logoUrl = item.logoUrl;
 
     if (logoUrl == null || logoUrl.isEmpty) {
-      return _buildTitle(
-        theme,
-        item.title,
-      );
+      return _buildTitle(theme, item.title);
     }
 
     return SizedBox(
