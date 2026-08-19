@@ -46,6 +46,7 @@ class AyaMediaBar extends StatefulWidget {
   final double height;
   final EdgeInsets padding;
   final bool focusExpansionEnabled;
+  final Widget? trailerOverlay;
   final ValueChanged<MediaBarSlideItem>? onAmbientItemChanged;
 
   const AyaMediaBar({
@@ -55,6 +56,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.height,
     required this.padding,
     required this.focusExpansionEnabled,
+    this.trailerOverlay,
     this.onAmbientItemChanged,
   });
 
@@ -212,7 +214,13 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      _buildAnimatedSlide(theme, item),
+                      _buildAnimatedBackdrop(item),
+
+                      if (widget.trailerOverlay != null)
+                        widget.trailerOverlay!,
+
+                      _buildAnimatedContent(theme, item),
+
                       if (widget.items.length > 1)
                         _buildIndicators(),
                     ],
@@ -249,7 +257,28 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     );
   }
 
-  Widget _buildAnimatedSlide(
+  Widget _buildAnimatedBackdrop(MediaBarSlideItem item) {
+    return AnimatedSwitcher(
+      duration: AyaMediaBar._slideTransitionDuration,
+      reverseDuration: AyaMediaBar._slideTransitionDuration,
+      switchInCurve: Curves.easeInOutCubic,
+      switchOutCurve: Curves.easeInOutCubic,
+      layoutBuilder: _buildAnimatedLayout,
+      transitionBuilder: _buildSlideTransition,
+      child: KeyedSubtree(
+        key: ValueKey('aya_backdrop_slide_${item.itemId}'),
+        child: _AyaBackdrop(
+          item: item,
+          highlighted: _isHighlighted,
+          depthScale: AyaMediaBar._backdropDepthScale,
+          depthInDuration: AyaMediaBar._backdropDepthInDuration,
+          depthOutDuration: AyaMediaBar._backdropDepthOutDuration,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedContent(
       ThemeData theme,
       MediaBarSlideItem item,
       ) {
@@ -258,70 +287,54 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       reverseDuration: AyaMediaBar._slideTransitionDuration,
       switchInCurve: Curves.easeInOutCubic,
       switchOutCurve: Curves.easeInOutCubic,
-      layoutBuilder: (
-          Widget? currentChild,
-          List<Widget> previousChildren,
-          ) {
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          ) {
-        final opacity = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOutCubic,
-          reverseCurve: Curves.easeInOutCubic,
-        );
-
-        final scale = Tween<double>(
-          begin: AyaMediaBar._slideScaleBegin,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-
-        return FadeTransition(
-          opacity: opacity,
-          child: ScaleTransition(
-            scale: scale,
-            child: child,
-          ),
-        );
-      },
+      layoutBuilder: _buildAnimatedLayout,
+      transitionBuilder: _buildSlideTransition,
       child: KeyedSubtree(
-        key: ValueKey(item.itemId),
-        child: _buildSlide(theme, item),
+        key: ValueKey('aya_content_${item.itemId}'),
+        child: _buildContent(theme, item),
       ),
     );
   }
 
-  Widget _buildSlide(
-      ThemeData theme,
-      MediaBarSlideItem item,
+  Widget _buildAnimatedLayout(
+      Widget? currentChild,
+      List<Widget> previousChildren,
       ) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        _AyaBackdrop(
-          key: ValueKey('aya_backdrop_${item.itemId}'),
-          item: item,
-          highlighted: _isHighlighted,
-          depthScale: AyaMediaBar._backdropDepthScale,
-          depthInDuration: AyaMediaBar._backdropDepthInDuration,
-          depthOutDuration: AyaMediaBar._backdropDepthOutDuration,
-        ),
-        _buildContent(theme, item),
+        ...previousChildren,
+        if (currentChild != null) currentChild,
       ],
+    );
+  }
+
+  Widget _buildSlideTransition(
+      Widget child,
+      Animation<double> animation,
+      ) {
+    final opacity = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeInOutCubic,
+      reverseCurve: Curves.easeInOutCubic,
+    );
+
+    final scale = Tween<double>(
+      begin: AyaMediaBar._slideScaleBegin,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    return FadeTransition(
+      opacity: opacity,
+      child: ScaleTransition(
+        scale: scale,
+        child: child,
+      ),
     );
   }
 
@@ -329,10 +342,15 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       ThemeData theme,
       MediaBarSlideItem item,
       ) {
-    return Positioned(
-      left: AyaMediaBar._contentLeftPadding,
-      top: AyaMediaBar._contentTopPadding,
-      child: _buildLogoOrTitle(theme, item),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          left: AyaMediaBar._contentLeftPadding,
+          top: AyaMediaBar._contentTopPadding,
+          child: _buildLogoOrTitle(theme, item),
+        ),
+      ],
     );
   }
 
@@ -439,7 +457,6 @@ class _AyaBackdrop extends StatefulWidget {
   final Duration depthOutDuration;
 
   const _AyaBackdrop({
-    super.key,
     required this.item,
     required this.highlighted,
     required this.depthScale,

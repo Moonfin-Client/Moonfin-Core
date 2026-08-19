@@ -2669,6 +2669,10 @@ class _MediaBarState extends State<MediaBar>
       _currentIndex = clampedIndex;
     }
 
+    final trailerOverlays = _buildVideoOverlays(
+      allowPersistentMedia3: true,
+    );
+
     return MouseRegion(
       onEnter: (_) => _setPaused(true),
       onExit: (_) => _setPaused(false),
@@ -2705,6 +2709,12 @@ class _MediaBarState extends State<MediaBar>
             padding: _ayaMediaBarInsets(),
             focusExpansionEnabled: widget.prefs.get(
               UserPreferences.cardFocusExpansion,
+            ),
+            trailerOverlay: trailerOverlays.isEmpty
+                ? null
+                : Stack(
+              fit: StackFit.expand,
+              children: trailerOverlays,
             ),
             onAmbientItemChanged: (item) {
               final backdropUrl = item.backdropUrl;
