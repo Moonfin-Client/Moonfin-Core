@@ -452,9 +452,8 @@ void main() {
         2, // Index 2 is forced
       );
     });
-    test('SubtitleMode.flagged only selects default or forced tracks', () {
+    test('SubtitleMode.flagged selects preferred language track when default or forced flags are absent', () {
       final cesTracks = streams.where((s) => s['Language'] == 'ces').toList();
-      // None of the ces tracks are default or forced, so should return -1
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: cesTracks,
@@ -469,7 +468,7 @@ void main() {
           preferredAudioLanguage: '',
           activeAudioLanguage: null,
         ),
-        -1,
+        9, // Preferred language 'ces' (Index 9) selected
       );
     });
     test('SubtitleMode.foreign keeps subtitles off when active audio language matches preferred audio language', () {

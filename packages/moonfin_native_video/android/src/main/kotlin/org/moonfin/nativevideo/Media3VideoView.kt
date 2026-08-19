@@ -632,6 +632,10 @@ class Media3VideoView(
     private var videoView: View = newVideoView()
     private var lastSourceArguments: Map<*, *>? = null
     private var lastPlaybackPositionMs: Long = 0L
+    private var displayModeSwitchPending = false
+    private var wasPlayingBeforeDisplayModeSwitch = false
+    private var lastAutoPlay = false
+    private var displayModeSwitchRetryAttemptedForCurrentSource = false
 
     private fun newVideoView(): View =
         if (useSurfaceView) {
@@ -939,6 +943,12 @@ class Media3VideoView(
             ) {
                 revealVideo()
             }
+            if (displayModeSwitchPending && playbackState == Player.STATE_READY) {
+                if (wasPlayingBeforeDisplayModeSwitch && !player.playWhenReady) {
+                    player.playWhenReady = true
+                }
+                displayModeSwitchPending = false
+            }
             emitState()
             if (playbackState == Player.STATE_ENDED) {
                 Media3Bridge.emitEvent(
@@ -950,19 +960,21 @@ class Media3VideoView(
             }
         }
 
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            if (!playWhenReady && displayModeSwitchPending) {
+                wasPlayingBeforeDisplayModeSwitch = true
+            }
             emitState()
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            // Recovery order matters: an init failure under tunneling is
-            // retried untunneled before any downmix so a tunnel failure
-            // can't stick the whole session to stereo. The downmix retry
-            // stays last and handles 7.1 PCM that the device can't open as
-            // an 8-channel AudioTrack.
-            val nativeRetryTriggered = retryAudioWithoutOffloadIfNeeded(error) ||
+            val nativeRetryTriggered = retryPlaybackOnDisplayModeSwitchErrorIfNeeded(error) ||
+                retryAudioWithoutOffloadIfNeeded(error) ||
                 retryAudioWithoutTunnelingIfNeeded(error) ||
                 retryAudioWithStereoDownmixIfNeeded(error)
+            if (nativeRetryTriggered) {
+                return
+            }
             emitRecoverablePlayerError(error, nativeRetryTriggered)
             Media3Bridge.emitEvent(
                 mapOf(
@@ -1029,8 +1041,8 @@ class Media3VideoView(
             videoHeightPx = videoSize.height
             videoPixelRatio = videoSize.pixelWidthHeightRatio
             applyVideoLayout()
-            if (detectedFrameRate == null) {
-                resolveSelectedVideoFrameRate()?.let { frameRate ->
+            resolveSelectedVideoFrameRate()?.let { frameRate ->
+                if (detectedFrameRate != frameRate) {
                     maybeApplyFrameRateSwitching(frameRate)
                 }
             }
@@ -1085,8 +1097,8 @@ class Media3VideoView(
                     "positionMs" to player.currentPosition,
                 ),
             )
-            if (detectedFrameRate == null) {
-                resolveSelectedVideoFrameRate()?.let { frameRate ->
+            resolveSelectedVideoFrameRate()?.let { frameRate ->
+                if (detectedFrameRate != frameRate) {
                     maybeApplyFrameRateSwitching(frameRate)
                 }
             }
@@ -1100,7 +1112,7 @@ class Media3VideoView(
             format: Format,
             decoderReuseEvaluation: DecoderReuseEvaluation?,
         ) {
-            val frameRate = format.frameRate
+            val frameRate = resolveSelectedVideoFrameRate() ?: format.frameRate
             if (frameRate.isFinite() && frameRate > 0f) {
                 maybeApplyFrameRateSwitching(frameRate)
             }
@@ -2104,6 +2116,8 @@ class Media3VideoView(
         val url = args["url"]?.toString() ?: return
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
         val autoPlay = args["autoPlay"] as? Boolean ?: false
+        lastAutoPlay = autoPlay
+        displayModeSwitchRetryAttemptedForCurrentSource = false
 
         restorePreferredDisplayMode()
         detectedFrameRate = null
@@ -2380,7 +2394,9 @@ class Media3VideoView(
 
         val preferredMode = choosePreferredDisplayMode(display, normalizedFrameRate) ?: return
         val preferredModeId = preferredMode.modeId
-        if (activePreferredDisplayModeId == preferredModeId) {
+        val currentModeId = window.attributes.preferredDisplayModeId
+        if (currentModeId == preferredModeId || activePreferredDisplayModeId == preferredModeId) {
+            activePreferredDisplayModeId = preferredModeId
             emitFrameRateState(
                 detectedFrameRate = normalizedFrameRate,
                 appliedFrameRate = preferredMode.refreshRate,
@@ -2389,6 +2405,9 @@ class Media3VideoView(
             )
             return
         }
+
+        displayModeSwitchPending = true
+        wasPlayingBeforeDisplayModeSwitch = player.playWhenReady || lastAutoPlay
 
         val updatedLayoutParams = window.attributes
         updatedLayoutParams.preferredDisplayModeId = preferredModeId
@@ -2426,6 +2445,8 @@ class Media3VideoView(
         }
 
         val restoredLayoutParams = window.attributes
+        displayModeSwitchPending = false
+        wasPlayingBeforeDisplayModeSwitch = false
         restoredLayoutParams.preferredDisplayModeId = originalModeId
         window.attributes = restoredLayoutParams
         activePreferredDisplayModeId = null
@@ -2479,6 +2500,9 @@ class Media3VideoView(
     }
 
     private fun resolveSelectedVideoFrameRate(): Float? {
+        if (sourceFrameRateHint != null && sourceFrameRateHint!! > 0f) {
+            return sourceFrameRateHint
+        }
         for (group in player.currentTracks.groups) {
             if (group.type != C.TRACK_TYPE_VIDEO) {
                 continue
@@ -2493,7 +2517,7 @@ class Media3VideoView(
                 }
             }
         }
-        return sourceFrameRateHint
+        return null
     }
 
     private fun emitFrameRateState(
@@ -3480,6 +3504,24 @@ class Media3VideoView(
         player.setMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
+        return true
+    }
+
+    private fun retryPlaybackOnDisplayModeSwitchErrorIfNeeded(error: PlaybackException): Boolean {
+        if (!displayModeSwitchPending || displayModeSwitchRetryAttemptedForCurrentSource) {
+            return false
+        }
+        val mediaItem = player.currentMediaItem ?: return false
+        displayModeSwitchRetryAttemptedForCurrentSource = true
+        val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
+        val playWhenReady = wasPlayingBeforeDisplayModeSwitch || player.playWhenReady
+
+        player.setMediaItem(mediaItem, retryPositionMs)
+        player.prepare()
+        player.playWhenReady = playWhenReady
+        if (playWhenReady) {
+            player.play()
+        }
         return true
     }
 
