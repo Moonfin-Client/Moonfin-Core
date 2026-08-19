@@ -2686,6 +2686,9 @@ class _MediaBarState extends State<MediaBar>
             activeIndex: clampedIndex,
             height: widget.height,
             padding: _ayaMediaBarInsets(),
+            focusExpansionEnabled: widget.prefs.get(
+              UserPreferences.cardFocusExpansion,
+            ),
           ),
         ),
       ),

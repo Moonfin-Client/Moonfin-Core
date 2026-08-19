@@ -28,6 +28,7 @@ class AyaMediaBar extends StatefulWidget {
 
   static const _focusInset = 3.5;
   static const _focusBorderWidth = 3.0;
+  static const _focusScale = 1.006;
 
   static const _slideTransitionDuration = Duration(
     milliseconds: 900,
@@ -37,12 +38,17 @@ class AyaMediaBar extends StatefulWidget {
     milliseconds: 280,
   );
 
+  static const _focusScaleDuration = Duration(
+    milliseconds: 220,
+  );
+
   static const _slideScaleBegin = 1.006;
 
   final List<MediaBarSlideItem> items;
   final int activeIndex;
   final double height;
   final EdgeInsets padding;
+  final bool focusExpansionEnabled;
 
   const AyaMediaBar({
     super.key,
@@ -50,6 +56,7 @@ class AyaMediaBar extends StatefulWidget {
     required this.activeIndex,
     required this.height,
     required this.padding,
+    required this.focusExpansionEnabled,
   });
 
   @override
@@ -66,6 +73,8 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
 
     final isFocused = Focus.of(context).hasFocus;
     final isHighlighted = isFocused || _isHovered;
+    final shouldExpand =
+        widget.focusExpansionEnabled && isHighlighted;
 
     final borders = ThemeRegistry.active.borders;
     final borderColor = GlassFocusHalo.appleStyleActive
@@ -79,74 +88,79 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Padding(
-        padding: widget.padding,
-        child: Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
-            if (showGlow)
-              Positioned(
-                top: -AyaMediaBar._focusInset,
-                bottom: -AyaMediaBar._focusInset,
-                left: -AyaMediaBar._focusInset,
-                right: -AyaMediaBar._focusInset,
-                child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: AppRadius.circular(
-                        AyaMediaBar._cornerRadius +
-                            AyaMediaBar._focusInset,
+      child: AnimatedScale(
+        scale: shouldExpand ? AyaMediaBar._focusScale : 1.0,
+        duration: AyaMediaBar._focusScaleDuration,
+        curve: Curves.easeOutCubic,
+        child: Padding(
+          padding: widget.padding,
+          child: Stack(
+            fit: StackFit.passthrough,
+            clipBehavior: Clip.none,
+            children: [
+              if (showGlow)
+                Positioned(
+                  top: -AyaMediaBar._focusInset,
+                  bottom: -AyaMediaBar._focusInset,
+                  left: -AyaMediaBar._focusInset,
+                  right: -AyaMediaBar._focusInset,
+                  child: IgnorePointer(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: AppRadius.circular(
+                          AyaMediaBar._cornerRadius +
+                              AyaMediaBar._focusInset,
+                        ),
+                        boxShadow: borders.focusGlow,
                       ),
-                      boxShadow: borders.focusGlow,
                     ),
                   ),
                 ),
-              ),
-            ClipRRect(
-              borderRadius: AppRadius.circular(
-                AyaMediaBar._cornerRadius,
-              ),
-              child: SizedBox(
-                height: widget.height,
-                width: double.infinity,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    _buildAnimatedSlide(
-                      theme,
-                      item,
-                    ),
-                    if (widget.items.length > 1)
-                      _buildIndicators(),
-                  ],
+              ClipRRect(
+                borderRadius: AppRadius.circular(
+                  AyaMediaBar._cornerRadius,
+                ),
+                child: SizedBox(
+                  height: widget.height,
+                  width: double.infinity,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _buildAnimatedSlide(
+                        theme,
+                        item,
+                      ),
+                      if (widget.items.length > 1)
+                        _buildIndicators(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (isHighlighted)
-              Positioned(
-                top: -AyaMediaBar._focusInset,
-                bottom: -AyaMediaBar._focusInset,
-                left: -AyaMediaBar._focusInset,
-                right: -AyaMediaBar._focusInset,
-                child: IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: AppRadius.circular(
-                        AyaMediaBar._cornerRadius +
-                            AyaMediaBar._focusInset,
-                      ),
-                      border: Border.fromBorderSide(
-                        borders.focusBorder.copyWith(
-                          color: borderColor,
-                          width: AyaMediaBar._focusBorderWidth,
+              if (isHighlighted)
+                Positioned(
+                  top: -AyaMediaBar._focusInset,
+                  bottom: -AyaMediaBar._focusInset,
+                  left: -AyaMediaBar._focusInset,
+                  right: -AyaMediaBar._focusInset,
+                  child: IgnorePointer(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: AppRadius.circular(
+                          AyaMediaBar._cornerRadius +
+                              AyaMediaBar._focusInset,
+                        ),
+                        border: Border.fromBorderSide(
+                          borders.focusBorder.copyWith(
+                            color: borderColor,
+                            width: AyaMediaBar._focusBorderWidth,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
