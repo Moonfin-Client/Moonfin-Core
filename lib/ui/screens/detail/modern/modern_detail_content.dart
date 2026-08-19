@@ -3978,7 +3978,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ),
           ),
         ],
-        if (overview.isNotEmpty && !widget.prefs.get(UserPreferences.hideDetailsMediaDescription)) ...[
+        if (overview.isNotEmpty &&
+            !hidesMediaDescription(
+              itemType: item.type,
+              hideMediaDescription: widget.prefs.get(
+                UserPreferences.hideDetailsMediaDescription,
+              ),
+            )) ...[
           if (!hideTitleAndLogo || (item.tagline != null && item.tagline!.trim().isNotEmpty))
             const SizedBox(height: 8),
           _buildOverviewText(

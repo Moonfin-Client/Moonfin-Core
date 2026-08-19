@@ -864,7 +864,12 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
-    if (prefs.get(UserPreferences.hideDetailsMediaDescription)) {
+    if (hidesMediaDescription(
+      itemType: item.type,
+      hideMediaDescription: prefs.get(
+        UserPreferences.hideDetailsMediaDescription,
+      ),
+    )) {
       return null;
     }
     final overview = item.overview?.trim();
@@ -3997,7 +4002,12 @@ class _HeaderSection extends StatelessWidget {
         ],
         if (item.overview != null &&
             item.overview!.isNotEmpty &&
-            !prefs.get(UserPreferences.hideDetailsMediaDescription)) ...[
+            !hidesMediaDescription(
+              itemType: item.type,
+              hideMediaDescription: prefs.get(
+                UserPreferences.hideDetailsMediaDescription,
+              ),
+            )) ...[
           const SizedBox(height: 8),
           _OverviewText(
             text: item.overview!,
@@ -4300,49 +4310,42 @@ class DetailPosterImage extends StatelessWidget {
   }
 }
 
+/// The thumb endpoint only takes a width, so a card that reserves its space by
+/// height asks for the 16:9 width that fills it.
+int _landscapeWidthFor(int height) => (height * 16 / 9).round();
+
+/// The parent series artwork, for standing in where an episode still or a
+/// chapter frame would give something away. Null when the series offers nothing
+/// to show, which leaves the caller on the picture it would have used.
 String? _resolveSeriesLandscapeThumbnailUrl(
   AggregatedItem item,
   ImageApi imageApi, {
   required int maxWidth,
 }) {
-  final sId = item.seriesId ?? item.parentPrimaryImageItemId ?? item.parentId;
-  if (sId == null || sId.isEmpty) return null;
-
-  final seriesThumbTag = item.seriesThumbImageTag ?? item.parentThumbImageTag;
-  if (seriesThumbTag != null && seriesThumbTag.isNotEmpty) {
-    return imageApi.getThumbImageUrl(sId, maxWidth: maxWidth, tag: seriesThumbTag);
+  final thumbId = item.parentThumbItemId ?? item.seriesId;
+  final thumbTag = item.parentThumbImageTag ?? item.seriesThumbImageTag;
+  if (thumbId != null &&
+      thumbId.isNotEmpty &&
+      thumbTag != null &&
+      thumbTag.isNotEmpty) {
+    return imageApi.getThumbImageUrl(thumbId, maxWidth: maxWidth, tag: thumbTag);
   }
 
-  if (item.parentThumbItemId != null &&
-      item.parentThumbItemId!.isNotEmpty &&
-      item.parentThumbImageTag != null &&
-      item.parentThumbImageTag!.isNotEmpty) {
-    return imageApi.getThumbImageUrl(
-      item.parentThumbItemId!,
+  final seriesId = item.seriesId ?? item.parentPrimaryImageItemId;
+  final seriesPrimaryTag =
+      item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
+  if (seriesId != null &&
+      seriesId.isNotEmpty &&
+      seriesPrimaryTag != null &&
+      seriesPrimaryTag.isNotEmpty) {
+    return imageApi.getPrimaryImageUrl(
+      seriesId,
       maxWidth: maxWidth,
-      tag: item.parentThumbImageTag!,
+      tag: seriesPrimaryTag,
     );
   }
 
-  final backdropTags = item.parentBackdropImageTags.isNotEmpty
-      ? item.parentBackdropImageTags
-      : item.backdropImageTags;
-  final backdropId = item.parentBackdropItemId ?? sId;
-  if (backdropTags.isNotEmpty) {
-    return imageApi.getBackdropImageUrl(
-      backdropId,
-      maxWidth: maxWidth,
-      index: 0,
-      tag: backdropTags.first,
-    );
-  }
-
-  final sPrimaryTag = item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
-  if (sPrimaryTag != null && sPrimaryTag.isNotEmpty) {
-    return imageApi.getPrimaryImageUrl(sId, maxWidth: maxWidth, tag: sPrimaryTag);
-  }
-
-  return imageApi.getPrimaryImageUrl(sId, maxWidth: maxWidth);
+  return null;
 }
 
 class _EpisodeThumbnail extends StatelessWidget {
@@ -4359,9 +4362,10 @@ class _EpisodeThumbnail extends StatelessWidget {
     final h = isMobile ? 113.0 : 158.0 * desktopScale;
     final maxW = isMobile ? 400 : (560 * desktopScale).round();
 
-    final prefs = GetIt.instance<UserPreferences>();
-    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
-    final seriesThumbUrl = useSeriesThumb
+    final seriesThumbUrl =
+        GetIt.instance<UserPreferences>().get(
+          UserPreferences.detailUseSeriesThumbnails,
+        )
         ? _resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: maxW)
         : null;
 
@@ -11825,6 +11829,16 @@ class DetailChaptersRow extends StatelessWidget {
     final chapterCardWidth = isMobile ? 220.0 : 280.0 * desktopScale;
     final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
     final chapterImageWidth = (chapterCardWidth * devicePixelRatio).ceil();
+    final seriesThumbUrl =
+        GetIt.instance<UserPreferences>().get(
+          UserPreferences.detailUseSeriesThumbnails,
+        )
+        ? _resolveSeriesLandscapeThumbnailUrl(
+            item,
+            imageApi,
+            maxWidth: chapterImageWidth,
+          )
+        : null;
 
     return SizedBox(
       height: isMobile ? 180 : 210 * desktopScale,
@@ -11844,12 +11858,6 @@ class DetailChaptersRow extends StatelessWidget {
               ? (chapter['Name'] as String)
               : AppLocalizations.of(context).chapterNumber(index + 1);
           final imageTag = chapter['ImageTag'] as String?;
-          final prefs = GetIt.instance<UserPreferences>();
-          final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
-          final seriesThumbUrl = useSeriesThumb
-              ? _resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: chapterImageWidth)
-              : null;
-
           final chapterImageUrl = seriesThumbUrl ??
               imageApi.getChapterImageUrl(
                 item.id,
@@ -13056,24 +13064,23 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
               ? '${runtime.inHours}h ${runtime.inMinutes.remainder(60)}m'
               : '${runtime.inMinutes}m')
         : null;
-    final focusColor = Color(
-      GetIt.instance<UserPreferences>()
-          .get(UserPreferences.focusColor)
-          .colorValue,
-    );
-
     final prefs = GetIt.instance<UserPreferences>();
-    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
-    final maxW = widget.isMobile ? 250 : (250 * desktopScale).round();
-    final seriesThumbUrl = useSeriesThumb
-        ? _resolveSeriesLandscapeThumbnailUrl(ep, widget.imageApi, maxWidth: maxW)
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final maxH = widget.isMobile ? 250 : (250 * desktopScale).round();
+    final seriesThumbUrl =
+        prefs.get(UserPreferences.detailUseSeriesThumbnails)
+        ? _resolveSeriesLandscapeThumbnailUrl(
+            ep,
+            widget.imageApi,
+            maxWidth: _landscapeWidthFor(maxH),
+          )
         : null;
 
     final epImageUrl = seriesThumbUrl ??
         (ep.primaryImageTag != null
             ? widget.imageApi.getPrimaryImageUrl(
                 ep.id,
-                maxWidth: maxW,
+                maxHeight: maxH,
                 tag: ep.primaryImageTag,
               )
             : null);
@@ -13289,17 +13296,17 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
     final subtitle = [?label, episode.name].join(' - ');
 
     final isMobile = _isCompact(context);
-    final focusColor = Color(
-      GetIt.instance<UserPreferences>()
-          .get(UserPreferences.focusColor)
-          .colorValue,
-    );
     final prefs = GetIt.instance<UserPreferences>();
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
-    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
-    final maxW = isMobile ? 240 : (240 * desktopScale).round();
-    final seriesThumbUrl = useSeriesThumb
-        ? _resolveSeriesLandscapeThumbnailUrl(episode, widget.imageApi, maxWidth: maxW)
+    final maxH = isMobile ? 240 : (240 * desktopScale).round();
+    final seriesThumbUrl =
+        prefs.get(UserPreferences.detailUseSeriesThumbnails)
+        ? _resolveSeriesLandscapeThumbnailUrl(
+            episode,
+            widget.imageApi,
+            maxWidth: _landscapeWidthFor(maxH),
+          )
         : null;
 
     final epThumbTag = episode.primaryImageTag;
@@ -13307,7 +13314,7 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
         (epThumbTag != null
             ? widget.imageApi.getPrimaryImageUrl(
                 episode.id,
-                maxHeight: maxW,
+                maxHeight: maxH,
                 tag: epThumbTag,
               )
             : null);
@@ -13504,20 +13511,18 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
               : '${runtime.inMinutes}m')
         : null;
 
-    final focusColor = Color(
-      GetIt.instance<UserPreferences>()
-          .get(UserPreferences.focusColor)
-          .colorValue,
-    );
-    final cardExpansion = GetIt.instance<UserPreferences>().get(
-      UserPreferences.cardFocusExpansion,
-    );
-    final isMobile = _isCompact(context);
     final prefs = GetIt.instance<UserPreferences>();
-    final useSeriesThumb = prefs.get(UserPreferences.detailUseSeriesThumbnails);
-    final maxW = isMobile ? 220 : (220 * desktopScale).round();
-    final seriesThumbUrl = useSeriesThumb
-        ? _resolveSeriesLandscapeThumbnailUrl(episode, widget.imageApi, maxWidth: maxW)
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final isMobile = _isCompact(context);
+    final maxH = isMobile ? 220 : (220 * desktopScale).round();
+    final seriesThumbUrl =
+        prefs.get(UserPreferences.detailUseSeriesThumbnails)
+        ? _resolveSeriesLandscapeThumbnailUrl(
+            episode,
+            widget.imageApi,
+            maxWidth: _landscapeWidthFor(maxH),
+          )
         : null;
 
     final epThumbTag = episode.primaryImageTag;
@@ -13525,7 +13530,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
         (epThumbTag != null
             ? widget.imageApi.getPrimaryImageUrl(
                 episode.id,
-                maxHeight: maxW,
+                maxHeight: maxH,
                 tag: epThumbTag,
               )
             : null);

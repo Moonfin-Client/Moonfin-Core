@@ -33,3 +33,12 @@ String cleanOverview(String? input) {
     return _namedEntities[entity] ?? match[0]!;
   });
 }
+
+/// Whether the plot summary is being held back from someone avoiding spoilers.
+/// Only a film or an episode gives the story away, so a series or a season
+/// keeps its description whatever the setting says.
+bool hidesMediaDescription({
+  required String? itemType,
+  required bool hideMediaDescription,
+}) =>
+    hideMediaDescription && (itemType == 'Movie' || itemType == 'Episode');

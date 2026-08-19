@@ -160,14 +160,13 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                     setState(() {});
                   },
                 ),
-              if (rowsStyle == HomeRowsStyle.v2)
-                SwitchPreferenceTile(
-                  preference: UserPreferences.hideHomeMediaDescription,
-                  title: l10n.hideHomeMediaDescription,
-                  subtitle: l10n.hideHomeMediaDescriptionSubtitle,
-                  icon: Icons.description_outlined,
-                  onChanged: _pushPersonalizationSync,
-                ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.hideHomeMediaDescription,
+                title: l10n.hideHomeMediaDescription,
+                subtitle: l10n.hideHomeMediaDescriptionSubtitle,
+                icon: Icons.description_outlined,
+                onChanged: _pushPersonalizationSync,
+              ),
             ],
           ),
 
