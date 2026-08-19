@@ -959,8 +959,18 @@ class Media3VideoView(
             }
         }
 
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            emitState()
+        }
+
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-            if (!playWhenReady && displayModeSwitchPending) {
+            // The HDMI switch drops the audio route and the player pauses
+            // itself. A pause the user asked for has to survive the switch, so
+            // only the system's own is worth undoing.
+            if (!playWhenReady &&
+                displayModeSwitchPending &&
+                reason != Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
+            ) {
                 wasPlayingBeforeDisplayModeSwitch = true
             }
             emitState()
