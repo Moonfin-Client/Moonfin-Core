@@ -2170,7 +2170,10 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   void _navigateFromMediaBarToNavbar() {
-    widget.onItemSelected(null);
+    widget.onItemSelected(
+      null,
+      preserveBackground: _isAyaMode(),
+    );
     if (_scrollController.hasClients && _scrollController.offset > 0) {
       unawaited(
         _scrollController.animateTo(

@@ -2638,11 +2638,15 @@ class _MediaBarState extends State<MediaBar>
     const desktopSidebarInset = 56.0;
     const desktopToolbarVerticalPadding = 10.0;
 
-    final navigationLeftInset = isTvTopNavbar
-        ? tvTopNavbarHorizontalInset
+    final leftInset = isTvTopNavbar
+        ? tvTopNavbarHorizontalInset + contentPadding
         : hasDesktopSidebar
-        ? desktopSidebarInset
-        : 0.0;
+        ? desktopSidebarInset + contentPadding
+        : contentPadding;
+
+    final rightInset = isTvTopNavbar
+        ? tvTopNavbarHorizontalInset + contentPadding
+        : contentPadding;
 
     final topInset = navbarIsTop
         ? safeTop +
@@ -2652,9 +2656,9 @@ class _MediaBarState extends State<MediaBar>
         : contentPadding;
 
     return EdgeInsets.fromLTRB(
-      navigationLeftInset + contentPadding,
+      leftInset,
       topInset,
-      contentPadding,
+      rightInset,
       contentPadding,
     );
   }
@@ -2679,7 +2683,7 @@ class _MediaBarState extends State<MediaBar>
       child: Focus(
         focusNode: widget.focusNode,
         autofocus: widget.focusNode == null && PlatformDetection.useLeanbackUi,
-        skipTraversal: false,
+        skipTraversal: true,
         onFocusChange: (focused) {
           _handleFocusChange(focused);
 
