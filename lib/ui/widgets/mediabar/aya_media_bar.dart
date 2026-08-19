@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -30,11 +32,14 @@ class AyaMediaBar extends StatefulWidget {
   static const _focusBorderWidth = 3.0;
   static const _focusScale = 1.006;
 
+  static const _backdropDepthScale = 1.012;
   static const _slideScaleBegin = 1.006;
 
   static const _slideTransitionDuration = Duration(milliseconds: 900);
   static const _indicatorAnimationDuration = Duration(milliseconds: 280);
   static const _focusScaleDuration = Duration(milliseconds: 220);
+  static const _backdropDepthInDuration = Duration(milliseconds: 320);
+  static const _backdropDepthOutDuration = Duration(seconds: 8);
 
   final List<MediaBarSlideItem> items;
   final int activeIndex;
@@ -294,7 +299,7 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
         );
       },
       child: KeyedSubtree(
-        key: ValueKey(widget.activeIndex),
+        key: ValueKey(item.itemId),
         child: _buildSlide(theme, item),
       ),
     );
@@ -307,29 +312,16 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        _buildBackdrop(item),
+        _AyaBackdrop(
+          key: ValueKey('aya_backdrop_${item.itemId}'),
+          item: item,
+          highlighted: _isHighlighted,
+          depthScale: AyaMediaBar._backdropDepthScale,
+          depthInDuration: AyaMediaBar._backdropDepthInDuration,
+          depthOutDuration: AyaMediaBar._backdropDepthOutDuration,
+        ),
         _buildContent(theme, item),
       ],
-    );
-  }
-
-  Widget _buildBackdrop(MediaBarSlideItem item) {
-    final backdropUrl = item.backdropUrl;
-
-    if (backdropUrl == null || backdropUrl.isEmpty) {
-      return ColoredBox(
-        color: AppColorScheme.background,
-      );
-    }
-
-    return OfflineAwareImage(
-      imageUrl: backdropUrl,
-      fit: BoxFit.cover,
-      alignment: Alignment.center,
-      fadeInDuration: Duration.zero,
-      errorWidget: (_, _, _) => ColoredBox(
-        color: AppColorScheme.background,
-      ),
     );
   }
 
@@ -435,6 +427,143 @@ class _AyaMediaBarState extends State<AyaMediaBar> {
           },
         ),
       ),
+    );
+  }
+}
+
+class _AyaBackdrop extends StatefulWidget {
+  final MediaBarSlideItem item;
+  final bool highlighted;
+  final double depthScale;
+  final Duration depthInDuration;
+  final Duration depthOutDuration;
+
+  const _AyaBackdrop({
+    super.key,
+    required this.item,
+    required this.highlighted,
+    required this.depthScale,
+    required this.depthInDuration,
+    required this.depthOutDuration,
+  });
+
+  @override
+  State<_AyaBackdrop> createState() => _AyaBackdropState();
+}
+
+class _AyaBackdropState extends State<_AyaBackdrop>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _depthController;
+
+  double get _scale {
+    return 1.0 +
+        ((widget.depthScale - 1.0) * _depthController.value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _depthController = AnimationController(
+      vsync: this,
+      value: widget.highlighted ? 1.0 : 0.0,
+    );
+
+    if (widget.highlighted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !widget.highlighted) {
+          return;
+        }
+
+        unawaited(_retreatFromDepth());
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _AyaBackdrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.highlighted == widget.highlighted) {
+      return;
+    }
+
+    if (widget.highlighted) {
+      unawaited(_runDepthCycle());
+    } else {
+      _resetDepth();
+    }
+  }
+
+  @override
+  void dispose() {
+    _depthController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _runDepthCycle() async {
+    _depthController.stop();
+
+    await _depthController.animateTo(
+      1.0,
+      duration: widget.depthInDuration,
+      curve: Curves.easeOutCubic,
+    );
+
+    if (!mounted || !widget.highlighted) {
+      return;
+    }
+
+    await _depthController.animateBack(
+      0.0,
+      duration: widget.depthOutDuration,
+      curve: Curves.linear,
+    );
+  }
+
+  Future<void> _retreatFromDepth() async {
+    _depthController.stop();
+    _depthController.value = 1.0;
+
+    await _depthController.animateBack(
+      0.0,
+      duration: widget.depthOutDuration,
+      curve: Curves.linear,
+    );
+  }
+
+  void _resetDepth() {
+    _depthController.stop();
+    _depthController.value = 0.0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final backdropUrl = widget.item.backdropUrl;
+
+    if (backdropUrl == null || backdropUrl.isEmpty) {
+      return ColoredBox(
+        color: AppColorScheme.background,
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _depthController,
+      child: OfflineAwareImage(
+        imageUrl: backdropUrl,
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        fadeInDuration: Duration.zero,
+        errorWidget: (_, _, _) => ColoredBox(
+          color: AppColorScheme.background,
+        ),
+      ),
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scale,
+          child: child,
+        );
+      },
     );
   }
 }
