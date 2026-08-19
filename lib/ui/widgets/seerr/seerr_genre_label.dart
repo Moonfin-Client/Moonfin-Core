@@ -27,7 +27,6 @@ class SeerrGenreLabel extends StatelessWidget {
             fontWeight: FontWeight.bold,
             letterSpacing: 2.5,
             color: AppColorScheme.onSurface.withValues(alpha: 0.9),
-            shadows: [Shadow(blurRadius: 4, color: AppColorScheme.scrim)],
           ),
         ),
       ),
