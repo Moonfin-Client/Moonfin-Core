@@ -55,17 +55,17 @@ class Server {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'address': address,
-        'connectionAddress': connectionAddress,
-        'version': version,
-        'serverType': serverType.name,
-        'loginDisclaimer': loginDisclaimer,
-        'splashscreenEnabled': splashscreenEnabled,
-        'setupCompleted': setupCompleted,
-        'dateAdded': dateAdded.toIso8601String(),
-        'dateLastAccessed': dateLastAccessed.toIso8601String(),
-      };
+    'name': name,
+    'address': address,
+    'connectionAddress': connectionAddress,
+    'version': version,
+    'serverType': serverType.name,
+    'loginDisclaimer': loginDisclaimer,
+    'splashscreenEnabled': splashscreenEnabled,
+    'setupCompleted': setupCompleted,
+    'dateAdded': dateAdded.toIso8601String(),
+    'dateLastAccessed': dateLastAccessed.toIso8601String(),
+  };
 
   factory Server.fromJson(String id, Map<String, dynamic> json) {
     final address = json['address'] as String? ?? '';
@@ -82,10 +82,12 @@ class Server {
       loginDisclaimer: json['loginDisclaimer'] as String?,
       splashscreenEnabled: json['splashscreenEnabled'] as bool? ?? false,
       setupCompleted: json['setupCompleted'] as bool? ?? true,
-      dateAdded: DateTime.tryParse(json['dateAdded'] as String? ?? '') ??
+      dateAdded:
+          DateTime.tryParse(json['dateAdded'] as String? ?? '') ??
           DateTime.now(),
-      dateLastAccessed:
-          DateTime.tryParse(json['dateLastAccessed'] as String? ?? ''),
+      dateLastAccessed: DateTime.tryParse(
+        json['dateLastAccessed'] as String? ?? '',
+      ),
     );
   }
 }
