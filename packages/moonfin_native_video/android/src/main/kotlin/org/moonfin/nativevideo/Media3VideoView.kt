@@ -18,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.view.Gravity
 import android.view.Display
 import android.view.Surface
@@ -522,6 +523,13 @@ class Media3VideoView(
         private const val TS_SEARCH_BYTES_DEFAULT = TsExtractor.DEFAULT_TIMESTAMP_SEARCH_BYTES
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val STREAMING_MAX_BUFFER_MS = 120_000
+        // How long a television gets to blank, renegotiate the link and come
+        // back before a failure stops counting as part of the mode switch.
+        private const val DISPLAY_MODE_SWITCH_RECOVERY_MS = 10_000L
+        // A television that steps through an intermediate mode drops the
+        // surface more than once, so one retry is not always enough. The
+        // recovery window is what stops this running on.
+        private const val DISPLAY_MODE_SWITCH_MAX_RETRIES = 3
         private const val MAX_TARGET_BUFFER_BYTES = 384L * 1024 * 1024
         // Broadcast captions ride inside the video as CEA-608 messages rather
         // than as their own stream, and the extractor only looks for them when
@@ -632,9 +640,9 @@ class Media3VideoView(
     private var videoView: View = newVideoView()
     private var lastSourceArguments: Map<*, *>? = null
     private var lastPlaybackPositionMs: Long = 0L
-    private var displayModeSwitchPending = false
+    private var displayModeSwitchAtMs = 0L
     private var wasPlayingBeforeDisplayModeSwitch = false
-    private var displayModeSwitchRetryAttemptedForCurrentSource = false
+    private var displayModeSwitchRetriesForCurrentSource = 0
 
     private fun newVideoView(): View =
         if (useSurfaceView) {
@@ -942,11 +950,10 @@ class Media3VideoView(
             ) {
                 revealVideo()
             }
-            if (displayModeSwitchPending && playbackState == Player.STATE_READY) {
+            if (displayModeSwitchInFlight() && playbackState == Player.STATE_READY) {
                 if (wasPlayingBeforeDisplayModeSwitch && !player.playWhenReady) {
                     player.playWhenReady = true
                 }
-                displayModeSwitchPending = false
             }
             emitState()
             if (playbackState == Player.STATE_ENDED) {
@@ -967,11 +974,12 @@ class Media3VideoView(
             // The HDMI switch drops the audio route and the player pauses
             // itself. A pause the user asked for has to survive the switch, so
             // only the system's own is worth undoing.
-            if (!playWhenReady &&
-                displayModeSwitchPending &&
-                reason != Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
-            ) {
-                wasPlayingBeforeDisplayModeSwitch = true
+            if (!playWhenReady && displayModeSwitchInFlight()) {
+                if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) {
+                    endDisplayModeSwitchRecovery()
+                } else {
+                    wasPlayingBeforeDisplayModeSwitch = true
+                }
             }
             emitState()
         }
@@ -2132,7 +2140,7 @@ class Media3VideoView(
         val url = args["url"]?.toString() ?: return
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
         val autoPlay = args["autoPlay"] as? Boolean ?: false
-        displayModeSwitchRetryAttemptedForCurrentSource = false
+        displayModeSwitchRetriesForCurrentSource = 0
 
         restorePreferredDisplayMode()
         detectedFrameRate = null
@@ -2421,7 +2429,7 @@ class Media3VideoView(
             return
         }
 
-        displayModeSwitchPending = true
+        displayModeSwitchAtMs = SystemClock.elapsedRealtime()
         wasPlayingBeforeDisplayModeSwitch = player.playWhenReady
 
         val updatedLayoutParams = window.attributes
@@ -2447,8 +2455,7 @@ class Media3VideoView(
 
     private fun restorePreferredDisplayMode() {
         clearSurfaceFrameRateHint()
-        displayModeSwitchPending = false
-        wasPlayingBeforeDisplayModeSwitch = false
+        endDisplayModeSwitchRecovery()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
@@ -3519,12 +3526,27 @@ class Media3VideoView(
         return true
     }
 
+    // Setting the window's preferred mode only asks for the switch. The
+    // television renegotiates the link well after the player is ready again,
+    // and the surface it drops on the way through is what kills playback, so
+    // the recovery has to stay armed until the transition has had time to land.
+    private fun displayModeSwitchInFlight(): Boolean =
+        displayModeSwitchAtMs != 0L &&
+            SystemClock.elapsedRealtime() - displayModeSwitchAtMs < DISPLAY_MODE_SWITCH_RECOVERY_MS
+
+    private fun endDisplayModeSwitchRecovery() {
+        displayModeSwitchAtMs = 0L
+        wasPlayingBeforeDisplayModeSwitch = false
+    }
+
     private fun retryPlaybackOnDisplayModeSwitchErrorIfNeeded(error: PlaybackException): Boolean {
-        if (!displayModeSwitchPending || displayModeSwitchRetryAttemptedForCurrentSource) {
+        if (!displayModeSwitchInFlight() ||
+            displayModeSwitchRetriesForCurrentSource >= DISPLAY_MODE_SWITCH_MAX_RETRIES
+        ) {
             return false
         }
         val mediaItem = player.currentMediaItem ?: return false
-        displayModeSwitchRetryAttemptedForCurrentSource = true
+        displayModeSwitchRetriesForCurrentSource++
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = wasPlayingBeforeDisplayModeSwitch || player.playWhenReady
 
