@@ -1230,21 +1230,6 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     if (mounted) setState(() {});
   }
 
-  String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
-    SeerrRowType.shortcuts => l10n.seerrShortcutsRow,
-    SeerrRowType.recentRequests => l10n.recentRequests,
-    SeerrRowType.yourWatchlist => l10n.yourWatchlist,
-    SeerrRowType.recentlyAdded => l10n.recentlyAdded,
-    SeerrRowType.trending => l10n.trending,
-    SeerrRowType.popularMovies => l10n.popularMovies,
-    SeerrRowType.movieGenres => l10n.movieGenres,
-    SeerrRowType.upcomingMovies => l10n.upcomingMovies,
-    SeerrRowType.studios => l10n.studios,
-    SeerrRowType.popularSeries => l10n.popularSeries,
-    SeerrRowType.seriesGenres => l10n.seriesGenres,
-    SeerrRowType.upcomingSeries => l10n.upcomingSeries,
-    SeerrRowType.networks => l10n.networks,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -1270,7 +1255,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     final row = entry.value;
                     return _SeerrRowSwitchTile(
                       focusNode: rowIndex == 0 ? _firstFocusNode : null,
-                      title: _rowLabel(row.type, l10n),
+                      title: localizeSeerrRowTitle(row.type, l10n),
                       value: row.enabled,
                       onChanged: (enabled) {
                         setState(() {

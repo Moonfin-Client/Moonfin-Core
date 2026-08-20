@@ -24,6 +24,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../util/home_row_title_localizer.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -397,21 +398,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     _focusRowAndEnsureVisible(newIndex);
   }
 
-  String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
-    SeerrRowType.shortcuts => l10n.seerrShortcutsRow,
-    SeerrRowType.recentRequests => l10n.recentRequests,
-    SeerrRowType.recentlyAdded => l10n.recentlyAdded,
-    SeerrRowType.trending => l10n.trending,
-    SeerrRowType.popularMovies => l10n.popularMovies,
-    SeerrRowType.movieGenres => l10n.movieGenres,
-    SeerrRowType.upcomingMovies => l10n.upcomingMovies,
-    SeerrRowType.studios => l10n.studios,
-    SeerrRowType.popularSeries => l10n.popularSeries,
-    SeerrRowType.seriesGenres => l10n.seriesGenres,
-    SeerrRowType.upcomingSeries => l10n.upcomingSeries,
-    SeerrRowType.networks => l10n.networks,
-    SeerrRowType.yourWatchlist => l10n.yourWatchlist,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -679,7 +665,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
               return _SeerrReorderableTile(
                 key: ValueKey('${row.type}:${row.enabled}'),
                 focusNode: _focusNodes[rowIndex],
-                label: _rowLabel(row.type, l10n),
+                label: localizeSeerrRowTitle(row.type, l10n),
                 enabled: row.enabled,
                 enabledLabel: l10n.enabled,
                 hiddenLabel: l10n.hidden,
@@ -734,7 +720,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
               return _SeerrReorderableTile(
                 key: ValueKey(row.type),
                 focusNode: _focusNodes[rowIndex],
-                label: _rowLabel(row.type, l10n),
+                label: localizeSeerrRowTitle(row.type, l10n),
                 enabled: row.enabled,
                 enabledLabel: l10n.enabled,
                 hiddenLabel: l10n.hidden,

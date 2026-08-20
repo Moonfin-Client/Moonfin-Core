@@ -1,5 +1,25 @@
 import '../../data/models/home_row.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/preference_constants.dart';
+
+/// The Seerr page builds its rows from the type alone, so it localizes the
+/// title here rather than carrying one around.
+String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
+    switch (type) {
+      SeerrRowType.shortcuts => l10n.seerrShortcutsRow,
+      SeerrRowType.recentRequests => l10n.recentRequests,
+      SeerrRowType.recentlyAdded => l10n.recentlyAdded,
+      SeerrRowType.yourWatchlist => l10n.yourWatchlist,
+      SeerrRowType.trending => l10n.trending,
+      SeerrRowType.popularMovies => l10n.popularMovies,
+      SeerrRowType.movieGenres => l10n.movieGenres,
+      SeerrRowType.upcomingMovies => l10n.upcomingMovies,
+      SeerrRowType.studios => l10n.studios,
+      SeerrRowType.popularSeries => l10n.popularSeries,
+      SeerrRowType.seriesGenres => l10n.seriesGenres,
+      SeerrRowType.upcomingSeries => l10n.upcomingSeries,
+      SeerrRowType.networks => l10n.networks,
+    };
 
 String localizeHomeRowTitle({
   required HomeRow row,

@@ -10,7 +10,6 @@ import '../utils/bounded_concurrency.dart';
 
 class SeerrDiscoverRow {
   final SeerrRowType type;
-  final String title;
   final List<SeerrDiscoverItem> items;
   final List<SeerrGenre> genres;
   final List<SeerrNetwork> networks;
@@ -21,7 +20,6 @@ class SeerrDiscoverRow {
 
   const SeerrDiscoverRow({
     required this.type,
-    required this.title,
     this.items = const [],
     this.genres = const [],
     this.networks = const [],
@@ -42,7 +40,6 @@ class SeerrDiscoverRow {
   }) =>
       SeerrDiscoverRow(
         type: type,
-        title: title,
         items: items ?? this.items,
         genres: genres ?? this.genres,
         networks: networks ?? this.networks,
@@ -150,7 +147,6 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       await _refreshRecentlyAddedGate(activeRows);
       _rows = _visibleRows(activeRows).map((type) => SeerrDiscoverRow(
         type: type,
-        title: _titleForRowType(type),
         isLoading: true,
       )).toList();
       notifyListeners();
@@ -521,19 +517,4 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  static String _titleForRowType(SeerrRowType type) => switch (type) {
-    SeerrRowType.shortcuts => 'Seerr Browse',
-    SeerrRowType.recentRequests => 'Recent Requests',
-    SeerrRowType.yourWatchlist => 'Your Watchlist',
-    SeerrRowType.recentlyAdded => 'Recently Added',
-    SeerrRowType.trending => 'Trending',
-    SeerrRowType.popularMovies => 'Popular Movies',
-    SeerrRowType.movieGenres => 'Movie Genres',
-    SeerrRowType.upcomingMovies => 'Upcoming Movies',
-    SeerrRowType.studios => 'Studios',
-    SeerrRowType.popularSeries => 'Popular Series',
-    SeerrRowType.seriesGenres => 'Series Genres',
-    SeerrRowType.upcomingSeries => 'Upcoming Series',
-    SeerrRowType.networks => 'Networks',
-  };
 }
