@@ -4,6 +4,7 @@ class Server {
   final String id;
   final String name;
   final String address;
+  final String connectionAddress;
   final String version;
   final ServerType serverType;
   final String? loginDisclaimer;
@@ -16,6 +17,7 @@ class Server {
     required this.id,
     required this.name,
     required this.address,
+    String? connectionAddress,
     required this.version,
     required this.serverType,
     this.loginDisclaimer,
@@ -23,11 +25,13 @@ class Server {
     this.setupCompleted = true,
     required this.dateAdded,
     DateTime? dateLastAccessed,
-  }) : dateLastAccessed = dateLastAccessed ?? dateAdded;
+  }) : connectionAddress = connectionAddress ?? address,
+       dateLastAccessed = dateLastAccessed ?? dateAdded;
 
   Server copyWith({
     String? name,
     String? address,
+    String? connectionAddress,
     String? version,
     ServerType? serverType,
     String? loginDisclaimer,
@@ -39,6 +43,7 @@ class Server {
       id: id,
       name: name ?? this.name,
       address: address ?? this.address,
+      connectionAddress: connectionAddress ?? this.connectionAddress,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
@@ -52,6 +57,7 @@ class Server {
   Map<String, dynamic> toJson() => {
         'name': name,
         'address': address,
+        'connectionAddress': connectionAddress,
         'version': version,
         'serverType': serverType.name,
         'loginDisclaimer': loginDisclaimer,
@@ -62,10 +68,12 @@ class Server {
       };
 
   factory Server.fromJson(String id, Map<String, dynamic> json) {
+    final address = json['address'] as String? ?? '';
     return Server(
       id: id,
       name: json['name'] as String? ?? '',
-      address: json['address'] as String? ?? '',
+      address: address,
+      connectionAddress: json['connectionAddress'] as String? ?? address,
       version: json['version'] as String? ?? '',
       serverType: ServerType.values.firstWhere(
         (t) => t.name == json['serverType'],
