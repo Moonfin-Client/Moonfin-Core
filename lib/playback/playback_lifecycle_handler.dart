@@ -7,6 +7,19 @@ import '../data/models/aggregated_item.dart';
 import '../util/platform_detection.dart';
 import 'media3_player_backend.dart';
 
+class _StaleVideoClaim {
+  _StaleVideoClaim({
+    required this.item,
+    required this.position,
+    required this.wasPlaying,
+  });
+
+  final AggregatedItem item;
+  final Duration position;
+  final bool wasPlaying;
+  late final Future<bool> cleanup;
+}
+
 class PlaybackLifecycleHandler with WidgetsBindingObserver {
   // Detaching the render surface can regress the backend position, but only
   // right after the app goes to the background. _restoreState runs the same
@@ -23,6 +36,9 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   bool _screenLocked = false;
   Timer? _videoStopTimer;
   AggregatedItem? _videoStopItem;
+  dynamic _savedStateItem;
+  _StaleVideoClaim? _staleVideoClaim;
+  _StaleVideoClaim? _staleRestoreClaim;
 
   void setScreenLocked(bool locked) {
     _screenLocked = locked;
@@ -69,10 +85,12 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
         break;
       case AppLifecycleState.resumed:
         final backend = _manager.backend;
-        if (backend is Media3PlayerBackend) {
+        if (backend is Media3PlayerBackend &&
+            !identical(_staleVideoClaim?.item, currentItem) &&
+            !identical(_staleRestoreClaim?.item, currentItem)) {
           unawaited(backend.appResumed());
         }
-        _restoreState();
+        unawaited(_restoreState());
         break;
       default:
         break;
@@ -86,7 +104,10 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
       return;
     }
 
-    if (identical(_videoStopItem, currentItem)) return;
+    if (identical(_videoStopItem, currentItem) ||
+        identical(_staleVideoClaim?.item, currentItem)) {
+      return;
+    }
 
     _videoStopTimer?.cancel();
     _videoStopItem = currentItem;
@@ -96,9 +117,29 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
           !identical(_manager.queueService.currentItem, currentItem)) {
         return;
       }
-      unawaited(_manager.stop(userInitiated: false));
+      final claim = _StaleVideoClaim(
+        item: currentItem,
+        position: _isLiveTv(currentItem)
+            ? Duration.zero
+            : (_savedPosition ?? Duration.zero),
+        wasPlaying: _wasPlaying ?? false,
+      );
+      _staleVideoClaim = claim;
+      claim.cleanup = _cleanupVideoSession(currentItem);
+      unawaited(claim.cleanup);
     });
   }
+
+  Future<bool> _cleanupVideoSession(AggregatedItem item) async {
+    try {
+      return await _manager.stopForBackground(item);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  bool _isLiveTv(AggregatedItem item) =>
+      item.type == 'TvChannel' || item.type == 'LiveTvChannel';
 
   void _cancelVideoStop() {
     _videoStopTimer?.cancel();
@@ -107,7 +148,13 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   }
 
   void _saveState() {
-    if (_manager.queueService.currentItem == null) return;
+    final currentItem = _manager.queueService.currentItem;
+    if (currentItem == null) return;
+    if (!identical(_savedStateItem, currentItem)) {
+      _savedPosition = null;
+      _wasPlaying = null;
+      _savedStateItem = currentItem;
+    }
 
     final newPos = _manager.state.position;
     if (_savedPosition != null && newPos < _savedPosition!) {
@@ -171,10 +218,43 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
 
     if (_screenLocked) return;
 
+    if (_staleRestoreClaim != null) return;
+
+    final staleClaim = _staleVideoClaim;
+    if (staleClaim != null) {
+      _staleVideoClaim = null;
+      _staleRestoreClaim = staleClaim;
+      _savedPosition = null;
+      _wasPlaying = null;
+      _savedStateItem = null;
+
+      try {
+        final cleanupSucceeded = await staleClaim.cleanup;
+        if (!cleanupSucceeded ||
+            !identical(_manager.queueService.currentItem, staleClaim.item)) {
+          return;
+        }
+        await _manager.startQueuedPlayback(
+          startPosition: staleClaim.position,
+          freshResolution: true,
+        );
+        if (!staleClaim.wasPlaying && _manager.state.isPlaying) {
+          await _manager.pause();
+        }
+      } catch (_) {
+      } finally {
+        if (identical(_staleRestoreClaim, staleClaim)) {
+          _staleRestoreClaim = null;
+        }
+      }
+      return;
+    }
+
     final savedPos = _savedPosition;
     final wasPlaying = _wasPlaying;
     _savedPosition = null;
     _wasPlaying = null;
+    _savedStateItem = null;
 
     if (savedPos == null || wasPlaying == null) return;
     if (_manager.queueService.currentItem == null) return;

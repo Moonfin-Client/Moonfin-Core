@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -13,6 +14,9 @@ class _MockPlaybackManager extends Mock implements PlaybackManager {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() {
+    registerFallbackValue(Duration.zero);
+  });
 
   late _MockPlaybackManager manager;
   late QueueService queue;
@@ -47,7 +51,13 @@ void main() {
     when(
       () => manager.currentOfflineMetadata,
     ).thenAnswer((_) => offlineMetadata);
-    when(() => manager.stop(userInitiated: false)).thenAnswer((_) async {});
+    when(() => manager.stopForBackground(any())).thenAnswer((_) async => true);
+    when(
+      () => manager.startQueuedPlayback(
+        startPosition: any(named: 'startPosition'),
+        freshResolution: any(named: 'freshResolution'),
+      ),
+    ).thenAnswer((_) async {});
     when(() => manager.resume()).thenAnswer((_) async {});
     handler = PlaybackLifecycleHandler(manager);
   });
@@ -72,11 +82,11 @@ void main() {
           handler.didChangeAppLifecycleState(state);
           await tester.pump(const Duration(milliseconds: 2999));
 
-          verifyNever(() => manager.stop(userInitiated: false));
+          verifyNever(() => manager.stopForBackground(any()));
 
           await tester.pump(const Duration(milliseconds: 1));
 
-          verify(() => manager.stop(userInitiated: false)).called(1);
+          verify(() => manager.stopForBackground(any())).called(1);
         });
       });
     }
@@ -92,12 +102,12 @@ void main() {
       handler.didChangeAppLifecycleState(AppLifecycleState.paused);
       await tester.pump(const Duration(seconds: 3));
 
-      verify(() => manager.stop(userInitiated: false)).called(1);
+      verify(() => manager.stopForBackground(any())).called(1);
 
       handler.didChangeAppLifecycleState(AppLifecycleState.paused);
       await tester.pump(const Duration(seconds: 3));
 
-      verifyNever(() => manager.stop(userInitiated: false));
+      verifyNever(() => manager.stopForBackground(any()));
     });
   });
 
@@ -115,8 +125,122 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
 
-      verifyNever(() => manager.stop(userInitiated: false));
+      verifyNever(() => manager.stopForBackground(any()));
       verify(() => manager.resume()).called(1);
+    });
+  });
+
+  for (final type in <String>['Movie', 'Episode']) {
+    testWidgets('$type timeout resumes through a fresh session at position', (
+      tester,
+    ) async {
+      await asAndroidTv(() async {
+        final current = item(type);
+        queue.setQueue(<dynamic>[current]);
+        playerState.setPosition(const Duration(seconds: 90));
+        playerState.setPlaying(true);
+
+        handler.didChangeAppLifecycleState(AppLifecycleState.paused);
+        await tester.pump(const Duration(seconds: 3));
+        handler.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        await tester.pump();
+
+        verify(() => manager.stopForBackground(current)).called(1);
+        verify(
+          () => manager.startQueuedPlayback(
+            startPosition: const Duration(seconds: 90),
+            freshResolution: true,
+          ),
+        ).called(1);
+      });
+    });
+  }
+
+  testWidgets('live TV timeout resumes fresh at the live edge', (tester) async {
+    await asAndroidTv(() async {
+      final current = item('LiveTvChannel');
+      queue.setQueue(<dynamic>[current]);
+      playerState.setPosition(const Duration(minutes: 12));
+      playerState.setPlaying(true);
+
+      handler.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 3));
+      handler.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await tester.pump();
+
+      verify(() => manager.stopForBackground(current)).called(1);
+      verify(
+        () => manager.startQueuedPlayback(
+          startPosition: Duration.zero,
+          freshResolution: true,
+        ),
+      ).called(1);
+    });
+  });
+
+  testWidgets('resume racing timeout waits for its claimed cleanup once', (
+    tester,
+  ) async {
+    await asAndroidTv(() async {
+      final cleanup = Completer<bool>();
+      when(
+        () => manager.stopForBackground(any()),
+      ).thenAnswer((_) => cleanup.future);
+      final current = item('Movie');
+      queue.setQueue(<dynamic>[current]);
+      playerState.setPosition(const Duration(seconds: 45));
+      playerState.setPlaying(true);
+
+      handler.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 3));
+      handler.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      handler.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      await tester.pump();
+
+      verifyNever(
+        () => manager.startQueuedPlayback(
+          startPosition: any(named: 'startPosition'),
+          freshResolution: any(named: 'freshResolution'),
+        ),
+      );
+
+      cleanup.complete(true);
+      await tester.pump();
+
+      verify(
+        () => manager.startQueuedPlayback(
+          startPosition: const Duration(seconds: 45),
+          freshResolution: true,
+        ),
+      ).called(1);
+    });
+  });
+
+  testWidgets('replacement ownership cannot restart the timed-out item', (
+    tester,
+  ) async {
+    await asAndroidTv(() async {
+      final cleanup = Completer<bool>();
+      when(
+        () => manager.stopForBackground(any()),
+      ).thenAnswer((_) => cleanup.future);
+      final oldItem = item('Movie');
+      queue.setQueue(<dynamic>[oldItem]);
+      playerState.setPlaying(true);
+
+      handler.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 3));
+      queue.setQueue(<dynamic>[item('Episode')]);
+      handler.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      cleanup.complete(true);
+      await tester.pump();
+
+      verifyNever(
+        () => manager.startQueuedPlayback(
+          startPosition: any(named: 'startPosition'),
+          freshResolution: any(named: 'freshResolution'),
+        ),
+      );
     });
   });
 
@@ -143,7 +267,7 @@ void main() {
 
         await tester.pump(const Duration(seconds: 4));
 
-        verifyNever(() => manager.stop(userInitiated: false));
+        verifyNever(() => manager.stopForBackground(any()));
       });
     },
   );
@@ -160,10 +284,10 @@ void main() {
       handler.didChangeAppLifecycleState(AppLifecycleState.paused);
 
       await tester.pump(const Duration(milliseconds: 2999));
-      verifyNever(() => manager.stop(userInitiated: false));
+      verifyNever(() => manager.stopForBackground(any()));
 
       await tester.pump(const Duration(milliseconds: 1));
-      verify(() => manager.stop(userInitiated: false)).called(1);
+      verify(() => manager.stopForBackground(any())).called(1);
     });
   });
 
