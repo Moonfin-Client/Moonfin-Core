@@ -108,6 +108,23 @@ class MediaCard extends StatefulWidget {
     this.isBanner = false,
   });
 
+  /// The genre name grows with the card, so it reads well both on a poster
+  /// and on a focused thumbnail. Long names shrink to fit.
+  static const _genreLabelRatio = 14 / 200;
+  static const _genreLabelMinSize = 14.0;
+  static const _genreLabelMaxSize = 24.0;
+
+  /// The Seerr genre rows draw their own label and call this, so both come out
+  /// the same size.
+  static double genreLabelFontSize(double cardWidth) =>
+      (cardWidth * _genreLabelRatio).clamp(
+        _genreLabelMinSize,
+        _genreLabelMaxSize,
+      );
+
+  /// Letter spacing grows with the text.
+  static double genreLabelLetterSpacing(double fontSize) => fontSize * 0.18;
+
   static IconData iconForType(String? type) {
     switch (type) {
       case 'Folder':
@@ -369,7 +386,10 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                           height: titleLineHeight,
                           width: cardWidth,
                           child: showMarquee
-                              ? MarqueeText(text: widget.title!, style: titleStyle)
+                              ? MarqueeText(
+                                  text: widget.title!,
+                                  style: titleStyle,
+                                )
                               : Text(
                                   widget.title!,
                                   maxLines: 1,
@@ -622,7 +642,8 @@ class _CardImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = isCircular ? 999.0 : 8.0;
     final showBorder = !suppressFocusBorder && (focused || hovered);
-    final borderColor = focusColor ??
+    final borderColor =
+        focusColor ??
         (GlassFocusHalo.appleStyleActive
             ? Colors.white
             : Theme.of(context).colorScheme.primary);
@@ -678,7 +699,9 @@ class _CardImage extends StatelessWidget {
                           children: [
                             BoundedNetworkImage(
                               imageUrl: imageUrl!,
-                              fit: (itemType == 'Network' || itemType == 'Studio')
+                              fit:
+                                  (itemType == 'Network' ||
+                                      itemType == 'Studio')
                                   ? BoxFit.contain
                                   : BoxFit.cover,
                               fadeInDuration: Duration.zero,
@@ -694,26 +717,37 @@ class _CardImage extends StatelessWidget {
                                 color: Colors.black.withValues(alpha: 0.45),
                               ),
                               if (title != null && title!.isNotEmpty)
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        title!.toUpperCase(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 2.5,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface
-                                              .withValues(alpha: 0.9),
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final fontSize =
+                                        MediaCard.genreLabelFontSize(
+                                          constraints.maxWidth,
+                                        );
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            title!.toUpperCase(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: fontSize,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing:
+                                                  MediaCard.genreLabelLetterSpacing(
+                                                    fontSize,
+                                                  ),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withValues(alpha: 0.9),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
                             ],
                           ],

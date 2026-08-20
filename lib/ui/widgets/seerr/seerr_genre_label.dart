@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../media_card.dart';
+
 /// The genre name across the middle of its artwork, the way Seerr shows it, in
-/// the same lettering as the Jellyfin genre row so the two rows match. It darkens
-/// the image behind the text: some duotone backdrops come out light enough that
-/// white text would be hard to read on them.
+/// the same lettering and size as the Jellyfin genre row.
 class SeerrGenreLabel extends StatelessWidget {
   const SeerrGenreLabel({super.key, required this.name});
 
@@ -13,23 +13,27 @@ class SeerrGenreLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColorScheme.scrim.withValues(alpha: 0.3),
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(12),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          name.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.5,
-            color: AppColorScheme.onSurface.withValues(alpha: 0.9),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fontSize = MediaCard.genreLabelFontSize(constraints.maxWidth);
+        return Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(12),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              name.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                letterSpacing: MediaCard.genreLabelLetterSpacing(fontSize),
+                color: AppColorScheme.onSurface.withValues(alpha: 0.9),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
