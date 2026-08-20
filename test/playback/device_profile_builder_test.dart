@@ -58,15 +58,55 @@ bool _excludesVideoProfile(
     final conditions = codecProfile['Conditions'] as List<dynamic>? ?? const [];
     for (final rawCondition in conditions) {
       final condition = rawCondition as Map<dynamic, dynamic>;
-      if (condition['Property'] == 'VideoProfile' &&
-          condition['Condition'] == 'NotEquals' &&
+      if (condition['Property'] != 'VideoProfile') {
+        continue;
+      }
+
+      // Both spellings exclude the profile. Only the allow-list form survives
+      // into the transcode URL, which is why the builder prefers it, but the
+      // negated form is still in use for other codecs.
+      if (condition['Condition'] == 'NotEquals' &&
           condition['Value'] == videoProfile) {
         return true;
+      }
+
+      if (condition['Condition'] == 'EqualsAny') {
+        final allowed = (condition['Value'] as String)
+            .split('|')
+            .map((value) => value.trim().toLowerCase())
+            .toSet();
+        if (!allowed.contains(videoProfile.toLowerCase())) {
+          return true;
+        }
       }
     }
   }
 
   return false;
+}
+
+/// The server only serialises positive VideoProfile conditions into the
+/// transcode URL, so a negated veto is silently dropped and the stream gets
+/// copied instead of re-encoded.
+bool _vetoSurvivesToTranscodeUrl(
+  Map<String, dynamic> profile,
+  String codec,
+) {
+  final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
+
+  return codecProfiles.any((rawProfile) {
+    final codecProfile = rawProfile as Map<dynamic, dynamic>;
+    if (codecProfile['Type'] != 'Video' || codecProfile['Codec'] != codec) {
+      return false;
+    }
+
+    final conditions = codecProfile['Conditions'] as List<dynamic>? ?? const [];
+    return conditions.any((rawCondition) {
+      final condition = rawCondition as Map<dynamic, dynamic>;
+      return condition['Property'] == 'VideoProfile' &&
+          condition['Condition'] == 'EqualsAny';
+    });
+  });
 }
 
 Set<String> _codecUnsupportedRangeTypes(
@@ -333,6 +373,38 @@ void main() {
       );
 
       expect(_excludesVideoProfile(profile, 'h264', 'high 10'), isFalse);
+    });
+
+    test('states the Hi10p veto positively so the server cannot stream copy '
+        'the 10 bit bitstream', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAvc: true,
+        avcMainLevel: 51,
+      );
+
+      expect(_vetoSurvivesToTranscodeUrl(profile, 'h264'), isTrue);
+    });
+  });
+
+  group('DeviceProfileBuilder HEVC Main 10', () {
+    test('a device without a 10 bit HEVC decoder transcodes Main 10', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        hevcMainLevel: 120,
+      );
+
+      expect(_excludesVideoProfile(profile, 'hevc', 'main 10'), isTrue);
+      expect(_vetoSurvivesToTranscodeUrl(profile, 'hevc'), isTrue);
+    });
+
+    test('a device with one keeps Main 10 direct playable', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsHevc: true,
+        hevcMainLevel: 120,
+        supportsHevcMain10: true,
+      );
+
+      expect(_excludesVideoProfile(profile, 'hevc', 'main 10'), isFalse);
     });
   });
 
