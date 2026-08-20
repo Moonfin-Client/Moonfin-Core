@@ -243,29 +243,38 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
 
     if (!event.isActionable) return KeyEventResult.ignored;
     final key = event.logicalKey;
-    if (key.isLeftKey) {
-      if (_focusedIndex > 0) {
-        _setFocusedIndex(_focusedIndex - 1);
-        _scrollToIndex(_focusedIndex);
+    if (key.isLeftKey || key.isRightKey) {
+      // The list scrolls in whatever direction the ambient Directionality
+      // mirrors it to, so index+1 lands on-screen-left under RTL instead of
+      // on-screen-right. Flip the index step (and which physical edge each
+      // callback represents) so the highlight always follows the pressed key.
+      final isRtl = Directionality.of(context) == TextDirection.rtl;
+      final movesToNextIndex = key.isRightKey != isRtl;
+      if (movesToNextIndex) {
+        if (_focusedIndex < widget.items.length - 1) {
+          _setFocusedIndex(_focusedIndex + 1);
+          _scrollToIndex(_focusedIndex);
+          return KeyEventResult.handled;
+        }
+        final edge = isRtl ? widget.onLeftEdge : widget.onRightEdge;
+        if (edge != null) {
+          edge();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.handled;
+      } else {
+        if (_focusedIndex > 0) {
+          _setFocusedIndex(_focusedIndex - 1);
+          _scrollToIndex(_focusedIndex);
+          return KeyEventResult.handled;
+        }
+        final edge = isRtl ? widget.onRightEdge : widget.onLeftEdge;
+        if (edge != null) {
+          edge();
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.handled;
       }
-      if (widget.onLeftEdge != null) {
-        widget.onLeftEdge!();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.handled;
-    }
-    if (key.isRightKey) {
-      if (_focusedIndex < widget.items.length - 1) {
-        _setFocusedIndex(_focusedIndex + 1);
-        _scrollToIndex(_focusedIndex);
-        return KeyEventResult.handled;
-      }
-      if (widget.onRightEdge != null) {
-        widget.onRightEdge!();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.handled;
     }
     if (key.isUpKey) {
       final handled = widget.onVerticalNavigation?.call(true) ?? false;
