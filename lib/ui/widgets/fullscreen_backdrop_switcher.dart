@@ -80,6 +80,7 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
     }
 
     if (next == null) {
+      // Cleared: drop all backdrop state immediately.
       _controller.stop();
 
       setState(() {
