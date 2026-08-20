@@ -1181,7 +1181,11 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
     final focusColor =
         Color(GetIt.instance<UserPreferences>().get(UserPreferences.focusColor).colorValue);
     final externallyDriven = widget.externalIsFocused != null;
-    final effectiveFocused = widget.externalIsFocused ?? (focused || hovered);
+    // The row drives focus and knows nothing about the mouse, so hovering has
+    // to count too. Same rule as MediaCard.
+    final effectiveFocused = externallyDriven
+        ? (widget.externalIsFocused! || hovered)
+        : (focused || hovered);
 
     final inner = GestureDetector(
       onTap: widget.onTap,
@@ -1318,7 +1322,11 @@ class _LogoCardState extends State<_LogoCard> with FocusStateMixin {
     final focusColor =
         Color(GetIt.instance<UserPreferences>().get(UserPreferences.focusColor).colorValue);
     final externallyDriven = widget.externalIsFocused != null;
-    final effectiveFocused = widget.externalIsFocused ?? (focused || hovered);
+    // The row drives focus and knows nothing about the mouse, so hovering has
+    // to count too. Same rule as MediaCard.
+    final effectiveFocused = externallyDriven
+        ? (widget.externalIsFocused! || hovered)
+        : (focused || hovered);
 
     final inner = GestureDetector(
       onTap: widget.onTap,
