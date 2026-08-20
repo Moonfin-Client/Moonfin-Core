@@ -985,6 +985,13 @@ class Media3VideoView(
         }
 
         override fun onPlayerError(error: PlaybackException) {
+            // Recovery order matters: an error while a display mode switch is
+            // in flight is most likely the dropped surface, so that retry gets
+            // the first look. An init failure under tunneling is retried
+            // untunneled before any downmix so a tunnel failure can't stick
+            // the whole session to stereo. The downmix retry stays last and
+            // handles 7.1 PCM that the device can't open as an 8-channel
+            // AudioTrack.
             val nativeRetryTriggered = retryPlaybackOnDisplayModeSwitchErrorIfNeeded(error) ||
                 retryAudioWithoutOffloadIfNeeded(error) ||
                 retryAudioWithoutTunnelingIfNeeded(error) ||
