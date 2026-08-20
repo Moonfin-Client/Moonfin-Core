@@ -284,6 +284,8 @@ class AppleTvBackend implements PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
 
+    final autoPlay = payload['autoPlay'] != false;
+    
     final headers = payload['headers'] is Map
         ? (payload['headers'] as Map).map(
             (key, value) => MapEntry(key.toString(), value.toString()),
@@ -302,14 +304,15 @@ class AppleTvBackend implements PlayerBackend {
     _log(
       'play ${_describeUrl(url)} live=${payload['isLive'] == true} '
       'audioOnly=$audioOnly startMs=${startPosition.inMilliseconds} '
-      'headers=${(headers.keys.toList()..sort()).join(',')}',
+      'headers=${(headers.keys.toList()..sort()).join(',')}'
+      'autoPlay=$autoPlay ',
     );
     await _ensurePlayerPresented(audioOnly: audioOnly);
 
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
-      'autoPlay': true,
+      'autoPlay': autoPlay,
       'startPositionMs': startPosition.inMilliseconds,
       'container': payload['container']?.toString(),
       'videoRangeType': payload['videoRangeType']?.toString(),

@@ -684,6 +684,7 @@ class Media3PlayerBackend extends PlayerBackend {
     Duration startPosition = Duration.zero,
   }) async {
     final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
+    final autoPlay = payload['autoPlay'] != false;
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
@@ -769,7 +770,7 @@ class Media3PlayerBackend extends PlayerBackend {
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
-      'autoPlay': true,
+      'autoPlay': autoPlay,
       'startPositionMs': startPosition.inMilliseconds,
       'container': container,
       'videoRangeType': videoRangeType,
@@ -808,7 +809,9 @@ class Media3PlayerBackend extends PlayerBackend {
     await _invoke<void>('setSubtitleRendererMode', {
       'mode': _modeToWire(_requestedSubtitleRendererMode),
     });
-    await _invoke<void>('play');
+    if (autoPlay) {
+      await _invoke<void>('play');
+    }
   }
 
   @override

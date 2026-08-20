@@ -621,6 +621,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     Duration startPosition = Duration.zero,
   }) async {
     final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
+    final autoPlay = payload['autoPlay'] != false;
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
@@ -649,7 +650,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
 
     final media = Media(url);
-    final openPaused = startPosition > Duration.zero;
+    final openPaused = !autoPlay || startPosition > Duration.zero;
     await _player.open(media, play: !openPaused);
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);

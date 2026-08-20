@@ -167,6 +167,7 @@ class AetherBackend implements PlayerBackend {
     Duration startPosition = Duration.zero,
   }) async {
     final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
+    final autoPlay = payload['autoPlay'] != false;
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
@@ -188,7 +189,7 @@ class AetherBackend implements PlayerBackend {
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
-      'autoPlay': true,
+      'autoPlay': autoPlay,
       'startPositionMs': startPosition.inMilliseconds,
       'audioStreamIndex': (payload['audioStreamIndex'] as num?)?.toInt() ?? -1,
       'isLive': payload['isLive'] == true,

@@ -69,6 +69,9 @@ jobs:
       - name: Resolve dependencies
         run: flutter-tvos pub get
 
+      - name: Static analysis
+        run: flutter-tvos analyze --no-fatal-warnings --no-fatal-infos
+
       - name: Import App Store Connect API key
         env:
           ASC_KEY_BASE64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
@@ -82,10 +85,37 @@ jobs:
 
       - name: Prepare Flutter build settings and pods
         run: |
-          flutter-tvos build tvos --release --no-tree-shake-icons --dart-define=MOONFIN_TVOS=true || true
+          set -euo pipefail
+
+          BASE_BUILD=$(awk -F'+' '/^version:/ {gsub(/[[:space:]]/, "", $2); print $2; exit}' pubspec.yaml)
+
+          if ! [[ "$BASE_BUILD" =~ ^[0-9]+$ ]]; then
+            echo "::error::Could not read a numeric build number from pubspec.yaml"
+            exit 1
+          fi
+
+          BUILD_NUMBER=$((BASE_BUILD + GITHUB_RUN_NUMBER * 1000 + GITHUB_RUN_ATTEMPT))
+
+          echo "MOONFIN_TVOS_BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+          echo "Using tvOS TestFlight build number: $BUILD_NUMBER"
+
+          flutter-tvos build tvos \
+            --release \
+            --no-tree-shake-icons \
+            --build-number="$BUILD_NUMBER" \
+            --dart-define=MOONFIN_TVOS=true || true
+
           test -f tvos/Flutter/Generated.xcconfig
+
           grep -q '^FLUTTER_ROOT=' tvos/Flutter/Generated.xcconfig \
             || echo "FLUTTER_ROOT=$HOME/flutter-tvos" >> tvos/Flutter/Generated.xcconfig
+
+          ACTUAL_BUILD=$(awk -F= '/^FLUTTER_BUILD_NUMBER=/{print $2; exit}' tvos/Flutter/Generated.xcconfig)
+
+          if [ "$ACTUAL_BUILD" != "$BUILD_NUMBER" ]; then
+            echo "::error::Generated Flutter build number ($ACTUAL_BUILD) does not match expected build number ($BUILD_NUMBER)"
+            exit 1
+          fi
 
       - name: Stage flutter_assets for the Xcode copy phase
         run: |
@@ -176,6 +206,21 @@ jobs:
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
             archive
+                    
+          APP="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app"
+
+          APP_BUILD=$(plutil -extract CFBundleVersion raw "$APP/Info.plist")
+          EXT_BUILD=$(plutil -extract CFBundleVersion raw "$APP/PlugIns/MoonfinTopShelf.appex/Info.plist")
+
+          echo "Archived Runner build number: $APP_BUILD"
+          echo "Archived Top Shelf build number: $EXT_BUILD"
+
+          [ "$APP_BUILD" = "$MOONFIN_TVOS_BUILD_NUMBER" ] \
+            || { echo "::error::Runner build number does not match generated tvOS build number"; exit 1; }
+
+          [ "$EXT_BUILD" = "$APP_BUILD" ] \
+            || { echo "::error::Top Shelf build number does not match Runner"; exit 1; }
+
           APPEX="$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app/PlugIns/MoonfinTopShelf.appex/MoonfinTopShelf"
           test -e "$APPEX" \
             || { echo "::error::Top Shelf extension missing from archive"; exit 1; }

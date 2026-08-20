@@ -368,6 +368,7 @@ class HtmlVideoBackend extends PlayerBackend {
     if (_disposed) return;
 
     final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
+    final autoPlay = payload['autoPlay'] != false;
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
@@ -382,17 +383,22 @@ class HtmlVideoBackend extends PlayerBackend {
 
     await _applySource(url, container: container, startPosition: startPosition);
 
-    _setBuffering(true);
-    try {
-      await _videoElement.play().toDart;
-      _setPlaying(true);
-    } catch (error) {
+    if (autoPlay) {
+      _setBuffering(true);
+      try {
+        await _videoElement.play().toDart;
+        _setPlaying(true);
+      } catch (error) {
+        _setPlaying(false);
+        _errorStream.add(<String, dynamic>{
+          'event': 'playerError',
+          'message': error.toString(),
+        });
+      } finally {
+        _setBuffering(false);
+      }
+    } else {
       _setPlaying(false);
-      _errorStream.add(<String, dynamic>{
-        'event': 'playerError',
-        'message': error.toString(),
-      });
-    } finally {
       _setBuffering(false);
     }
 
