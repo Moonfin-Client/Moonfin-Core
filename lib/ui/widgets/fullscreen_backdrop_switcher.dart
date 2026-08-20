@@ -28,18 +28,33 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
 
   String? _currentUrl;
   String? _incomingUrl;
+  String? _pendingUrl;
 
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(vsync: this, duration: widget.duration);
+
     _currentUrl = widget.imageUrl;
+
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed && mounted) {
-        setState(() {
-          _currentUrl = _incomingUrl;
-          _incomingUrl = null;
-        });
+      if (status != AnimationStatus.completed || !mounted) {
+        return;
+      }
+
+      final pending = _pendingUrl;
+
+      final shouldContinue = pending != null && pending != _incomingUrl;
+
+      setState(() {
+        _currentUrl = _incomingUrl;
+        _incomingUrl = shouldContinue ? pending : null;
+        _pendingUrl = null;
+      });
+
+      if (shouldContinue) {
+        _controller.forward(from: 0);
       }
     });
   }
@@ -47,21 +62,44 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
   @override
   void didUpdateWidget(FullscreenBackdropSwitcher oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+
     final next = widget.imageUrl;
     final shown = _incomingUrl ?? _currentUrl;
-    if (next == shown) return;
 
-    if (next == null) {
-      // Cleared: drop both layers immediately.
-      _controller.stop();
-      setState(() {
-        _currentUrl = null;
-        _incomingUrl = null;
-      });
+    if (next == shown) {
+      _pendingUrl = null;
       return;
     }
 
-    setState(() => _incomingUrl = next);
+    if (next == _pendingUrl) {
+      return;
+    }
+
+    if (next == null) {
+      _controller.stop();
+
+      setState(() {
+        _currentUrl = null;
+        _incomingUrl = null;
+        _pendingUrl = null;
+      });
+
+      return;
+    }
+
+    if (_controller.isAnimating) {
+      _pendingUrl = next;
+      return;
+    }
+
+    setState(() {
+      _incomingUrl = next;
+    });
+
     _controller.forward(from: 0);
   }
 
