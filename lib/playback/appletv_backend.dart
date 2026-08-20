@@ -278,7 +278,9 @@ class AppleTvBackend implements PlayerBackend {
     dynamic mediaItem, {
     Duration startPosition = Duration.zero,
   }) async {
-    final payload = mediaItem is Map ? mediaItem : const <String, dynamic>{};
+    final payload = mediaItem is Map 
+      ? mediaItem 
+      : const <String, dynamic>{};
     final url = mediaItem is String
         ? mediaItem
         : payload['url']?.toString() ?? '';
@@ -304,8 +306,8 @@ class AppleTvBackend implements PlayerBackend {
     _log(
       'play ${_describeUrl(url)} live=${payload['isLive'] == true} '
       'audioOnly=$audioOnly startMs=${startPosition.inMilliseconds} '
-      'headers=${(headers.keys.toList()..sort()).join(',')}'
-      'autoPlay=$autoPlay ',
+      'headers=${(headers.keys.toList()..sort()).join(',')} '
+      'autoPlay=$autoPlay',
     );
     await _ensurePlayerPresented(audioOnly: audioOnly);
 

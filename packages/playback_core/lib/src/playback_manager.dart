@@ -2270,21 +2270,26 @@ class PlaybackManager implements AudioOwnable {
     bool forceTranscode = false,
     bool isErrorRecovery = false,
   }) {
-    final autoPlayAfterResolve =
-    isErrorRecovery ? true : (_backend?.isPlaying ?? state.isPlaying);
     final previous = _reResolveQueue;
+
     final run = () async {
       if (previous != null) {
         try {
           await previous;
         } catch (_) {}
       }
+
+      final autoPlayAfterResolve = isErrorRecovery
+          ? true
+          : (_backend?.isPlaying ?? state.isPlaying);
+
       await _reResolveNow(
         forceTranscode: forceTranscode,
         isErrorRecovery: isErrorRecovery,
         autoPlayAfterResolve: autoPlayAfterResolve,
       );
     }();
+
     _reResolveQueue = run;
     return run;
   }
