@@ -472,27 +472,6 @@ void main() {
         -1,
       );
     });
-    test('SubtitleMode.flagged selects external tracks without default or forced flags', () {
-      // Index 3 is embedded with no flags, Index 6 is an unflagged external
-      // file. Matching the server, only the external one is a candidate.
-      final tracks = streams.where((s) => s['Index'] == 3 || s['Index'] == 6).toList();
-      expect(
-        computeEffectiveSubtitleIndex(
-          subtitleStreams: tracks,
-          selectedSubtitleIndex: null,
-          activePlaybackSubtitleIndex: null,
-          subtitleMode: SubtitleMode.flagged,
-          preferredLanguage: 'eng',
-          fallbackLanguage: '',
-          preferSdh: false,
-          pgsDirectPlay: true,
-          assDirectPlay: true,
-          preferredAudioLanguage: '',
-          activeAudioLanguage: null,
-        ),
-        6,
-      );
-    });
     test('SubtitleMode.foreign keeps subtitles off when active audio language matches preferred audio language', () {
       expect(
         computeEffectiveSubtitleIndex(

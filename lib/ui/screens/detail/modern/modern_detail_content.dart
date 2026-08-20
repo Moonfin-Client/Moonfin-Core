@@ -2742,7 +2742,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
 
     final manager = GetIt.instance<PlaybackManager>();
-    final isPlayingThisItem = manager.queueService.currentItem?.id == item.id;
+    // The queue holds bare id strings during offline playback, so this checks
+    // the type before asking for an item id.
+    final currentQueueItem = manager.queueService.currentItem;
+    final isPlayingThisItem =
+        currentQueueItem is AggregatedItem && currentQueueItem.id == item.id;
 
     final activeAudioIndex = highlightedAudioIndex(
       audioStreams: audioStreams,

@@ -137,11 +137,8 @@ int? computeEffectiveSubtitleIndex({
         candidates.add(stream);
       }
     } else if (subtitleMode == SubtitleMode.flagged) {
-      // The server's default mode also admits external subtitle files, which
-      // rarely carry default or forced flags.
       if (stream['IsDefault'] == true ||
           stream['IsForced'] == true ||
-          isExternalSubtitleStream(stream) ||
           (bothUnavailable && matchLang(stream['Language'], 'eng'))) {
         candidates.add(stream);
       }
