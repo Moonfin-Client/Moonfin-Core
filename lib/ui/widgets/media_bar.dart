@@ -744,6 +744,43 @@ class _MediaBarState extends State<MediaBar>
     }
   }
 
+  /// Prev/next arrows swap on-screen sides under RTL so "next" always sits
+  /// toward the reading-forward (physical-left) edge, matching the rest of
+  /// the RTL-mirrored UI. The avatar/sidebar-hidden left slot stays a
+  /// physical-screen concept regardless of which logical arrow lands there.
+  List<Widget> _buildNavArrows(
+    BuildContext context,
+    int itemCount, {
+    double nextRightInset = 0,
+  }) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final prevArrow = _NavArrow(
+      icon: isRtl ? Icons.chevron_right : Icons.chevron_left,
+      onTap: _currentIndex > 0 ? () => _goToPage(_currentIndex - 1) : null,
+    );
+    final nextArrow = _NavArrow(
+      icon: isRtl ? Icons.chevron_left : Icons.chevron_right,
+      onTap: () => _goToPage((_currentIndex + 1) % itemCount),
+    );
+    final leftArrow = isRtl ? nextArrow : prevArrow;
+    final rightArrow = isRtl ? prevArrow : nextArrow;
+    return [
+      if (!_hideLeftNavArrowForSidebar)
+        Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          child: Center(child: leftArrow),
+        ),
+      Positioned(
+        right: nextRightInset,
+        top: 0,
+        bottom: 0,
+        child: Center(child: rightArrow),
+      ),
+    ];
+  }
+
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
     _syncMakdBackdropWithCurrentSlide();
@@ -2098,34 +2135,8 @@ class _MediaBarState extends State<MediaBar>
                         ),
                       ),
                     ),
-                  if (items.length > 1 && !PlatformDetection.useMobileUi) ...[
-                    if (!_hideLeftNavArrowForSidebar)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        child: Center(
-                          child: _NavArrow(
-                            icon: Icons.chevron_left,
-                            onTap: _currentIndex > 0
-                                ? () => _goToPage(_currentIndex - 1)
-                                : null,
-                          ),
-                        ),
-                      ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: Center(
-                        child: _NavArrow(
-                          icon: Icons.chevron_right,
-                          onTap: () =>
-                              _goToPage((_currentIndex + 1) % items.length),
-                        ),
-                      ),
-                    ),
-                  ],
+                  if (items.length > 1 && !PlatformDetection.useMobileUi)
+                    ..._buildNavArrows(context, items.length),
                 ],
               ),
             ),
@@ -2413,34 +2424,12 @@ class _MediaBarState extends State<MediaBar>
                           ),
                   if (items.length > 1 &&
                       !PlatformDetection.useMobileUi &&
-                      !_isTrailerPlaying) ...[
-                    if (!_hideLeftNavArrowForSidebar)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        child: Center(
-                          child: _NavArrow(
-                            icon: Icons.chevron_left,
-                            onTap: _currentIndex > 0
-                                ? () => _goToPage(_currentIndex - 1)
-                                : null,
-                          ),
-                        ),
-                      ),
-                    Positioned(
-                      right: 44,
-                      top: 0,
-                      bottom: 0,
-                      child: Center(
-                        child: _NavArrow(
-                          icon: Icons.chevron_right,
-                          onTap: () =>
-                              _goToPage((_currentIndex + 1) % items.length),
-                        ),
-                      ),
+                      !_isTrailerPlaying)
+                    ..._buildNavArrows(
+                      context,
+                      items.length,
+                      nextRightInset: 44,
                     ),
-                  ],
                 ],
               ),
             ),

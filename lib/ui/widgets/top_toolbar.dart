@@ -503,7 +503,19 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     if (index < 0) return false;
     final nextIndex =
         direction == TraversalDirection.right ? index + 1 : index - 1;
-    if (nextIndex < 0 || nextIndex >= nodes.length) return false;
+    if (nextIndex < 0 || nextIndex >= nodes.length) {
+      // The avatar/back chip sits pinned at the physical left edge
+      // (non-directional Alignment.centerLeft), so leaving the icon row's
+      // on-screen leftmost item is always "left", regardless of which
+      // logical icon that is under RTL mirroring.
+      if (direction == TraversalDirection.left &&
+          nextIndex < 0 &&
+          _avatarFocus.canRequestFocus) {
+        _avatarFocus.requestFocus();
+        return true;
+      }
+      return false;
+    }
     nodes[nextIndex].node.requestFocus();
     return true;
   }
@@ -930,15 +942,6 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                     label: l10n.home,
                     baseColor: nextNavColor(),
                     focusNode: _homeFocus,
-                    onKeyEvent: (node, event) {
-                      if (event is KeyDownEvent &&
-                          PlatformDetection.isTV &&
-                          event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                        _avatarFocus.requestFocus();
-                        return KeyEventResult.handled;
-                      }
-                      return KeyEventResult.ignored;
-                    },
                     onPressed: () {
                       if (_isActive(Destinations.home)) {
                         homeRefreshBus.request();
