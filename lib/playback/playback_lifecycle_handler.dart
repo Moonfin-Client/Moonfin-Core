@@ -12,12 +12,13 @@ class _StaleVideoClaim {
     required this.item,
     required this.position,
     required this.wasPlaying,
+    required this.cleanup,
   });
 
   final AggregatedItem item;
   final Duration position;
   final bool wasPlaying;
-  late final Future<bool> cleanup;
+  final Future<bool> cleanup;
 }
 
 class PlaybackLifecycleHandler with WidgetsBindingObserver {
@@ -123,9 +124,9 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
             ? Duration.zero
             : (_savedPosition ?? Duration.zero),
         wasPlaying: _wasPlaying ?? false,
+        cleanup: _cleanupVideoSession(currentItem),
       );
       _staleVideoClaim = claim;
-      claim.cleanup = _cleanupVideoSession(currentItem);
       unawaited(claim.cleanup);
     });
   }
