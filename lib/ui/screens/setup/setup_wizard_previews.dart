@@ -227,6 +227,7 @@ Widget mediaBarPreview(String mode) => _liveOrFallback(
     UserPreferences.mediaBarModeBookshelf => _bookshelfBar(context, items),
     UserPreferences.mediaBarModeGallery => _galleryBar(context, items),
     UserPreferences.mediaBarModeBanner => _bannerBar(context, items),
+    UserPreferences.mediaBarModeAya => _ayaBar(context, items),
     // The rows carry the whole screen with the bar off, so the preview packs
     // them tighter than the style default to show more than one.
     UserPreferences.mediaBarModeOff => _homeRowsScreen(
@@ -273,6 +274,7 @@ Widget _dots({
   required double inactiveAlpha,
   double gap = 4,
   bool pillActive = false,
+  double? height,
 }) {
   return Row(
     mainAxisSize: MainAxisSize.min,
@@ -280,7 +282,8 @@ Widget _dots({
       for (var i = 0; i < count; i++)
         Container(
           width: i == 0 ? active : inactive,
-          height: i == 0 ? (pillActive ? inactive : active) : inactive,
+          height:
+              height ?? (i == 0 ? (pillActive ? inactive : active) : inactive),
           margin: EdgeInsets.symmetric(horizontal: gap),
           decoration: BoxDecoration(
             shape: pillActive ? BoxShape.rectangle : BoxShape.circle,
@@ -1479,6 +1482,92 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
   );
 }
 
+/// Artwork first, with the logo top left and the page marks top right. The
+/// bar takes 65 percent of the screen on every platform, so the rows always
+/// show underneath it.
+Widget _ayaBar(BuildContext context, List<MediaBarSlideItem> items) {
+  final item = items.first;
+  final size = _designSize();
+
+  final padding = _phone
+      ? const EdgeInsets.fromLTRB(16, 60, 16, 16)
+      : EdgeInsets.fromLTRB(_tv ? 80 : 32, _tv ? 71 : 32, _tv ? 80 : 32, 32);
+
+  // Phones preview in portrait, which is where the poster is used.
+  final artwork = _phone
+      ? (item.posterUrl ?? item.backdropUrl)
+      : item.backdropUrl;
+
+  final bar = Padding(
+    padding: padding,
+    child: ClipRRect(
+      borderRadius: AppRadius.circular(18),
+      child: SizedBox(
+        height: size.height * 0.65 - padding.vertical,
+        width: double.infinity,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _artwork(artwork),
+            Positioned(
+              left: 44,
+              top: 40,
+              child: _logoOrTitle(
+                item,
+                width: 340,
+                height: 100,
+                alignment: Alignment.topLeft,
+                fallbackStyle: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                  height: 1.0,
+                  color: AppColorScheme.onSurface,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 20,
+                      color: AppColorScheme.scrim.withValues(alpha: 0.72),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 22,
+              right: 24,
+              child: _dots(
+                count: 5,
+                active: 16,
+                inactive: 10,
+                inactiveAlpha: 0.30,
+                gap: 2.5,
+                pillActive: true,
+                height: 2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      bar,
+      Expanded(
+        child: ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.topCenter,
+            maxHeight: double.infinity,
+            child: _homeRowsColumn(context, items, modern: !_phone),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Home rows
 // ---------------------------------------------------------------------------
@@ -2556,6 +2645,34 @@ Widget _fallbackMediaBar(String mode) => switch (mode) {
         _posterCard(22),
         Opacity(opacity: 0.5, child: _posterCard(14)),
         Opacity(opacity: 0.5, child: _posterCard(14)),
+      ],
+    ),
+  ),
+  UserPreferences.mediaBarModeAya => Padding(
+    padding: const EdgeInsets.all(6),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRRect(borderRadius: AppRadius.circular(6), child: _backdrop()),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: _bar(42, 5, _strong),
+          ),
+        ),
+        Positioned(
+          top: 6,
+          right: 6,
+          child: Row(
+            spacing: 2,
+            children: [
+              _bar(8, 2, _strong),
+              _bar(5, 2, _weak),
+              _bar(5, 2, _weak),
+            ],
+          ),
+        ),
       ],
     ),
   ),

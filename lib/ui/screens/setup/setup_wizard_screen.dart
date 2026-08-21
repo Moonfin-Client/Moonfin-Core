@@ -376,6 +376,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       UserPreferences.mediaBarModeBookshelf,
       UserPreferences.mediaBarModeGallery,
       UserPreferences.mediaBarModeBanner,
+      UserPreferences.mediaBarModeAya,
       UserPreferences.mediaBarModeOff,
     ];
     final labels = {
@@ -384,14 +385,17 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       UserPreferences.mediaBarModeBookshelf: l10n.mediaBarModeBookshelf,
       UserPreferences.mediaBarModeGallery: l10n.mediaBarModeGallery,
       UserPreferences.mediaBarModeBanner: l10n.mediaBarModeBanner,
+      UserPreferences.mediaBarModeAya: l10n.mediaBarModeAya,
       UserPreferences.mediaBarModeOff: l10n.mediaBarModeOff,
     };
     final selected = _mediaBar ?? _prefs.get(UserPreferences.mediaBarMode);
 
     return _OptionLayout(
+      // A remote only moves along one row comfortably, so leanback fits every
+      // style on a single line and lets the card width shrink to suit.
       columns: PlatformDetection.useMobileUi
           ? 2
-          : (PlatformDetection.useLeanbackUi ? 6 : 3),
+          : (PlatformDetection.useLeanbackUi ? modes.length : 4),
       children: [
         for (var i = 0; i < modes.length; i++)
           _OptionCard(

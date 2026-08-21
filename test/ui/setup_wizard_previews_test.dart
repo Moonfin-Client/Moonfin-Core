@@ -36,6 +36,7 @@ const _mediaBarModes = [
   UserPreferences.mediaBarModeBookshelf,
   UserPreferences.mediaBarModeGallery,
   UserPreferences.mediaBarModeBanner,
+  UserPreferences.mediaBarModeAya,
   UserPreferences.mediaBarModeOff,
 ];
 
