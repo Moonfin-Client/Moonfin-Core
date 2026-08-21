@@ -509,15 +509,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final nextIndex = direction == TraversalDirection.right
         ? index + 1
         : index - 1;
-    if (nextIndex < 0 || nextIndex >= nodes.length) {
-      if (direction == TraversalDirection.left &&
-          nextIndex < 0 &&
-          _avatarFocus.canRequestFocus) {
-        _avatarFocus.requestFocus();
-        return true;
-      }
-      return false;
-    }
+    if (nextIndex < 0 || nextIndex >= nodes.length) return false;
     nodes[nextIndex].node.requestFocus();
     return true;
   }

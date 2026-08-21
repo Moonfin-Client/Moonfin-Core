@@ -62,13 +62,16 @@ class DetailsTabBar extends StatelessWidget {
       onNavigateDown:
           onNavigateDown != null ? () => onNavigateDown!(i) : null,
       onNavigateUp: onExitUp,
+      // The escape follows the physical key, matching the other tab rows: a
+      // Left press that can't step any further leaves through onExitLeft,
+      // whichever index sits at that edge.
       onNavigateLeft: () {
         final delta = isRtl ? 1 : -1;
         if (i + delta >= 0 && i + delta < labels.length) {
           step(delta);
           return true;
         }
-        if (!isRtl && onExitLeft != null) {
+        if (onExitLeft != null) {
           onExitLeft!();
           return true;
         }
@@ -78,8 +81,6 @@ class DetailsTabBar extends StatelessWidget {
         final delta = isRtl ? -1 : 1;
         if (i + delta >= 0 && i + delta < labels.length) {
           step(delta);
-        } else if (isRtl && onExitLeft != null) {
-          onExitLeft!();
         }
       },
     );

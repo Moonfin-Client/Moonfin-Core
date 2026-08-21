@@ -713,6 +713,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Text(
             _formatCode(_quickConnectCode!),
             textAlign: TextAlign.center,
+            // The space between the digit groups is bidi neutral, so an RTL
+            // paragraph swaps the groups and shows a code the server never
+            // issued. Pinning the text LTR keeps the digits in reading order.
             textDirection: TextDirection.ltr,
             style: TextStyle(
               fontSize: 48,
