@@ -26,6 +26,8 @@ private struct TopShelfCachePayload: Codable {
         let title: String
         let imageURL: String?
         let contentImageURL: String?
+        let imageURL2x: String?
+        let contentImageURL2x: String?
         let displayURL: String
         let playURL: String
         let playbackProgress: Double?
@@ -48,16 +50,12 @@ final class ServiceProvider: TVTopShelfContentProvider {
         guard let payload = try? JSONDecoder().decode(TopShelfCachePayload.self, from: data) else { return nil }
 
         let carouselItems: [TVTopShelfCarouselItem] = payload.sections.flatMap { section in
-            section.items.compactMap { cachedItem -> TVTopShelfCarouselItem? in
+            section.items.map { cachedItem in
                 let item = TVTopShelfCarouselItem(identifier: cachedItem.id)
                 item.title = cachedItem.title
                 item.contextTitle = section.title
 
-                let contentURL = cachedItem.contentImageURL ?? cachedItem.imageURL
-                if let urlString = contentURL, let url = URL(string: urlString) {
-                    item.setImageURL(url, for: .screenScale1x)
-                    item.setImageURL(url, for: .screenScale2x)
-                }
+                configureImages(for: item, cachedItem: cachedItem)
 
                 if let playURL = URL(string: cachedItem.playURL) {
                     item.playAction = TVTopShelfAction(url: playURL)
@@ -71,8 +69,55 @@ final class ServiceProvider: TVTopShelfContentProvider {
             }
         }
 
-        guard !carouselItems.isEmpty else { return nil }
+        guard !carouselItems.isEmpty else {
+            return nil
+        }
 
-        return TVTopShelfCarouselContent(style: .actions, items: carouselItems)
+        return TVTopShelfCarouselContent(
+            style: .actions,
+            items: carouselItems
+        )
+    }
+
+    private func configureImages(
+        for item: TVTopShelfCarouselItem,
+        cachedItem: TopShelfCachePayload.Item
+    ) {
+        let image1x = firstValidURL(
+            cachedItem.contentImageURL,
+            cachedItem.imageURL
+        )
+
+        let image2x = firstValidURL(
+            cachedItem.contentImageURL2x,
+            cachedItem.imageURL2x
+        )
+
+        let resolved1x = image1x ?? image2x
+        let resolved2x = image2x ?? image1x
+
+        if let resolved1x {
+            item.setImageURL(resolved1x, for: .screenScale1x)
+        }
+
+        if let resolved2x {
+            item.setImageURL(resolved2x, for: .screenScale2x)
+        }
+    }
+
+    private func firstValidURL(_ candidates: String?...) -> URL? {
+        for candidate in candidates {
+            guard
+                let candidate,
+                !candidate.isEmpty,
+                let url = URL(string: candidate)
+            else {
+                continue
+            }
+
+            return url
+        }
+
+        return nil
     }
 }

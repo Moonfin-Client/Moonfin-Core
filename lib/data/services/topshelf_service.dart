@@ -18,6 +18,11 @@ class TopShelfService {
   static const _maxItems = 15;
   static const _debounceDelay = Duration(seconds: 2);
 
+  static const _image1xMaxWidth = 1920;
+  static const _image1xMaxHeight = 1080;
+  static const _image2xMaxWidth = 3840;
+  static const _image2xMaxHeight = 2160;
+
   Timer? _debounce;
 
   /// Schedules a Top Shelf cache refresh, coalescing the rapid successive
@@ -72,20 +77,75 @@ class TopShelfService {
         ? 'id=$id'
         : 'id=$id&serverId=${Uri.encodeQueryComponent(serverId)}';
 
-    String? image;
+    String? image1x;
+    String? image2x;
+
     final thumbTag = item.thumbImageTag;
+    final backdropTags = item.backdropImageTags;
+    final parentBackdropId = item.parentBackdropItemId;
+    final parentBackdropTags = item.parentBackdropImageTags;
     final primaryTag = item.primaryImageTag;
+
     if (thumbTag != null && thumbTag.isNotEmpty) {
-      image = imageApi.getThumbImageUrl(id, maxWidth: 960, tag: thumbTag);
+      image1x = imageApi.getThumbImageUrl(
+        id,
+        maxWidth: _image1xMaxWidth,
+        tag: thumbTag,
+      );
+
+      image2x = imageApi.getThumbImageUrl(
+        id,
+        maxWidth: _image2xMaxWidth,
+        tag: thumbTag,
+      );
+    } else if (backdropTags.isNotEmpty) {
+      image1x = imageApi.getBackdropImageUrl(
+        id,
+        maxWidth: _image1xMaxWidth,
+        tag: backdropTags.first,
+      );
+
+      image2x = imageApi.getBackdropImageUrl(
+        id,
+        maxWidth: _image2xMaxWidth,
+        tag: backdropTags.first,
+      );
+    } else if (item.type != 'Video' &&
+        item.type != 'MusicVideo' &&
+        parentBackdropId != null &&
+        parentBackdropTags.isNotEmpty) {
+      image1x = imageApi.getBackdropImageUrl(
+        parentBackdropId,
+        maxWidth: _image1xMaxWidth,
+        tag: parentBackdropTags.first,
+      );
+
+      image2x = imageApi.getBackdropImageUrl(
+        parentBackdropId,
+        maxWidth: _image2xMaxWidth,
+        tag: parentBackdropTags.first,
+      );
     } else if (primaryTag != null && primaryTag.isNotEmpty) {
-      image = imageApi.getPrimaryImageUrl(id, maxHeight: 480, tag: primaryTag);
+      image1x = imageApi.getPrimaryImageUrl(
+        id,
+        maxHeight: _image1xMaxHeight,
+        tag: primaryTag,
+      );
+
+      image2x = imageApi.getPrimaryImageUrl(
+        id,
+        maxHeight: _image2xMaxHeight,
+        tag: primaryTag,
+      );
     }
 
     return {
       'id': id,
       'title': item.name,
-      'imageURL': ?image,
-      'contentImageURL': ?image,
+      'imageURL': ?image1x,
+      'contentImageURL': ?image1x,
+      'imageURL2x': ?image2x,
+      'contentImageURL2x': ?image2x,
       'displayURL': 'moonfin://item?$query',
       'playURL': 'moonfin://play?$query',
     };
