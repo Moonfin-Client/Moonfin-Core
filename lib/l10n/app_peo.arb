@@ -1,4 +1,5 @@
 {
+    "@@locale": "peo",
     "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
