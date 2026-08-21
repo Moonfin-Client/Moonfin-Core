@@ -801,8 +801,9 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
           onTap: widget.onTap,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
-            width: 30,
+            constraints: const BoxConstraints(minWidth: 30),
             height: 34,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: widget.isSelected
@@ -821,6 +822,8 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
             ),
             child: Text(
               widget.label,
+              maxLines: 1,
+              softWrap: false,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight:
