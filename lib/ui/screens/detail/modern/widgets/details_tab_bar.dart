@@ -48,40 +48,51 @@ class DetailsTabBar extends StatelessWidget {
     this.wrap = false,
   });
 
-  _DetailsTabItem _buildTabItem(int i, {Key? key}) => _DetailsTabItem(
-        key: key,
-        label: labels[i],
-        isSelected: selectedIndex == i,
-        segmented: segmented,
-        pill: pill,
-        focusNode: focusNodeFor(i),
-        onSelect: () => onSelect(i),
-        onNavigateDown:
-            onNavigateDown != null ? () => onNavigateDown!(i) : null,
-        onNavigateUp: onExitUp,
-        onNavigateLeft: () {
-          if (i > 0) {
-            focusNodeFor(i - 1).requestFocus();
-            return true;
-          }
-          if (onExitLeft != null) {
-            onExitLeft!();
-            return true;
-          }
-          return false;
-        },
-        onNavigateRight: () {
-          if (i < labels.length - 1) {
-            focusNodeFor(i + 1).requestFocus();
-          }
-        },
-      );
+  // The tab row mirrors under RTL (ambient Directionality), so which
+  // physical key steps the index forward/back flips; onExitLeft always
+  // fires at the physical-left edge.
+  _DetailsTabItem _buildTabItem(BuildContext context, int i, {Key? key}) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    void step(int delta) => focusNodeFor(i + delta).requestFocus();
+    return _DetailsTabItem(
+      key: key,
+      label: labels[i],
+      isSelected: selectedIndex == i,
+      segmented: segmented,
+      pill: pill,
+      focusNode: focusNodeFor(i),
+      onSelect: () => onSelect(i),
+      onNavigateDown:
+          onNavigateDown != null ? () => onNavigateDown!(i) : null,
+      onNavigateUp: onExitUp,
+      onNavigateLeft: () {
+        final delta = isRtl ? 1 : -1;
+        if (i + delta >= 0 && i + delta < labels.length) {
+          step(delta);
+          return true;
+        }
+        if (!isRtl && onExitLeft != null) {
+          onExitLeft!();
+          return true;
+        }
+        return false;
+      },
+      onNavigateRight: () {
+        final delta = isRtl ? -1 : 1;
+        if (i + delta >= 0 && i + delta < labels.length) {
+          step(delta);
+        } else if (isRtl && onExitLeft != null) {
+          onExitLeft!();
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     if (pill) return _PillTabBar(this);
 
-    _DetailsTabItem item(int i) => _buildTabItem(i);
+    _DetailsTabItem item(int i) => _buildTabItem(context, i);
 
     if (segmented) {
       final container = Container(
@@ -507,9 +518,12 @@ class _PillTabBarState extends State<_PillTabBar> {
     final thumbColor = glass ? onSurface.withValues(alpha: 0.22) : accent;
 
     final hasThumb = selectedIndex >= 0 && selectedIndex < _widths.length;
-    var thumbLeft = 0.0;
+    // The tab Row mirrors under RTL, so the thumb's offset must accumulate
+    // from whichever edge is the row's actual start under Directionality.
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    var thumbOffset = 0.0;
     for (var i = 0; i < selectedIndex && i < _widths.length; i++) {
-      thumbLeft += _widths[i];
+      thumbOffset += _widths[i];
     }
 
     final stack = Stack(
@@ -520,7 +534,8 @@ class _PillTabBarState extends State<_PillTabBar> {
             curve: Curves.easeOutCubic,
             top: 0,
             bottom: 0,
-            left: thumbLeft,
+            left: isRtl ? null : thumbOffset,
+            right: isRtl ? thumbOffset : null,
             width: _widths[selectedIndex],
             child: Container(
               decoration: BoxDecoration(
@@ -541,7 +556,7 @@ class _PillTabBarState extends State<_PillTabBar> {
           mainAxisSize: MainAxisSize.min,
           children: [
             for (var i = 0; i < _labels.length; i++)
-              _config._buildTabItem(i, key: _segmentKeys[i]),
+              _config._buildTabItem(context, i, key: _segmentKeys[i]),
           ],
         ),
       ],

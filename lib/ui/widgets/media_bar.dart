@@ -754,12 +754,14 @@ class _MediaBarState extends State<MediaBar>
     double nextRightInset = 0,
   }) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    // The icon always matches the action (prev looks backward, next looks
+    // forward) — only the on-screen slot it lands in flips for RTL below.
     final prevArrow = _NavArrow(
-      icon: isRtl ? Icons.chevron_right : Icons.chevron_left,
+      icon: Icons.chevron_left,
       onTap: _currentIndex > 0 ? () => _goToPage(_currentIndex - 1) : null,
     );
     final nextArrow = _NavArrow(
-      icon: isRtl ? Icons.chevron_left : Icons.chevron_right,
+      icon: Icons.chevron_right,
       onTap: () => _goToPage((_currentIndex + 1) % itemCount),
     );
     final leftArrow = isRtl ? nextArrow : prevArrow;
@@ -2693,21 +2695,32 @@ class _MediaBarState extends State<MediaBar>
 
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-    if (key == LogicalKeyboardKey.arrowLeft) {
-      if (_currentIndex > 0) {
-        _goToPage(_currentIndex - 1);
-      } else if (widget.onNavigateLeft != null) {
-        widget.onNavigateLeft!();
-      }
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowRight) {
-      if (_isBookshelfMode()) {
-        if (_currentIndex < items.length - 1) {
-          _goToPage(_currentIndex + 1);
+    if (key == LogicalKeyboardKey.arrowLeft ||
+        key == LogicalKeyboardKey.arrowRight) {
+      // Matches the hero chevrons: "advance" follows the reading-forward
+      // direction, which swaps to the physical-left key under RTL.
+      final isRtl = Directionality.of(context) == TextDirection.rtl;
+      final isPhysicalLeftKey = key == LogicalKeyboardKey.arrowLeft;
+      final advances = isPhysicalLeftKey == isRtl;
+      final beforeIndex = _currentIndex;
+      if (advances) {
+        if (_isBookshelfMode()) {
+          if (_currentIndex < items.length - 1) {
+            _goToPage(_currentIndex + 1);
+          }
+        } else {
+          _goToPage((_currentIndex + 1) % items.length);
         }
-      } else {
-        _goToPage((_currentIndex + 1) % items.length);
+      } else if (_currentIndex > 0) {
+        _goToPage(_currentIndex - 1);
+      }
+      // The sidebar is pinned to the physical-left edge regardless of
+      // locale, so it's only ever reached by a physical-left press that
+      // didn't move the banner.
+      if (_currentIndex == beforeIndex &&
+          isPhysicalLeftKey &&
+          widget.onNavigateLeft != null) {
+        widget.onNavigateLeft!();
       }
       return KeyEventResult.handled;
     }

@@ -62,7 +62,9 @@ class TopToolbar extends StatefulWidget {
 
   /// True while focus is inside the toolbar, so screens can avoid stealing its
   /// d-pad keys. Mirrors [LeftSidebar.isFocusedNotifier].
-  static final ValueNotifier<bool> isFocusedNotifier = ValueNotifier<bool>(false);
+  static final ValueNotifier<bool> isFocusedNotifier = ValueNotifier<bool>(
+    false,
+  );
 
   const TopToolbar({
     super.key,
@@ -150,7 +152,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     };
     _previousFocusNavbarCallback = NavigationLayout.focusNavbarNotifier.value;
     _previousFocusAvatarCallback =
-      NavigationLayout.focusNavbarAvatarNotifier.value;
+        NavigationLayout.focusNavbarAvatarNotifier.value;
     NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
     NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
     _avatarFocus.addListener(_onAvatarFocusChanged);
@@ -385,7 +387,9 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
   void _restoreFocusBelowToolbar() {
     final playBtnNode = NavigationLayout.focusDetailsPlayButtonNotifier.value;
-    if (playBtnNode != null && playBtnNode.context != null && playBtnNode.canRequestFocus) {
+    if (playBtnNode != null &&
+        playBtnNode.context != null &&
+        playBtnNode.canRequestFocus) {
       playBtnNode.requestFocus();
       return;
     }
@@ -484,25 +488,27 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
     final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
 
-    final nodes = _toolbarScopeNode.descendants
-        .where((n) => !n.skipTraversal && _isLaidOutFocusNode(n))
-        .where((n) {
-          final isMusicNode = _isDescendantOf(n, _musicBarFocusNode);
-          return insideMusicBar == isMusicNode;
-        })
-        .map((n) {
-          final box = n.context!.findRenderObject() as RenderBox?;
-          final pos = box?.localToGlobal(Offset.zero);
-          return (node: n, x: pos?.dx ?? -1.0);
-        })
-        .where((item) => item.x > 0)
-        .toList()
-      ..sort((a, b) => a.x.compareTo(b.x));
+    final nodes =
+        _toolbarScopeNode.descendants
+            .where((n) => !n.skipTraversal && _isLaidOutFocusNode(n))
+            .where((n) {
+              final isMusicNode = _isDescendantOf(n, _musicBarFocusNode);
+              return insideMusicBar == isMusicNode;
+            })
+            .map((n) {
+              final box = n.context!.findRenderObject() as RenderBox?;
+              final pos = box?.localToGlobal(Offset.zero);
+              return (node: n, x: pos?.dx ?? -1.0);
+            })
+            .where((item) => item.x > 0)
+            .toList()
+          ..sort((a, b) => a.x.compareTo(b.x));
 
     final index = nodes.indexWhere((e) => e.node == primary);
     if (index < 0) return false;
-    final nextIndex =
-        direction == TraversalDirection.right ? index + 1 : index - 1;
+    final nextIndex = direction == TraversalDirection.right
+        ? index + 1
+        : index - 1;
     if (nextIndex < 0 || nextIndex >= nodes.length) {
       // The avatar/back chip sits pinned at the physical left edge
       // (non-directional Alignment.centerLeft), so leaving the icon row's
@@ -609,154 +615,177 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
     final manager = GetIt.instance<PlaybackManager>();
     final currentItem = manager.queueService.currentItem;
-    final isMusicActive = currentItem is AggregatedItem && currentItem.isAudioLike;
+    final isMusicActive =
+        currentItem is AggregatedItem && currentItem.isAudioLike;
     final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
 
-    return SafeArea(
-      bottom: false,
-      child: SizedBox(
-        height: totalHeight,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
-          child: Focus(
-            focusNode: _toolbarScopeNode,
-            onFocusChange: (hasFocus) {
-              _toolbarHadFocus = hasFocus;
-              TopToolbar.isFocusedNotifier.value = hasFocus;
-            },
-            onKeyEvent: (_, event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                final primary = FocusManager.instance.primaryFocus;
-                if (primary != null) {
-                  final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
-                  if (!insideMusicBar && isMusicActive) {
-                    final musicNodes = _musicBarFocusNode.descendants
-                        .where((n) => !n.skipTraversal && _isLaidOutFocusNode(n))
-                        .map((n) {
-                          final box = n.context!.findRenderObject() as RenderBox?;
-                          final pos = box?.localToGlobal(Offset.zero);
-                          return (node: n, x: pos?.dx ?? -1.0);
-                        })
-                        .where((item) => item.x > 0)
-                        .toList()
-                      ..sort((a, b) => a.x.compareTo(b.x));
+    // The toolbar is fixed chrome, not reading content: it always renders
+    // Home-first/left, Settings-last/right regardless of app locale, so it
+    // does not mirror under RTL the way scrollable rows and tabs do.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: totalHeight,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+            child: Focus(
+              focusNode: _toolbarScopeNode,
+              onFocusChange: (hasFocus) {
+                _toolbarHadFocus = hasFocus;
+                TopToolbar.isFocusedNotifier.value = hasFocus;
+              },
+              onKeyEvent: (_, event) {
+                if (event is KeyDownEvent &&
+                    event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  final primary = FocusManager.instance.primaryFocus;
+                  if (primary != null) {
+                    final insideMusicBar = _isDescendantOf(
+                      primary,
+                      _musicBarFocusNode,
+                    );
+                    if (!insideMusicBar && isMusicActive) {
+                      final musicNodes =
+                          _musicBarFocusNode.descendants
+                              .where(
+                                (n) =>
+                                    !n.skipTraversal && _isLaidOutFocusNode(n),
+                              )
+                              .map((n) {
+                                final box =
+                                    n.context!.findRenderObject() as RenderBox?;
+                                final pos = box?.localToGlobal(Offset.zero);
+                                return (node: n, x: pos?.dx ?? -1.0);
+                              })
+                              .where((item) => item.x > 0)
+                              .toList()
+                            ..sort((a, b) => a.x.compareTo(b.x));
 
-                    if (musicNodes.isNotEmpty) {
-                      musicNodes.first.node.requestFocus();
-                      return KeyEventResult.handled;
+                      if (musicNodes.isNotEmpty) {
+                        musicNodes.first.node.requestFocus();
+                        return KeyEventResult.handled;
+                      }
+                    }
+
+                    if (widget.activeRoute != Destinations.home &&
+                        NavigationLayout.focusDetailsPlayButtonNotifier.value ==
+                            null) {
+                      final success = primary.focusInDirection(
+                        TraversalDirection.down,
+                      );
+                      if (success) {
+                        final newFocus = FocusManager.instance.primaryFocus;
+                        if (newFocus != null && _isInsideToolbar(newFocus)) {
+                          return KeyEventResult.handled;
+                        }
+                      }
                     }
                   }
-
-                  if (widget.activeRoute != Destinations.home &&
-                      NavigationLayout.focusDetailsPlayButtonNotifier.value == null) {
-                    final success =
-                        primary.focusInDirection(TraversalDirection.down);
-                    if (success) {
-                      final newFocus = FocusManager.instance.primaryFocus;
-                      if (newFocus != null && _isInsideToolbar(newFocus)) {
+                  _restoreFocusBelowToolbar();
+                  return KeyEventResult.handled;
+                }
+                if (event is KeyDownEvent &&
+                    event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  final primary = FocusManager.instance.primaryFocus;
+                  if (primary != null) {
+                    final insideMusicBar = _isDescendantOf(
+                      primary,
+                      _musicBarFocusNode,
+                    );
+                    if (insideMusicBar) {
+                      if (_homeFocus.canRequestFocus) {
+                        _homeFocus.requestFocus();
+                        return KeyEventResult.handled;
+                      }
+                      FocusNode? targetNode;
+                      for (final n in _toolbarScopeNode.descendants) {
+                        if (!n.skipTraversal &&
+                            _isLaidOutFocusNode(n) &&
+                            !_isDescendantOf(n, _musicBarFocusNode)) {
+                          final box =
+                              n.context!.findRenderObject() as RenderBox?;
+                          final pos = box?.localToGlobal(Offset.zero);
+                          if (pos != null && pos.dx > 0) {
+                            targetNode = n;
+                            break;
+                          }
+                        }
+                      }
+                      if (targetNode != null) {
+                        targetNode.requestFocus();
                         return KeyEventResult.handled;
                       }
                     }
                   }
                 }
-                _restoreFocusBelowToolbar();
-                return KeyEventResult.handled;
-              }
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                final primary = FocusManager.instance.primaryFocus;
-                if (primary != null) {
-                  final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
-                  if (insideMusicBar) {
-                    if (_homeFocus.canRequestFocus) {
-                      _homeFocus.requestFocus();
-                      return KeyEventResult.handled;
-                    }
-                    FocusNode? targetNode;
-                    for (final n in _toolbarScopeNode.descendants) {
-                      if (!n.skipTraversal && _isLaidOutFocusNode(n) && !_isDescendantOf(n, _musicBarFocusNode)) {
-                        final box = n.context!.findRenderObject() as RenderBox?;
-                        final pos = box?.localToGlobal(Offset.zero);
-                        if (pos != null && pos.dx > 0) {
-                          targetNode = n;
-                          break;
-                        }
-                      }
-                    }
-                    if (targetNode != null) {
-                      targetNode.requestFocus();
-                      return KeyEventResult.handled;
-                    }
-                  }
+                if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
+                    event is KeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                        event.logicalKey == LogicalKeyboardKey.arrowRight)) {
+                  final direction =
+                      event.logicalKey == LogicalKeyboardKey.arrowLeft
+                      ? TraversalDirection.left
+                      : TraversalDirection.right;
+                  _moveWithinToolbar(direction);
+                  // Always consume so the key can't escape sideways into content.
+                  return KeyEventResult.handled;
                 }
-              }
-              if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
-                  event is KeyDownEvent &&
-                  (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
-                      event.logicalKey == LogicalKeyboardKey.arrowRight)) {
-                final direction =
-                    event.logicalKey == LogicalKeyboardKey.arrowLeft
-                        ? TraversalDirection.left
-                        : TraversalDirection.right;
-                _moveWithinToolbar(direction);
-                // Always consume so the key can't escape sideways into content.
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FocusTraversalGroup(
-                  policy: WidgetOrderTraversalPolicy(),
-                  child: isLandscape
-                      ? SizedBox(
-                          height: toolbarHeight - (vPad * 2),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: centerSidePadding,
-                                  ),
-                                  child: _buildCenter(),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: _buildStart(),
-                              ),
-                              if (!isMobile)
+                return KeyEventResult.ignored;
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FocusTraversalGroup(
+                    policy: WidgetOrderTraversalPolicy(),
+                    child: isLandscape
+                        ? SizedBox(
+                            height: toolbarHeight - (vPad * 2),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
                                 Align(
-                                  alignment: Alignment.centerRight,
-                                  child: _buildEnd(),
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: centerSidePadding,
+                                    ),
+                                    child: _buildCenter(),
+                                  ),
                                 ),
-                            ],
-                          ),
-                        )
-                      : SizedBox(
-                          height: toolbarHeight - (vPad * 2),
-                          child: Row(
-                            children: [
-                              _buildStart(),
-                              const SizedBox(width: 12),
-                              Expanded(child: _buildCenter()),
-                              if (!isMobile) ...[
-                                const SizedBox(width: 12),
-                                _buildEnd(),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: _buildStart(),
+                                ),
+                                if (!isMobile)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: _buildEnd(),
+                                  ),
                               ],
-                            ],
+                            ),
+                          )
+                        : SizedBox(
+                            height: toolbarHeight - (vPad * 2),
+                            child: Row(
+                              children: [
+                                _buildStart(),
+                                const SizedBox(width: 12),
+                                Expanded(child: _buildCenter()),
+                                if (!isMobile) ...[
+                                  const SizedBox(width: 12),
+                                  _buildEnd(),
+                                ],
+                              ],
+                            ),
                           ),
-                        ),
-                ),
-                if (isMusicActive) ...[
-                  const SizedBox(height: 8),
-                  TopMusicBar(focusNode: _musicBarFocusNode),
+                  ),
+                  if (isMusicActive) ...[
+                    const SizedBox(height: 8),
+                    TopMusicBar(focusNode: _musicBarFocusNode),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -903,7 +932,8 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final showSeerr = _prefs.get(UserPreferences.showSeerrButton) &&
+    final showSeerr =
+        _prefs.get(UserPreferences.showSeerrButton) &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
     final l10n = AppLocalizations.of(context);
     final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
@@ -928,208 +958,208 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
       child: _wrapPill(
         isNeon: isNeon,
         child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _orderButton(
-                  order: (order++).toDouble(),
-                  child: ExpandableIconButton(
-                    key: const ValueKey('toolbar_home'),
-                    forceExpanded: alwaysExpanded,
-                    icon: Icons.home_rounded,
-                    label: l10n.home,
-                    baseColor: nextNavColor(),
-                    focusNode: _homeFocus,
-                    onPressed: () {
-                      if (_isActive(Destinations.home)) {
-                        homeRefreshBus.request();
-                        return;
-                      }
-                      homeRefreshBus.requestAfterNavigation();
-                      context.go(Destinations.home);
-                    },
-                  ),
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _orderButton(
+                order: (order++).toDouble(),
+                child: ExpandableIconButton(
+                  key: const ValueKey('toolbar_home'),
+                  forceExpanded: alwaysExpanded,
+                  icon: Icons.home_rounded,
+                  label: l10n.home,
+                  baseColor: nextNavColor(),
+                  focusNode: _homeFocus,
+                  onPressed: () {
+                    if (_isActive(Destinations.home)) {
+                      homeRefreshBus.request();
+                      return;
+                    }
+                    homeRefreshBus.requestAfterNavigation();
+                    context.go(Destinations.home);
+                  },
                 ),
+              ),
+              _gap(),
+              _orderButton(
+                order: (order++).toDouble(),
+                child: ExpandableIconButton(
+                  key: const ValueKey('toolbar_search'),
+                  forceExpanded: alwaysExpanded,
+                  icon: Icons.search_rounded,
+                  label: l10n.search,
+                  baseColor: nextNavColor(),
+                  onPressed: () {
+                    if (_isActive(Destinations.search)) return;
+                    context.navigateTopLevel(Destinations.search);
+                  },
+                ),
+              ),
+              if (showShuffle) ...[
                 _gap(),
                 _orderButton(
                   order: (order++).toDouble(),
                   child: ExpandableIconButton(
-                    key: const ValueKey('toolbar_search'),
+                    key: const ValueKey('toolbar_shuffle'),
                     forceExpanded: alwaysExpanded,
-                    icon: Icons.search_rounded,
-                    label: l10n.search,
+                    icon: Icons.shuffle_rounded,
+                    label: l10n.shuffle,
                     baseColor: nextNavColor(),
-                    onPressed: () {
-                      if (_isActive(Destinations.search)) return;
-                      context.navigateTopLevel(Destinations.search);
-                    },
+                    onPressed: () => showShuffleOverlay(context),
                   ),
                 ),
-                if (showShuffle) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_shuffle'),
-                      forceExpanded: alwaysExpanded,
-                      icon: Icons.shuffle_rounded,
-                      label: l10n.shuffle,
-                      baseColor: nextNavColor(),
-                      onPressed: () => showShuffleOverlay(context),
-                    ),
-                  ),
-                ],
-                if (showGenres) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_genres'),
-                      forceExpanded: alwaysExpanded,
-                      baseColor: nextNavColor(),
-                      iconBuilder: (size, color) => Image.asset(
-                        'assets/icons/genres.png',
-                        width: size,
-                        height: size,
-                        color: color,
-                        fit: BoxFit.contain,
-                      ),
-                      label: l10n.genres,
-                      onPressed: () {
-                        if (_isActive(Destinations.allGenres)) return;
-                        context.navigateTopLevel(Destinations.allGenres);
-                      },
-                    ),
-                  ),
-                ],
-                if (showFavorites) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_favorites'),
-                      forceExpanded: alwaysExpanded,
-                      icon: Icons.favorite_rounded,
-                      label: l10n.favorites,
-                      baseColor: nextNavColor(),
-                      onPressed: () {
-                        if (_isActive(Destinations.allFavorites)) return;
-                        context.navigateTopLevel(Destinations.allFavorites);
-                      },
-                    ),
-                  ),
-                ],
-                if (showFolders) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_folders'),
-                      forceExpanded: alwaysExpanded,
-                      icon: Icons.folder_rounded,
-                      label: l10n.folders,
-                      baseColor: nextNavColor(),
-                      onPressed: () {
-                        if (_isActive(Destinations.folderView)) return;
-                        context.navigateTopLevel(Destinations.folderView);
-                      },
-                    ),
-                  ),
-                ],
-                if (showSyncPlay) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_syncplay'),
-                      forceExpanded: alwaysExpanded,
-                      icon: Icons.groups_rounded,
-                      label: l10n.syncPlay,
-                      baseColor: nextNavColor(),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const SyncPlayScreen(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                if (showSeerr) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: ExpandableIconButton(
-                      key: const ValueKey('toolbar_seerr'),
-                      forceExpanded: alwaysExpanded,
-                      baseColor: nextNavColor(),
-                      iconBuilder: (size, color) => seerrPrefs.isSeerrVariant
-                          ? SeerrIcon(size: size, color: color)
-                          : SeerrIcon(size: size, color: color),
-                      label: seerrNavLabel,
-                      onPressed: () {
-                        if (_isActive(Destinations.seerrDiscover)) return;
-                        context.navigateTopLevel(Destinations.seerrDiscover);
-                      },
-                    ),
-                  ),
-                ],
-                if (showLibraries && _libraries.isNotEmpty) ...[
-                  _gap(),
-                  _orderButton(
-                    order: (order++).toDouble(),
-                    child: useInlineLibraries
-                        ? _buildInlineLibrariesButton(
-                            l10n,
-                            iconColor: nextNavColor(),
-                            alwaysExpanded: alwaysExpanded,
-                          )
-                        : _buildLibrariesButton(
-                            iconColor: nextNavColor(),
-                            alwaysExpanded: alwaysExpanded,
-                          ),
-                  ),
-                ],
+              ],
+              if (showGenres) ...[
                 _gap(),
                 _orderButton(
-                  order: 99,
+                  order: (order++).toDouble(),
                   child: ExpandableIconButton(
-                    key: const ValueKey('toolbar_settings'),
+                    key: const ValueKey('toolbar_genres'),
                     forceExpanded: alwaysExpanded,
-                    icon: Icons.settings_rounded,
-                    label: l10n.settings,
                     baseColor: nextNavColor(),
-                    focusNode: _settingsFocus,
-                    onKeyEvent: (_, event) {
-                      if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-                          PlatformDetection.isTV &&
-                          event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                        return KeyEventResult.handled;
-                      }
-                      if (event is KeyDownEvent &&
-                          event.logicalKey == LogicalKeyboardKey.arrowLeft &&
-                          useInlineLibraries &&
-                          showLibraries &&
-                          _libraries.isNotEmpty) {
-                        _inlineLibrariesTriggerFocus.requestFocus();
-                        return KeyEventResult.handled;
-                      }
-                      return KeyEventResult.ignored;
-                    },
-                    onPressed: () async {
-                      await SettingsPanel.open(
-                        context,
-                        const SettingsSidePanel(),
-                      );
-                      if (mounted) _settingsFocus.requestFocus();
+                    iconBuilder: (size, color) => Image.asset(
+                      'assets/icons/genres.png',
+                      width: size,
+                      height: size,
+                      color: color,
+                      fit: BoxFit.contain,
+                    ),
+                    label: l10n.genres,
+                    onPressed: () {
+                      if (_isActive(Destinations.allGenres)) return;
+                      context.navigateTopLevel(Destinations.allGenres);
                     },
                   ),
                 ),
               ],
-            ),
+              if (showFavorites) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_favorites'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.favorite_rounded,
+                    label: l10n.favorites,
+                    baseColor: nextNavColor(),
+                    onPressed: () {
+                      if (_isActive(Destinations.allFavorites)) return;
+                      context.navigateTopLevel(Destinations.allFavorites);
+                    },
+                  ),
+                ),
+              ],
+              if (showFolders) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_folders'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.folder_rounded,
+                    label: l10n.folders,
+                    baseColor: nextNavColor(),
+                    onPressed: () {
+                      if (_isActive(Destinations.folderView)) return;
+                      context.navigateTopLevel(Destinations.folderView);
+                    },
+                  ),
+                ),
+              ],
+              if (showSyncPlay) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_syncplay'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.groups_rounded,
+                    label: l10n.syncPlay,
+                    baseColor: nextNavColor(),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SyncPlayScreen(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (showSeerr) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_seerr'),
+                    forceExpanded: alwaysExpanded,
+                    baseColor: nextNavColor(),
+                    iconBuilder: (size, color) => seerrPrefs.isSeerrVariant
+                        ? SeerrIcon(size: size, color: color)
+                        : SeerrIcon(size: size, color: color),
+                    label: seerrNavLabel,
+                    onPressed: () {
+                      if (_isActive(Destinations.seerrDiscover)) return;
+                      context.navigateTopLevel(Destinations.seerrDiscover);
+                    },
+                  ),
+                ),
+              ],
+              if (showLibraries && _libraries.isNotEmpty) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: useInlineLibraries
+                      ? _buildInlineLibrariesButton(
+                          l10n,
+                          iconColor: nextNavColor(),
+                          alwaysExpanded: alwaysExpanded,
+                        )
+                      : _buildLibrariesButton(
+                          iconColor: nextNavColor(),
+                          alwaysExpanded: alwaysExpanded,
+                        ),
+                ),
+              ],
+              _gap(),
+              _orderButton(
+                order: 99,
+                child: ExpandableIconButton(
+                  key: const ValueKey('toolbar_settings'),
+                  forceExpanded: alwaysExpanded,
+                  icon: Icons.settings_rounded,
+                  label: l10n.settings,
+                  baseColor: nextNavColor(),
+                  focusNode: _settingsFocus,
+                  onKeyEvent: (_, event) {
+                    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+                        PlatformDetection.isTV &&
+                        event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                      return KeyEventResult.handled;
+                    }
+                    if (event is KeyDownEvent &&
+                        event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                        useInlineLibraries &&
+                        showLibraries &&
+                        _libraries.isNotEmpty) {
+                      _inlineLibrariesTriggerFocus.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  onPressed: () async {
+                    await SettingsPanel.open(
+                      context,
+                      const SettingsSidePanel(),
+                    );
+                    if (mounted) _settingsFocus.requestFocus();
+                  },
+                ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 
@@ -1182,7 +1212,10 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         } else if (lib.collectionType == 'books' ||
             lib.collectionType == 'audiobooks') {
           context.navigateTopLevel(
-            Destinations.bookLibrary(lib.id, collectionType: lib.collectionType),
+            Destinations.bookLibrary(
+              lib.id,
+              collectionType: lib.collectionType,
+            ),
           );
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
@@ -1220,7 +1253,10 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         } else if (lib.collectionType == 'books' ||
             lib.collectionType == 'audiobooks') {
           context.navigateTopLevel(
-            Destinations.bookLibrary(lib.id, collectionType: lib.collectionType),
+            Destinations.bookLibrary(
+              lib.id,
+              collectionType: lib.collectionType,
+            ),
           );
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
@@ -1571,7 +1607,9 @@ class _ToolbarLibrariesTriggerButtonState
       final base =
           widget.iconColor ?? AppColorScheme.onSurface.withValues(alpha: 0.6);
       final active = _focused || _hovered || widget.expanded;
-      bgColor = active ? focusColor.withValues(alpha: 0.18) : Colors.transparent;
+      bgColor = active
+          ? focusColor.withValues(alpha: 0.18)
+          : Colors.transparent;
       fgColor = active ? focusColor : base;
     }
 
@@ -1697,7 +1735,9 @@ class _ToolbarLibraryLabelButtonState
       final focusColor = Color(
         _prefs.get(UserPreferences.focusColor).colorValue,
       );
-      bgColor = active ? focusColor.withValues(alpha: 0.18) : Colors.transparent;
+      bgColor = active
+          ? focusColor.withValues(alpha: 0.18)
+          : Colors.transparent;
       fgColor = active
           ? focusColor
           : AppColorScheme.onSurface.withValues(alpha: 0.85);
@@ -2184,17 +2224,24 @@ class _TopMusicBarState extends State<TopMusicBar> {
 
   String? _artUrl(AggregatedItem item) {
     try {
-      final client = _clientFactory.getClientIfExists(item.serverId) ??
+      final client =
+          _clientFactory.getClientIfExists(item.serverId) ??
           GetIt.instance<MediaServerClient>();
       final albumTag = item.albumPrimaryImageTag;
       final albumId = item.albumId;
       if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 120, tag: albumTag);
+        return client.imageApi.getPrimaryImageUrl(
+          albumId,
+          maxHeight: 120,
+          tag: albumTag,
+        );
       }
       if (item.primaryImageTag != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(item.id, maxHeight: 120, tag: item.primaryImageTag);
+        return client.imageApi.getPrimaryImageUrl(
+          item.id,
+          maxHeight: 120,
+          tag: item.primaryImageTag,
+        );
       }
     } catch (_) {}
     return null;
@@ -2226,14 +2273,14 @@ class _TopMusicBarState extends State<TopMusicBar> {
               height: 32,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: focused
-                    ? AppColorScheme.onSurface
-                    : Colors.transparent,
+                color: focused ? AppColorScheme.onSurface : Colors.transparent,
               ),
               child: AdaptiveIcon(
                 icon,
                 size: 20,
-                color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
+                color: focused
+                    ? AppColorScheme.surface
+                    : AppColorScheme.onSurface,
               ),
             ),
           );
@@ -2268,11 +2315,18 @@ class _TopMusicBarState extends State<TopMusicBar> {
     }
     return Container(
       decoration: BoxDecoration(
-        color: OverlayColorPalette.resolveColor(
-          GetIt.instance<UserPreferences>().get(UserPreferences.navbarColor),
-        ).withValues(
-          alpha: GetIt.instance<UserPreferences>().get(UserPreferences.navbarOpacity) / 100.0,
-        ),
+        color:
+            OverlayColorPalette.resolveColor(
+              GetIt.instance<UserPreferences>().get(
+                UserPreferences.navbarColor,
+              ),
+            ).withValues(
+              alpha:
+                  GetIt.instance<UserPreferences>().get(
+                    UserPreferences.navbarOpacity,
+                  ) /
+                  100.0,
+            ),
         borderRadius: AppRadius.circular(24),
         border: border,
       ),
@@ -2292,7 +2346,9 @@ class _TopMusicBarState extends State<TopMusicBar> {
     final artist = item.artists.isNotEmpty
         ? item.artists.join(', ')
         : item.albumArtist ?? '';
-    final displayText = artist.isNotEmpty ? '${item.name} - $artist' : item.name;
+    final displayText = artist.isNotEmpty
+        ? '${item.name} - $artist'
+        : item.name;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     return Center(
@@ -2303,72 +2359,77 @@ class _TopMusicBarState extends State<TopMusicBar> {
           canRequestFocus: false,
           child: FocusTraversalGroup(
             child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: AppRadius.circular(6),
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: artUrl != null
-                        ? OfflineAwareImage(
-                            imageUrl: artUrl,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            color: AppColorScheme.onSurface.withValues(alpha: 0.1),
-                            child: Icon(
-                              Icons.music_note,
-                              size: 16,
-                              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ClipRRect(
+                    borderRadius: AppRadius.circular(6),
+                    child: SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: artUrl != null
+                          ? OfflineAwareImage(
+                              imageUrl: artUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: AppColorScheme.onSurface.withValues(
+                                alpha: 0.1,
+                              ),
+                              child: Icon(
+                                Icons.music_note,
+                                size: 16,
+                                color: AppColorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
                             ),
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Flexible(
-                  child: GestureDetector(
-                    onTap: () => appRouter.push(Destinations.audioPlayer),
-                    child: Text(
-                      displayText,
-                      style: TextStyle(
-                        color: AppColorScheme.onSurface,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                _buildBarButton(
-                  icon: Icons.skip_previous,
-                  onPressed: _manager.previous,
-                ),
-                const SizedBox(width: 4),
-                _buildBarButton(
-                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                  onPressed: isPlaying ? _manager.pause : _manager.resume,
-                ),
-                const SizedBox(width: 4),
-                _buildBarButton(
-                  icon: Icons.skip_next,
-                  onPressed: _manager.next,
-                ),
-                const SizedBox(width: 4),
-                _buildBarButton(
-                  icon: Icons.stop,
-                  onPressed: () => unawaited(_manager.stop(userInitiated: true)),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => appRouter.push(Destinations.audioPlayer),
+                      child: Text(
+                        displayText,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  _buildBarButton(
+                    icon: Icons.skip_previous,
+                    onPressed: _manager.previous,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                    onPressed: isPlaying ? _manager.pause : _manager.resume,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: Icons.skip_next,
+                    onPressed: _manager.next,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: Icons.stop,
+                    onPressed: () =>
+                        unawaited(_manager.stop(userInitiated: true)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 }

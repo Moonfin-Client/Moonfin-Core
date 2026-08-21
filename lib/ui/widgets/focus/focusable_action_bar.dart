@@ -115,27 +115,34 @@ class FocusableActionBarState extends State<FocusableActionBar> {
 
     if (!event.isActionable) return KeyEventResult.ignored;
     final k = event.logicalKey;
-    if (k.isLeftKey) {
-      if (index > 0) {
-        _nodes[index - 1].requestFocus();
+    if (k.isLeftKey || k.isRightKey) {
+      // The action row mirrors under RTL (ambient Directionality), so the
+      // index step and which "navigate out" callback applies both flip.
+      final isRtl = Directionality.of(context) == TextDirection.rtl;
+      final movesToNextIndex = k.isRightKey != isRtl;
+      if (movesToNextIndex) {
+        if (index < _nodes.length - 1) {
+          _nodes[index + 1].requestFocus();
+          return KeyEventResult.handled;
+        }
+        final navigate = isRtl ? widget.onNavigateLeft : widget.onNavigateRight;
+        if (navigate != null) {
+          navigate();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.handled;
+      } else {
+        if (index > 0) {
+          _nodes[index - 1].requestFocus();
+          return KeyEventResult.handled;
+        }
+        final navigate = isRtl ? widget.onNavigateRight : widget.onNavigateLeft;
+        if (navigate != null) {
+          navigate();
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.handled;
       }
-      if (widget.onNavigateLeft != null) {
-        widget.onNavigateLeft!();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.handled;
-    }
-    if (k.isRightKey) {
-      if (index < _nodes.length - 1) {
-        _nodes[index + 1].requestFocus();
-        return KeyEventResult.handled;
-      }
-      if (widget.onNavigateRight != null) {
-        widget.onNavigateRight!();
-        return KeyEventResult.handled;
-      }
-      return KeyEventResult.handled;
     }
     if (k.isUpKey) {
       if (widget.onNavigateUp != null) widget.onNavigateUp!();
