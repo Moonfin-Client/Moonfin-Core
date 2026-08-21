@@ -9,6 +9,12 @@ import '../media_card.dart';
 class SeerrGenreLabel extends StatelessWidget {
   const SeerrGenreLabel({super.key, required this.name});
 
+  /// Darkens the artwork behind the name. Several duotone pairs, the yellow
+  /// and the light green among them, come out bright enough that white
+  /// lettering is hard to read straight on top of them. Lighter than the
+  /// Jellyfin genre row's veil, since the point of the duotone is its colour.
+  static const scrimOpacity = 0.3;
+
   final String name;
 
   @override
@@ -19,6 +25,7 @@ class SeerrGenreLabel extends StatelessWidget {
         return Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(12),
+          color: AppColorScheme.scrim.withValues(alpha: scrimOpacity),
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
