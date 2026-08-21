@@ -713,10 +713,6 @@ class _LoginScreenState extends State<LoginScreen> {
           Text(
             _formatCode(_quickConnectCode!),
             textAlign: TextAlign.center,
-            // The Unicode bidi algorithm reorders the two digit groups as
-            // blocks under an RTL paragraph direction (the space between
-            // them is a neutral char resolved by paragraph direction), so
-            // the code shown would not match the server's actual code.
             textDirection: TextDirection.ltr,
             style: TextStyle(
               fontSize: 48,

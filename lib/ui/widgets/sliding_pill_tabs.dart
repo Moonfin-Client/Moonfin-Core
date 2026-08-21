@@ -123,8 +123,6 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
     final key = event.logicalKey;
     final index = widget.selectedIndex;
     if (key.isLeftKey || key.isRightKey) {
-      // The pill row mirrors under RTL (ambient Directionality), so the
-      // index step flips; onExitLeft always fires at the physical-left edge.
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       final movesToNextIndex = key.isRightKey != isRtl;
       if (movesToNextIndex) {

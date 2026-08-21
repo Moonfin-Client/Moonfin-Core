@@ -510,10 +510,6 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         ? index + 1
         : index - 1;
     if (nextIndex < 0 || nextIndex >= nodes.length) {
-      // The avatar/back chip sits pinned at the physical left edge
-      // (non-directional Alignment.centerLeft), so leaving the icon row's
-      // on-screen leftmost item is always "left", regardless of which
-      // logical icon that is under RTL mirroring.
       if (direction == TraversalDirection.left &&
           nextIndex < 0 &&
           _avatarFocus.canRequestFocus) {
@@ -619,9 +615,6 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         currentItem is AggregatedItem && currentItem.isAudioLike;
     final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
 
-    // The toolbar is fixed chrome, not reading content: it always renders
-    // Home-first/left, Settings-last/right regardless of app locale, so it
-    // does not mirror under RTL the way scrollable rows and tabs do.
     return Directionality(
       textDirection: TextDirection.ltr,
       child: SafeArea(

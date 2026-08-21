@@ -244,10 +244,6 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (!event.isActionable) return KeyEventResult.ignored;
     final key = event.logicalKey;
     if (key.isLeftKey || key.isRightKey) {
-      // The list scrolls in whatever direction the ambient Directionality
-      // mirrors it to, so index+1 lands on-screen-left under RTL instead of
-      // on-screen-right. Flip the index step (and which physical edge each
-      // callback represents) so the highlight always follows the pressed key.
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       final movesToNextIndex = key.isRightKey != isRtl;
       if (movesToNextIndex) {

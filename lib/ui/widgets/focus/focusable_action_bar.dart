@@ -116,8 +116,6 @@ class FocusableActionBarState extends State<FocusableActionBar> {
     if (!event.isActionable) return KeyEventResult.ignored;
     final k = event.logicalKey;
     if (k.isLeftKey || k.isRightKey) {
-      // The action row mirrors under RTL (ambient Directionality), so the
-      // index step and which "navigate out" callback applies both flip.
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       final movesToNextIndex = k.isRightKey != isRtl;
       if (movesToNextIndex) {

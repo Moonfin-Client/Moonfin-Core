@@ -744,18 +744,12 @@ class _MediaBarState extends State<MediaBar>
     }
   }
 
-  /// Prev/next arrows swap on-screen sides under RTL so "next" always sits
-  /// toward the reading-forward (physical-left) edge, matching the rest of
-  /// the RTL-mirrored UI. The avatar/sidebar-hidden left slot stays a
-  /// physical-screen concept regardless of which logical arrow lands there.
   List<Widget> _buildNavArrows(
     BuildContext context,
     int itemCount, {
     double nextRightInset = 0,
   }) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    // The icon always matches the action (prev looks backward, next looks
-    // forward) — only the on-screen slot it lands in flips for RTL below.
     final prevArrow = _NavArrow(
       icon: Icons.chevron_left,
       onTap: _currentIndex > 0 ? () => _goToPage(_currentIndex - 1) : null,
@@ -2697,8 +2691,6 @@ class _MediaBarState extends State<MediaBar>
 
     if (key == LogicalKeyboardKey.arrowLeft ||
         key == LogicalKeyboardKey.arrowRight) {
-      // Matches the hero chevrons: "advance" follows the reading-forward
-      // direction, which swaps to the physical-left key under RTL.
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       final isPhysicalLeftKey = key == LogicalKeyboardKey.arrowLeft;
       final advances = isPhysicalLeftKey == isRtl;
@@ -2714,9 +2706,6 @@ class _MediaBarState extends State<MediaBar>
       } else if (_currentIndex > 0) {
         _goToPage(_currentIndex - 1);
       }
-      // The sidebar is pinned to the physical-left edge regardless of
-      // locale, so it's only ever reached by a physical-left press that
-      // didn't move the banner.
       if (_currentIndex == beforeIndex &&
           isPhysicalLeftKey &&
           widget.onNavigateLeft != null) {

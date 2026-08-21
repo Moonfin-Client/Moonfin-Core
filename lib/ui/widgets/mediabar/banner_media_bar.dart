@@ -145,8 +145,6 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
     }
     if (key == LogicalKeyboardKey.arrowLeft ||
         key == LogicalKeyboardKey.arrowRight) {
-      // Matches the hero chevrons: "advance" follows the reading-forward
-      // direction, which swaps to the physical-left key under RTL.
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       final isPhysicalLeftKey = key == LogicalKeyboardKey.arrowLeft;
       final advances = isPhysicalLeftKey == isRtl;
@@ -156,9 +154,6 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
       } else if (_index > 0) {
         _setIndex(_index - 1);
       }
-      // The sidebar is pinned to the physical-left edge regardless of
-      // locale, so it's only ever reached by a physical-left press that
-      // didn't move the banner.
       if (_index == beforeIndex &&
           isPhysicalLeftKey &&
           widget.onNavigateLeft != null) {

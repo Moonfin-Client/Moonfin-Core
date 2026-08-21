@@ -48,9 +48,6 @@ class DetailsTabBar extends StatelessWidget {
     this.wrap = false,
   });
 
-  // The tab row mirrors under RTL (ambient Directionality), so which
-  // physical key steps the index forward/back flips; onExitLeft always
-  // fires at the physical-left edge.
   _DetailsTabItem _buildTabItem(BuildContext context, int i, {Key? key}) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     void step(int delta) => focusNodeFor(i + delta).requestFocus();
@@ -518,8 +515,6 @@ class _PillTabBarState extends State<_PillTabBar> {
     final thumbColor = glass ? onSurface.withValues(alpha: 0.22) : accent;
 
     final hasThumb = selectedIndex >= 0 && selectedIndex < _widths.length;
-    // The tab Row mirrors under RTL, so the thumb's offset must accumulate
-    // from whichever edge is the row's actual start under Directionality.
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     var thumbOffset = 0.0;
     for (var i = 0; i < selectedIndex && i < _widths.length; i++) {
