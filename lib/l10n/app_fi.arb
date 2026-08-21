@@ -9281,7 +9281,7 @@
     "@onWatchlist": {
         "description": "Details screen button label when the title is already on the Seerr watchlist"
     },
-    "requestSeriesOrMovie4k": "Pyydä 4K {tyyppi}",
+    "requestSeriesOrMovie4k": "Pyydä 4K {type}",
     "@requestSeriesOrMovie4k": {
         "description": "Bottom sheet title for requesting media in 4K",
         "placeholders": {
