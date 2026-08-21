@@ -398,7 +398,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     _focusRowAndEnsureVisible(newIndex);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);

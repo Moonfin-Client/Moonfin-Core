@@ -1230,7 +1230,6 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     if (mounted) setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
