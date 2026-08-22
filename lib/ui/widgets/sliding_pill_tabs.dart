@@ -140,7 +140,13 @@ class _SlidingPillTabsState extends State<SlidingPillTabs> {
       }
       return KeyEventResult.handled;
     }
-    if (event is KeyDownEvent && (key.isUpKey || key.isDownKey)) {
+    if (key.isUpKey || key.isDownKey) {
+      // Keep a repeat from the gesture that focused this pill from escaping
+      // into Flutter's default directional focus traversal. A fresh press can
+      // still leave the pill through the screen's navigation callback.
+      if (event is KeyRepeatEvent) {
+        return KeyEventResult.handled;
+      }
       final handled = widget.onVerticalNavigation?.call(key.isUpKey) ?? false;
       return handled ? KeyEventResult.handled : KeyEventResult.ignored;
     }
