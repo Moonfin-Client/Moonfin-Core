@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -56,6 +57,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   AppThemeController? _themeController;
   ScreensaverController? _screensaverController;
   StreamSubscription<bool>? _screensaverPlayingSub;
+  PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
 
   AppleTvBackend? get _backend {
     try {
@@ -84,13 +86,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _actionSub = _backend?.uiActionStream.listen(_handleUiAction);
     final manager = _manager;
     if (manager != null) {
+      _bringupState = manager.bringupState;
       _queueSub = manager.queueService.queueChangedStream.listen(
         (_) => _onQueueChanged(),
       );
       _sessionEndedSub = manager.sessionEndedStream.listen(
         (_) => _handleExit(),
       );
-      _bringupSub = manager.bringupStateStream.listen((_) {
+      _bringupSub = manager.bringupStateStream.listen((state) {
+        if (mounted) {
+          setState(() => _bringupState = state);
+        }
         _pushMetadata();
         // The initState load can run before the queue item resolves, so retry
         // here. The per-item guard makes repeat events a no-op.
@@ -1412,9 +1418,19 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final showLaunchFeedback =
+        _bringupState.phase != PlaybackBringupPhase.ready &&
+        _bringupState.phase != PlaybackBringupPhase.failed;
+    return Scaffold(
       backgroundColor: Colors.black,
-      body: SizedBox.expand(),
+      body: showLaunchFeedback
+          ? const Center(
+              child: CupertinoActivityIndicator(
+                radius: 20,
+                color: Colors.white,
+              ),
+            )
+          : const SizedBox.expand(),
     );
   }
 }

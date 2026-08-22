@@ -96,6 +96,19 @@ import '../../../util/platform_detection.dart';
 const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
 const _kCompactBreakpoint = 600.0;
 
+/// Whether video navigation should acknowledge playback before startup ends.
+///
+/// iOS already uses this path; tvOS needs the same immediate transition while
+/// its native player resolves and presents.
+@visibleForTesting
+bool shouldPushVideoPlayerRouteEarly({
+  required String destination,
+  required bool isIOS,
+  required bool isAppleTV,
+}) {
+  return destination == Destinations.videoPlayer && (isIOS || isAppleTV);
+}
+
 bool _isCompact(BuildContext context) =>
     !PlatformDetection.isTV &&
     (PlatformDetection.useMobileUi ||
@@ -8130,8 +8143,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }) async {
     if (!context.mounted) return false;
     final manager = GetIt.instance<PlaybackManager>();
-    final pushVideoEarly =
-        destination == Destinations.videoPlayer && PlatformDetection.isIOS;
+    final pushVideoEarly = shouldPushVideoPlayerRouteEarly(
+      destination: destination,
+      isIOS: PlatformDetection.isIOS,
+      isAppleTV: PlatformDetection.isAppleTV,
+    );
 
     void popTopPlayerRoute() {
       final route = ModalRoute.of(context);
