@@ -1032,7 +1032,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
       unawaited(_setAlwaysOnTop(false));
     }
-    if (!_isStopping) _manager.stop(userInitiated: false);
+    // The launch coordinator briefly owns this route while Android decides
+    // whether to hand the queue to an external player. Keep that prepared
+    // queue intact when the internal host is being replaced.
+    if (!_isStopping && !_manager.playbackDeferredToExternalPlayer) {
+      _manager.stop(userInitiated: false);
+    }
     unawaited(_restoreSystemUiForExit());
     super.dispose();
   }
@@ -3788,15 +3793,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
-    return phase == PlaybackBringupPhase.stoppingPrevious ||
-        phase == PlaybackBringupPhase.resolving ||
-        phase == PlaybackBringupPhase.opening ||
-        phase == PlaybackBringupPhase.waitingForReady ||
-        phase == PlaybackBringupPhase.seekingResume;
+    return phase.isInProgress;
   }
 
   String _bringupLabel() {
     switch (_bringupState.phase) {
+      case PlaybackBringupPhase.preparing:
+        return _streamLoadingLabel;
       case PlaybackBringupPhase.stoppingPrevious:
         return 'Stopping previous playback...';
       case PlaybackBringupPhase.resolving:

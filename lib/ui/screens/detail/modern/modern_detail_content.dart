@@ -25,6 +25,7 @@ import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
+import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
@@ -3334,18 +3335,40 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Future<void> _playTrack(BuildContext context, int index) async {
     final manager = GetIt.instance<PlaybackManager>();
-    await manager.playItems(_vm.tracks, startIndex: index);
-    if (!context.mounted) return;
     final isAudio = _vm.tracks.every(_isAudioItem);
-    context.push(isAudio ? Destinations.audioPlayer : Destinations.videoPlayer);
+    await launchPlayerWhilePreparing(
+      context,
+      manager: manager,
+      destination: isAudio
+          ? Destinations.audioPlayer
+          : Destinations.videoPlayer,
+      startPlayback: (launchSession) async {
+        await runPlaybackStart(
+          launchSession,
+          () => manager.playItems(_vm.tracks, startIndex: index),
+        );
+        return true;
+      },
+    );
   }
 
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
     final manager = GetIt.instance<PlaybackManager>();
-    await manager.playItems(_vm.playlistItems, startIndex: index);
-    if (!context.mounted) return;
     final isAudio = _vm.playlistItems.every(_isAudioItem);
-    context.push(isAudio ? Destinations.audioPlayer : Destinations.videoPlayer);
+    await launchPlayerWhilePreparing(
+      context,
+      manager: manager,
+      destination: isAudio
+          ? Destinations.audioPlayer
+          : Destinations.videoPlayer,
+      startPlayback: (launchSession) async {
+        await runPlaybackStart(
+          launchSession,
+          () => manager.playItems(_vm.playlistItems, startIndex: index),
+        );
+        return true;
+      },
+    );
   }
 
   String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) {
@@ -4351,35 +4374,46 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       onNavigateDown: _focusSelectedTab,
       onTap: () async {
         final manager = GetIt.instance<PlaybackManager>();
-        final hasProgress = (episode!.playbackPosition?.inMilliseconds ?? 0) > 0 ||
-                            (episode.playedPercentage ?? 0) > 0;
+        final targetEpisode = episode!;
+        final hasProgress =
+            (targetEpisode.playbackPosition?.inMilliseconds ?? 0) > 0 ||
+            (targetEpisode.playedPercentage ?? 0) > 0;
         // On a season, follow the list as displayed so playback carries on
         // through the season instead of stopping after this one item.
-        var queue = <AggregatedItem>[episode];
+        var queue = <AggregatedItem>[targetEpisode];
         var startIndex = 0;
         if (item.type == 'Season') {
           final playable = _vm.episodes
-              .where((e) => e.id == episode!.id || isEligibleNextEpisodeCandidate(e))
+              .where(
+                (e) =>
+                    e.id == targetEpisode.id ||
+                    isEligibleNextEpisodeCandidate(e),
+              )
               .toList();
-          final at = playable.indexWhere((e) => e.id == episode!.id);
+          final at = playable.indexWhere((e) => e.id == targetEpisode.id);
           if (at >= 0) {
             queue = playable;
             startIndex = at;
           }
         }
-        await manager.playItems(
-          queue,
-          startIndex: startIndex,
-          startPosition: hasProgress
-              ? (episode.playbackPosition ?? Duration.zero)
-              : Duration.zero,
+        await launchPlayerWhilePreparing(
+          context,
+          manager: manager,
+          destination: Destinations.videoPlayer,
+          startPlayback: (launchSession) async {
+            await runPlaybackStart(
+              launchSession,
+              () => manager.playItems(
+                queue,
+                startIndex: startIndex,
+                startPosition: hasProgress
+                    ? (targetEpisode.playbackPosition ?? Duration.zero)
+                    : Duration.zero,
+              ),
+            );
+            return true;
+          },
         );
-        if (context.mounted) {
-          final destination = manager.playbackDeferredToExternalPlayer
-              ? Destinations.externalPlayer
-              : Destinations.videoPlayer;
-          unawaited(context.push(destination));
-        }
       },
     );
   }
