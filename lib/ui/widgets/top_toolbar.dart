@@ -607,170 +607,170 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         currentItem is AggregatedItem && currentItem.isAudioLike;
     final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
 
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: SafeArea(
-        bottom: false,
-        child: SizedBox(
-          height: totalHeight,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
-            child: Focus(
-              focusNode: _toolbarScopeNode,
-              onFocusChange: (hasFocus) {
-                _toolbarHadFocus = hasFocus;
-                TopToolbar.isFocusedNotifier.value = hasFocus;
-              },
-              onKeyEvent: (_, event) {
-                if (event is KeyDownEvent &&
-                    event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                  final primary = FocusManager.instance.primaryFocus;
-                  if (primary != null) {
-                    final insideMusicBar = _isDescendantOf(
-                      primary,
-                      _musicBarFocusNode,
-                    );
-                    if (!insideMusicBar && isMusicActive) {
-                      final musicNodes =
-                          _musicBarFocusNode.descendants
-                              .where(
-                                (n) =>
-                                    !n.skipTraversal && _isLaidOutFocusNode(n),
-                              )
-                              .map((n) {
-                                final box =
-                                    n.context!.findRenderObject() as RenderBox?;
-                                final pos = box?.localToGlobal(Offset.zero);
-                                return (node: n, x: pos?.dx ?? -1.0);
-                              })
-                              .where((item) => item.x > 0)
-                              .toList()
-                            ..sort((a, b) => a.x.compareTo(b.x));
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: totalHeight,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+          child: Focus(
+            focusNode: _toolbarScopeNode,
+            onFocusChange: (hasFocus) {
+              _toolbarHadFocus = hasFocus;
+              TopToolbar.isFocusedNotifier.value = hasFocus;
+            },
+            onKeyEvent: (_, event) {
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                final primary = FocusManager.instance.primaryFocus;
+                if (primary != null) {
+                  final insideMusicBar = _isDescendantOf(
+                    primary,
+                    _musicBarFocusNode,
+                  );
+                  if (!insideMusicBar && isMusicActive) {
+                    final musicNodes =
+                        _musicBarFocusNode.descendants
+                            .where(
+                              (n) =>
+                                  !n.skipTraversal && _isLaidOutFocusNode(n),
+                            )
+                            .map((n) {
+                              final box =
+                                  n.context!.findRenderObject() as RenderBox?;
+                              final pos = box?.localToGlobal(Offset.zero);
+                              return (node: n, x: pos?.dx ?? -1.0);
+                            })
+                            .where((item) => item.x > 0)
+                            .toList()
+                          ..sort((a, b) => a.x.compareTo(b.x));
 
-                      if (musicNodes.isNotEmpty) {
-                        musicNodes.first.node.requestFocus();
-                        return KeyEventResult.handled;
-                      }
-                    }
-
-                    if (widget.activeRoute != Destinations.home &&
-                        NavigationLayout.focusDetailsPlayButtonNotifier.value ==
-                            null) {
-                      final success = primary.focusInDirection(
-                        TraversalDirection.down,
-                      );
-                      if (success) {
-                        final newFocus = FocusManager.instance.primaryFocus;
-                        if (newFocus != null && _isInsideToolbar(newFocus)) {
-                          return KeyEventResult.handled;
-                        }
-                      }
+                    if (musicNodes.isNotEmpty) {
+                      musicNodes.first.node.requestFocus();
+                      return KeyEventResult.handled;
                     }
                   }
-                  _restoreFocusBelowToolbar();
-                  return KeyEventResult.handled;
-                }
-                if (event is KeyDownEvent &&
-                    event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                  final primary = FocusManager.instance.primaryFocus;
-                  if (primary != null) {
-                    final insideMusicBar = _isDescendantOf(
-                      primary,
-                      _musicBarFocusNode,
+
+                  if (widget.activeRoute != Destinations.home &&
+                      NavigationLayout.focusDetailsPlayButtonNotifier.value ==
+                          null) {
+                    final success = primary.focusInDirection(
+                      TraversalDirection.down,
                     );
-                    if (insideMusicBar) {
-                      if (_homeFocus.canRequestFocus) {
-                        _homeFocus.requestFocus();
-                        return KeyEventResult.handled;
-                      }
-                      FocusNode? targetNode;
-                      for (final n in _toolbarScopeNode.descendants) {
-                        if (!n.skipTraversal &&
-                            _isLaidOutFocusNode(n) &&
-                            !_isDescendantOf(n, _musicBarFocusNode)) {
-                          final box =
-                              n.context!.findRenderObject() as RenderBox?;
-                          final pos = box?.localToGlobal(Offset.zero);
-                          if (pos != null && pos.dx > 0) {
-                            targetNode = n;
-                            break;
-                          }
-                        }
-                      }
-                      if (targetNode != null) {
-                        targetNode.requestFocus();
+                    if (success) {
+                      final newFocus = FocusManager.instance.primaryFocus;
+                      if (newFocus != null && _isInsideToolbar(newFocus)) {
                         return KeyEventResult.handled;
                       }
                     }
                   }
                 }
-                if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
-                    event is KeyDownEvent &&
-                    (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
-                        event.logicalKey == LogicalKeyboardKey.arrowRight)) {
-                  final direction =
-                      event.logicalKey == LogicalKeyboardKey.arrowLeft
-                      ? TraversalDirection.left
-                      : TraversalDirection.right;
-                  _moveWithinToolbar(direction);
-                  // Always consume so the key can't escape sideways into content.
-                  return KeyEventResult.handled;
+                _restoreFocusBelowToolbar();
+                return KeyEventResult.handled;
+              }
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                final primary = FocusManager.instance.primaryFocus;
+                if (primary != null) {
+                  final insideMusicBar = _isDescendantOf(
+                    primary,
+                    _musicBarFocusNode,
+                  );
+                  if (insideMusicBar) {
+                    if (_homeFocus.canRequestFocus) {
+                      _homeFocus.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                    FocusNode? targetNode;
+                    for (final n in _toolbarScopeNode.descendants) {
+                      if (!n.skipTraversal &&
+                          _isLaidOutFocusNode(n) &&
+                          !_isDescendantOf(n, _musicBarFocusNode)) {
+                        final box =
+                            n.context!.findRenderObject() as RenderBox?;
+                        final pos = box?.localToGlobal(Offset.zero);
+                        if (pos != null && pos.dx > 0) {
+                          targetNode = n;
+                          break;
+                        }
+                      }
+                    }
+                    if (targetNode != null) {
+                      targetNode.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                  }
                 }
-                return KeyEventResult.ignored;
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FocusTraversalGroup(
-                    policy: WidgetOrderTraversalPolicy(),
-                    child: isLandscape
-                        ? SizedBox(
-                            height: toolbarHeight - (vPad * 2),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: centerSidePadding,
-                                    ),
-                                    child: _buildCenter(),
+              }
+              if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
+                  event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                      event.logicalKey == LogicalKeyboardKey.arrowRight)) {
+                final direction =
+                    event.logicalKey == LogicalKeyboardKey.arrowLeft
+                    ? TraversalDirection.left
+                    : TraversalDirection.right;
+                _moveWithinToolbar(direction);
+                // Always consume so the key can't escape sideways into content.
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FocusTraversalGroup(
+                  policy: WidgetOrderTraversalPolicy(),
+                  child: isLandscape
+                      ? SizedBox(
+                          height: toolbarHeight - (vPad * 2),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: centerSidePadding,
                                   ),
+                                  child: _buildCenter(),
                                 ),
+                              ),
+                              Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: _buildStart(),
+                              ),
+                              if (!isMobile)
                                 Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: _buildStart(),
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: _buildEnd(),
                                 ),
-                                if (!isMobile)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: _buildEnd(),
-                                  ),
-                              ],
-                            ),
-                          )
-                        : SizedBox(
-                            height: toolbarHeight - (vPad * 2),
-                            child: Row(
-                              children: [
-                                _buildStart(),
-                                const SizedBox(width: 12),
-                                Expanded(child: _buildCenter()),
-                                if (!isMobile) ...[
-                                  const SizedBox(width: 12),
-                                  _buildEnd(),
-                                ],
-                              ],
-                            ),
+                            ],
                           ),
+                        )
+                      : SizedBox(
+                          height: toolbarHeight - (vPad * 2),
+                          child: Row(
+                            children: [
+                              _buildStart(),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildCenter()),
+                              if (!isMobile) ...[
+                                const SizedBox(width: 12),
+                                _buildEnd(),
+                              ],
+                            ],
+                          ),
+                        ),
+                ),
+                if (isMusicActive) ...[
+                  const SizedBox(height: 8),
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: TopMusicBar(focusNode: _musicBarFocusNode),
                   ),
-                  if (isMusicActive) ...[
-                    const SizedBox(height: 8),
-                    TopMusicBar(focusNode: _musicBarFocusNode),
-                  ],
                 ],
-              ),
+              ],
             ),
           ),
         ),
@@ -832,11 +832,6 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
             event.logicalKey == LogicalKeyboardKey.arrowDown) {
           _restoreFocusBelowToolbar();
-          return KeyEventResult.handled;
-        }
-        if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
-            event.logicalKey == LogicalKeyboardKey.arrowRight) {
-          _homeFocus.requestFocus();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -1117,13 +1112,21 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   baseColor: nextNavColor(),
                   focusNode: _settingsFocus,
                   onKeyEvent: (_, event) {
+                    final isRtl =
+                        Directionality.of(context) == TextDirection.rtl;
+                    final outwardKey = isRtl
+                        ? LogicalKeyboardKey.arrowLeft
+                        : LogicalKeyboardKey.arrowRight;
+                    final inwardKey = isRtl
+                        ? LogicalKeyboardKey.arrowRight
+                        : LogicalKeyboardKey.arrowLeft;
                     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
                         PlatformDetection.isTV &&
-                        event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                        event.logicalKey == outwardKey) {
                       return KeyEventResult.handled;
                     }
                     if (event is KeyDownEvent &&
-                        event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                        event.logicalKey == inwardKey &&
                         useInlineLibraries &&
                         showLibraries &&
                         _libraries.isNotEmpty) {
@@ -1273,6 +1276,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
       builder: (context, time, _) {
         return Text(
           time,
+          textDirection: TextDirection.ltr,
           style: TextStyle(
             color: isNeon
                 ? AppColorScheme.onSurface
