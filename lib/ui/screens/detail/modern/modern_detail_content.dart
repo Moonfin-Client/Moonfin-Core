@@ -2083,20 +2083,41 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _studiosTab(BuildContext context, AggregatedItem item) {
     // Only the library's own studios can be filtered, so build the cards from
     // those and reuse a TMDB logo whenever a studio name matches one.
+    String normalize(String s) => s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
     final tmdbLogoByName = <String, String>{};
+    final tmdbLogoByNormalized = <String, String>{};
     for (final company in _tmdbStudios) {
       final logo = company.imageUrl;
       if (logo != null) {
-        tmdbLogoByName[company.name.trim().toLowerCase()] = logo;
+        final rawKey = company.name.trim().toLowerCase();
+        final normKey = normalize(company.name);
+        tmdbLogoByName[rawKey] = logo;
+        if (normKey.isNotEmpty) {
+          tmdbLogoByNormalized[normKey] = logo;
+        }
       }
     }
     final studios = <({String name, String? logoUrl})>[];
     for (final s in item.studios) {
       final name = s['Name']?.toString() ?? '';
       if (name.isEmpty) continue;
+      final rawKey = name.trim().toLowerCase();
+      final normKey = normalize(name);
+
+      String? logoUrl = tmdbLogoByName[rawKey] ?? tmdbLogoByNormalized[normKey];
+      if (logoUrl == null && normKey.isNotEmpty) {
+        for (final entry in tmdbLogoByNormalized.entries) {
+          if (normKey.contains(entry.key) || entry.key.contains(normKey)) {
+            logoUrl = entry.value;
+            break;
+          }
+        }
+      }
+
       studios.add((
         name: name,
-        logoUrl: tmdbLogoByName[name.trim().toLowerCase()],
+        logoUrl: logoUrl,
       ));
     }
     if (studios.isEmpty) {
