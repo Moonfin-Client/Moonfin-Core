@@ -114,6 +114,7 @@ class TopShelfService {
         item.type != 'MusicVideo' &&
         parentBackdropId != null &&
         parentBackdropTags.isNotEmpty) {
+      // Episodes carry no backdrop of their own and borrow the series one.
       image1x = imageApi.getBackdropImageUrl(
         parentBackdropId,
         maxWidth: _image1xMaxWidth,
@@ -145,7 +146,6 @@ class TopShelfService {
       'imageURL': ?image1x,
       'contentImageURL': ?image1x,
       'imageURL2x': ?image2x,
-      'contentImageURL2x': ?image2x,
       'displayURL': 'moonfin://item?$query',
       'playURL': 'moonfin://play?$query',
     };

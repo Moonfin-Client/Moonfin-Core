@@ -27,7 +27,6 @@ private struct TopShelfCachePayload: Codable {
         let imageURL: String?
         let contentImageURL: String?
         let imageURL2x: String?
-        let contentImageURL2x: String?
         let displayURL: String
         let playURL: String
         let playbackProgress: Double?
@@ -88,10 +87,7 @@ final class ServiceProvider: TVTopShelfContentProvider {
             cachedItem.imageURL
         )
 
-        let image2x = firstValidURL(
-            cachedItem.contentImageURL2x,
-            cachedItem.imageURL2x
-        )
+        let image2x = firstValidURL(cachedItem.imageURL2x)
 
         let resolved1x = image1x ?? image2x
         let resolved2x = image2x ?? image1x
