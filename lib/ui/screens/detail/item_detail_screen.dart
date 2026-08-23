@@ -6825,6 +6825,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       }
     }
 
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
     final Widget rowContent;
     if (!needsOverflow) {
       final normalizedButtons = allButtons.asMap().entries.map((entry) {
@@ -6844,35 +6846,35 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                       widget.upTarget != null
                   ? _focusUpTarget
                   : null),
-          onArrowLeft: index == 0
-              ? _focusSidebar
-              : () {
-                  if (!_focusAdjacent(
-                    (i) => _primaryNodeAt(i, allButtons.length),
-                    index - 1,
-                    -1,
-                    allButtons.length,
-                  )) {
-                    _focusSidebar();
-                  }
-                },
+          onArrowLeft: () {
+            final step = isRtl ? 1 : -1;
+            if (!_focusAdjacent(
+              (i) => _primaryNodeAt(i, allButtons.length),
+              index + step,
+              step,
+              allButtons.length,
+            )) {
+              _focusSidebar();
+            }
+          },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-          onArrowRight: index == allButtons.length - 1
-              ? (widget.onArrowRightAtEnd ?? () {})
-              : () {
-                  if (!_focusAdjacent(
-                    (i) => _primaryNodeAt(i, allButtons.length),
-                    index + 1,
-                    1,
-                    allButtons.length,
-                  )) {
-                    (widget.onArrowRightAtEnd ?? () {})();
-                  }
-                },
+          onArrowRight: () {
+            final step = isRtl ? -1 : 1;
+            if (!_focusAdjacent(
+              (i) => _primaryNodeAt(i, allButtons.length),
+              index + step,
+              step,
+              allButtons.length,
+            )) {
+              (widget.onArrowRightAtEnd ?? () {})();
+            }
+          },
         );
       }).toList();
       rowContent = Align(
-        alignment: widget.modernStyle ? Alignment.centerLeft : Alignment.center,
+        alignment: widget.modernStyle
+            ? AlignmentDirectional.centerStart
+            : Alignment.center,
         child: Wrap(
           spacing: buttonSpacing,
           runSpacing: buttonRunSpacing,
@@ -6905,25 +6907,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                       widget.upTarget != null
                   ? _focusUpTarget
                   : null),
-          onArrowLeft: index == 0
-              ? _focusSidebar
-              : () {
-                  if (!_focusAdjacent(
-                    _primaryNodePlain,
-                    index - 1,
-                    -1,
-                    primaryButtons.length,
-                  )) {
-                    _focusSidebar();
-                  }
-                },
+          onArrowLeft: () {
+            final step = isRtl ? 1 : -1;
+            if (!_focusAdjacent(
+              _primaryNodePlain,
+              index + step,
+              step,
+              primaryButtons.length,
+            )) {
+              _focusSidebar();
+            }
+          },
           onArrowRight: () {
             // Skip any unmounted slot (e.g. hidden delete-download) and fall
             // through to the More button so it is always reachable.
+            final step = isRtl ? -1 : 1;
             if (!_focusAdjacent(
               _primaryNodePlain,
-              index + 1,
-              1,
+              index + step,
+              step,
               primaryButtons.length,
             )) {
               (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode)
@@ -6967,23 +6969,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
           },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-          onArrowLeft: index == 0
-              ? _focusSidebar
-              : () {
-                  if (!_focusAdjacent(
-                    _extraFocusNode,
-                    index - 1,
-                    -1,
-                    extraButtons.length,
-                  )) {
-                    _focusSidebar();
-                  }
-                },
-          onArrowRight: () {
+          onArrowLeft: () {
+            final step = isRtl ? 1 : -1;
             if (!_focusAdjacent(
               _extraFocusNode,
-              index + 1,
-              1,
+              index + step,
+              step,
+              extraButtons.length,
+            )) {
+              _focusSidebar();
+            }
+          },
+          onArrowRight: () {
+            final step = isRtl ? -1 : 1;
+            if (!_focusAdjacent(
+              _extraFocusNode,
+              index + step,
+              step,
               extraButtons.length,
             )) {
               (widget.onArrowRightAtEnd ?? () {})();
@@ -7013,8 +7015,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           // (e.g. hidden delete-download) so More can always return to the row.
           _focusAdjacent(
             _primaryNodePlain,
-            primaryButtons.length - 1,
-            -1,
+            isRtl ? 0 : primaryButtons.length - 1,
+            isRtl ? 1 : -1,
             primaryButtons.length,
           );
         },
@@ -7048,7 +7050,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
           if (_expanded) {
             rowContent = Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -7069,7 +7071,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             );
           } else {
             rowContent = Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: primaryRow,
             );
           }
@@ -7077,7 +7079,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           // Primary row keeps the More/Less button pinned at its end; the extra
           // buttons reveal in a second wrap below, so More/Less never moves.
           rowContent = Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -7123,7 +7125,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             : WrapAlignment.center;
         rowContent = Align(
           alignment: widget.modernStyle
-              ? Alignment.centerLeft
+              ? AlignmentDirectional.centerStart
               : Alignment.center,
           child: Column(
             mainAxisSize: MainAxisSize.min,

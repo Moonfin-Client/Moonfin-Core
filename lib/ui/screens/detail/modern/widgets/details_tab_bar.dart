@@ -584,7 +584,7 @@ class _PillTabBarState extends State<_PillTabBar> {
         final content = _widths.fold<double>(0, (sum, w) => sum + w) + 16.0;
         final pillWidth = content < available ? content : available;
         return Align(
-          alignment: Alignment.centerLeft,
+          alignment: AlignmentDirectional.centerStart,
           child: SizedBox(width: pillWidth, child: pane),
         );
       },
