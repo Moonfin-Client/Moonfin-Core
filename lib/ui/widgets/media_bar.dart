@@ -417,7 +417,7 @@ class _MediaBarState extends State<MediaBar>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!PlatformDetection.isMobile) return;
+    if (!PlatformDetection.isMobile && !PlatformDetection.isAppleTV) return;
     final topmost = ModalRoute.isCurrentOf(context) ?? true;
     if (topmost == _isHomeRouteTopmost) return;
     _isHomeRouteTopmost = topmost;
