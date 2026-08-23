@@ -8553,6 +8553,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'イントロとアウトロをスキップしますか?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'メディアセグメントのカウントダウン';
 
   @override

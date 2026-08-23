@@ -8542,6 +8542,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '인트로와 아웃트로를 건너뛰시겠습니까?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => '미디어 구간 카운트다운';
 
   @override

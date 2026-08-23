@@ -9015,6 +9015,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Прескочити уводе и резултате?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Одбројавање медијског сегмента';
 
   @override

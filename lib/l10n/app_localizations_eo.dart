@@ -8791,6 +8791,11 @@ class AppLocalizationsEo extends AppLocalizations {
       'Ĉu preterpasi enkondukojn kaj aliajn?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Antaŭnombrado de aŭdvida segmento';
 

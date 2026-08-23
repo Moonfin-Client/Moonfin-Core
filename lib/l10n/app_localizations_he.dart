@@ -8681,6 +8681,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'לדלג על Intros ו-Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'ספירה לאחור של מקטע מדיה';
 
   @override

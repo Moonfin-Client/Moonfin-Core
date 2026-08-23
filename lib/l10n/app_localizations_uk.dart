@@ -8876,6 +8876,11 @@ class AppLocalizationsUk extends AppLocalizations {
       'Пропустити введення та завершення?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Відлік медіасегментів';
 
   @override

@@ -8813,6 +8813,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Hoppa över Intros och Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Nedräkning för mediesegment';
 
   @override

@@ -8786,6 +8786,11 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intros এবং Outros এড়িয়ে যান?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'মিডিয়া সেগমেন্ট কাউন্টডাউন';
 
   @override

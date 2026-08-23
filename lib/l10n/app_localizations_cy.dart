@@ -8854,6 +8854,11 @@ class AppLocalizationsCy extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Hepgor Intros a Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Cyfrif i Lawr Segment Cyfryngau';
 
   @override

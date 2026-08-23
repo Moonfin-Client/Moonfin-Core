@@ -8739,6 +8739,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'ข้ามช่วงแนะนำและส่วนท้ายใช่ไหม';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'การนับถอยหลังของช่วงสื่อ';
 
   @override

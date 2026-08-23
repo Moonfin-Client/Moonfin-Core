@@ -8846,6 +8846,11 @@ class AppLocalizationsKk extends AppLocalizations {
       'Кіріспелер мен шығыстарды өткізіп жіберу керек пе?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Медиасегмент кері санағы';
 
   @override

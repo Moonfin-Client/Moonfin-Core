@@ -8899,6 +8899,11 @@ class AppLocalizationsTl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Laktawan ang Intro at Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override

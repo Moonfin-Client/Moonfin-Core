@@ -8872,6 +8872,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Pular introduções e outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Contagem Regressiva de Segmentos de Mídia';
 

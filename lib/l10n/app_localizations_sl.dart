@@ -8857,6 +8857,11 @@ class AppLocalizationsSl extends AppLocalizations {
       'Preskočiti uvodne in končne elemente?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Odštevanje predstavnostnih odsekov';
 

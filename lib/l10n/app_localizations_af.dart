@@ -8807,6 +8807,11 @@ class AppLocalizationsAf extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Slaan Intro\'s en Outros oor?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Aftelling vir mediasegmente';
 
   @override

@@ -9020,6 +9020,11 @@ class AppLocalizationsHr extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Preskočiti Intros i Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Odbrojavanje medijskog segmenta';
 
   @override

@@ -8886,6 +8886,11 @@ class AppLocalizationsHu extends AppLocalizations {
       'Kihagyod a bevezetőket és a stáblistákat?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Médiaszegmens visszaszámlálása';
 
   @override

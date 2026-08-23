@@ -8857,6 +8857,11 @@ class AppLocalizationsLt extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Praleisti įžangas ir pabaigas?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Medijos segmento atgalinis skaičiavimas';
 

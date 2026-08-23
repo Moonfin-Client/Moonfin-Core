@@ -8950,6 +8950,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Ometeu introduccions i altres?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Compte enrere per els segments';
 
   @override

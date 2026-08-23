@@ -8867,6 +8867,11 @@ class AppLocalizationsTe extends AppLocalizations {
       'పరిచయాలు మరియు అవుట్‌రోలను దాటవేయాలా?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'మీడియా సెగ్మెంట్ కౌంట్‌డౌన్';
 
   @override

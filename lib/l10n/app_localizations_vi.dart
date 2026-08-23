@@ -8802,6 +8802,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bỏ qua phần giới thiệu và phần kết thúc?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Đếm ngược phân đoạn phương tiện';
 
   @override

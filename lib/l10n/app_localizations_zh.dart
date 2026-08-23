@@ -8465,6 +8465,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳过片头和片尾？';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => '媒体片段倒计时';
 
   @override

@@ -8832,6 +8832,11 @@ class AppLocalizationsUg extends AppLocalizations {
       'Intros ۋە Outros نى ئاتلاپ ئۆتۈپ كېتەمسىز؟';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'مېدىيا بۆلىكى تەتۈر ساناش';
 
   @override

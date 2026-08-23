@@ -8799,6 +8799,11 @@ class AppLocalizationsDa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Springe introer og outros over?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Nedtælling for mediesegment';
 
   @override

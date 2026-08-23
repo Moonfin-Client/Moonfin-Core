@@ -8766,6 +8766,11 @@ class AppLocalizationsPa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intros ਅਤੇ Outros ਨੂੰ ਛੱਡਣਾ ਹੈ?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'ਮੀਡੀਆ ਖੰਡ ਕਾਊਂਟਡਾਊਨ';
 
   @override

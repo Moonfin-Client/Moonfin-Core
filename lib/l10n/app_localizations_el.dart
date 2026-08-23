@@ -8942,6 +8942,11 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Παράλειψη εισαγωγών και εξόδων;';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Αντίστροφη μέτρηση τμήματος πολυμέσων';
 

@@ -8921,6 +8921,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ignorer les intros et les outros ?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Compte à rebours des segments';
 
   @override

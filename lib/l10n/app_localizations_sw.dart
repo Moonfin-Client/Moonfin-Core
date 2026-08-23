@@ -8874,6 +8874,11 @@ class AppLocalizationsSw extends AppLocalizations {
       'Ungependa Kuruka Utambulisho na Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Hesabu ya Kurudi Nyuma ya Sehemu ya Maudhui';
 

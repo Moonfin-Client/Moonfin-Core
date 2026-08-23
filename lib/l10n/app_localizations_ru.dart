@@ -8876,6 +8876,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Пропустить интро и аутро?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Обратный отсчёт сегментов';
 
   @override

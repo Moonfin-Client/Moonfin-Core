@@ -15676,6 +15676,12 @@ abstract class AppLocalizations {
   /// **'Skip Intros and Outros?'**
   String get settingsSkipIntrosAndOutros;
 
+  /// Setting label for what to do with one type of media segment
+  ///
+  /// In en, this message translates to:
+  /// **'{segment} Segments'**
+  String settingsMediaSegmentTypeAction(String segment);
+
   /// Setting label for media segment countdown customizations
   ///
   /// In en, this message translates to:

@@ -8911,6 +8911,11 @@ class AppLocalizationsMl extends AppLocalizations {
       'ആമുഖങ്ങളും ഔട്ട്റോകളും ഒഴിവാക്കണോ?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'മീഡിയ സെഗ്‌മെന്റ് കൗണ്ട്ഡൗൺ';
 
   @override

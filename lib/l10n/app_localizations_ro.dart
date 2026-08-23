@@ -8878,6 +8878,11 @@ class AppLocalizationsRo extends AppLocalizations {
       'Sari peste introsuri si versiuni suplimentare?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Numărătoare inversă pentru segmentele media';
 

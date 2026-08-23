@@ -8874,6 +8874,11 @@ class AppLocalizationsTa extends AppLocalizations {
       'அறிமுகங்கள் மற்றும் அவுட்ரோக்களை தவிர்க்கவா?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'மீடியா பிரிவு கவுண்ட்டவுன்';
 
   @override

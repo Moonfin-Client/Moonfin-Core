@@ -8853,6 +8853,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intro\'s en Outro\'s overslaan?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Aftellen bij mediasegmenten';
 
   @override

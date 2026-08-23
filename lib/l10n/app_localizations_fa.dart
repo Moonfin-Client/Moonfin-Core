@@ -8745,6 +8745,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'از معرفی و برون رفت بگذرید؟';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'شمارش معکوس بخش رسانه';
 
   @override

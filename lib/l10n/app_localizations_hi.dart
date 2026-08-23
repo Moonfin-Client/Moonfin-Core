@@ -8775,6 +8775,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'परिचय और बाह्य को छोड़ें?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'मीडिया सेगमेंट काउंटडाउन';
 
   @override

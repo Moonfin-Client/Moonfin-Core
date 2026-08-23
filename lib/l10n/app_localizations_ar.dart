@@ -8788,6 +8788,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'تخطي المقدمات والنهايات؟';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'العد التنازلي لمقاطع الوسائط';
 
   @override

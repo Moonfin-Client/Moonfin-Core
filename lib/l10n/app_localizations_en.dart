@@ -8730,6 +8730,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Skip Intros and Outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override

@@ -8805,6 +8805,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Lewati Intro dan Outro?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Hitung Mundur Segmen Media';
 
   @override

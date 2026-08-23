@@ -8863,6 +8863,11 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಪರಿಚಯಗಳು ಮತ್ತು ಔಟ್ರೊಗಳನ್ನು ಬಿಟ್ಟುಬಿಡುವುದೇ?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'ಮಾಧ್ಯಮ ವಿಭಾಗ ಕೌಂಟ್‌ಡೌನ್';
 
   @override

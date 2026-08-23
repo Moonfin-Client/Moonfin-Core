@@ -8491,6 +8491,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳過片頭和片尾？';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => '媒體片段倒數';
 
   @override

@@ -8853,6 +8853,11 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прапусціць уводныя і канчатковыя часткі?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Адлік медыясегмента';
 
   @override

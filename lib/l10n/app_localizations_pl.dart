@@ -9063,6 +9063,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pomijać czołówki i napisy końcowe?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Odliczanie segmentu materiału';
 
   @override

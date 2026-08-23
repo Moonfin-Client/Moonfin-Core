@@ -8860,6 +8860,11 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Preskočiť úvody a závery?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Odpočítavanie mediálnych segmentov';
 

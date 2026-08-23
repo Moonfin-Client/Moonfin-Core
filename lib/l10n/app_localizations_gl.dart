@@ -8926,6 +8926,11 @@ class AppLocalizationsGl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Omitir intros e outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Conta atrás dos segmentos multimedia';
 

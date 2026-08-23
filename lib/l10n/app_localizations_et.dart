@@ -8811,6 +8811,11 @@ class AppLocalizationsEt extends AppLocalizations {
       'Kas jätta sissejuhatused ja välised vahele?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Meediasegmendi loendur';
 
   @override

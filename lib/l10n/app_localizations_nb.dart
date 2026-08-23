@@ -8798,6 +8798,11 @@ class AppLocalizationsNb extends AppLocalizations {
       'Vil du hoppe over introer og outroer?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Nedtelling for mediesegment';
 
   @override

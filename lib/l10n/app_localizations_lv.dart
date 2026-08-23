@@ -8853,6 +8853,11 @@ class AppLocalizationsLv extends AppLocalizations {
       'Vai izlaist ievadus un noslēgumus?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Multivides segmenta atpakaļskaitīšana';
 

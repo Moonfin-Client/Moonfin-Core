@@ -8812,6 +8812,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Giriş ve Jenerikleri atlansın mı?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Medya Bölümü Geri Sayımı';
 
   @override

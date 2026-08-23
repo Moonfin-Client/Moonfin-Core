@@ -8836,6 +8836,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Ohitetaanko introt ja loppupalat?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Mediasegmentin ajastin';
 
   @override

@@ -8794,6 +8794,11 @@ class AppLocalizationsSi extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'හැඳින්වීම් සහ පිටවීම් මඟ හරින්නද?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'මාධ්‍ය කොටස් ආපසු ගණන් කිරීම';
 
   @override

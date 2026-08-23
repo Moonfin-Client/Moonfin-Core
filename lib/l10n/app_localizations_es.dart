@@ -8903,6 +8903,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '¿Saltar introducciones y finales?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Cuenta atrás de los segmentos multimedia';
 

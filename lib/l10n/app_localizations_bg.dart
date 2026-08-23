@@ -8892,6 +8892,11 @@ class AppLocalizationsBg extends AppLocalizations {
       'Пропускане на въведения и изключения?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Обратно броене за медийните сегменти';
 

@@ -8824,6 +8824,11 @@ class AppLocalizationsMn extends AppLocalizations {
       'Танилцуулга болон гадуурх хэсгийг алгасах уу?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown => 'Медиа сегментийн тоолол';
 
   @override

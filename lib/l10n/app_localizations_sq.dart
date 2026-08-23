@@ -8884,6 +8884,11 @@ class AppLocalizationsSq extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Të kapërcehen hyrjet dhe daljet?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return '$segment Segments';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Numërimi mbrapsht i segmentit të medias';
 
