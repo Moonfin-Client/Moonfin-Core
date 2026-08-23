@@ -132,6 +132,7 @@ void main() {
     'mediaBarTrailerCaptions',
     'mediaBarTrailerPreview',
     'mediaQueuingEnabled',
+    'mediaSegmentActions',
     'mediaSegmentAutoHide',
     'mediaSegmentCountdown',
     'mediaTypeBadgeBehavior',

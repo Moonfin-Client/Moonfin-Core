@@ -8364,6 +8364,15 @@
   "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
   "settingsAdvancedOptionsSubtitle": "Specialized player features. Use with caution, as some options may cause playback issues",
   "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
+  "settingsMediaSegmentTypeAction": "{segment} Segments",
+  "@settingsMediaSegmentTypeAction": {
+    "description": "Setting label for what to do with one type of media segment",
+    "placeholders": {
+      "segment": {
+        "type": "String"
+      }
+    }
+  },
   "settingsMediaSegmentCountdown": "Media Segment Countdown",
   "@settingsMediaSegmentCountdown": {
     "description": "Setting label for media segment countdown customizations"

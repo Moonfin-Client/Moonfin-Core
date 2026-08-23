@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:server_core/server_core.dart';
 
 import '../models/media_segment.dart';
+import '../utils/media_segment_actions.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 
@@ -39,27 +40,8 @@ class MediaSegmentService {
     _activeSegment = null;
   }
 
-  Map<MediaSegmentType, MediaSegmentAction> get actionMap {
-    final raw = _prefs.get(UserPreferences.mediaSegmentActions);
-    final map = <MediaSegmentType, MediaSegmentAction>{};
-    for (final part in raw.split(',')) {
-      final kv = part.split(':');
-      if (kv.length != 2) continue;
-      final name = kv[0].trim();
-      // Reaching for the first letter of a nameless entry throws, and this runs
-      // on every position tick, so one bad entry would take the prompt with it.
-      if (name.isEmpty) continue;
-      final type = MediaSegmentType.fromServerString(
-          name[0].toUpperCase() + name.substring(1));
-      final action = switch (kv[1].trim()) {
-        'skip' => MediaSegmentAction.skip,
-        'askToSkip' => MediaSegmentAction.askToSkip,
-        _ => MediaSegmentAction.nothing,
-      };
-      map[type] = action;
-    }
-    return map;
-  }
+  Map<MediaSegmentType, MediaSegmentAction> get actionMap =>
+      parseMediaSegmentActions(_prefs.get(UserPreferences.mediaSegmentActions));
 
   SegmentCheckResult checkPosition(Duration position) {
     if (_segments.isEmpty) return SegmentCheckResult.none;
