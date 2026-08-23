@@ -5,7 +5,8 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, listEquals, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -78,6 +79,21 @@ Color get _homeBackground => AppColorScheme.background;
 
 /// How far the rows have to scroll before the return is worth offering.
 const _kHomeStartThreshold = 20.0;
+
+/// Clips inactive Classic rows where they pass behind the pinned info area.
+///
+/// The focused row must remain complete: it is the user's active navigation
+/// target, and clipping its artwork can leave only the card metadata visible.
+@visibleForTesting
+double classicHomeRowOverlayClipTop({
+  required bool isFocused,
+  required double rowViewportTop,
+  required double rowExtent,
+  required double overlayBottom,
+}) {
+  if (isFocused) return 0.0;
+  return (overlayBottom - rowViewportTop).clamp(0.0, rowExtent);
+}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -3797,10 +3813,15 @@ class _ContentRowsState extends State<_ContentRows>
 
     // Get viewport height from scroll controller
     final viewportHeight = _scrollController.position.viewportDimension;
+    final isFocusedRow = focusedRowIndex == rowIndex;
 
     if (!fullScreenRows && !isRowsV2) {
-      final clipTop =
-          (overlayBottom - rowViewportTop).clamp(0.0, rowExtents[rowIndex]);
+      final clipTop = classicHomeRowOverlayClipTop(
+        isFocused: isFocusedRow,
+        rowViewportTop: rowViewportTop,
+        rowExtent: rowExtents[rowIndex],
+        overlayBottom: overlayBottom,
+      );
       if (clipTop <= 0.0) {
         return child;
       }
@@ -3815,7 +3836,6 @@ class _ContentRowsState extends State<_ContentRows>
     final isUnderOverlay = rowViewportBottom <= overlayBottom + 8;
     final rowDistance = (rowIndex - focusedRowIndex).abs();
     final isNeighbor = rowDistance == 1;
-    final isFocusedRow = focusedRowIndex == rowIndex;
     final isFarAway = rowDistance > 1;
 
     // Focused row: always visible
