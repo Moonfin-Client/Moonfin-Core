@@ -10054,6 +10054,15 @@ String? channelLayoutFromStreams(List<Map<String, dynamic>> streams) {
   return null;
 }
 
+bool _showsEpisodeOverview(AggregatedItem episode, UserPreferences prefs) =>
+    episode.overview != null &&
+    !hidesMediaDescription(
+      itemType: episode.type,
+      hideMediaDescription: prefs.get(
+        UserPreferences.hideDetailsMediaDescription,
+      ),
+    );
+
 bool _isReadableBookItem(AggregatedItem item) {
   final mediaType = item.rawData['MediaType'] as String?;
   return item.type == 'Book' && mediaType != 'Audio';
@@ -13387,8 +13396,7 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (!prefs.get(UserPreferences.hideDetailsMediaDescription) &&
-                                episode.overview != null) ...[
+                            if (_showsEpisodeOverview(episode, prefs)) ...[
                               const SizedBox(height: 4),
                               Text(
                                 episode.overview!,
@@ -13659,8 +13667,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                       ),
                                 ),
                               ],
-                              if (!prefs.get(UserPreferences.hideDetailsMediaDescription) &&
-                                  episode.overview != null) ...[
+                              if (_showsEpisodeOverview(episode, prefs)) ...[
                                 const SizedBox(height: 4),
                                 Text(
                                   episode.overview!,
