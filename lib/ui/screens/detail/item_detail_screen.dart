@@ -13387,7 +13387,8 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (episode.overview != null) ...[
+                            if (!prefs.get(UserPreferences.hideDetailsMediaDescription) &&
+                                episode.overview != null) ...[
                               const SizedBox(height: 4),
                               Text(
                                 episode.overview!,
@@ -13658,7 +13659,8 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                       ),
                                 ),
                               ],
-                              if (episode.overview != null) ...[
+                              if (!prefs.get(UserPreferences.hideDetailsMediaDescription) &&
+                                  episode.overview != null) ...[
                                 const SizedBox(height: 4),
                                 Text(
                                   episode.overview!,

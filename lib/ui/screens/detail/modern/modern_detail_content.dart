@@ -4329,10 +4329,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ? '$customLabel - ${episode.name}'
         : '${l10n.nextUp} - $title';
     final progress = (episode.playedPercentage ?? 0) / 100.0;
+    final hideMediaDescription = widget.prefs.get(
+      UserPreferences.hideDetailsMediaDescription,
+    );
     return UpNextCard(
       label: combinedLabel,
       title: '',
-      description: episode.overview?.trim(),
+      description: hideMediaDescription ? null : episode.overview?.trim(),
       imageUrl: _imageUrl(episode),
       progress: progress,
       remainingLabel: _remainingLabel(episode, l10n),
