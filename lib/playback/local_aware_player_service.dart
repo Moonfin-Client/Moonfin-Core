@@ -70,6 +70,8 @@ class LocalAwarePlayerService implements PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   }) async {
     if (!resolution.isLocalMedia) {
       return _inner.onPlaybackProgress(
@@ -79,6 +81,8 @@ class LocalAwarePlayerService implements PlayerService {
         isPaused: isPaused,
         audioStreamIndex: audioStreamIndex,
         subtitleStreamIndex: subtitleStreamIndex,
+        volumeLevel: volumeLevel,
+        isMuted: isMuted,
       );
     }
     await _recordLocal(mediaItem, position.inMicroseconds * 10);
@@ -90,6 +94,8 @@ class LocalAwarePlayerService implements PlayerService {
         isPaused: isPaused,
         audioStreamIndex: audioStreamIndex,
         subtitleStreamIndex: subtitleStreamIndex,
+        volumeLevel: volumeLevel,
+        isMuted: isMuted,
       ),
     );
   }

@@ -73,6 +73,8 @@ class PlaybackManager implements AudioOwnable {
   String? _mediaSourceId;
   String? _pendingItemOverrideId;
   int? _pendingItemAudioStreamIndex;
+  double _volume = 100;
+  bool _isMuted = false;
   int? _pendingItemSubtitleStreamIndex;
   String? _pendingItemMediaSourceId;
   String? _lastItemId;
@@ -125,6 +127,15 @@ class PlaybackManager implements AudioOwnable {
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
 
   PlayerBackend? get backend => _backend;
+
+  double get volume => _volume;
+  bool get isMuted => _isMuted;
+
+  void reportVolumeState({required double volume, required bool isMuted}) {
+    _volume = volume.clamp(0, 100);
+    _isMuted = isMuted;
+  }
+
   Duration get currentPlaybackPosition {
     final backendPos = _backend?.position ?? Duration.zero;
     return Duration(
@@ -1776,6 +1787,8 @@ class PlaybackManager implements AudioOwnable {
           isPaused: !state.isPlaying,
           audioStreamIndex: _audioStreamIndex,
           subtitleStreamIndex: _subtitleStreamIndex,
+          volumeLevel: _volume.round(),
+          isMuted: _isMuted,
         );
       } catch (_) {
         return;
