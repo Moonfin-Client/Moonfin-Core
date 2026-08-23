@@ -60,7 +60,7 @@ class AppleTvAudioNowPlayingFeeder {
       topTitle: raw.name,
       topSubtitle: artist,
       chapters: const [],
-      hasPrevious: _manager.queueService.hasPrevious,
+      hasPrevious: true,
       hasNext: _manager.queueService.hasNext,
       skipForwardMs: 0,
       skipBackMs: 0,

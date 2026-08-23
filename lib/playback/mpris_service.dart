@@ -411,7 +411,9 @@ class _MprisPlayer extends DBusObject {
       case 'CanGoNext':
         return DBusBoolean(q.hasNext);
       case 'CanGoPrevious':
-        return DBusBoolean(q.hasPrevious);
+        // Previous restarts the current item when nothing precedes it, so it
+        // is always available rather than following the queue.
+        return DBusBoolean(q.currentItem != null);
       case 'CanPlay':
         return DBusBoolean(q.currentItem != null);
       case 'CanPause':

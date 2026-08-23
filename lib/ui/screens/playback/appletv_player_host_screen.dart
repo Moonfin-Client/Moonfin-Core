@@ -1215,7 +1215,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       topTitle: topTitle,
       topSubtitle: topSubtitle,
       chapters: chapters,
-      hasPrevious: manager.queueService.hasPrevious,
+      hasPrevious: true,
       hasNext: manager.queueService.hasNext,
       skipForwardMs: skipForwardMs,
       skipBackMs: skipBackMs,
