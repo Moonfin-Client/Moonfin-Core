@@ -37,10 +37,10 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
   Map<String, String> _segmentActionOptions(
     AppLocalizations l10n,
     String current,
+    Map<MediaSegmentType, MediaSegmentAction> actions,
     MediaSegmentType type,
   ) {
-    final selected =
-        parseMediaSegmentActions(current)[type] ?? MediaSegmentAction.nothing;
+    final selected = actions[type] ?? MediaSegmentAction.nothing;
     String valueFor(MediaSegmentAction action) => action == selected
         ? current
         : withMediaSegmentAction(current, type, action);
@@ -104,6 +104,7 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
                   options: _segmentActionOptions(
                     l10n,
                     mediaSegmentActions,
+                    segmentActions,
                     type,
                   ),
                 ),
