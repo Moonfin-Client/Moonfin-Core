@@ -7055,11 +7055,21 @@ class AppLocalizationsLv extends AppLocalizations {
   String get adminPluginsRestart => 'Restartēt';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Neviens spraudnis neatbilst jūsu meklēšanas vaicājumam';
 
   @override
   String get adminPluginsNoneInstalled => 'Nav instalēts neviens spraudnis';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

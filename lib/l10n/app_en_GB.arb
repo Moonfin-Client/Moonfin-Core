@@ -5819,8 +5819,11 @@
     "adminPluginsCatalog": "Catalog",
     "adminPluginsActive": "Active",
     "adminPluginsRestart": "Restart",
+    "adminPluginsRestartRequired": "Restart required",
     "adminPluginsNoSearchResults": "No plugins match your search",
     "adminPluginsNoneInstalled": "No plugins installed",
+    "adminPluginsNoneActive": "No active plugins",
+    "adminPluginsNoneRequireRestart": "No plugins require a server restart",
     "adminPluginsUpdateAvailable": "Update available: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {

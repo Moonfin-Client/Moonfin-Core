@@ -7128,11 +7128,21 @@ class AppLocalizationsCa extends AppLocalizations {
   String get adminPluginsRestart => 'Reinicieu';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Cap connector coincideix amb la vostra cerca';
 
   @override
   String get adminPluginsNoneInstalled => 'No hi ha connectors instal·lats';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

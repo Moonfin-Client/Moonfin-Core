@@ -7077,11 +7077,21 @@ class AppLocalizationsHu extends AppLocalizations {
   String get adminPluginsRestart => 'Újraindítás';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Egyetlen beépülő modul sem felel meg a keresésnek';
 
   @override
   String get adminPluginsNoneInstalled => 'Nincs telepítve beépülő modul';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

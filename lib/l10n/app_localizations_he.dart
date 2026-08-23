@@ -6925,10 +6925,20 @@ class AppLocalizationsHe extends AppLocalizations {
   String get adminPluginsRestart => 'הפעל מחדש';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'אין תוספים שתואמים לחיפוש שלך';
 
   @override
   String get adminPluginsNoneInstalled => 'לא מותקנים תוספים';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

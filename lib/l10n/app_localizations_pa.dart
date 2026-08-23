@@ -6995,11 +6995,21 @@ class AppLocalizationsPa extends AppLocalizations {
   String get adminPluginsRestart => 'ਰੀਸਟਾਰਟ ਕਰੋ';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'ਕੋਈ ਪਲੱਗਇਨ ਤੁਹਾਡੀ ਖੋਜ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ';
 
   @override
   String get adminPluginsNoneInstalled => 'ਕੋਈ ਪਲੱਗਇਨ ਸਥਾਪਤ ਨਹੀਂ ਹਨ';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

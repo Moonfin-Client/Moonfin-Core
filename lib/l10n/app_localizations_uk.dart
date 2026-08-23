@@ -7064,11 +7064,21 @@ class AppLocalizationsUk extends AppLocalizations {
   String get adminPluginsRestart => 'Перезапустіть';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Жоден плагін не відповідає вашому пошуку';
 
   @override
   String get adminPluginsNoneInstalled => 'Плагіни не встановлено';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

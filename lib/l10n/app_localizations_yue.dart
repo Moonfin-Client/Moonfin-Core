@@ -6795,10 +6795,20 @@ class AppLocalizationsYue extends AppLocalizations {
   String get adminPluginsRestart => '重新啟動';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => '沒有符合您搜尋條件的插件';
 
   @override
   String get adminPluginsNoneInstalled => '沒有安裝插件';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

@@ -7031,11 +7031,21 @@ class AppLocalizationsMn extends AppLocalizations {
   String get adminPluginsRestart => 'Дахин эхлүүлэх';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Таны хайлтад тохирох нэмэлт өргөтгөл байхгүй байна';
 
   @override
   String get adminPluginsNoneInstalled => 'Ямар ч залгаас суулгаагүй байна';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

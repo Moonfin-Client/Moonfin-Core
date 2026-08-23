@@ -7065,10 +7065,20 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminPluginsRestart => 'పునఃప్రారంభించండి';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'మీ శోధనకు సరిపోలే ప్లగిన్‌లు లేవు';
 
   @override
   String get adminPluginsNoneInstalled => 'ప్లగిన్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

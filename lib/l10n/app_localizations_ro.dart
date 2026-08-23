@@ -7074,11 +7074,21 @@ class AppLocalizationsRo extends AppLocalizations {
   String get adminPluginsRestart => 'Repornire';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Niciun plugin nu corespunde căutării tale';
 
   @override
   String get adminPluginsNoneInstalled => 'Nu există pluginuri instalate';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

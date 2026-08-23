@@ -6963,10 +6963,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminPluginsRestart => 'Restart';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'No plugins match your search';
 
   @override
   String get adminPluginsNoneInstalled => 'No plugins installed';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {
@@ -17656,10 +17666,20 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get adminPluginsRestart => 'Restart';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'No plugins match your search';
 
   @override
   String get adminPluginsNoneInstalled => 'No plugins installed';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

@@ -7051,11 +7051,21 @@ class AppLocalizationsLt extends AppLocalizations {
   String get adminPluginsRestart => 'Paleisti iš naujo';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Nėra jūsų paiešką atitinkančių papildinių';
 
   @override
   String get adminPluginsNoneInstalled => 'Įskiepių nėra įdiegta';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

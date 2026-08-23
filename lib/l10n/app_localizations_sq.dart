@@ -7079,11 +7079,21 @@ class AppLocalizationsSq extends AppLocalizations {
   String get adminPluginsRestart => 'Rinis';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Asnjë shtojcë nuk përputhet me kërkimin tuaj';
 
   @override
   String get adminPluginsNoneInstalled => 'Asnjë shtojcë e instaluar';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

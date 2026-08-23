@@ -6774,10 +6774,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get adminPluginsRestart => '重启';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => '未找到符合搜索条件的插件';
 
   @override
   String get adminPluginsNoneInstalled => '未安装插件';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

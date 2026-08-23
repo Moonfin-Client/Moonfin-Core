@@ -7069,12 +7069,22 @@ class AppLocalizationsSw extends AppLocalizations {
   String get adminPluginsRestart => 'Anzisha upya';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Hakuna programu-jalizi zinazolingana na utafutaji wako';
 
   @override
   String get adminPluginsNoneInstalled =>
       'Hakuna programu-jalizi zilizosakinishwa';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

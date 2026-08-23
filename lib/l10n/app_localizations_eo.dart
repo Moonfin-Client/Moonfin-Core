@@ -7006,11 +7006,21 @@ class AppLocalizationsEo extends AppLocalizations {
   String get adminPluginsRestart => 'Rekomencu';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Neniuj kromprogramoj kongruas kun via serĉo';
 
   @override
   String get adminPluginsNoneInstalled => 'Neniuj kromprogramoj instalitaj';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

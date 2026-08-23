@@ -7094,11 +7094,21 @@ class AppLocalizationsTl extends AppLocalizations {
   String get adminPluginsRestart => 'I-restart';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Walang mga plugin na tumutugma sa iyong paghahanap';
 
   @override
   String get adminPluginsNoneInstalled => 'Walang naka-install na plugin';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

@@ -293,14 +293,6 @@ class _InstalledTab extends ConsumerWidget {
               .toList();
         }
 
-        if (filtered.isEmpty) {
-          return Center(
-            child: Text(searchQuery.isNotEmpty
-                ? AppLocalizations.of(context).adminPluginsNoSearchResults
-                : AppLocalizations.of(context).adminPluginsNoneInstalled),
-          );
-        }
-
         return Column(
           children: [
             Padding(
@@ -311,42 +303,63 @@ class _InstalledTab extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(12, 4, 12, 80),
-                children: [
-                  adminGlassGroup(
-                    context,
-                    children: [
-                      for (final plugin in filtered)
-                        Builder(
-                          builder: (context) {
-                            final updateInfo =
-                                updateInfoByPluginId[plugin.id] ??
-                                    const _PluginUpdateInfo();
-                            return _InstalledPluginTile(
-                              plugin: plugin,
-                              hasUpdate: updateInfo.latestVersion != null,
-                              latestVersion: updateInfo.latestVersion,
-                              imageUrl: imageUrlsByPluginId[plugin.id],
-                              onUpdate: updateInfo.package != null &&
-                                      updateInfo.latestVersionInfo != null
-                                  ? () => onInstallUpdate(
-                                        plugin,
-                                        updateInfo.package!,
-                                        updateInfo.latestVersionInfo!,
-                                      )
-                                  : null,
-                              onTap: () => context
-                                  .push(Destinations.adminPlugin(plugin.id)),
-                              onToggle: () => onToggle(plugin),
-                              onUninstall: () => onUninstall(plugin),
-                            );
-                          },
+              child: filtered.isEmpty
+                  ? Center(
+                      child: Text(
+                        searchQuery.isNotEmpty
+                            ? AppLocalizations.of(context)
+                                .adminPluginsNoSearchResults
+                            : switch (statusFilter) {
+                                _InstalledPluginFilter.all =>
+                                  AppLocalizations.of(context)
+                                      .adminPluginsNoneInstalled,
+                                _InstalledPluginFilter.active =>
+                                  AppLocalizations.of(context)
+                                      .adminPluginsNoneActive,
+                                _InstalledPluginFilter.restart =>
+                                  AppLocalizations.of(context)
+                                      .adminPluginsNoneRequireRestart,
+                              },
+                      ),
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(12, 4, 12, 80),
+                      children: [
+                        adminGlassGroup(
+                          context,
+                          children: [
+                            for (final plugin in filtered)
+                              Builder(
+                                builder: (context) {
+                                  final updateInfo =
+                                      updateInfoByPluginId[plugin.id] ??
+                                          const _PluginUpdateInfo();
+                                  return _InstalledPluginTile(
+                                    plugin: plugin,
+                                    hasUpdate:
+                                        updateInfo.latestVersion != null,
+                                    latestVersion: updateInfo.latestVersion,
+                                    imageUrl: imageUrlsByPluginId[plugin.id],
+                                    onUpdate: updateInfo.package != null &&
+                                            updateInfo.latestVersionInfo != null
+                                        ? () => onInstallUpdate(
+                                              plugin,
+                                              updateInfo.package!,
+                                              updateInfo.latestVersionInfo!,
+                                            )
+                                        : null,
+                                    onTap: () => context.push(
+                                      Destinations.adminPlugin(plugin.id),
+                                    ),
+                                    onToggle: () => onToggle(plugin),
+                                    onUninstall: () => onUninstall(plugin),
+                                  );
+                                },
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
             ),
           ],
         );
@@ -427,7 +440,7 @@ class _InstalledFilterTabs extends StatelessWidget {
             onTap: () => onStatusChanged(_InstalledPluginFilter.active),
           ),
           _InstalledFilterTab(
-            label: AppLocalizations.of(context).adminPluginsRestart,
+            label: AppLocalizations.of(context).adminPluginsRestartRequired,
             selected: statusFilter == _InstalledPluginFilter.restart,
             onTap: () => onStatusChanged(_InstalledPluginFilter.restart),
           ),

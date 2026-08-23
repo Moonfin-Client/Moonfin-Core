@@ -7024,10 +7024,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get adminPluginsRestart => 'Tekrar başlat';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'Aramanızla eşleşen eklenti yok';
 
   @override
   String get adminPluginsNoneInstalled => 'Hiçbir eklenti yüklü değil';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

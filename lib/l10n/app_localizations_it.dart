@@ -7071,11 +7071,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get adminPluginsRestart => 'Riavvio';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Nessun plugin corrisponde alla ricerca';
 
   @override
   String get adminPluginsNoneInstalled => 'Nessun plugin installato';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

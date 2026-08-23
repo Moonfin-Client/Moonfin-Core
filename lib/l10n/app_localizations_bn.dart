@@ -7008,11 +7008,21 @@ class AppLocalizationsBn extends AppLocalizations {
   String get adminPluginsRestart => 'রিস্টার্ট করুন';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'কোনো প্লাগইন আপনার অনুসন্ধানের সাথে মেলে না';
 
   @override
   String get adminPluginsNoneInstalled => 'কোন প্লাগইন ইনস্টল করা নেই';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

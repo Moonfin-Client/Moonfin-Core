@@ -7051,11 +7051,21 @@ class AppLocalizationsKk extends AppLocalizations {
   String get adminPluginsRestart => 'Қайтадан қосу';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Іздеуіңізге сәйкес келетін плагиндер жоқ';
 
   @override
   String get adminPluginsNoneInstalled => 'Ешқандай плагин орнатылмаған';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

@@ -7035,11 +7035,21 @@ class AppLocalizationsUg extends AppLocalizations {
   String get adminPluginsRestart => 'قايتا قوزغىتىڭ';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'ھېچقانداق قىستۇرما ئىزدىشىڭىزگە ماس كەلمەيدۇ';
 
   @override
   String get adminPluginsNoneInstalled => 'قىستۇرما ئورنىتىلمىدى';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

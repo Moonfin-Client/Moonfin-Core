@@ -7011,11 +7011,21 @@ class AppLocalizationsSi extends AppLocalizations {
   String get adminPluginsRestart => 'යළි අරඹන්න';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'ඔබගේ සෙවුමට ගැලපෙන ප්ලගීන කිසිවක් නැත';
 
   @override
   String get adminPluginsNoneInstalled => 'ප්ලගීන ස්ථාපනය කර නැත';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

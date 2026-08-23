@@ -7052,11 +7052,21 @@ class AppLocalizationsSl extends AppLocalizations {
   String get adminPluginsRestart => 'Znova zaženite';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Noben vtičnik ne ustreza vašemu iskanju';
 
   @override
   String get adminPluginsNoneInstalled => 'Ni nameščenih vtičnikov';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

@@ -7065,11 +7065,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get adminPluginsRestart => 'Перезапуск';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Нет плагинов, соответствующих вашему запросу';
 
   @override
   String get adminPluginsNoneInstalled => 'Плагины не установлены';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

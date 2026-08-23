@@ -12544,6 +12544,12 @@ abstract class AppLocalizations {
   /// **'Restart'**
   String get adminPluginsRestart;
 
+  /// Label for the installed-plugin filter showing changes that require a server restart
+  ///
+  /// In en, this message translates to:
+  /// **'Restart required'**
+  String get adminPluginsRestartRequired;
+
   /// No description provided for @adminPluginsNoSearchResults.
   ///
   /// In en, this message translates to:
@@ -12555,6 +12561,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No plugins installed'**
   String get adminPluginsNoneInstalled;
+
+  /// Empty state for the active installed-plugin filter
+  ///
+  /// In en, this message translates to:
+  /// **'No active plugins'**
+  String get adminPluginsNoneActive;
+
+  /// Empty state for the installed-plugin filter showing changes that require a server restart
+  ///
+  /// In en, this message translates to:
+  /// **'No plugins require a server restart'**
+  String get adminPluginsNoneRequireRestart;
 
   /// No description provided for @adminPluginsUpdateAvailable.
   ///

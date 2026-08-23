@@ -6967,11 +6967,21 @@ class AppLocalizationsTh extends AppLocalizations {
   String get adminPluginsRestart => 'รีสตาร์ท';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'ไม่มีปลั๊กอินที่ตรงกับการค้นหาของคุณ';
 
   @override
   String get adminPluginsNoneInstalled => 'ไม่มีการติดตั้งปลั๊กอิน';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

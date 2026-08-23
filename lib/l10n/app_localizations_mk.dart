@@ -7067,11 +7067,21 @@ class AppLocalizationsMk extends AppLocalizations {
   String get adminPluginsRestart => 'Рестартирајте';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Нема додатоци кои одговараат на вашето пребарување';
 
   @override
   String get adminPluginsNoneInstalled => 'Нема инсталирани додатоци';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

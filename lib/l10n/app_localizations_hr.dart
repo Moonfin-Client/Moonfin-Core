@@ -7218,11 +7218,21 @@ class AppLocalizationsHr extends AppLocalizations {
   String get adminPluginsRestart => 'Ponovno pokretanje';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Nijedan dodatak ne odgovara vašem pretraživanju';
 
   @override
   String get adminPluginsNoneInstalled => 'Nema instaliranih dodataka';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

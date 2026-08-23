@@ -7000,11 +7000,21 @@ class AppLocalizationsHi extends AppLocalizations {
   String get adminPluginsRestart => 'पुनः आरंभ करें';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'कोई भी प्लगइन आपकी खोज से मेल नहीं खाता';
 
   @override
   String get adminPluginsNoneInstalled => 'कोई प्लगइन्स स्थापित नहीं है';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

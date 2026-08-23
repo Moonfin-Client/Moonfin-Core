@@ -7055,11 +7055,21 @@ class AppLocalizationsNl extends AppLocalizations {
   String get adminPluginsRestart => 'Opnieuw opstarten';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Er zijn geen plug-ins die overeenkomen met uw zoekopdracht';
 
   @override
   String get adminPluginsNoneInstalled => 'Geen plug-ins geïnstalleerd';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

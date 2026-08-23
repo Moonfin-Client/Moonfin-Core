@@ -7469,8 +7469,20 @@
   "adminPluginsCatalog": "Catalog",
   "adminPluginsActive": "Active",
   "adminPluginsRestart": "Restart",
+  "adminPluginsRestartRequired": "Restart required",
+  "@adminPluginsRestartRequired": {
+    "description": "Label for the installed-plugin filter showing changes that require a server restart"
+  },
   "adminPluginsNoSearchResults": "No plugins match your search",
   "adminPluginsNoneInstalled": "No plugins installed",
+  "adminPluginsNoneActive": "No active plugins",
+  "@adminPluginsNoneActive": {
+    "description": "Empty state for the active installed-plugin filter"
+  },
+  "adminPluginsNoneRequireRestart": "No plugins require a server restart",
+  "@adminPluginsNoneRequireRestart": {
+    "description": "Empty state for the installed-plugin filter showing changes that require a server restart"
+  },
   "adminPluginsUpdateAvailable": "Update available: v{version}",
   "@adminPluginsUpdateAvailable": {
     "placeholders": {

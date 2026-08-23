@@ -6840,10 +6840,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get adminPluginsRestart => '再起動';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => '検索に一致するプラグインはありません';
 
   @override
   String get adminPluginsNoneInstalled => 'プラグインがインストールされていません';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

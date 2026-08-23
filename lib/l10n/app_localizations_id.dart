@@ -7022,11 +7022,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminPluginsRestart => 'Mulai Ulang';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Tidak ada plugin yang cocok dengan pencarian Anda';
 
   @override
   String get adminPluginsNoneInstalled => 'Tidak ada plugin yang terinstal';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

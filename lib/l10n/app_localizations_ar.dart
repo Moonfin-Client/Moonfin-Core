@@ -6996,10 +6996,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminPluginsRestart => 'إعادة تشغيل';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'لا توجد مكونات إضافية تطابق بحثك';
 
   @override
   String get adminPluginsNoneInstalled => 'لم يتم تثبيت أي مكونات إضافية';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

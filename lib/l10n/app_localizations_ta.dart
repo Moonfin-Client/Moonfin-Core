@@ -7076,12 +7076,22 @@ class AppLocalizationsTa extends AppLocalizations {
   String get adminPluginsRestart => 'மறுதொடக்கம்';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'உங்கள் தேடலுடன் எந்த செருகுநிரல்களும் பொருந்தவில்லை';
 
   @override
   String get adminPluginsNoneInstalled =>
       'செருகுநிரல்கள் எதுவும் நிறுவப்படவில்லை';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

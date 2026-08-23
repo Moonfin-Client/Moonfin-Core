@@ -7023,10 +7023,20 @@ class AppLocalizationsSv extends AppLocalizations {
   String get adminPluginsRestart => 'Starta om';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults => 'Inga plugins matchar din sökning';
 
   @override
   String get adminPluginsNoneInstalled => 'Inga plugins installerade';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {

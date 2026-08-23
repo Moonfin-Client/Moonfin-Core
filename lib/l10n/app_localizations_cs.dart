@@ -7035,11 +7035,21 @@ class AppLocalizationsCs extends AppLocalizations {
   String get adminPluginsRestart => 'Restartujte';
 
   @override
+  String get adminPluginsRestartRequired => 'Restart required';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Vašemu vyhledávání neodpovídají žádné pluginy';
 
   @override
   String get adminPluginsNoneInstalled => 'Nejsou nainstalovány žádné pluginy';
+
+  @override
+  String get adminPluginsNoneActive => 'No active plugins';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'No plugins require a server restart';
 
   @override
   String adminPluginsUpdateAvailable(String version) {
