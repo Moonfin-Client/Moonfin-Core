@@ -333,6 +333,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
+        activeRoute: Destinations.seerrDiscover,
         showBackButton: true,
         child: QuickReturnWrapper(
           scrollController: _scrollController,
