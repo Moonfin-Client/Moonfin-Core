@@ -39,6 +39,8 @@ class PlaySessionService implements PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   }) async {
     final report = PlaybackProgressReport(
       itemId: MediaStreamResolver.extractItemId(mediaItem),
@@ -48,6 +50,8 @@ class PlaySessionService implements PlayerService {
       isPaused: isPaused,
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
+      volumeLevel: volumeLevel,
+      isMuted: isMuted ?? false,
     );
     await _client.playbackApi.reportPlaybackProgress(report.toJson());
     _armExitBeacon(mediaItem, resolution, position.inMicroseconds * 10);

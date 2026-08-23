@@ -2,7 +2,14 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/widgets.dart'
+    show
+        ActivateIntent,
+        Actions,
+        AppLifecycleState,
+        FocusManager,
+        TraversalDirection,
+        WidgetsBinding;
 
 import '../../l10n/current_app_localizations.dart';
 import '../../ui/navigation/app_router.dart';
@@ -38,6 +45,7 @@ import '../../playback/media_browse_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
+import '../../util/fullscreen_helper.dart';
 import '../../util/platform_detection.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
@@ -49,7 +57,7 @@ import 'user_repository.dart';
 enum SessionState { ready, restoring, switching }
 
 class SessionRepository {
-  static const List<String> _supportedRemoteCommands = [
+  static const List<String> _baseSupportedRemoteCommands = [
     'DisplayMessage',
     'SetVolume',
     'Mute',
@@ -60,7 +68,26 @@ class SessionRepository {
     'SetRepeatMode',
     'SetShuffleQueue',
     'GoHome',
+    'VolumeUp',
+    'VolumeDown',
+    'ToggleFullscreen',
   ];
+
+  static const List<String> _tvNavigationRemoteCommands = [
+    'MoveUp',
+    'MoveDown',
+    'MoveLeft',
+    'MoveRight',
+    'Select',
+    'Back',
+  ];
+
+  List<String> get _supportedRemoteCommands => [
+    ..._baseSupportedRemoteCommands,
+    if (PlatformDetection.isTV) ..._tvNavigationRemoteCommands,
+  ];
+
+  static const double _volumeStep = 10;
   static const Duration _initialLoginSyncWait = Duration(seconds: 3);
 
   final AuthenticationStore _authStore;
@@ -633,11 +660,26 @@ class SessionRepository {
   }
 
   Future<void> _setLocalVolume(PlaybackManager manager, double volume) async {
+    final clamped = volume.clamp(0, 100).toDouble();
+    manager.reportVolumeState(volume: clamped, isMuted: clamped <= 0);
     final backend = manager.backend;
     if (backend == null) {
       return;
     }
-    await backend.setVolume(volume.clamp(0, 100));
+    await backend.setVolume(clamped);
+  }
+
+  void _moveFocus(TraversalDirection direction) {
+    if (!PlatformDetection.isTV) return;
+    FocusManager.instance.primaryFocus?.focusInDirection(direction);
+  }
+
+  void _activateFocused() {
+    if (!PlatformDetection.isTV) return;
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    if (focusContext != null) {
+      Actions.maybeInvoke<ActivateIntent>(focusContext, const ActivateIntent());
+    }
   }
 
   double _normalizeVolume(String raw) {
@@ -886,6 +928,40 @@ class SessionRepository {
       case 'togglemute':
         _remoteMuted = !_remoteMuted;
         await _setLocalVolume(manager, _remoteMuted ? 0 : _lastUnmutedVolume);
+      case 'volumeup':
+        final raised = manager.volume + _volumeStep;
+        await _setLocalVolume(manager, raised);
+        _remoteMuted = raised <= 0;
+        if (!_remoteMuted) {
+          _lastUnmutedVolume = raised.clamp(0, 100).toDouble();
+        }
+      case 'volumedown':
+        final lowered = manager.volume - _volumeStep;
+        await _setLocalVolume(manager, lowered);
+        _remoteMuted = lowered <= 0;
+        if (!_remoteMuted) {
+          _lastUnmutedVolume = lowered.clamp(0, 100).toDouble();
+        }
+      case 'togglefullscreen':
+        await FullscreenHelper.toggle();
+      case 'moveup':
+        _moveFocus(TraversalDirection.up);
+      case 'movedown':
+        _moveFocus(TraversalDirection.down);
+      case 'moveleft':
+        _moveFocus(TraversalDirection.left);
+      case 'moveright':
+        _moveFocus(TraversalDirection.right);
+      case 'select':
+        _activateFocused();
+      case 'back':
+        if (PlatformDetection.isTV) {
+          if (appRouter.canPop()) {
+            appRouter.pop();
+          } else {
+            appRouter.go(Destinations.home);
+          }
+        }
       case 'setaudiostreamindex':
         final index = _parseIntArg(message.arguments, 'Index');
         if (index != null) {
