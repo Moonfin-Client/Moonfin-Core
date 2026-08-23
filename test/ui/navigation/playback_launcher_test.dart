@@ -190,6 +190,59 @@ void main() {
     router.dispose();
   });
 
+  testWidgets('a throw before the route opens releases the launch slot', (
+    tester,
+  ) async {
+    // Disposing a manager closes its bring-up stream, so the first thing the
+    // launcher does throws. The slot has to come back or every later launch
+    // returns false without saying why.
+    final dead = PlaybackManager()..dispose();
+    final live = PlaybackManager();
+    var secondRan = false;
+    Object? firstError;
+
+    final router = _router(
+      onLaunch: (context) {
+        launchPlayerWhilePreparing(
+          context,
+          manager: dead,
+          destination: Destinations.videoPlayer,
+          startPlayback: (_) async => true,
+        ).catchError((Object error) {
+          firstError = error;
+          return false;
+        });
+      },
+    );
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+
+    await tester.tap(find.byKey(const ValueKey('launch')));
+    await tester.pumpAndSettle();
+    expect(firstError, isA<StateError>());
+
+    final context = tester.element(find.text('home'));
+    final second = launchPlayerWhilePreparing(
+      context,
+      manager: live,
+      destination: Destinations.videoPlayer,
+      startPlayback: (_) async {
+        secondRan = true;
+        return false;
+      },
+    );
+    await tester.pumpAndSettle();
+    await second;
+
+    expect(
+      secondRan,
+      isTrue,
+      reason: 'the slot was still claimed, so this launch never ran',
+    );
+
+    live.dispose();
+    router.dispose();
+  });
+
   test('bring-up phases identify preparation and playback work', () {
     expect(PlaybackBringupPhase.preparing.isInProgress, isTrue);
     expect(PlaybackBringupPhase.resolving.isInProgress, isTrue);

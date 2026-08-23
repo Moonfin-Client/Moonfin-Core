@@ -39,18 +39,21 @@ Future<bool> launchPlayerWhilePreparing(
 
   final session = PlaybackLaunchSession._();
   _activeVideoLaunch = session;
-  manager.beginPlaybackPreparation();
-  // The queue still points at the previous item until preparation finishes.
-  // Keep the temporary internal route from being redirected using stale data.
-  manager.skipExternalRoutingOnce();
 
   Future<Object?> routeFuture;
   try {
+    manager.beginPlaybackPreparation();
+    // The queue still points at the previous item until preparation finishes.
+    // Keep the temporary internal route from being redirected using stale data.
+    manager.skipExternalRoutingOnce();
     routeFuture = context.push(Destinations.videoPlayer);
   } catch (_) {
+    // Release the slot before touching the manager again. The cleanup below
+    // goes through the same call that just threw, and a second throw here
+    // would leave the slot claimed for the rest of the process.
+    _activeVideoLaunch = null;
     manager.consumeSkipExternalRoutingOnce();
     manager.cancelPlaybackPreparation();
-    _activeVideoLaunch = null;
     rethrow;
   }
 
