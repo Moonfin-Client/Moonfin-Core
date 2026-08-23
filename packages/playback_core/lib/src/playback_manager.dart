@@ -1943,12 +1943,18 @@ class PlaybackManager implements AudioOwnable {
       await seekTo(Duration.zero);
       return;
     }
-    _mediaSourceId = null;
-    await _stopAndReportCurrent(skipQueueChange: true);
-    _resetBackendSelectionLock();
-    final hadPrevious = queueService.previous();
-    if (hadPrevious) {
-      await _playCurrentItem();
+    if (queueService.hasPrevious) {
+      _mediaSourceId = null;
+      await _stopAndReportCurrent(skipQueueChange: true);
+      _resetBackendSelectionLock();
+      final hadPrevious = queueService.previous();
+      if (hadPrevious) {
+        await _playCurrentItem();
+      } else {
+        await seekTo(Duration.zero);
+      }
+    } else {
+      await seekTo(Duration.zero);
     }
   }
 
