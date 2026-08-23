@@ -100,6 +100,7 @@ class AuthRepository {
     final isAdmin = policy?.isAdministrator ?? false;
     final canManageSubtitles = policy?.canFetchRemoteSubtitles ?? false;
     final canManageCollections = policy?.enableCollectionManagement ?? false;
+    final canDownload = policy?.enableContentDownloading ?? false;
 
     if (accessToken == null || userId == null) {
       const state = ApiClientError(error: 'Invalid auth response');
@@ -118,6 +119,7 @@ class AuthRepository {
       lastUsed: DateTime.now(),
       imageTag: imageTag,
       isAdministrator: isAdmin,
+      canDownload: canDownload,
       canManageSubtitles: canManageSubtitles,
       canManageCollections: canManageCollections,
     );

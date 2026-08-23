@@ -12,6 +12,7 @@ import 'package:path/path.dart' as p;
 import 'package:server_core/server_core.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../auth/repositories/user_repository.dart';
 import '../../platform/ios_storage.dart';
 import '../../playback/subtitle_formats.dart';
 import '../../preference/user_preferences.dart';
@@ -117,6 +118,16 @@ bool looksLikeTlsError(bgd.TaskException? exception) {
 class _NeverStartedException implements Exception {}
 
 enum _DownloadActivityPhase { start, progress, stop }
+
+/// Whether the signed in user may download at all.
+///
+/// The server policy and the platform both have a say, and the two entry
+/// points that offer downloads have to agree or one of them hands out a
+/// button the other would refuse.
+bool userCanDownload() {
+  if (PlatformDetection.isTV) return false;
+  return GetIt.instance<UserRepository>().currentUser?.canDownload ?? false;
+}
 
 class DownloadService extends ChangeNotifier {
   final MediaServerClient _client;
@@ -2042,12 +2053,23 @@ class DownloadService extends ChangeNotifier {
     _completedCount = 0;
     notifyListeners();
 
-    for (final item in items) {
-      if (_cancelAllRequested) break;
-      try {
-        await downloadItem(item, quality: quality);
-      } catch (_) {}
+    // The queue hands the next item to whichever worker frees up, so a slow
+    // download holds up only its own slot rather than everything behind it.
+    final queue = List<AggregatedItem>.from(items);
+    final limit = _prefs.get(UserPreferences.downloadConcurrentCount);
+    final workers = queue.isEmpty ? 1 : limit.clamp(1, queue.length);
+
+    Future<void> drain() async {
+      while (queue.isNotEmpty) {
+        if (_cancelAllRequested) return;
+        final item = queue.removeAt(0);
+        try {
+          await downloadItem(item, quality: quality);
+        } catch (_) {}
+      }
     }
+
+    await Future.wait([for (var i = 0; i < workers; i++) drain()]);
 
     _totalQueued = 0;
     _completedCount = 0;

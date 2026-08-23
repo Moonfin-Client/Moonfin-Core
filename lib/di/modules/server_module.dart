@@ -78,7 +78,12 @@ void setActiveServerClient(MediaServerClient client) {
   _getIt.registerSingleton<MediaServerClient>(wrapped);
 
   if (_getIt.isRegistered<DownloadService>()) {
-    _getIt.unregister<DownloadService>();
+    // Without this the replaced service keeps its Dio client and error stream
+    // open, and its native tasks keep running for a server nothing is signed
+    // in to any more.
+    _getIt.unregister<DownloadService>(
+      disposingFunction: (service) => service.dispose(),
+    );
   }
   final downloadService = DownloadService(
     rawClient,

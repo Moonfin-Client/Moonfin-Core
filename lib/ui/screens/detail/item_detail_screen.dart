@@ -3309,7 +3309,7 @@ class _DetailContentState extends State<_DetailContent> {
         isPlaylist && viewModel.canManagePlaylistTracks;
     final canDeleteItem = item.canDelete;
     final canDownloadAll =
-        _canUserDownload() &&
+        userCanDownload() &&
         (item.type == 'MusicAlbum' ||
             item.type == 'AudioBook' ||
             (item.type == 'Playlist' &&
@@ -6335,9 +6335,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .toList();
 
     final canShowDownloadActions =
-        _isDownloadable(item.type) &&
-        _canUserDownload() &&
-        !PlatformDetection.isTV;
+        _isDownloadable(item.type) && userCanDownload();
 
     final String playButtonLabel;
     if (isPhoto) {
@@ -10143,11 +10141,6 @@ bool _isDownloadable(String? type) {
       type == 'MusicVideo' ||
       type == 'Video' ||
       type == 'MusicAlbum';
-}
-
-bool _canUserDownload() {
-  final user = GetIt.instance<UserRepository>().currentUser;
-  return !PlatformDetection.isTV && (user?.canDownload ?? false);
 }
 
 class _DownloadButton extends StatefulWidget {
