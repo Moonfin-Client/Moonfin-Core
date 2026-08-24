@@ -21,6 +21,7 @@ import 'data/services/connectivity_service.dart';
 import 'data/services/download_service.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
+import 'data/services/server_messages_service.dart';
 import 'data/services/retro_artwork/retro_artwork_data_source.dart';
 import 'data/services/theme_music_service.dart';
 import 'data/services/deep_link_service.dart';
@@ -38,7 +39,9 @@ import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
 import 'ui/widgets/app_update_banner.dart';
 import 'ui/widgets/cast_mini_player.dart';
+import 'ui/widgets/floating_notification.dart';
 import 'ui/widgets/offline_banner.dart';
+import 'ui/widgets/server_messages_dialog.dart';
 import 'ui/widgets/exit_confirmation_dialog.dart';
 import 'ui/screensaver/screensaver_controller.dart';
 import 'ui/screensaver/screensaver_host.dart';
@@ -55,7 +58,6 @@ import 'ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'util/focus/key_event_utils.dart';
 import 'util/focus/gamepad/gamepad_navigation_scope.dart';
-import 'ui/widgets/focus/request_initial_focus.dart';
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 
 class MoonfinApp extends StatefulWidget {
@@ -958,6 +960,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
                 );
       }
     }
+    if (GetIt.instance.isRegistered<ServerMessagesService>()) {
+      GetIt.instance<ServerMessagesService>().addListener(
+        _handleServerMessagesChanged,
+      );
+    }
     if (GetIt.instance.isRegistered<DownloadService>()) {
       _downloadErrorSub = GetIt.instance<DownloadService>().errors.listen(
         _handleDownloadError,
@@ -973,6 +980,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     if (GetIt.instance.isRegistered<PluginSyncService>()) {
       GetIt.instance<PluginSyncService>().onAdminMessage = null;
       GetIt.instance<PluginSyncService>().onSeerrNotification = null;
+    }
+    if (GetIt.instance.isRegistered<ServerMessagesService>()) {
+      GetIt.instance<ServerMessagesService>().removeListener(
+        _handleServerMessagesChanged,
+      );
     }
     super.dispose();
   }
@@ -1053,20 +1065,38 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     );
   }
 
-  void _handleAdminMessage(String message) {
-    if (!mounted) return;
-
+  BuildContext? _navigatorContext() {
+    if (!mounted) return null;
     final navContext =
         appRouter.routerDelegate.navigatorKey.currentContext ?? context;
-    if (!navContext.mounted) {
-      return;
-    }
+    return navContext.mounted ? navContext : null;
+  }
 
-    showFocusRestoringDialog<void>(
-      context: navContext,
-      barrierDismissible: false,
-      builder: (ctx) => _AdminMessageDialog(message: message),
+  /// A broadcast arrived. It is saved on the server now, so show a small popup
+  /// instead of a blocking dialog and let the menu button carry it from there.
+  void _handleAdminMessage(String message) {
+    final navContext = _navigatorContext();
+    if (navContext == null) return;
+
+    FloatingNotification.show(
+      navContext,
+      AppLocalizations.of(navContext).serverMessages,
+      message,
+      () => showServerMessagesDialog(navContext),
     );
+  }
+
+  /// Opens the messages window for messages the admin marked as "open the
+  /// window". Nothing else opens on its own.
+  void _handleServerMessagesChanged() {
+    final service = GetIt.instance<ServerMessagesService>();
+    if (service.pendingPopups.isEmpty) return;
+
+    final navContext = _navigatorContext();
+    if (navContext == null) return;
+
+    service.markPopupsRead();
+    showServerMessagesDialog(navContext);
   }
 
   /// Fires whenever server reachability flips (either way) so home swaps
@@ -1106,147 +1136,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     _wasOnline = isOnline;
 
     return widget.child;
-  }
-}
-
-class _AdminMessageDialog extends StatefulWidget {
-  final String message;
-
-  const _AdminMessageDialog({required this.message});
-
-  @override
-  State<_AdminMessageDialog> createState() => _AdminMessageDialogState();
-}
-
-class _AdminMessageDialogState extends State<_AdminMessageDialog> {
-  final _okFocusNode = FocusNode(debugLabel: 'AdminMessageOkButton');
-  final _dialogScopeNode = FocusScopeNode(
-    debugLabel: 'AdminMessageDialogScope',
-  );
-  bool _focused = false;
-
-  @override
-  void dispose() {
-    _okFocusNode.dispose();
-    _dialogScopeNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return FocusScope(
-      node: _dialogScopeNode,
-      autofocus: true,
-      onKeyEvent: (node, event) {
-        if (!event.isActionable) {
-          return KeyEventResult.ignored;
-        }
-
-        final key = event.logicalKey;
-        if (key.isDirectional) {
-          if (!_okFocusNode.hasFocus && _okFocusNode.canRequestFocus) {
-            _okFocusNode.requestFocus();
-          }
-          return KeyEventResult.handled;
-        }
-
-        return KeyEventResult.ignored;
-      },
-      child: RequestInitialFocus(
-        targetNode: _okFocusNode,
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: AppColorScheme.isGlass
-                    ? const Color(0xD90E1117)
-                    : AppColorScheme.surface,
-                borderRadius: AppRadius.circular(
-                  AppColorScheme.isGlass ? 20 : 16,
-                ),
-                border: Border.fromBorderSide(
-                  AppColorScheme.isGlass
-                      ? const BorderSide(color: Color(0x33FFFFFF), width: 1)
-                      : ThemeRegistry.active.borders.chipBorder,
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.campaign_outlined,
-                    size: 40,
-                    color: AppColorScheme.accent,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.adminSendMessage,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w600,
-                      color: AppColorScheme.onSurface,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.message,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Focus(
-                    focusNode: _okFocusNode,
-                    autofocus: true,
-                    onFocusChange: (f) => setState(() => _focused = f),
-                    onKeyEvent: (node, event) => handleOneShotSelect(event, () {
-                      Navigator.of(context, rootNavigator: true).pop();
-                    }),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _focused
-                              ? AppColorScheme.onSurface
-                              : AppColorScheme.onSurface.withValues(alpha: 0.1),
-                          borderRadius: AppRadius.circular(8),
-                        ),
-                        child: Text(
-                          l10n.ok,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: _focused
-                                ? AppColors.black
-                                : AppColorScheme.onSurface,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 

@@ -21,6 +21,7 @@ import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
+import '../../data/services/server_messages_service.dart';
 import '../../data/services/socket_handler.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
@@ -179,6 +180,9 @@ class SessionRepository {
   }) async {
     _setState(SessionState.switching);
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<ServerMessagesService>()) {
+      GetIt.instance<ServerMessagesService>().clear();
+    }
 
     final server = _serverRepository.getServer(serverId);
     if (server == null) {
@@ -474,6 +478,9 @@ class SessionRepository {
     }
 
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<ServerMessagesService>()) {
+      GetIt.instance<ServerMessagesService>().clear();
+    }
 
     if (serverId != null && !tokenKnownInvalid) {
       try {

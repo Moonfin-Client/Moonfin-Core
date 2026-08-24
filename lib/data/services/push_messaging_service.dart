@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../firebase_options.dart';
 import '../../ui/navigation/app_router.dart';
+import '../../ui/widgets/server_messages_dialog.dart';
 import '../../util/platform_detection.dart';
 import 'plugin_sync_service.dart';
 
@@ -207,8 +208,18 @@ class PushMessagingService {
 
   void _navigateFromMessage(RemoteMessage message) {
     final route = message.data['route'];
-    if (route is String && route.trim().isNotEmpty) {
-      appRouter.go(route.trim());
+    if (route is! String) return;
+
+    final trimmed = route.trim();
+    if (trimmed.isEmpty) return;
+
+    // Messages open a window over whatever is on screen, so there is no page to
+    // go to.
+    if (trimmed == serverMessagesPushRoute) {
+      openServerMessagesFromNotification();
+      return;
     }
+
+    appRouter.go(trimmed);
   }
 }
