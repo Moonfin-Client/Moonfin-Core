@@ -297,6 +297,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('showDescriptionOnPause', UserPreferences.showDescriptionOnPause, SyncCodec.boolean),
   SyncedField('showMediaDetailsOnLibraryPage', UserPreferences.showMediaDetailsOnLibraryPage, SyncCodec.boolean),
   SyncedField('showSeerrButton', UserPreferences.showSeerrButton, SyncCodec.boolean),
+  SyncedField('showServerMessagesButton', UserPreferences.showServerMessagesButton, SyncCodec.boolean),
   SyncedField('sinceYouWatched1Enabled', UserPreferences.sinceYouWatched1Enabled, SyncCodec.boolean),
   SyncedField('sinceYouWatched2Enabled', UserPreferences.sinceYouWatched2Enabled, SyncCodec.boolean),
   SyncedField('sinceYouWatched3Enabled', UserPreferences.sinceYouWatched3Enabled, SyncCodec.boolean),

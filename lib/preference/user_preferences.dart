@@ -1368,9 +1368,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// Off by default. An admin who wants it on for everyone can set it in the
+  /// Moonbase default settings.
   static final showServerMessagesButton = Preference(
     key: 'pref_show_server_messages_button',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final adminDrawerOrder = Preference(
