@@ -186,4 +186,18 @@ class StoragePathService {
     if (!await dir.exists()) await dir.create(recursive: true);
     return dir;
   }
+
+  Future<Directory> getMessageCacheDir() async {
+    if (PlatformDetection.isAndroid && _useMediaStore) {
+      final support = await getApplicationSupportDirectory();
+      final dir = Directory('${support.path}/Moonfin/messages');
+      if (!await dir.exists()) await dir.create(recursive: true);
+      return dir;
+    }
+
+    final root = await getOfflineRoot();
+    final dir = Directory('${root.path}/messages');
+    if (!await dir.exists()) await dir.create(recursive: true);
+    return dir;
+  }
 }
