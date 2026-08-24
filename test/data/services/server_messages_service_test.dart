@@ -46,7 +46,6 @@ Map<String, dynamic> _message(
   String id, {
   String color = 'white',
   String delivery = 'inbox',
-  bool pinned = false,
   String createdUtc = '2026-08-24T12:00:00Z',
 }) => {
   'id': id,
@@ -54,7 +53,6 @@ Map<String, dynamic> _message(
   'body': 'Body $id',
   'color': color,
   'delivery': delivery,
-  'pinned': pinned,
   'createdUtc': createdUtc,
 };
 
@@ -104,16 +102,12 @@ void main() {
     expect(service.messages, isEmpty);
   });
 
-  test('pinned messages come first, then the newest', () async {
-    adapter.items = [
-      _message('old', createdUtc: '2026-08-01T12:00:00Z'),
-      _message('new', createdUtc: '2026-08-20T12:00:00Z'),
-      _message('pin', pinned: true, createdUtc: '2026-07-01T12:00:00Z'),
-    ];
+  test('messages keep the order the server sent them', () async {
+    adapter.items = [_message('c'), _message('a'), _message('b')];
 
     await service.refresh(client);
 
-    expect(service.messages.map((m) => m.id), ['pin', 'new', 'old']);
+    expect(service.messages.map((m) => m.id), ['c', 'a', 'b']);
   });
 
   test('the unread flag clears once everything is read', () async {
@@ -169,7 +163,6 @@ void main() {
   test('only popup messages are pending, and marking them clears them', () async {
     adapter.items = [
       _message('quiet', delivery: 'inbox'),
-      _message('toast', delivery: 'toast'),
       _message('loud', delivery: 'popup'),
     ];
     await service.refresh(client);
@@ -180,7 +173,7 @@ void main() {
 
     expect(service.pendingPopups, isEmpty);
     expect(service.isRead('loud'), isTrue);
-    expect(service.isRead('toast'), isFalse, reason: 'only popups were marked');
+    expect(service.isRead('quiet'), isFalse, reason: 'only popups were marked');
   });
 
   test('a failed request keeps the messages already loaded', () async {
@@ -215,14 +208,12 @@ void main() {
         'Body': 'World',
         'Color': 'red',
         'Delivery': 'popup',
-        'Pinned': true,
       });
 
       expect(message, isNotNull);
       expect(message!.title, 'Hello');
       expect(message.color, ServerMessageColor.red);
       expect(message.delivery, ServerMessageDelivery.popup);
-      expect(message.pinned, isTrue);
     });
 
     test('unknown colour and delivery fall back to the quiet defaults', () {

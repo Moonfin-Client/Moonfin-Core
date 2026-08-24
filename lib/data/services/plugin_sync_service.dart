@@ -69,7 +69,6 @@ class PluginSyncService extends ChangeNotifier {
   bool _tmdbAvailable = false;
   bool get tmdbAvailable => _tmdbAvailable;
   String? _activeThemeCacheServerId;
-  void Function(String message)? onAdminMessage;
   void Function(
     String title,
     String body,
@@ -479,16 +478,9 @@ class PluginSyncService extends ChangeNotifier {
     final type = _eventValue(parsed, 'type');
 
     if (type == 'adminMessage') {
-      // The server also saves broadcasts now, so pull the list and let the
-      // messages button and its toast take it from there.
+      // Broadcasts are saved as messages now, so refreshing is enough: the
+      // stored copy is set to open the window, which the messages service does.
       await _messages?.refresh(client);
-      final text = _eventValue(parsed, 'text');
-      if (text is String) {
-        final trimmed = text.trim();
-        if (trimmed.isNotEmpty) {
-          onAdminMessage?.call(trimmed);
-        }
-      }
       return;
     }
 

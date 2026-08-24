@@ -33,6 +33,7 @@ import '../screens/settings/settings_side_panel.dart';
 import 'seerr_icons.dart';
 import 'server_messages_dialog.dart';
 import 'server_messages_nav_slot.dart';
+import 'unread_badge.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
@@ -811,12 +812,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     required String label,
   }) {
     return ServerMessagesNavSlot(
-      builder: (context, glow) => _SidebarItem(
+      builder: (context, unread) => _SidebarItem(
         key: const ValueKey('sidebar-server-messages'),
         icon: Icons.info_outline_rounded,
         label: label,
         baseColor: navColor,
-        glowColor: glow,
+        badgeCount: unread,
         focusNode: _serverMessagesFocusNode,
         showLabel: _showLabels,
         onPressed: () async {
@@ -1317,9 +1318,8 @@ class _SidebarItem extends StatefulWidget {
   final FocusNode? focusNode;
   final Color? baseColor;
 
-  /// Tints the row when it is neither focused nor hovered, to flag it as
-  /// needing attention.
-  final Color? glowColor;
+  /// Unread count drawn as a small red circle on the icon. Zero draws nothing.
+  final int badgeCount;
 
   const _SidebarItem({
     super.key,
@@ -1331,7 +1331,7 @@ class _SidebarItem extends StatefulWidget {
     this.trailing,
     this.focusNode,
     this.baseColor,
-    this.glowColor,
+    this.badgeCount = 0,
   });
 
   @override
@@ -1430,7 +1430,7 @@ class _SidebarItemState extends State<_SidebarItem> {
                     ? (useBaseForFocus
                           ? baseColor.withValues(alpha: 0.12)
                           : focusColor.withValues(alpha: 0.12))
-                    : (widget.glowColor ?? Colors.transparent),
+                    : Colors.transparent,
                 borderRadius: PlatformDetection.isTV
                     ? AppRadius.circular(24)
                     : BorderRadius.zero,
@@ -1439,15 +1439,18 @@ class _SidebarItemState extends State<_SidebarItem> {
                 children: [
                   SizedBox(
                     width: iconSlotWidth,
-                    child:
-                        widget.iconBuilder?.call(iconSize, fgColor) ??
-                        (widget.icon != null
-                            ? AdaptiveIcon(
-                                widget.icon!,
-                                size: iconSize,
-                                color: fgColor,
-                              )
-                            : const SizedBox.shrink()),
+                    child: UnreadBadge(
+                      count: widget.badgeCount,
+                      child:
+                          widget.iconBuilder?.call(iconSize, fgColor) ??
+                          (widget.icon != null
+                              ? AdaptiveIcon(
+                                  widget.icon!,
+                                  size: iconSize,
+                                  color: fgColor,
+                                )
+                              : const SizedBox.shrink()),
+                    ),
                   ),
                   if (widget.showLabel) ...[
                     const SizedBox(width: 12),

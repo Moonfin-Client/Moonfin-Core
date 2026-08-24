@@ -3,11 +3,8 @@ enum ServerMessageColor { green, red, yellow, blue, white }
 
 /// How noisy a message should be when it arrives.
 enum ServerMessageDelivery {
-  /// Only marks the menu button as unread.
+  /// Only adds to the unread count on the menu button.
   inbox,
-
-  /// Shows a small popup in the corner.
-  toast,
 
   /// Opens the message window once, until the user reads it.
   popup,
@@ -20,7 +17,6 @@ class ServerMessage {
   final String body;
   final ServerMessageColor color;
   final ServerMessageDelivery delivery;
-  final bool pinned;
   final String? actionLabel;
   final String? actionUrl;
   final DateTime? createdUtc;
@@ -31,7 +27,6 @@ class ServerMessage {
     required this.body,
     this.color = ServerMessageColor.white,
     this.delivery = ServerMessageDelivery.inbox,
-    this.pinned = false,
     this.actionLabel,
     this.actionUrl,
     this.createdUtc,
@@ -81,10 +76,8 @@ class ServerMessage {
       },
       delivery: switch (_string(json, 'delivery').toLowerCase()) {
         'popup' => ServerMessageDelivery.popup,
-        'toast' => ServerMessageDelivery.toast,
         _ => ServerMessageDelivery.inbox,
       },
-      pinned: _value(json, 'pinned') == true,
       actionLabel: _nullableString(json, 'actionLabel'),
       actionUrl: _nullableString(json, 'actionUrl'),
       createdUtc: _date(json, 'createdUtc'),
@@ -97,7 +90,6 @@ class ServerMessage {
     'body': body,
     'color': color.name,
     'delivery': delivery.name,
-    'pinned': pinned,
     if (actionLabel != null) 'actionLabel': actionLabel,
     if (actionUrl != null) 'actionUrl': actionUrl,
     if (createdUtc != null) 'createdUtc': createdUtc!.toIso8601String(),

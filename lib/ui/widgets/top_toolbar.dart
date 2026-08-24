@@ -1287,13 +1287,13 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     required String label,
   }) {
     return ServerMessagesNavSlot(
-      builder: (context, glow) => ExpandableIconButton(
+      builder: (context, unread) => ExpandableIconButton(
         key: const ValueKey('toolbar_server_messages'),
         forceExpanded: alwaysExpanded,
         icon: Icons.info_outline_rounded,
         label: label,
         baseColor: navColor,
-        glowColor: glow,
+        badgeCount: unread,
         focusNode: _serverMessagesFocus,
         onPressed: () async {
           await showServerMessagesDialog(context);

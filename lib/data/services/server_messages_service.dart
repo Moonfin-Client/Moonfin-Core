@@ -36,7 +36,7 @@ class ServerMessagesService extends ChangeNotifier {
   /// True when the server plugin has the messages endpoints.
   bool get supported => _supported;
 
-  /// Messages to show, pinned first then newest.
+  /// Messages to show, in the order the admin arranged them in Moonbase.
   List<ServerMessage> get messages => _messages;
 
   int get unreadCount =>
@@ -168,15 +168,6 @@ class ServerMessagesService extends ChangeNotifier {
       final message = ServerMessage.fromJson(Map<String, dynamic>.from(entry));
       if (message != null) messages.add(message);
     }
-
-    // The server already sorts, but a cached file may be older than that.
-    messages.sort((a, b) {
-      if (a.pinned != b.pinned) return a.pinned ? -1 : 1;
-      final aDate = a.createdUtc;
-      final bDate = b.createdUtc;
-      if (aDate == null || bDate == null) return 0;
-      return bDate.compareTo(aDate);
-    });
 
     return messages;
   }

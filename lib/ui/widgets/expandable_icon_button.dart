@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import 'unread_badge.dart';
+
 import '../../preference/user_preferences.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/input_mode_tracker.dart';
@@ -26,9 +28,8 @@ class ExpandableIconButton extends StatefulWidget {
   final ValueChanged<bool>? onFocusChanged;
   final Color? baseColor;
 
-  /// Tints the button background when it is neither focused nor hovered. Used to
-  /// flag the button as needing attention without moving anything around it.
-  final Color? glowColor;
+  /// Unread count drawn as a small red circle on the icon. Zero draws nothing.
+  final int badgeCount;
 
   /// When true, the label stays visible even when unfocused/unhovered instead
   /// of collapsing to an icon-only button. Drives the "always expand navbar
@@ -46,7 +47,7 @@ class ExpandableIconButton extends StatefulWidget {
     this.onKeyEvent,
     this.onFocusChanged,
     this.baseColor,
-    this.glowColor,
+    this.badgeCount = 0,
     this.forceExpanded = false,
   });
 
@@ -182,7 +183,7 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
         ? AppColorScheme.onSurface
         : (focusVisible || hoverActive)
         ? focusColor.withValues(alpha: 0.18)
-        : (widget.glowColor ?? Colors.transparent);
+        : Colors.transparent;
 
     final fgColor = leanbackFocused
       ? AppColors.black
@@ -233,8 +234,12 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                widget.iconBuilder?.call(iconSize, fgColor) ??
-                    Icon(widget.icon, size: iconSize, color: fgColor),
+                UnreadBadge(
+                  count: widget.badgeCount,
+                  child:
+                      widget.iconBuilder?.call(iconSize, fgColor) ??
+                      Icon(widget.icon, size: iconSize, color: fgColor),
+                ),
                 if (isExpanded) ...[
                   const SizedBox(width: _kSpacing),
                   Flexible(

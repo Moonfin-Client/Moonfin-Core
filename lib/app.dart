@@ -39,7 +39,6 @@ import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
 import 'ui/widgets/app_update_banner.dart';
 import 'ui/widgets/cast_mini_player.dart';
-import 'ui/widgets/floating_notification.dart';
 import 'ui/widgets/offline_banner.dart';
 import 'ui/widgets/server_messages_dialog.dart';
 import 'ui/widgets/exit_confirmation_dialog.dart';
@@ -945,7 +944,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     final manager = ref.read(syncPlayManagerProvider);
     _syncPlayEventsSub = manager.uiEvents.listen(_handleSyncPlayEvent);
     if (GetIt.instance.isRegistered<PluginSyncService>()) {
-      GetIt.instance<PluginSyncService>().onAdminMessage = _handleAdminMessage;
       if (GetIt.instance.isRegistered<SeerrNotificationService>()) {
         final notificationService =
             GetIt.instance<SeerrNotificationService>();
@@ -978,7 +976,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     _syncPlayEventsSub?.cancel();
     _downloadErrorSub?.cancel();
     if (GetIt.instance.isRegistered<PluginSyncService>()) {
-      GetIt.instance<PluginSyncService>().onAdminMessage = null;
       GetIt.instance<PluginSyncService>().onSeerrNotification = null;
     }
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
@@ -1070,20 +1067,6 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     final navContext =
         appRouter.routerDelegate.navigatorKey.currentContext ?? context;
     return navContext.mounted ? navContext : null;
-  }
-
-  /// A broadcast arrived. It is saved on the server now, so show a small popup
-  /// instead of a blocking dialog and let the menu button carry it from there.
-  void _handleAdminMessage(String message) {
-    final navContext = _navigatorContext();
-    if (navContext == null) return;
-
-    FloatingNotification.show(
-      navContext,
-      AppLocalizations.of(navContext).serverMessages,
-      message,
-      () => showServerMessagesDialog(navContext),
-    );
   }
 
   /// Opens the messages window for messages the admin marked as "open the
