@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -8,6 +10,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../data/models/server_message.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../../util/overview_text.dart';
 import '../navigation/app_router.dart';
@@ -40,9 +43,15 @@ void openServerMessagesFromNotification() {
 Future<void> showServerMessagesDialog(BuildContext context) {
   final service = GetIt.instance<ServerMessagesService>();
 
+  // The shared default of 440 leaves a long message in a narrow column, which
+  // reads badly on a TV. Never go under the 340 the dialog asks for, or the
+  // constraints stop being valid on a small phone.
+  final width = MediaQuery.sizeOf(context).width;
+
   return showStyledPlayerDialog<void>(
     context,
     title: AppLocalizations.of(context).serverMessages,
+    maxWidth: math.max(340.0, math.min(width - 80, 720.0)),
     builder: (dialogContext) => _ServerMessagesBody(service: service),
   );
 }
@@ -129,10 +138,24 @@ class _MessageCard extends StatefulWidget {
 }
 
 class _MessageCardState extends State<_MessageCard> {
+  final _cardFocus = FocusNode(debugLabel: 'ServerMessageCard');
+  final _actionFocus = FocusNode(debugLabel: 'ServerMessageAction');
   bool _expanded = false;
   bool _focused = false;
 
+  @override
+  void dispose() {
+    _cardFocus.dispose();
+    _actionFocus.dispose();
+    super.dispose();
+  }
+
   void _toggle() {
+    // Collapsing takes the button away, so pull focus back to the card first
+    // or it lands nowhere.
+    if (_expanded && _actionFocus.hasFocus) {
+      _cardFocus.requestFocus();
+    }
     setState(() => _expanded = !_expanded);
     if (_expanded && !widget.read) {
       widget.onRead();
@@ -145,9 +168,29 @@ class _MessageCardState extends State<_MessageCard> {
     final color = serverMessageColor(message.color);
     final body = cleanOverview(message.body);
 
+    final canEnterAction = _expanded && message.hasAction;
+
     return Focus(
+      focusNode: _cardFocus,
       onFocusChange: (focused) => setState(() => _focused = focused),
-      onKeyEvent: (node, event) => handleOneShotSelect(event, _toggle),
+      onKeyEvent: (node, event) {
+        // The card wraps its button, so the button sits inside the card's own
+        // rectangle and never counts as being below it. Without this, pressing
+        // down skips to the next message and the button cannot be reached with
+        // a remote.
+        //
+        // Only when the card itself holds focus. Key events travel up from the
+        // button to here, so without that check pressing down on the button
+        // would send focus straight back to it and trap the remote.
+        if (canEnterAction &&
+            _cardFocus.hasPrimaryFocus &&
+            event.isActionable &&
+            event.logicalKey.isDownKey) {
+          _actionFocus.requestFocus();
+          return KeyEventResult.handled;
+        }
+        return handleOneShotSelect(event, _toggle);
+      },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
@@ -237,6 +280,8 @@ class _MessageCardState extends State<_MessageCard> {
                         if (_expanded && message.hasAction) ...[
                           const SizedBox(height: 10),
                           _DialogTextButton(
+                            focusNode: _actionFocus,
+                            onFocusUp: _cardFocus.requestFocus,
                             label: message.actionLabel!,
                             onPressed: () => showQrOrLaunch(
                               context,
@@ -263,8 +308,18 @@ class _MessageCardState extends State<_MessageCard> {
 class _DialogTextButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
+  final FocusNode? focusNode;
 
-  const _DialogTextButton({required this.label, required this.onPressed});
+  /// Called when the remote presses up, so the card that owns this button can
+  /// take focus back instead of the list jumping past it.
+  final VoidCallback? onFocusUp;
+
+  const _DialogTextButton({
+    required this.label,
+    required this.onPressed,
+    this.focusNode,
+    this.onFocusUp,
+  });
 
   @override
   State<_DialogTextButton> createState() => _DialogTextButtonState();
@@ -276,8 +331,16 @@ class _DialogTextButtonState extends State<_DialogTextButton> {
   @override
   Widget build(BuildContext context) {
     return Focus(
+      focusNode: widget.focusNode,
       onFocusChange: (focused) => setState(() => _focused = focused),
-      onKeyEvent: (node, event) => handleOneShotSelect(event, widget.onPressed),
+      onKeyEvent: (node, event) {
+        final goUp = widget.onFocusUp;
+        if (goUp != null && event.isActionable && event.logicalKey.isUpKey) {
+          goUp();
+          return KeyEventResult.handled;
+        }
+        return handleOneShotSelect(event, widget.onPressed);
+      },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
