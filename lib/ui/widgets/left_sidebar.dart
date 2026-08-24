@@ -804,6 +804,32 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     );
   }
 
+  /// The messages row, or nothing when there is nothing to show. The nav colour
+  /// is passed in so the caller decides which palette slot it takes.
+  Widget _serverMessagesSidebarItem({
+    required Color? navColor,
+    required String label,
+  }) {
+    return ServerMessagesNavSlot(
+      builder: (context, glow) => _SidebarItem(
+        key: const ValueKey('sidebar-server-messages'),
+        icon: Icons.info_outline_rounded,
+        label: label,
+        baseColor: navColor,
+        glowColor: glow,
+        focusNode: _serverMessagesFocusNode,
+        showLabel: _showLabels,
+        onPressed: () async {
+          _onNavigate();
+          await showServerMessagesDialog(context);
+          if (!mounted) return;
+          _markNavigationAwayFromSidebar();
+          _serverMessagesFocusNode.requestFocus();
+        },
+      ),
+    );
+  }
+
   Widget _buildContent() {
     final l10n = AppLocalizations.of(context);
     final showShuffle = _prefs.get(UserPreferences.showShuffleButton);
@@ -1071,22 +1097,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                         : const SizedBox.shrink(),
                   ),
                 ],
-                ServerMessagesNavSlot(
-                  builder: (context, glow) => _SidebarItem(
-                    key: const ValueKey('sidebar-server-messages'),
-                    icon: Icons.info_outline_rounded,
-                    label: l10n.serverMessages,
-                    glowColor: glow,
-                    focusNode: _serverMessagesFocusNode,
-                    showLabel: _showLabels,
-                    onPressed: () async {
-                      _onNavigate();
-                      await showServerMessagesDialog(context);
-                      if (!mounted) return;
-                      _markNavigationAwayFromSidebar();
-                      _serverMessagesFocusNode.requestFocus();
-                    },
-                  ),
+                // The slot is taken here rather than inside the builder, so the
+                // settings row keeps its colour whether or not there are any
+                // messages to show.
+                _serverMessagesSidebarItem(
+                  navColor: nextMainSidebarColor(),
+                  label: l10n.serverMessages,
                 ),
                 _SidebarItem(
                   key: const ValueKey('sidebar-settings'),

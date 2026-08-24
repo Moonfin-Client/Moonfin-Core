@@ -1110,19 +1110,13 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               _gap(),
               _orderButton(
                 order: 98,
-                child: ServerMessagesNavSlot(
-                  builder: (context, glow) => ExpandableIconButton(
-                    key: const ValueKey('toolbar_server_messages'),
-                    forceExpanded: alwaysExpanded,
-                    icon: Icons.info_outline_rounded,
-                    label: l10n.serverMessages,
-                    glowColor: glow,
-                    focusNode: _serverMessagesFocus,
-                    onPressed: () async {
-                      await showServerMessagesDialog(context);
-                      if (mounted) _serverMessagesFocus.requestFocus();
-                    },
-                  ),
+                // The slot is taken here rather than inside the builder, so the
+                // settings icon keeps its colour whether or not there are any
+                // messages to show.
+                child: _buildServerMessagesButton(
+                  navColor: nextNavColor(),
+                  alwaysExpanded: alwaysExpanded,
+                  label: l10n.serverMessages,
                 ),
               ),
               _orderButton(
@@ -1282,6 +1276,30 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
           );
         }
       },
+    );
+  }
+
+  /// The messages button, or nothing when there is nothing to show. The nav
+  /// colour is passed in so the caller decides which palette slot it takes.
+  Widget _buildServerMessagesButton({
+    required Color? navColor,
+    required bool alwaysExpanded,
+    required String label,
+  }) {
+    return ServerMessagesNavSlot(
+      builder: (context, glow) => ExpandableIconButton(
+        key: const ValueKey('toolbar_server_messages'),
+        forceExpanded: alwaysExpanded,
+        icon: Icons.info_outline_rounded,
+        label: label,
+        baseColor: navColor,
+        glowColor: glow,
+        focusNode: _serverMessagesFocus,
+        onPressed: () async {
+          await showServerMessagesDialog(context);
+          if (mounted) _serverMessagesFocus.requestFocus();
+        },
+      ),
     );
   }
 
