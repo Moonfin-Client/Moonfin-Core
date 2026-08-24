@@ -31,6 +31,8 @@ import 'settings/settings_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'seerr_icons.dart';
+import 'server_messages_dialog.dart';
+import 'server_messages_nav_slot.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
@@ -78,6 +80,9 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   final _sidebarFocus = FocusScopeNode(debugLabel: 'LeftSidebar');
   final _homeFocusNode = FocusNode(debugLabel: 'LeftSidebarHome');
   final _settingsFocusNode = FocusNode(debugLabel: 'LeftSidebarSettings');
+  final _serverMessagesFocusNode = FocusNode(
+    debugLabel: 'LeftSidebarServerMessages',
+  );
   final _profileFocusNode = FocusNode(debugLabel: 'LeftSidebarProfile');
   final _musicCardFocusNode = FocusNode(debugLabel: 'SidebarMusicCard');
   late final VoidCallback _focusNavbarCallback;
@@ -218,6 +223,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     _librariesReloadDebounce?.cancel();
     _homeFocusNode.dispose();
     _settingsFocusNode.dispose();
+    _serverMessagesFocusNode.dispose();
     _profileFocusNode.dispose();
     _musicCardFocusNode.dispose();
     _sidebarFocus.dispose();
@@ -1065,6 +1071,22 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                         : const SizedBox.shrink(),
                   ),
                 ],
+                ServerMessagesNavSlot(
+                  builder: (context) => _SidebarItem(
+                    key: const ValueKey('sidebar-server-messages'),
+                    icon: Icons.info_outline_rounded,
+                    label: l10n.serverMessages,
+                    focusNode: _serverMessagesFocusNode,
+                    showLabel: _showLabels,
+                    onPressed: () async {
+                      _onNavigate();
+                      await showServerMessagesDialog(context);
+                      if (!mounted) return;
+                      _markNavigationAwayFromSidebar();
+                      _serverMessagesFocusNode.requestFocus();
+                    },
+                  ),
+                ),
                 _SidebarItem(
                   key: const ValueKey('sidebar-settings'),
                   icon: Icons.settings_rounded,

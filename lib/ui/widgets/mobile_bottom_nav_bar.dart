@@ -11,6 +11,7 @@ import '../../data/models/aggregated_library.dart';
 import '../../data/repositories/multi_server_repository.dart';
 import '../../data/repositories/user_views_repository.dart';
 import '../../data/services/plugin_sync_service.dart';
+import '../../data/services/server_messages_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
@@ -23,6 +24,7 @@ import '../screens/syncplay/syncplay_screen.dart';
 import 'adaptive/adaptive_glass.dart';
 import 'adaptive/sf_symbol.dart';
 import 'seerr_icons.dart';
+import 'server_messages_dialog.dart';
 import 'settings/settings_panel.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
@@ -56,6 +58,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     _prefs.addListener(_onPrefsChanged);
     _viewsRepo.addListener(_onViewsChanged);
     GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
+    GetIt.instance<ServerMessagesService>().addListener(_onPrefsChanged);
     _userSub = _userRepo.currentUserStream.listen((_) => _loadUserImage());
     _loadUserImage();
     _loadLibraries();
@@ -65,6 +68,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
   void dispose() {
     try {
       GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
+      GetIt.instance<ServerMessagesService>().removeListener(_onPrefsChanged);
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     try {
@@ -300,6 +304,25 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     } catch (_) {
       return false;
     }
+  }
+
+  /// The messages entry, or null when the user turned it off or the server has
+  /// no messages.
+  _BottomNavAction? _serverMessagesAction(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    if (!_prefs.get(UserPreferences.showServerMessagesButton)) return null;
+
+    final service = GetIt.instance<ServerMessagesService>();
+    if (service.messages.isEmpty) return null;
+
+    return _BottomNavAction(
+      icon: Icons.info_outline_rounded,
+      label: l10n.serverMessages,
+      isActive: service.unreadCount > 0,
+      onTap: () => showServerMessagesDialog(context),
+    );
   }
 
   _BottomNavAction _settingsAction(
@@ -620,8 +643,9 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final content = _contentActions(context, l10n);
+    final messages = _serverMessagesAction(context, l10n);
     final settings = _settingsAction(context, l10n);
-    final actions = <_BottomNavAction>[...content, settings];
+    final actions = <_BottomNavAction>[...content, ?messages, settings];
 
     const maxInline = 5;
     final List<_BottomNavAction> tabs;

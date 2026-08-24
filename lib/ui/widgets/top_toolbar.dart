@@ -31,6 +31,8 @@ import 'settings/settings_panel.dart';
 import '../screens/settings/settings_side_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import 'seerr_icons.dart';
+import 'server_messages_dialog.dart';
+import 'server_messages_nav_slot.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
@@ -110,6 +112,9 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
   final _avatarFocus = FocusNode();
   final _homeFocus = FocusNode(debugLabel: 'TopToolbarHome');
   final _settingsFocus = FocusNode(debugLabel: 'TopToolbarSettings');
+  final _serverMessagesFocus = FocusNode(
+    debugLabel: 'TopToolbarServerMessages',
+  );
   final _inlineLibrariesTriggerFocus = FocusNode(
     debugLabel: 'TopToolbarInlineLibrariesTrigger',
   );
@@ -232,6 +237,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     _avatarFocus.dispose();
     _homeFocus.dispose();
     _settingsFocus.dispose();
+    _serverMessagesFocus.dispose();
     _inlineLibrariesTriggerFocus.dispose();
     _musicBarFocusNode.dispose();
     _userSub?.cancel();
@@ -1102,6 +1108,22 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 ),
               ],
               _gap(),
+              _orderButton(
+                order: 98,
+                child: ServerMessagesNavSlot(
+                  builder: (context) => ExpandableIconButton(
+                    key: const ValueKey('toolbar_server_messages'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.info_outline_rounded,
+                    label: l10n.serverMessages,
+                    focusNode: _serverMessagesFocus,
+                    onPressed: () async {
+                      await showServerMessagesDialog(context);
+                      if (mounted) _serverMessagesFocus.requestFocus();
+                    },
+                  ),
+                ),
+              ),
               _orderButton(
                 order: 99,
                 child: ExpandableIconButton(

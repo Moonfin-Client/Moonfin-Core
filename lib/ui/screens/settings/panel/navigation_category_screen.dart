@@ -154,6 +154,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                     ),
                     onChanged: _pushPersonalizationSync,
                   ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showServerMessagesButton,
+                  title: l10n.serverMessagesShowButton,
+                  subtitle: l10n.serverMessagesShowButtonSubtitle,
+                  icon: Icons.info_outline_rounded,
+                  onChanged: _pushPersonalizationSync,
+                ),
               ],
             ),
           ],
