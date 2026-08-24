@@ -9841,5 +9841,25 @@
   "runSetupAgain": "Run setup again",
   "@runSetupAgain": {
     "description": "Starts the first-run setup wizard again from settings"
+  },
+  "serverMessages": "Messages",
+  "@serverMessages": {
+    "description": "Menu button and window title for messages sent by the server admin"
+  },
+  "serverMessagesEmpty": "No messages from your server yet",
+  "@serverMessagesEmpty": {
+    "description": "Shown in the messages window when the server has sent nothing"
+  },
+  "serverMessagesMarkAllRead": "Mark all as read",
+  "@serverMessagesMarkAllRead": {
+    "description": "Button in the messages window that marks every message as read"
+  },
+  "serverMessagesShowButton": "Show messages button",
+  "@serverMessagesShowButton": {
+    "description": "Setting that shows or hides the messages button in the menu"
+  },
+  "serverMessagesShowButtonSubtitle": "Adds a button to the menu for messages sent by your server admin",
+  "@serverMessagesShowButtonSubtitle": {
+    "description": "Explains the setting that shows or hides the messages button"
   }
 }

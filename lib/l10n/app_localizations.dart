@@ -19719,6 +19719,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Run setup again'**
   String get runSetupAgain;
+
+  /// Menu button and window title for messages sent by the server admin
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get serverMessages;
+
+  /// Shown in the messages window when the server has sent nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No messages from your server yet'**
+  String get serverMessagesEmpty;
+
+  /// Button in the messages window that marks every message as read
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get serverMessagesMarkAllRead;
+
+  /// Setting that shows or hides the messages button in the menu
+  ///
+  /// In en, this message translates to:
+  /// **'Show messages button'**
+  String get serverMessagesShowButton;
+
+  /// Explains the setting that shows or hides the messages button
+  ///
+  /// In en, this message translates to:
+  /// **'Adds a button to the menu for messages sent by your server admin'**
+  String get serverMessagesShowButtonSubtitle;
 }
 
 class _AppLocalizationsDelegate
