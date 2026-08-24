@@ -1111,11 +1111,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               _orderButton(
                 order: 98,
                 child: ServerMessagesNavSlot(
-                  builder: (context) => ExpandableIconButton(
+                  builder: (context, glow) => ExpandableIconButton(
                     key: const ValueKey('toolbar_server_messages'),
                     forceExpanded: alwaysExpanded,
                     icon: Icons.info_outline_rounded,
                     label: l10n.serverMessages,
+                    glowColor: glow,
                     focusNode: _serverMessagesFocus,
                     onPressed: () async {
                       await showServerMessagesDialog(context);

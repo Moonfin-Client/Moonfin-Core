@@ -4,16 +4,16 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/services/server_messages_service.dart';
 import '../../preference/user_preferences.dart';
-import 'server_messages_dialog.dart';
 
 /// Wraps the messages button for a nav bar.
 ///
 /// Renders nothing when the user turned the button off or the server has no
 /// messages, so the menu never shows a button that does nothing. Unread
-/// messages put a soft glow behind the icon in the colour of the most important
-/// one. The icon itself keeps the normal menu colour.
+/// messages get a faint plate behind the icon. The colour an admin picks for a
+/// message is only used inside the messages window, not here, so the menu stays
+/// calm no matter what was posted.
 class ServerMessagesNavSlot extends StatelessWidget {
-  final WidgetBuilder builder;
+  final Widget Function(BuildContext context, Color? glow) builder;
 
   const ServerMessagesNavSlot({super.key, required this.builder});
 
@@ -34,38 +34,13 @@ class ServerMessagesNavSlot extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final button = builder(context);
-        final severity = service.highestUnreadSeverity;
-        if (severity == null) {
-          return button;
-        }
-
-        // Sits behind the button and follows its size, so it keeps up with the
-        // label opening and closing. The inset keeps the glow smaller than the
-        // button so it reads as a hint rather than a filled disc.
-        final glow = serverMessageColor(severity);
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.all(9),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: AppRadius.circular(999),
-                    color: glow.withValues(alpha: 0.07),
-                    boxShadow: [
-                      BoxShadow(
-                        color: glow.withValues(alpha: 0.20),
-                        blurRadius: 7,
-                        spreadRadius: -2,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            button,
-          ],
+        // The button paints this itself, so it lines up with the icon and keeps
+        // up with the label opening and closing.
+        return builder(
+          context,
+          service.hasUnread
+              ? AppColorScheme.onSurface.withValues(alpha: 0.16)
+              : null,
         );
       },
     );

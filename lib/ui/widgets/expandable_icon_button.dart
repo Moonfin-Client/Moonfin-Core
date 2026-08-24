@@ -26,6 +26,10 @@ class ExpandableIconButton extends StatefulWidget {
   final ValueChanged<bool>? onFocusChanged;
   final Color? baseColor;
 
+  /// Tints the button background when it is neither focused nor hovered. Used to
+  /// flag the button as needing attention without moving anything around it.
+  final Color? glowColor;
+
   /// When true, the label stays visible even when unfocused/unhovered instead
   /// of collapsing to an icon-only button. Drives the "always expand navbar
   /// labels" preference.
@@ -42,6 +46,7 @@ class ExpandableIconButton extends StatefulWidget {
     this.onKeyEvent,
     this.onFocusChanged,
     this.baseColor,
+    this.glowColor,
     this.forceExpanded = false,
   });
 
@@ -177,7 +182,7 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
         ? AppColorScheme.onSurface
         : (focusVisible || hoverActive)
         ? focusColor.withValues(alpha: 0.18)
-        : Colors.transparent;
+        : (widget.glowColor ?? Colors.transparent);
 
     final fgColor = leanbackFocused
       ? AppColors.black

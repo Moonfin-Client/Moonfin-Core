@@ -1,5 +1,5 @@
-/// How important a message is. Drives its colour in the app.
-enum ServerMessageSeverity { info, warning, critical }
+/// The colour the admin picked for a message.
+enum ServerMessageColor { green, red, yellow, blue, white }
 
 /// How noisy a message should be when it arrives.
 enum ServerMessageDelivery {
@@ -18,7 +18,7 @@ class ServerMessage {
   final String id;
   final String title;
   final String body;
-  final ServerMessageSeverity severity;
+  final ServerMessageColor color;
   final ServerMessageDelivery delivery;
   final bool pinned;
   final String? actionLabel;
@@ -29,7 +29,7 @@ class ServerMessage {
     required this.id,
     required this.title,
     required this.body,
-    this.severity = ServerMessageSeverity.info,
+    this.color = ServerMessageColor.white,
     this.delivery = ServerMessageDelivery.inbox,
     this.pinned = false,
     this.actionLabel,
@@ -72,10 +72,12 @@ class ServerMessage {
       id: id,
       title: title,
       body: body,
-      severity: switch (_string(json, 'severity').toLowerCase()) {
-        'critical' => ServerMessageSeverity.critical,
-        'warning' => ServerMessageSeverity.warning,
-        _ => ServerMessageSeverity.info,
+      color: switch (_string(json, 'color').toLowerCase()) {
+        'green' => ServerMessageColor.green,
+        'red' => ServerMessageColor.red,
+        'yellow' => ServerMessageColor.yellow,
+        'blue' => ServerMessageColor.blue,
+        _ => ServerMessageColor.white,
       },
       delivery: switch (_string(json, 'delivery').toLowerCase()) {
         'popup' => ServerMessageDelivery.popup,
@@ -93,7 +95,7 @@ class ServerMessage {
     'id': id,
     'title': title,
     'body': body,
-    'severity': severity.name,
+    'color': color.name,
     'delivery': delivery.name,
     'pinned': pinned,
     if (actionLabel != null) 'actionLabel': actionLabel,

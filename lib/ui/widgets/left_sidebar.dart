@@ -1072,10 +1072,11 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                   ),
                 ],
                 ServerMessagesNavSlot(
-                  builder: (context) => _SidebarItem(
+                  builder: (context, glow) => _SidebarItem(
                     key: const ValueKey('sidebar-server-messages'),
                     icon: Icons.info_outline_rounded,
                     label: l10n.serverMessages,
+                    glowColor: glow,
                     focusNode: _serverMessagesFocusNode,
                     showLabel: _showLabels,
                     onPressed: () async {
@@ -1300,6 +1301,10 @@ class _SidebarItem extends StatefulWidget {
   final FocusNode? focusNode;
   final Color? baseColor;
 
+  /// Tints the row when it is neither focused nor hovered, to flag it as
+  /// needing attention.
+  final Color? glowColor;
+
   const _SidebarItem({
     super.key,
     this.icon,
@@ -1310,6 +1315,7 @@ class _SidebarItem extends StatefulWidget {
     this.trailing,
     this.focusNode,
     this.baseColor,
+    this.glowColor,
   });
 
   @override
@@ -1408,7 +1414,7 @@ class _SidebarItemState extends State<_SidebarItem> {
                     ? (useBaseForFocus
                           ? baseColor.withValues(alpha: 0.12)
                           : focusColor.withValues(alpha: 0.12))
-                    : Colors.transparent,
+                    : (widget.glowColor ?? Colors.transparent),
                 borderRadius: PlatformDetection.isTV
                     ? AppRadius.circular(24)
                     : BorderRadius.zero,

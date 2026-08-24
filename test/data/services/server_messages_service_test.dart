@@ -44,7 +44,7 @@ class _MessagesAdapter implements HttpClientAdapter {
 
 Map<String, dynamic> _message(
   String id, {
-  String severity = 'info',
+  String color = 'white',
   String delivery = 'inbox',
   bool pinned = false,
   String createdUtc = '2026-08-24T12:00:00Z',
@@ -52,7 +52,7 @@ Map<String, dynamic> _message(
   'id': id,
   'title': 'Title $id',
   'body': 'Body $id',
-  'severity': severity,
+  'color': color,
   'delivery': delivery,
   'pinned': pinned,
   'createdUtc': createdUtc,
@@ -116,24 +116,18 @@ void main() {
     expect(service.messages.map((m) => m.id), ['pin', 'new', 'old']);
   });
 
-  test('the button colour follows the most important unread message', () async {
-    adapter.items = [
-      _message('info', severity: 'info'),
-      _message('warn', severity: 'warning'),
-      _message('crit', severity: 'critical'),
-    ];
+  test('the unread flag clears once everything is read', () async {
+    adapter.items = [_message('a'), _message('b')];
     await service.refresh(client);
 
-    expect(service.highestUnreadSeverity, ServerMessageSeverity.critical);
+    expect(service.hasUnread, isTrue);
+    expect(service.unreadCount, 2);
 
-    await service.markRead('crit');
-    expect(service.highestUnreadSeverity, ServerMessageSeverity.warning);
+    await service.markRead('a');
+    expect(service.hasUnread, isTrue);
 
-    await service.markRead('warn');
-    expect(service.highestUnreadSeverity, ServerMessageSeverity.info);
-
-    await service.markRead('info');
-    expect(service.highestUnreadSeverity, isNull);
+    await service.markRead('b');
+    expect(service.hasUnread, isFalse);
     expect(service.unreadCount, 0);
   });
 
@@ -219,27 +213,27 @@ void main() {
         'Id': 'x',
         'Title': 'Hello',
         'Body': 'World',
-        'Severity': 'critical',
+        'Color': 'red',
         'Delivery': 'popup',
         'Pinned': true,
       });
 
       expect(message, isNotNull);
       expect(message!.title, 'Hello');
-      expect(message.severity, ServerMessageSeverity.critical);
+      expect(message.color, ServerMessageColor.red);
       expect(message.delivery, ServerMessageDelivery.popup);
       expect(message.pinned, isTrue);
     });
 
-    test('unknown severity and delivery fall back to the quiet defaults', () {
+    test('unknown colour and delivery fall back to the quiet defaults', () {
       final message = ServerMessage.fromJson({
         'id': 'x',
         'title': 'Hello',
-        'severity': 'apocalyptic',
+        'color': 'chartreuse',
         'delivery': 'smoke-signal',
       });
 
-      expect(message!.severity, ServerMessageSeverity.info);
+      expect(message!.color, ServerMessageColor.white);
       expect(message.delivery, ServerMessageDelivery.inbox);
     });
 

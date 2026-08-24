@@ -44,17 +44,8 @@ class ServerMessagesService extends ChangeNotifier {
 
   bool isRead(String id) => _readIds.contains(id);
 
-  /// The colour the menu button should use, or null when nothing is unread.
-  ServerMessageSeverity? get highestUnreadSeverity {
-    ServerMessageSeverity? highest;
-    for (final message in _messages) {
-      if (_readIds.contains(message.id)) continue;
-      if (highest == null || message.severity.index > highest.index) {
-        highest = message.severity;
-      }
-    }
-    return highest;
-  }
+  /// True when at least one message has not been read yet.
+  bool get hasUnread => unreadCount > 0;
 
   /// Unread messages the admin marked as "open the window".
   List<ServerMessage> get pendingPopups => _messages

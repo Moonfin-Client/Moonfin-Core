@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -12,17 +14,14 @@ import '../navigation/app_router.dart';
 import 'support_dialog.dart';
 import 'track_selector_dialog.dart';
 
-/// Colour used for a message and for the menu button when it is unread.
-Color serverMessageColor(ServerMessageSeverity severity) => switch (severity) {
-  ServerMessageSeverity.critical => AppColorScheme.statusError,
-  ServerMessageSeverity.warning => AppColorScheme.statusPending,
-  ServerMessageSeverity.info => AppColorScheme.statusAvailable,
-};
-
-IconData _severityIcon(ServerMessageSeverity severity) => switch (severity) {
-  ServerMessageSeverity.critical => Icons.error_outline_rounded,
-  ServerMessageSeverity.warning => Icons.warning_amber_rounded,
-  ServerMessageSeverity.info => Icons.info_outline_rounded,
+/// The colour the admin picked, as drawn in the app. Fixed values rather than
+/// theme tokens, so a message marked blue looks blue on every theme.
+Color serverMessageColor(ServerMessageColor color) => switch (color) {
+  ServerMessageColor.green => const Color(0xFF4CAF6D),
+  ServerMessageColor.red => const Color(0xFFE05260),
+  ServerMessageColor.yellow => const Color(0xFFE0B040),
+  ServerMessageColor.blue => const Color(0xFF4A9EE0),
+  ServerMessageColor.white => const Color(0xFFE8EAED),
 };
 
 /// Route the server sends with a message push. Not a page: it tells the app to
@@ -143,115 +142,114 @@ class _MessageCardState extends State<_MessageCard> {
   @override
   Widget build(BuildContext context) {
     final message = widget.message;
-    final color = serverMessageColor(message.severity);
+    final color = serverMessageColor(message.color);
     final body = cleanOverview(message.body);
 
     return Focus(
       onFocusChange: (focused) => setState(() => _focused = focused),
       onKeyEvent: (node, event) => handleOneShotSelect(event, _toggle),
-      child: GestureDetector(
-        onTap: _toggle,
-        child: GlassSurface(
-          cornerRadius: 16,
-          reinforced: true,
-          fallbackColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.95),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: AppRadius.circular(16),
-              border: Border.fromBorderSide(
-                _focused
-                    ? BorderSide(color: color, width: 2)
-                    : BorderSide(color: color.withValues(alpha: 0.35)),
-              ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: _toggle,
+          child: GlassSurface(
+            cornerRadius: 16,
+            reinforced: true,
+            fallbackColor: AppColorScheme.surfaceVariant.withValues(
+              alpha: 0.95,
             ),
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(_severityIcon(message.severity), size: 22, color: color),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              message.title.isNotEmpty
-                                  ? message.title
-                                  : AppLocalizations.of(
-                                      context,
-                                    ).serverMessages,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: AppColorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                          if (!widget.read)
-                            Container(
-                              width: 8,
-                              height: 8,
-                              margin: const EdgeInsets.only(left: 8),
-                              decoration: BoxDecoration(
-                                color: color,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                        ],
-                      ),
-                      if (message.createdUtc != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          DateFormat.yMMMd().add_jm().format(
-                            message.createdUtc!.toLocal(),
-                          ),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColorScheme.onSurface.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (body.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 150),
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            body,
-                            maxLines: _expanded ? null : 2,
-                            overflow: _expanded
-                                ? TextOverflow.visible
-                                : TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              height: 1.35,
-                              color: AppColorScheme.onSurface.withValues(
-                                alpha: 0.75,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (_expanded && message.hasAction) ...[
-                        const SizedBox(height: 10),
-                        _DialogTextButton(
-                          label: message.actionLabel!,
-                          onPressed: () => showQrOrLaunch(
-                            context,
-                            url: message.actionUrl!,
-                            title: message.actionLabel!,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(16),
+                border: Border.fromBorderSide(
+                  _focused
+                      ? BorderSide(color: color, width: 2)
+                      : BorderSide(color: color.withValues(alpha: 0.35)),
                 ),
-              ],
+              ),
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline_rounded, size: 22, color: color),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                message.title.isNotEmpty
+                                    ? message.title
+                                    : AppLocalizations.of(
+                                        context,
+                                      ).serverMessages,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                            if (!widget.read)
+                              Container(
+                                width: 8,
+                                height: 8,
+                                margin: const EdgeInsets.only(left: 8),
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                          ],
+                        ),
+                        if (message.createdUtc != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat.yMMMd().add_jm().format(
+                              message.createdUtc!.toLocal(),
+                            ),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppColorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (body.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 150),
+                            alignment: Alignment.topLeft,
+                            child: _expanded
+                                ? _MessageBody(markdown: body)
+                                : Text(
+                                    stripMarkdown(body),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: _bodyTextStyle,
+                                  ),
+                          ),
+                        ],
+                        if (_expanded && message.hasAction) ...[
+                          const SizedBox(height: 10),
+                          _DialogTextButton(
+                            label: message.actionLabel!,
+                            onPressed: () => showQrOrLaunch(
+                              context,
+                              url: message.actionUrl!,
+                              title: message.actionLabel!,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -279,29 +277,128 @@ class _DialogTextButtonState extends State<_DialogTextButton> {
   Widget build(BuildContext context) {
     return Focus(
       onFocusChange: (focused) => setState(() => _focused = focused),
-      onKeyEvent: (node, event) =>
-          handleOneShotSelect(event, widget.onPressed),
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: _focused
-                ? AppColorScheme.accent
-                : AppColorScheme.accent.withValues(alpha: 0.16),
-            borderRadius: AppRadius.circular(8),
-          ),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+      onKeyEvent: (node, event) => handleOneShotSelect(event, widget.onPressed),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
               color: _focused
-                  ? AppColorScheme.onAccent
-                  : AppColorScheme.onSurface,
+                  ? AppColorScheme.accent
+                  : AppColorScheme.accent.withValues(alpha: 0.16),
+              borderRadius: AppRadius.circular(8),
+            ),
+            child: Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: _focused
+                    ? AppColorScheme.onAccent
+                    : AppColorScheme.onSurface,
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+final _bodyTextStyle = TextStyle(
+  fontSize: 13,
+  height: 1.35,
+  color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+);
+
+/// Markdown syntax to drop from the one-line preview on a collapsed card, so it
+/// reads as a sentence instead of showing asterisks and hashes.
+final _markdownNoise = RegExp(
+  r'^\s{0,3}#{1,6}\s+|^\s{0,3}>\s?|^\s{0,3}[-*+]\s+',
+  multiLine: true,
+);
+final _markdownEmphasis = RegExp(r'(\*{1,3}|_{1,3}|`)');
+final _markdownLink = RegExp(r'\[([^\]]*)\]\([^)]*\)');
+
+/// Flattens markdown to plain text for the collapsed preview.
+String stripMarkdown(String source) => source
+    .replaceAll(_markdownNoise, '')
+    .replaceAllMapped(_markdownLink, (m) => m[1] ?? '')
+    .replaceAll(_markdownEmphasis, '')
+    .replaceAll(RegExp(r'\n{2,}'), '\n')
+    .trim();
+
+/// The formatted body of an opened message.
+///
+/// Images are dropped on purpose: the body is admin free text, and loading a
+/// remote image from it would reach out to whatever host it names.
+class _MessageBody extends StatelessWidget {
+  final String markdown;
+
+  const _MessageBody({required this.markdown});
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = AppColorScheme.onSurface.withValues(alpha: 0.75);
+
+    return MarkdownBody(
+      data: markdown,
+      shrinkWrap: true,
+      // The package defaults to GitHub flavour, which adds tables and task lists.
+      // Those do not fit a narrow card, so this keeps to plain CommonMark:
+      // headings, bold, italic, lists, quotes, code and links.
+      extensionSet: md.ExtensionSet.commonMark,
+      selectable: false,
+      imageBuilder: (_, _, _) => const SizedBox.shrink(),
+      onTapLink: (text, href, title) {
+        if (href == null || href.isEmpty) return;
+        showQrOrLaunch(context, url: href, title: text.isEmpty ? href : text);
+      },
+      // Based on the app theme so every element the parser can produce gets a
+      // readable colour, not just the handful spelled out below.
+      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+        p: _bodyTextStyle,
+        h1: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: AppColorScheme.onSurface,
+        ),
+        h2: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: AppColorScheme.onSurface,
+        ),
+        h3: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColorScheme.onSurface,
+        ),
+        strong: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: AppColorScheme.onSurface,
+        ),
+        em: const TextStyle(fontStyle: FontStyle.italic),
+        a: TextStyle(color: AppColorScheme.accent),
+        listBullet: _bodyTextStyle,
+        blockquote: _bodyTextStyle,
+        code: TextStyle(fontFamily: 'monospace', fontSize: 12, color: muted),
+        del: _bodyTextStyle.copyWith(decoration: TextDecoration.lineThrough),
+        codeblockDecoration: BoxDecoration(
+          color: AppColorScheme.onSurface.withValues(alpha: 0.07),
+          borderRadius: AppRadius.circular(6),
+        ),
+        blockquoteDecoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.25),
+              width: 3,
+            ),
+          ),
+        ),
+        blockquotePadding: const EdgeInsets.only(left: 10),
+        blockSpacing: 6,
       ),
     );
   }
