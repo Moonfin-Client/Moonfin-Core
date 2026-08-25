@@ -9,14 +9,9 @@ class MediaDeduplicationUtils {
   /// them differently between versions.
   static const _providerPriority = ['imdb', 'tmdb', 'tvdb'];
 
-  /// A key two items share only when they are certainly the same title.
-  ///
-  /// Only an external provider id can say that. Titles can't: every series has
-  /// a Season 1, plenty of episodes are called Pilot, and Greatest Hits is a
-  /// whole genre of album. So an item without one gets a key of its own and
-  /// never merges.
-  static String getDeduplicationKey(AggregatedItem item) {
+  static String? providerKey(AggregatedItem item) {
     final providerIds = item.providerIds;
+    if (providerIds.isEmpty) return null;
     for (final provider in _providerPriority) {
       for (final entry in providerIds.entries) {
         if (entry.key.trim().toLowerCase() != provider) continue;
@@ -24,7 +19,46 @@ class MediaDeduplicationUtils {
         if (value.isNotEmpty) return '$provider:$value';
       }
     }
-    return 'item:${item.serverId}:${item.id}';
+    return null;
+  }
+
+  static String? episodeKey(AggregatedItem item) {
+    final t = item.type;
+    if (t != 'Episode' && t != 'Season') return null;
+    final series = (item.seriesName ?? '').trim().toLowerCase();
+    if (series.isEmpty) return null;
+    if (t == 'Season') {
+      final seasonNum = item.indexNumber ?? 1;
+      return 'season:$series:s$seasonNum';
+    }
+    if (item.indexNumber == null) return null;
+    final season = item.parentIndexNumber ?? 1;
+    return 'episode:$series:s$season:e${item.indexNumber}';
+  }
+
+  static String? nameKey(AggregatedItem item) {
+    final name = item.name.trim().toLowerCase();
+    final type = (item.type ?? '').trim().toLowerCase();
+    if (name.isEmpty || type.isEmpty) return null;
+    if (type == 'episode' || type == 'season' || type == 'playlist' || type == 'boxset' || type == 'person') {
+      return episodeKey(item);
+    }
+    final year = item.productionYear ?? (item.premiereDate?.year);
+    if (year == null) return null;
+    return '$type:$name:$year';
+  }
+
+  /// A key two items share only when they are certainly the same title.
+  static String getDeduplicationKey(AggregatedItem item) {
+    if (item.type == 'Episode') {
+      return episodeKey(item) ??
+          providerKey(item) ??
+          nameKey(item) ??
+          'item:${item.serverId}:${item.id}';
+    }
+    return providerKey(item) ??
+        nameKey(item) ??
+        'item:${item.serverId}:${item.id}';
   }
 
   /// Keeps one card per title, in the order the titles first appear.

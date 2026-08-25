@@ -65,14 +65,56 @@ void main() {
       expect(upper, lower);
     });
 
-    test('an item with no provider id gets a key of its own', () {
+    test('an item with no provider id and no year gets a key of its own', () {
       final a = MediaDeduplicationUtils.getDeduplicationKey(
-        _item(id: '1', serverId: 's1'),
+        _item(id: '1', serverId: 's1', year: null),
       );
       final b = MediaDeduplicationUtils.getDeduplicationKey(
-        _item(id: '2', serverId: 's1'),
+        _item(id: '2', serverId: 's1', year: null),
       );
       expect(a, isNot(b));
+    });
+
+    test('deduplicates episodes by series name, season, and episode number', () {
+      final ep1 = AggregatedItem(
+        id: 'ep1',
+        serverId: 's1',
+        rawData: {
+          'Name': 'Pilot',
+          'Type': 'Episode',
+          'SeriesName': 'Breaking Bad',
+          'ParentIndexNumber': 1,
+          'IndexNumber': 1,
+          'ProviderIds': {'Imdb': 'tt0903747'},
+        },
+      );
+      final ep2 = AggregatedItem(
+        id: 'ep2',
+        serverId: 's2',
+        rawData: {
+          'Name': 'Pilot',
+          'Type': 'Episode',
+          'SeriesName': 'Breaking Bad',
+          'ParentIndexNumber': 1,
+          'IndexNumber': 1,
+          'ProviderIds': {'Imdb': 'tt0903747'},
+        },
+      );
+      final ep3 = AggregatedItem(
+        id: 'ep3',
+        serverId: 's1',
+        rawData: {
+          'Name': 'Cat\'s in the Bag...',
+          'Type': 'Episode',
+          'SeriesName': 'Breaking Bad',
+          'ParentIndexNumber': 1,
+          'IndexNumber': 2,
+          'ProviderIds': {'Imdb': 'tt0903747'},
+        },
+      );
+
+      final result = MediaDeduplicationUtils.deduplicateMediaItems([ep1, ep2, ep3]);
+      expect(_ids(result), ['ep1', 'ep3']);
     });
   });
 
