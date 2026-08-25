@@ -1248,6 +1248,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get downloadSubtitles => 'ดาวน์โหลดคำบรรยาย';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'คำบรรยายที่เลือกไม่ถูกต้อง';
 
   @override
@@ -1417,6 +1423,20 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get perfectMatch => 'คู่ที่สมบูรณ์แบบ';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

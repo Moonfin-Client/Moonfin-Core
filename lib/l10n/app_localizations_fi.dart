@@ -1260,6 +1260,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get downloadSubtitles => 'Lataa tekstitykset';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Valittu tekstitys on virheellinen.';
 
   @override
@@ -1431,6 +1437,20 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Täydellinen ottelu';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

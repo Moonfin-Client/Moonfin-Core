@@ -1258,6 +1258,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get downloadSubtitles => 'ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'ಆಯ್ಕೆಮಾಡಿದ ಉಪಶೀರ್ಷಿಕೆ ಅಮಾನ್ಯವಾಗಿದೆ.';
 
   @override
@@ -1428,6 +1434,20 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get perfectMatch => 'ಪರಿಪೂರ್ಣ ಹೊಂದಾಣಿಕೆ';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

@@ -63,7 +63,10 @@ final class AppleTvPlayerViewController: UIViewController {
     private var canFavorite = false
     private var isFavorite = false
     private var canDownloadSubtitles = false
-    private weak var subtitleSearchingAlert: UIAlertController?
+    /// The searching / downloading alert. Dart raises and clears it, so both
+    /// halves of the flow report their own ending instead of the search one
+    /// falling through to "No Subtitles Found" whatever went wrong.
+    private weak var subtitleProgressAlert: UIAlertController?
     /// The buttons the player button settings left switched on, in the order
     /// the user put them in. Nil until the Dart side sends one, and the row
     /// offers everything until then.
@@ -2328,12 +2331,40 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func beginSubtitleSearch() {
-        let alert = UIAlertController(
-            title: "Searching for Subtitles\u{2026}", message: nil,
-            preferredStyle: .alert)
-        subtitleSearchingAlert = alert
-        present(alert, animated: true)
         onSearchSubtitles?()
+    }
+
+    /// Put up a spinner-less "working on it" alert for the stretch between
+    /// picking a subtitle and the server listing it. Without this the sheet just
+    /// closes and nothing happens for as long as the refresh takes, which reads
+    /// as the press having been ignored.
+    func showSubtitleProgress(_ message: String) {
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        subtitleProgressAlert = alert
+        present(alert, animated: true)
+    }
+
+    /// Take the progress alert down. A message turns it into an alert the viewer
+    /// has to acknowledge, which is how a failure or a subtitle that never
+    /// turned up gets reported instead of being swallowed.
+    func hideSubtitleProgress(message: String?) {
+        dismissSubtitleProgress { [weak self] in
+            guard let self, let message, !message.isEmpty else { return }
+            let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+            self.present(alert, animated: true)
+        }
+    }
+
+    /// Dismissal is asynchronous, so whatever comes next has to wait for the
+    /// completion rather than be presented on top of an alert on its way out.
+    private func dismissSubtitleProgress(then next: @escaping () -> Void) {
+        guard let existing = subtitleProgressAlert else {
+            next()
+            return
+        }
+        subtitleProgressAlert = nil
+        existing.dismiss(animated: true) { next() }
     }
 
     func presentRemoteSubtitleResults(_ results: [[String: Any]]) {
@@ -2361,12 +2392,7 @@ final class AppleTvPlayerViewController: UIViewController {
             sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
             self.present(sheet, animated: true)
         }
-        if let searching = subtitleSearchingAlert {
-            subtitleSearchingAlert = nil
-            searching.dismiss(animated: true) { show() }
-        } else {
-            show()
-        }
+        dismissSubtitleProgress { show() }
     }
 
     private func presentChapterMenu() {

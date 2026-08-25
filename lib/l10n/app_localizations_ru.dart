@@ -1264,6 +1264,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get downloadSubtitles => 'Скачать субтитры';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Выбранный субтитр недействителен.';
 
   @override
@@ -1439,6 +1445,20 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Идеальное совпадение';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

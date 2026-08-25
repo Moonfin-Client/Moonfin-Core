@@ -1263,6 +1263,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get downloadSubtitles => 'வசனங்களைப் பதிவிறக்கவும்';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'தேர்ந்தெடுக்கப்பட்ட வசனம் தவறானது.';
 
   @override
@@ -1434,6 +1440,20 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get perfectMatch => 'சரியான போட்டி';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

@@ -1689,6 +1689,14 @@
     "description": "Subtitle for the download subtitles option"
   },
   "downloadSubtitles": "Download Subtitles",
+  "searchingSubtitles": "Searching for subtitles\u2026",
+  "@searchingSubtitles": {
+    "description": "Shown while a remote subtitle search is running"
+  },
+  "downloadingSubtitle": "Downloading subtitle\u2026",
+  "@downloadingSubtitle": {
+    "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
+  },
   "@downloadSubtitles": {
     "description": "Dialog title for downloading remote subtitles"
   },
@@ -1945,6 +1953,27 @@
   "perfectMatch": "Perfect match",
   "@perfectMatch": {
     "description": "Label for a subtitle that is a hash match"
+  },
+  "aiTranslated": "AI translated",
+  "@aiTranslated": {
+    "description": "Label for a remote subtitle the provider marked as AI translated"
+  },
+  "machineTranslated": "Machine translated",
+  "@machineTranslated": {
+    "description": "Label for a remote subtitle the provider marked as machine translated"
+  },
+  "hearingImpaired": "SDH",
+  "@hearingImpaired": {
+    "description": "Label for a remote subtitle marked as hearing impaired"
+  },
+  "framerateFps": "{rate} fps",
+  "@framerateFps": {
+    "description": "Framerate of a remote subtitle, shown in its detail line",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
   },
   "channelsCount": "{count}ch",
   "@channelsCount": {

@@ -1265,6 +1265,12 @@ class AppLocalizationsCy extends AppLocalizations {
   String get downloadSubtitles => 'Lawrlwythwch Isdeitlau';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid =>
       'Mae\'r is-deitl a ddewiswyd yn annilys.';
 
@@ -1444,6 +1450,20 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Cydweddiad perffaith';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

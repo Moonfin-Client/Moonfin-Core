@@ -4,7 +4,6 @@ import 'dart:ui';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/identify_dialog.dart';
 import '../../widgets/focus/context_action.dart' show canIdentifyItemType;
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +38,9 @@ import 'modern/modern_detail_content.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/progress_snack_bar.dart';
+import '../../../util/remote_subtitle_labels.dart';
+import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
@@ -9266,153 +9268,37 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         !isAudio;
   }
 
-  String _remoteSubtitleErrorMessage(Object error, {required String action}) {
-    final l10n = AppLocalizations.of(context);
-    if (error is DioException) {
-      final status = error.response?.statusCode;
-      if (status == 403) {
-        return l10n.remoteSubtitlePermissionError(action);
-      }
-      if (status == 404) {
-        return l10n.remoteSubtitleNotFoundError(action);
-      }
 
-      final data = error.response?.data;
-      String? detail;
-      if (data is Map) {
-        detail =
-            (data['message'] ??
-                    data['Message'] ??
-                    data['error'] ??
-                    data['Error'])
-                as String?;
-      } else if (data is String && data.trim().isNotEmpty) {
-        detail = data.trim();
-      }
 
-      if (detail != null && detail.isNotEmpty) {
-        return l10n.remoteSubtitleDetailError(action, detail);
-      }
-      if (status != null) {
-        return l10n.remoteSubtitleHttpError(action, status);
-      }
-    }
-
-    return l10n.remoteSubtitleGenericError(action);
-  }
-
-  String _remoteSubtitleLanguage(
-    List<Map<String, dynamic>> subtitleStreams,
-    List<Map<String, dynamic>> audioStreams,
-  ) {
-    final preferred = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.defaultSubtitleLanguage)
-        .trim();
-    if (preferred.isNotEmpty) {
-      return preferred;
-    }
-
-    for (final stream in [...subtitleStreams, ...audioStreams]) {
-      final language = (stream['Language'] as String?)?.trim();
-      if (language != null && language.isNotEmpty) {
-        return language;
-      }
-    }
-
-    return 'eng';
-  }
-
-  String _remoteSubtitleOptionSubtitle(Map<String, dynamic> subtitle) {
-    final details = <String>[];
-    final language =
-        (subtitle['ThreeLetterISOLanguageName'] as String?)?.trim() ??
-        (subtitle['Language'] as String?)?.trim();
-    final provider = subtitle['ProviderName'] as String?;
-    final format = subtitle['Format'] as String?;
-    final downloadCount = subtitle['DownloadCount'] as num?;
-    final rating = subtitle['CommunityRating'] as num?;
-    final isHashMatch = subtitle['IsHashMatch'] == true;
-
-    if (language != null && language.isNotEmpty) {
-      details.add(language.toUpperCase());
-    }
-
-    if (provider != null && provider.isNotEmpty) {
-      details.add(provider);
-    }
-    if (format != null && format.isNotEmpty) {
-      details.add(format.toUpperCase());
-    }
-    if (rating != null) {
-      details.add('${rating.toStringAsFixed(1)}★');
-    }
-    if (downloadCount != null) {
-      details.add(
-        AppLocalizations.of(context).downloadsCount(downloadCount.toInt()),
-      );
-    }
-    if (isHashMatch) {
-      details.add(AppLocalizations.of(context).perfectMatch);
-    }
-
-    return details.join(' | ');
-  }
-
-  Future<List<Map<String, dynamic>>> _refreshSubtitleStreams(
+  /// Waits for a freshly downloaded subtitle to show up on the item.
+  ///
+  /// The wait asks the item endpoint for the media streams alone rather than
+  /// reloading the view model: a view model load blanks the screen behind a
+  /// loading overlay and fans out into ratings, similar items, features and
+  /// Seerr, none of which say anything about whether the subtitle has landed.
+  /// One reload happens at the end, when there is something new to show.
+  Future<Map<String, dynamic>?> _awaitDownloadedSubtitle(
     AggregatedItem currentItem,
+    MediaServerClient client,
     Set<int> existingIndexes,
   ) async {
-    const attempts = 8;
-    const delay = Duration(milliseconds: 500);
-    List<Map<String, dynamic>> latestStreams = currentItem.mediaStreams
-        .where((stream) => stream['Type'] == 'Subtitle')
-        .toList(growable: false);
+    final found = await awaitNewSubtitleStream(
+      client: client,
+      item: currentItem,
+      existingIndexes: existingIndexes,
+      streamsOf: (refreshed) => mediaStreamsForItem(
+        refreshed,
+        selectedMediaSourceForItem(refreshed, widget.selectedMediaSourceId),
+      ),
+      keepGoing: () => mounted,
+    );
 
-    for (var attempt = 0; attempt < attempts; attempt++) {
+    if (found != null) {
       await viewModel.load();
-      if (!mounted) {
-        return latestStreams;
-      }
-
-      final refreshedItem = viewModel.item;
-      if (refreshedItem != null) {
-        final mediaSource = selectedMediaSourceForItem(
-          refreshedItem,
-          widget.selectedMediaSourceId,
-        );
-        latestStreams = mediaStreamsForItem(refreshedItem, mediaSource)
-            .where((stream) => stream['Type'] == 'Subtitle')
-            .toList(growable: false);
-        final hasNewStream = latestStreams.any((stream) {
-          final index = stream['Index'] as int?;
-          return index != null && !existingIndexes.contains(index);
-        });
-        if (hasNewStream) {
-          return latestStreams;
-        }
-      }
-
-      if (attempt < attempts - 1) {
-        await Future.delayed(delay);
-      }
     }
-
-    return latestStreams;
+    return found;
   }
 
-  Map<String, dynamic>? _findNewSubtitleStream(
-    Set<int> existingIndexes,
-    List<Map<String, dynamic>> after,
-  ) {
-    for (final stream in after) {
-      final index = stream['Index'] as int?;
-      if (index != null && !existingIndexes.contains(index)) {
-        return stream;
-      }
-    }
-
-    return null;
-  }
 
   Future<void> _downloadRemoteSubtitles(
     BuildContext context,
@@ -9422,13 +9308,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   ) async {
     final messenger = ScaffoldMessenger.of(context);
     final client = GetIt.instance<MediaServerClient>();
-    final language = _remoteSubtitleLanguage(subtitleStreams, audioStreams);
+    final language = remoteSubtitleLanguage(subtitleStreams, audioStreams);
 
     List<Map<String, dynamic>> results;
     try {
-      results = await client.itemsApi.searchRemoteSubtitles(
-        item.id,
-        language: language,
+      results = await withProgressSnackBar(
+        messenger,
+        AppLocalizations.of(context).searchingSubtitles,
+        () => client.itemsApi.searchRemoteSubtitles(item.id, language: language),
       );
     } catch (error) {
       if (!context.mounted) {
@@ -9437,8 +9324,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            _remoteSubtitleErrorMessage(
+            remoteSubtitleErrorMessage(
               error,
+              AppLocalizations.of(context),
               action: AppLocalizations.of(context).search,
             ),
           ),
@@ -9461,16 +9349,16 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
     final result = await TrackSelectorDialog.show(
       context,
-      title: AppLocalizations.of(context).downloadSubtitles,
+      title: l10n.downloadSubtitles,
       options: results.map((subtitle) {
-        final l10n = AppLocalizations.of(context);
         final label =
             subtitle['Name'] as String? ??
             subtitle['Author'] as String? ??
             l10n.subtitles;
-        final subtitleText = _remoteSubtitleOptionSubtitle(subtitle);
+        final subtitleText = remoteSubtitleDetails(subtitle, l10n);
         return TrackOption(
           label: label,
           subtitle: subtitleText.isNotEmpty ? subtitleText : null,
@@ -9492,29 +9380,23 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return;
     }
 
+    final existingIndexes = subtitleStreams
+        .map((stream) => stream['Index'] as int?)
+        .whereType<int>()
+        .toSet();
+
     try {
-      await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
-      if (!context.mounted) {
-        return;
-      }
-
-      final existingIndexes = subtitleStreams
-          .map((stream) => stream['Index'] as int?)
-          .whereType<int>()
-          .toSet();
-
-      final refreshedSubtitleStreams = await _refreshSubtitleStreams(
-        item,
-        existingIndexes,
+      final newStream = await withProgressSnackBar(
+        messenger,
+        AppLocalizations.of(context).downloadingSubtitle,
+        () async {
+          await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
+          return _awaitDownloadedSubtitle(item, client, existingIndexes);
+        },
       );
       if (!context.mounted) {
         return;
       }
-
-      final newStream = _findNewSubtitleStream(
-        existingIndexes,
-        refreshedSubtitleStreams,
-      );
 
       if (newStream != null) {
         setState(() => _selectedSubtitleIndex = newStream['Index'] as int?);
@@ -9545,8 +9427,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            _remoteSubtitleErrorMessage(
+            remoteSubtitleErrorMessage(
               error,
+              AppLocalizations.of(context),
               action: AppLocalizations.of(context).download,
             ),
           ),

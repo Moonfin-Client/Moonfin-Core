@@ -27,6 +27,8 @@ import '../../navigation/destinations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/remote_subtitle_labels.dart';
+import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/play_method_label.dart';
 import 'appletv_playback_prompt_controller.dart';
@@ -750,40 +752,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         !isAudio;
   }
 
-  String _remoteSubtitleLanguage(
-    List<Map<String, dynamic>> subtitleStreams,
-    List<Map<String, dynamic>> audioStreams,
-  ) {
-    final preferred = GetIt.instance<UserPreferences>()
-        .get(UserPreferences.defaultSubtitleLanguage)
-        .trim()
-        .toLowerCase();
-    if (preferred.isNotEmpty && preferred != 'auto' && preferred != 'none') {
-      return preferred;
-    }
-    for (final stream in [...subtitleStreams, ...audioStreams]) {
-      final language = (stream['Language'] as String?)?.trim();
-      if (language != null && language.isNotEmpty) return language;
-    }
-    return 'eng';
-  }
-
-  String _remoteSubtitleOptionSubtitle(Map<String, dynamic> subtitle) {
-    final details = <String>[];
-    final language =
-        (subtitle['ThreeLetterISOLanguageName'] as String?)?.trim() ??
-        (subtitle['Language'] as String?)?.trim();
-    final provider = subtitle['ProviderName'] as String?;
-    final format = subtitle['Format'] as String?;
-    final rating = subtitle['CommunityRating'] as num?;
-    if (language != null && language.isNotEmpty) {
-      details.add(language.toUpperCase());
-    }
-    if (provider != null && provider.isNotEmpty) details.add(provider);
-    if (format != null && format.isNotEmpty) details.add(format.toUpperCase());
-    if (rating != null) details.add('${rating.toStringAsFixed(1)}*');
-    return details.join(' · ');
-  }
 
   void _searchRemoteSubtitles() {
     final manager = _manager;
@@ -806,31 +774,54 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
     final audioStreams = allStreams.where((s) => s['Type'] == 'Audio').toList();
-    final language = _remoteSubtitleLanguage(subtitleStreams, audioStreams);
+    final language = remoteSubtitleLanguage(subtitleStreams, audioStreams);
+    final l10n = AppLocalizations.of(context);
     () async {
-      var results = const <Map<String, dynamic>>[];
+      // The search alert is raised from here rather than from Swift so that a
+      // refused or failed search can end on the reason. Left to itself the
+      // native side could only fall through to "No Subtitles Found", which told
+      // the viewer the film had none when the truth was a rejected request.
+      await backend.showSubtitleProgress(l10n.searchingSubtitles);
+
+      List<Map<String, dynamic>> results;
       try {
         results = await client.itemsApi.searchRemoteSubtitles(
           item.id,
           language: language,
         );
-      } catch (_) {}
-      if (!mounted) return;
+      } catch (error) {
+        await backend.hideSubtitleProgress(
+          message: remoteSubtitleErrorMessage(
+            error,
+            l10n,
+            action: l10n.search,
+          ),
+        );
+        return;
+      }
+
+      if (!mounted) {
+        await backend.hideSubtitleProgress();
+        return;
+      }
+
       final mapped = results
           .map((s) {
             final id = (s['Id']?.toString()) ?? '';
             final label =
                 (s['Name'] as String?) ??
                 (s['Author'] as String?) ??
-                'Subtitle';
+                l10n.subtitles;
             return {
               'id': id,
               'label': label,
-              'subtitle': _remoteSubtitleOptionSubtitle(s),
+              'subtitle': remoteSubtitleDetails(s, l10n),
             };
           })
           .where((m) => (m['id']?.toString() ?? '').isNotEmpty)
           .toList();
+
+      await backend.hideSubtitleProgress();
       backend.showRemoteSubtitles(mapped);
     }();
   }
@@ -849,7 +840,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
             .map((s) => s['Index'] as int?)
             .whereType<int>()
             .toSet();
+    final backend = _backend;
+    final l10n = AppLocalizations.of(context);
     () async {
+      // The wait after the press is the server queueing a metadata refresh, so
+      // it can run to twenty seconds. Every ending says something: swallowing
+      // them left the viewer staring at a player that had gone back to normal
+      // with no idea whether the subtitle was coming.
+      await backend?.showSubtitleProgress(l10n.downloadingSubtitle);
+      String? outcome;
       try {
         await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
         final newStream = await _refreshAndFindSubtitle(
@@ -860,9 +859,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         final index = newStream?['Index'] as int?;
         if (index != null) {
           await manager.changeSubtitleTrack(index);
+        } else {
+          outcome = l10n.subtitleDownloadedPending;
         }
-      } catch (_) {
+      } catch (error) {
+        outcome = remoteSubtitleErrorMessage(
+          error,
+          l10n,
+          action: l10n.download,
+        );
       } finally {
+        await backend?.hideSubtitleProgress(message: outcome);
         if (mounted) _pushMetadata();
       }
     }();
@@ -872,26 +879,13 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     AggregatedItem item,
     MediaServerClient client,
     Set<int> existingIndexes,
-  ) async {
-    for (var attempt = 0; attempt < 8; attempt++) {
-      try {
-        final raw = await client.itemsApi.getItem(item.id);
-        if (!mounted) return null;
-        final refreshed = AggregatedItem(
-          id: item.id,
-          serverId: item.serverId,
-          rawData: raw,
-        );
-        for (final s in refreshed.mediaStreams.where(
-          (s) => s['Type'] == 'Subtitle',
-        )) {
-          final index = s['Index'] as int?;
-          if (index != null && !existingIndexes.contains(index)) return s;
-        }
-      } catch (_) {}
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-    }
-    return null;
+  ) {
+    return awaitNewSubtitleStream(
+      client: client,
+      item: item,
+      existingIndexes: existingIndexes,
+      keepGoing: () => mounted,
+    );
   }
 
   void _toggleFavorite(dynamic item) {

@@ -594,6 +594,16 @@ class AppleTvBackend implements PlayerBackend {
     await _invoke<void>('showRemoteSubtitles', {'results': results});
   }
 
+  Future<void> showSubtitleProgress(String message) async {
+    await _invoke<void>('showSubtitleProgress', {'message': message});
+  }
+
+  /// Pass a message to leave the viewer with something to acknowledge, or null
+  /// when the subtitle arrived and the progress alert can just go away.
+  Future<void> hideSubtitleProgress({String? message}) async {
+    await _invoke<void>('hideSubtitleProgress', {'message': message});
+  }
+
   Future<void> setThemeConfig({
     required bool isGlass,
     required int accentARGB,

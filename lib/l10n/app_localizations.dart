@@ -2422,6 +2422,18 @@ abstract class AppLocalizations {
   /// **'Download Subtitles'**
   String get downloadSubtitles;
 
+  /// Shown while a remote subtitle search is running
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for subtitles…'**
+  String get searchingSubtitles;
+
+  /// Shown while a chosen subtitle is downloaded and the server is picking it up
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading subtitle…'**
+  String get downloadingSubtitle;
+
   /// Error message when a selected subtitle is invalid
   ///
   /// In en, this message translates to:
@@ -2673,6 +2685,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Perfect match'**
   String get perfectMatch;
+
+  /// Label for a remote subtitle the provider marked as AI translated
+  ///
+  /// In en, this message translates to:
+  /// **'AI translated'**
+  String get aiTranslated;
+
+  /// Label for a remote subtitle the provider marked as machine translated
+  ///
+  /// In en, this message translates to:
+  /// **'Machine translated'**
+  String get machineTranslated;
+
+  /// Label for a remote subtitle marked as hearing impaired
+  ///
+  /// In en, this message translates to:
+  /// **'SDH'**
+  String get hearingImpaired;
+
+  /// Framerate of a remote subtitle, shown in its detail line
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} fps'**
+  String framerateFps(String rate);
 
   /// Audio channel count label
   ///

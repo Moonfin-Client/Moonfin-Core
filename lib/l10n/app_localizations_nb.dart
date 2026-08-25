@@ -1256,6 +1256,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get downloadSubtitles => 'Last ned undertekster';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Den valgte underteksten er ugyldig.';
 
   @override
@@ -1425,6 +1431,20 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Perfekt match';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

@@ -1263,6 +1263,12 @@ class AppLocalizationsLv extends AppLocalizations {
   String get downloadSubtitles => 'Lejupielādēt subtitrus';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Atlasītie subtitri nav derīgi.';
 
   @override
@@ -1436,6 +1442,20 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Perfekta sakritība';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

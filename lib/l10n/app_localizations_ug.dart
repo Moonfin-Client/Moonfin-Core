@@ -1256,6 +1256,12 @@ class AppLocalizationsUg extends AppLocalizations {
   String get downloadSubtitles => 'Subtitles نى چۈشۈرۈڭ';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'تاللانغان تارماق ئىناۋەتسىز.';
 
   @override
@@ -1425,6 +1431,20 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get perfectMatch => 'مۇكەممەل ماسلاشتۇرۇش';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

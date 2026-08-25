@@ -1257,6 +1257,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get downloadSubtitles => 'Субтитрлерді жүктеп алыңыз';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Таңдалған субтитр жарамсыз.';
 
   @override
@@ -1426,6 +1432,20 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Керемет сәйкестік';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,6 +72,9 @@ import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/progress_snack_bar.dart';
+import '../../../util/remote_subtitle_labels.dart';
+import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../playback/tizen_player_backend.dart';
 import 'playback_takeover.dart';
@@ -425,153 +427,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         !isAudio;
   }
 
-  String _remoteSubtitleErrorMessage(Object error, {required String action}) {
-    final l10n = AppLocalizations.of(context);
-    if (error is DioException) {
-      final status = error.response?.statusCode;
-      if (status == 403) {
-        return l10n.remoteSubtitlePermissionError(action);
-      }
-      if (status == 404) {
-        return l10n.remoteSubtitleNotFoundError(action);
-      }
 
-      final data = error.response?.data;
-      String? detail;
-      if (data is Map) {
-        detail =
-            (data['message'] ??
-                    data['Message'] ??
-                    data['error'] ??
-                    data['Error'])
-                as String?;
-      } else if (data is String && data.trim().isNotEmpty) {
-        detail = data.trim();
-      }
 
-      if (detail != null && detail.isNotEmpty) {
-        return l10n.remoteSubtitleDetailError(action, detail);
-      }
-      if (status != null) {
-        return l10n.remoteSubtitleHttpError(action, status);
-      }
-    }
-
-    return l10n.remoteSubtitleGenericError(action);
-  }
-
-  String _remoteSubtitleLanguage(
-    List<Map<String, dynamic>> subtitleStreams,
-    List<Map<String, dynamic>> audioStreams,
-  ) {
-    final preferred = _prefs
-        .get(UserPreferences.defaultSubtitleLanguage)
-        .trim();
-    if (preferred.isNotEmpty) {
-      return preferred;
-    }
-
-    for (final stream in [...subtitleStreams, ...audioStreams]) {
-      final language = (stream['Language'] as String?)?.trim();
-      if (language != null && language.isNotEmpty) {
-        return language;
-      }
-    }
-
-    return 'eng';
-  }
-
-  String _remoteSubtitleOptionSubtitle(Map<String, dynamic> subtitle) {
-    final details = <String>[];
-    final language =
-        (subtitle['ThreeLetterISOLanguageName'] as String?)?.trim() ??
-        (subtitle['Language'] as String?)?.trim();
-    final provider = subtitle['ProviderName'] as String?;
-    final format = subtitle['Format'] as String?;
-    final downloadCount = subtitle['DownloadCount'] as num?;
-    final rating = subtitle['CommunityRating'] as num?;
-    final isHashMatch = subtitle['IsHashMatch'] == true;
-
-    if (language != null && language.isNotEmpty) {
-      details.add(language.toUpperCase());
-    }
-    if (provider != null && provider.isNotEmpty) {
-      details.add(provider);
-    }
-    if (format != null && format.isNotEmpty) {
-      details.add(format.toUpperCase());
-    }
-    if (rating != null) {
-      details.add('${rating.toStringAsFixed(1)}★');
-    }
-    if (downloadCount != null) {
-      details.add(
-        AppLocalizations.of(context).downloadsCount(downloadCount.toInt()),
-      );
-    }
-    if (isHashMatch) {
-      details.add(AppLocalizations.of(context).perfectMatch);
-    }
-
-    return details.join(' | ');
-  }
-
-  Future<List<Map<String, dynamic>>> _refreshSubtitleStreams(
+  Future<Map<String, dynamic>?> _awaitDownloadedSubtitle(
     AggregatedItem currentItem,
     Set<int> existingIndexes,
-  ) async {
-    const attempts = 8;
-    const delay = Duration(milliseconds: 500);
-    final client = _clientForItem(currentItem);
-
-    List<Map<String, dynamic>> latestStreams = currentItem.mediaStreams
-        .where((stream) => stream['Type'] == 'Subtitle')
-        .toList(growable: false);
-
-    for (var attempt = 0; attempt < attempts; attempt++) {
-      try {
-        final refreshedRaw = await client.itemsApi.getItem(currentItem.id);
-        if (!mounted) return latestStreams;
-        final refreshedItem = AggregatedItem(
-          id: currentItem.id,
-          serverId: currentItem.serverId,
-          rawData: refreshedRaw,
-        );
-        latestStreams = refreshedItem.mediaStreams
-            .where((stream) => stream['Type'] == 'Subtitle')
-            .toList(growable: false);
-
-        final hasNewStream = latestStreams.any((stream) {
-          final index = stream['Index'] as int?;
-          return index != null && !existingIndexes.contains(index);
-        });
-        if (hasNewStream) {
-          return latestStreams;
-        }
-      } catch (_) {
-        break;
-      }
-
-      if (attempt < attempts - 1) {
-        await Future.delayed(delay);
-      }
-    }
-
-    return latestStreams;
-  }
-
-  Map<String, dynamic>? _findNewSubtitleStream(
-    Set<int> existingIndexes,
-    List<Map<String, dynamic>> after,
   ) {
-    for (final stream in after) {
-      final index = stream['Index'] as int?;
-      if (index != null && !existingIndexes.contains(index)) {
-        return stream;
-      }
-    }
-    return null;
+    return awaitNewSubtitleStream(
+      client: _clientForItem(currentItem),
+      item: currentItem,
+      existingIndexes: existingIndexes,
+      keepGoing: () => mounted,
+    );
   }
+
 
   Future<void> _downloadRemoteSubtitles(
     AggregatedItem item,
@@ -580,19 +449,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   ) async {
     final messenger = ScaffoldMessenger.of(context);
     final client = _clientForItem(item);
-    final language = _remoteSubtitleLanguage(subtitleStreams, audioStreams);
+    final language = remoteSubtitleLanguage(subtitleStreams, audioStreams);
 
     List<Map<String, dynamic>> results;
     try {
-      results = await client.itemsApi.searchRemoteSubtitles(
-        item.id,
-        language: language,
+      results = await withProgressSnackBar(
+        messenger,
+        AppLocalizations.of(context).searchingSubtitles,
+        () => client.itemsApi.searchRemoteSubtitles(item.id, language: language),
       );
     } catch (error) {
       if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(
-          content: Text(_remoteSubtitleErrorMessage(error, action: 'search')),
+          content: Text(
+            remoteSubtitleErrorMessage(
+              error,
+              AppLocalizations.of(context),
+              action: AppLocalizations.of(context).search,
+            ),
+          ),
         ),
       );
       return;
@@ -610,15 +486,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
     final result = await TrackSelectorDialog.show(
       context,
-      title: AppLocalizations.of(context).downloadSubtitles,
+      title: l10n.downloadSubtitles,
       options: results.map((subtitle) {
         final label =
             subtitle['Name'] as String? ??
             subtitle['Author'] as String? ??
-            'Subtitle';
-        final subtitleText = _remoteSubtitleOptionSubtitle(subtitle);
+            l10n.subtitles;
+        final subtitleText = remoteSubtitleDetails(subtitle, l10n);
         return TrackOption(
           label: label,
           subtitle: subtitleText.isNotEmpty ? subtitleText : null,
@@ -638,25 +515,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
 
+    final existingIndexes = subtitleStreams
+        .map((stream) => stream['Index'] as int?)
+        .whereType<int>()
+        .toSet();
+
     try {
-      await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
-      if (!mounted) return;
-
-      final existingIndexes = subtitleStreams
-          .map((stream) => stream['Index'] as int?)
-          .whereType<int>()
-          .toSet();
-
-      final refreshedSubtitleStreams = await _refreshSubtitleStreams(
-        item,
-        existingIndexes,
+      final newStream = await withProgressSnackBar(
+        messenger,
+        AppLocalizations.of(context).downloadingSubtitle,
+        () async {
+          await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
+          return _awaitDownloadedSubtitle(item, existingIndexes);
+        },
       );
       if (!mounted) return;
 
-      final newStream = _findNewSubtitleStream(
-        existingIndexes,
-        refreshedSubtitleStreams,
-      );
       if (newStream != null) {
         final streamIndex = newStream['Index'] as int?;
         if (streamIndex != null) {
@@ -693,7 +567,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(
-          content: Text(_remoteSubtitleErrorMessage(error, action: 'download')),
+          content: Text(
+            remoteSubtitleErrorMessage(
+              error,
+              AppLocalizations.of(context),
+              action: AppLocalizations.of(context).download,
+            ),
+          ),
         ),
       );
     }

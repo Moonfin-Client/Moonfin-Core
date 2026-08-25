@@ -1263,6 +1263,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get downloadSubtitles => 'സബ്‌ടൈറ്റിലുകൾ ഡൗൺലോഡ് ചെയ്യുക';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'തിരഞ്ഞെടുത്ത സബ്ടൈറ്റിൽ അസാധുവാണ്.';
 
   @override
@@ -1434,6 +1440,20 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get perfectMatch => 'തികഞ്ഞ പൊരുത്തം';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

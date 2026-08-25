@@ -1252,6 +1252,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get downloadSubtitles => 'সাবটাইটেল ডাউনলোড করুন';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'নির্বাচিত সাবটাইটেলটি অবৈধ৷';
 
   @override
@@ -1421,6 +1427,20 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get perfectMatch => 'নিখুঁত ম্যাচ';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

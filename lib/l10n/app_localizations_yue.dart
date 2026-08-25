@@ -1217,6 +1217,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get downloadSubtitles => '下載字幕';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => '所選的字幕無效。';
 
   @override
@@ -1386,6 +1392,20 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get perfectMatch => '完美搭配';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

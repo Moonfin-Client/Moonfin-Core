@@ -1215,6 +1215,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadSubtitles => '下载字幕';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => '所选的字幕无效。';
 
   @override
@@ -1384,6 +1390,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get perfectMatch => '完全匹配';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {

@@ -1264,6 +1264,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get downloadSubtitles => 'Shkarko titrat';
 
   @override
+  String get searchingSubtitles => 'Searching for subtitles…';
+
+  @override
+  String get downloadingSubtitle => 'Downloading subtitle…';
+
+  @override
   String get selectedSubtitleInvalid => 'Titra e zgjedhur është e pavlefshme.';
 
   @override
@@ -1433,6 +1439,20 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get perfectMatch => 'Ndeshje perfekte';
+
+  @override
+  String get aiTranslated => 'AI translated';
+
+  @override
+  String get machineTranslated => 'Machine translated';
+
+  @override
+  String get hearingImpaired => 'SDH';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {
