@@ -1436,10 +1436,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get perfectMatch => 'ಪರಿಪೂರ್ಣ ಹೊಂದಾಣಿಕೆ';
 
   @override
-  String get aiTranslated => 'AI translated';
+  String get aiTranslated => 'AI Translated';
 
   @override
-  String get machineTranslated => 'Machine translated';
+  String get machineTranslated => 'Machine Translated';
 
   @override
   String get hearingImpaired => 'SDH';

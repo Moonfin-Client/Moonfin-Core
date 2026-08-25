@@ -499,6 +499,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         return TrackOption(
           label: label,
           subtitle: subtitleText.isNotEmpty ? subtitleText : null,
+          subtitleMaxLines: 2,
+          badges: remoteSubtitleFlags(subtitle, l10n),
         );
       }).toList(),
     );

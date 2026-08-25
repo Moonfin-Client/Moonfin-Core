@@ -1432,10 +1432,10 @@ class AppLocalizationsDa extends AppLocalizations {
   String get perfectMatch => 'Perfekt match';
 
   @override
-  String get aiTranslated => 'AI translated';
+  String get aiTranslated => 'AI Translated';
 
   @override
-  String get machineTranslated => 'Machine translated';
+  String get machineTranslated => 'Machine Translated';
 
   @override
   String get hearingImpaired => 'SDH';

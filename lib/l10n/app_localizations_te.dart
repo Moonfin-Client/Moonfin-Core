@@ -1437,10 +1437,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get perfectMatch => 'పర్ఫెక్ట్ మ్యాచ్';
 
   @override
-  String get aiTranslated => 'AI translated';
+  String get aiTranslated => 'AI Translated';
 
   @override
-  String get machineTranslated => 'Machine translated';
+  String get machineTranslated => 'Machine Translated';
 
   @override
   String get hearingImpaired => 'SDH';

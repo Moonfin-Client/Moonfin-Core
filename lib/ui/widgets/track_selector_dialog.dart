@@ -112,6 +112,16 @@ class TrackOption {
   final String label;
   final String? subtitle;
   final int? labelMaxLines;
+
+  /// Lines the detail line may run to before it is cut short. One is right for
+  /// a track's own description; a remote subtitle result carries enough - the
+  /// format, the rating, the framerate - that one line loses the end of it.
+  final int subtitleMaxLines;
+
+  /// Short labels shown as pills under the detail line. What goes here is what
+  /// decides the choice rather than describes it, so it survives however narrow
+  /// the row gets instead of being the first thing cut off the end.
+  final List<String> badges;
   final bool scrollLabel;
   final bool scrollSubtitle;
 
@@ -119,6 +129,8 @@ class TrackOption {
     required this.label,
     this.subtitle,
     this.labelMaxLines = 1,
+    this.subtitleMaxLines = 1,
+    this.badges = const <String>[],
     this.scrollLabel = false,
     this.scrollSubtitle = false,
   });
@@ -270,13 +282,62 @@ class _TrackRowState extends State<_TrackRow> {
                                 fontSize: 12,
                                 color: subtitleColor,
                               ),
-                              maxLines: 1,
+                              maxLines: widget.option.subtitleMaxLines,
                               overflow: TextOverflow.ellipsis,
                             )),
+                    if (widget.option.badges.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: widget.option.badges
+                              .map((badge) => _OptionBadge(
+                                    label: badge,
+                                    dimmed: widget.dimmed,
+                                  ))
+                              .toList(growable: false),
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A pill under a track row, in the same shape as the audio quality badge so
+/// the two read as the same kind of mark.
+class _OptionBadge extends StatelessWidget {
+  final String label;
+  final bool dimmed;
+
+  const _OptionBadge({required this.label, required this.dimmed});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColorScheme.accent;
+    final alpha = dimmed ? 0.3 : 0.55;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColorScheme.onSurface.withValues(alpha: 0.10),
+        borderRadius: AppRadius.circular(11),
+        border: Border.all(color: accent.withValues(alpha: alpha), width: 1),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+          color: Color.alphaBlend(
+            accent.withValues(alpha: dimmed ? 0.5 : 0.85),
+            Colors.white,
           ),
         ),
       ),

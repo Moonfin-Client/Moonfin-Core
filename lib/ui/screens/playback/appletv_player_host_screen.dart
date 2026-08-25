@@ -815,7 +815,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
             return {
               'id': id,
               'label': label,
-              'subtitle': remoteSubtitleDetails(s, l10n),
+              'subtitle': remoteSubtitleSummary(s, l10n),
             };
           })
           .where((m) => (m['id']?.toString() ?? '').isNotEmpty)

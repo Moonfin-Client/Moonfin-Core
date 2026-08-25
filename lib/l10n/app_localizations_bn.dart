@@ -1429,10 +1429,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get perfectMatch => 'নিখুঁত ম্যাচ';
 
   @override
-  String get aiTranslated => 'AI translated';
+  String get aiTranslated => 'AI Translated';
 
   @override
-  String get machineTranslated => 'Machine translated';
+  String get machineTranslated => 'Machine Translated';
 
   @override
   String get hearingImpaired => 'SDH';

@@ -2689,13 +2689,13 @@ abstract class AppLocalizations {
   /// Label for a remote subtitle the provider marked as AI translated
   ///
   /// In en, this message translates to:
-  /// **'AI translated'**
+  /// **'AI Translated'**
   String get aiTranslated;
 
   /// Label for a remote subtitle the provider marked as machine translated
   ///
   /// In en, this message translates to:
-  /// **'Machine translated'**
+  /// **'Machine Translated'**
   String get machineTranslated;
 
   /// Label for a remote subtitle marked as hearing impaired

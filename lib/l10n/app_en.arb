@@ -1954,11 +1954,11 @@
   "@perfectMatch": {
     "description": "Label for a subtitle that is a hash match"
   },
-  "aiTranslated": "AI translated",
+  "aiTranslated": "AI Translated",
   "@aiTranslated": {
     "description": "Label for a remote subtitle the provider marked as AI translated"
   },
-  "machineTranslated": "Machine translated",
+  "machineTranslated": "Machine Translated",
   "@machineTranslated": {
     "description": "Label for a remote subtitle the provider marked as machine translated"
   },

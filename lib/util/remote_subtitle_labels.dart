@@ -4,13 +4,40 @@ import 'package:get_it/get_it.dart';
 import '../l10n/app_localizations.dart';
 import '../preference/user_preferences.dart';
 
-/// Builds the one line of detail shown under a remote subtitle search result.
+/// The flags the provider sets on an upload - machine or AI translated,
+/// hearing impaired, forced, a hash match against this exact file.
 ///
-/// The flags OpenSubtitles sets on an upload - machine or AI translated,
-/// hearing impaired, forced - are the part that decides whether a result is
-/// worth taking at all, so they come first. Everything after them is the
-/// provider's own bookkeeping, and the row is a single line that gets cut off
-/// well before the end on a phone.
+/// These decide whether a result is worth taking at all, so they are kept apart
+/// from the detail line and shown as badges: run in with the rest they were the
+/// first thing to fall off the end of the row.
+List<String> remoteSubtitleFlags(
+  Map<String, dynamic> subtitle,
+  AppLocalizations l10n,
+) {
+  return <String>[
+    if (subtitle['AiTranslated'] == true) l10n.aiTranslated,
+    if (subtitle['MachineTranslated'] == true) l10n.machineTranslated,
+    if (subtitle['HearingImpaired'] == true) l10n.hearingImpaired,
+    if (subtitle['Forced'] == true) l10n.forced,
+    if (subtitle['IsHashMatch'] == true) l10n.perfectMatch,
+  ];
+}
+
+/// Flags and detail as a single string, for a surface that can only take text.
+///
+/// The tvOS sheet is a native action sheet whose rows are one title each, so it
+/// has nowhere to put a badge.
+String remoteSubtitleSummary(
+  Map<String, dynamic> subtitle,
+  AppLocalizations l10n,
+) {
+  final parts = <String>[
+    ...remoteSubtitleFlags(subtitle, l10n),
+    remoteSubtitleDetails(subtitle, l10n),
+  ]..removeWhere((part) => part.isEmpty);
+  return parts.join(' | ');
+}
+/// The provider's own bookkeeping, as one line under the release name.
 String remoteSubtitleDetails(
   Map<String, dynamic> subtitle,
   AppLocalizations l10n,
@@ -22,22 +49,6 @@ String remoteSubtitleDetails(
       (subtitle['Language'] as String?)?.trim();
   if (language != null && language.isNotEmpty) {
     details.add(language.toUpperCase());
-  }
-
-  if (subtitle['AiTranslated'] == true) {
-    details.add(l10n.aiTranslated);
-  }
-  if (subtitle['MachineTranslated'] == true) {
-    details.add(l10n.machineTranslated);
-  }
-  if (subtitle['HearingImpaired'] == true) {
-    details.add(l10n.hearingImpaired);
-  }
-  if (subtitle['Forced'] == true) {
-    details.add(l10n.forced);
-  }
-  if (subtitle['IsHashMatch'] == true) {
-    details.add(l10n.perfectMatch);
   }
 
   final provider = (subtitle['ProviderName'] as String?)?.trim();

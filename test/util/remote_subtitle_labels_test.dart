@@ -6,7 +6,7 @@ void main() {
   final l10n = AppLocalizationsEn();
 
   group('remoteSubtitleDetails', () {
-    test('shows the AI translated flag the provider set', () {
+    test('keeps the flags out of the detail line', () {
       final details = remoteSubtitleDetails(<String, dynamic>{
         'ThreeLetterISOLanguageName': 'eng',
         'AiTranslated': true,
@@ -14,31 +14,7 @@ void main() {
         'Format': 'srt',
       }, l10n);
 
-      expect(details, 'ENG | AI translated | Open Subtitles | SRT');
-    });
-
-    test('shows machine translated, SDH and forced flags', () {
-      final details = remoteSubtitleDetails(<String, dynamic>{
-        'MachineTranslated': true,
-        'HearingImpaired': true,
-        'Forced': true,
-      }, l10n);
-
-      expect(details, 'Machine translated | SDH | Forced');
-    });
-
-    test('puts the flags before the provider bookkeeping', () {
-      final details = remoteSubtitleDetails(<String, dynamic>{
-        'ThreeLetterISOLanguageName': 'fre',
-        'ProviderName': 'Open Subtitles',
-        'DownloadCount': 12,
-        'AiTranslated': true,
-      }, l10n);
-
-      expect(
-        details.indexOf('AI translated'),
-        lessThan(details.indexOf('Open Subtitles')),
-      );
+      expect(details, 'ENG | Open Subtitles | SRT');
     });
 
     test('keeps a fractional framerate and trims a whole one', () {
@@ -62,14 +38,15 @@ void main() {
       );
     });
 
-    test('leaves out flags that are absent or false', () {
+    test('keeps the flags out of the detail line', () {
       final details = remoteSubtitleDetails(<String, dynamic>{
         'ThreeLetterISOLanguageName': 'eng',
-        'AiTranslated': false,
-        'Forced': null,
+        'AiTranslated': true,
+        'ProviderName': 'Open Subtitles',
+        'Format': 'srt',
       }, l10n);
 
-      expect(details, 'ENG');
+      expect(details, 'ENG | Open Subtitles | SRT');
     });
 
     test('falls back to the Language key when Emby sends that instead', () {
@@ -79,14 +56,76 @@ void main() {
       );
     });
 
-    test('keeps rating, downloads and hash match', () {
+    test('keeps rating and downloads', () {
       final details = remoteSubtitleDetails(<String, dynamic>{
-        'IsHashMatch': true,
         'CommunityRating': 8.5,
         'DownloadCount': 3421,
       }, l10n);
 
-      expect(details, 'Perfect match | 8.5★ | 3421 downloads');
+      expect(details, '8.5★ | 3421 downloads');
+    });
+  });
+
+  group('remoteSubtitleFlags', () {
+    test('returns every flag the provider set, in reading order', () {
+      final flags = remoteSubtitleFlags(<String, dynamic>{
+        'AiTranslated': true,
+        'MachineTranslated': true,
+        'HearingImpaired': true,
+        'Forced': true,
+        'IsHashMatch': true,
+      }, l10n);
+
+      expect(flags, <String>[
+        'AI Translated',
+        'Machine Translated',
+        'SDH',
+        'Forced',
+        'Perfect match',
+      ]);
+    });
+
+    test('leaves out flags that are absent or false', () {
+      final flags = remoteSubtitleFlags(<String, dynamic>{
+        'AiTranslated': false,
+        'Forced': null,
+        'HearingImpaired': true,
+      }, l10n);
+
+      expect(flags, <String>['SDH']);
+    });
+
+    test('is empty when the provider set nothing', () {
+      expect(
+        remoteSubtitleFlags(<String, dynamic>{'Format': 'srt'}, l10n),
+        isEmpty,
+      );
+    });
+  });
+
+  group('remoteSubtitleSummary', () {
+    test('runs the flags back in for a text-only surface', () {
+      final summary = remoteSubtitleSummary(<String, dynamic>{
+        'ThreeLetterISOLanguageName': 'eng',
+        'AiTranslated': true,
+        'Format': 'srt',
+      }, l10n);
+
+      expect(summary, 'AI Translated | ENG | SRT');
+    });
+
+    test('is just the detail line when there are no flags', () {
+      expect(
+        remoteSubtitleSummary(<String, dynamic>{'Format': 'srt'}, l10n),
+        'SRT',
+      );
+    });
+
+    test('is just the flags when there is no detail', () {
+      expect(
+        remoteSubtitleSummary(<String, dynamic>{'Forced': true}, l10n),
+        'Forced',
+      );
     });
   });
 }
