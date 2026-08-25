@@ -1325,6 +1325,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.verticalOffset,
       keywords: ['position', 'height'],
     ),
+    subtitleStyle.leaf(
+      'subtitles_hdr_separate',
+      l10n.subtitleHdrSeparate,
+      subtitle: l10n.subtitleHdrSeparateSubtitle,
+      keywords: ['hdr', 'brightness', 'grey'],
+    ),
 
     automation.screen(keywords: ['skip intro', 'autoplay', 'queue']),
     automation.leaf(

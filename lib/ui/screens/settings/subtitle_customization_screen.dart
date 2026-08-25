@@ -31,7 +31,6 @@ class _SubtitleCustomizationScreenState
   late final PreferenceBinding<double> _offsetBind;
   late final PreferenceBinding<double> _hdrSizeBind;
   late final PreferenceBinding<double> _hdrOffsetBind;
-  late final PreferenceBinding<bool> _hdrSeparateBind;
   late final FocusNode _sizeOuterNode;
   late final FocusNode _sizeInnerNode;
   late final FocusNode _offsetOuterNode;
@@ -73,10 +72,6 @@ class _SubtitleCustomizationScreenState
     _hdrOffsetBind = PreferenceBinding(
       store,
       UserPreferences.subtitlesHdrOffsetPosition,
-    );
-    _hdrSeparateBind = PreferenceBinding(
-      store,
-      UserPreferences.subtitlesHdrSeparate,
     );
     _hdrSizeOuterNode = FocusNode(debugLabel: 'SubtitleHdrSizeOuter');
     _hdrSizeInnerNode = FocusNode(
@@ -146,7 +141,6 @@ class _SubtitleCustomizationScreenState
     _offsetBind.dispose();
     _hdrSizeBind.dispose();
     _hdrOffsetBind.dispose();
-    _hdrSeparateBind.dispose();
     super.dispose();
   }
 
@@ -223,7 +217,6 @@ class _SubtitleCustomizationScreenState
               max: 0.5,
               divisions: 50,
               step: 0.01,
-              swallowDown: true,
               labelBuilder: (v) => l10n.percentValue((v * 100).round()),
             ),
             SwitchPreferenceTile(
@@ -232,9 +225,11 @@ class _SubtitleCustomizationScreenState
               subtitle: l10n.subtitleHdrSeparateSubtitle,
               icon: Icons.hdr_on,
             ),
-            ValueListenableBuilder<bool>(
-              valueListenable: _hdrSeparateBind,
-              builder: (context, separate, _) => separate
+            ListenableBuilder(
+              listenable: GetIt.instance<UserPreferences>(),
+              builder: (context, _) => GetIt.instance<UserPreferences>().get(
+                UserPreferences.subtitlesHdrSeparate,
+              )
                   ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
