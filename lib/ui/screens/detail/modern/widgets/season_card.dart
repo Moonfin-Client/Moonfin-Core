@@ -156,7 +156,9 @@ class SeasonCard extends StatelessWidget {
                               ThemeRegistry.active.borders.focusBorder.copyWith(
                                 color: isNeon
                                     ? const Color(0xFF00FFFF)
-                                    : Colors.cyan.withValues(alpha: 0.7),
+                                    : AppColorScheme.accent.withValues(
+                                        alpha: 0.7,
+                                      ),
                                 width: 1.5,
                               ),
                             )
