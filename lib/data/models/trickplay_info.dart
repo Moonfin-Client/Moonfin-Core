@@ -31,6 +31,7 @@ class TrickplayInfo {
                 imageTag: thumbnail.imageTag,
               ),
             )
+            .where((frame) => frame.isValid)
             .toList()
           ..sort((a, b) => a.positionTicks.compareTo(b.positionTicks));
 
@@ -65,7 +66,9 @@ class TrickplayInfo {
 
   bool get isValid {
     if (width <= 0 || height <= 0) return false;
-    if (usesIndividualFrames) return frames.every((frame) => frame.isValid);
+    // The frames were filtered as the list was built, and this runs on every
+    // scrub, so it can't afford to walk them again.
+    if (usesIndividualFrames) return true;
     return tileWidth > 0 && tileHeight > 0 && interval > 0;
   }
 

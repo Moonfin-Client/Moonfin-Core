@@ -51,7 +51,8 @@ class EmbyTrickplayApi implements TrickplayApi {
       'maxWidth': width.toString(),
       'tag': imageTag,
       'PositionTicks': positionTicks.toString(),
-      'MediaSourceId': ?mediaSourceId,
+      if (mediaSourceId != null && mediaSourceId.isNotEmpty)
+        'MediaSourceId': mediaSourceId,
       'quality': '90',
     });
     return '${_getBaseUrl()}/Items/$itemId/Images/Thumbnail$query';

@@ -87,6 +87,22 @@ void main() {
       expect(frameInfo.resolveTile(const Duration(minutes: 2)).imageIndex, 2);
     });
 
+    test('drops a frame it could never fetch', () {
+      final info = TrickplayInfo.fromThumbnailSet(
+        const TrickplayThumbnailSet(
+          aspectRatio: 2,
+          thumbnails: [
+            TrickplayThumbnail(positionTicks: 0, imageTag: 'first'),
+            TrickplayThumbnail(positionTicks: 100, imageTag: ''),
+          ],
+        ),
+        width: 200,
+      );
+
+      expect(info.frames.map((frame) => frame.imageTag), ['first']);
+      expect(info.isValid, isTrue);
+    });
+
     test('sorts timestamps and replaces duplicate positions', () {
       final sorted = TrickplayInfo.fromThumbnailSet(
         const TrickplayThumbnailSet(

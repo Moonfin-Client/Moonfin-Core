@@ -97,6 +97,30 @@ void main() {
     expect(result, isNull);
   });
 
+  test('returns null when the server has generated no previews', () async {
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          handler.resolve(
+            Response(
+              requestOptions: options,
+              // A library with no generated previews sends no AspectRatio
+              // at all, not an empty one.
+              data: const <String, dynamic>{'Thumbnails': <dynamic>[]},
+            ),
+          );
+        }),
+      );
+
+    final result = await EmbyTrickplayApi(
+      dio,
+      () => 'https://emby.example',
+      () => null,
+    ).getThumbnailSet('no-previews', width: 320);
+
+    expect(result, isNull);
+  });
+
   test('builds an individually addressable Emby BIF frame URL', () {
     final api = EmbyTrickplayApi(
       Dio(),
