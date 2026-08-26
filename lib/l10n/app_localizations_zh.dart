@@ -2265,6 +2265,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showBackdropImages => '在内容后方显示背景图';
 
   @override
+  String get deviceBackdrops => 'Backdrops on This Device';
+
+  @override
+  String get deviceBackdropsSubtitle =>
+      'Overrides every profile. Turn off to stop loading and displaying background artwork on this device.';
+
+  @override
+  String get backdropRendering => 'Backdrop Rendering';
+
+  @override
+  String get backdropRenderingSubtitle =>
+      'Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.';
+
+  @override
+  String get backdropRenderingAutomatic => 'Automatic';
+
+  @override
+  String get backdropRenderingQuality => 'Quality';
+
+  @override
+  String get backdropRenderingPerformance => 'Performance';
+
+  @override
   String get seriesThumbnails => '显示剧集缩略图';
 
   @override
@@ -3589,6 +3612,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enableBuiltInScreensaver => '启用内置屏幕保护程序';
+
+  @override
+  String get deviceScreensaver => 'Moonfin Screensaver on This Device';
+
+  @override
+  String get deviceScreensaverSubtitle =>
+      'Overrides every profile. Turn off to let the system screensaver start instead.';
 
   @override
   String get mode => '模式';

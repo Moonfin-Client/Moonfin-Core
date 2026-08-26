@@ -3,11 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/fullscreen_backdrop_switcher.dart';
 
 void main() {
-  Widget app(String? imageUrl) {
+  Widget app(String? imageUrl, {bool animateTransitions = true}) {
     return MaterialApp(
       home: FullscreenBackdropSwitcher(
         imageUrl: imageUrl,
         duration: const Duration(milliseconds: 800),
+        animateTransitions: animateTransitions,
         imageBuilder: (url) => Text(url),
       ),
     );
@@ -80,5 +81,31 @@ void main() {
 
     expect(find.text('b'), findsOneWidget);
     expect(find.text('a'), findsNothing);
+  });
+
+  testWidgets('replaces a backdrop immediately when transitions are disabled', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app('a', animateTransitions: false));
+
+    await tester.pumpWidget(app('b', animateTransitions: false));
+
+    expect(find.text('a'), findsNothing);
+    expect(find.text('b'), findsOneWidget);
+    expect(find.byType(FadeTransition), findsNothing);
+  });
+
+  testWidgets('disabling transitions settles an in-flight backdrop', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app('a'));
+    await tester.pumpWidget(app('b'));
+    await tester.pump(const Duration(milliseconds: 200));
+
+    await tester.pumpWidget(app('b', animateTransitions: false));
+
+    expect(find.text('a'), findsNothing);
+    expect(find.text('b'), findsOneWidget);
+    expect(find.byType(FadeTransition), findsNothing);
   });
 }

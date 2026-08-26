@@ -41,6 +41,7 @@ import '../../playback/appletv_preview_player.dart';
 import '../../playback/html_video_backend_profile.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
+import 'backdrop_render_profile.dart';
 import 'bounded_network_image.dart';
 import 'fullscreen_backdrop_switcher.dart';
 import 'navigation_layout.dart';
@@ -104,6 +105,12 @@ class _MediaBarState extends State<MediaBar>
   final _playbackManager = GetIt.instance<PlaybackManager>();
   final _audioArbiter = GetIt.instance<PlaybackArbiter>();
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  bool get _showBackdrops => widget.prefs.shouldShowBackdrops;
+  BackdropRenderProfile get _backdropRenderProfile =>
+      BackdropRenderProfile.resolve(
+        widget.prefs.get(UserPreferences.backdropRenderMode),
+        isTv: PlatformDetection.isTV,
+      );
   // The playback module only registers a Media3 backend on some platforms, so
   // ask the container instead of repeating its platform list here.
   final Media3PlayerBackend? _media3TrailerBackend =
@@ -530,6 +537,14 @@ class _MediaBarState extends State<MediaBar>
   void _syncMakdBackdropWithCurrentSlide() {
     if (!_isHomeRouteActive) return;
 
+    if (!_showBackdrops) {
+      _lastSyncedMakdBackdropUrl = null;
+      if (_backgroundService.currentUrl != null) {
+        _backgroundService.clearBackgrounds();
+      }
+      return;
+    }
+
     final mode = UserPreferences.normalizeMediaBarMode(
       widget.prefs.get(UserPreferences.mediaBarMode),
     );
@@ -586,7 +601,10 @@ class _MediaBarState extends State<MediaBar>
     final activeBookHeight = contentHeight * 0.84;
     final activeBookWidth = activeBookHeight * 0.72;
     final posterCacheW = (activeBookWidth * 0.88 * dpr).round().clamp(150, 400);
-    final backdropCacheW = (screenWidth * dpr).round().clamp(640, 1280);
+    final backdropCacheW = (screenWidth * dpr).round().clamp(
+      640,
+      _backdropRenderProfile.maxDecodeWidth,
+    );
 
     final warmIndices = <int>{
       centerIndex,
@@ -627,7 +645,7 @@ class _MediaBarState extends State<MediaBar>
               );
             }
           } else {
-            if (item.backdropUrl != null) {
+            if (_showBackdrops && item.backdropUrl != null) {
               await precacheImage(
                 ResizeImage(
                   offlineAwareImageProvider(item.backdropUrl!),
@@ -825,7 +843,10 @@ class _MediaBarState extends State<MediaBar>
     final activeBookHeight = contentHeight * 0.84;
     final activeBookWidth = activeBookHeight * 0.72;
     final posterCacheW = (activeBookWidth * 0.88 * dpr).round().clamp(150, 400);
-    final backdropCacheW = (screenWidth * dpr).round().clamp(640, 1280);
+    final backdropCacheW = (screenWidth * dpr).round().clamp(
+      640,
+      _backdropRenderProfile.maxDecodeWidth,
+    );
 
     final isBookshelf = _isBookshelfMode();
 
@@ -851,7 +872,7 @@ class _MediaBarState extends State<MediaBar>
             );
           }
         } else {
-          if (item.backdropUrl != null) {
+          if (_showBackdrops && item.backdropUrl != null) {
             precacheImage(
               ResizeImage(
                 offlineAwareImageProvider(item.backdropUrl!),
@@ -2031,6 +2052,8 @@ class _MediaBarState extends State<MediaBar>
                     child: _BackdropLayer(
                       items: items,
                       currentIndex: _currentIndex,
+                      enabled: _showBackdrops,
+                      renderProfile: _backdropRenderProfile,
                     ),
                   ),
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
@@ -2229,11 +2252,15 @@ class _MediaBarState extends State<MediaBar>
                       child: _BackdropLayer(
                         items: items,
                         currentIndex: _currentIndex,
-                        zoomDuration: Duration(
-                          milliseconds: widget.prefs.get(
-                            UserPreferences.mediaBarIntervalMs,
-                          ),
-                        ),
+                        enabled: _showBackdrops,
+                        renderProfile: _backdropRenderProfile,
+                        zoomDuration: _backdropRenderProfile.animateTransitions
+                            ? Duration(
+                                milliseconds: widget.prefs.get(
+                                  UserPreferences.mediaBarIntervalMs,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                   if (!isMobile)
@@ -2696,6 +2723,10 @@ class _MediaBarState extends State<MediaBar>
             return;
           }
 
+          if (!_showBackdrops) {
+            return;
+          }
+
           final backdropUrl = items[clampedIndex].backdropUrl;
 
           if (backdropUrl == null || backdropUrl.isEmpty) {
@@ -2734,6 +2765,9 @@ class _MediaBarState extends State<MediaBar>
                 ? null
                 : Stack(fit: StackFit.expand, children: trailerOverlays),
             onAmbientArtworkChanged: (artworkUrl) {
+              if (!_showBackdrops) {
+                return;
+              }
               if (artworkUrl == null || artworkUrl.isEmpty) {
                 return;
               }
@@ -2775,7 +2809,7 @@ class _MediaBarState extends State<MediaBar>
   }
 
   void _prefetchGalleryWindow(List<MediaBarSlideItem> items, int centerIndex) {
-    if (!mounted || items.isEmpty) return;
+    if (!mounted || items.isEmpty || !_showBackdrops) return;
     final pageSize = GalleryLayout.pageSize;
     final start = (centerIndex ~/ pageSize) * pageSize;
     final end = (start + pageSize * 2).clamp(0, items.length);
@@ -3065,6 +3099,8 @@ class _MediaBarState extends State<MediaBar>
 class _BackdropLayer extends StatelessWidget {
   final List<MediaBarSlideItem> items;
   final int currentIndex;
+  final bool enabled;
+  final BackdropRenderProfile renderProfile;
 
   /// When set, the backdrop slowly zooms (Ken Burns) over this duration
   final Duration? zoomDuration;
@@ -3072,23 +3108,26 @@ class _BackdropLayer extends StatelessWidget {
   const _BackdropLayer({
     required this.items,
     required this.currentIndex,
+    required this.enabled,
+    required this.renderProfile,
     this.zoomDuration,
   });
 
   @override
   Widget build(BuildContext context) {
-    final url = (currentIndex >= 0 && currentIndex < items.length)
+    final url = enabled && currentIndex >= 0 && currentIndex < items.length
         ? items[currentIndex].backdropUrl
         : null;
     return RepaintBoundary(
       child: FullscreenBackdropSwitcher(
         imageUrl: url,
-        duration: const Duration(milliseconds: 600),
+        duration: renderProfile.transitionDuration,
+        animateTransitions: renderProfile.animateTransitions,
         imageBuilder: (imageUrl) {
           final Widget image = BoundedNetworkImage(
             imageUrl: imageUrl,
             minWidth: 640,
-            maxWidth: 1280,
+            maxWidth: renderProfile.maxDecodeWidth,
             errorBuilder: (_, _, _) =>
                 ColoredBox(color: AppColorScheme.background),
           );

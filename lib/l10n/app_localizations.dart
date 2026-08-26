@@ -4198,6 +4198,48 @@ abstract class AppLocalizations {
   /// **'Show backdrop images behind content'**
   String get showBackdropImages;
 
+  /// Device-wide master setting for backdrop artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Backdrops on This Device'**
+  String get deviceBackdrops;
+
+  /// Description for the device-wide backdrop override
+  ///
+  /// In en, this message translates to:
+  /// **'Overrides every profile. Turn off to stop loading and displaying background artwork on this device.'**
+  String get deviceBackdropsSubtitle;
+
+  /// Setting for the backdrop rendering budget
+  ///
+  /// In en, this message translates to:
+  /// **'Backdrop Rendering'**
+  String get backdropRendering;
+
+  /// Description for the backdrop rendering budget
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.'**
+  String get backdropRenderingSubtitle;
+
+  /// Backdrop rendering option: choose for this device
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get backdropRenderingAutomatic;
+
+  /// Backdrop rendering option: full artwork and transitions
+  ///
+  /// In en, this message translates to:
+  /// **'Quality'**
+  String get backdropRenderingQuality;
+
+  /// Backdrop rendering option: reduced work
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get backdropRenderingPerformance;
+
   /// Setting for series thumbnails
   ///
   /// In en, this message translates to:
@@ -6759,6 +6801,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable the built-in screensaver'**
   String get enableBuiltInScreensaver;
+
+  /// Device-wide master setting for Moonfin's screensaver
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Screensaver on This Device'**
+  String get deviceScreensaver;
+
+  /// Description for the device-wide screensaver override
+  ///
+  /// In en, this message translates to:
+  /// **'Overrides every profile. Turn off to let the system screensaver start instead.'**
+  String get deviceScreensaverSubtitle;
 
   /// Setting for mode
   ///

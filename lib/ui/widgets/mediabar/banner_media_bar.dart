@@ -13,6 +13,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
+import '../backdrop_render_profile.dart';
 import '../rating_display.dart';
 import 'media_bar_status_focus.dart';
 
@@ -329,14 +330,21 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
   }
 
   Widget _backdrop(MediaBarSlideItem item) {
+    if (!widget.prefs.shouldShowBackdrops) {
+      return ColoredBox(color: AppColorScheme.surface);
+    }
     final url = item.backdropUrl;
     if (url == null) {
       return ColoredBox(color: AppColorScheme.surface);
     }
+    final renderProfile = BackdropRenderProfile.resolve(
+      widget.prefs.get(UserPreferences.backdropRenderMode),
+      isTv: PlatformDetection.isTV,
+    );
     return BoundedNetworkImage(
       imageUrl: url,
       minWidth: 640,
-      maxWidth: 1280,
+      maxWidth: renderProfile.maxDecodeWidth,
       errorBuilder: (_, _, _) => ColoredBox(color: AppColorScheme.surface),
     );
   }

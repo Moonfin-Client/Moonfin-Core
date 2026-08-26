@@ -12,7 +12,7 @@ import '../../util/platform_detection.dart';
 class ScreensaverController {
   ScreensaverController(this._prefs, PlaybackManager playbackManager) {
     if (PlatformDetection.isTV) {
-      _enabledCache = _prefs.get(UserPreferences.screensaverEnabled);
+      _enabledCache = _prefs.shouldUseInAppScreensaver;
       _timeoutCache = _prefs.get(UserPreferences.screensaverTimeout);
       _playingSub = playbackManager.state.playingStream.listen(
         _onPlayingChanged,
@@ -115,7 +115,7 @@ class ScreensaverController {
   }
 
   void _onPrefsChanged() {
-    final enabled = _prefs.get(UserPreferences.screensaverEnabled);
+    final enabled = _prefs.shouldUseInAppScreensaver;
     final timeout = _prefs.get(UserPreferences.screensaverTimeout);
     if (enabled == _enabledCache && timeout == _timeoutCache) return;
     _enabledCache = enabled;

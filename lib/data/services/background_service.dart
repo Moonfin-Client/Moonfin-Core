@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/models/aggregated_item.dart';
+import '../../preference/user_preferences.dart';
 import 'connectivity_service.dart';
 import 'media_server_client_factory.dart';
 
@@ -44,7 +45,12 @@ class BackgroundService {
   Stream<String?> get backgroundStream => _backgroundController.stream;
   Stream<BlurContext> get blurContextStream => _blurContextController.stream;
 
+  bool get _backdropsAllowed =>
+      !GetIt.instance.isRegistered<UserPreferences>() ||
+      GetIt.instance<UserPreferences>().shouldShowBackdrops;
+
   void setBackground(AggregatedItem? item, {BlurContext context = BlurContext.details}) {
+    if (!_backdropsAllowed) return clearBackgrounds();
     if (item == null) return clearBackgrounds();
 
     _blurContext = context;
@@ -130,6 +136,7 @@ class BackgroundService {
   }
 
   void setBackgroundUrl(String url, {BlurContext context = BlurContext.browsing}) {
+    if (!_backdropsAllowed) return clearBackgrounds();
     _blurContext = context;
     _blurContextController.add(context);
     _loadBackgrounds([url]);

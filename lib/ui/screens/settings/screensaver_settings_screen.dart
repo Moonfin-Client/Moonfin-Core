@@ -57,10 +57,20 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(
+                    preference: UserPreferences.deviceScreensaverEnabled,
+                    title: l10n.deviceScreensaver,
+                    subtitle: l10n.deviceScreensaverSubtitle,
+                    icon: Icons.tv_off_outlined,
+                    onChanged: GetIt.instance<UserPreferences>()
+                        .notifyPreferenceChanged,
+                  ),
+                  SwitchPreferenceTile(
                     preference: UserPreferences.screensaverEnabled,
                     title: l10n.inAppScreensaver,
                     subtitle: l10n.enableBuiltInScreensaver,
                     icon: Icons.wallpaper,
+                    onChanged: GetIt.instance<UserPreferences>()
+                        .notifyPreferenceChanged,
                   ),
                   EnumPreferenceTile<ScreensaverMode>(
                     preference: UserPreferences.screensaverMode,
@@ -75,6 +85,8 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                     preference: UserPreferences.screensaverTimeout,
                     title: l10n.timeout,
                     icon: Icons.timer,
+                    onChanged: GetIt.instance<UserPreferences>()
+                        .notifyPreferenceChanged,
                     labelOf: (value) => l10n.minutesShort(value.minutes),
                   ),
                   SliderPreferenceTile(

@@ -585,10 +585,22 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['mouse', 'wheel', 'speed', 'scrolling'],
     ),
     style.leaf(
+      'pref_device_backdrops_enabled',
+      l10n.deviceBackdrops,
+      subtitle: l10n.deviceBackdropsSubtitle,
+      keywords: ['all profiles', 'device override', 'background images'],
+    ),
+    style.leaf(
       'pref_show_backdrop',
       l10n.backgroundBackdrops,
       subtitle: l10n.showBackdropImages,
       keywords: ['background images'],
+    ),
+    style.leaf(
+      'pref_backdrop_render_mode',
+      l10n.backdropRendering,
+      subtitle: l10n.backdropRenderingSubtitle,
+      keywords: ['background images', 'performance', 'lag', 'tv'],
     ),
     style.leaf(
       'pref_oled_mode',
@@ -729,6 +741,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
 
     if (PlatformDetection.isTV) ...[
       screensaver.screen(keywords: ['idle', 'dim', 'burn in']),
+      screensaver.leaf(
+        'pref_device_screensaver_enabled',
+        l10n.deviceScreensaver,
+        subtitle: l10n.deviceScreensaverSubtitle,
+        keywords: ['system screensaver', 'android tv', 'all profiles'],
+      ),
       screensaver.leaf(
         'pref_screensaver_enabled',
         l10n.inAppScreensaver,

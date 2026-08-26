@@ -312,7 +312,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final topPad = MediaQuery.of(context).padding.top;
     final prefs = GetIt.instance<UserPreferences>();
     final navbarPosition = prefs.get(UserPreferences.navbarPosition);
-    final backdropEnabled = prefs.get(UserPreferences.backdropEnabled);
+    final backdropEnabled = prefs.shouldShowBackdrops;
     final navbarHeight = navbarPosition == NavbarPosition.top
         ? (PlatformDetection.isTV ? 95.0 : PlatformDetection.useMobileUi ? 60.0 : 80.0)
         : 0.0;

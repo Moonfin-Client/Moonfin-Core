@@ -2439,6 +2439,29 @@ class AppLocalizationsHr extends AppLocalizations {
   String get showBackdropImages => 'Prikaži slike pozadine iza sadržaja';
 
   @override
+  String get deviceBackdrops => 'Backdrops on This Device';
+
+  @override
+  String get deviceBackdropsSubtitle =>
+      'Overrides every profile. Turn off to stop loading and displaying background artwork on this device.';
+
+  @override
+  String get backdropRendering => 'Backdrop Rendering';
+
+  @override
+  String get backdropRenderingSubtitle =>
+      'Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.';
+
+  @override
+  String get backdropRenderingAutomatic => 'Automatic';
+
+  @override
+  String get backdropRenderingQuality => 'Quality';
+
+  @override
+  String get backdropRenderingPerformance => 'Performance';
+
+  @override
   String get seriesThumbnails => 'Sličice serije';
 
   @override
@@ -3846,6 +3869,13 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get enableBuiltInScreensaver => 'Omogućite ugrađeni čuvar zaslona';
+
+  @override
+  String get deviceScreensaver => 'Moonfin Screensaver on This Device';
+
+  @override
+  String get deviceScreensaverSubtitle =>
+      'Overrides every profile. Turn off to let the system screensaver start instead.';
 
   @override
   String get mode => 'Način';

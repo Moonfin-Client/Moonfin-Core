@@ -6,6 +6,7 @@ class FullscreenBackdropSwitcher extends StatefulWidget {
   final Duration duration;
   final Alignment alignment;
   final Duration fadeInDuration;
+  final bool animateTransitions;
   final Widget Function(String imageUrl)? imageBuilder;
 
   const FullscreenBackdropSwitcher({
@@ -14,6 +15,7 @@ class FullscreenBackdropSwitcher extends StatefulWidget {
     required this.duration,
     this.alignment = Alignment.topCenter,
     this.fadeInDuration = const Duration(milliseconds: 300),
+    this.animateTransitions = true,
     this.imageBuilder,
   });
 
@@ -68,6 +70,22 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
     }
 
     final next = widget.imageUrl;
+
+    if (!widget.animateTransitions) {
+      _controller.stop();
+      if (_currentUrl == next &&
+          _incomingUrl == null &&
+          _pendingUrl == null) {
+        return;
+      }
+      setState(() {
+        _currentUrl = next;
+        _incomingUrl = null;
+        _pendingUrl = null;
+      });
+      return;
+    }
+
     final shown = _incomingUrl ?? _currentUrl;
 
     if (next == shown) {

@@ -919,6 +919,26 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// Device-wide master switch for backdrop artwork. This intentionally stays
+  /// unscoped so a low-power TV can disable background artwork once without
+  /// repeating the choice for every Jellyfin profile. The profile preference
+  /// above is preserved and takes effect again if this override is re-enabled.
+  static final deviceBackdropsEnabled = Preference(
+    key: 'pref_device_backdrops_enabled',
+    defaultValue: true,
+  );
+
+  bool get shouldShowBackdrops =>
+      get(deviceBackdropsEnabled) && get(backdropEnabled);
+
+  /// Device-local because the appropriate artwork budget depends on the GPU,
+  /// not the signed-in server profile or the user's other Moonfin clients.
+  static final backdropRenderMode = EnumPreference(
+    key: 'pref_backdrop_render_mode',
+    defaultValue: BackdropRenderMode.automatic,
+    values: BackdropRenderMode.values,
+  );
+
   /// Plays retro games through the native libretro backend instead of the
   /// EmulatorJS WebView, on platforms that have both. Deliberately not synced:
   /// the right backend is a per-device choice.
@@ -1513,6 +1533,17 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_screensaver_enabled',
     defaultValue: true,
   );
+
+  /// Device-wide master switch for Moonfin's in-app screensaver. When false,
+  /// profile settings remain intact but the controller stays disarmed and
+  /// releases its wake lock so the operating system screensaver can run.
+  static final deviceScreensaverEnabled = Preference(
+    key: 'pref_device_screensaver_enabled',
+    defaultValue: true,
+  );
+
+  bool get shouldUseInAppScreensaver =>
+      get(deviceScreensaverEnabled) && get(screensaverEnabled);
 
   static final screensaverMode = EnumPreference(
     key: 'pref_screensaver_mode',

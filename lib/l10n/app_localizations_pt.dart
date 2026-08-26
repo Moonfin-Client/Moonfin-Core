@@ -2332,6 +2332,29 @@ class AppLocalizationsPt extends AppLocalizations {
   String get showBackdropImages => 'Mostrar imagens de fundo atrás do conteúdo';
 
   @override
+  String get deviceBackdrops => 'Imagens de Fundo Neste Dispositivo';
+
+  @override
+  String get deviceBackdropsSubtitle =>
+      'Substitui todos os perfis. Desative para não carregar nem exibir imagens de fundo neste dispositivo.';
+
+  @override
+  String get backdropRendering => 'Renderização das Imagens de Fundo';
+
+  @override
+  String get backdropRenderingSubtitle =>
+      'Automático otimiza TVs. Qualidade mantém a arte completa e transições; Desempenho usa imagens menores e trocas instantâneas para reduzir travamentos.';
+
+  @override
+  String get backdropRenderingAutomatic => 'Automático';
+
+  @override
+  String get backdropRenderingQuality => 'Qualidade';
+
+  @override
+  String get backdropRenderingPerformance => 'Desempenho';
+
+  @override
   String get seriesThumbnails => 'Miniaturas de Séries';
 
   @override
@@ -3742,6 +3765,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get enableBuiltInScreensaver =>
       'Habilitar a proteção de tela integrada';
+
+  @override
+  String get deviceScreensaver =>
+      'Proteção de Tela do Moonfin Neste Dispositivo';
+
+  @override
+  String get deviceScreensaverSubtitle =>
+      'Substitui todos os perfis. Desative para permitir que a proteção de tela do sistema seja iniciada.';
 
   @override
   String get mode => 'Modo';

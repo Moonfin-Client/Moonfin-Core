@@ -175,6 +175,14 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                 ),
               adaptiveListSection(
                 children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.deviceBackdropsEnabled,
+                    title: l10n.deviceBackdrops,
+                    subtitle: l10n.deviceBackdropsSubtitle,
+                    icon: Icons.layers_clear_outlined,
+                    onChanged: GetIt.instance<UserPreferences>()
+                        .notifyPreferenceChanged,
+                  ),
                   EnumPreferenceTile<DesktopUiScale>(
                     preference: UserPreferences.desktopUiScale,
                     title: l10n.desktopUiScale,
@@ -205,6 +213,22 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                     subtitle: l10n.showBackdropImages,
                     icon: Icons.photo,
                     onChanged: _pushPersonalizationSync,
+                  ),
+                  EnumPreferenceTile<BackdropRenderMode>(
+                    preference: UserPreferences.backdropRenderMode,
+                    title: l10n.backdropRendering,
+                    description: l10n.backdropRenderingSubtitle,
+                    icon: Icons.speed_outlined,
+                    onChanged: GetIt.instance<UserPreferences>()
+                        .notifyPreferenceChanged,
+                    labelOf: (v) => switch (v) {
+                      BackdropRenderMode.automatic =>
+                        l10n.backdropRenderingAutomatic,
+                      BackdropRenderMode.quality =>
+                        l10n.backdropRenderingQuality,
+                      BackdropRenderMode.performance =>
+                        l10n.backdropRenderingPerformance,
+                    },
                   ),
                   EnumPreferenceTile<OledMode>(
                     preference: UserPreferences.oledMode,

@@ -202,6 +202,13 @@ enum DesktopScrollWheelAction {
 /// `reduced` forces the zero-blur sheen everywhere.
 enum GlassQualityMode { auto, full, reduced }
 
+/// Rendering budget for full-screen browsing backdrops.
+///
+/// [automatic] keeps the quality path on phones and desktops, while TVs use
+/// the lower-cost path. [quality] preserves the full decode and crossfade;
+/// [performance] uses a smaller decode and swaps a single layer immediately.
+enum BackdropRenderMode { automatic, quality, performance }
+
 /// Persisted settled quality of the adaptive glass renderer, mirroring the
 /// package's GlassQuality tiers. `unset` means no benchmark has settled yet,
 /// so the adaptive scope runs its warm-up pass on next launch. Kept as a

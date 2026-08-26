@@ -2692,6 +2692,34 @@
     "@showBackdropImages": {
         "description": "Description for background backdrops"
     },
+    "deviceBackdrops": "Imagens de Fundo Neste Dispositivo",
+    "@deviceBackdrops": {
+        "description": "Device-wide master setting for backdrop artwork"
+    },
+    "deviceBackdropsSubtitle": "Substitui todos os perfis. Desative para não carregar nem exibir imagens de fundo neste dispositivo.",
+    "@deviceBackdropsSubtitle": {
+        "description": "Description for the device-wide backdrop override"
+    },
+    "backdropRendering": "Renderização das Imagens de Fundo",
+    "@backdropRendering": {
+        "description": "Setting for the backdrop rendering budget"
+    },
+    "backdropRenderingSubtitle": "Automático otimiza TVs. Qualidade mantém a arte completa e transições; Desempenho usa imagens menores e trocas instantâneas para reduzir travamentos.",
+    "@backdropRenderingSubtitle": {
+        "description": "Description for the backdrop rendering budget"
+    },
+    "backdropRenderingAutomatic": "Automático",
+    "@backdropRenderingAutomatic": {
+        "description": "Backdrop rendering option: choose for this device"
+    },
+    "backdropRenderingQuality": "Qualidade",
+    "@backdropRenderingQuality": {
+        "description": "Backdrop rendering option: full artwork and transitions"
+    },
+    "backdropRenderingPerformance": "Desempenho",
+    "@backdropRenderingPerformance": {
+        "description": "Backdrop rendering option: reduced work"
+    },
     "seriesThumbnails": "Miniaturas de Séries",
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
@@ -3738,6 +3766,14 @@
     "enableBuiltInScreensaver": "Habilitar a proteção de tela integrada",
     "@enableBuiltInScreensaver": {
         "description": "Description for in-app screensaver"
+    },
+    "deviceScreensaver": "Proteção de Tela do Moonfin Neste Dispositivo",
+    "@deviceScreensaver": {
+        "description": "Device-wide master setting for Moonfin's screensaver"
+    },
+    "deviceScreensaverSubtitle": "Substitui todos os perfis. Desative para permitir que a proteção de tela do sistema seja iniciada.",
+    "@deviceScreensaverSubtitle": {
+        "description": "Description for the device-wide screensaver override"
     },
     "mode": "Modo",
     "@mode": {

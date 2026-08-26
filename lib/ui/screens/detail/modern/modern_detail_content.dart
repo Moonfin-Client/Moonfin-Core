@@ -4487,14 +4487,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     return '${m}m';
   }
 
-  /// Full-bleed cinematic backdrop owned by the Modern screen (deliberately
-  /// ignores the global backdrop-hide / blur prefs; no blur). In landscape the
+  /// Full-bleed cinematic backdrop owned by the Modern screen. The device-wide
+  /// backdrop override still wins so low-power TVs can suppress every artwork
+  /// path without changing the profile's own preference. In landscape the
   /// image is right-aligned and embedded into the page with layered scrims: a
   /// strong left-to-right gradient keeping the left content readable, a
   /// bottom-to-top gradient blending the lower UI into the background, and a
   /// subtle edge vignette. In portrait it fades from the top into the content.
   Widget _buildBackdrop(bool landscape, String? backdropUrl) {
     final base = AppColorScheme.background;
+    if (!widget.prefs.shouldShowBackdrops) {
+      return ColoredBox(color: base);
+    }
     final item = _vm.item;
     final url = backdropUrl ?? (item?.type == 'Person' ? (_randomBackdropUrl ?? _imageUrl(item!)) : null);
     final blurAmount = widget.prefs

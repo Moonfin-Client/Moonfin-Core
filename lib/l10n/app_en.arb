@@ -3269,6 +3269,34 @@
   "@showBackdropImages": {
     "description": "Description for background backdrops"
   },
+  "deviceBackdrops": "Backdrops on This Device",
+  "@deviceBackdrops": {
+    "description": "Device-wide master setting for backdrop artwork"
+  },
+  "deviceBackdropsSubtitle": "Overrides every profile. Turn off to stop loading and displaying background artwork on this device.",
+  "@deviceBackdropsSubtitle": {
+    "description": "Description for the device-wide backdrop override"
+  },
+  "backdropRendering": "Backdrop Rendering",
+  "@backdropRendering": {
+    "description": "Setting for the backdrop rendering budget"
+  },
+  "backdropRenderingSubtitle": "Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.",
+  "@backdropRenderingSubtitle": {
+    "description": "Description for the backdrop rendering budget"
+  },
+  "backdropRenderingAutomatic": "Automatic",
+  "@backdropRenderingAutomatic": {
+    "description": "Backdrop rendering option: choose for this device"
+  },
+  "backdropRenderingQuality": "Quality",
+  "@backdropRenderingQuality": {
+    "description": "Backdrop rendering option: full artwork and transitions"
+  },
+  "backdropRenderingPerformance": "Performance",
+  "@backdropRenderingPerformance": {
+    "description": "Backdrop rendering option: reduced work"
+  },
   "seriesThumbnails": "Display Series Thumbnails",
   "@seriesThumbnails": {
     "description": "Setting for series thumbnails"
@@ -5045,6 +5073,14 @@
   "enableBuiltInScreensaver": "Enable the built-in screensaver",
   "@enableBuiltInScreensaver": {
     "description": "Description for in-app screensaver"
+  },
+  "deviceScreensaver": "Moonfin Screensaver on This Device",
+  "@deviceScreensaver": {
+    "description": "Device-wide master setting for Moonfin's screensaver"
+  },
+  "deviceScreensaverSubtitle": "Overrides every profile. Turn off to let the system screensaver start instead.",
+  "@deviceScreensaverSubtitle": {
+    "description": "Description for the device-wide screensaver override"
   },
   "mode": "Mode",
   "@mode": {

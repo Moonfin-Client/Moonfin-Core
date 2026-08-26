@@ -2269,6 +2269,29 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showBackdropImages => '顯示內容後面的背景影像';
 
   @override
+  String get deviceBackdrops => 'Backdrops on This Device';
+
+  @override
+  String get deviceBackdropsSubtitle =>
+      'Overrides every profile. Turn off to stop loading and displaying background artwork on this device.';
+
+  @override
+  String get backdropRendering => 'Backdrop Rendering';
+
+  @override
+  String get backdropRenderingSubtitle =>
+      'Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.';
+
+  @override
+  String get backdropRenderingAutomatic => 'Automatic';
+
+  @override
+  String get backdropRenderingQuality => 'Quality';
+
+  @override
+  String get backdropRenderingPerformance => 'Performance';
+
+  @override
   String get seriesThumbnails => '系列縮圖';
 
   @override
@@ -3611,6 +3634,13 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get enableBuiltInScreensaver => '啟用內建螢幕保護程式';
+
+  @override
+  String get deviceScreensaver => 'Moonfin Screensaver on This Device';
+
+  @override
+  String get deviceScreensaverSubtitle =>
+      'Overrides every profile. Turn off to let the system screensaver start instead.';
 
   @override
   String get mode => '模式';

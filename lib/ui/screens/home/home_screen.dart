@@ -68,6 +68,7 @@ import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/top_toolbar.dart';
 import '../../navigation/home_refresh_bus.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/backdrop_render_profile.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../util/home_row_title_localizer.dart';
@@ -268,6 +269,10 @@ class _HomeShellState extends State<_HomeShell>
 
   void _onPrefsChanged() {
     if (!mounted) return;
+    if (!_userPrefs.shouldShowBackdrops &&
+        _backgroundService.currentUrl != null) {
+      _backgroundService.clearBackgrounds();
+    }
     final currentJson = _userPrefs.get(UserPreferences.homeSectionsJson);
     final currentMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
@@ -454,7 +459,11 @@ class _HomeShellState extends State<_HomeShell>
 
   @override
   Widget build(BuildContext context) {
-    final backdropEnabled = _userPrefs.get(UserPreferences.backdropEnabled);
+    final backdropEnabled = _userPrefs.shouldShowBackdrops;
+    final backdropRenderProfile = BackdropRenderProfile.resolve(
+      _userPrefs.get(UserPreferences.backdropRenderMode),
+      isTv: PlatformDetection.isTV,
+    );
     final blurAmount = _userPrefs
         .get(UserPreferences.browsingBackgroundBlurAmount)
         .toDouble();
@@ -489,6 +498,7 @@ class _HomeShellState extends State<_HomeShell>
                       return _Backdrop(
                         url: url,
                         blurAmount: blurAmount,
+                        renderProfile: backdropRenderProfile,
                         useMakdBackdropFx: useMakdBackdropFx,
                       );
                     },
@@ -559,11 +569,13 @@ class _GradientScrim extends StatelessWidget {
 class _Backdrop extends StatelessWidget {
   final String? url;
   final double blurAmount;
+  final BackdropRenderProfile renderProfile;
   final bool useMakdBackdropFx;
 
   const _Backdrop({
     this.url,
     required this.blurAmount,
+    required this.renderProfile,
     this.useMakdBackdropFx = false,
   });
 
@@ -572,7 +584,8 @@ class _Backdrop extends StatelessWidget {
     return RepaintBoundary(
       child: FullscreenBackdropSwitcher(
         imageUrl: url,
-        duration: BackgroundService.transitionDuration,
+        duration: renderProfile.transitionDuration,
+        animateTransitions: renderProfile.animateTransitions,
         imageBuilder: (imageUrl) {
           final image = _blurredImage(context, imageUrl, blurAmount);
           if (!useMakdBackdropFx) {
@@ -619,9 +632,9 @@ class _Backdrop extends StatelessWidget {
                 ? viewportWidth * pixelRatio * 0.6
                 : viewportWidth * pixelRatio)
             .round();
-    final maxWidth = targetPxWidth < 480
-        ? 480
-        : (targetPxWidth > 1280 ? 1280 : targetPxWidth);
+    final maxWidth = targetPxWidth
+        .clamp(480, renderProfile.maxDecodeWidth)
+        .toInt();
     final image = BoundedNetworkImage(
       imageUrl: imageUrl,
       scale: blur > 0 ? 0.3 : 1.0,

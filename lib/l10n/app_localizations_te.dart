@@ -2334,6 +2334,29 @@ class AppLocalizationsTe extends AppLocalizations {
       'కంటెంట్ వెనుక బ్యాక్‌డ్రాప్ చిత్రాలను చూపండి';
 
   @override
+  String get deviceBackdrops => 'Backdrops on This Device';
+
+  @override
+  String get deviceBackdropsSubtitle =>
+      'Overrides every profile. Turn off to stop loading and displaying background artwork on this device.';
+
+  @override
+  String get backdropRendering => 'Backdrop Rendering';
+
+  @override
+  String get backdropRenderingSubtitle =>
+      'Automatic optimizes TVs. Quality keeps full artwork and crossfades; Performance uses smaller artwork and instant changes to reduce lag.';
+
+  @override
+  String get backdropRenderingAutomatic => 'Automatic';
+
+  @override
+  String get backdropRenderingQuality => 'Quality';
+
+  @override
+  String get backdropRenderingPerformance => 'Performance';
+
+  @override
   String get seriesThumbnails => 'సిరీస్ సూక్ష్మచిత్రాలు';
 
   @override
@@ -3743,6 +3766,13 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get enableBuiltInScreensaver =>
       'అంతర్నిర్మిత స్క్రీన్‌సేవర్‌ని ప్రారంభించండి';
+
+  @override
+  String get deviceScreensaver => 'Moonfin Screensaver on This Device';
+
+  @override
+  String get deviceScreensaverSubtitle =>
+      'Overrides every profile. Turn off to let the system screensaver start instead.';
 
   @override
   String get mode => 'మోడ్';
