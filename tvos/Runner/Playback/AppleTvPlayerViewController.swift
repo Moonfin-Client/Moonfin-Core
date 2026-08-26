@@ -81,6 +81,11 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private var trickplay: TrickplayData?
     private var trickplaySheets: [Int: UIImage] = [:]
+    private var trickplaySheetsLoading: Set<Int> = []
+    private var trickplayMode: TrickplayMode = .single
+    private var trickplayScalePercent = 30
+    private var trickplayVerticalPercent = 0
+    private var trickplayFollowScrub = true
 
     // The Next Up card, skip button, and Still Watching prompt are pure
     // renderers. The Dart side owns every decision (when to show, the
@@ -125,7 +130,15 @@ final class AppleTvPlayerViewController: UIViewController {
     private var streamStats: [(label: String, value: String)] = []
 
     private var scrubTargetMs: Int?
-    private var scrubCommitTimer: Timer?
+    // Shown on the scrubber from the commit until the player has landed, so
+    // the timeline never jumps back to the old position for a frame.
+    private var scrubFrozenMs: Int?
+    // Bumped whenever a new gesture or an outside seek starts, so an older
+    // commit still waiting to land can't resume playback under the new one.
+    private var scrubCommitId = 0
+    private var scrubConvergeTimer: Timer?
+    private var scrubConvergeDeadline: TimeInterval = 0
+    private var wasPlayingBeforeScrub = false
     private var scrubHoldTimer: Timer?
     private var scrubHoldForward = false
     private var scrubHoldStart: TimeInterval = 0
@@ -144,6 +157,8 @@ final class AppleTvPlayerViewController: UIViewController {
         let rows: Int
         let intervalMs: Int
     }
+
+    private enum TrickplayMode: String { case disabled, single, strip, full }
 
     private enum Zone { case scrubber, buttons }
     private enum ControlId {
@@ -171,9 +186,9 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private let trickplayContainer = UIView()
     private let trickplayImageView = UIImageView()
-    private let trickplayWidth: CGFloat = 480
-    private var trickplayCenterX: NSLayoutConstraint?
-    private var trickplayHeight: NSLayoutConstraint?
+    private let trickplayStrip = UIView()
+    private var trickplayStripTiles: [UIImageView] = []
+    private let trickplayCover = UIImageView()
 
     private let topContainer = UIView()
     private let topGradientLayer = CAGradientLayer()
@@ -693,39 +708,22 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func setupTrickplay() {
-        trickplayContainer.translatesAutoresizingMaskIntoConstraints = false
         trickplayContainer.backgroundColor = .black
-        trickplayContainer.layer.cornerRadius = 6
+        trickplayContainer.layer.cornerRadius = 8
         trickplayContainer.layer.borderWidth = 2
-        trickplayContainer.layer.borderColor = UIColor.white.cgColor
         trickplayContainer.clipsToBounds = true
         trickplayContainer.isHidden = true
         osdContainer.addSubview(trickplayContainer)
 
-        trickplayImageView.translatesAutoresizingMaskIntoConstraints = false
         trickplayImageView.contentMode = .scaleAspectFill
         trickplayContainer.addSubview(trickplayImageView)
 
-        let center = trickplayContainer.centerXAnchor.constraint(
-            equalTo: scrubber.leadingAnchor)
-        let height = trickplayContainer.heightAnchor.constraint(
-            equalToConstant: trickplayWidth * 9 / 16)
-        trickplayCenterX = center
-        trickplayHeight = height
-        NSLayoutConstraint.activate([
-            center,
-            height,
-            trickplayContainer.widthAnchor.constraint(equalToConstant: trickplayWidth),
-            trickplayContainer.bottomAnchor.constraint(
-                equalTo: scrubber.topAnchor, constant: -14),
-            trickplayImageView.leadingAnchor.constraint(
-                equalTo: trickplayContainer.leadingAnchor),
-            trickplayImageView.trailingAnchor.constraint(
-                equalTo: trickplayContainer.trailingAnchor),
-            trickplayImageView.topAnchor.constraint(equalTo: trickplayContainer.topAnchor),
-            trickplayImageView.bottomAnchor.constraint(
-                equalTo: trickplayContainer.bottomAnchor),
-        ])
+        trickplayStrip.isHidden = true
+        osdContainer.addSubview(trickplayStrip)
+
+        trickplayCover.backgroundColor = .black
+        trickplayCover.isHidden = true
+        view.insertSubview(trickplayCover, belowSubview: topContainer)
     }
 
     // Mirrors the Flutter NextUpOverlay layout at TV scale: a thumbnail on
@@ -1193,7 +1191,6 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func parseTrickplay(_ raw: Any?) {
-        trickplaySheets.removeAll()
         guard let dict = raw as? [String: Any],
             let urls = dict["urls"] as? [String],
             let width = (dict["width"] as? NSNumber)?.intValue,
@@ -1204,13 +1201,27 @@ final class AppleTvPlayerViewController: UIViewController {
             width > 0, height > 0, cols > 0, rows > 0, intervalMs > 0
         else {
             trickplay = nil
+            trickplaySheets.removeAll()
+            trickplaySheetsLoading.removeAll()
+            hideTrickplay()
             return
+        }
+        // A settings change resends the same sheets, which are worth keeping.
+        if trickplay?.urls != urls {
+            trickplaySheets.removeAll()
+            trickplaySheetsLoading.removeAll()
         }
         let headers = (dict["headers"] as? [String: String]) ?? [:]
         trickplay = TrickplayData(
             urls: urls, headers: headers, width: width, height: height,
             cols: cols, rows: rows, intervalMs: intervalMs)
-        trickplayHeight?.constant = trickplayWidth * CGFloat(height) / CGFloat(width)
+        trickplayMode = TrickplayMode(rawValue: (dict["mode"] as? String) ?? "") ?? .single
+        trickplayScalePercent = (dict["scalePercent"] as? NSNumber)?.intValue ?? 30
+        trickplayVerticalPercent = (dict["verticalPositionPercent"] as? NSNumber)?.intValue ?? 0
+        trickplayFollowScrub = (dict["followScrub"] as? Bool) ?? true
+        if scrubTargetMs != nil || scrubFrozenMs != nil {
+            updateTrickplay()
+        }
     }
 
     private func parsePauseMeta(_ raw: Any?) {
@@ -1377,8 +1388,8 @@ final class AppleTvPlayerViewController: UIViewController {
         super.viewDidDisappear(animated)
         updateTimer?.invalidate()
         updateTimer = nil
-        scrubCommitTimer?.invalidate()
-        scrubCommitTimer = nil
+        scrubConvergeTimer?.invalidate()
+        scrubConvergeTimer = nil
         scrubHoldTimer?.invalidate()
         scrubHoldTimer = nil
         player.stop()
@@ -1432,7 +1443,7 @@ final class AppleTvPlayerViewController: UIViewController {
             return
         }
         if scrubTargetMs != nil {
-            cancelScrub()
+            abandonScrubSession()
             showOsd()
             return
         }
@@ -1522,7 +1533,7 @@ final class AppleTvPlayerViewController: UIViewController {
             if commit {
                 commitScrub()
             } else {
-                cancelScrub()
+                abandonScrubSession()
             }
             focusedZone = zoneBeforePanScrub ?? .buttons
             updateFocusHighlight()
@@ -1676,17 +1687,16 @@ final class AppleTvPlayerViewController: UIViewController {
         guard scrubHoldTimer != nil else { return }
         scrubHoldTimer?.invalidate()
         scrubHoldTimer = nil
-        if scrubTargetMs != nil { commitScrub() }
+        // With a preview up the session outlives the key: the preview stays on
+        // the paused frame and play is what commits. With nothing to look at,
+        // letting go is the commit.
+        if scrubTargetMs != nil && !hasTrickplayPreview { commitScrub() }
     }
 
     private func handleSelect() {
         switch focusedZone {
         case .scrubber:
-            if scrubTargetMs != nil {
-                commitScrub()
-            } else {
-                togglePlayPause()
-            }
+            togglePlayPause()
         case .buttons:
             guard controls.indices.contains(focusedControlIndex) else { return }
             activate(controls[focusedControlIndex])
@@ -1726,11 +1736,11 @@ final class AppleTvPlayerViewController: UIViewController {
         case .prev:
             onPrevious?()
         case .skipBack:
-            adjustScrub(byMs: -skipBackMs)
+            seekDirect(toMs: Int(player.currentTime * 1000) - skipBackMs)
         case .playPause:
             togglePlayPause()
         case .skipForward:
-            adjustScrub(byMs: skipForwardMs)
+            seekDirect(toMs: Int(player.currentTime * 1000) + skipForwardMs)
         case .next:
             onNext?()
         case .speed:
@@ -1888,6 +1898,13 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func togglePlayPause() {
+        // During a paused scrub session play means go to the scrubbed spot
+        // and carry on from there, not resume where the video was paused.
+        if scrubTargetMs != nil {
+            wasPlayingBeforeScrub = true
+            commitScrub()
+            return
+        }
         switch player.state {
         case .playing, .buffering, .opening:
             player.pause()
@@ -1900,90 +1917,297 @@ final class AppleTvPlayerViewController: UIViewController {
         player.state == .paused
     }
 
+    private var hasTrickplayPreview: Bool {
+        trickplayMode != .disabled && trickplay != nil
+    }
+
+    // Pauses once per session so the preview has a still frame to sit on.
+    // Without a preview scrubbing leaves playback alone.
+    private func beginScrub() {
+        scrubCommitId += 1
+        scrubConvergeTimer?.invalidate()
+        scrubConvergeTimer = nil
+        scrubFrozenMs = nil
+        guard hasTrickplayPreview else { return }
+        if !wasPlayingBeforeScrub {
+            wasPlayingBeforeScrub = !isPaused()
+            if wasPlayingBeforeScrub { player.pause() }
+        }
+    }
+
+    // Moves the frozen target only. The one real seek happens in commitScrub.
     private func adjustScrub(byMs deltaMs: Int) {
         guard !isLive else { return }
         let durationMs = Int(player.duration * 1000)
         guard durationMs > 0 else { return }
-        let base = scrubTargetMs ?? Int(player.currentTime * 1000)
+        // A quick press after a release lands while the last commit is still
+        // converging, when the player still reads the old position.
+        let base = scrubTargetMs ?? scrubFrozenMs ?? Int(player.currentTime * 1000)
+        if scrubTargetMs == nil { beginScrub() }
         scrubTargetMs = min(durationMs, max(0, base + deltaMs))
+        prefetchTrickplay(aroundMs: base, forward: deltaMs > 0, sheetsAhead: 2)
         renderProgress()
         updateTrickplay()
-        scrubCommitTimer?.invalidate()
-        scrubCommitTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.6, repeats: false
-        ) { [weak self] _ in
-            Task { @MainActor in self?.commitScrub() }
-        }
     }
 
     private func commitScrub() {
-        scrubCommitTimer?.invalidate()
-        scrubCommitTimer = nil
         guard let target = scrubTargetMs else { return }
         scrubTargetMs = nil
-        trickplayContainer.isHidden = true
+        scrubFrozenMs = target
+        scrubCommitId += 1
+        let commitId = scrubCommitId
         player.seek(to: Double(target) / 1000.0)
         onUserSeek?()
+        renderProgress()
+        updateTrickplay()
+        scrubConvergeDeadline = ProcessInfo.processInfo.systemUptime + 2.0
+        scrubConvergeTimer?.invalidate()
+        scrubConvergeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) {
+            [weak self] _ in
+            Task { @MainActor in self?.checkScrubConverged(commitId: commitId, targetMs: target) }
+        }
     }
 
-    private func cancelScrub() {
+    // The frozen timeline lets go once the player reads close to the target,
+    // or after two seconds so a seek that never lands can't hold it forever.
+    private func checkScrubConverged(commitId: Int, targetMs: Int) {
+        guard commitId == scrubCommitId else {
+            scrubConvergeTimer?.invalidate()
+            scrubConvergeTimer = nil
+            return
+        }
+        let landed = abs(Int(player.currentTime * 1000) - targetMs) <= 800
+        let timedOut = ProcessInfo.processInfo.systemUptime >= scrubConvergeDeadline
+        guard landed || timedOut else { return }
+        scrubConvergeTimer?.invalidate()
+        scrubConvergeTimer = nil
+        scrubFrozenMs = nil
+        if wasPlayingBeforeScrub {
+            wasPlayingBeforeScrub = false
+            player.resume()
+        }
+        renderProgress()
+        updateTrickplay()
+    }
+
+    // A skip, a chapter jump or a seek sent from the app lands somewhere the
+    // session knows nothing about, so the session is dropped rather than left
+    // to commit its stale target the next time play is pressed.
+    private func abandonScrubSession() {
+        guard scrubTargetMs != nil || scrubFrozenMs != nil || wasPlayingBeforeScrub else {
+            return
+        }
+        scrubCommitId += 1
         scrubHoldTimer?.invalidate()
         scrubHoldTimer = nil
-        scrubCommitTimer?.invalidate()
-        scrubCommitTimer = nil
+        scrubConvergeTimer?.invalidate()
+        scrubConvergeTimer = nil
         scrubTargetMs = nil
-        trickplayContainer.isHidden = true
+        scrubFrozenMs = nil
+        hideTrickplay()
+        if wasPlayingBeforeScrub {
+            wasPlayingBeforeScrub = false
+            player.resume()
+        }
         renderProgress()
     }
 
+    private func seekDirect(toMs ms: Int) {
+        abandonScrubSession()
+        let durationMs = Int(player.duration * 1000)
+        let clamped = durationMs > 0 ? min(durationMs, max(0, ms)) : max(0, ms)
+        player.seek(to: Double(clamped) / 1000.0)
+        onUserSeek?()
+    }
+
+    func seekFromHost(toSeconds seconds: TimeInterval) {
+        abandonScrubSession()
+        player.seek(to: seconds)
+    }
+
+    private func hideTrickplay() {
+        trickplayContainer.isHidden = true
+        trickplayStrip.isHidden = true
+        trickplayCover.isHidden = true
+    }
+
+    // The same sizing rule as the Flutter player: the slider maps 10 to 100
+    // percent onto half to double the space between the overlays, and a tile
+    // never grows past that space or the track width.
+    private func resolveTileSize(trackWidth: CGFloat, aspect: CGFloat, budget: CGFloat) -> CGSize {
+        let percent = CGFloat(min(100, max(10, trickplayScalePercent)))
+        let scale = 0.5 + (percent - 10) / 90 * 1.5
+        let safeBudget = max(budget, 32)
+        let safeTrack = max(trackWidth, 24)
+        let desired = min(max(safeBudget * (scale / 2), 24), safeBudget)
+        let height = min(desired, safeTrack * aspect)
+        return CGSize(width: height / aspect, height: height)
+    }
+
     private func updateTrickplay() {
-        guard let tp = trickplay, let target = scrubTargetMs, player.duration > 0 else {
-            trickplayContainer.isHidden = true
+        guard hasTrickplayPreview, let tp = trickplay,
+            let target = scrubTargetMs ?? scrubFrozenMs, player.duration > 0
+        else {
+            hideTrickplay()
             return
         }
-        let tilesPerImage = tp.cols * tp.rows
-        guard tilesPerImage > 0 else { return }
-        let tileIndex = target / tp.intervalMs
-        let imageIndex = tileIndex / tilesPerImage
-        let tileOffset = tileIndex % tilesPerImage
-        let col = tileOffset % tp.cols
-        let row = tileOffset / tp.cols
-
-        let width = scrubber.bounds.width
-        if width > 0 {
-            let fraction = CGFloat(min(1, max(0, Double(target) / (player.duration * 1000))))
-            let half: CGFloat = 120
-            let x = min(width - half, max(half, fraction * width))
-            trickplayCenterX?.constant = x
+        let durationMs = Int(player.duration * 1000)
+        if trickplayMode == .full {
+            trickplayContainer.isHidden = true
+            trickplayStrip.isHidden = true
+            renderTrickplayCover(tp, targetMs: target)
+            return
         }
+        trickplayCover.isHidden = true
 
-        if let sheet = trickplaySheets[imageIndex] {
-            cropTrickplay(sheet, col: col, row: row, data: tp)
+        let scrubFrame = scrubber.convert(scrubber.bounds, to: osdContainer)
+        let trackWidth = scrubFrame.width
+        guard trackWidth > 0 else {
+            hideTrickplay()
+            return
+        }
+        let aspect = CGFloat(tp.height) / CGFloat(tp.width)
+        let previewBottom = scrubFrame.minY - 14
+        let budget = previewBottom - topContainer.bounds.height
+        let tile = resolveTileSize(trackWidth: trackWidth, aspect: aspect, budget: budget)
+        let maxTravel = max(min(budget - tile.height, trackWidth), 0)
+        let travel = CGFloat(min(100, max(0, trickplayVerticalPercent))) / 100 * maxTravel
+        let fraction = CGFloat(min(1, max(0, Double(target) / Double(durationMs))))
+        let thumbX = 7 + fraction * max(trackWidth - 14, 0)
+        let mainLeft: CGFloat =
+            trickplayFollowScrub
+            ? min(max(thumbX - tile.width / 2, 0), max(trackWidth - tile.width, 0))
+            : (trackWidth - tile.width) / 2
+        let y = previewBottom - travel - tile.height
+
+        if trickplayMode == .strip {
+            trickplayContainer.isHidden = true
+            renderTrickplayStrip(
+                tp, targetMs: target, durationMs: durationMs, mainLeft: mainLeft,
+                originX: scrubFrame.minX, y: y, tile: tile, trackWidth: trackWidth)
+            return
+        }
+        trickplayStrip.isHidden = true
+        trickplayContainer.layer.borderColor = themeAccent.cgColor
+        trickplayContainer.frame = CGRect(
+            x: scrubFrame.minX + mainLeft, y: y, width: tile.width, height: tile.height)
+        trickplayImageView.frame = trickplayContainer.bounds
+        if let image = trickplayTile(tp, atMs: target) {
+            trickplayImageView.image = image
             trickplayContainer.isHidden = false
         } else {
             trickplayContainer.isHidden = true
-            loadTrickplaySheet(imageIndex)
         }
     }
 
-    private func cropTrickplay(_ sheet: UIImage, col: Int, row: Int, data: TrickplayData) {
-        guard let cg = sheet.cgImage else { return }
+    private func renderTrickplayStrip(
+        _ tp: TrickplayData, targetMs: Int, durationMs: Int, mainLeft: CGFloat,
+        originX: CGFloat, y: CGFloat, tile: CGSize, trackWidth: CGFloat
+    ) {
+        let spacing: CGFloat = 4
+        let overflow: CGFloat = 24
+        let step = tile.width + spacing
+        guard step > 0 else {
+            trickplayStrip.isHidden = true
+            return
+        }
+        let leftCount = min(500, max(0, Int(((mainLeft + overflow) / step).rounded(.down)) + 1))
+        let rightCount = min(
+            500, max(0, Int(((trackWidth + overflow - mainLeft - tile.width) / step).rounded(.down)) + 1))
+        let count = leftCount + 1 + rightCount
+        while trickplayStripTiles.count < count {
+            let tileView = UIImageView()
+            tileView.contentMode = .scaleAspectFill
+            tileView.clipsToBounds = true
+            tileView.backgroundColor = .black
+            tileView.layer.cornerRadius = 8
+            trickplayStrip.addSubview(tileView)
+            trickplayStripTiles.append(tileView)
+        }
+        for (index, tileView) in trickplayStripTiles.enumerated() {
+            tileView.isHidden = index >= count
+        }
+        let leftOffset = mainLeft - CGFloat(leftCount) * step
+        trickplayStrip.frame = CGRect(
+            x: originX + leftOffset, y: y, width: CGFloat(count) * step - spacing,
+            height: tile.height)
+        let stepMs = max(skipForwardMs, 1)
+        for index in 0..<count {
+            let slot = index - leftCount
+            let tileView = trickplayStripTiles[index]
+            tileView.frame = CGRect(
+                x: CGFloat(index) * step, y: 0, width: tile.width, height: tile.height)
+            tileView.layer.borderWidth = slot == 0 ? 2 : 1
+            tileView.layer.borderColor =
+                slot == 0 ? themeAccent.cgColor : UIColor(white: 1, alpha: 0.25).cgColor
+            let ms = targetMs + slot * stepMs
+            let image = ms < 0 || ms > durationMs ? nil : trickplayTile(tp, atMs: ms)
+            tileView.image = image
+            tileView.alpha = image == nil ? 0 : 1
+        }
+        trickplayStrip.isHidden = false
+    }
+
+    private func renderTrickplayCover(_ tp: TrickplayData, targetMs: Int) {
+        trickplayCover.frame = view.bounds
+        switch player.zoomMode {
+        case .fit: trickplayCover.contentMode = .scaleAspectFit
+        case .autoCrop: trickplayCover.contentMode = .scaleAspectFill
+        case .stretch: trickplayCover.contentMode = .scaleToFill
+        }
+        if let image = trickplayTile(tp, atMs: targetMs) {
+            trickplayCover.image = image
+            trickplayCover.isHidden = false
+        } else {
+            trickplayCover.isHidden = true
+        }
+    }
+
+    // The cropped thumbnail for a position, or nil while its sheet is still
+    // on its way. Asking for it is what starts the download.
+    private func trickplayTile(_ tp: TrickplayData, atMs ms: Int) -> UIImage? {
+        let tilesPerImage = tp.cols * tp.rows
+        guard tilesPerImage > 0 else { return nil }
+        let lastMs = max(0, Int(player.duration * 1000) - 1)
+        let tileIndex = min(max(0, ms), lastMs) / tp.intervalMs
+        let imageIndex = tileIndex / tilesPerImage
+        let offset = tileIndex % tilesPerImage
+        guard let sheet = trickplaySheets[imageIndex] else {
+            loadTrickplaySheet(imageIndex)
+            return nil
+        }
+        guard let cg = sheet.cgImage else { return nil }
         let rect = CGRect(
-            x: col * data.width, y: row * data.height,
-            width: data.width, height: data.height)
-        if let cropped = cg.cropping(to: rect) {
-            trickplayImageView.image = UIImage(cgImage: cropped)
+            x: (offset % tp.cols) * tp.width, y: (offset / tp.cols) * tp.height,
+            width: tp.width, height: tp.height)
+        return cg.cropping(to: rect).map { UIImage(cgImage: $0) }
+    }
+
+    private func prefetchTrickplay(aroundMs ms: Int, forward: Bool, sheetsAhead: Int) {
+        guard hasTrickplayPreview, let tp = trickplay, player.duration > 0, sheetsAhead > 0
+        else { return }
+        let tilesPerImage = tp.cols * tp.rows
+        guard tilesPerImage > 0 else { return }
+        let lastIndex = max(0, (Int(player.duration * 1000) - 1) / tp.intervalMs / tilesPerImage)
+        let current = max(0, ms) / tp.intervalMs / tilesPerImage
+        for ahead in 1...sheetsAhead {
+            let index = forward ? current + ahead : current - ahead
+            if index < 0 || index > lastIndex { break }
+            loadTrickplaySheet(index)
         }
     }
 
     private func loadTrickplaySheet(_ index: Int) {
         guard let tp = trickplay, index >= 0, index < tp.urls.count,
-            trickplaySheets[index] == nil
+            trickplaySheets[index] == nil, !trickplaySheetsLoading.contains(index)
         else { return }
+        trickplaySheetsLoading.insert(index)
         loadImage(tp.urls[index], headers: tp.headers) { [weak self] image in
-            guard let self, let image else { return }
+            guard let self else { return }
+            self.trickplaySheetsLoading.remove(index)
+            guard let image else { return }
             self.trickplaySheets[index] = image
-            if self.scrubTargetMs != nil {
+            if self.scrubTargetMs != nil || self.scrubFrozenMs != nil {
                 self.updateTrickplay()
             }
         }
@@ -2153,8 +2377,7 @@ final class AppleTvPlayerViewController: UIViewController {
             sheet.addAction(
                 UIAlertAction(title: "\(chapter.title) · \(stamp)", style: .default) {
                     [weak self] _ in
-                    self?.player.seek(to: Double(chapter.startMs) / 1000.0)
-                    self?.onUserSeek?()
+                    self?.seekDirect(toMs: chapter.startMs)
                     self?.showOsd()
                 })
         }
@@ -2458,7 +2681,8 @@ final class AppleTvPlayerViewController: UIViewController {
             return
         }
         let duration = player.duration
-        let current = scrubTargetMs.map { Double($0) / 1000.0 } ?? player.currentTime
+        let current =
+            (scrubTargetMs ?? scrubFrozenMs).map { Double($0) / 1000.0 } ?? player.currentTime
         scrubber.progress = duration > 0 ? Float(min(1, max(0, current / duration))) : 0
         currentTimeLabel.text = formatTime(current)
         durationLabel.text = formatTime(duration)
@@ -2497,6 +2721,9 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private func updateOsd() {
         renderProgress()
+        if scrubTargetMs == nil && scrubFrozenMs == nil {
+            prefetchTrickplay(aroundMs: Int(player.currentTime * 1000), forward: true, sheetsAhead: 1)
+        }
         controlIcons[.playPause]?.image = UIImage(
             systemName: isPaused() ? "play.fill" : "pause.fill",
             withConfiguration: UIImage.SymbolConfiguration(pointSize: 27, weight: .medium))
@@ -2508,7 +2735,7 @@ final class AppleTvPlayerViewController: UIViewController {
 
         let shouldShow =
             !osdDismissed && !nextUpVisible
-            && (isPaused() || scrubTargetMs != nil
+            && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
         let visible = osdContainer.alpha > 0.5
         if shouldShow && !visible {

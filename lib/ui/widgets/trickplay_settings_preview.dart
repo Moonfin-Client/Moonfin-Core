@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/models/trickplay_preview_layout.dart';
-import '../../data/models/trickplay_strip_resolution.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
@@ -144,7 +143,7 @@ class _TrickplaySettingsPreviewState extends State<TrickplaySettingsPreview> {
                   final frameTopMargin =
                       TrickplayPreviewLayout.verticalTravelTopMargin *
                       previewScale;
-                  final tileSize = TrickplayPreviewLayout.resolveTileSize(
+                  final plan = TrickplayPreviewLayout.plan(
                     trackWidth: trackWidth,
                     scalePercent: scalePercent,
                     aspect: 9 / 16,
@@ -152,65 +151,33 @@ class _TrickplaySettingsPreviewState extends State<TrickplaySettingsPreview> {
                       videoHeight - floorReserved - frameTopMargin,
                       32.0,
                     ),
-                  );
-                  final tileWidth = tileSize.width;
-                  final tileHeight = tileSize.height;
-                  final previewHeight = tileHeight;
-                  final mainTileLeft = TrickplayPreviewLayout.resolveSingleLeft(
                     positionMs: _positionMs,
                     durationMs: _fakeDurationMs,
-                    trackWidth: trackWidth,
-                    tileWidth: tileWidth,
                     followScrub: followScrub,
-                  );
-                  final maxTravel = TrickplayPreviewLayout.resolveVerticalTravelMax(
-                    rawMaxTravel:
-                        videoHeight - floorReserved - previewHeight - frameTopMargin,
-                    trackWidth: trackWidth,
-                  );
-                  final verticalTravel =
-                      TrickplayPreviewLayout.resolveVerticalTravel(
-                        verticalPositionPercent,
-                        maxTravel: maxTravel,
-                      );
-
-                  final stripLayout = mode == TrickplayMode.strip
-                      ? TrickplayPreviewLayout.resolveStrip(
-                          mainTileLeft: mainTileLeft,
-                          trackWidth: trackWidth,
-                          tileWidth: tileWidth,
-                          spacing: AppSpacing.spaceXs,
-                          overflowMargin: _sliderInset,
-                        )
-                      : TrickplayStripLayout(
-                          leftCount: 0,
-                          rightCount: 0,
-                          leftOffset: mainTileLeft,
-                        );
-                  final leftOffset = stripLayout.leftOffset;
-                  final resolvedSlots = TrickplayStripResolver.resolve(
-                    fakeTimelinePosition: position,
+                    verticalPositionPercent: verticalPositionPercent,
+                    isStrip: mode == TrickplayMode.strip,
+                    spacing: AppSpacing.spaceXs,
+                    overflowMargin: _sliderInset,
+                    seekPosition: position,
                     totalDuration: const Duration(
                       milliseconds: _fakeDurationMsInt,
                     ),
                     stepMs: _fakeStepMs,
-                    slotCount: stripLayout.slotCount,
-                    highlightIndex: stripLayout.highlightIndex,
                   );
-                  final slotsByIndex = {
-                    for (final slot in resolvedSlots) slot.slotIndex: slot,
-                  };
+                  final previewHeight = plan.tileHeight;
+                  final verticalTravel = plan.verticalTravel;
+                  final leftOffset = plan.leftOffset;
                   final previewTile =
                       mode == TrickplayMode.strip ||
                           mode == TrickplayMode.single
                       ? Trickplay(
-                          leftCount: stripLayout.leftCount,
-                          rightCount: stripLayout.rightCount,
-                          tileWidth: tileWidth,
-                          tileHeight: tileHeight,
+                          leftCount: plan.leftCount,
+                          rightCount: plan.rightCount,
+                          tileWidth: plan.tileWidth,
+                          tileHeight: plan.tileHeight,
                           content: (slotIndex) {
                             final target =
-                                slotsByIndex[slotIndex]?.targetPosition;
+                                plan.slotsByIndex[slotIndex]?.targetPosition;
                             return target == null
                                 ? null
                                 : _fakeTileContent(

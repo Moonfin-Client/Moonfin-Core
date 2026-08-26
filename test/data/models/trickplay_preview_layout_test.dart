@@ -418,4 +418,82 @@ void main() {
       expect(atCeiling.width, closeTo(atMax.width, 0.001));
     });
   });
+
+  group('TrickplayPreviewLayout.plan', () {
+    const seek = Duration(minutes: 30);
+    const total = Duration(hours: 1);
+
+    TrickplayPreviewPlan planAt({required bool isStrip}) =>
+        TrickplayPreviewLayout.plan(
+          trackWidth: 1000,
+          scalePercent: 30,
+          aspect: 9 / 16,
+          maxHeightBudget: 400,
+          positionMs: 1800000,
+          durationMs: 3600000,
+          followScrub: true,
+          verticalPositionPercent: 50,
+          isStrip: isStrip,
+          spacing: 4,
+          overflowMargin: 16,
+          seekPosition: seek,
+          totalDuration: total,
+          stepMs: 30000,
+        );
+
+    test('agrees with the pieces it is built from', () {
+      final plan = planAt(isStrip: true);
+      final tile = TrickplayPreviewLayout.resolveTileSize(
+        trackWidth: 1000,
+        scalePercent: 30,
+        aspect: 9 / 16,
+        maxHeightBudget: 400,
+      );
+      expect(plan.tileWidth, tile.width);
+      expect(plan.tileHeight, tile.height);
+      final mainLeft = TrickplayPreviewLayout.resolveSingleLeft(
+        positionMs: 1800000,
+        durationMs: 3600000,
+        trackWidth: 1000,
+        tileWidth: tile.width,
+        followScrub: true,
+      );
+      expect(plan.leftOffset, mainLeft - plan.leftCount * (tile.width + 4));
+      expect(
+        plan.verticalTravel,
+        TrickplayPreviewLayout.resolveVerticalTravel(
+          50,
+          maxTravel: TrickplayPreviewLayout.resolveVerticalTravelMax(
+            rawMaxTravel: 400 - tile.height,
+            trackWidth: 1000,
+          ),
+        ),
+      );
+    });
+
+    test(
+      'the highlighted slot is the seek position and the wings step out',
+      () {
+        final plan = planAt(isStrip: true);
+        expect(plan.slotsByIndex[0]!.targetPosition, seek);
+        expect(
+          plan.slotsByIndex[1]!.targetPosition,
+          seek + const Duration(seconds: 30),
+        );
+        expect(
+          plan.slotsByIndex[-1]!.targetPosition,
+          seek - const Duration(seconds: 30),
+        );
+        expect(plan.slotsByIndex.length, plan.leftCount + 1 + plan.rightCount);
+        expect(plan.leftCount, greaterThan(0));
+      },
+    );
+
+    test('single mode has one slot and no wings', () {
+      final plan = planAt(isStrip: false);
+      expect(plan.leftCount, 0);
+      expect(plan.rightCount, 0);
+      expect(plan.slotsByIndex.keys, [0]);
+    });
+  });
 }

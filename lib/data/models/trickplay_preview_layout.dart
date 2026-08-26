@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'trickplay_strip_resolution.dart';
+
 class TrickplayPreviewLayout {
   const TrickplayPreviewLayout._();
 
@@ -84,6 +86,73 @@ class TrickplayPreviewLayout {
     return percent * math.max(maxTravel, 0.0);
   }
 
+  static TrickplayPreviewPlan plan({
+    required double trackWidth,
+    required int scalePercent,
+    required double aspect,
+    required double maxHeightBudget,
+    required double positionMs,
+    required double durationMs,
+    required bool followScrub,
+    required int verticalPositionPercent,
+    required bool isStrip,
+    required double spacing,
+    required double overflowMargin,
+    required Duration seekPosition,
+    required Duration totalDuration,
+    required int stepMs,
+  }) {
+    final tileSize = resolveTileSize(
+      trackWidth: trackWidth,
+      scalePercent: scalePercent,
+      aspect: aspect,
+      maxHeightBudget: maxHeightBudget,
+    );
+    final verticalTravel = resolveVerticalTravel(
+      verticalPositionPercent,
+      maxTravel: resolveVerticalTravelMax(
+        rawMaxTravel: maxHeightBudget - tileSize.height,
+        trackWidth: trackWidth,
+      ),
+    );
+    final mainTileLeft = resolveSingleLeft(
+      positionMs: positionMs,
+      durationMs: durationMs,
+      trackWidth: trackWidth,
+      tileWidth: tileSize.width,
+      followScrub: followScrub,
+    );
+    final strip = isStrip
+        ? resolveStrip(
+            mainTileLeft: mainTileLeft,
+            trackWidth: trackWidth,
+            tileWidth: tileSize.width,
+            spacing: spacing,
+            overflowMargin: overflowMargin,
+          )
+        : TrickplayStripLayout(
+            leftCount: 0,
+            rightCount: 0,
+            leftOffset: mainTileLeft,
+          );
+    final slots = TrickplayStripResolver.resolve(
+      fakeTimelinePosition: seekPosition,
+      totalDuration: totalDuration,
+      stepMs: stepMs,
+      slotCount: strip.slotCount,
+      highlightIndex: strip.highlightIndex,
+    );
+    return TrickplayPreviewPlan(
+      tileWidth: tileSize.width,
+      tileHeight: tileSize.height,
+      verticalTravel: verticalTravel,
+      leftOffset: strip.leftOffset,
+      leftCount: strip.leftCount,
+      rightCount: strip.rightCount,
+      slotsByIndex: {for (final slot in slots) slot.slotIndex: slot},
+    );
+  }
+
   static TrickplayTileSize resolveTileSize({
     required double trackWidth,
     required int scalePercent,
@@ -100,6 +169,28 @@ class TrickplayPreviewLayout {
     final height = math.min(desiredHeight, safeTrackWidth * aspect);
     return TrickplayTileSize(width: height / aspect, height: height);
   }
+}
+
+/// Everything a preview needs to draw itself, worked out once here so the
+/// player and the settings preview do not drift apart.
+class TrickplayPreviewPlan {
+  final double tileWidth;
+  final double tileHeight;
+  final double verticalTravel;
+  final double leftOffset;
+  final int leftCount;
+  final int rightCount;
+  final Map<int, TrickplayStripSlot> slotsByIndex;
+
+  const TrickplayPreviewPlan({
+    required this.tileWidth,
+    required this.tileHeight,
+    required this.verticalTravel,
+    required this.leftOffset,
+    required this.leftCount,
+    required this.rightCount,
+    required this.slotsByIndex,
+  });
 }
 
 class TrickplayTileSize {

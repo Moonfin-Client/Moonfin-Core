@@ -40,7 +40,6 @@ import '../../../data/models/media_segment.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/models/trickplay_prefetch_planner.dart';
 import '../../../data/models/trickplay_preview_layout.dart';
-import '../../../data/models/trickplay_strip_resolution.dart';
 import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/cast/cast_target.dart';
 import '../../../data/services/cast/native_airplay_channel.dart';
@@ -2165,10 +2164,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final duration = _state.duration;
     if (duration <= Duration.zero) return;
 
-    if (!PlatformDetection.isTV) {
-      _startTouchTrickplayPrefetch(info, position, duration);
-    }
-
     _precacheTrickplayIndexes(
       TrickplayPrefetchPlanner.planImageIndexes(
         info: info,
@@ -2180,12 +2175,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  void _startTouchTrickplayPrefetch(
-    TrickplayInfo info,
-    Duration position,
-    Duration duration,
-  ) {
-    if (_touchTrickplayPrefetchStarted) return;
+  // Every sheet, nearest first. Held back until the first scrub or hover so
+  // a video that is only ever watched costs nothing here, and skipped on TV
+  // where the D-pad direction says which sheets are worth having.
+  void _prefetchAllTrickplaySheets(Duration position) {
+    if (PlatformDetection.isTV || _touchTrickplayPrefetchStarted) return;
+    if (_prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
+      return;
+    }
+    final info = _trickplayInfo;
+    final duration = _state.duration;
+    if (info == null || !info.isValid || duration <= Duration.zero) return;
     _touchTrickplayPrefetchStarted = true;
     _precacheTrickplayIndexes(
       TrickplayPrefetchPlanner.planAllImageIndexes(
@@ -2350,7 +2350,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         return;
       }
       if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
-        unawaited(_manager.seekTo(result.skipTo!));
+        unawaited(_seekDirect(result.skipTo!));
         _presentNextUpOverlay();
         return;
       }
@@ -2358,7 +2358,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(_exitPlayback());
         return;
       }
-      _manager.seekTo(result.skipTo!);
+      _seekDirect(result.skipTo!);
       _clearSkipSegment();
       return;
     }
@@ -2602,7 +2602,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
       final skipTo = _skipTo;
       if (skipTo != null) {
-        unawaited(_manager.seekTo(skipTo));
+        unawaited(_seekDirect(skipTo));
       }
       _presentNextUpOverlay();
       return;
@@ -2613,7 +2613,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     if (_skipTo != null) {
-      _manager.seekTo(_skipTo!);
+      _seekDirect(_skipTo!);
     }
     _resetSkipSegmentAutoHide();
     setState(() {
@@ -2876,6 +2876,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return dismissed;
   }
 
+  // A skip, a chapter jump or a segment skip lands somewhere the scrub
+  // session knows nothing about. Left alone, the session would commit its
+  // stale target the next time play is pressed, so it is dropped here and
+  // the seek goes straight through.
+  Future<void> _seekDirect(Duration target) {
+    if (_pendingScrubSeekTarget != null || _isPausedScrubActive || _isSeeking) {
+      _scrubSeekCommitId++;
+      _pendingScrubSeekTarget = null;
+      _isPausedScrubActive = false;
+      final resume = _wasPlayingBeforeScrubPause;
+      _wasPlayingBeforeScrubPause = false;
+      if (resume) unawaited(_manager.resume());
+      if (mounted) setState(() => _isSeeking = false);
+    }
+    return _manager.seekTo(target);
+  }
+
   void _seekRelative(int ms, {bool showControls = true}) {
     _suppressSeekPrompts();
     final target = _state.position + Duration(milliseconds: ms);
@@ -2885,7 +2902,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _state.duration.inMilliseconds,
       ),
     );
-    _manager.seekTo(clamped);
+    _seekDirect(clamped);
     _lastSeekTime = DateTime.now();
     if (showControls) {
       _showControls();
@@ -2930,6 +2947,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     // frozen timeline back to live position mid-hold.
     _scrubSeekCommitId++;
     if (_hasTrickplayPreview) {
+      _prefetchAllTrickplaySheets(_state.position);
       _isPausedScrubActive = true;
       // If an earlier still-resolving commit already paused playback for
       // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
@@ -3332,7 +3350,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             return KeyEventResult.handled;
 
           case LogicalKeyboardKey.mediaRewind:
-            unawaited(_manager.seekTo(Duration.zero));
+            unawaited(_seekDirect(Duration.zero));
             _lastSeekTime = DateTime.now();
             unawaited(_manager.resume());
             return KeyEventResult.handled;
@@ -4896,6 +4914,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       trackWidth,
       duration,
     );
+    if (_hoverPosition == null) _prefetchAllTrickplaySheets(position);
     if (position != _hoverPosition) setState(() => _hoverPosition = position);
   }
 
@@ -4967,73 +4986,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final resolvedTopMargin =
         _topOverlayHeight ?? TrickplayPreviewLayout.verticalTravelTopMargin;
 
-    final maxHeightBudget =
-        MediaQuery.sizeOf(context).height -
-        resolvedBottomMargin -
-        resolvedTopMargin;
-    final tileSize = TrickplayPreviewLayout.resolveTileSize(
+    const spacing = AppSpacing.spaceXs;
+    final plan = TrickplayPreviewLayout.plan(
       trackWidth: trackWidth,
       scalePercent: scalePercent,
       aspect: referenceTile.thumbHeight / referenceTile.thumbWidth,
-      maxHeightBudget: maxHeightBudget,
-    );
-    final tileWidth = tileSize.width;
-    final tileHeight = tileSize.height;
-    final previewHeight = tileHeight;
-    final verticalTravel = TrickplayPreviewLayout.resolveVerticalTravel(
-      _prefs.get(UserPreferences.trickPlayVerticalPositionPercent),
-      maxTravel: TrickplayPreviewLayout.resolveVerticalTravelMax(
-        rawMaxTravel:
-            MediaQuery.sizeOf(context).height -
-            previewHeight -
-            resolvedBottomMargin -
-            resolvedTopMargin,
-        trackWidth: trackWidth,
-      ),
-    );
-    final mainTileLeft = TrickplayPreviewLayout.resolveSingleLeft(
+      maxHeightBudget:
+          MediaQuery.sizeOf(context).height -
+          resolvedBottomMargin -
+          resolvedTopMargin,
       positionMs: positionMs,
       durationMs: durationMs,
-      trackWidth: trackWidth,
-      tileWidth: tileWidth,
       followScrub: followScrub,
-    );
-
-    const spacing = AppSpacing.spaceXs;
-    final stripLayout = isStrip
-        ? TrickplayPreviewLayout.resolveStrip(
-            mainTileLeft: mainTileLeft,
-            trackWidth: trackWidth,
-            tileWidth: tileWidth,
-            spacing: spacing,
-            overflowMargin: AppSpacing.spaceLg,
-          )
-        : TrickplayStripLayout(
-            leftCount: 0,
-            rightCount: 0,
-            leftOffset: mainTileLeft,
-          );
-    final leftOffset = stripLayout.leftOffset;
-    final resolvedSlots = TrickplayStripResolver.resolve(
-      fakeTimelinePosition: seekPosition,
+      verticalPositionPercent: _prefs.get(
+        UserPreferences.trickPlayVerticalPositionPercent,
+      ),
+      isStrip: isStrip,
+      spacing: spacing,
+      overflowMargin: AppSpacing.spaceLg,
+      seekPosition: seekPosition,
       totalDuration: totalDuration,
       stepMs: math.max(_prefs.get(UserPreferences.skipForwardLength), 1),
-      slotCount: stripLayout.slotCount,
-      highlightIndex: stripLayout.highlightIndex,
     );
-    final slotsByIndex = {
-      for (final slot in resolvedSlots) slot.slotIndex: slot,
-    };
+    final previewHeight = plan.tileHeight;
+    final verticalTravel = plan.verticalTravel;
+    final leftOffset = plan.leftOffset;
     final previewWidget = Trickplay(
-      leftCount: stripLayout.leftCount,
-      rightCount: stripLayout.rightCount,
+      leftCount: plan.leftCount,
+      rightCount: plan.rightCount,
       timeLabel: timeLabel,
-      tileWidth: tileWidth,
-      tileHeight: tileHeight,
+      tileWidth: plan.tileWidth,
+      tileHeight: plan.tileHeight,
       slotSpacing: spacing,
       content: (slotIndex) {
         if (slotIndex == 0) return _trickplayTileImage(referenceTile);
-        final target = slotsByIndex[slotIndex]?.targetPosition;
+        final target = plan.slotsByIndex[slotIndex]?.targetPosition;
         if (target == null) return null;
         final tile = _getTrickplayTile(target);
         return tile == null ? null : _trickplayTileImage(tile);
@@ -6972,7 +6959,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       final ch = chapters[result];
       final ticks = ch['StartPositionTicks'] as int? ?? 0;
       _suppressSeekPrompts();
-      _manager.seekTo(Duration(microseconds: ticks ~/ 10));
+      _seekDirect(Duration(microseconds: ticks ~/ 10));
     }());
     _showControls();
   }

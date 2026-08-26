@@ -53,6 +53,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   MediaSegmentService? _segmentService;
   String? _segmentsLoadedForItemId;
   StreamSubscription<Duration>? _positionSub;
+  UserPreferences? _prefsListened;
+  String _lastTrickplayPrefs = '';
   SyncPlayManager? _syncPlay;
   AppThemeController? _themeController;
   ScreensaverController? _screensaverController;
@@ -120,6 +122,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         queueSnapshot: _queueSnapshot,
         segmentService: () => _segmentService,
       );
+      _prefsListened = prefs;
+      _lastTrickplayPrefs = _trickplayPrefsSnapshot(prefs);
+      prefs.addListener(_onPrefsChanged);
     } catch (_) {}
     _loadSegmentsForCurrentItem();
     if (GetIt.instance.isRegistered<SyncPlayManager>()) {
@@ -591,14 +596,13 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     dynamic item,
     PlaybackManager manager,
   ) {
+    final UserPreferences prefs;
     try {
-      if (GetIt.instance<UserPreferences>().get(
-            UserPreferences.trickPlayMode,
-          ) ==
-          TrickplayMode.disabled) {
-        return null;
-      }
+      prefs = GetIt.instance<UserPreferences>();
     } catch (_) {
+      return null;
+    }
+    if (prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
       return null;
     }
     final raw = _rawDataForQueueItem(item);
@@ -638,7 +642,31 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       'cols': info.tileWidth,
       'rows': info.tileHeight,
       'intervalMs': info.interval,
+      'mode': prefs.get(UserPreferences.trickPlayMode).name,
+      'scalePercent': prefs.get(UserPreferences.trickPlayPreviewScalePercent),
+      'verticalPositionPercent': prefs.get(
+        UserPreferences.trickPlayVerticalPositionPercent,
+      ),
+      'followScrub': prefs.get(UserPreferences.trickPlayFollowScrubPosition),
     };
+  }
+
+  // The native player reads these once per metadata push, so a change made
+  // while a video is playing has to be sent over again.
+  String _trickplayPrefsSnapshot(UserPreferences prefs) => [
+    prefs.get(UserPreferences.trickPlayMode).name,
+    prefs.get(UserPreferences.trickPlayPreviewScalePercent),
+    prefs.get(UserPreferences.trickPlayVerticalPositionPercent),
+    prefs.get(UserPreferences.trickPlayFollowScrubPosition),
+  ].join('|');
+
+  void _onPrefsChanged() {
+    final prefs = _prefsListened;
+    if (prefs == null) return;
+    final next = _trickplayPrefsSnapshot(prefs);
+    if (next == _lastTrickplayPrefs) return;
+    _lastTrickplayPrefs = next;
+    _pushMetadata();
   }
 
   List<Map<String, dynamic>> _mapPeople(
@@ -1410,6 +1438,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _screensaverController?.setPlaybackActive(false);
     _syncPlay?.removeListener(_onSyncPlayChanged);
     _themeController?.removeListener(_onThemeChanged);
+    _prefsListened?.removeListener(_onPrefsChanged);
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     try {
       final manager = GetIt.instance<PlaybackManager>();
