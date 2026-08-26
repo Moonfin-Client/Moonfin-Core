@@ -206,6 +206,7 @@ void main() {
     'showLibrariesInToolbar',
     'showMediaDetailsOnLibraryPage',
     'showSeerrButton',
+    'showServerMessagesButton',
     'showShuffleButton',
     'showSyncPlayButton',
     'shuffleContentType',

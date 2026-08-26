@@ -39,8 +39,15 @@ void openServerMessagesFromNotification() {
   showServerMessagesDialog(context);
 }
 
+bool _dialogOpen = false;
+
 /// Opens the window listing the messages the server admin sent.
+///
+/// Only one at a time. The window follows the service, so a message that
+/// arrives while it is open shows up in place, and opening another over it
+/// would just stack two copies of the same list.
 Future<void> showServerMessagesDialog(BuildContext context) {
+  if (_dialogOpen) return Future<void>.value();
   final service = GetIt.instance<ServerMessagesService>();
 
   // The shared default of 440 leaves a long message in a narrow column, which
@@ -48,12 +55,13 @@ Future<void> showServerMessagesDialog(BuildContext context) {
   // constraints stop being valid on a small phone.
   final width = MediaQuery.sizeOf(context).width;
 
+  _dialogOpen = true;
   return showStyledPlayerDialog<void>(
     context,
     title: AppLocalizations.of(context).serverMessages,
     maxWidth: math.max(340.0, math.min(width - 80, 720.0)),
     builder: (dialogContext) => _ServerMessagesBody(service: service),
-  );
+  ).whenComplete(() => _dialogOpen = false);
 }
 
 class _ServerMessagesBody extends StatelessWidget {
@@ -416,8 +424,9 @@ class _MessageBody extends StatelessWidget {
       selectable: false,
       imageBuilder: (_, _, _) => const SizedBox.shrink(),
       onTapLink: (text, href, title) {
-        if (href == null || href.isEmpty) return;
-        showQrOrLaunch(context, url: href, title: text.isEmpty ? href : text);
+        final url = ServerMessage.webLink(href);
+        if (url == null) return;
+        showQrOrLaunch(context, url: url, title: text.isEmpty ? url : text);
       },
       // Based on the app theme so every element the parser can produce gets a
       // readable colour, not just the handful spelled out below.

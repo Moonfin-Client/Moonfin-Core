@@ -27,6 +27,7 @@ import 'seerr_icons.dart';
 import 'server_messages_dialog.dart';
 import 'settings/settings_panel.dart';
 import 'shuffle_overlay.dart';
+import 'unread_badge.dart';
 import 'user_menu_dialog.dart';
 
 const double _kBarHeight = 54.0;
@@ -58,7 +59,9 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     _prefs.addListener(_onPrefsChanged);
     _viewsRepo.addListener(_onViewsChanged);
     GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
-    GetIt.instance<ServerMessagesService>().addListener(_onPrefsChanged);
+    GetIt.instance<ServerMessagesService>().addListener(
+      _onServerMessagesChanged,
+    );
     _userSub = _userRepo.currentUserStream.listen((_) => _loadUserImage());
     _loadUserImage();
     _loadLibraries();
@@ -68,7 +71,9 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
   void dispose() {
     try {
       GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
-      GetIt.instance<ServerMessagesService>().removeListener(_onPrefsChanged);
+      GetIt.instance<ServerMessagesService>().removeListener(
+        _onServerMessagesChanged,
+      );
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     try {
@@ -83,6 +88,11 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     if (!mounted) return;
     _scheduleLibrariesReload();
     setState(() {});
+  }
+
+  // Only the button changes, so the libraries are left alone.
+  void _onServerMessagesChanged() {
+    if (mounted) setState(() {});
   }
 
   void _onViewsChanged() {
@@ -320,7 +330,8 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     return _BottomNavAction(
       icon: Icons.info_outline_rounded,
       label: l10n.serverMessages,
-      isActive: service.unreadCount > 0,
+      isActive: false,
+      badgeCount: service.unreadCount,
       onTap: () => showServerMessagesDialog(context),
     );
   }
@@ -580,10 +591,14 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
 
   Widget _icon(_BottomNavAction action, {required Color color}) {
     final icon = action.icon;
-    return action.iconBuilder?.call(_kIconSize, color) ??
-        (icon != null
-            ? AdaptiveIcon(icon, size: _kIconSize, color: color)
-            : const SizedBox.shrink());
+    return UnreadBadge(
+      count: action.badgeCount,
+      child:
+          action.iconBuilder?.call(_kIconSize, color) ??
+          (icon != null
+              ? AdaptiveIcon(icon, size: _kIconSize, color: color)
+              : const SizedBox.shrink()),
+    );
   }
 
   Widget _buildTab(BuildContext context, _BottomNavAction action,
@@ -728,12 +743,16 @@ class _BottomNavAction {
   final bool isActive;
   final VoidCallback onTap;
 
+  /// Unread count drawn as a small red circle on the icon. Zero draws nothing.
+  final int badgeCount;
+
   const _BottomNavAction({
     this.icon,
     this.iconBuilder,
     required this.label,
     required this.isActive,
     required this.onTap,
+    this.badgeCount = 0,
   });
 }
 

@@ -252,5 +252,43 @@ void main() {
       });
       expect(labelOnly!.hasAction, isFalse);
     });
+
+    test('an action link has to be a web address', () {
+      ServerMessage parse(String url) => ServerMessage.fromJson({
+        'id': 'x',
+        'title': 'T',
+        'actionLabel': 'Open',
+        'actionUrl': url,
+      })!;
+
+      expect(parse('https://example.com/a').hasAction, isTrue);
+      expect(parse('http://example.com').hasAction, isTrue);
+
+      // Anything else would go straight to the system launcher.
+      for (final url in [
+        'javascript:alert(1)',
+        'file:///etc/passwd',
+        'moonfin://server/item/1',
+        'intent://x#Intent;scheme=http;end',
+        'data:text/html,hi',
+        'example.com',
+        'ht tp://broken',
+        ':::',
+      ]) {
+        expect(parse(url).hasAction, isFalse, reason: url);
+        expect(parse(url).actionUrl, isNull, reason: url);
+      }
+    });
+
+    test('links inside the body are held to the same rule', () {
+      expect(ServerMessage.webLink('https://a.test/x'), 'https://a.test/x');
+      expect(ServerMessage.webLink('  https://a.test/x  '), 'https://a.test/x');
+      expect(ServerMessage.webLink('javascript:alert(1)'), isNull);
+      expect(ServerMessage.webLink('moonfin://x'), isNull);
+      expect(ServerMessage.webLink('http://[bad'), isNull);
+      expect(ServerMessage.webLink('https://'), isNull);
+      expect(ServerMessage.webLink(''), isNull);
+      expect(ServerMessage.webLink(null), isNull);
+    });
   });
 }

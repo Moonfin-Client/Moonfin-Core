@@ -1281,24 +1281,32 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
 
   /// The messages button, or nothing when there is nothing to show. The nav
   /// colour is passed in so the caller decides which palette slot it takes.
+  /// The gap to the next button travels with it, so it only takes up room when
+  /// the button is there.
   Widget _buildServerMessagesButton({
     required Color? navColor,
     required bool alwaysExpanded,
     required String label,
   }) {
     return ServerMessagesNavSlot(
-      builder: (context, unread) => ExpandableIconButton(
-        key: const ValueKey('toolbar_server_messages'),
-        forceExpanded: alwaysExpanded,
-        icon: Icons.info_outline_rounded,
-        label: label,
-        baseColor: navColor,
-        badgeCount: unread,
-        focusNode: _serverMessagesFocus,
-        onPressed: () async {
-          await showServerMessagesDialog(context);
-          if (mounted) _serverMessagesFocus.requestFocus();
-        },
+      builder: (context, unread) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ExpandableIconButton(
+            key: const ValueKey('toolbar_server_messages'),
+            forceExpanded: alwaysExpanded,
+            icon: Icons.info_outline_rounded,
+            label: label,
+            baseColor: navColor,
+            badgeCount: unread,
+            focusNode: _serverMessagesFocus,
+            onPressed: () async {
+              await showServerMessagesDialog(context);
+              if (mounted) _serverMessagesFocus.requestFocus();
+            },
+          ),
+          _gap(),
+        ],
       ),
     );
   }

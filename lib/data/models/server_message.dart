@@ -44,6 +44,21 @@ class ServerMessage {
     return value is String ? value : '';
   }
 
+  /// The address as sent when it is a web link, otherwise null. The body and
+  /// the action come from the admin as free text and end up in the system
+  /// launcher, so anything that is not http or https is dropped rather than
+  /// handed over.
+  static String? webLink(String? raw) {
+    final value = raw?.trim();
+    if (value == null || value.isEmpty) return null;
+    final uri = Uri.tryParse(value);
+    if (uri == null || uri.host.isEmpty) return null;
+    return switch (uri.scheme) {
+      'http' || 'https' => value,
+      _ => null,
+    };
+  }
+
   static String? _nullableString(Map<String, dynamic> json, String key) {
     final value = _string(json, key).trim();
     return value.isEmpty ? null : value;
@@ -79,7 +94,7 @@ class ServerMessage {
         _ => ServerMessageDelivery.inbox,
       },
       actionLabel: _nullableString(json, 'actionLabel'),
-      actionUrl: _nullableString(json, 'actionUrl'),
+      actionUrl: webLink(_nullableString(json, 'actionUrl')),
       createdUtc: _date(json, 'createdUtc'),
     );
   }
