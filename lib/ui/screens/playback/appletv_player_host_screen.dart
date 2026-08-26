@@ -55,6 +55,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
   String _lastTrickplayPrefs = '';
+  TrickplayInfo? _trickplayInfo;
+  String? _trickplayKey;
+  int _trickplayLoadGeneration = 0;
+  static const int _trickplayFrameWidth = 320;
   SyncPlayManager? _syncPlay;
   AppThemeController? _themeController;
   ScreensaverController? _screensaverController;
@@ -605,34 +609,57 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
       return null;
     }
-    final raw = _rawDataForQueueItem(item);
     final itemId = _itemIdForQueueItem(item);
     final client = _clientForQueueItem(item);
-    if (raw == null || itemId == null || itemId.isEmpty || client == null) {
+    if (itemId == null || itemId.isEmpty || client == null) {
       return null;
     }
     final mediaSourceId = manager.currentResolution?.mediaSourceId;
-    final info = TrickplayInfo.fromItemData(raw, mediaSourceId: mediaSourceId);
+    final key = '$itemId|${mediaSourceId ?? ''}';
+    final info = key == _trickplayKey ? _trickplayInfo : null;
     if (info == null || !info.isValid) return null;
 
-    final runtimeTicks = raw['RunTimeTicks'] as int?;
-    final durationMs = runtimeTicks != null ? runtimeTicks ~/ 10000 : 0;
-    final msPerImage = info.interval * info.tilesPerImage;
-    var imageCount = durationMs > 0 ? (durationMs / msPerImage).ceil() + 1 : 16;
-    imageCount = imageCount.clamp(1, 128);
-
-    final urls = List<String>.generate(
-      imageCount,
-      (i) => client.imageApi.getTrickplayTileImageUrl(
-        itemId,
-        width: info.width,
-        index: i,
-        mediaSourceId: mediaSourceId,
-      ),
-    );
+    final List<String> urls;
+    final List<int> timestampsMs;
+    if (info.usesIndividualFrames) {
+      urls = info.frames
+          .map(
+            (frame) => client.trickplayApi!.getFrameImageUrl(
+              itemId,
+              width: info.width,
+              positionTicks: frame.positionTicks,
+              imageTag: frame.imageTag,
+              mediaSourceId: mediaSourceId,
+            ),
+          )
+          .toList(growable: false);
+      timestampsMs = info.frames
+          .map((frame) => frame.positionTicks ~/ 10000)
+          .toList(growable: false);
+    } else {
+      final raw = _rawDataForQueueItem(item);
+      final runtimeTicks = raw?['RunTimeTicks'] as int?;
+      final durationMs = runtimeTicks != null ? runtimeTicks ~/ 10000 : 0;
+      final msPerImage = info.interval * info.tilesPerImage;
+      var imageCount = durationMs > 0
+          ? (durationMs / msPerImage).ceil() + 1
+          : 16;
+      imageCount = imageCount.clamp(1, 128);
+      urls = List<String>.generate(
+        imageCount,
+        (i) => client.imageApi.getTrickplayTileImageUrl(
+          itemId,
+          width: info.width,
+          index: i,
+          mediaSourceId: mediaSourceId,
+        ),
+      );
+      timestampsMs = const [];
+    }
     final token = client.accessToken;
     return {
       'urls': urls,
+      if (timestampsMs.isNotEmpty) 'timestampsMs': timestampsMs,
       'headers': {
         if (token != null && token.isNotEmpty)
           'Authorization': 'MediaBrowser Token="$token"',
@@ -975,6 +1002,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final manager = _manager;
     if (manager == null) return;
     final item = manager.queueService.currentItem;
+    unawaited(_loadTrickplayForCurrentItem(item, manager));
     final id = _itemIdForQueueItem(item);
     if (id == null || id.isEmpty || id == _segmentsLoadedForItemId) return;
     final client = _clientForQueueItem(item);
@@ -999,6 +1027,55 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         }),
       );
     } catch (_) {}
+  }
+
+  Future<void> _loadTrickplayForCurrentItem(
+    dynamic item,
+    PlaybackManager manager,
+  ) async {
+    final itemId = _itemIdForQueueItem(item);
+    final mediaSourceId = manager.currentResolution?.mediaSourceId;
+    final key = itemId == null ? null : '$itemId|${mediaSourceId ?? ''}';
+    if (key == _trickplayKey) return;
+
+    final generation = ++_trickplayLoadGeneration;
+    _trickplayKey = key;
+    _trickplayInfo = null;
+    if (itemId == null || itemId.isEmpty) {
+      _pushMetadata();
+      return;
+    }
+
+    final raw = _rawDataForQueueItem(item);
+    var info = raw == null
+        ? null
+        : TrickplayInfo.fromItemData(raw, mediaSourceId: mediaSourceId);
+    final client = _clientForQueueItem(item);
+    if (info == null && client?.trickplayApi != null) {
+      try {
+        final thumbnailSet = await client!.trickplayApi!.getThumbnailSet(
+          itemId,
+          width: _trickplayFrameWidth,
+          mediaSourceId: mediaSourceId,
+        );
+        if (thumbnailSet != null && thumbnailSet.isValid) {
+          info = TrickplayInfo.fromThumbnailSet(
+            thumbnailSet,
+            width: _trickplayFrameWidth,
+          );
+        }
+      } catch (_) {
+        // Emby BIF previews are optional. Playback remains usable when the
+        // server has not generated them or the request fails.
+      }
+    }
+
+    if (!mounted || generation != _trickplayLoadGeneration) return;
+    final currentItemId = _itemIdForQueueItem(manager.queueService.currentItem);
+    final currentSourceId = manager.currentResolution?.mediaSourceId;
+    if (currentItemId != itemId || currentSourceId != mediaSourceId) return;
+    _trickplayInfo = info?.isValid == true ? info : null;
+    _pushMetadata();
   }
 
   AppleTvQueueSnapshot _queueSnapshot() {
@@ -1427,6 +1504,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   @override
   void dispose() {
+    _trickplayLoadGeneration++;
     _exitSub?.cancel();
     _queueSub?.cancel();
     _sessionEndedSub?.cancel();

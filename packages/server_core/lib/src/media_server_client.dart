@@ -26,6 +26,7 @@ import 'api/admin_items_api.dart';
 import 'api/client_log_api.dart';
 import 'api/syncplay_api.dart';
 import 'api/games_api.dart';
+import 'api/trickplay_api.dart';
 
 abstract class MediaServerClient {
   ServerType get serverType;
@@ -44,6 +45,7 @@ abstract class MediaServerClient {
   ItemsApi get itemsApi;
   PlaybackApi get playbackApi;
   ImageApi get imageApi;
+  TrickplayApi? get trickplayApi => null;
   SessionApi get sessionApi;
   SystemApi get systemApi;
   UserLibraryApi get userLibraryApi;

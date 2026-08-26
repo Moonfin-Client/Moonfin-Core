@@ -232,6 +232,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   TrickplayInfo? _trickplayInfo;
   String? _trickplayMediaSourceId;
+  int _trickplayLoadGeneration = 0;
+  static const int _trickplayFrameWidth = 320;
 
   final _overlayFocus = FocusNode();
   final _tvSeekbarFocus = FocusNode(debugLabel: 'video_player_tv_seekbar');
@@ -982,6 +984,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    _trickplayLoadGeneration++;
     if (_isInPiP && GetIt.instance.isRegistered<PlaybackArbiter>()) {
       GetIt.instance<PlaybackArbiter>().pipActive = false;
     }
@@ -1520,11 +1523,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _loadSegmentsForCurrentItem() async {
     final item = _queue.currentItem;
+    final trickplayLoad = _loadTrickplayInfo(item);
     if (item is AggregatedItem) {
       _segmentService = _createSegmentService(item);
       await _segmentService.loadSegments(item.id);
     }
-    _loadTrickplayInfo(item);
+    await trickplayLoad;
     await _pushMedia3UiMetadata();
   }
 
@@ -2118,31 +2122,55 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  void _loadTrickplayInfo(dynamic item) {
+  Future<void> _loadTrickplayInfo(dynamic item) async {
+    final generation = ++_trickplayLoadGeneration;
     final rawData = _rawDataForQueueItem(item);
-    if (rawData == null) {
-      if (mounted) {
-        setState(() {
-          _trickplayInfo = null;
-          _trickplayMediaSourceId = null;
-        });
-      }
-      return;
-    }
-
+    final itemId = _itemIdForQueueItem(item);
     final mediaSourceId = _manager.currentResolution?.mediaSourceId;
-    final info = TrickplayInfo.fromItemData(
-      rawData,
-      mediaSourceId: mediaSourceId,
-    );
     _prefetchedTrickplayIndexes.clear();
     _touchTrickplayPrefetchStarted = false;
     if (mounted) {
       setState(() {
-        _trickplayInfo = info;
+        _trickplayInfo = null;
         _trickplayMediaSourceId = mediaSourceId;
       });
     }
+
+    var info = rawData == null
+        ? null
+        : TrickplayInfo.fromItemData(rawData, mediaSourceId: mediaSourceId);
+    if (info == null && itemId != null && itemId.isNotEmpty) {
+      final client = _clientForQueueItem(item);
+      final trickplayApi = client.trickplayApi;
+      if (trickplayApi != null) {
+        try {
+          final thumbnailSet = await trickplayApi.getThumbnailSet(
+            itemId,
+            width: _trickplayFrameWidth,
+            mediaSourceId: mediaSourceId,
+          );
+          if (thumbnailSet != null && thumbnailSet.isValid) {
+            info = TrickplayInfo.fromThumbnailSet(
+              thumbnailSet,
+              width: _trickplayFrameWidth,
+            );
+          }
+        } catch (_) {
+          // Missing, unavailable, or malformed BIF data is an optional
+          // playback enhancement and must never interrupt playback.
+        }
+      }
+    }
+
+    if (!mounted || generation != _trickplayLoadGeneration) return;
+    if (_itemIdForQueueItem(_queue.currentItem) != itemId ||
+        _manager.currentResolution?.mediaSourceId != mediaSourceId) {
+      return;
+    }
+    setState(() {
+      _trickplayInfo = info?.isValid == true ? info : null;
+      _trickplayMediaSourceId = mediaSourceId;
+    });
   }
 
   void _refreshTrickplayIfNeeded() {
@@ -2151,7 +2179,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final resolvedSourceId = _manager.currentResolution?.mediaSourceId;
     if (resolvedSourceId != null &&
         resolvedSourceId != _trickplayMediaSourceId) {
-      _loadTrickplayInfo(item);
+      unawaited(_loadTrickplayInfo(item));
     }
   }
 
@@ -2161,6 +2189,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     final info = _trickplayInfo;
     if (info == null || !info.isValid) return;
+    if (info.usesIndividualFrames) return;
     final duration = _state.duration;
     if (duration <= Duration.zero) return;
 
@@ -2192,6 +2221,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         info: info,
         position: position,
         totalDuration: duration,
+        maxSheets: info.usesIndividualFrames ? 7 : 128,
       ),
     );
   }
@@ -2234,12 +2264,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     for (final index in indexes) {
       if (!_prefetchedTrickplayIndexes.add(index)) continue;
       if (!mounted) return;
-      final url = client.imageApi.getTrickplayTileImageUrl(
-        itemId,
-        width: info.width,
-        index: index,
-        mediaSourceId: _trickplayMediaSourceId,
+      final url = _trickplayImageUrl(
+        info: info,
+        imageIndex: index,
+        itemId: itemId,
+        client: client,
       );
+      if (url == null) continue;
       unawaited(
         precacheImage(
           CachedNetworkImageProvider(
@@ -5086,12 +5117,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         : position;
     final resolution = info.resolveTile(resolvePosition);
     final trickplayClient = _clientForQueueItem(item);
-    final url = trickplayClient.imageApi.getTrickplayTileImageUrl(
-      itemId,
-      width: info.width,
-      index: resolution.imageIndex,
-      mediaSourceId: _trickplayMediaSourceId,
+    final url = _trickplayImageUrl(
+      info: info,
+      imageIndex: resolution.imageIndex,
+      itemId: itemId,
+      client: trickplayClient,
+      resolution: resolution,
     );
+    if (url == null) return null;
     final token = trickplayClient.accessToken;
     final headers = <String, String>{
       ...serverImageHeaders,
@@ -5100,6 +5133,33 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     };
 
     return TrickplayTile(url: url, headers: headers, resolution: resolution);
+  }
+
+  String? _trickplayImageUrl({
+    required TrickplayInfo info,
+    required int imageIndex,
+    required String itemId,
+    required MediaServerClient client,
+    TrickplayTileResolution? resolution,
+  }) {
+    if (!info.usesIndividualFrames) {
+      return client.imageApi.getTrickplayTileImageUrl(
+        itemId,
+        width: info.width,
+        index: imageIndex,
+        mediaSourceId: _trickplayMediaSourceId,
+      );
+    }
+
+    if (imageIndex < 0 || imageIndex >= info.frames.length) return null;
+    final frame = info.frames[imageIndex];
+    return client.trickplayApi?.getFrameImageUrl(
+      itemId,
+      width: info.width,
+      positionTicks: resolution?.positionTicks ?? frame.positionTicks,
+      imageTag: resolution?.imageTag ?? frame.imageTag,
+      mediaSourceId: _trickplayMediaSourceId,
+    );
   }
 
   Widget _buildTvTransportRow() {

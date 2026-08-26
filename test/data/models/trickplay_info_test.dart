@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/trickplay_info.dart';
+import 'package:server_core/server_core.dart';
 
 void main() {
   const info = TrickplayInfo(
@@ -49,6 +50,58 @@ void main() {
       expect(tile.thumbHeight, 60);
       expect(tile.tileWidth, 5);
       expect(tile.tileHeight, 4);
+    });
+  });
+
+  group('timestamped Emby frames', () {
+    final frameInfo = TrickplayInfo.fromThumbnailSet(
+      const TrickplayThumbnailSet(
+        aspectRatio: 16 / 9,
+        thumbnails: [
+          TrickplayThumbnail(positionTicks: 0, imageTag: 'tag-0'),
+          TrickplayThumbnail(positionTicks: 75000000, imageTag: 'tag-1'),
+          TrickplayThumbnail(positionTicks: 210000000, imageTag: 'tag-2'),
+        ],
+      ),
+      width: 320,
+    );
+
+    test('uses the thumbnail aspect ratio for preview dimensions', () {
+      expect(frameInfo.isValid, isTrue);
+      expect(frameInfo.usesIndividualFrames, isTrue);
+      expect(frameInfo.width, 320);
+      expect(frameInfo.height, 180);
+      expect(frameInfo.tilesPerImage, 1);
+    });
+
+    test('chooses the last frame at or before the scrub position', () {
+      expect(frameInfo.resolveTile(Duration.zero).imageIndex, 0);
+      expect(
+        frameInfo.resolveTile(const Duration(milliseconds: 7499)).imageIndex,
+        0,
+      );
+      final exact = frameInfo.resolveTile(const Duration(milliseconds: 7500));
+      expect(exact.imageIndex, 1);
+      expect(exact.positionTicks, 75000000);
+      expect(exact.imageTag, 'tag-1');
+      expect(frameInfo.resolveTile(const Duration(minutes: 2)).imageIndex, 2);
+    });
+
+    test('sorts timestamps and replaces duplicate positions', () {
+      final sorted = TrickplayInfo.fromThumbnailSet(
+        const TrickplayThumbnailSet(
+          aspectRatio: 2,
+          thumbnails: [
+            TrickplayThumbnail(positionTicks: 100, imageTag: 'old'),
+            TrickplayThumbnail(positionTicks: 0, imageTag: 'first'),
+            TrickplayThumbnail(positionTicks: 100, imageTag: 'new'),
+          ],
+        ),
+        width: 200,
+      );
+
+      expect(sorted.frames.map((frame) => frame.positionTicks), [0, 100]);
+      expect(sorted.frames.last.imageTag, 'new');
     });
   });
 }

@@ -156,6 +156,7 @@ final class AppleTvPlayerViewController: UIViewController {
         let cols: Int
         let rows: Int
         let intervalMs: Int
+        let timestampsMs: [Int]
     }
 
     private enum TrickplayMode: String { case disabled, single, strip, full }
@@ -1212,9 +1213,18 @@ final class AppleTvPlayerViewController: UIViewController {
             trickplaySheetsLoading.removeAll()
         }
         let headers = (dict["headers"] as? [String: String]) ?? [:]
+        let timestampsMs = (dict["timestampsMs"] as? [NSNumber])?.map(\.intValue) ?? []
+        if !timestampsMs.isEmpty && timestampsMs.count != urls.count {
+            trickplay = nil
+            trickplaySheets.removeAll()
+            trickplaySheetsLoading.removeAll()
+            hideTrickplay()
+            return
+        }
         trickplay = TrickplayData(
             urls: urls, headers: headers, width: width, height: height,
-            cols: cols, rows: rows, intervalMs: intervalMs)
+            cols: cols, rows: rows, intervalMs: intervalMs,
+            timestampsMs: timestampsMs)
         trickplayMode = TrickplayMode(rawValue: (dict["mode"] as? String) ?? "") ?? .single
         trickplayScalePercent = (dict["scalePercent"] as? NSNumber)?.intValue ?? 30
         trickplayVerticalPercent = (dict["verticalPositionPercent"] as? NSNumber)?.intValue ?? 0
@@ -2169,13 +2179,22 @@ final class AppleTvPlayerViewController: UIViewController {
         let tilesPerImage = tp.cols * tp.rows
         guard tilesPerImage > 0 else { return nil }
         let lastMs = max(0, Int(player.duration * 1000) - 1)
-        let tileIndex = min(max(0, ms), lastMs) / tp.intervalMs
-        let imageIndex = tileIndex / tilesPerImage
-        let offset = tileIndex % tilesPerImage
+        let boundedMs = min(max(0, ms), lastMs)
+        let imageIndex: Int
+        let offset: Int
+        if tp.timestampsMs.isEmpty {
+            let tileIndex = boundedMs / tp.intervalMs
+            imageIndex = tileIndex / tilesPerImage
+            offset = tileIndex % tilesPerImage
+        } else {
+            imageIndex = trickplayImageIndex(tp, atMs: boundedMs)
+            offset = 0
+        }
         guard let sheet = trickplaySheets[imageIndex] else {
             loadTrickplaySheet(imageIndex)
             return nil
         }
+        if !tp.timestampsMs.isEmpty { return sheet }
         guard let cg = sheet.cgImage else { return nil }
         let rect = CGRect(
             x: (offset % tp.cols) * tp.width, y: (offset / tp.cols) * tp.height,
@@ -2188,13 +2207,35 @@ final class AppleTvPlayerViewController: UIViewController {
         else { return }
         let tilesPerImage = tp.cols * tp.rows
         guard tilesPerImage > 0 else { return }
-        let lastIndex = max(0, (Int(player.duration * 1000) - 1) / tp.intervalMs / tilesPerImage)
-        let current = max(0, ms) / tp.intervalMs / tilesPerImage
+        let lastIndex: Int
+        let current: Int
+        if tp.timestampsMs.isEmpty {
+            lastIndex = max(0, (Int(player.duration * 1000) - 1) / tp.intervalMs / tilesPerImage)
+            current = max(0, ms) / tp.intervalMs / tilesPerImage
+        } else {
+            lastIndex = tp.timestampsMs.count - 1
+            current = trickplayImageIndex(tp, atMs: max(0, ms))
+        }
         for ahead in 1...sheetsAhead {
             let index = forward ? current + ahead : current - ahead
             if index < 0 || index > lastIndex { break }
             loadTrickplaySheet(index)
         }
+    }
+
+    private func trickplayImageIndex(_ tp: TrickplayData, atMs ms: Int) -> Int {
+        guard !tp.timestampsMs.isEmpty else { return 0 }
+        var low = 0
+        var high = tp.timestampsMs.count - 1
+        while low <= high {
+            let middle = low + (high - low) / 2
+            if tp.timestampsMs[middle] <= ms {
+                low = middle + 1
+            } else {
+                high = middle - 1
+            }
+        }
+        return min(max(high, 0), tp.timestampsMs.count - 1)
     }
 
     private func loadTrickplaySheet(_ index: Int) {

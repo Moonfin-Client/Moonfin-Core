@@ -6,6 +6,7 @@ export 'src/api/emby_auth_api.dart';
 export 'src/api/emby_items_api.dart';
 export 'src/api/emby_playback_api.dart';
 export 'src/api/emby_image_api.dart';
+export 'src/api/emby_trickplay_api.dart';
 export 'src/api/emby_session_api.dart';
 export 'src/api/emby_system_api.dart';
 export 'src/api/emby_user_library_api.dart';

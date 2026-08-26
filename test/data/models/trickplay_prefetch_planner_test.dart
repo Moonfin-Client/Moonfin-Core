@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/models/trickplay_info.dart';
 import 'package:moonfin/data/models/trickplay_prefetch_planner.dart';
+import 'package:server_core/server_core.dart';
 
 void main() {
   const info = TrickplayInfo(
@@ -83,5 +84,35 @@ void main() {
       expect(indexes.length, 128);
       expect(indexes.every((i) => i < 128), isTrue);
     });
+  });
+
+  test('timestamped frames use their real indexes and respect the cap', () {
+    final timestamped = TrickplayInfo.fromThumbnailSet(
+      TrickplayThumbnailSet(
+        aspectRatio: 16 / 9,
+        thumbnails: List.generate(
+          20,
+          (index) => TrickplayThumbnail(
+            positionTicks: index * index * 10000000,
+            imageTag: 'frame-$index',
+          ),
+        ),
+      ),
+      width: 320,
+    );
+
+    final indexes = TrickplayPrefetchPlanner.planAllImageIndexes(
+      info: timestamped,
+      position: const Duration(seconds: 100),
+      totalDuration: const Duration(minutes: 10),
+      maxSheets: 7,
+    );
+
+    expect(indexes, hasLength(7));
+    expect(
+      indexes.first,
+      timestamped.resolveTile(const Duration(seconds: 100)).imageIndex,
+    );
+    expect(indexes.every((index) => index >= 0 && index < 20), isTrue);
   });
 }

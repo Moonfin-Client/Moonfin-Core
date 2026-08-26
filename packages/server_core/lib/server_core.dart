@@ -20,6 +20,7 @@ export 'src/api/syncplay_api.dart';
 export 'src/api/items_api.dart';
 export 'src/api/playback_api.dart';
 export 'src/api/image_api.dart';
+export 'src/api/trickplay_api.dart';
 export 'src/api/session_api.dart';
 export 'src/api/system_api.dart';
 export 'src/api/user_library_api.dart';

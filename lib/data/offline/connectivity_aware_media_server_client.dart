@@ -68,6 +68,10 @@ class ConnectivityAwareMediaServerClient implements MediaServerClient {
   ImageApi get imageApi => _useOffline() ? _offlineImages : _online.imageApi;
 
   @override
+  TrickplayApi? get trickplayApi =>
+      _useOffline() ? null : _online.trickplayApi;
+
+  @override
   UserViewsApi get userViewsApi =>
       _useOffline() ? _offlineViews : _online.userViewsApi;
 

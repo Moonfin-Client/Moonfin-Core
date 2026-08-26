@@ -13,6 +13,7 @@ import 'api/emby_live_tv_api.dart';
 import 'api/emby_instant_mix_api.dart';
 import 'api/emby_display_preferences_api.dart';
 import 'api/emby_users_api.dart';
+import 'api/emby_trickplay_api.dart';
 
 class EmbyMediaServerClient extends MediaServerClient {
   final Dio _dio;
@@ -100,6 +101,10 @@ class EmbyMediaServerClient extends MediaServerClient {
   @override
   late final ImageApi imageApi =
       EmbyImageApi(() => _baseUrl, () => _accessToken);
+
+  @override
+  late final TrickplayApi trickplayApi =
+      EmbyTrickplayApi(_dio, () => _baseUrl, () => _accessToken);
 
   @override
   late final SessionApi sessionApi = EmbySessionApi(_dio);
