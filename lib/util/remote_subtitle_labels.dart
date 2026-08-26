@@ -37,6 +37,7 @@ String remoteSubtitleSummary(
   ]..removeWhere((part) => part.isEmpty);
   return parts.join(' | ');
 }
+
 /// The provider's own bookkeeping, as one line under the release name.
 String remoteSubtitleDetails(
   Map<String, dynamic> subtitle,

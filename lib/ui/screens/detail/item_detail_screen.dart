@@ -9268,8 +9268,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         !isAudio;
   }
 
-
-
   /// Waits for a freshly downloaded subtitle to show up on the item.
   ///
   /// The wait asks the item endpoint for the media streams alone rather than
@@ -9298,7 +9296,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
     return found;
   }
-
 
   Future<void> _downloadRemoteSubtitles(
     BuildContext context,

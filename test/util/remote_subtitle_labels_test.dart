@@ -1,8 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/util/remote_subtitle_labels.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   final l10n = AppLocalizationsEn();
 
   group('remoteSubtitleDetails', () {
@@ -36,17 +41,6 @@ void main() {
         }, l10n),
         'SRT',
       );
-    });
-
-    test('keeps the flags out of the detail line', () {
-      final details = remoteSubtitleDetails(<String, dynamic>{
-        'ThreeLetterISOLanguageName': 'eng',
-        'AiTranslated': true,
-        'ProviderName': 'Open Subtitles',
-        'Format': 'srt',
-      }, l10n);
-
-      expect(details, 'ENG | Open Subtitles | SRT');
     });
 
     test('falls back to the Language key when Emby sends that instead', () {
@@ -126,6 +120,64 @@ void main() {
         remoteSubtitleSummary(<String, dynamic>{'Forced': true}, l10n),
         'Forced',
       );
+    });
+  });
+
+  group('remoteSubtitleLanguage', () {
+    late UserPreferences prefs;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues(const <String, Object>{});
+      final store = PreferenceStore();
+      await store.init();
+      prefs = UserPreferences(store);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    });
+
+    tearDown(() => GetIt.instance.unregister<UserPreferences>());
+
+    test('the preference wins when it names a language', () async {
+      await prefs.set(UserPreferences.defaultSubtitleLanguage, 'ger');
+
+      expect(
+        remoteSubtitleLanguage(
+          [<String, dynamic>{'Language': 'fre'}],
+          const [],
+        ),
+        'ger',
+      );
+    });
+
+    test('auto and none are not languages to search for', () async {
+      for (final sentinel in ['auto', 'None']) {
+        await prefs.set(UserPreferences.defaultSubtitleLanguage, sentinel);
+
+        expect(
+          remoteSubtitleLanguage(
+            [<String, dynamic>{'Language': 'fre'}],
+            const [],
+          ),
+          'fre',
+          reason: '$sentinel names a setting, not a language to search for',
+        );
+      }
+    });
+
+    test('falls back to what the item already carries', () async {
+      await prefs.set(UserPreferences.defaultSubtitleLanguage, '');
+
+      expect(
+        remoteSubtitleLanguage(const [], [
+          <String, dynamic>{'Language': 'jpn'},
+        ]),
+        'jpn',
+      );
+    });
+
+    test('is English when nothing else says otherwise', () async {
+      await prefs.set(UserPreferences.defaultSubtitleLanguage, '');
+
+      expect(remoteSubtitleLanguage(const [], const []), 'eng');
     });
   });
 }

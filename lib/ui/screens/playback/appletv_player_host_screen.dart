@@ -752,7 +752,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         !isAudio;
   }
 
-
   void _searchRemoteSubtitles() {
     final manager = _manager;
     final backend = _backend;
@@ -821,7 +820,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           .where((m) => (m['id']?.toString() ?? '').isNotEmpty)
           .toList();
 
-      await backend.hideSubtitleProgress();
+      // The results sheet takes the progress alert down itself and waits for
+      // the dismissal before presenting. Hiding it here instead leaves the
+      // sheet presenting over an alert still animating out, which tvOS drops.
       backend.showRemoteSubtitles(mapped);
     }();
   }

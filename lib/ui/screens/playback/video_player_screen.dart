@@ -427,8 +427,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         !isAudio;
   }
 
-
-
   Future<Map<String, dynamic>?> _awaitDownloadedSubtitle(
     AggregatedItem currentItem,
     Set<int> existingIndexes,
@@ -440,7 +438,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       keepGoing: () => mounted,
     );
   }
-
 
   Future<void> _downloadRemoteSubtitles(
     AggregatedItem item,
