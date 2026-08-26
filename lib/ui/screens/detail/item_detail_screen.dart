@@ -13850,7 +13850,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                     ThemeRegistry.active.borders.focusBorder.copyWith(
                                       color: isNeon
                                           ? const Color(0xFF00FFFF)
-                                          : Colors.cyan.withValues(alpha: 0.7),
+                                          : AppColorScheme.accent,
                                       width: 1.5,
                                     ),
                                   ),
