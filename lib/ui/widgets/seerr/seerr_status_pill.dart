@@ -131,19 +131,20 @@ class SeerrStatusPill extends StatelessWidget {
     }
 
     final color = seerrStatusColor(_effectiveStatus);
+    // Seerr's badge treatment: fill at 80%, a full border of the same hue,
+    // light text of that hue. This pill sits over cover art, where a 20% tint
+    // is unreadable.
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        border: Border.fromBorderSide(
-          ThemeRegistry.active.borders.chipBorder.copyWith(color: color),
-        ),
-        borderRadius: AppRadius.circular(6),
+        color: color.withValues(alpha: 0.8),
+        border: Border.all(color: color),
+        borderRadius: AppRadius.circular(8),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: color,
+          color: Color.lerp(color, Colors.white, 0.82),
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),
