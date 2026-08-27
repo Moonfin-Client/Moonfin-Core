@@ -13,6 +13,7 @@ import '../adaptive/adaptive_icons.dart';
 import '../adaptive/sf_symbol.dart';
 import '../overlay_sheet.dart';
 import 'preference_binding.dart';
+import 'settings_motion_profile.dart';
 
 Widget withBackClose(BuildContext dialogContext, Widget child) {
   final closeDialog = createDialogBackCloseHandler(dialogContext);
@@ -163,6 +164,7 @@ BoxDecoration _settingsTileDecoration(
   BuildContext context, {
   required bool focused,
 }) {
+  final motion = SettingsMotionProfile.of(context);
   if (AppUiIdiomResolver.isApple) {
     if (!focused) return const BoxDecoration();
     return BoxDecoration(
@@ -203,7 +205,7 @@ BoxDecoration _settingsTileDecoration(
         width: 1.0,
       ),
     ),
-    boxShadow: focused
+    boxShadow: focused && motion.showFocusGlow
         ? (borderTokens.focusGlow.isNotEmpty
               ? borderTokens.focusGlow
               : [
@@ -265,14 +267,32 @@ Widget buildSettingsSelectionBubble(
 void _ensureFocusVisible(BuildContext context, {double alignment = 0.9}) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (!context.mounted) return;
+    final motion = SettingsMotionProfile.of(context);
     Scrollable.ensureVisible(
       context,
       alignment: alignment,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      duration: const Duration(milliseconds: 120),
+      duration: motion.focusScrollDuration,
       curve: Curves.easeOut,
     );
   });
+}
+
+Widget buildSettingsFocusSurface(
+  BuildContext context, {
+  required BoxDecoration decoration,
+  required Widget child,
+}) {
+  final motion = SettingsMotionProfile.of(context);
+  if (motion.tileFocusDuration == Duration.zero) {
+    return DecoratedBox(decoration: decoration, child: child);
+  }
+  return AnimatedContainer(
+    duration: motion.tileFocusDuration,
+    curve: Curves.easeOut,
+    decoration: decoration,
+    child: child,
+  );
 }
 
 class SettingsListTypography extends StatelessWidget {
@@ -745,9 +765,8 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
       },
       child: Padding(
         padding: _settingsTileOuterPadding(context),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 90),
-          curve: Curves.easeOut,
+        child: buildSettingsFocusSurface(
+          context,
           decoration: _settingsTileDecoration(context, focused: _outerFocused),
           child: ListTileTheme.merge(
             textColor: invert
@@ -1162,6 +1181,22 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
     // Gate the tile highlight to keyboard/D-pad
     final focusVisible = InputModeTracker.showFocusVisuals(context, _focused);
     final highlighted = focusVisible && settingsTileInvertsOnFocus;
+    final tile = ListTileTheme.merge(
+      textColor: highlighted
+          ? AppColors.black.withValues(alpha: 0.87)
+          : settingsHeadlineColor(),
+      iconColor: highlighted
+          ? AppColors.black.withValues(alpha: 0.54)
+          : AppColorScheme.onSurface.withValues(alpha: 0.7),
+      titleTextStyle: _kSettingsTitleTextStyle,
+      subtitleTextStyle: _kSettingsSubtitleTextStyle,
+      child: Material(
+        type: MaterialType.transparency,
+        child: Builder(
+          builder: (ctx) => widget.builder(ctx, focusVisible),
+        ),
+      ),
+    );
     return Focus(
       focusNode: _effectiveFocusNode,
       canRequestFocus: false,
@@ -1172,26 +1207,10 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
         padding: widget.outerPadding ?? _settingsTileOuterPadding(context),
         child: Opacity(
           opacity: widget.enabled ? 1.0 : 0.45,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 90),
-            curve: Curves.easeOut,
+          child: buildSettingsFocusSurface(
+            context,
             decoration: _settingsTileDecoration(context, focused: focusVisible),
-            child: ListTileTheme.merge(
-              textColor: highlighted
-                  ? AppColors.black.withValues(alpha: 0.87)
-                  : settingsHeadlineColor(),
-              iconColor: highlighted
-                  ? AppColors.black.withValues(alpha: 0.54)
-                  : AppColorScheme.onSurface.withValues(alpha: 0.7),
-              titleTextStyle: _kSettingsTitleTextStyle,
-              subtitleTextStyle: _kSettingsSubtitleTextStyle,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Builder(
-                  builder: (ctx) => widget.builder(ctx, focusVisible),
-                ),
-              ),
-            ),
+            child: tile,
           ),
         ),
       ),

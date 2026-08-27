@@ -61,6 +61,7 @@ import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/button_layout_list.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
+import '../../widgets/settings/settings_motion_profile.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/support_dialog.dart';

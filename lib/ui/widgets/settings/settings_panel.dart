@@ -11,6 +11,7 @@ import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../overlay_sheet.dart';
 import 'preference_tiles.dart';
+import 'settings_motion_profile.dart';
 
 class SettingsPanel extends StatelessWidget {
   final Widget child;
@@ -31,6 +32,7 @@ class SettingsPanel extends StatelessWidget {
   static Future<void> open(BuildContext context, Widget content) {
     FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context);
+    final motion = SettingsMotionProfile.of(context);
     isOpenNotifier.value = true;
     final navigatorKey = GlobalKey();
     final future = showGeneralDialog<void>(
@@ -38,10 +40,11 @@ class SettingsPanel extends StatelessWidget {
       barrierDismissible: true,
       barrierLabel: l10n.settings,
       barrierColor: AppColorScheme.scrim.withValues(alpha: 0.54),
-      transitionDuration: const Duration(milliseconds: 220),
+      transitionDuration: motion.panelTransitionDuration,
       pageBuilder: (_, anim, _) =>
           SettingsPanel(navigatorKey: navigatorKey, child: content),
       transitionBuilder: (context, anim, secondAnim, child) {
+        if (!motion.animateTransitions) return child;
         final slide = Tween<Offset>(
           begin: const Offset(1.0, 0.0),
           end: Offset.zero,
@@ -59,6 +62,7 @@ class SettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final motion = SettingsMotionProfile.of(context);
     final screenWidth = MediaQuery.sizeOf(context).width;
     final appleTv = AppUiIdiomResolver.appleTvStyle;
     final isMobile = PlatformDetection.useMobileUi;
@@ -129,7 +133,7 @@ class SettingsPanel extends StatelessWidget {
         borderRadius: BorderRadius.horizontal(
           left: Radius.circular(panelCorner),
         ),
-        clipBehavior: Clip.antiAlias,
+        clipBehavior: motion.useHardEdgeClip ? Clip.hardEdge : Clip.antiAlias,
         child: content,
       ),
     );
@@ -212,13 +216,15 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 extension SettingsPush on BuildContext {
   Future<void> pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
+    final motion = SettingsMotionProfile.of(this);
     return Navigator.of(this)
         .push(
           PageRouteBuilder(
             pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
-            transitionDuration: const Duration(milliseconds: 160),
-            reverseTransitionDuration: const Duration(milliseconds: 130),
+            transitionDuration: motion.nestedTransitionDuration,
+            reverseTransitionDuration: motion.nestedReverseTransitionDuration,
             transitionsBuilder: (context, anim, _, child) {
+              if (!motion.animateTransitions) return child;
               final slide =
                   Tween<Offset>(
                     begin: const Offset(1.0, 0.0),

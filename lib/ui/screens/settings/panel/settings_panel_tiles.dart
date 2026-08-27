@@ -187,6 +187,7 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final motion = SettingsMotionProfile.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
       child: Focus(
@@ -200,9 +201,8 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
             setState(() => _outerFocused = focused);
           }
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 90),
-          curve: Curves.easeOut,
+        child: buildSettingsFocusSurface(
+          context,
           decoration: BoxDecoration(
             color: _outerFocused
                 ? AppColorScheme.onSurface
@@ -214,7 +214,7 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
                       : ThemeRegistry.active.borders.cardBorder)
                   .copyWith(width: 1),
             ),
-            boxShadow: _outerFocused
+            boxShadow: _outerFocused && motion.showFocusGlow
                 ? ThemeRegistry.active.borders.focusGlow
                 : null,
           ),

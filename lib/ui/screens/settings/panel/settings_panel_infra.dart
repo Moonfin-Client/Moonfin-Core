@@ -189,11 +189,12 @@ void _ensureSettingsTileVisible(
 }) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (!context.mounted) return;
+    final motion = SettingsMotionProfile.of(context);
     Scrollable.ensureVisible(
       context,
       alignment: alignment,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      duration: const Duration(milliseconds: 120),
+      duration: motion.focusScrollDuration,
       curve: Curves.easeOut,
     );
   });
