@@ -5631,6 +5631,43 @@
   "@seerrRequestedStatus": {
     "description": "Seerr media status when item has been requested"
   },
+  "seerrDownloading": "Downloading",
+  "@seerrDownloading": {
+    "description": "Seerr download bar label when the server reports no usable file sizes"
+  },
+  "seerrDownloadingSize": "Downloading · {done} / {total}",
+  "@seerrDownloadingSize": {
+    "description": "Label above the Seerr download progress bar when byte counts are known",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrDownloadedOfTotal": "{done} / {total}",
+  "@seerrDownloadedOfTotal": {
+    "description": "Short form of the Seerr download label, used when the card is too narrow for the verb",
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "seerrPercentValue": "{percent}%",
+  "@seerrPercentValue": {
+    "description": "Standalone percentage shown at the end of the Seerr download bar label",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "seerrDownloadingPercent": "Downloading · {percent}%",
   "@seerrDownloadingPercent": {
     "description": "Label above the Seerr download progress bar",
