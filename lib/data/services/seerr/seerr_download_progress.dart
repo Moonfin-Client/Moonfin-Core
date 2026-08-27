@@ -11,12 +11,22 @@ class SeerrDownloadSummary {
   /// the UI can label the full bar instead of showing a stuck 100%.
   final bool isImporting;
 
+  /// Total bytes and how many have arrived. The UI shows these next to the
+  /// percentage. Zero when the server reports no usable sizes.
+  final int totalBytes;
+  final int downloadedBytes;
+
   const SeerrDownloadSummary({
     required this.fraction,
     required this.isImporting,
+    this.totalBytes = 0,
+    this.downloadedBytes = 0,
   });
 
   int get percent => (fraction * 100).round();
+
+  /// Whether the byte counts are worth showing.
+  bool get hasSize => totalBytes > 0;
 
   static const _statusProcessing = 3;
   static const _statusPartiallyAvailable = 4;
@@ -63,6 +73,8 @@ class SeerrDownloadSummary {
     return SeerrDownloadSummary(
       fraction: ((total - left) / total).clamp(0.0, 1.0),
       isImporting: left <= 0,
+      totalBytes: total,
+      downloadedBytes: total - left,
     );
   }
 }
