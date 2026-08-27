@@ -7150,9 +7150,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final withDownloads = downloads == null
         ? rowContent
         : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               rowContent,
+              // Space it off the buttons, or it reads as an underline.
+              SizedBox(height: buttonRunSpacing),
               SeerrItemDownloadBars(state: downloads),
             ],
           );

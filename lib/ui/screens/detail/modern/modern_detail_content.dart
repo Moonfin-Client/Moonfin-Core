@@ -66,8 +66,8 @@ import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_request_dialog.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
-import '../../../widgets/seerr/seerr_stats_card.dart';
 import '../../../widgets/seerr/seerr_status_pill.dart';
+import '../../../widgets/seerr/seerr_stats_card.dart';
 
 double _desktopUiScale({UserPreferences? prefs}) {
   final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
@@ -4211,8 +4211,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (item.genres.isNotEmpty) {
       addText(item.genres.take(3).join(' · '));
     }
-    // A badge rather than another word in the line, so it sits outside the dot
-    // separators.
+    // A badge rather than another word in the line, so it sits outside the
+    // dot separators.
     final seerrStatus = seerrItemStatus(_vm);
     final seerrPills = seerrStatus == null
         ? null
