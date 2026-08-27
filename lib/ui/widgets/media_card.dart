@@ -4,6 +4,7 @@ import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteTouchEvent, TvRemoteTouchPhase;
 import 'package:moonfin_design/moonfin_design.dart';
 
+import 'seerr/seerr_media_type_badge.dart';
 import '../../preference/preference_constants.dart';
 import '../../util/platform_detection.dart';
 import '../../util/focus/dpad_keys.dart';
@@ -769,7 +770,7 @@ class _CardImage extends StatelessWidget {
                   Positioned(
                     top: 6,
                     left: 6,
-                    child: _buildSeerrMediaTypeBadge(),
+                    child: SeerrMediaTypeBadge(mediaType: seerrMediaType),
                   ),
                 if (_showSeerrStatusIndicator)
                   Positioned(
@@ -849,32 +850,6 @@ class _CardImage extends StatelessWidget {
   }
 
   bool get _showSeerrStatusIndicator => SeerrMediaStatus.hasDot(seerrStatus);
-
-  Widget _buildSeerrMediaTypeBadge() {
-    final type = seerrMediaType?.toLowerCase();
-    final isMovie = type == 'movie';
-    final badgeColor = isMovie
-        ? AppColorScheme.mediaTypeBadgeMovie
-        : AppColorScheme.mediaTypeBadgeShow;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.85),
-        borderRadius: AppRadius.circular(4),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Text(
-          isMovie ? 'MOVIE' : 'SERIES',
-          style: TextStyle(
-            color: AppColorScheme.onBadge,
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildWatchedIndicator() {
     if (isPlayed) {
