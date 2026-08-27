@@ -780,6 +780,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Future<void> _prepare() async {
+    // Every failure path releases the block, so a retry has to take it again.
+    _acquireGameplayArtworkBlock();
     final games = _client.gamesApi;
     if (games == null) {
       _releaseGameplayArtworkBlock();
