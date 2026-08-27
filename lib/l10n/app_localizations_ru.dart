@@ -4200,6 +4200,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get seerrRequestedStatus => 'Запрошено';
 
   @override
+  String get seerrDownloading => 'Downloading';
+
+  @override
+  String seerrDownloadingSize(String done, String total) {
+    return 'Downloading · $done / $total';
+  }
+
+  @override
+  String seerrDownloadedOfTotal(String done, String total) {
+    return '$done / $total';
+  }
+
+  @override
+  String seerrPercentValue(int percent) {
+    return '$percent%';
+  }
+
+  @override
   String seerrDownloadingPercent(int percent) {
     return 'Скачивание · $percent%';
   }

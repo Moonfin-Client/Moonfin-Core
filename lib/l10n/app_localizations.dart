@@ -7552,6 +7552,30 @@ abstract class AppLocalizations {
   /// **'Requested'**
   String get seerrRequestedStatus;
 
+  /// Seerr download bar label when the server reports no usable file sizes
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get seerrDownloading;
+
+  /// Label above the Seerr download progress bar when byte counts are known
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading · {done} / {total}'**
+  String seerrDownloadingSize(String done, String total);
+
+  /// Short form of the Seerr download label, used when the card is too narrow for the verb
+  ///
+  /// In en, this message translates to:
+  /// **'{done} / {total}'**
+  String seerrDownloadedOfTotal(String done, String total);
+
+  /// Standalone percentage shown at the end of the Seerr download bar label
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String seerrPercentValue(int percent);
+
   /// Label above the Seerr download progress bar
   ///
   /// In en, this message translates to:
