@@ -1406,6 +1406,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
   ) {
     return InkWell(
       onTap: widget.onTap,
+      mouseCursor: SystemMouseCursors.click,
       focusNode: _cardFocus,
       onFocusChange: (value) {
         setFocused(value);
@@ -1941,6 +1942,7 @@ class _IssueCardState extends State<_IssueCard> with FocusStateMixin {
 
     return InkWell(
       onTap: widget.onTap,
+      mouseCursor: SystemMouseCursors.click,
       focusNode: _cardFocus,
       onFocusChange: setFocused,
       child: SizedBox(
