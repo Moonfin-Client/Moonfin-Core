@@ -159,9 +159,9 @@ void main() {
                               children: [
                                 const Flexible(child: Text('Toy Story 5')),
                                 const SizedBox(width: 8),
-                                Container(width: 40, height: 17),
+                                const SizedBox(width: 40, height: 17),
                                 const SizedBox(width: 8),
-                                Container(width: 70, height: 22),
+                                const SizedBox(width: 70, height: 22),
                               ],
                             ),
                             const SizedBox(height: 8),

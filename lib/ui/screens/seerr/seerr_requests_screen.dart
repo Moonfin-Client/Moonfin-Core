@@ -26,6 +26,7 @@ import '../../widgets/navigation_layout.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/seerr_download_progress_bar.dart';
 import '../../widgets/seerr/seerr_media_type_badge.dart';
+import '../../widgets/seerr/seerr_request_tile_caption.dart';
 import '../../widgets/seerr/seerr_text_field.dart';
 import '../../widgets/seerr/seerr_tv_controls.dart';
 import '../../widgets/track_selector_dialog.dart';
@@ -596,15 +597,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     );
   }
 
-  /// Shared by the grid and its skeleton, so the loading state has the same
-  /// shape as what replaces it.
-  /// Height a tile needs beyond its poster: caption inset, title, status or
-  /// progress, requester and date (106), plus 24 of slack for the focus scale.
-  /// A constant because the grid needs it before layout.
-  static const double _captionHeight = 130;
-
   /// Grid sized so a tile holds a whole 2:3 poster plus the caption. Records
-  /// the geometry it works out so the row snap uses the same numbers.
+  /// the geometry it works out so the row snap uses the same numbers. Shared
+  /// by the grid and its skeleton, so the loading state has the same shape as
+  /// what replaces it.
   ///
   /// The ratio comes from the real tile width: the poster scales with width
   /// but the caption is a fixed height, so no single ratio works everywhere.
@@ -617,7 +613,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
       ((available + spacing) / (extent + spacing)).ceil(),
     );
     final tileWidth = (available - spacing * (columns - 1)) / columns;
-    final tileHeight = tileWidth * 1.5 + _captionHeight * scale;
+    final tileHeight =
+        tileWidth * 1.5 + SeerrRequestTileCaption.reservedHeight * scale;
+    // Written during build on purpose. It is a plain field the row snap reads
+    // after the frame, not state the widget rebuilds from.
     _tileGeometry = (
       perLine: columns,
       lineExtent: tileHeight,
@@ -1480,79 +1479,20 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
             ),
           ),
         ),
-        // Inset so the caption does not touch the card edges.
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            10 * scale,
-            8 * scale,
-            10 * scale,
-            10 * scale,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: onSurface,
-                  fontSize: 14 * scale,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4 * scale),
-              // Fixed height. The bar is taller than a status word and the
-              // poster takes what the caption leaves, so reserve one height to
-              // keep posters level across a row.
-              SizedBox(
-                height: 26 * scale,
-                width: double.infinity,
-                child: downloadSummary != null
-                    ? Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: SeerrDownloadProgressBar(
-                          summary: downloadSummary,
-                          // The tile's own scale, so the bar stays in
-                          // proportion with the caption around it.
-                          scale: scale,
-                        ),
-                      )
-                    : Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: _StatusPill(
-                          label: statusLabel,
-                          color: statusColor,
-                        ),
-                      ),
-              ),
-              SizedBox(height: 4 * scale),
-              Text(
-                l10n.requestedByName(requester),
-                style: TextStyle(
-                  color: onSurface.withValues(alpha: 0.54),
-                  fontSize: 12 * scale,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (date.isNotEmpty)
-                Text(
-                  date,
-                  style: TextStyle(
-                    color: onSurface.withValues(alpha: 0.38),
-                    fontSize: 12 * scale,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              if (_actions(l10n, onSurface).isNotEmpty) ...[
-                SizedBox(height: 6 * scale),
-                Row(children: _actions(l10n, onSurface)),
-              ],
-            ],
-          ),
+        SeerrRequestTileCaption(
+          title: title,
+          requestedBy: l10n.requestedByName(requester),
+          date: date,
+          scale: scale,
+          status: downloadSummary != null
+              ? SeerrDownloadProgressBar(
+                  summary: downloadSummary,
+                  // The tile's own scale, so the bar stays in proportion
+                  // with the caption around it.
+                  scale: scale,
+                )
+              : _StatusPill(label: statusLabel, color: statusColor),
+          actions: _actions(l10n, onSurface),
         ),
       ],
     );

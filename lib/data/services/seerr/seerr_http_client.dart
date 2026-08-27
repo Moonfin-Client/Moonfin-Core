@@ -100,20 +100,18 @@ class SeerrHttpClient {
   }
 
   /// Seerr and the Moonbase proxy send the reason in a JSON body. Include it
-  /// so the screen shows more than a status code.
+  /// so the screen shows more than a status code, and take nothing else. The
+  /// message ends up in the diagnostic report, and a raw body from a proxy in
+  /// front of the server is an error page that can carry paths or tokens the
+  /// report's redaction wasn't written for.
   String _errorDetail(Response response) {
     final data = response.data;
-    if (data == null) return '';
-    String? detail;
-    if (data is Map) {
-      final message = data['message'] ?? data['error'] ?? data['code'];
-      detail = message?.toString();
-    } else if (data is String && data.trim().isNotEmpty) {
-      detail = data.trim();
-    }
+    if (data is! Map) return '';
+    final detail = (data['message'] ?? data['error'] ?? data['code'])
+        ?.toString()
+        .trim();
     if (detail == null || detail.isEmpty) return '';
-    // A proxy in front of the server may answer with an HTML error page.
-    if (detail.length > 200) detail = '${detail.substring(0, 200)}...';
+    if (detail.length > 200) return ' - ${detail.substring(0, 200)}...';
     return ' - $detail';
   }
 
