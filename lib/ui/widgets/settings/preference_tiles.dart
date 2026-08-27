@@ -432,7 +432,10 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
             subtitle: widget.subtitle != null
                 ? Text(widget.subtitle!, style: _kSettingsSubtitleTextStyle)
                 : null,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
             value: widget.inverted ? !value : value,
             onChanged: widget.enabled
                 ? (v) {
@@ -542,7 +545,10 @@ class _EnumPreferenceTileState<T extends Enum>
                 : null,
             isThreeLine: widget.description != null,
             titleAlignment: ListTileTitleAlignment.center,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
             onTap: () => _showPicker(context, current),
           );
         },
@@ -605,8 +611,8 @@ class _EnumPreferenceTileState<T extends Enum>
                           color: invert
                               ? AppColors.black.withValues(alpha: 0.54)
                               : (AppUiIdiomResolver.isApple
-                                  ? AppColorScheme.accent
-                                  : null),
+                                    ? AppColorScheme.accent
+                                    : null),
                         )
                       : null,
                   onTap: () {
@@ -1192,9 +1198,7 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
       subtitleTextStyle: _kSettingsSubtitleTextStyle,
       child: Material(
         type: MaterialType.transparency,
-        child: Builder(
-          builder: (ctx) => widget.builder(ctx, focusVisible),
-        ),
+        child: Builder(builder: (ctx) => widget.builder(ctx, focusVisible)),
       ),
     );
     return Focus(

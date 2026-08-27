@@ -115,11 +115,7 @@ class SettingsPanel extends StatelessWidget {
       if (navBorder != null) {
         content = DecoratedBox(
           position: DecorationPosition.foreground,
-          decoration: BoxDecoration(
-            border: Border(
-              left: navBorder,
-            ),
-          ),
+          decoration: BoxDecoration(border: Border(left: navBorder)),
           child: body,
         );
       } else {

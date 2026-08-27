@@ -17,14 +17,8 @@ void main() {
   test('non-TV settings preserve the existing presentation', () {
     final profile = SettingsMotionProfile.resolve(isTv: false);
 
-    expect(
-      profile.panelTransitionDuration,
-      const Duration(milliseconds: 220),
-    );
-    expect(
-      profile.nestedTransitionDuration,
-      const Duration(milliseconds: 160),
-    );
+    expect(profile.panelTransitionDuration, const Duration(milliseconds: 220));
+    expect(profile.nestedTransitionDuration, const Duration(milliseconds: 160));
     expect(profile.tileFocusDuration, const Duration(milliseconds: 90));
     expect(profile.focusScrollDuration, const Duration(milliseconds: 120));
     expect(profile.animateTransitions, isTrue);
@@ -34,10 +28,7 @@ void main() {
 
   test('reduced-motion accessibility uses the performance profile', () {
     expect(
-      SettingsMotionProfile.resolve(
-        isTv: false,
-        disableAnimations: true,
-      ),
+      SettingsMotionProfile.resolve(isTv: false, disableAnimations: true),
       same(SettingsMotionProfile.performance),
     );
   });

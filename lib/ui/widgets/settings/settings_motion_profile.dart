@@ -58,7 +58,6 @@ class SettingsMotionProfile {
 
   static SettingsMotionProfile of(BuildContext context) => resolve(
     isTv: PlatformDetection.isTV,
-    disableAnimations:
-        MediaQuery.maybeOf(context)?.disableAnimations ?? false,
+    disableAnimations: MediaQuery.maybeOf(context)?.disableAnimations ?? false,
   );
 }
