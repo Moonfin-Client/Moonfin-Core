@@ -17,6 +17,26 @@ extern "C" {
 
 typedef struct lh_host lh_host;
 
+// Result codes for lh_load and lh_probe_options. The VALUES are fixed: platform
+// runners map them to channel errors and the self-test asserts them, so name
+// them, never renumber them.
+//
+// Scoped to the load path. Other entry points also return -1 as a plain
+// failure without meaning LH_ERR_SESSION_BUSY.
+typedef enum {
+  LH_OK = 0,
+  LH_ERR_SESSION_BUSY = -1,      // a core is already loaded in this process
+  LH_ERR_CORE_OPEN = -2,         // the module could not be opened
+  LH_ERR_CORE_SYMBOLS = -3,      // required libretro symbols are missing
+  LH_ERR_ROM_READ = -4,          // the content file could not be read
+  LH_ERR_CONTENT_REJECTED = -5,  // retro_load_game returned false
+  // Also returned when a shutdown lands mid-load. Pre-existing overload, kept
+  // because the value is part of the contract.
+  LH_ERR_AUDIO_RING = -6,        // the audio ring could not be sized/allocated
+  LH_ERR_ALLOC = -7,             // a host allocation failed
+  LH_ERR_BAD_GAME_ID = -8,       // game_id would escape save_dir
+} lh_result;
+
 // Ports the input latch tracks. Matches the largest per-platform mask array
 // (Android, macOS/iOS); the desktop runners only ever touch port 0.
 #define LH_MAX_PORTS 4
@@ -209,6 +229,16 @@ int lh_unserialize(lh_host *host, const void *src, size_t size);
 // shrink between the two calls, because a restart on the emulation thread
 // rebuilds the whole definition list. Treat a -1 as "stop enumerating", not as
 // a hole to skip past.
+// Reads a core's option definitions without loading content, so a core whose
+// game will not start is still configurable. Definitions are host-owned copies
+// readable through lh_option_count/lh_get_option afterwards; a core may publish
+// more from retro_load_game, so this can be a subset. Returns 0 on success.
+//
+// Refused while any session is loaded: libretro's callbacks carry no user data,
+// so a second module would be handed the running core's environment callback.
+int lh_probe_options(lh_host *host, const char *core_path,
+                     const char *system_dir);
+
 int lh_option_count(lh_host *host);
 int lh_get_option(lh_host *host, int index, lh_option *out);
 void lh_set_option(lh_host *host, const char *id, const char *value);

@@ -28,6 +28,32 @@ class GameLoadInfo {
 }
 
 /// One emulator core option (from the core's variables list).
+/// Why a native game failed to start.
+///
+/// The platform channel carries these as strings -- every runner already emits
+/// them, so the wire format is fixed -- but callers match on the enum instead
+/// of retyping the literal.
+enum GameLoadError {
+  coreMissing('core_missing'),
+  loadFailed('load_failed'),
+  /// Anything else, including codes a newer runner may add.
+  unknown('');
+
+  const GameLoadError(this.code);
+
+  /// The string the platform channel uses.
+  final String code;
+
+  static GameLoadError fromCode(String? code) => values.firstWhere(
+        (e) => e.code == code,
+        orElse: () => GameLoadError.unknown,
+      );
+
+  /// The error [e] represents, or [unknown] if it is not a channel failure.
+  static GameLoadError of(Object e) =>
+      e is PlatformException ? fromCode(e.code) : GameLoadError.unknown;
+}
+
 class GameCoreOption {
   const GameCoreOption({
     required this.id,
@@ -85,6 +111,11 @@ abstract class NativeGamePlayer {
   /// keyboard path, where input comes from Flutter rather than a native source.
   Future<void> setInput(int port, int mask);
   Future<List<GameCoreOption>> getOptions();
+
+  /// Reads [corePath]'s options without loading a game, so a core that will
+  /// not start is still configurable. Empty while a session is live, and may
+  /// be a subset of [getOptions] -- cores can publish more at load time.
+  Future<List<GameCoreOption>> probeOptions(String corePath, String systemDir);
   Future<void> setOption(String id, String value);
   Future<Map<String, String>> getCurrentOptions();
   Future<int> controllerCount();
@@ -146,7 +177,7 @@ class MethodChannelGamePlayer implements NativeGamePlayer {
       if (options != null && options.isNotEmpty) 'options': options,
     });
     if (result == null) {
-      throw PlatformException(code: 'load_failed');
+      throw PlatformException(code: GameLoadError.loadFailed.code);
     }
     return GameLoadInfo(
       textureId: (result['textureId'] as num).toInt(),
@@ -225,8 +256,29 @@ class MethodChannelGamePlayer implements NativeGamePlayer {
   }
 
   @override
-  Future<List<GameCoreOption>> getOptions() async {
-    final raw = await _control.invokeMethod<List<dynamic>>('getOptions');
+  Future<List<GameCoreOption>> getOptions() async =>
+      _decodeOptions(await _control.invokeMethod<List<dynamic>>('getOptions'));
+
+  @override
+  Future<List<GameCoreOption>> probeOptions(
+    String corePath,
+    String systemDir,
+  ) async {
+    try {
+      return _decodeOptions(
+        await _control.invokeMethod<List<dynamic>>('probeOptions', {
+          'corePath': corePath,
+          'systemDir': systemDir,
+        }),
+      );
+    } on MissingPluginException {
+      return const [];  // runner without the probe yet
+    } on PlatformException {
+      return const [];
+    }
+  }
+
+  List<GameCoreOption> _decodeOptions(List<dynamic>? raw) {
     return (raw ?? const [])
         .whereType<Map>()
         .map((m) {

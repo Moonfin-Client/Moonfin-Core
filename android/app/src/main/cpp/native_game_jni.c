@@ -629,10 +629,10 @@ JNI(jboolean, nativeLoadState)(JNIEnv *env, jobject thiz, jbyteArray data) {
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
-JNI(jobjectArray, nativeOptions)(JNIEnv *env, jobject thiz) {
-  (void)thiz;
+// Packs [host]'s options into the tab-joined Array<String> Kotlin decodes.
+static jobjectArray options_array(JNIEnv *env, lh_host *host) {
   jclass string_cls = (*env)->FindClass(env, "java/lang/String");
-  if (!g_ctx.host) return (*env)->NewObjectArray(env, 0, string_cls, NULL);
+  if (!host) return (*env)->NewObjectArray(env, 0, string_cls, NULL);
 
   // lh_option_count and lh_get_option are separate locked calls, so a restart
   // on the emulation thread can shrink the definition list in between. Skipping
@@ -640,13 +640,13 @@ JNI(jobjectArray, nativeOptions)(JNIEnv *env, jobject thiz) {
   // Array<String>, which NPEs on the platform thread the moment it is iterated.
   // Stop at the first failure instead and hand back only what was filled - a
   // short list of live options is correct, a list with a hole in it is not.
-  int count = lh_option_count(g_ctx.host);
+  int count = lh_option_count(host);
   jobjectArray result = (*env)->NewObjectArray(env, count, string_cls, NULL);
   if (!result) return NULL;
   int filled = 0;
   for (int i = 0; i < count; i++) {
     lh_option opt;
-    if (lh_get_option(g_ctx.host, i, &opt) != 0) break;
+    if (lh_get_option(host, i, &opt) != 0) break;
     // Tab-joined: id, label, current, then each choice.
     size_t len = strlen(opt.id) + strlen(opt.label) + strlen(opt.current) + 3;
     for (int c = 0; c < opt.choice_count; c++) len += strlen(opt.choices[c]) + 1;
@@ -791,6 +791,56 @@ JNI(jint, nativeSetControllerType)(JNIEnv *env, jobject thiz, jint port,
   }
   return (jint)lh_set_controller_type(g_ctx.host, (int)port,
                                       (unsigned)device_type);
+}
+
+
+JNI(jobjectArray, nativeOptions)(JNIEnv *env, jobject thiz) {
+  (void)thiz;
+  return options_array(env, g_ctx.host);
+}
+
+// Only to satisfy lh_create's non-optional callbacks; a probe runs no frames.
+static void probe_frame_ready(void *user) { (void)user; }
+static int probe_controller_count(void *user) {
+  (void)user;
+  return 0;
+}
+
+// Throwaway host so the probe cannot disturb g_ctx. See lh_probe_options.
+JNI(jobjectArray, nativeProbeOptions)(JNIEnv *env, jobject thiz,
+                                      jstring core_path, jstring system_dir) {
+  (void)thiz;
+  jclass string_cls = (*env)->FindClass(env, "java/lang/String");
+  if (!core_path || !system_dir) {
+    return (*env)->NewObjectArray(env, 0, string_cls, NULL);
+  }
+  const char *core = (*env)->GetStringUTFChars(env, core_path, NULL);
+  if (!core) {
+    (*env)->ExceptionClear(env);
+    return (*env)->NewObjectArray(env, 0, string_cls, NULL);
+  }
+  const char *sys = (*env)->GetStringUTFChars(env, system_dir, NULL);
+  if (!sys) {
+    (*env)->ReleaseStringUTFChars(env, core_path, core);
+    (*env)->ExceptionClear(env);
+    return (*env)->NewObjectArray(env, 0, string_cls, NULL);
+  }
+
+  lh_callbacks cb = {0};
+  cb.frame_ready = probe_frame_ready;
+  cb.controller_count = probe_controller_count;
+  lh_host *probe = lh_create(LH_FORMAT_RGBA8888, cb);
+  jobjectArray result;
+  if (probe && lh_probe_options(probe, core, sys) == 0) {
+    result = options_array(env, probe);
+  } else {
+    LOGE("nativeProbeOptions: probe failed for '%s'", core);
+    result = (*env)->NewObjectArray(env, 0, string_cls, NULL);
+  }
+  if (probe) lh_destroy(probe);
+  (*env)->ReleaseStringUTFChars(env, system_dir, sys);
+  (*env)->ReleaseStringUTFChars(env, core_path, core);
+  return result;
 }
 
 JNI(void, nativeSetOption)(JNIEnv *env, jobject thiz, jstring id, jstring value) {

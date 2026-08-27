@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
@@ -408,6 +409,50 @@ String coreSettingsKey(String coreId) => 'moonfin-native-$coreId';
 /// sending a zero-byte PUT body, which some HTTP stacks and servers mishandle.
 Future<void> resetCoreSettings(GamesApi games, String coreId) =>
     games.putSave(coreSettingsKey(coreId), const [10], kind: 'settings');
+
+/// Reads [coreId]'s persisted options as id -> value. One `id=value` per line;
+/// a line with no `=`, or `=` at position zero, is skipped.
+Future<Map<String, String>> readCoreSettings(
+  GamesApi games,
+  String coreId,
+) async {
+  final blob = await games.getSave(coreSettingsKey(coreId), kind: 'settings');
+  if (blob == null || blob.isEmpty) return const {};
+  final map = <String, String>{};
+  for (final line in String.fromCharCodes(blob).split('\n')) {
+    final eq = line.indexOf('=');
+    if (eq > 0) map[line.substring(0, eq)] = line.substring(eq + 1);
+  }
+  return map;
+}
+
+/// Writes [values] as [coreId]'s persisted options, in the format
+/// [readCoreSettings] and the in-game menu both use.
+Future<void> writeCoreSettings(
+  GamesApi games,
+  String coreId,
+  Map<String, String> values,
+) {
+  if (values.isEmpty) return resetCoreSettings(games, coreId);
+  final blob = values.entries.map((e) => '${e.key}=${e.value}').join('\n');
+  return games.putSave(
+    coreSettingsKey(coreId),
+    utf8.encode(blob),
+    kind: 'settings',
+  );
+}
+
+/// EmulatorJS's settings key. One GLOBAL blob for every game, unlike the
+/// native cores' per-core keys.
+const String emulatorJsSettingsKey = 'moonfin-global';
+
+/// Clears the EmulatorJS settings shared by every game.
+///
+/// `{}`, not the newline [resetCoreSettings] uses: the restore path injects any
+/// non-empty value straight into `ejs-settings`, so a newline would land there
+/// unparseable rather than cleared.
+Future<void> resetEmulatorJsSettings(GamesApi games) =>
+    games.putSave(emulatorJsSettingsKey, utf8.encode('{}'), kind: 'settings');
 
 /// The libretro core id for an EmulatorJS core name, or null if there's no
 /// mapping for it.

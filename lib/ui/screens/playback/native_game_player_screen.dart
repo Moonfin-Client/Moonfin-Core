@@ -18,6 +18,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../../playback/native_game_player.dart';
 import '../../../util/game_cores.dart';
+import '../settings/emulator_core_settings_screen.dart';
 import '../../../util/game_storage.dart';
 import '../../../util/core_input_descriptors.dart';
 import '../../../util/native_controller_mapping.dart';
@@ -970,6 +971,9 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       await _player.stop();
       if (mounted) {
         setState(() => _error = _startFailureMessage(e));
+        if (GameLoadError.of(e) == GameLoadError.loadFailed) {
+          unawaited(_checkCoreOptionsAvailable());
+        }
       }
     }
   }
@@ -1021,19 +1025,65 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   /// answers RETRO_ENVIRONMENT_SET_HW_RENDER with false, and cores with no
   /// software renderer (e.g. Nintendo 64's mupen64plus_next) fail their
   /// content load outright.
-  String _startFailureMessage(Object error) {
-    if (error is PlatformException) {
-      switch (error.code) {
-        case 'core_missing':
-          return 'The core for this system is not included in this build.';
-        case 'load_failed':
-          return 'This game cannot be played with the native core.\n'
-              'Open the game\'s details screen and switch it to '
-              '"EmulatorJS (WebView)".\nYou may also try resetting this core\'s settings in '
-              'Settings > Playback > Emulator Cores and try again.';
+  /// The core whose settings the error screen offers, if any.
+  String? get _settingsCoreId => libretroCoreId(widget.core);
+
+  /// Null until checked, then whether this core has settings we can actually
+  /// show. Only some runners implement the probe, so offering the button
+  /// everywhere would promise a fix the platform cannot deliver.
+  bool? _coreOptionsAvailable;
+
+  Future<void> _checkCoreOptionsAvailable() async {
+    var available = false;
+    try {
+      final coreId = _settingsCoreId;
+      final corePath =
+          coreId == null ? null : await installedCorePath(coreId);
+      if (corePath != null) {
+        final systemDir = await GameStorage.systemDir();
+        final probed = await _player.probeOptions(corePath, systemDir.path);
+        available = probed.isNotEmpty;
       }
+    } catch (_) {
+      // Treated the same as "no settings": the button must not appear.
     }
-    return 'Could not start this game. ($error)';
+    if (mounted) setState(() => _coreOptionsAvailable = available);
+  }
+
+  Future<void> _openCoreSettings() async {
+    final coreId = _settingsCoreId;
+    if (coreId == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EmulatorCoreSettingsScreen(
+          coreId: coreId,
+          system: widget.core,
+        ),
+      ),
+    );
+  }
+
+  /// Clears the error and loads again, so a changed setting takes effect.
+  Future<void> _retryAfterSettings() async {
+    if (!mounted) return;
+    setState(() {
+      _error = null;
+      _progress = null;
+    });
+    await _prepare();
+  }
+
+  String _startFailureMessage(Object error) {
+    switch (GameLoadError.of(error)) {
+      case GameLoadError.coreMissing:
+        // TODO: Localize this.
+        return 'The core for this system is not included in this build.';
+      case GameLoadError.loadFailed:
+        // TODO: Localize this.
+        return 'The native emulator core for this game is not starting.';
+      case GameLoadError.unknown:
+        return 'Could not start this game. ($error)';
+    }
   }
 
   /// Returns the playable content path: the file itself, the ROM extracted
@@ -2377,10 +2427,58 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(48),
-                child: Text(
-                  _error!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontSize: 24),
+                    ),
+                    // TODO: Localize this.
+                    if (_coreOptionsAvailable == true) ...[
+                      const SizedBox(height: 16),
+                      const Text(
+                        'The emulator settings may be reached below. You can reset to defaults and/or '
+                        'change them to try and fix it (e.g. RDP Plugin setting).',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 18),
+                      ),
+                      const SizedBox(height: 28),
+                      Wrap(
+                        spacing: 16,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: _openCoreSettings,
+                            icon: const Icon(Icons.tune),
+                            label: const Text('Emulator settings'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _retryAfterSettings,
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Try again'),
+                          ),
+                        ],
+                      ),
+                    ] else if (_coreOptionsAvailable == false) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        emulatorJsAvailable
+                            ? 'This core\'s settings cannot be changed on this '
+                                'device. Open the game\'s details screen and '
+                                'switch it to "EmulatorJS (WebView)".'
+                            : 'This core\'s settings cannot be changed on this '
+                                'device, and this game has no other player '
+                                'here.',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),

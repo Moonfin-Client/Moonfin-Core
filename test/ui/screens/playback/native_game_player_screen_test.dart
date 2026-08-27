@@ -249,6 +249,11 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
   @override
   Future<List<GameCoreOption>> getOptions() async => const [];
   @override
+  Future<List<GameCoreOption>> probeOptions(
+    String corePath,
+    String systemDir,
+  ) async => const [];
+  @override
   Future<void> setOption(String id, String value) async {}
 
   /// What the loaded game currently has set. Cores publish per-game options

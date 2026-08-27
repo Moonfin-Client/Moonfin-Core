@@ -58,6 +58,11 @@ if(LIBRETRO_HOST_TESTS)
 
   add_executable(libretro_host_test test/test_harness.c)
   target_link_libraries(libretro_host_test PRIVATE libretro_host)
+  # The harness includes stdatomic.h too, so it needs the same opt-in the
+  # library gets above; without it the test target is unbuildable on MSVC.
+  if(MSVC)
+    target_compile_options(libretro_host_test PRIVATE /experimental:c11atomics)
+  endif()
 
   enable_testing()
   add_test(

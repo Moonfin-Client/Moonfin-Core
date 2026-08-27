@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:server_core/server_core.dart';
 
 import '../../../data/services/core_download_service.dart';
 import '../../../l10n/app_localizations.dart';
@@ -12,6 +11,7 @@ import '../../../util/platform_detection.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import 'emulator_core_settings_screen.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'settings_app_bar.dart';
@@ -29,7 +29,6 @@ class EmulatorCoresScreen extends StatefulWidget {
 class _EmulatorCoresScreenState extends State<EmulatorCoresScreen> {
   late final CoreDownloadService _service =
       CoreDownloadService(GetIt.instance<PreferenceStore>());
-  final MediaServerClient _client = GetIt.instance<MediaServerClient>();
 
   final Set<String> _installed = {};
   final Map<String, double> _downloading = {};
@@ -95,23 +94,15 @@ class _EmulatorCoresScreenState extends State<EmulatorCoresScreen> {
     }
   }
 
-  Future<void> _resetSettings(GameCore core) async {
-    final l10n = AppLocalizations.of(context);
-    final games = _client.gamesApi;
-    if (games == null) return;
-    try {
-      await resetCoreSettings(games, core.coreId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.emulatorCoreSettingsReset)),
-      );
-    } catch (e) {
-      debugPrint('[EmulatorCoresScreen] Reset settings failed: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.emulatorCoreResetSettingsFailed)),
-      );
-    }
+  void _openSettings(GameCore core) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EmulatorCoreSettingsScreen(
+          coreId: core.coreId,
+          system: core.system,
+        ),
+      ),
+    );
   }
 
   @override
@@ -204,12 +195,13 @@ class _EmulatorCoresScreenState extends State<EmulatorCoresScreen> {
             ),
           ),
         ),
+        // Reset now lives inside this screen, alongside editing.
         Tooltip(
           message: l10n.emulatorCoreResetSettings(core.system),
           child: FocusableButton(
             semanticLabel: l10n.emulatorCoreResetSettings(core.system),
-            onPressed: () => _resetSettings(core),
-            child: const Icon(Icons.settings_backup_restore),
+            onPressed: installed ? () => _openSettings(core) : null,
+            child: const Icon(Icons.tune),
           ),
         ),
       ],

@@ -1091,6 +1091,99 @@ static void test_rejects_bad_frame(const char *core_path, const char *rom_path,
 // backstop and the ASAN build is the real check.
 // ---------------------------------------------------------------------------
 
+// The numeric values are the contract: platform runners map them to channel
+// errors. Naming them must not renumber them.
+static void test_result_codes_are_stable(void) {
+  printf("result codes keep their values:\n");
+  CHECK(LH_OK == 0, "LH_OK");
+  CHECK(LH_ERR_SESSION_BUSY == -1, "LH_ERR_SESSION_BUSY");
+  CHECK(LH_ERR_CORE_OPEN == -2, "LH_ERR_CORE_OPEN");
+  CHECK(LH_ERR_CORE_SYMBOLS == -3, "LH_ERR_CORE_SYMBOLS");
+  CHECK(LH_ERR_ROM_READ == -4, "LH_ERR_ROM_READ");
+  CHECK(LH_ERR_CONTENT_REJECTED == -5, "LH_ERR_CONTENT_REJECTED");
+  CHECK(LH_ERR_AUDIO_RING == -6, "LH_ERR_AUDIO_RING");
+  CHECK(LH_ERR_ALLOC == -7, "LH_ERR_ALLOC");
+  CHECK(LH_ERR_BAD_GAME_ID == -8, "LH_ERR_BAD_GAME_ID");
+}
+
+// Options are published at retro_init, before retro_load_game, so a core can be
+// asked what it supports with no ROM and no session.
+static void test_probe_options_without_content(const char *core_path,
+                                               const char *work_dir) {
+  printf("probe reads options with no content loaded:\n");
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+
+  CHECK(lh_option_count(host) == 0, "no definitions before probing");
+  CHECK(lh_probe_options(host, core_path, work_dir) == 0, "probe succeeds");
+  CHECK(lh_option_count(host) > 0, "probe published the core's definitions");
+
+  // Readable after the probe unloads the core, so the copies are host-owned.
+  lh_option opt;
+  CHECK(lh_get_option(host, 0, &opt) == 0, "definition readable after probe");
+  CHECK(strcmp(opt.id, "stub_speed") == 0, "probed id");
+  CHECK(strcmp(opt.label, "Speed") == 0, "probed label");
+  CHECK(opt.choice_count == 2, "probed choice count");
+
+  lh_av_info av;
+  char rom_path[1024];
+  snprintf(rom_path, sizeof(rom_path), "%s/dummy.rom", work_dir);
+  CHECK(lh_load(host, core_path, rom_path, work_dir, work_dir, "afterprobe",
+                NULL, NULL, 0, &av) == 0,
+        "a real load still works after a probe");
+  lh_destroy(host);
+}
+
+// One core per process: probing during a session would hand the running core's
+// environment callback to a second module.
+static void test_probe_refused_during_session(const char *core_path,
+                                              const char *rom_path,
+                                              const char *work_dir) {
+  printf("probe is refused while a session is live:\n");
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  lh_av_info av;
+  int rc = lh_load(host, core_path, rom_path, work_dir, work_dir, "probeguard",
+                   NULL, NULL, 0, &av);
+  CHECK(rc == 0, "core loads for the probe-guard test");
+  if (rc != 0) {
+    lh_destroy(host);
+    return;
+  }
+  lh_start(host);
+  msleep(50);
+
+  lh_host *other = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  CHECK(lh_probe_options(other, core_path, work_dir) != 0,
+        "probe refuses while another session is loaded");
+  CHECK(lh_option_count(other) == 0, "refused probe published nothing");
+  lh_destroy(other);
+
+  lh_option opt;
+  CHECK(lh_get_option(host, 0, &opt) == 0, "live session still readable");
+  CHECK(strcmp(opt.id, "stub_speed") == 0, "live session options intact");
+  lh_destroy(host);
+}
+
+// A failed probe must leave the host reusable, not half-initialised.
+static void test_probe_bad_path_leaves_host_usable(const char *core_path,
+                                                   const char *rom_path,
+                                                   const char *work_dir) {
+  printf("probe failure leaves the host usable:\n");
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  CHECK(lh_probe_options(host, "/no/such/core.so", work_dir) != 0,
+        "probing a missing core fails");
+  CHECK(lh_option_count(host) == 0, "failed probe published nothing");
+
+  CHECK(lh_probe_options(host, core_path, work_dir) == 0,
+        "a good probe works after a failed one");
+  CHECK(lh_option_count(host) > 0, "recovered probe published definitions");
+
+  lh_av_info av;
+  CHECK(lh_load(host, core_path, rom_path, work_dir, work_dir, "afterbadprobe",
+                NULL, NULL, 0, &av) == 0,
+        "a real load still works after a failed probe");
+  lh_destroy(host);
+}
+
 static void test_option_snapshot_survives_invalidation(const char *core_path,
                                                        const char *rom_path,
                                                        const char *work_dir) {
@@ -1346,13 +1439,18 @@ int main(int argc, char **argv) {
   lh_host *rejected = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
   int rejected_rc = lh_load(rejected, core_path, rejected_path, work_dir,
                             work_dir, "rejected", NULL, NULL, 0, &bad_av);
-  CHECK(rejected_rc == -5, "core rejection returns the libretro load code");
+  CHECK(rejected_rc == LH_ERR_CONTENT_REJECTED,
+        "core rejection returns the libretro load code");
   CHECK(strstr(g_last_message, "stub rejected this content") != NULL,
         "core rejection reason reaches the host diagnostic");
   CHECK(strstr(g_last_message, "rejection cleanup") == NULL,
         "later informational output does not replace the rejection reason");
   lh_destroy(rejected);
 
+  test_result_codes_are_stable();
+  test_probe_options_without_content(core_path, work_dir);
+  test_probe_refused_during_session(core_path, rom_path, work_dir);
+  test_probe_bad_path_leaves_host_usable(core_path, rom_path, work_dir);
   test_input_latch();
   test_analog_passthrough();
   test_analog_via_core(core_path, rom_path, work_dir);

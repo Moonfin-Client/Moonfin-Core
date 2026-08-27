@@ -155,6 +155,16 @@ class LibretroBridge(
         refreshInputDescriptors().map { it.channelPayload() },
       )
       "setControllerType" -> setControllerType(args, result)
+      // Refused natively while a session is live; surfaces as an empty list.
+      "probeOptions" -> {
+        val corePath = args["corePath"] as? String
+        val systemDir = args["systemDir"] as? String
+        if (corePath == null || systemDir == null) {
+          result.error("bad_args", "probeOptions needs corePath and systemDir", null)
+        } else {
+          result.success(decodeOptions(nativeProbeOptions(corePath, systemDir)))
+        }
+      }
       "setOption" -> {
         val id = args["id"] as? String
         val value = args["value"] as? String
@@ -566,7 +576,12 @@ class LibretroBridge(
     // entries it actually filled: a core restart can shrink the option list
     // mid-enumeration, and the JNI side used to leave a null in the gap, which
     // this non-null element type turns into an NPE on the platform thread.
-    return nativeOptions().mapNotNull { entry ->
+    return decodeOptions(nativeOptions())
+  }
+
+  /** Decodes the tab-joined option entries the JNI layer packs. */
+  private fun decodeOptions(entries: Array<String>): List<Map<String, Any>> {
+    return entries.mapNotNull { entry ->
       val parts = entry.split("\t")
       if (parts.size < 3) return@mapNotNull null
       val choices = parts.drop(3).map { mapOf("value" to it, "label" to it) }
@@ -666,6 +681,8 @@ class LibretroBridge(
   private external fun nativeControllerTypes(): Array<String>
   private external fun nativeInputDescriptors(): Array<String>
   private external fun nativeSetControllerType(port: Int, deviceType: Long): Int
+  private external fun nativeProbeOptions(
+    corePath: String, systemDir: String): Array<String>
   private external fun nativeSetOption(id: String, value: String)
 
   companion object {

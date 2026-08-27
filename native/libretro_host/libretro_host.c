@@ -2049,6 +2049,7 @@ static int load_failed(struct lh_host *h, int code) {
   return code;
 }
 
+
 static int open_core(struct lh_host *h) {
   h->core.handle = lib_open(h->core_path);
   if (!h->core.handle) {
@@ -2061,12 +2062,12 @@ static int open_core(struct lh_host *h) {
     host_log(h, "Failed to load core '%s': %s", h->core_path,
              err ? err : "unknown dlopen failure");
 #endif
-    return -2;
+    return LH_ERR_CORE_OPEN;
   }
   if (!resolve_core(&h->core)) {
     lib_close(h->core.handle);
     memset(&h->core, 0, sizeof(h->core));
-    return -3;
+    return LH_ERR_CORE_SYMBOLS;
   }
 
   h->pixel_format = RETRO_PIXEL_FORMAT_0RGB1555;
@@ -2088,6 +2089,37 @@ static int open_core(struct lh_host *h) {
   return 0;
 }
 
+// open_core already does exactly what a probe needs -- dlopen, resolve,
+// set_environment, retro_init -- and stops short of content.
+int lh_probe_options(lh_host *h, const char *core_path, const char *system_dir) {
+  if (!h || !core_path || !system_dir) return -1;
+  if (g_session) return LH_ERR_SESSION_BUSY;
+
+  free_option_definitions(h);  // this core's options, not a union
+
+  h->system_dir = lh_strdup(system_dir);
+  h->core_path = lh_strdup(core_path);
+  if (!h->system_dir || !h->core_path) {
+    free_load_paths(h);
+    return LH_ERR_ALLOC;
+  }
+
+  g_session = h;
+  int rc = open_core(h);
+  if (rc != 0) {
+    free_load_paths(h);
+    g_session = NULL;
+    return rc;
+  }
+
+  // Pairs the init and drops the module. Deliberately leaves h->defs alone.
+  unwind_failed_core(h);
+  free_load_paths(h);
+  g_session = NULL;
+  return 0;
+}
+
+
 static int load_content(struct lh_host *h) {
   struct retro_system_info info;
   memset(&info, 0, sizeof(info));
@@ -2099,20 +2131,20 @@ static int load_content(struct lh_host *h) {
   void *rom_data = NULL;
   if (!info.need_fullpath) {
     FILE *f = fopen(h->rom_path, "rb");
-    if (!f) return -4;
+    if (!f) return LH_ERR_ROM_READ;
     fseek(f, 0, SEEK_END);
     long len = ftell(f);
     fseek(f, 0, SEEK_SET);
     if (len <= 0) {
       fclose(f);
-      return -4;
+      return LH_ERR_ROM_READ;
     }
     rom_data = malloc((size_t)len);
     size_t got = rom_data ? fread(rom_data, 1, (size_t)len, f) : 0;
     fclose(f);
     if (got != (size_t)len) {
       free(rom_data);
-      return -4;
+      return LH_ERR_ROM_READ;
     }
     game.data = rom_data;
     game.size = (size_t)len;
@@ -2140,13 +2172,13 @@ static int load_content(struct lh_host *h) {
       host_log(h, "retro_load_game rejected '%s' without a core diagnostic",
                h->rom_path);
     }
-    return -5;
+    return LH_ERR_CONTENT_REJECTED;
   }
   // A core that asked to quit during the load has nothing to run. Unload before
   // reporting, so the caller's teardown is not left holding a live game.
   if (h->shutdown_requested) {
     if (h->core.unload_game) h->core.unload_game();
-    return -6;
+    return LH_ERR_AUDIO_RING;
   }
 
   struct retro_system_av_info av;
@@ -2163,10 +2195,10 @@ static int load_content(struct lh_host *h) {
   h->av.sample_rate = av.timing.sample_rate > 0 ? av.timing.sample_rate : 44100;
 
   int cap_frames = (int)(h->av.sample_rate * 0.25);
-  if (cap_frames <= 0 || cap_frames > INT_MAX / 2) return -6;
+  if (cap_frames <= 0 || cap_frames > INT_MAX / 2) return LH_ERR_AUDIO_RING;
   int ring_capacity = cap_frames * 2;
   int16_t *ring = calloc((size_t)ring_capacity, sizeof(int16_t));
-  if (!ring) return -6;
+  if (!ring) return LH_ERR_AUDIO_RING;
   mutex_lock(&h->audio_lock);
   int16_t *old_ring = h->ring;
   h->ring = ring;
@@ -2185,7 +2217,7 @@ static int load_content(struct lh_host *h) {
   // as a failure rather than a silent partial success. -7 joins this
   // function's existing -4/-5/-6 as "the same allocation-failure code lh_load
   // uses for its own setup", so both callers just check `rc != 0`.
-  if (h->alloc_failed) return -7;
+  if (h->alloc_failed) return LH_ERR_ALLOC;
   return 0;
 }
 
@@ -2193,7 +2225,7 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
             const char *system_dir, const char *save_dir, const char *game_id,
             const char *const *opt_keys, const char *const *opt_vals,
             int opt_count, lh_av_info *out_info) {
-  if (g_session) return -1;  // one session per process
+  if (g_session) return LH_ERR_SESSION_BUSY;
   h->shutdown_requested = 0;
   // A fresh load is a new session, so do not carry a choice from a different
   // core/content forward. Internal restart deliberately does not call this.
@@ -2215,7 +2247,7 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
   // load with a clear error.
   if (!game_id || strchr(game_id, '/') || strchr(game_id, '\\') ||
       strstr(game_id, "..")) {
-    return -8;
+    return LH_ERR_BAD_GAME_ID;
   }
 
   h->system_dir = lh_strdup(system_dir);
@@ -2235,13 +2267,13 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
   if (!h->system_dir || !h->save_dir || !h->core_path || !h->rom_path ||
       !h->sram_path) {
     free_load_paths(h);
-    return -7;
+    return LH_ERR_ALLOC;
   }
   snprintf(h->sram_path, sram_len, "%s/%s.srm", save_dir, game_id);
   for (int i = 0; i < opt_count; i++) {
     if (vars_set(h, opt_keys[i], opt_vals[i]) != 0) {
       free_load_paths(h);
-      return -7;
+      return LH_ERR_ALLOC;
     }
   }
 
