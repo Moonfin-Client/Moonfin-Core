@@ -85,6 +85,227 @@ void main() {
     );
   }
 
+  testWidgets('the reset row says whether the buttons are stock or changed', (
+    tester,
+  ) async {
+    const gameId = 'hydro-thunder';
+    Widget harnessFor(NativeControllerMapping mapping) => MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            NativeControllerMappingScreen(
+              devices: const [deviceA],
+              mappings: {deviceA.id: mapping},
+              gameId: gameId,
+              onMappingChanged: (_, _) async {},
+              onClose: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Future<void> show(NativeControllerMapping mapping) async {
+      await tester.pumpWidget(harnessFor(mapping));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Reset this game to defaults'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.pumpAndSettle();
+    }
+
+    // 'Default layout' is also every unbound BUTTON row's subtitle, so scope
+    // the check to the reset row itself.
+    Finder captionOf(String text) => find.descendant(
+      of: find
+          .ancestor(
+            of: find.text('Reset this game to defaults'),
+            matching: find.byType(GestureDetector),
+          )
+          .first,
+      matching: find.text(text),
+    );
+
+    await show(NativeControllerMapping.empty);
+    expect(captionOf('Default layout'), findsOneWidget);
+
+    await show(
+      NativeControllerMapping.empty.withBindingForGame(
+        gameId,
+        96,
+        RetroPadButton.a,
+      ),
+    );
+    expect(captionOf('Customised for this game'), findsOneWidget);
+
+    // A reset stores an explicit empty table, which is still an entry. The row
+    // must report the buttons the user can see, not that bookkeeping.
+    await show(
+      NativeControllerMapping.empty
+          .withBindingForGame(gameId, 96, RetroPadButton.a)
+          .withBindingsForGame(gameId, const {}),
+    );
+    expect(captionOf('Default layout'), findsOneWidget);
+  });
+
+  testWidgets('reset returns this game to defaults and nothing else', (
+    tester,
+  ) async {
+    // The row says "this game", so it must not also throw away the pad's
+    // controller type for every core, its snap for every game, or another
+    // game's bindings -- which replacing the whole mapping with empty did.
+    const gameId = 'hydro-thunder';
+    final saved = NativeControllerMapping.empty
+        .withBindingForGame(gameId, 96, RetroPadButton.a)
+        .withBindingForGame('burgertime', 190, RetroPadButton.b)
+        .withSnap('burgertime', StickSnapMode.fourWay)
+        .withControllerType('fbneo', 5);
+    NativeControllerMapping? persisted;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              NativeControllerMappingScreen(
+                devices: const [deviceA],
+                mappings: {deviceA.id: saved},
+                gameId: gameId,
+                onMappingChanged: (_, mapping) async => persisted = mapping,
+                onClose: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Reset this game to defaults'),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Reset this game to defaults'));
+    await tester.pumpAndSettle();
+
+    // A reset cannot be undone, so it asks first and nothing has happened yet.
+    expect(find.text('Reset buttons'), findsOneWidget);
+    expect(persisted, isNull);
+
+    await tester.tap(find.text('Reset buttons'));
+    await tester.pumpAndSettle();
+
+    expect(persisted, isNotNull);
+    expect(persisted!.bindingsForGame(gameId), isEmpty);
+    expect(persisted!.bindingsForGame('burgertime')[190], RetroPadButton.b);
+    expect(persisted!.snapForGame('burgertime'), StickSnapMode.fourWay);
+    expect(persisted!.controllerTypeForCore('fbneo'), 5);
+  });
+
+  testWidgets('cancelling the reset confirmation changes nothing', (
+    tester,
+  ) async {
+    const gameId = 'hydro-thunder';
+    final saved = NativeControllerMapping.empty.withBindingForGame(
+      gameId,
+      96,
+      RetroPadButton.a,
+    );
+    var persistCalls = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              NativeControllerMappingScreen(
+                devices: const [deviceA],
+                mappings: {deviceA.id: saved},
+                gameId: gameId,
+                onMappingChanged: (_, _) async => persistCalls++,
+                onClose: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Reset this game to defaults'),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Reset this game to defaults'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(persistCalls, 0);
+    // Back on the button list, with the mapping untouched.
+    expect(find.text('Reset this game to defaults'), findsOneWidget);
+  });
+
+  testWidgets('the reset confirmation is reachable with a controller', (
+    tester,
+  ) async {
+    // A Material dialog would strand a gamepad user here: this panel is driven
+    // by RetroPad indices, not focus traversal.
+    const gameId = 'hydro-thunder';
+    final key = GlobalKey<NativeControllerMappingScreenState>();
+    NativeControllerMapping? persisted;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              NativeControllerMappingScreen(
+                key: key,
+                devices: const [deviceA],
+                mappings: {
+                  deviceA.id: NativeControllerMapping.empty.withBindingForGame(
+                    gameId,
+                    96,
+                    RetroPadButton.a,
+                  ),
+                },
+                gameId: gameId,
+                onMappingChanged: (_, mapping) async => persisted = mapping,
+                onClose: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Reset this game to defaults'),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Reset this game to defaults'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reset buttons'), findsOneWidget);
+
+    // Cancel is preselected, so moving once lands on Reset; 0 activates it.
+    key.currentState!.handleButton(4, true);
+    await tester.pump();
+    key.currentState!.handleButton(0, true);
+    await tester.pumpAndSettle();
+
+    expect(persisted, isNotNull);
+    expect(persisted!.bindingsForGame(gameId), isEmpty);
+  });
+
   testWidgets(
     'rebuild with a shorter device list clamps selection instead of throwing',
     (tester) async {

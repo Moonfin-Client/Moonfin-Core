@@ -143,6 +143,8 @@ class NativeControllerMappingScreenState
   int _deviceIndex = 0;
   bool _confirmingCopy = false;
   int _copySelected = 0;
+  bool _confirmingReset = false;
+  int _resetSelected = 0;
   bool _choosingControllerType = false;
   int _controllerTypeSelected = 0;
   bool _choosingPlayer = false;
@@ -204,6 +206,8 @@ class NativeControllerMappingScreenState
   int get _rowCount => _resetRow + 1;
   int get _copyConfirmRow => 0;
   int get _copyCancelRow => 1;
+  int get _resetConfirmRow => 0;
+  int get _resetCancelRow => 1;
 
   List<String> get _copyTargets => widget.devices
       .where((device) => device.supported && device.port != null)
@@ -312,6 +316,10 @@ class NativeControllerMappingScreenState
       setState(() => _confirmingCopy = false);
       return true;
     }
+    if (_confirmingReset) {
+      _cancelReset();
+      return true;
+    }
     return false;
   }
 
@@ -381,6 +389,26 @@ class NativeControllerMappingScreenState
       }
       return;
     }
+    if (_confirmingReset) {
+      switch (index) {
+        case 4:
+        case 5:
+          setState(() {
+            _resetSelected = _resetSelected == _resetConfirmRow
+                ? _resetCancelRow
+                : _resetConfirmRow;
+          });
+        case 0:
+          if (_resetSelected == _resetConfirmRow) {
+            _confirmReset();
+          } else {
+            _cancelReset();
+          }
+        case 8:
+          _cancelReset();
+      }
+      return;
+    }
     switch (index) {
       case 4:
         _move(-1);
@@ -409,7 +437,8 @@ class NativeControllerMappingScreenState
       return;
     }
 
-    final mapping = _mapping.withBinding(code, capturing);
+    // Scoped to this game, so this does not rewrite every other game.
+    final mapping = _mapping.withBindingForGame(widget.gameId, code, capturing);
     if (!mounted) return;
     setState(() {
       _mapping = mapping;
@@ -493,7 +522,7 @@ class NativeControllerMappingScreenState
       return;
     }
     if (_selected == _rowCount - 1) {
-      _reset();
+      _beginReset();
       return;
     }
     final device = _device;
@@ -504,13 +533,34 @@ class NativeControllerMappingScreenState
     unawaited(capture.begin(device.runtimeId));
   }
 
-  void _reset() {
+  void _beginReset() {
+    if (_device == null) return;
+    setState(() {
+      _confirmingReset = true;
+      // Cancel is the safe default: a reset cannot be undone.
+      _resetSelected = _resetCancelRow;
+    });
+  }
+
+  void _cancelReset() {
+    setState(() => _confirmingReset = false);
+    _revealRow(_selected);
+  }
+
+  /// Returns this game's buttons to the built-in layout for this controller.
+  ///
+  /// An empty table is not the same as no entry: no entry inherits the saved
+  /// bindings, an empty one says this game deliberately uses none.
+  void _confirmReset() {
     final device = _device;
     if (device == null) return;
-    setState(() => _mapping = NativeControllerMapping.empty);
-    unawaited(
-      widget.onMappingChanged(device.id, NativeControllerMapping.empty),
-    );
+    final mapping = _mapping.withBindingsForGame(widget.gameId, const {});
+    setState(() {
+      _mapping = mapping;
+      _confirmingReset = false;
+    });
+    _revealRow(_selected);
+    unawaited(widget.onMappingChanged(device.id, mapping));
   }
 
   void _onDiagnosticsSnapshot(ControllerDiagnosticsSnapshot snapshot) {
@@ -553,7 +603,7 @@ class NativeControllerMappingScreenState
         }
       }
     }
-    retroPad ??= _mapping.keycodeToButton[button.rawCode];
+    retroPad ??= _mapping.bindingsForGame(widget.gameId)[button.rawCode];
     return ButtonChannel(
       rawCode: button.rawCode,
       rawName: button.rawName,
@@ -734,6 +784,14 @@ class NativeControllerMappingScreenState
         : '$label - this game and controller';
   }
 
+  /// Whether these buttons are the built-in layout or something the user
+  /// changed. Reads the bindings in effect, because a reset stores an empty
+  /// table, which is still an entry.
+  String get _bindingScopeSubtitle =>
+      _mapping.bindingsForGame(widget.gameId).isEmpty
+      ? 'Default layout'
+      : 'Customised for this game';
+
   void _cycleSnap() {
     final device = _device;
     if (device == null || widget.gameId.isEmpty) return;
@@ -898,7 +956,7 @@ class NativeControllerMappingScreenState
       'a disconnected controller';
 
   int? _keycodeFor(RetroPadButton button) {
-    for (final entry in _mapping.keycodeToButton.entries) {
+    for (final entry in _mapping.bindingsForGame(widget.gameId).entries) {
       if (entry.value == button) return entry.key;
     }
     return null;
@@ -965,6 +1023,42 @@ class NativeControllerMappingScreenState
               _copyCancelRow,
               trailing: Icons.close,
               onTap: () => setState(() => _confirmingCopy = false),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_confirmingReset) {
+      final device = _device;
+      return Flexible(
+        child: ListView(
+          controller: _scroll,
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                'Reset ${device?.name ?? 'this controller'} to the default '
+                'button layout for this game?\n\n'
+                'Only this game and this controller change. Your other '
+                'games keep their buttons, and this core\'s controller '
+                'type and stick snap are not touched.',
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            _row(
+              'Reset buttons',
+              _resetConfirmRow,
+              trailing: Icons.restart_alt,
+              onTap: _confirmReset,
+            ),
+            _row(
+              'Cancel',
+              _resetCancelRow,
+              trailing: Icons.close,
+              onTap: _cancelReset,
             ),
           ],
         ),
@@ -1145,12 +1239,13 @@ class NativeControllerMappingScreenState
           }
           if (index == _resetRow) {
             return _row(
-              'Reset to defaults',
+              'Reset this game to defaults',
               index,
+              subtitle: _bindingScopeSubtitle,
               trailing: Icons.restart_alt,
               onTap: () {
                 setState(() => _selected = index);
-                _reset();
+                _beginReset();
               },
             );
           }
@@ -1177,6 +1272,7 @@ class NativeControllerMappingScreenState
     if (_choosingPlayer) return _playerSelected;
     if (_choosingControllerType) return _controllerTypeSelected;
     if (_confirmingCopy) return _copySelected;
+    if (_confirmingReset) return _resetSelected;
     return _selected;
   }
 

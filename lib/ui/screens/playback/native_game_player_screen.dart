@@ -74,26 +74,50 @@ PlayerOneWarning? playerOneWarningFor(
 int? desktopBitForButton(
   NativeControllerMapping? mapping,
   GamepadButton button,
-  int? fallback,
-) {
-  final bound = desktopBoundBit(mapping, button);
+  int? fallback, {
+  String gameId = '',
+}) {
+  final bound = desktopBoundBit(mapping, button, gameId: gameId);
   if (bound != null) return bound;
   if (fallback == null || mapping == null) return fallback;
-  final claimed = mapping.keycodeToButton.values
+  final claimed = mapping
+      .bindingsForGame(gameId)
+      .values
       .map((b) => 1 << b.retroPadIndex)
       .contains(fallback);
   return claimed ? null : fallback;
 }
+
+/// The per-profile binding tables to hand the native side for [gameId].
+///
+/// The mapping menu resolves through this same call, so what the core plays
+/// with and what the menu shows cannot drift. Keycodes only; controller type
+/// and stick snap go through their own channels.
+@visibleForTesting
+String controllerMappingsPayload(
+  Map<String, NativeControllerMapping> mappings,
+  String gameId,
+) => jsonEncode({
+  for (final entry in mappings.entries)
+    entry.key: {
+      for (final binding in entry.value.bindingsForGame(gameId).entries)
+        binding.key.toString(): binding.value.retroPadIndex,
+    },
+});
 
 /// The RetroPad bit a saved binding gives [button], or null when it is unbound.
 ///
 /// Split out so the desktop trigger path is testable: the gamepad stream is a
 /// static, and only Windows/Linux read it in Dart.
 @visibleForTesting
-int? desktopBoundBit(NativeControllerMapping? mapping, GamepadButton button) {
+int? desktopBoundBit(
+  NativeControllerMapping? mapping,
+  GamepadButton button, {
+  String gameId = '',
+}) {
   final code = desktopGamepadButtonCodes[button];
   if (mapping == null || code == null) return null;
-  final bound = mapping.keycodeToButton[code];
+  final bound = mapping.bindingsForGame(gameId)[code];
   return bound == null ? null : 1 << bound.retroPadIndex;
 }
 
@@ -607,7 +631,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   /// Android's table and EmulatorJS, which clears duplicates the same way.
   int? _bitForGamepadButton(String gamepadId, GamepadButton button) {
     final mapping = _controllerMappings[desktopControllerDeviceId(gamepadId)];
-    return desktopBitForButton(mapping, button, _gamepadButtonToBit[button]);
+    return desktopBitForButton(
+      mapping,
+      button,
+      _gamepadButtonToBit[button],
+      gameId: widget.gameId,
+    );
   }
 
   // Negative stick values map to the first bit, positive to the second. The Y
@@ -634,7 +663,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     double value,
   ) {
     final mapping = _controllerMappings[desktopControllerDeviceId(gamepadId)];
-    final bit = desktopBoundBit(mapping, trigger) ?? fallbackBit;
+    final bit =
+        desktopBoundBit(mapping, trigger, gameId: widget.gameId) ?? fallbackBit;
     // Keyed by pad too: two controllers resolve the same trigger to different
     // bits, and a shared key let one clear the bit the other was holding.
     final key = (gamepadId, trigger);
@@ -1939,10 +1969,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     }
   }
 
-  String _controllerMappingsJson() => jsonEncode({
-    for (final entry in _controllerMappings.entries)
-      entry.key: jsonDecode(entry.value.toJson()),
-  });
+  /// Resolved for the current game here rather than natively, because the
+  /// Android parser reads one flat table per profile. Stick snap is resolved
+  /// the same way just below.
+  String _controllerMappingsJson() =>
+      controllerMappingsPayload(_controllerMappings, widget.gameId);
 
   /// Pushes the mappings to whatever applies them.
   ///
@@ -2162,15 +2193,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         (device) => targetIds.contains(device.id),
       ))
         target.id:
-            NativeControllerMapping(
-              source.keycodeToButton,
-              controllerTypesByCore:
-                  _controllerMappings[target.id]?.controllerTypesByCore ??
-                  const {},
-              // Snap is per game and per controller; keep the target's own.
-              snapByGame:
-                  _controllerMappings[target.id]?.snapByGame ?? const {},
-            ).withControllerType(
+            (_controllerMappings[target.id] ?? NativeControllerMapping.empty)
+                // Copies the table the user is looking at, and scopes it to
+                // this game on the target too, so the copy cannot reach games
+                // the user was not looking at.
+                .withBindingsForGame(
+                  widget.gameId,
+                  source.bindingsForGame(widget.gameId),
+                )
+                .withControllerType(
               coreId,
               target.port != null &&
                       _isControllerTypeSupportedAtPort(

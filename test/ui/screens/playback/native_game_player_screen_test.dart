@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -430,6 +431,61 @@ void main() {
       expect(desktopBoundBit(null, GamepadButton.leftTrigger), isNull);
     },
   );
+
+  group('the table handed to the native side', () {
+    // This payload IS what the core plays with. The mapping menu resolves the
+    // same way, so a regression here is invisible in the UI -- the menu would
+    // still show the right buttons while the game used the wrong ones.
+    const pad = 'android-p1';
+    const gameId = 'hydro-thunder';
+    final mapping = NativeControllerMapping.empty
+        .withBinding(96, RetroPadButton.a)
+        .withBindingForGame(gameId, 190, RetroPadButton.a)
+        .withControllerType('fbneo', 5)
+        .withSnap(gameId, StickSnapMode.fourWay);
+
+    test('sends the current game own table, not the default', () {
+      final sent =
+          jsonDecode(controllerMappingsPayload({pad: mapping}, gameId))
+              as Map<String, dynamic>;
+
+      expect(sent[pad], {'190': RetroPadButton.a.retroPadIndex});
+    });
+
+    test('sends the default for a game that has not diverged', () {
+      final sent =
+          jsonDecode(controllerMappingsPayload({pad: mapping}, 'burgertime'))
+              as Map<String, dynamic>;
+
+      expect(sent[pad], {'96': RetroPadButton.a.retroPadIndex});
+    });
+
+    test('sends a table for every connected profile', () {
+      final sent =
+          jsonDecode(
+                controllerMappingsPayload({
+                  pad: mapping,
+                  'android-p2': NativeControllerMapping.empty
+                      .withBindingForGame(gameId, 191, RetroPadButton.b),
+                }, gameId),
+              )
+              as Map<String, dynamic>;
+
+      expect(sent.keys, containsAll(<String>[pad, 'android-p2']));
+      expect(sent['android-p2'], {'191': RetroPadButton.b.retroPadIndex});
+    });
+
+    test('emits keycodes only, no metadata the parser would skip', () {
+      final sent =
+          jsonDecode(controllerMappingsPayload({pad: mapping}, gameId))
+              as Map<String, dynamic>;
+
+      final keys = (sent[pad] as Map<String, dynamic>).keys;
+      expect(keys.every((key) => int.tryParse(key) != null), isTrue);
+      expect(keys, isNot(contains('controllerTypes')));
+      expect(keys, isNot(contains('snapByGame')));
+    });
+  });
 
   test('a rebound trigger resolves to the button it was bound to', () {
     final mapping = NativeControllerMapping(const {

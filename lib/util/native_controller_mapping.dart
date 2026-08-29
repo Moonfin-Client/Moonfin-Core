@@ -93,10 +93,12 @@ class NativeControllerMapping {
     this.keycodeToButton, {
     this.controllerTypesByCore = const {},
     this.snapByGame = const {},
+    this.bindingsByGame = const {},
   });
 
   static const empty = NativeControllerMapping({});
 
+  /// The default bindings, used by any game without an override of its own.
   final Map<int, RetroPadButton> keycodeToButton;
 
   /// Explicit alternate layouts by canonical libretro core id. An absent entry
@@ -105,6 +107,13 @@ class NativeControllerMapping {
 
   /// Stick snap mode by game id; absent means [StickSnapMode.off].
   final Map<String, StickSnapMode> snapByGame;
+
+  /// Whole replacement binding tables by game id; an absent game inherits
+  /// [keycodeToButton].
+  ///
+  /// Replacement rather than an overlay because bindings are 1:1, and an
+  /// overlay cannot say "unbound here" without a tombstone concept.
+  final Map<String, Map<int, RetroPadButton>> bindingsByGame;
 
   /// Returns an independent immutable snapshot of this mapping.
   ///
@@ -117,6 +126,12 @@ class NativeControllerMapping {
       Map<String, int>.from(controllerTypesByCore),
     ),
     snapByGame: Map.unmodifiable(Map<String, StickSnapMode>.from(snapByGame)),
+    bindingsByGame: Map<String, Map<int, RetroPadButton>>.unmodifiable({
+      for (final entry in bindingsByGame.entries)
+        entry.key: Map<int, RetroPadButton>.unmodifiable(
+          Map<int, RetroPadButton>.from(entry.value),
+        ),
+    }),
   );
 
   factory NativeControllerMapping.fromJson(String json) {
@@ -126,18 +141,7 @@ class NativeControllerMapping {
       final sourceBindings = decoded['bindings'] is Map
           ? decoded['bindings'] as Map
           : decoded;
-      final bindings = <int, RetroPadButton>{};
-      for (final entry in sourceBindings.entries) {
-        final keycode = int.tryParse(entry.key.toString());
-        final buttonIndex = entry.value is num
-            ? (entry.value as num).toInt()
-            : int.tryParse(entry.value.toString());
-        if (keycode == null || buttonIndex == null) continue;
-        final button = RetroPadButton.values
-            .where((candidate) => candidate.retroPadIndex == buttonIndex)
-            .firstOrNull;
-        if (button != null) bindings[keycode] = button;
-      }
+      final bindings = _bindingsFrom(sourceBindings);
       final controllerTypes = <String, int>{};
       final rawTypes = decoded['controllerTypes'];
       if (rawTypes is Map) {
@@ -164,14 +168,49 @@ class NativeControllerMapping {
           }
         }
       }
+      final overrides = <String, Map<int, RetroPadButton>>{};
+      final rawOverrides = decoded['bindingsByGame'];
+      if (rawOverrides is Map) {
+        for (final entry in rawOverrides.entries) {
+          final gameId = entry.key.toString();
+          // A game whose table is unreadable falls back to the default rather
+          // than to no bindings at all.
+          if (gameId.isEmpty || entry.value is! Map) continue;
+          overrides[gameId] = Map<int, RetroPadButton>.unmodifiable(
+            _bindingsFrom(entry.value as Map),
+          );
+        }
+      }
       return NativeControllerMapping(
         Map.unmodifiable(bindings),
         controllerTypesByCore: Map.unmodifiable(controllerTypes),
         snapByGame: Map.unmodifiable(snaps),
+        bindingsByGame: Map<String, Map<int, RetroPadButton>>.unmodifiable(
+          overrides,
+        ),
       );
     } catch (_) {
       return empty;
     }
+  }
+
+  /// Reads a keycode->button table, skipping anything that is not one, which
+  /// is how the nonnumeric metadata keys fall out when this runs on the whole
+  /// document.
+  static Map<int, RetroPadButton> _bindingsFrom(Map source) {
+    final bindings = <int, RetroPadButton>{};
+    for (final entry in source.entries) {
+      final keycode = int.tryParse(entry.key.toString());
+      final buttonIndex = entry.value is num
+          ? (entry.value as num).toInt()
+          : int.tryParse(entry.value.toString());
+      if (keycode == null || buttonIndex == null) continue;
+      final button = RetroPadButton.values
+          .where((candidate) => candidate.retroPadIndex == buttonIndex)
+          .firstOrNull;
+      if (button != null) bindings[keycode] = button;
+    }
+    return bindings;
   }
 
   String toJson() => jsonEncode({
@@ -185,6 +224,14 @@ class NativeControllerMapping {
       'snapByGame': {
         for (final entry in snapByGame.entries) entry.key: entry.value.wireName,
       },
+    if (bindingsByGame.isNotEmpty)
+      'bindingsByGame': {
+        for (final entry in bindingsByGame.entries)
+          entry.key: {
+            for (final binding in entry.value.entries)
+              binding.key.toString(): binding.value.retroPadIndex,
+          },
+      },
   });
 
   NativeControllerMapping withBinding(int keycode, RetroPadButton button) {
@@ -196,8 +243,77 @@ class NativeControllerMapping {
       Map.unmodifiable(next),
       controllerTypesByCore: controllerTypesByCore,
       snapByGame: snapByGame,
+      bindingsByGame: bindingsByGame,
     );
   }
+
+  /// The bindings [gameId] actually plays with: its own table when it has one,
+  /// otherwise the default.
+  Map<int, RetroPadButton> bindingsForGame(String gameId) =>
+      bindingsByGame[gameId] ?? keycodeToButton;
+
+  /// Whether [gameId] has diverged from the default.
+  bool hasGameOverride(String gameId) => bindingsByGame.containsKey(gameId);
+
+  /// Binds within [gameId]'s own table, leaving every other game alone.
+  ///
+  /// The first edit copies the current default in, so buttons the user never
+  /// touched keep working. An empty [gameId] edits the default itself.
+  NativeControllerMapping withBindingForGame(
+    String gameId,
+    int keycode,
+    RetroPadButton button,
+  ) {
+    if (gameId.isEmpty) return withBinding(keycode, button);
+    final table = Map<int, RetroPadButton>.from(bindingsForGame(gameId));
+    // One physical key and one semantic button each have exactly one binding,
+    // within this game only.
+    table.removeWhere((_, current) => current == button);
+    table[keycode] = button;
+    return _withOverrides({
+      ...bindingsByGame,
+      gameId: Map<int, RetroPadButton>.unmodifiable(table),
+    });
+  }
+
+  /// Replaces [gameId]'s whole table with [bindings], for copy-to-all-pads and
+  /// reset. An empty [gameId] replaces the default instead.
+  NativeControllerMapping withBindingsForGame(
+    String gameId,
+    Map<int, RetroPadButton> bindings,
+  ) {
+    if (gameId.isEmpty) {
+      return NativeControllerMapping(
+        Map<int, RetroPadButton>.unmodifiable(bindings),
+        controllerTypesByCore: controllerTypesByCore,
+        snapByGame: snapByGame,
+        bindingsByGame: bindingsByGame,
+      );
+    }
+    return _withOverrides({
+      ...bindingsByGame,
+      gameId: Map<int, RetroPadButton>.unmodifiable(bindings),
+    });
+  }
+
+  /// Returns [gameId] to the default bindings.
+  NativeControllerMapping withoutGameOverride(String gameId) {
+    if (!bindingsByGame.containsKey(gameId)) return this;
+    final next = Map<String, Map<int, RetroPadButton>>.from(bindingsByGame)
+      ..remove(gameId);
+    return _withOverrides(next);
+  }
+
+  NativeControllerMapping _withOverrides(
+    Map<String, Map<int, RetroPadButton>> overrides,
+  ) => NativeControllerMapping(
+    keycodeToButton,
+    controllerTypesByCore: controllerTypesByCore,
+    snapByGame: snapByGame,
+    bindingsByGame: Map<String, Map<int, RetroPadButton>>.unmodifiable(
+      overrides,
+    ),
+  );
 
   int controllerTypeForCore(String coreId) =>
       controllerTypesByCore[coreId] ?? retroDeviceJoypad;
@@ -213,6 +329,7 @@ class NativeControllerMapping {
       keycodeToButton,
       controllerTypesByCore: Map.unmodifiable(next),
       snapByGame: snapByGame,
+      bindingsByGame: bindingsByGame,
     );
   }
 
@@ -230,6 +347,7 @@ class NativeControllerMapping {
       keycodeToButton,
       controllerTypesByCore: controllerTypesByCore,
       snapByGame: Map.unmodifiable(next),
+      bindingsByGame: bindingsByGame,
     );
   }
 }
