@@ -802,7 +802,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     setState(() => _infoVisible = true);
     if (PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_infoVisible) return;
+        if (!mounted || !_infoVisible || _isOverlayInteractionActive) return;
         _tvPlayPauseFocus.requestFocus();
       });
     }
