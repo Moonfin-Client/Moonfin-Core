@@ -1,0 +1,117 @@
+name: PR Comment
+
+# Posts one build-status comment on a pull request and rewrites it in place on
+# every new commit. It runs on workflow_run rather than pull_request so it still
+# has write access on pull requests from forks. It never checks out the PR
+# branch, it only reads the results artifact the build workflow uploaded.
+
+on:
+  workflow_run:
+    workflows: [Build All Platforms]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      (github.event.workflow_run.conclusion == 'success' ||
+       github.event.workflow_run.conclusion == 'failure')
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v4
+        with:
+          name: build-results
+          path: build-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const outcomes = JSON.parse(fs.readFileSync('build-results/outcomes.json', 'utf8'));
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runId = context.payload.workflow_run.id;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`;
+
+            const { data: list } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: runId,
+              per_page: 100,
+            });
+            const artifacts = new Map(list.artifacts.map(a => [a.name, a]));
+
+            const rows = [
+              { platform: 'Android',       job: 'android',       artifact: 'android',              files: 'Moonfin_Android_v* + Moonfin_AndroidTV_v*' },
+              { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
+              { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
+              { platform: 'Windows x64',   job: 'windows',       artifact: 'windows-exe',          files: 'Moonfin_Windows_v*.exe' },
+              { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
+              { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
+              { platform: 'Linux ARM64',   job: 'linux',         artifact: 'linux-packages-arm64', files: 'Moonfin_LinuxARM64_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
+            ];
+
+            // Linux builds both architectures in one matrix job, so a failure on
+            // either one fails the job as a whole. An artifact only uploads when
+            // its own leg got that far, so its presence is what tells the two apart.
+            const statusOf = (row) => {
+              const result = outcomes[row.job];
+              return result === 'success' || artifacts.has(row.artifact) ? 'success' : result;
+            };
+
+            const badge = { success: '✅ Passed', failure: '❌ Failed' };
+
+            const artifactCell = (row) => {
+              const artifact = artifacts.get(row.artifact);
+              return artifact ? `[${row.files}](${runUrl}/artifacts/${artifact.id})` : 'n/a';
+            };
+
+            const statuses = rows.map(statusOf);
+            const passed = statuses.every(s => s === 'success');
+
+            const marker = '<!-- moonfin-build-result -->';
+            const body = [
+              marker,
+              passed ? '## ✅ Build Successful' : '## ❌ Build Failed',
+              '',
+              passed
+                ? 'All platform builds passed. You can download the test artifacts below.'
+                : 'One or more platform builds failed. Artifacts are listed for the platforms that did build.',
+              '',
+              '| Platform | Status | Artifact |',
+              '|---|---|---|',
+              ...rows.map((row, i) =>
+                `| **${row.platform}** | ${badge[statuses[i]] || '⚠️ Skipped'} | ${artifactCell(row)} |`),
+              '',
+              '| Property | Value |',
+              '|---|---|',
+              `| **Commit** | \`${outcomes.sha.substring(0, 7)}\` |`,
+              `| **Workflow run** | [Build #${context.payload.workflow_run.run_number}](${runUrl}) |`,
+            ].join('\n');
+
+            // Paginated because the marker comment falls off the first page once
+            // a pull request collects more than 30 comments, which would post a
+            // second comment instead of updating the first.
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: outcomes.pr_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find(c => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: outcomes.pr_number, body });
+            }

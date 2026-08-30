@@ -78,4 +78,30 @@ void main() {
       expect(codecCapsLookDegenerate(withAvcFloor({})), isFalse);
     });
   });
+
+  group('codecCapsWithoutAProbe', () {
+    // The launch that reported an HEVC library as H264 only had a cached
+    // answer on disk the whole time, and reached for the floor instead.
+    test('keeps a seeded answer rather than falling to the floor', () {
+      const seeded = {
+        'supportsAvc': true,
+        'avcMainLevel': 52,
+        'supportsHevc': true,
+        'hevcMainLevel': 153,
+      };
+
+      expect(codecCapsWithoutAProbe(seeded), seeded);
+    });
+
+    test('falls to the floor when there is nothing seeded', () {
+      expect(codecCapsWithoutAProbe(const {}), withAvcFloor(const {}));
+    });
+
+    test('falls to the floor when the seed is itself degenerate', () {
+      expect(
+        codecCapsWithoutAProbe(const {'supportsAvc': false}),
+        withAvcFloor(const {}),
+      );
+    });
+  });
 }

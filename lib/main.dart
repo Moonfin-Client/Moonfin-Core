@@ -276,6 +276,18 @@ Future<void> _seedCapabilitiesFromCache() async {
   if (audio != null) {
     PlatformDetection.setAudioCapabilities(audio);
   }
+  if (PlatformDetection.isAndroid) {
+    // Read without the build key the probe path checks. Only a firmware
+    // update can make this stale and the probe a moment later corrects it,
+    // where a launch whose probe cant answer would otherwise run on the
+    // H264 floor.
+    final codecs = await DeviceCapabilityCache.readMap(
+      DeviceCapabilityCache.codecKey,
+    );
+    if (codecs != null) {
+      PlatformDetection.setMediaCodecCapabilities(codecs);
+    }
+  }
   if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
     final hdrTypes = await DeviceCapabilityCache.readStringList(
       DeviceCapabilityCache.displayHdrKey,
@@ -370,14 +382,18 @@ Future<Map<String, dynamic>?> _queryCodecCaps(MethodChannel channel) async {
 /// result without it is either a partial enumeration worth another look or a
 /// device that really lacks the decoder and loses nothing to the re-probes.
 Future<void> _retryCodecCapsOffLaunchPath(MethodChannel channel) =>
-    _retryOffLaunchPath(() async {
-      final caps = await _queryCodecCaps(channel);
-      if (caps == null || codecCapsLookDegenerate(caps)) return false;
-      PlatformDetection.setMediaCodecCapabilities(caps);
-      if (codecCapsLookIncomplete(caps)) return false;
-      await _cacheCodecCaps(channel, caps);
-      return true;
-    });
+    _retryOffLaunchPath(() => _applyCodecProbe(channel));
+
+/// One probe: applies a sound answer and persists a complete one. Returns
+/// true once the answer carries HEVC and throws when the channel does.
+Future<bool> _applyCodecProbe(MethodChannel channel) async {
+  final caps = await _queryCodecCaps(channel);
+  if (caps == null || codecCapsLookDegenerate(caps)) return false;
+  PlatformDetection.setMediaCodecCapabilities(caps);
+  if (codecCapsLookIncomplete(caps)) return false;
+  await _cacheCodecCaps(channel, caps);
+  return true;
+}
 
 /// The OS build fingerprint, which is the key the codec cache is valid under.
 /// Codec support only changes with a firmware update, and a firmware update
@@ -454,10 +470,11 @@ Future<void> _detectAndSetCodecCapabilities() async {
   } catch (_) {
     // A probe that never answered, like a channel hit before the plugin
     // registered, leaves every codec flag false and the profile claiming the
-    // device decodes nothing. The floor keeps transcodes playable in the
-    // meantime and the retries are the same recovery a degenerate answer
-    // gets.
-    PlatformDetection.setMediaCodecCapabilities(withAvcFloor(const {}));
+    // device decodes nothing. The floor only lands when the seed left nothing
+    // to keep, and the retries are the same recovery a degenerate answer gets.
+    PlatformDetection.setMediaCodecCapabilities(
+      codecCapsWithoutAProbe(PlatformDetection.mediaCodecCapabilitiesSnapshot),
+    );
     unawaited(_retryCodecCapsOffLaunchPath(channel));
   }
 }
@@ -602,11 +619,12 @@ class _ImageCacheSweepObserver with WidgetsBindingObserver {
   }
 }
 
-/// Re-probes display and audio capabilities when the app comes back to the
-/// foreground, which on a TV covers being woken from standby, the moment the
-/// HDMI chain has just renegotiated. Only answers that carry something are
-/// applied here: an empty answer mid-renegotiation must not clobber a good
-/// snapshot.
+/// Re-probes display, decoder and audio capabilities when the app comes back
+/// to the foreground, which on a TV covers being woken from standby, the
+/// moment the HDMI chain has just renegotiated, and is also the first moment
+/// an engine that launched without an Activity has a platform channel to ask.
+/// Only answers that carry something are applied here: an empty answer
+/// mid-renegotiation must not clobber a good snapshot.
 class _CapabilityRefreshObserver with WidgetsBindingObserver {
   static const _throttle = Duration(seconds: 30);
   DateTime? _lastRefresh;
@@ -625,6 +643,20 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
       try {
         await _probeDisplayHdrOnce();
+      } catch (_) {}
+    }
+    // The launch retries all run inside the first half minute, which covers
+    // a slow enumeration but not an engine that had no Activity to answer
+    // the probe until now. A device with no HEVC decoder pays one
+    // enumeration per resume for this and keeps its answer.
+    if (PlatformDetection.isAndroid &&
+        codecCapsLookIncomplete(
+          PlatformDetection.mediaCodecCapabilitiesSnapshot,
+        )) {
+      try {
+        await _applyCodecProbe(
+          const MethodChannel('org.moonfin.androidtv/platform'),
+        );
       } catch (_) {}
     }
     if (AudioCapabilityProbe.isSupported) {

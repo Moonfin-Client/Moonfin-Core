@@ -29,7 +29,7 @@
     "@username": {
         "description": "Username field label"
     },
-    "quickConnectInstruction": "Gib diesen Code in einem bereits angemeldeten Client ein:",
+    "quickConnectInstruction": "Geben Sie diesen Code an einem bereits angemeldeten Client ein:",
     "@quickConnectInstruction": {
         "description": "Instruction text for Quick Connect code entry"
     },
@@ -2826,7 +2826,7 @@
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "Trickspiel",
+    "trickPlay": "Vorschaubilder beim Scrollen",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -4432,7 +4432,7 @@
     "unmute": "Stummschaltung aufheben",
     "mute": "Stummschalten",
     "branding": "Branding",
-    "adminDrawerDashboard": "Armaturenbrett",
+    "adminDrawerDashboard": "Übersicht",
     "adminDrawerAnalytics": "Analyse",
     "adminDrawerSettings": "Einstellungen",
     "adminDrawerBranding": "Branding",
@@ -7171,7 +7171,7 @@
     "watchWithGroup": "Mit der Gruppe ansehen",
     "errors": "Fehler",
     "warnings": "Warnungen",
-    "disk": "Scheibe",
+    "disk": "Speicherauslastung",
     "openInBrowser": "Im Browser öffnen",
     "embeddedBrowserNotAvailable": "Ein eingebetteter Browser ist auf dieser Plattform nicht verfügbar.",
     "adminRestartServerConfirmation": "Sind Sie sicher, dass Sie den Server neu starten möchten?",
@@ -9322,5 +9322,9 @@
     "interfaceLayoutSubtitle": "Überschreibt das automatisch erkannte Layout, wenn Ihr Gerät falsch erkannt wurde. Starten Sie Moonfin neu, damit die Änderungen wirksam werden.",
     "@interfaceLayoutSubtitle": {
         "description": "Subtitle for the interface layout setting"
+    },
+    "trickplaySettingsPreviewHint": "Bewegen Sie den Schieberegler für eine interaktive Vorschau",
+    "@trickplaySettingsPreviewHint": {
+        "description": "Hint shown below the live trickplay settings preview"
     }
 }

@@ -52,9 +52,10 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 - **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork, and skips anything you have already chosen.
 - **Featured media bar** with six layouts, Moonfin, MakD, Bookshelf, Gallery, Banner, and the rounded Aya hero, plus optional in-bar trailer previews.
 - **Themes and Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks.
-- **Integrated admin panel** for settings, users, libraries, logs, devices, and analytics without leaving the client.
+- **Integrated admin panel** for settings, users, libraries, logs, devices, and analytics without leaving the client, plus a messages window for what your server admin sends you.
 - **Discovery with Seerr** built into the media details screen, plus trending, popular, and upcoming rows with request status overlays.
 - **Live TV and DVR** with an EPG-style guide and recording management.
+- **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, with prefetching and configurable size and placement, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.
 - **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network.
 - **SyncPlay** for synchronized group watching.
@@ -126,9 +127,9 @@ See [Development](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Developmen
 
 ## Help translate Moonfin [here](https://translate.moonfin.io/engage/moonfin-core/)
 
-<a href="https://translate.moonfin.io/engage/moonfin-core/">
+<a href="https://translate.moonfin.io/engage/moonfin/">
   <img
-    src="https://translate.moonfin.io/widgets/moonfin-core/-/multi-auto.svg"
+    src="https://translate.moonfin.io/widgets/moonfin/moonfin-core/multi-auto.svg"
     alt="Moonfin Core translation status by language"
   />
 </a>

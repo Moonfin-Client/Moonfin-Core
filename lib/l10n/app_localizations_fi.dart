@@ -7099,13 +7099,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindArranger => 'Järjestä';
 
   @override
-  String get adminMetadataPersonKindEngineer => 'Engineer';
+  String get adminMetadataPersonKindEngineer => 'Insinööri';
 
   @override
   String get adminMetadataPersonKindMixer => 'Sekoita';
 
   @override
-  String get adminMetadataPersonKindRemixer => 'Remixer';
+  String get adminMetadataPersonKindRemixer => 'Remixaaja';
 
   @override
   String get adminMetadataPersonKindCreator => 'Luoja';
@@ -7117,7 +7117,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindAlbumArtist => 'Albumin artisti';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Luoja';
+  String get adminMetadataPersonKindAuthor => 'Tekijä';
 
   @override
   String get adminMetadataPersonKindIllustrator => 'Kuvittaja';
@@ -7126,19 +7126,19 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataPersonKindPenciller => 'Piirtäjä';
 
   @override
-  String get adminMetadataPersonKindInker => 'Inker';
+  String get adminMetadataPersonKindInker => 'Tussaaja';
 
   @override
   String get adminMetadataPersonKindColorist => 'Värimäärittelijä';
 
   @override
-  String get adminMetadataPersonKindLetterer => 'Letterer';
+  String get adminMetadataPersonKindLetterer => 'Tekstaaja';
 
   @override
-  String get adminMetadataPersonKindCoverArtist => 'Cover artist';
+  String get adminMetadataPersonKindCoverArtist => 'Kansitaiteilija';
 
   @override
-  String get adminMetadataPersonKindEditor => 'Editor';
+  String get adminMetadataPersonKindEditor => 'Editori';
 
   @override
   String get adminMetadataPersonKindTranslator => 'Kääntäjä';
@@ -7170,10 +7170,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminMetadataLockFieldGenres => 'Genret';
 
   @override
-  String get adminMetadataLockFieldOfficialRating => 'Vanhempien luokitus';
+  String get adminMetadataLockFieldOfficialRating => 'Ikäraja';
 
   @override
-  String get adminMetadataLockFieldCast => 'People';
+  String get adminMetadataLockFieldCast => 'Henkilöt';
 
   @override
   String get adminMetadataLockFieldProductionLocations => 'Tuotantopaikat';
@@ -11047,7 +11047,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get clearFilters => 'Tyhjennä suodattimet';
 
   @override
-  String get seerrShortcutsRow => 'Seerr Browse';
+  String get seerrShortcutsRow => 'Seerr Valitse';
 
   @override
   String get seerrReleased => 'Julkaistu';
@@ -11165,7 +11165,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get setupTourMoreHeader => 'Asetuksissa on vielä lisää odotettavaa';
 
   @override
-  String get setupTourBulletRequests => 'Seerr requests';
+  String get setupTourBulletRequests => 'Seerr-pyynnöt';
 
   @override
   String get setupTourBulletSyncPlay => 'SyncPlay-katselutilaisuudet';
@@ -11180,21 +11180,21 @@ class AppLocalizationsFi extends AppLocalizations {
   String get setupTourBulletMore => 'Ja paljon muuta';
 
   @override
-  String get runSetupAgain => 'Run setup again';
+  String get runSetupAgain => 'Suorita asennus uudelleen';
 
   @override
-  String get serverMessages => 'Messages';
+  String get serverMessages => 'Viestit';
 
   @override
-  String get serverMessagesEmpty => 'No messages from your server yet';
+  String get serverMessagesEmpty => 'Palvelimeltasi ei ole vielä viestejä';
 
   @override
-  String get serverMessagesMarkAllRead => 'Mark all as read';
+  String get serverMessagesMarkAllRead => 'Merkitse kaikki luetuiksi';
 
   @override
-  String get serverMessagesShowButton => 'Show messages button';
+  String get serverMessagesShowButton => 'Näytä viestit -painike';
 
   @override
   String get serverMessagesShowButtonSubtitle =>
-      'Adds a button to the menu for messages sent by your server admin';
+      'Lisää valikkoon painikkeen, joka koskee palvelimen järjestelmänvalvojan lähettämiä viestejä';
 }

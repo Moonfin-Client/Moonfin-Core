@@ -2080,8 +2080,10 @@ final class AppleTvPlayerViewController: UIViewController {
             return
         }
         let aspect = CGFloat(tp.height) / CGFloat(tp.width)
-        let previewBottom = scrubFrame.minY - 14
-        let budget = previewBottom - topContainer.bounds.height
+        let scrubberGap: CGFloat = 14
+        let previewBottom = scrubFrame.minY - scrubberGap
+        let scrubberTopInView = scrubber.convert(scrubber.bounds, to: view).minY
+        let budget = scrubberTopInView - scrubberGap - topContainer.frame.maxY
         let tile = resolveTileSize(trackWidth: trackWidth, aspect: aspect, budget: budget)
         let maxTravel = max(min(budget - tile.height, trackWidth), 0)
         let travel = CGFloat(min(100, max(0, trickplayVerticalPercent))) / 100 * maxTravel

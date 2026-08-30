@@ -127,6 +127,9 @@ class PlatformDetection {
   static bool get routeSupportsHdAudio =>
       _audioCapabilityBool('routeSupportsHdAudio');
 
+  static Map<String, dynamic> get mediaCodecCapabilitiesSnapshot =>
+      Map<String, dynamic>.from(_mediaCodecCapabilities);
+
   static bool get supportsAvc => _capabilityBool('supportsAvc');
   static bool get supportsAvcHigh10 => _capabilityBool('supportsAvcHigh10');
   static int get avcMainLevel => _capabilityInt('avcMainLevel');

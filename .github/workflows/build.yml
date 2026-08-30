@@ -40,6 +40,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 env:
   FLUTTER_VERSION: '3.44.1'
@@ -252,9 +253,37 @@ jobs:
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
       - uses: actions/upload-artifact@v4
+        id: unsigned-windows
         with:
           name: windows-exe
           path: Moonfin_Windows_v*.exe
+          if-no-files-found: error
+
+      # Tags only, so a pull request neither spends a signing request nor needs
+      # the token. Inno Setup packs moonfin.exe and its DLLs before this runs,
+      # so the installer is signed but the files it carries are not.
+      - name: Sign installer
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: SignPath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: Moonfin-Core
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY || 'test-signing' }}
+          artifact-configuration-slug: windows-installer
+          github-artifact-id: ${{ steps.unsigned-windows.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      # Overwrites the unsigned upload, so the release job sees one artifact per
+      # architecture rather than two carrying the same filename.
+      - name: Replace with the signed installer
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: signed/Moonfin_Windows_v*.exe
+          overwrite: true
           if-no-files-found: error
 
   # Windows ARM64 installer EXE (native build on an ARM64 runner)
@@ -312,9 +341,37 @@ jobs:
           $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
 
       - uses: actions/upload-artifact@v4
+        id: unsigned-windows-arm64
         with:
           name: windows-arm64-exe
           path: Moonfin_WindowsARM64_v*.exe
+          if-no-files-found: error
+
+      # Tags only, so a pull request neither spends a signing request nor needs
+      # the token. Inno Setup packs moonfin.exe and its DLLs before this runs,
+      # so the installer is signed but the files it carries are not.
+      - name: Sign installer
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: SignPath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: Moonfin-Core
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY || 'test-signing' }}
+          artifact-configuration-slug: windows-installer
+          github-artifact-id: ${{ steps.unsigned-windows-arm64.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      # Overwrites the unsigned upload, so the release job sees one artifact per
+      # architecture rather than two carrying the same filename.
+      - name: Replace with the signed installer
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm64-exe
+          path: signed/Moonfin_WindowsARM64_v*.exe
+          overwrite: true
           if-no-files-found: error
 
   # Linux packages, built natively for each architecture
@@ -445,6 +502,34 @@ jobs:
             ${{ matrix.artifact_prefix }}_v*.snap
             ${{ matrix.artifact_prefix }}_v*.flatpak
           if-no-files-found: error
+
+  # What the PR Comment workflow reads to build its comment. always() keeps this
+  # running when a platform job fails, which is the case the comment most needs
+  # to report.
+  save-pr-results:
+    if: always() && github.event_name == 'pull_request'
+    needs: [android, ios, macos, windows, windows-arm64, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write outcomes.json
+        run: |
+          cat > outcomes.json <<EOF
+          {
+            "pr_number": ${{ github.event.pull_request.number }},
+            "sha": "${{ github.event.pull_request.head.sha }}",
+            "android": "${{ needs.android.result }}",
+            "ios": "${{ needs.ios.result }}",
+            "macos": "${{ needs.macos.result }}",
+            "windows": "${{ needs.windows.result }}",
+            "windows_arm64": "${{ needs.windows-arm64.result }}",
+            "linux": "${{ needs.linux.result }}"
+          }
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-results
+          path: outcomes.json
 
   # GitHub Release
   release:

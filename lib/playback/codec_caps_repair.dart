@@ -37,3 +37,9 @@ Map<String, dynamic> withAvcFloor(Map<String, dynamic> caps) {
     'avcMainLevel': avcFloorLevel,
   };
 }
+
+/// The answer to run with when the probe couldnt answer at all. A result
+/// seeded from the last launch is this device's own and beats the floor,
+/// which claims H264 alone, so the floor only lands with nothing in hand.
+Map<String, dynamic> codecCapsWithoutAProbe(Map<String, dynamic> inHand) =>
+    codecCapsLookDegenerate(inHand) ? withAvcFloor(const {}) : inHand;
