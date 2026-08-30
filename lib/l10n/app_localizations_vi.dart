@@ -337,6 +337,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Thẻ mở rộng';
 
   @override

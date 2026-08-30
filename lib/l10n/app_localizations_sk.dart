@@ -338,6 +338,9 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Rozbalené karty';
 
   @override

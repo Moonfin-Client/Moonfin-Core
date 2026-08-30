@@ -337,6 +337,9 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'விரிவாக்கப்பட்ட தாவல்கள்';
 
   @override

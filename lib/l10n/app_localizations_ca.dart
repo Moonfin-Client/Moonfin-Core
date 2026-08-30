@@ -337,6 +337,9 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Pestanyes desplegades';
 
   @override

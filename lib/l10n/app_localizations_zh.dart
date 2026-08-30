@@ -335,6 +335,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => '自动展开标签页';
 
   @override

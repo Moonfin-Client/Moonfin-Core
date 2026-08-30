@@ -338,6 +338,9 @@ class AppLocalizationsSl extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Razširjeni zavihki';
 
   @override

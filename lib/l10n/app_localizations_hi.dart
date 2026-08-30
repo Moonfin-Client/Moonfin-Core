@@ -337,6 +337,9 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'विस्तृत टैब';
 
   @override

@@ -337,6 +337,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Развёрнутые вкладки';
 
   @override

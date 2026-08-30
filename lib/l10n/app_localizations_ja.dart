@@ -336,6 +336,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'タブの自動展開';
 
   @override

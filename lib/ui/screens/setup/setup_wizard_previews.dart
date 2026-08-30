@@ -2318,6 +2318,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
     DetailScreenStyle.classic => _classicDetail(context, items),
     DetailScreenStyle.modern => _modernDetail(context, items.first),
     DetailScreenStyle.spotlight => _spotlightDetail(context, items.first),
+    DetailScreenStyle.nouveau => _spotlightDetail(context, items.first),
   },
   fallback: _fallbackDetail(style),
 );

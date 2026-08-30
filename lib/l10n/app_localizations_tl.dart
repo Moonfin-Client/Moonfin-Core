@@ -338,6 +338,9 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Mga Naka-expand na Tab';
 
   @override

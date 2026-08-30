@@ -337,6 +337,9 @@ class AppLocalizationsMl extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'വിപുലീകരിച്ച ടാബുകൾ';
 
   @override

@@ -336,6 +336,9 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => '展開分頁';
 
   @override

@@ -337,6 +337,9 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'ವಿಸ್ತರಿಸಿದ ಟ್ಯಾಬ್‌ಗಳು';
 
   @override

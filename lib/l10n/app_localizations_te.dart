@@ -337,6 +337,9 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'విస్తరించిన ట్యాబ్‌లు';
 
   @override

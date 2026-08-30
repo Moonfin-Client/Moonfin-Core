@@ -338,6 +338,9 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'แท็บแบบขยาย';
 
   @override

@@ -260,7 +260,8 @@ enum VisualThemeId {
 enum DetailScreenStyle {
   classic,
   modern,
-  spotlight;
+  spotlight,
+  nouveau;
 }
 
 /// Selectable algorithm source for similarity recommendation system.

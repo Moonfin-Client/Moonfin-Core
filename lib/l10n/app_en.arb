@@ -373,6 +373,10 @@
       }
     }
   },
+  "detailScreenStyleNouveau": "Nouveau",
+  "@detailScreenStyleNouveau": {
+    "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+  },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
     "description": "Label for the detail screen expanded tabs setting"

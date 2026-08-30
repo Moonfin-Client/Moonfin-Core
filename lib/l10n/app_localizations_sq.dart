@@ -338,6 +338,9 @@ class AppLocalizationsSq extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Skedat e zgjeruara';
 
   @override

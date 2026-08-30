@@ -336,6 +336,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => '탭 자동 펼치기';
 
   @override

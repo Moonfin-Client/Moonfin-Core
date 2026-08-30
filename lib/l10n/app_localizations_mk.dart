@@ -337,6 +337,9 @@ class AppLocalizationsMk extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Проширени јазичиња';
 
   @override

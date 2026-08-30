@@ -337,6 +337,9 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'كېڭەيتىلگەن بەتكۈچلەر';
 
   @override

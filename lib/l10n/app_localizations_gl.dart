@@ -337,6 +337,9 @@ class AppLocalizationsGl extends AppLocalizations {
   }
 
   @override
+  String get detailScreenStyleNouveau => 'Nouveau';
+
+  @override
   String get expandedTabs => 'Pestanas despregadas';
 
   @override

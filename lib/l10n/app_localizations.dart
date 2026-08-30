@@ -640,6 +640,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 title} other{{count} titles}}'**
   String spotlightTitlesCount(int count);
 
+  /// Detail screen style option: nouveau full-screen layout with integrated sections
+  ///
+  /// In en, this message translates to:
+  /// **'Nouveau'**
+  String get detailScreenStyleNouveau;
+
   /// Label for the detail screen expanded tabs setting
   ///
   /// In en, this message translates to:
