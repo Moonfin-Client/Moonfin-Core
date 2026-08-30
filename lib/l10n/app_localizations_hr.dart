@@ -154,6 +154,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderni';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Proširene kartice';
 
   @override

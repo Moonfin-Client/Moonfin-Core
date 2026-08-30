@@ -155,6 +155,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderne';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Skedat e zgjeruara';
 
   @override

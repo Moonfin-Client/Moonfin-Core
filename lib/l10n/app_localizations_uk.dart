@@ -154,6 +154,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get detailScreenStyleModern => 'Сучасний';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Розгорнуті вкладки';
 
   @override

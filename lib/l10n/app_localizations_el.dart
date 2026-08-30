@@ -156,6 +156,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get detailScreenStyleModern => 'Μοντέρνο';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Αναπτυγμένες καρτέλες';
 
   @override

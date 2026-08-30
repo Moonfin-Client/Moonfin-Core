@@ -154,6 +154,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get detailScreenStyleModern => 'Орчин үеийн';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Дэлгэсэн табууд';
 
   @override

@@ -45,7 +45,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quickConnectInstruction =>
-      'Gib diesen Code in einem bereits angemeldeten Client ein:';
+      'Geben Sie diesen Code an einem bereits angemeldeten Client ein:';
 
   @override
   String get waitingForAuthorization => 'Warte auf Autorisierung...';
@@ -152,6 +152,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get detailScreenStyleModern => 'Modern';
+
+  @override
+  String get detailScreenStyleImmersive => 'Immersive';
 
   @override
   String get expandedTabs => 'Erweiterte Tabs';
@@ -274,11 +277,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get controller => 'Controller';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'Steuerung mit Gamepad';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'Ermöglicht die Navigation und Auswahl von Elementen mit einem verbundenen Gamepad.';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -1783,7 +1786,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get epubUnavailableOnPlatform =>
-      'In-App EPUB-Darstellung ist auf dieser Plattform noch nicht verfügbar.';
+      'EPUB-Darstellung in der App ist auf dieser Plattform noch nicht verfügbar.';
 
   @override
   String formatCannotRenderInApp(String extension) {
@@ -2418,20 +2421,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scaleFocusedCards =>
-      'Fokussierte oder überfahrene Karten und Kacheln vergrößern';
+      'Fokussierte oder überfahrene Karten und Kacheln vergrößern.';
 
   @override
   String get backgroundBackdrops => 'Hintergrundbilder';
 
   @override
-  String get showBackdropImages => 'Hintergrundbilder hinter Inhalten anzeigen';
+  String get showBackdropImages =>
+      'Hintergrundbilder hinter Inhalten anzeigen.';
 
   @override
   String get seriesThumbnails => 'Serien-Miniaturbilder';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Nur Episoden: Serienbilder verwenden, die zum Bildtyp jeder Reihe passen';
+      'Nur Episoden: Serienbilder verwenden, die zum Bildtyp jeder Reihe passen.';
 
   @override
   String get homeRowInfoOverlay => 'Startseiten-Info-Overlay';
@@ -2513,7 +2517,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get browsingBackgroundBlur => 'Stöbern-Hintergrundunschärfe';
+  String get browsingBackgroundBlur => 'Hintergrundunschärfe beim Stöbern';
 
   @override
   String get maxStreamingBitrate => 'Maximale Streaming-Bitrate';
@@ -2571,7 +2575,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scaleOnDevice => 'Auf Gerät skalieren';
 
   @override
-  String get trickPlay => 'Trickspiel';
+  String get trickPlay => 'Vorschaubilder beim Scrollen';
 
   @override
   String get showPreviewThumbnailsWhenSeeking =>
@@ -2588,7 +2592,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Bewegen Sie den Schieberegler für eine interaktive Vorschau';
 
   @override
   String get trickplayPreviewScale => 'Preview Size';
@@ -2625,25 +2629,26 @@ class AppLocalizationsDe extends AppLocalizations {
       'Slide up or down on the player to change brightness on the left and volume on the right';
 
   @override
-  String get osdButtons => 'Player Knöpfe';
+  String get osdButtons => 'Bedienelemente des Players';
 
   @override
-  String get osdButtonsDescription => 'Choose which buttons the player shows';
+  String get osdButtonsDescription =>
+      'Lege fest, welche Schaltflächen im Player angezeigt werden';
 
   @override
   String get osdButtonsSectionDescription =>
       'Playback controls are always shown. Everything below is up to you, and each kind of device keeps its own list.';
 
   @override
-  String get detailButtons => 'Action Buttons';
+  String get detailButtons => 'Aktionsschaltflächen';
 
   @override
   String get detailButtonsDescription =>
-      'Choose which buttons the details screen shows';
+      'Legen Sie fest, welche Aktionen auf der Detailseite verfügbar sind.';
 
   @override
   String get detailButtonsSectionDescription =>
-      'Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.';
+      '\"Wiedergeben\" steht immer an erster Stelle und gesperrte Schaltflächen werden immer angezeigt. Die übrigen Aktionen können Sie frei festlegen. Jeder Gerätetyp verwendet eine eigene Liste.';
 
   @override
   String get moveUp => 'nach oben bewegen';
@@ -3737,14 +3742,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get combineBothRows =>
-      'Beide Reihen in einen Startseitenbereich zusammenführen';
+      'Beide Reihen in einen Startseitenbereich zusammenführen.';
 
   @override
   String get nextUpMaxDays => 'Maximale Tage in Als Nächstes';
 
   @override
   String get nextUpMaxDaysDescription =>
-      'Wie lange eine Sendung in Als Nächstes angezeigt wird nachdem sie angeshen wurde';
+      'Wie lange eine Sendung in Als Nächstes angezeigt wird nachdem sie angesehen wurde.';
 
   @override
   String daysValue(int days) {
@@ -3756,14 +3761,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fullScreenRowsDescription =>
-      'Startseite auf eine Zeile pro Bildschirm begrenzen';
+      'Startseite auf eine Zeile pro Bildschirm begrenzen.';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Innenabstand der Startseitenzeilen';
 
   @override
   String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+      'Passen Sie den Abstand zwischen den Zeilen auf der Startseite an.';
 
   @override
   String get perRowImageType => 'Bildtyp pro Reihe';
@@ -4792,7 +4797,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get branding => 'Branding';
 
   @override
-  String get adminDrawerDashboard => 'Armaturenbrett';
+  String get adminDrawerDashboard => 'Übersicht';
 
   @override
   String get adminDrawerAnalytics => 'Analyse';
@@ -8917,7 +8922,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'App-Version, rechtliche Informationen und Credits';
 
   @override
-  String get settingsAuthenticationSection => 'AUTHENTIFIZIERUNG';
+  String get settingsAuthenticationSection => 'Authentifizierung';
 
   @override
   String get settingsSortServersBy => 'Server sortieren nach';
@@ -8929,7 +8934,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsAlphabetical => 'Alphabetisch';
 
   @override
-  String get settingsConnectionSection => 'VERBINDUNG';
+  String get settingsConnectionSection => 'Verbindungseinstellungen';
 
   @override
   String get settingsAllowSelfSignedCerts =>
@@ -8975,31 +8980,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsTwentyFourHourClockSubtitle =>
-      'Verwenden Sie überall dort, wo die Uhr angezeigt wird, das 24-Stunden-Format';
+      'Verwenden Sie überall dort, wo die Uhr angezeigt wird, das 24-Stunden-Format.';
 
   @override
   String get settingsShowShuffleButtonInNavigation =>
-      'Zeigen Sie die Zufallsschaltfläche in der Navigationsleiste an';
+      'Zeigen Sie die Zufallsschaltfläche in der Navigationsleiste an.';
 
   @override
   String get settingsShowGenresButtonInNavigation =>
-      'Zeigen Sie die Schaltfläche „Genres“ in der Navigationsleiste an';
+      'Zeigen Sie die Schaltfläche „Genres“ in der Navigationsleiste an.';
 
   @override
   String get settingsShowFavoritesButtonInNavigation =>
-      'Zeigen Sie die Favoritenschaltfläche in der Navigationsleiste an';
+      'Zeigen Sie die Favoritenschaltfläche in der Navigationsleiste an.';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>
-      'Zeigen Sie die Schaltfläche „Bibliotheken“ in der Navigationsleiste an';
+      'Zeigen Sie die Schaltfläche „Bibliotheken“ in der Navigationsleiste an.';
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Seerr-Schaltfläche in der Navigationsleiste anzeigen';
+      'Seerr-Schaltfläche in der Navigationsleiste anzeigen.';
 
   @override
   String get settingsAlwaysExpandNavbarLabels =>
-      'Textbeschriftungen in der oberen Navigationsleiste immer anzeigen';
+      'Textbeschriftungen in der oberen Navigationsleiste immer anzeigen.';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -9033,14 +9038,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Play games with native cores instead of the EmulatorJS web player';
 
   @override
-  String get emulatorCores => 'Emulator Cores';
+  String get emulatorCores => 'Emulatoren';
 
   @override
-  String get emulatorCoresSubtitle => 'Download systems to play games natively';
+  String get emulatorCoresSubtitle =>
+      'Lade Emulatoren herunter, um Spiele nativ auszuführen';
 
   @override
   String get emulatorCoresDescription =>
-      'Choose which systems to install. Cores are provided by the libretro project and let games run natively instead of in a browser view.';
+      'Wählen Sie aus, welche Emulatoren installiert werden sollen. Die Emulatoren werden vom libretro-Projekt bereitgestellt und ermöglichen es, Spiele nativ statt in einer Browseransicht auszuführen';
 
   @override
   String get emulatorCoreDownloading => 'Herunterladen';
@@ -9408,7 +9414,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Zeigen Sie die SyncPlay-Schaltfläche in der Navigationsleiste an';
+      'Zeigen Sie die SyncPlay-Schaltfläche in der Navigationsleiste an.';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Erweiterte Korrektur';
@@ -9571,7 +9577,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get themeStoreSubtitle =>
-      'Community-Themes durchstöbern und speichern';
+      'Community-Themes durchstöbern und speichern.';
 
   @override
   String get themeStoreDescription =>
@@ -9633,7 +9639,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get savedThemesManageSubtitle =>
-      'Verwalten Sie heruntergeladene Plugin-Themes auf diesem Gerät';
+      'Verwalten Sie heruntergeladene Plugin-Themes auf diesem Gerät.';
 
   @override
   String get themeEditor => 'Theme-Editor';
@@ -10150,7 +10156,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get warnings => 'Warnungen';
 
   @override
-  String get disk => 'Scheibe';
+  String get disk => 'Speicherauslastung';
 
   @override
   String get openInBrowser => 'Im Browser öffnen';
@@ -11087,16 +11093,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showAlphabeticalFilters => 'Show Alphabet';
 
   @override
-  String get personalRatingStyle => 'Personal rating style';
+  String get personalRatingStyle => 'Bewertungsstil';
 
   @override
-  String get personalRatingThumbs => 'Like / dislike';
+  String get personalRatingThumbs => 'Gefällt mir / Gefällt mir nicht';
 
   @override
-  String get personalRatingStars => '5 stars';
+  String get personalRatingStars => '5 Sterne System';
 
   @override
-  String get personalRatingNumeric => 'Numeric score out of 10';
+  String get personalRatingNumeric => 'Numerische Bewertung von 1 bis 10';
 
   @override
   String get rate => 'Rate';
@@ -11194,29 +11200,30 @@ class AppLocalizationsDe extends AppLocalizations {
       'White is much brighter in HDR than in SDR, so a dimmer style here avoids the glare';
 
   @override
-  String get scrollSensitivity => 'Scroll Sensitivity';
+  String get scrollSensitivity => 'Mausrad-Empfindlichkeit';
 
   @override
   String get scrollSensitivitySubtitle =>
-      'How far one mouse wheel notch scrolls';
+      'Legt fest, wie weit ein Mausradschritt scrollt.';
 
   @override
-  String get mediaDetailsAndSpoilers => 'Media Details and Spoilers';
+  String get mediaDetailsAndSpoilers =>
+      'Mediendetails und Spoilereinstellungen';
 
   @override
-  String get openTrailersExternally => 'Open Trailers in External App';
+  String get openTrailersExternally => 'Trailer in externer App öffnen';
 
   @override
   String get openTrailersExternallySubtitle =>
-      'Trailers open in the YouTube app or browser instead of the built-in player';
+      'Trailer werden in der YouTube-App oder im Browser statt im integrierten Player geöffnet.';
 
   @override
   String get hideDetailsMediaDescription =>
-      'Hide Media Description on Details Page';
+      'Medienbeschreibung auf der Detailseite ausblenden';
 
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
-      'Hide the movie or episode descriptive text.';
+      'Blendet die Beschreibung des Films oder der Episode aus.';
 
   @override
   String get detailUseSeriesThumbnails =>
@@ -11228,14 +11235,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hideHomeMediaDescription =>
-      'Hide Media Description on Home Screen';
+      'Medienbeschreibung auf der Startseite ausblenden';
 
   @override
   String get hideHomeMediaDescriptionSubtitle =>
-      'Hide the movie or episode descriptive text.';
+      'Blendet die Beschreibung des Films oder der Episode auf der Startseite aus.';
 
   @override
-  String get continueWatchingAndNextUpHeader => 'Continue Watching and Next Up';
+  String get continueWatchingAndNextUpHeader =>
+      'Weiterschauen und Als Nächstes';
 
   @override
   String get setupSkip => 'Skip setup';
@@ -11310,9 +11318,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get serverMessagesMarkAllRead => 'Mark all as read';
 
   @override
-  String get serverMessagesShowButton => 'Show messages button';
+  String get serverMessagesShowButton => 'Nachrichten-Schaltfläche anzeigen';
 
   @override
   String get serverMessagesShowButtonSubtitle =>
-      'Adds a button to the menu for messages sent by your server admin';
+      'Fügt dem Menü eine Schaltfläche für Nachrichten vom Serveradministrator hinzu.';
 }

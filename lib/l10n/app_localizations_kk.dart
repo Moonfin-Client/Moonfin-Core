@@ -154,6 +154,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get detailScreenStyleModern => 'Заманауи';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Жайылған қойындылар';
 
   @override

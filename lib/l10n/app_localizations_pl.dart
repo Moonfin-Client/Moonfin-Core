@@ -154,6 +154,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get detailScreenStyleModern => 'Nowoczesny';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Rozszerzone zakładki';
 
   @override
@@ -271,14 +274,14 @@ class AppLocalizationsPl extends AppLocalizations {
       'Używaj systemowej metody wprowadzania tekstu';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'Kontroler';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'Nawigacja kontrolerem';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'Pozwala używać podłączonego kontrolera do przesuwania zaznaczenia i wybierania pozycji';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -1349,10 +1352,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get downloadSubtitles => 'Pobierz napisy';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'Wyszukiwanie napisów…';
 
   @override
-  String get downloadingSubtitle => 'Downloading subtitle…';
+  String get downloadingSubtitle => 'Pobieranie napisów…';
 
   @override
   String get selectedSubtitleInvalid => 'Wybrane napisy są nieprawidłowe.';
@@ -1546,17 +1549,17 @@ class AppLocalizationsPl extends AppLocalizations {
   String get perfectMatch => 'Idealne dopasowanie';
 
   @override
-  String get aiTranslated => 'AI Translated';
+  String get aiTranslated => 'Przetłumaczone przez AI';
 
   @override
-  String get machineTranslated => 'Machine Translated';
+  String get machineTranslated => 'Tłumaczenie maszynowe';
 
   @override
   String get hearingImpaired => 'SDH';
 
   @override
   String framerateFps(String rate) {
-    return '$rate fps';
+    return '$rate kl./s';
   }
 
   @override
@@ -2634,30 +2637,30 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pokazuj podgląd klatek podczas przewijania';
 
   @override
-  String get trickplayDisplayStyleSingle => 'Single Thumbnail';
+  String get trickplayDisplayStyleSingle => 'Pojedyncza miniatura';
 
   @override
-  String get trickplayDisplayStyleStrip => 'Filmstrip';
+  String get trickplayDisplayStyleStrip => 'Pasek miniatur';
 
   @override
-  String get trickplayModeFull => 'Full Screen';
+  String get trickplayModeFull => 'Pełny ekran';
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Przeciągnij suwak, aby podejrzeć przewijanie';
 
   @override
-  String get trickplayPreviewScale => 'Preview Size';
+  String get trickplayPreviewScale => 'Rozmiar podglądu';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset => 'Odległość od paska postępu';
 
   @override
-  String get trickplayFollowScrubPosition => 'Follow Scrub Position';
+  String get trickplayFollowScrubPosition => 'Podążaj za pozycją przewijania';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
-      'Preview slides along the seekbar as you scrub, instead of staying centered';
+      'Podgląd przesuwa się wzdłuż paska postępu podczas przewijania zamiast pozostawać na środku';
 
   @override
   String get showDescriptionOnPause => 'Pokazuj opis podczas pauzy';
@@ -4319,11 +4322,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get seerrRequestedStatus => 'Prośba wysłana';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Pobieranie';
 
   @override
   String seerrDownloadingSize(String done, String total) {
-    return 'Downloading · $done / $total';
+    return 'Pobieranie · $done / $total';
   }
 
   @override

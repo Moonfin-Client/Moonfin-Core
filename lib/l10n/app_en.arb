@@ -204,6 +204,10 @@
   "@detailScreenStyleModern": {
     "description": "Detail screen style option: the responsive cinematic layout"
   },
+  "detailScreenStyleImmersive": "Immersive",
+  "@detailScreenStyleImmersive": {
+    "description": "Detail screen style option: immersive full-screen layout with integrated sections"
+  },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
     "description": "Label for the detail screen expanded tabs setting"

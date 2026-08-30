@@ -154,6 +154,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderna';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Etenditaj langetoj';
 
   @override

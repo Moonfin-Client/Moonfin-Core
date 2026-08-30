@@ -154,6 +154,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get detailScreenStyleModern => 'Modernais';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Izvērstas cilnes';
 
   @override

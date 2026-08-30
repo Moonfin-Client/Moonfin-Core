@@ -154,6 +154,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Kibontott lapok';
 
   @override

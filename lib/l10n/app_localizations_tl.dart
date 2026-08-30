@@ -155,6 +155,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Mga Naka-expand na Tab';
 
   @override

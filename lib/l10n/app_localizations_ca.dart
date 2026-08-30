@@ -154,6 +154,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Pestanyes desplegades';
 
   @override
