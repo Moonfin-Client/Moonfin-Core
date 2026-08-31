@@ -768,6 +768,16 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         return super.dispatchGenericMotionEvent(event)
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) nativePad?.releaseHeldInput()
+    }
+
+    override fun onPause() {
+        nativePad?.releaseHeldInput()
+        super.onPause()
+    }
+
     // The axis is "h" or "v" so Dart can tell which one a "none" recentre came
     // from. Without it, releasing a diagonal is ambiguous.
     private fun sendGamepadNavigate(axis: String, direction: String) {

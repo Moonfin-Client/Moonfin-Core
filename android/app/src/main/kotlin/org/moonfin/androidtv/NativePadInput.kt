@@ -297,9 +297,22 @@ internal class NativePadInput(
         // on purpose -- never bindable either. Reordering this below capture
         // would let a rebind strand a user with no way out.
         if (keyCode == KeyEvent.KEYCODE_BACK || isVolumeKey(keyCode)) return false
-        if (event.repeatCount != 0) return true
+        if (NativeKeyEventPolicy.shouldIgnoreRepeat(event.action, event.repeatCount)) return true
 
         val connection = registry.connection(event.deviceId)
+        // Android TV implementations can cancel the currently-held remote DPAD
+        // KeyEvent when another button is dispatched, even though the DPAD switch
+        // remains physically down. A genuine ACTION_UP follows when the user
+        // eventually releases the direction. Actual focus/lifecycle loss clears
+        // every held mask in MainActivity, so ignoring this canceled edge cannot
+        // strand movement if Android never delivers that final physical release.
+        if (NativeKeyEventPolicy.shouldIgnoreCanceledRemoteDpadRelease(
+                action = event.action,
+                canceled = event.isCanceled,
+                keyCode = keyCode,
+                isRemote = connection?.deviceClass == NativeInputDeviceClass.REMOTE,
+            )
+        ) return true
         // Observation only: computed before any consuming branch below and
         // never gates a return, so it can never bind or swallow anything.
         emitDiagnosticsButtonIfMatching(connection, event)
@@ -362,10 +375,12 @@ internal class NativePadInput(
                 val bit = 1 shl index
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     releaseLostHolds(state, index, bit)
-                    state.keyMask = state.keyMask or bit
-                } else {
-                    state.keyMask = state.keyMask and bit.inv()
                 }
+                state.keyMask = NativeDigitalKeyState.transition(
+                    state.keyMask,
+                    bit,
+                    event.action == KeyEvent.ACTION_DOWN,
+                )
                 publishMask(state)
             }
         }
@@ -800,7 +815,7 @@ internal class NativePadInput(
      * Analog counterpart of [publishMask]: sends through
      * [LibretroBridge.onPadState] instead of the mask-only path, but only
      * when the mask changed or an analog value moved by more than
-     * [ANALOG_SEND_EPSILON], so a resting stick does not cross JNI on every
+     * [ANALOG_MIN_SEND_DELTA], so a resting stick does not cross JNI on every
      * motion event.
      */
     private fun publishPadState(
@@ -823,13 +838,17 @@ internal class NativePadInput(
         val analogChanged = analogMoved(lx, state.analogLx) || analogMoved(ly, state.analogLy) ||
             analogMoved(rx, state.analogRx) || analogMoved(ry, state.analogRy) ||
             analogMoved(trigL, state.trigL) || analogMoved(trigR, state.trigR)
+        if (!maskChanged && !analogChanged) return
+        // These fields are the last state sent to the core, not the most
+        // recent Android sample. Keeping a suppressed sample here would make
+        // several small movements compare only with their immediate
+        // predecessor, so they could never accumulate past the minimum send delta.
         state.analogLx = lx
         state.analogLy = ly
         state.analogRx = rx
         state.analogRy = ry
         state.trigL = trigL
         state.trigR = trigR
-        if (!maskChanged && !analogChanged) return
         val combined = if (maskChanged) {
             state.sentMask = desiredMask
             updateComposedMask(state)
@@ -845,7 +864,8 @@ internal class NativePadInput(
         }
     }
 
-    private fun analogMoved(new: Int, old: Int): Boolean = abs(new - old) > ANALOG_SEND_EPSILON
+    private fun analogMoved(new: Int, old: Int): Boolean =
+        analogMovedPastSendBaseline(new, old, ANALOG_MIN_SEND_DELTA)
 
     private fun updateComposedMask(state: PadState): Int =
         if (state === keyboardState) maskComposer.setKeyboard(state.sentMask)
@@ -967,11 +987,10 @@ internal class NativePadInput(
         // low hundreds), so a stored binding can never collide with one.
         const val SYNTHETIC_KEYCODE_L2 = NativeMappingTables.SYNTHETIC_KEYCODE_L2
         const val SYNTHETIC_KEYCODE_R2 = NativeMappingTables.SYNTHETIC_KEYCODE_R2
-        // ~1/255 in int16 terms (32767/255 ≈ 128): the finest step the pads
-        // actually report, per the design doc's measured 8-bit resolution.
-        // A resting stick's rounding noise stays under this, a real move does
-        // not, so this is what gates crossing JNI on every motion event.
-        const val ANALOG_SEND_EPSILON = 128
+        // Minimum accumulated change from the last value sent to the core.
+        // About 0.4% of the int16 analog range: enough to filter sensor noise
+        // without losing gradual movement.
+        const val ANALOG_MIN_SEND_DELTA = 128
         // Every 64th publishPadState call re-reads analogDescriptorPorts. Chosen
         // to be cheap even at Gauntlet's measured ~56 ANALOG queries/frame
         // (an unrelated, much hotter path) while still reacting within a
@@ -1019,6 +1038,38 @@ internal class NativePadInput(
 internal object NativePadStateGuard {
     fun isCurrent(state: Any, keyboardState: Any, registeredState: Any?): Boolean =
         state === keyboardState || registeredState === state
+}
+
+/** True once movement has accumulated far enough from the last value sent. */
+internal fun analogMovedPastSendBaseline(
+    new: Int,
+    lastSent: Int,
+    minSendDelta: Int = 128,
+): Boolean = abs(new - lastSent) > minSendDelta
+
+internal object NativeKeyEventPolicy {
+    fun shouldIgnoreRepeat(action: Int, repeatCount: Int): Boolean =
+        action == KeyEvent.ACTION_DOWN && repeatCount != 0
+
+    fun shouldIgnoreCanceledRemoteDpadRelease(
+        action: Int,
+        canceled: Boolean,
+        keyCode: Int,
+        isRemote: Boolean,
+    ): Boolean =
+        isRemote && canceled && action == KeyEvent.ACTION_UP && keyCode in DPAD_DIRECTIONS
+
+    private val DPAD_DIRECTIONS = setOf(
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+    )
+}
+
+internal object NativeDigitalKeyState {
+    fun transition(mask: Int, bit: Int, pressed: Boolean): Int =
+        if (pressed) mask or bit else mask and bit.inv()
 }
 
 /**
