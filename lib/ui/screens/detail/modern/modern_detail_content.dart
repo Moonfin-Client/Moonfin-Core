@@ -26,6 +26,7 @@ import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
 import '../../../navigation/playback_launcher.dart';
+import '../../../widgets/horizontal_scroll_section.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
@@ -1525,28 +1526,30 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  Widget _castTab(BuildContext context, AggregatedItem item) => SizedBox(
-        height: 200,
-        child: Focus(
-          canRequestFocus: false,
-          onFocusChange: (focused) {
-            if (focused && mounted) {
-              widget.onToggleNavbar?.call(false);
-            } else if (!focused && mounted) {
-              widget.onToggleNavbar?.call(true);
-            }
-          },
-          onKeyEvent: (node, event) {
-            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              _focusSelectedTab();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: DetailCastRow(
+  Widget _castTab(BuildContext context, AggregatedItem item) => Focus(
+        canRequestFocus: false,
+        onFocusChange: (focused) {
+          if (focused && mounted) {
+            widget.onToggleNavbar?.call(false);
+          } else if (!focused && mounted) {
+            widget.onToggleNavbar?.call(true);
+          }
+        },
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: HorizontalScrollSection(
+          title: '',
+          contentSpacing: 0,
+          builder: (context, controller) => DetailCastRow(
             people: _vm.actors,
             imageApi: _vm.imageApi,
             serverId: item.serverId,
+            scrollController: controller,
             firstItemFocusNode: _castFirstFocusNode,
             onNavigateUp: _focusSelectedTab,
             onItemKeyEvent: (index, event) {
@@ -1610,28 +1613,30 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       };
     }).toList();
 
-    return SizedBox(
-      height: 200,
-      child: Focus(
-        canRequestFocus: false,
-        onFocusChange: (focused) {
-          if (focused && mounted) {
-            widget.onToggleNavbar?.call(false);
-          } else if (!focused && mounted) {
-            widget.onToggleNavbar?.call(true);
-          }
-        },
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: DetailCastRow(
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _focusSelectedTab();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => DetailCastRow(
           people: crew,
           imageApi: _vm.imageApi,
           serverId: item.serverId,
+          scrollController: controller,
           firstItemFocusNode: _crewFirstFocusNode,
           onNavigateUp: _focusSelectedTab,
           onItemKeyEvent: (index, event) {
@@ -1792,12 +1797,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   );
                 }
               },
-              child: SizedBox(
-                height: 200,
-                child: DetailCastRow(
+              child: HorizontalScrollSection(
+                title: '',
+                contentSpacing: 0,
+                builder: (context, controller) => DetailCastRow(
                   people: childActors,
                   imageApi: _vm.imageApi,
                   serverId: childItem.serverId,
+                  scrollController: controller,
                   firstItemFocusNode: rowFirstNode,
                   onNavigateUp: () {
                     headingNode.requestFocus();
@@ -2041,12 +2048,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   );
                 }
               },
-              child: SizedBox(
-                height: 200,
-                child: DetailCastRow(
+              child: HorizontalScrollSection(
+                title: '',
+                contentSpacing: 0,
+                builder: (context, controller) => DetailCastRow(
                   people: childCrew,
                   imageApi: _vm.imageApi,
                   serverId: childItem.serverId,
+                  scrollController: controller,
                   firstItemFocusNode: rowFirstNode,
                   onNavigateUp: () {
                     headingNode.requestFocus();
@@ -2158,87 +2167,92 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
-      child: SizedBox(
-        height: cardHeight + 20,
-        child: Focus(
-          canRequestFocus: false,
-          onFocusChange: (focused) {
-            if (focused && mounted) {
-              widget.onToggleNavbar?.call(false);
-            } else if (!focused && mounted) {
-              widget.onToggleNavbar?.call(true);
-            }
-          },
-          onKeyEvent: (node, event) {
-            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              _focusSelectedTab();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            itemCount: studios.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 16),
-            itemBuilder: (context, index) {
-              final studio = studios[index];
-              final name = studio.name;
-              final imageUrl = studio.logoUrl;
+      child: Focus(
+        canRequestFocus: false,
+        onFocusChange: (focused) {
+          if (focused && mounted) {
+            widget.onToggleNavbar?.call(false);
+          } else if (!focused && mounted) {
+            widget.onToggleNavbar?.call(true);
+          }
+        },
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: HorizontalScrollSection(
+          title: '',
+          contentSpacing: 0,
+          builder: (context, controller) => SizedBox(
+            height: cardHeight + 20,
+            child: ListView.separated(
+              controller: controller,
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              itemCount: studios.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 16),
+              itemBuilder: (context, index) {
+                final studio = studios[index];
+                final name = studio.name;
+                final imageUrl = studio.logoUrl;
 
-              return FocusableWrapper(
-                focusNode: index == 0 ? _studiosFirstFocusNode : null,
-                onSelect: name.isNotEmpty
-                    ? () => context.push(Destinations.studio(name))
-                    : null,
-                borderRadius: 12,
-                suppressFocusGlow: true,
-                onNavigateUp: _focusSelectedTab,
-                onNavigateRight: index == studios.length - 1 ? () {} : null,
-                child: Container(
-                  width: cardWidth,
-                  height: cardHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: AppRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                return FocusableWrapper(
+                  focusNode: index == 0 ? _studiosFirstFocusNode : null,
+                  onSelect: name.isNotEmpty
+                      ? () => context.push(Destinations.studio(name))
+                      : null,
+                  borderRadius: 12,
+                  suppressFocusGlow: true,
+                  onNavigateUp: _focusSelectedTab,
+                  onNavigateRight: index == studios.length - 1 ? () {} : null,
+                  child: Container(
+                    width: cardWidth,
+                    height: cardHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: AppRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        width: 1,
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: AppRadius.circular(12),
+                      child: imageUrl != null
+                          ? OfflineAwareImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.contain,
+                              imageBuilder: (context, imageProvider) {
+                                return Container(
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  child: Image(
+                                    image: imageProvider,
+                                    fit: BoxFit.contain,
+                                  ),
+                                );
+                              },
+                              placeholder: (context, url) => _buildStudioFallback(context, name),
+                              errorWidget: (context, url, error) => _buildStudioFallback(context, name),
+                            )
+                          : _buildStudioFallback(context, name),
+                    ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: AppRadius.circular(12),
-                    child: imageUrl != null
-                        ? OfflineAwareImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.contain,
-                            imageBuilder: (context, imageProvider) {
-                              return Container(
-                                color: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                child: Image(
-                                  image: imageProvider,
-                                  fit: BoxFit.contain,
-                                ),
-                              );
-                            },
-                            placeholder: (context, url) => _buildStudioFallback(context, name),
-                            errorWidget: (context, url, error) => _buildStudioFallback(context, name),
-                          )
-                        : _buildStudioFallback(context, name),
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -2255,18 +2269,23 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           widget.onToggleNavbar?.call(true);
         }
       },
-      child: FilmographyRow(
-        items: movies,
-        imageApi: _vm.imageApi,
-        prefs: widget.prefs,
-        firstFocusNode: focusNode ?? _personMoviesFirstFocusNode,
-        onItemKeyEvent: (index, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => FilmographyRow(
+          items: movies,
+          imageApi: _vm.imageApi,
+          prefs: widget.prefs,
+          scrollController: controller,
+          firstFocusNode: focusNode ?? _personMoviesFirstFocusNode,
+          onItemKeyEvent: (index, event) {
+            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _focusSelectedTab();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+        ),
       ),
     );
   }
@@ -2281,18 +2300,23 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           widget.onToggleNavbar?.call(true);
         }
       },
-      child: FilmographyRow(
-        items: series,
-        imageApi: _vm.imageApi,
-        prefs: widget.prefs,
-        firstFocusNode: focusNode ?? _personSeriesFirstFocusNode,
-        onItemKeyEvent: (index, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => FilmographyRow(
+          items: series,
+          imageApi: _vm.imageApi,
+          prefs: widget.prefs,
+          scrollController: controller,
+          firstFocusNode: focusNode ?? _personSeriesFirstFocusNode,
+          onItemKeyEvent: (index, event) {
+            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _focusSelectedTab();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+        ),
       ),
     );
   }
@@ -2307,17 +2331,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           widget.onToggleNavbar?.call(true);
         }
       },
-      child: SeerrAppearancesRow(
-        items: items,
-        prefs: widget.prefs,
-        firstFocusNode: _personSeerrAppearancesFirstFocusNode,
-        onItemKeyEvent: (index, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => SeerrAppearancesRow(
+          items: items,
+          prefs: widget.prefs,
+          scrollController: controller,
+          firstFocusNode: _personSeerrAppearancesFirstFocusNode,
+          onItemKeyEvent: (index, event) {
+            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _focusSelectedTab();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+        ),
       ),
     );
   }
@@ -2407,36 +2436,32 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     VoidCallback? onNavigateDown,
   }) {
     final textTheme = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: textTheme.titleMedium?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        SeerrAppearancesRow(
-          items: items,
-          prefs: widget.prefs,
-          firstFocusNode: firstFocusNode,
-          onItemKeyEvent: (index, event) {
-            if (event is! KeyDownEvent) return KeyEventResult.ignored;
-            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              (onNavigateUp ?? _focusSelectedTab)();
-              return KeyEventResult.handled;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
-                onNavigateDown != null) {
-              onNavigateDown();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-        ),
-      ],
+    return HorizontalScrollSection(
+      title: title,
+      titleStyle: textTheme.titleMedium?.copyWith(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+      ),
+      contentSpacing: 8,
+      builder: (context, controller) => SeerrAppearancesRow(
+        items: items,
+        prefs: widget.prefs,
+        scrollController: controller,
+        firstFocusNode: firstFocusNode,
+        onItemKeyEvent: (index, event) {
+          if (event is! KeyDownEvent) return KeyEventResult.ignored;
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            (onNavigateUp ?? _focusSelectedTab)();
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+              onNavigateDown != null) {
+            onNavigateDown();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+      ),
     );
   }
 
@@ -2450,17 +2475,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           widget.onToggleNavbar?.call(true);
         }
       },
-      child: SeerrCrewCreditsRow(
-        items: items,
-        prefs: widget.prefs,
-        firstFocusNode: _personSeerrCrewCreditsFirstFocusNode,
-        onItemKeyEvent: (index, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => SeerrCrewCreditsRow(
+          items: items,
+          prefs: widget.prefs,
+          scrollController: controller,
+          firstFocusNode: _personSeerrCrewCreditsFirstFocusNode,
+          onItemKeyEvent: (index, event) {
+            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _focusSelectedTab();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+        ),
       ),
     );
   }
@@ -2485,18 +2515,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         }
         return KeyEventResult.ignored;
       },
-      child: DetailChaptersRow(
-        item: item,
-        imageApi: _vm.imageApi,
-        onPlayFromChapter: widget.onPlayFromChapter ?? (_) {},
-        firstItemFocusNode: _chaptersFirstFocusNode,
+      child: HorizontalScrollSection(
+        title: '',
+        contentSpacing: 0,
+        builder: (context, controller) => DetailChaptersRow(
+          item: item,
+          imageApi: _vm.imageApi,
+          onPlayFromChapter: widget.onPlayFromChapter ?? (_) {},
+          scrollController: controller,
+          firstItemFocusNode: _chaptersFirstFocusNode,
+        ),
       ),
     );
   }
 
-  Widget _extrasTab(BuildContext context, AggregatedItem item, List<AggregatedItem> items, FocusNode? firstItemFocusNode) => SizedBox(
-        height: 200,
-        child: Focus(
+  Widget _extrasTab(BuildContext context, AggregatedItem item, List<AggregatedItem> items, FocusNode? firstItemFocusNode) =>
+        Focus(
           canRequestFocus: false,
           onFocusChange: (focused) {
             if (focused && mounted) {
@@ -2512,14 +2546,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             }
             return KeyEventResult.ignored;
           },
-          child: DetailFeaturesRow(
-            items: items,
-            imageApi: _vm.imageApi,
-            prefs: widget.prefs,
-            firstItemFocusNode: firstItemFocusNode,
+          child: HorizontalScrollSection(
+            title: '',
+            contentSpacing: 0,
+            builder: (context, controller) => DetailFeaturesRow(
+              items: items,
+              imageApi: _vm.imageApi,
+              prefs: widget.prefs,
+              scrollController: controller,
+              firstItemFocusNode: firstItemFocusNode,
+            ),
           ),
-        ),
-      );
+        );
 
   Widget _collectionsTab(BuildContext context, AggregatedItem item) {
     final collections = _vm.parentCollections;

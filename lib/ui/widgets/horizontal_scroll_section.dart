@@ -105,47 +105,56 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
 
   @override
   Widget build(BuildContext context) {
+    final hasControls = widget.showControls && !PlatformDetection.isTV;
+    final hasHeader =
+        widget.title.isNotEmpty || widget.trailing != null || hasControls;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: widget.headerPadding,
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.title,
-                  style: widget.titleStyle ?? Theme.of(context).textTheme.titleLarge,
+        if (hasHeader)
+          Padding(
+            padding: widget.headerPadding,
+            child: Row(
+              children: [
+                Expanded(
+                  child: widget.title.isNotEmpty
+                      ? Text(
+                          widget.title,
+                          style: widget.titleStyle ??
+                              Theme.of(context).textTheme.titleLarge,
+                        )
+                      : const SizedBox.shrink(),
                 ),
-              ),
-              if (widget.trailing != null) widget.trailing!,
-              if (widget.showControls && !PlatformDetection.isTV) ...[
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => _scrollBy(-_scrollStep),
-                    visualDensity: VisualDensity.compact,
+                if (widget.trailing != null) widget.trailing!,
+                if (hasControls) ...[
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => _scrollBy(-_scrollStep),
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
-                ),
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => _scrollBy(_scrollStep),
-                    visualDensity: VisualDensity.compact,
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => _scrollBy(_scrollStep),
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        if (widget.contentSpacing > 0) SizedBox(height: widget.contentSpacing),
+        if (hasHeader && widget.contentSpacing > 0)
+          SizedBox(height: widget.contentSpacing),
         widget.builder(context, _controller),
       ],
     );
