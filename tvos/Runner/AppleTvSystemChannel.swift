@@ -17,7 +17,6 @@ final class AppleTvSystemChannel: NSObject, UITextFieldDelegate {
         textField.delegate = self
         textField.returnKeyType = .done
         textField.enablesReturnKeyAutomatically = false
-        gamepadHost.view.addSubview(textField)
         channel.setMethodCallHandler { [weak self] call, result in
             self?.handle(call, result: result)
         }
@@ -40,23 +39,26 @@ final class AppleTvSystemChannel: NSObject, UITextFieldDelegate {
                     details: nil))
                 return
             }
+            // Without this the replaced request never completes, and the Dart
+            // side waiting on it stops taking input for the session.
+            finishTextInput(with: nil)
+
             textField.text = arguments["text"] as? String ?? ""
             textField.placeholder = arguments["hint"] as? String
             textField.isSecureTextEntry = arguments["obscureText"] as? Bool ?? false
             textField.keyboardType = keyboardType(for: arguments["purpose"] as? String)
+            gamepadHost?.view.addSubview(textField)
             textInputResult = result
             if !textField.becomeFirstResponder() {
                 textInputResult = nil
+                textField.removeFromSuperview()
                 result(FlutterError(
                     code: "text_input_unavailable",
                     message: "Unable to present tvOS text input",
                     details: nil))
             }
         case "hideTextInput":
-            let completion = textInputResult
-            textInputResult = nil
-            textField.resignFirstResponder()
-            completion?(nil)
+            finishTextInput(with: nil)
             result(nil)
         case "exitApp":
             result(nil)
@@ -87,6 +89,17 @@ final class AppleTvSystemChannel: NSObject, UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         let completion = textInputResult
         textInputResult = nil
+        textField.removeFromSuperview()
         completion?(textField.text ?? "")
+    }
+
+    /// Ends a request and takes the field back out of the view, so none of it
+    /// is left behind between two keyboards.
+    private func finishTextInput(with value: String?) {
+        let completion = textInputResult
+        textInputResult = nil
+        textField.resignFirstResponder()
+        textField.removeFromSuperview()
+        completion?(value)
     }
 }

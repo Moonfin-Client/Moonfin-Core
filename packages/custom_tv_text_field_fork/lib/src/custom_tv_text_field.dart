@@ -9,6 +9,11 @@ const MethodChannel _appleTvSystemChannel = MethodChannel(
   'moonfin/appletv_system',
 );
 
+/// Only the tvOS runner answers [_appleTvSystemChannel]. This reads the define
+/// the app builds tvOS with, so the native path folds away everywhere else
+/// rather than waiting on a call that can only fail.
+const bool _hasAppleTvSystemChannel = bool.fromEnvironment('MOONFIN_TVOS');
+
 enum TextFieldType {
   email,
   password,
@@ -428,9 +433,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     });
     _notifyVisibilityChanged();
 
-    if (nativeSystemImePending) {
-      unawaited(_appleTvSystemChannel.invokeMethod<void>('hideTextInput'));
-    }
+    if (nativeSystemImePending) unawaited(_hideNativeSystemIme());
 
     _systemInputFocusNode.unfocus();
     _systemInputFocusNode.canRequestFocus = false;
@@ -444,7 +447,20 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     } catch (_) {}
   }
 
+  /// Takes the runner's keyboard down. A runner with no field to take down
+  /// leaves this in the state it asks for, and a teardown path is the wrong
+  /// place to raise that.
+  Future<void> _hideNativeSystemIme() async {
+    try {
+      await _appleTvSystemChannel.invokeMethod<void>('hideTextInput');
+    } catch (_) {}
+  }
+
   Future<void> _requestSystemInputFocus() async {
+    if (!_hasAppleTvSystemChannel) {
+      _requestFlutterSystemInputFocus();
+      return;
+    }
     if (_nativeSystemImePending) return;
     _nativeSystemImePending = true;
     try {
@@ -463,9 +479,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       _submitSystemIme(value);
       return;
     } on MissingPluginException {
-      // Non-tvOS platforms use Flutter's normal text input path below.
+      // The runner has no native field, so fall back to the Flutter path.
     } on PlatformException {
-      // Fall back if the native tvOS text field could not be presented.
+      // The native field could not be presented, so fall back as well.
     }
 
     if (!mounted || !_useSystemImeSession || !_nativeSystemImePending) return;
@@ -560,7 +576,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   void dispose() {
     if (_nativeSystemImePending) {
       _nativeSystemImePending = false;
-      unawaited(_appleTvSystemChannel.invokeMethod<void>('hideTextInput'));
+      unawaited(_hideNativeSystemIme());
     }
     if (isKeyboardVisible) {
       CustomTVTextField.isKeyboardVisibleNotifier.value = false;
