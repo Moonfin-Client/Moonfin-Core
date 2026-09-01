@@ -98,6 +98,9 @@ int? desktopBoundBit(NativeControllerMapping? mapping, GamepadButton button) {
   return bound == null ? null : 1 << bound.retroPadIndex;
 }
 
+/// The advice lines under a start failure, which all read as one paragraph.
+const _errorAdviceStyle = TextStyle(color: Colors.white70, fontSize: 18);
+
 /// Native game player: the libretro core runs in the runner and renders into a
 /// Flutter texture, so this screen stays plain Flutter. It downloads and
 /// extracts the ROM, plays with a game controller, and syncs the save state on
@@ -2444,7 +2447,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                         'The emulator settings may be reached below. You can reset to defaults and/or '
                         'change them to try and fix it (e.g. RDP Plugin setting).',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white70, fontSize: 18),
+                        style: _errorAdviceStyle,
                       ),
                       const SizedBox(height: 28),
                       Wrap(
@@ -2463,6 +2466,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                           ),
                         ],
                       ),
+                      // Settings only reach a core that needs a different
+                      // renderer, so content this core will never run still
+                      // needs the fallback.
+                      if (emulatorJsAvailable) ...[
+                        const SizedBox(height: 20),
+                        const Text(
+                          'If that does not help, open the game\'s details '
+                          'screen and switch it to "EmulatorJS (WebView)".',
+                          textAlign: TextAlign.center,
+                          style: _errorAdviceStyle,
+                        ),
+                      ],
                     ] else if (_coreOptionsAvailable == false) ...[
                       const SizedBox(height: 16),
                       Text(
@@ -2474,10 +2489,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                                 'device, and this game has no other player '
                                 'here.',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
-                        ),
+                        style: _errorAdviceStyle,
+                      ),
+                    ] else if (emulatorJsAvailable) ...[
+                      // Still unanswered: the probe is running, or it never
+                      // ran because the core is missing rather than failing
+                      // to load.
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Open the game\'s details screen and switch it to '
+                        '"EmulatorJS (WebView)" if this keeps failing.',
+                        textAlign: TextAlign.center,
+                        style: _errorAdviceStyle,
                       ),
                     ],
                   ],

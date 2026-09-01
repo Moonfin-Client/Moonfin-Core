@@ -30,9 +30,10 @@ typedef enum {
   LH_ERR_CORE_SYMBOLS = -3,      // required libretro symbols are missing
   LH_ERR_ROM_READ = -4,          // the content file could not be read
   LH_ERR_CONTENT_REJECTED = -5,  // retro_load_game returned false
-  // Also returned when a shutdown lands mid-load. Pre-existing overload, kept
-  // because the value is part of the contract.
   LH_ERR_AUDIO_RING = -6,        // the audio ring could not be sized/allocated
+  // The same value under its other meaning. The overload predates the names
+  // and the value is part of the contract, so both spellings stay.
+  LH_ERR_SHUTDOWN_DURING_LOAD = -6,
   LH_ERR_ALLOC = -7,             // a host allocation failed
   LH_ERR_BAD_GAME_ID = -8,       // game_id would escape save_dir
 } lh_result;
@@ -229,6 +230,10 @@ int lh_unserialize(lh_host *host, const void *src, size_t size);
 // shrink between the two calls, because a restart on the emulation thread
 // rebuilds the whole definition list. Treat a -1 as "stop enumerating", not as
 // a hole to skip past.
+int lh_option_count(lh_host *host);
+int lh_get_option(lh_host *host, int index, lh_option *out);
+void lh_set_option(lh_host *host, const char *id, const char *value);
+
 // Reads a core's option definitions without loading content, so a core whose
 // game will not start is still configurable. Definitions are host-owned copies
 // readable through lh_option_count/lh_get_option afterwards; a core may publish
@@ -238,10 +243,6 @@ int lh_unserialize(lh_host *host, const void *src, size_t size);
 // so a second module would be handed the running core's environment callback.
 int lh_probe_options(lh_host *host, const char *core_path,
                      const char *system_dir);
-
-int lh_option_count(lh_host *host);
-int lh_get_option(lh_host *host, int index, lh_option *out);
-void lh_set_option(lh_host *host, const char *id, const char *value);
 
 // Controller configurations reported through
 // RETRO_ENVIRONMENT_SET_CONTROLLER_INFO. The host logs every port and type the

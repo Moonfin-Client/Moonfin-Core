@@ -2049,7 +2049,6 @@ static int load_failed(struct lh_host *h, int code) {
   return code;
 }
 
-
 static int open_core(struct lh_host *h) {
   h->core.handle = lib_open(h->core_path);
   if (!h->core.handle) {
@@ -2119,7 +2118,6 @@ int lh_probe_options(lh_host *h, const char *core_path, const char *system_dir) 
   return 0;
 }
 
-
 static int load_content(struct lh_host *h) {
   struct retro_system_info info;
   memset(&info, 0, sizeof(info));
@@ -2178,7 +2176,7 @@ static int load_content(struct lh_host *h) {
   // reporting, so the caller's teardown is not left holding a live game.
   if (h->shutdown_requested) {
     if (h->core.unload_game) h->core.unload_game();
-    return LH_ERR_AUDIO_RING;
+    return LH_ERR_SHUTDOWN_DURING_LOAD;
   }
 
   struct retro_system_av_info av;
@@ -2214,9 +2212,9 @@ static int load_content(struct lh_host *h) {
   // can call SET_VARIABLES from, so alloc_failed has to be re-checked here
   // too: a core is fully loaded and playable at this point, but with an
   // incomplete option set, which lh_load and restart_core both need to treat
-  // as a failure rather than a silent partial success. -7 joins this
-  // function's existing -4/-5/-6 as "the same allocation-failure code lh_load
-  // uses for its own setup", so both callers just check `rc != 0`.
+  // as a failure rather than a silent partial success. LH_ERR_ALLOC joins the
+  // other codes this function returns as "the same failure lh_load uses for
+  // its own setup", so both callers just check `rc != 0`.
   if (h->alloc_failed) return LH_ERR_ALLOC;
   return 0;
 }

@@ -352,6 +352,75 @@ void main() {
       },
     );
   });
+
+  group('core settings round trip', () {
+    late _MockGamesApi games;
+
+    setUpAll(() => registerFallbackValue(<int>[]));
+
+    setUp(() => games = _MockGamesApi());
+
+    // Reads back the exact bytes the write produced, so the encode and the
+    // decode cant drift apart.
+    Future<Map<String, String>> roundTrip(Map<String, String> values) async {
+      List<int>? written;
+      when(
+        () => games.putSave(any(), any(), kind: any(named: 'kind')),
+      ).thenAnswer((invocation) async {
+        written = invocation.positionalArguments[1] as List<int>;
+      });
+      await writeCoreSettings(games, 'mupen64plus_next', values);
+
+      when(
+        () => games.getSave(any(), kind: any(named: 'kind')),
+      ).thenAnswer((_) async => written);
+      return readCoreSettings(games, 'mupen64plus_next');
+    }
+
+    test('every written option comes back', () async {
+      const values = {
+        'mupen64plus-rdp-plugin': 'angrylion',
+        'mupen64plus-43screensize': '640x480',
+      };
+
+      expect(await roundTrip(values), values);
+    });
+
+    test('a value that is not plain ascii survives', () async {
+      expect(
+        await roundTrip(const {'core-label': 'Nintendo 64 \u00e9\u00fc'}),
+        const {'core-label': 'Nintendo 64 \u00e9\u00fc'},
+      );
+    });
+
+    test('a value containing = keeps everything after the first one', () async {
+      expect(
+        await roundTrip(const {'opt': 'a=b=c'}),
+        const {'opt': 'a=b=c'},
+      );
+    });
+
+    test('no values writes the blob reset uses', () async {
+      final written = <List<int>>[];
+      when(
+        () => games.putSave(any(), any(), kind: any(named: 'kind')),
+      ).thenAnswer((invocation) async {
+        written.add(invocation.positionalArguments[1] as List<int>);
+      });
+
+      await writeCoreSettings(games, 'mupen64plus_next', const {});
+
+      expect(written.single, const [10]);
+    });
+
+    test('nothing saved reads as no options', () async {
+      when(
+        () => games.getSave(any(), kind: any(named: 'kind')),
+      ).thenAnswer((_) async => null);
+
+      expect(await readCoreSettings(games, 'mupen64plus_next'), isEmpty);
+    });
+  });
 }
 
 Set<String> _defaultFetchCores(String relativePath) {

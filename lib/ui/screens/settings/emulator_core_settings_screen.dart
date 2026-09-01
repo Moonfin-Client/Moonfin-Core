@@ -37,6 +37,11 @@ class _EmulatorCoreSettingsScreenState
 
   List<GameCoreOption> _options = const [];
   Map<String, String> _values = {};
+
+  /// Saved entries for options this core only publishes once content is
+  /// loaded. Every write carries them along, so saving from a screen that cant
+  /// show them leaves them intact. Empty after a reset.
+  Map<String, String> _loadTimeOnly = {};
   bool _loading = true;
   bool _saving = false;
   String? _error;
@@ -77,6 +82,10 @@ class _EmulatorCoreSettingsScreenState
         _options = probed;
         _values = {
           for (final o in probed) o.id: saved[o.id] ?? o.current,
+        };
+        _loadTimeOnly = {
+          for (final e in saved.entries)
+            if (!_values.containsKey(e.key)) e.key: e.value,
         };
         _loading = false;
         // Empty covers both "the core has no options" and "this platform
@@ -144,7 +153,10 @@ class _EmulatorCoreSettingsScreenState
     if (games == null) return;
     setState(() => _saving = true);
     try {
-      await writeCoreSettings(games, widget.coreId, _values);
+      await writeCoreSettings(games, widget.coreId, {
+        ..._loadTimeOnly,
+        ..._values,
+      });
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -166,6 +178,7 @@ class _EmulatorCoreSettingsScreenState
       // Show what the next load will actually use.
       setState(() {
         _values = {for (final o in _options) o.id: o.current};
+        _loadTimeOnly = {};
         _saving = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
