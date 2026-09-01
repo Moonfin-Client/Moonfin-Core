@@ -148,6 +148,21 @@ void main() {
           .withBindingsForGame(gameId, const {}),
     );
     expect(captionOf('Default layout'), findsOneWidget);
+
+    // Bindings saved before games had tables of their own. The row must not
+    // claim a game the user never touched, and a reset would still move it.
+    await show(NativeControllerMapping.empty.withBinding(96, RetroPadButton.a));
+    expect(captionOf('Customised for every game'), findsOneWidget);
+
+    // Another game's table says nothing about this one.
+    await show(
+      NativeControllerMapping.empty.withBindingForGame(
+        'burgertime',
+        96,
+        RetroPadButton.a,
+      ),
+    );
+    expect(captionOf('Default layout'), findsOneWidget);
   });
 
   testWidgets('reset returns this game to defaults and nothing else', (

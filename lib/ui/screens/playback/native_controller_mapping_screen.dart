@@ -549,8 +549,9 @@ class NativeControllerMappingScreenState
 
   /// Returns this game's buttons to the built-in layout for this controller.
   ///
-  /// An empty table is not the same as no entry: no entry inherits the saved
-  /// bindings, an empty one says this game deliberately uses none.
+  /// An empty table is not the same as no entry. No entry inherits the saved
+  /// bindings, while an empty one lays nothing over the runner's own defaults,
+  /// which is what puts this game back on the built-in layout.
   void _confirmReset() {
     final device = _device;
     if (device == null) return;
@@ -784,13 +785,17 @@ class NativeControllerMappingScreenState
         : '$label - this game and controller';
   }
 
-  /// Whether these buttons are the built-in layout or something the user
-  /// changed. Reads the bindings in effect, because a reset stores an empty
-  /// table, which is still an entry.
-  String get _bindingScopeSubtitle =>
-      _mapping.bindingsForGame(widget.gameId).isEmpty
-      ? 'Default layout'
-      : 'Customised for this game';
+  /// What resetting this game would change the buttons from.
+  ///
+  /// A game with no table of its own still plays on the saved bindings, so a
+  /// reset moves its buttons too. Saying which scope those came from is the
+  /// difference between a reset that does something and one that does not.
+  String get _bindingScopeSubtitle {
+    if (_mapping.bindingsForGame(widget.gameId).isEmpty) return 'Default layout';
+    return _mapping.hasGameOverride(widget.gameId)
+        ? 'Customised for this game'
+        : 'Customised for every game';
+  }
 
   void _cycleSnap() {
     final device = _device;
