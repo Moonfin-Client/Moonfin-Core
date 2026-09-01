@@ -303,6 +303,13 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                   subtitle: l10n.settingsDownmixToStereoDescription,
                   icon: Icons.speaker,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.serverTranscodeUnsupportedAudio,
+                  title: l10n.settingsServerTranscodeUnsupportedAudio,
+                  subtitle:
+                  l10n.settingsServerTranscodeUnsupportedAudioDescription,
+                  icon: Icons.sync,
+                ),
               ],
             ),
             if (isManual && _showPassthroughToggles) ...[

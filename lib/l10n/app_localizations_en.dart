@@ -2765,6 +2765,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'How compressed surround sound reaches your TV or receiver.';
 
   @override
+  String get settingsServerTranscodeUnsupportedAudio =>
+      'Server transcode unsupported audio';
+
+  @override
+  String get settingsServerTranscodeUnsupportedAudioDescription =>
+      'Ask the server to transcode audio that cannot be passed through instead of decoding it locally.';
+
+  @override
   String get settingsAudioPassthroughModeDisabled =>
       'Disabled (always decode on this device)';
 

@@ -855,6 +855,30 @@ void main() {
       expect(codecs, contains('mlp'));
     });
 
+    test('does not advertise EAC3 when server transcoding is enabled', () {
+      final profile = DeviceProfileBuilder.build(
+        audioFallbackCodec: AudioFallbackCodec.ac3,
+        eac3PassthroughEnabled: false,
+        ac3PassthroughEnabled: true,
+        transcodeUnsupportedAudio: true,
+        universalAudioDecode: true,
+      );
+
+      final codecs = _videoDirectPlayAudioCodecs(profile);
+      expect(codecs, isNot(contains('eac3')));
+      expect(codecs, contains('ac3'));
+    });
+
+    test('keeps EAC3 advertised when server transcoding is disabled', () {
+      final profile = DeviceProfileBuilder.build(
+        eac3PassthroughEnabled: false,
+        transcodeUnsupportedAudio: false,
+        universalAudioDecode: true,
+      );
+
+      expect(_videoDirectPlayAudioCodecs(profile), contains('eac3'));
+    });
+
     test('keeps TrueHD for direct play but not the fmp4 transcode target', () {
       final profile = DeviceProfileBuilder.build();
 
@@ -869,23 +893,21 @@ void main() {
       );
     });
 
-    test(
-      'keeps codec when local decode is available even without passthrough',
-      () {
-        final profile = DeviceProfileBuilder.build(
-          audioCapabilityProfile: _capabilityProfile(
-            canDecodeDts: true,
-            canPassthroughDts: false,
-            canPassthroughDtsHd: false,
-          ),
-          dtsCorePassthroughEnabled: false,
-        );
+    test('keeps a locally decoded codec when server transcoding is disabled', () {
+      final profile = DeviceProfileBuilder.build(
+        audioCapabilityProfile: _capabilityProfile(
+          canDecodeDts: true,
+          canPassthroughDts: false,
+          canPassthroughDtsHd: false,
+        ),
+        dtsCorePassthroughEnabled: false,
+        transcodeUnsupportedAudio: false,
+      );
 
-        final codecs = _videoDirectPlayAudioCodecs(profile);
-        expect(codecs, contains('dts'));
-        expect(codecs, contains('dca'));
-      },
-    );
+      final codecs = _videoDirectPlayAudioCodecs(profile);
+      expect(codecs, contains('dts'));
+      expect(codecs, contains('dca'));
+    });
 
     test(
       'keeps codec when decode is unavailable but passthrough is enabled',
@@ -1242,6 +1264,21 @@ void main() {
         containsAll(<String>['aac', 'ac3', 'eac3', 'dts', 'flac', 'opus']),
       );
     });
+
+    test(
+      'keeps the selected fallback available when passthrough is disabled',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          audioFallbackCodec: AudioFallbackCodec.ac3,
+          ac3PassthroughEnabled: false,
+          eac3PassthroughEnabled: false,
+          transcodeUnsupportedAudio: true,
+        );
+
+        expect(_videoDirectPlayAudioCodecs(profile), isNot(contains('ac3')));
+        expect(_transcodingAudioCodecList(profile, 'ts'), contains('ac3'));
+      },
+    );
 
     test('the fallback preference only decides the encode target and never '
         'drops a copyable codec', () {

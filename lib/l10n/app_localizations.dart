@@ -5042,7 +5042,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'How compressed surround sound reaches your TV or receiver.'**
-  String get settingsAudioPassthroughModeDescription;
+   String get settingsAudioPassthroughModeDescription;
+
+   String get settingsServerTranscodeUnsupportedAudio =>
+       'Server transcode unsupported audio';
+
+   String get settingsServerTranscodeUnsupportedAudioDescription =>
+       'Ask the server to transcode audio that cannot be passed through instead of decoding it locally.';
 
   /// No description provided for @settingsAudioPassthroughModeDisabled.
   ///

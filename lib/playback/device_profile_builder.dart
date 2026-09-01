@@ -60,6 +60,15 @@ class DeviceProfileBuilder {
     'vorbis',
   ];
 
+  static const Set<String> _passthroughControlledAudioCodecs = <String>{
+    'ac3',
+    'eac3',
+    'dts',
+    'dca',
+    'truehd',
+    'mlp',
+  };
+
   // What each HLS container can carry. A video transcode advertises every one
   // of these it also direct plays, so the server copies the audio stream and
   // only re-encodes a source codec that isn't listed. TrueHD and MLP are the
@@ -114,6 +123,7 @@ class DeviceProfileBuilder {
     bool eac3PassthroughEnabled = false,
     bool dtsCorePassthroughEnabled = false,
     bool trueHdPassthroughEnabled = false,
+    bool transcodeUnsupportedAudio = false,
     int maxAudioChannels = 0,
     // Deterministic local stereo downmix. Universal-decode players keep their
     // full direct-play advertisement and downmix after decoding, so this only
@@ -122,7 +132,8 @@ class DeviceProfileBuilder {
     // The player decodes every advertised audio codec in software (FFmpeg),
     // so nothing about the output route can force a server transcode: every
     // codec direct plays and the player decodes, bitstreams or downmixes it
-    // locally. Detection never subtracts from the advertised list.
+    // locally. Detection never subtracts from the advertised list unless the
+    // user opts into server-side transcoding of unsupported bitstreams.
     bool universalAudioDecode = false,
     bool playerDecodesTrueHd = true,
     MaxVideoResolution maxResolution = MaxVideoResolution.auto,
@@ -290,6 +301,7 @@ class DeviceProfileBuilder {
                   eac3PassthroughEnabled: eac3PassthroughEnabled,
                   dtsCorePassthroughEnabled: dtsCorePassthroughEnabled,
                   trueHdPassthroughEnabled: trueHdPassthroughEnabled,
+                  transcodeUnsupportedAudio: transcodeUnsupportedAudio,
                 ),
               )
               .toList(growable: false);
@@ -917,14 +929,16 @@ class DeviceProfileBuilder {
             (codec) => !_avFoundationUndecodableAudio.contains(codec),
           )
         : containerAudioCodecs;
-    final ordered = <String>[
-      ..._fallbackTargetOrder(effectiveAudioFallbackCodec),
-      ...carried,
-    ];
+    final fallbackTargets = _fallbackTargetOrder(effectiveAudioFallbackCodec);
+    final ordered = <String>[...fallbackTargets, ...carried];
     final seen = <String>{};
     return ordered
         .where(carried.contains)
-        .where(allowedAudioCodecs.contains)
+        .where(
+          (codec) =>
+              allowedAudioCodecs.contains(codec) ||
+              fallbackTargets.contains(codec),
+        )
         .where(seen.add)
         .toList(growable: false);
   }
@@ -938,7 +952,21 @@ class DeviceProfileBuilder {
     required bool eac3PassthroughEnabled,
     required bool dtsCorePassthroughEnabled,
     required bool trueHdPassthroughEnabled,
+    required bool transcodeUnsupportedAudio,
   }) {
+    // This opt-in setting is separate from passthrough mode: false means the
+    // route cannot bitstream the codec, not that the player cannot decode it.
+    if (transcodeUnsupportedAudio && !_isAudioCodecPassthroughEnabled(
+          codec: codec,
+          ac3PassthroughEnabled: ac3PassthroughEnabled,
+          eac3PassthroughEnabled: eac3PassthroughEnabled,
+          dtsCorePassthroughEnabled: dtsCorePassthroughEnabled,
+          trueHdPassthroughEnabled: trueHdPassthroughEnabled,
+        ) &&
+        _passthroughControlledAudioCodecs.contains(codec)) {
+      return false;
+    }
+
     // A failed capability probe means the player picks a different local
     // route, never that the server has to re-encode.
     if (universalAudioDecode) {

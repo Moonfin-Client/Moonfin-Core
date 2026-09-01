@@ -425,6 +425,7 @@ class AppleTvBackend implements PlayerBackend {
       eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
       dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      transcodeUnsupportedAudio: _prefs.resolveServerTranscodeUnsupportedAudio(),
       downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
       // AetherEngine plays every advertised audio codec: AAC/AC3/EAC3(+JOC
       // Atmos)/FLAC/ALAC are stream-copied intact, and TrueHD/DTS/MP3/Opus/

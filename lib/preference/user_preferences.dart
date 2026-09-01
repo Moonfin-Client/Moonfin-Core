@@ -643,6 +643,9 @@ class UserPreferences extends ChangeNotifier {
 
   AudioFallbackCodec resolveAudioFallbackCodec() => get(audioFallbackCodec);
 
+  bool resolveServerTranscodeUnsupportedAudio() =>
+      get(serverTranscodeUnsupportedAudio);
+
   int resolveMaxAudioChannels() => get(maxAudioChannels);
 
   PosterSize resolveLibraryPosterSize() {
@@ -1695,6 +1698,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'audio_fallback_codec',
     defaultValue: AudioFallbackCodec.auto,
     values: AudioFallbackCodec.values,
+  );
+
+  static final serverTranscodeUnsupportedAudio = Preference(
+    key: 'pref_server_transcode_unsupported_audio',
+    defaultValue: false,
   );
 
   static final audioPassthroughMode = EnumPreference(

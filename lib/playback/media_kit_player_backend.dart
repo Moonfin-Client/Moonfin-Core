@@ -569,6 +569,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
       eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
       dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      transcodeUnsupportedAudio: _prefs.resolveServerTranscodeUnsupportedAudio(),
       maxAudioChannels: _prefs.resolveMaxAudioChannels(),
       downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
       // mpv decodes all advertised audio codecs in software and downmixes
