@@ -234,10 +234,19 @@ class CustomExternalListsService {
     }
   }
 
-  Future<List<ImdbExternalListItem>> loadCustomRowFromCache(HomeSectionConfig config) async {
+  Future<List<ImdbExternalListItem>> loadCustomRowFromCache(
+    HomeSectionConfig config, {
+    Duration maxAge = const Duration(hours: 24),
+  }) async {
     try {
       final file = await cacheFile(config);
       if (file.existsSync()) {
+        try {
+          final lastModified = file.lastModifiedSync();
+          if (DateTime.now().difference(lastModified) > maxAge) {
+            return [];
+          }
+        } catch (_) {}
         final content = await file.readAsString();
         final decoded = jsonDecode(content) as List;
         final items = decoded

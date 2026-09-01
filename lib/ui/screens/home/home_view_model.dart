@@ -3531,9 +3531,6 @@ class HomeViewModel extends ChangeNotifier {
 
     if (!isDifferentDay) return;
 
-    final syncService = GetIt.instance<PluginSyncService>();
-    if (!syncService.seerrAvailable) return;
-
     debugPrint('[DailyRefresh] Day changed or first run. Triggering background cache refresh of enabled lists...');
 
     await _prefs.set(UserPreferences.lastExternalRowsRefreshTime, now.millisecondsSinceEpoch);
@@ -3553,7 +3550,7 @@ class HomeViewModel extends ChangeNotifier {
           if (config.pluginSource == HomeSectionPluginSource.custom && config.enabled) {
             futures.add(() async {
               try {
-                final items = await customService.fetchCustomRow(config);
+                final items = await customService.fetchCustomRow(config, forceRefresh: true);
                 if (items.isNotEmpty) {
                   await customService.saveCustomRowToCache(config, items);
                 }
