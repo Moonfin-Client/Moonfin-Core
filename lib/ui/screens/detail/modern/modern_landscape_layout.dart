@@ -84,20 +84,24 @@ class ModernLandscapeLayout extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (upNext != null) ...[
-                        const SizedBox(width: 80),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: isBoxSet
-                                ? 24.0 / scale
-                                : (aboveHero != null ? 48.0 / scale : 0.0),
-                          ),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 310),
-                            child: upNext,
+                      if (upNext != null)
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                top: isBoxSet
+                                    ? 24.0 / scale
+                                    : (aboveHero != null ? 48.0 / scale : 0.0),
+                              ),
+                              child: ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 310),
+                                child: upNext,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
                     ],
                   ),
                 ),
