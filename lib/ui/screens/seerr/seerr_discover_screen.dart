@@ -1217,7 +1217,7 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                     Container(color: AppColorScheme.surfaceVariant),
                   // A genre card carries its name across the middle. A
                   // shortcut keeps the bottom gradient its lower-left label
-                  // needs, under the icon it shows instead.
+                  // needs, with the icon positioned inline with the text.
                   if (widget.icon != null)
                     Container(
                       decoration: BoxDecoration(
@@ -1231,14 +1231,6 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                         ),
                       ),
                     ),
-                  if (widget.icon != null)
-                    Center(
-                      child: Icon(
-                        widget.icon,
-                        size: 32,
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.8),
-                      ),
-                    ),
                   if (widget.icon == null)
                     SeerrGenreLabel(name: widget.name)
                   else
@@ -1246,21 +1238,41 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                       bottom: 8,
                       left: 8,
                       right: 8,
-                      child: Text(
-                        widget.name,
-                        style: TextStyle(
-                          color: AppColorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 4,
-                              color: AppColorScheme.scrim,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            widget.icon,
+                            size: 16,
+                            color: AppColorScheme.onSurface,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: AppColorScheme.scrim,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              widget.name,
+                              style: TextStyle(
+                                color: AppColorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 4,
+                                    color: AppColorScheme.scrim,
+                                  ),
+                                ],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
                   if (effectiveFocused)
