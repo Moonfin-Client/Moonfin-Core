@@ -1155,6 +1155,7 @@ class _DetailContentState extends State<_DetailContent> {
     _featureFocusNodes.clear();
     _nextEpisodeFocusNode.dispose();
     _seriesNextUpFocusNode.dispose();
+    NavigationLayout.focusDetailsPlayButtonNotifier.value = null;
     super.dispose();
   }
 
@@ -1255,6 +1256,16 @@ class _DetailContentState extends State<_DetailContent> {
     final item = widget.viewModel.item!;
     final headerOverviewFocusNode = _headerOverviewFocusNode(item);
     _ensureTvAlbumPlayFocus(item);
+    final topNavbarTarget = headerOverviewFocusNode ??
+        (item.type == 'Person'
+            ? (widget.initialFocusNode ?? _sectionFocusNode('detailPersonFavorite'))
+            : (item.type == 'MusicAlbum' || item.type == 'Playlist'
+                ? _albumPlayFocusNode
+                : (item.type == 'BoxSet'
+                    ? _sectionFocusNode('detailBoxSetActionButtons')
+                    : (widget.initialFocusNode ??
+                        _sectionFocusNode('detailActionButtons')))));
+    NavigationLayout.focusDetailsPlayButtonNotifier.value = topNavbarTarget;
     final isReadableBook = _isReadableBookItem(item);
     final selectedMediaSource = selectedMediaSourceForItem(
       item,
@@ -3653,6 +3664,7 @@ class _DetailContentState extends State<_DetailContent> {
     final actionButtonsFocusNode = _sectionFocusNode(
       'detailBoxSetActionButtons',
     );
+    final overviewFocusNode = _headerOverviewFocusNode(item);
     final firstFocus = initialFocusNode ?? actionButtonsFocusNode;
     final moviesFocusNode = movies.isNotEmpty
         ? _sectionFocusNode('detailBoxSetMovies')
@@ -3680,6 +3692,7 @@ class _DetailContentState extends State<_DetailContent> {
         selectedMediaSourceId: selectedMediaSourceId,
         onSelectedMediaSourceChanged: onSelectedMediaSourceChanged,
         tvPlayFocusNode: actionButtonsFocusNode,
+        upTarget: overviewFocusNode,
         onRequestFocus: _requestSectionFocus,
         downTarget: metadataFocusNode ?? boxSetDownTarget,
         autoPlay: widget.autoPlay,
@@ -4066,6 +4079,7 @@ class _HeaderSection extends StatelessWidget {
             ),
             textAlign: isMobile ? TextAlign.center : null,
           ),
+          const SizedBox(height: 8),
         ],
       ],
     );
