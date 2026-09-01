@@ -14,6 +14,7 @@ class UpNextCard extends StatefulWidget {
   final String title;
   final String? description;
   final String? imageUrl;
+  final double? aspectRatio;
   final double progress; // 0..1
   final String? remainingLabel;
   final VoidCallback onTap;
@@ -29,6 +30,7 @@ class UpNextCard extends StatefulWidget {
     required this.title,
     required this.description,
     required this.imageUrl,
+    this.aspectRatio,
     required this.progress,
     required this.remainingLabel,
     required this.onTap,
@@ -72,6 +74,13 @@ class _UpNextCardState extends State<UpNextCard> {
     final radius = JellyfinTokens.shapes.mediumRadius;
     final muted = AppColorScheme.onSurface.withValues(alpha: 0.7);
     final hasFocus = _effectiveNode.hasFocus;
+    final hasDescription =
+        widget.description != null && widget.description!.trim().isNotEmpty;
+    final effectiveAspectRatio = (widget.aspectRatio != null &&
+            widget.aspectRatio! > 0.5 &&
+            widget.aspectRatio! < 3.0)
+        ? widget.aspectRatio!
+        : (16 / 9);
 
     if (widget.minimal) {
       return FocusableWrapper(
@@ -196,19 +205,19 @@ class _UpNextCardState extends State<UpNextCard> {
                         ),
                       ),
                     ),
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (widget.description != null &&
-                                      widget.description!.isNotEmpty) ...[
+                    if (hasDescription)
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
                                     Text(
                                       widget.description!,
                                       maxLines: 3,
@@ -216,46 +225,97 @@ class _UpNextCardState extends State<UpNextCard> {
                                       style: textTheme.bodySmall
                                           ?.copyWith(color: muted),
                                     ),
-                                  ],
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      if (widget.progress > 0)
-                                        Expanded(
-                                          child: ClipRRect(
-                                            borderRadius: AppRadius.circular(2),
-                                            child: LinearProgressIndicator(
-                                              value: widget.progress.clamp(0.0, 1.0),
-                                              minHeight: 4,
-                                              backgroundColor: AppColorScheme
-                                                  .onSurface
-                                                  .withValues(alpha: 0.20),
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      AppColorScheme.accent),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        if (widget.progress > 0)
+                                          Expanded(
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  AppRadius.circular(2),
+                                              child: LinearProgressIndicator(
+                                                value: widget.progress
+                                                    .clamp(0.0, 1.0),
+                                                minHeight: 4,
+                                                backgroundColor: AppColorScheme
+                                                    .onSurface
+                                                    .withValues(alpha: 0.20),
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(AppColorScheme.accent),
+                                              ),
                                             ),
+                                          )
+                                        else
+                                          const Spacer(),
+                                        if (widget.remainingLabel != null) ...[
+                                          if (widget.progress > 0)
+                                            const SizedBox(width: 12),
+                                          Text(
+                                            widget.remainingLabel!,
+                                            style: textTheme.labelSmall
+                                                ?.copyWith(color: muted),
                                           ),
-                                        )
-                                      else
-                                        const Spacer(),
-                                      if (widget.remainingLabel != null) ...[
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          widget.remainingLabel!,
-                                          style: textTheme.labelSmall
-                                              ?.copyWith(color: muted),
-                                        ),
+                                        ],
                                       ],
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
+                            _thumbnail(),
+                          ],
+                        ),
+                      )
+                    else ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AspectRatio(
+                          aspectRatio: effectiveAspectRatio,
+                          child: ClipRRect(
+                            borderRadius: AppRadius.circular(
+                              (radius.topLeft.x - 4).clamp(0, double.infinity),
+                            ),
+                            child: _thumbnail(isFullWidth: true),
                           ),
-                          _thumbnail(),
-                        ],
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: Row(
+                          children: [
+                            if (widget.progress > 0)
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: AppRadius.circular(2),
+                                  child: LinearProgressIndicator(
+                                    value: widget.progress.clamp(0.0, 1.0),
+                                    minHeight: 4,
+                                    backgroundColor: AppColorScheme.onSurface
+                                        .withValues(alpha: 0.20),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColorScheme.accent,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              const Spacer(),
+                            if (widget.remainingLabel != null) ...[
+                              if (widget.progress > 0)
+                                const SizedBox(width: 12),
+                              Text(
+                                widget.remainingLabel!,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: muted,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -266,9 +326,9 @@ class _UpNextCardState extends State<UpNextCard> {
     );
   }
 
-  Widget _thumbnail({bool isMinimal = false}) {
+  Widget _thumbnail({bool isMinimal = false, bool isFullWidth = false}) {
     return SizedBox(
-      width: isMinimal ? null : 150,
+      width: (isMinimal || isFullWidth) ? null : 150,
       child: Stack(
         fit: StackFit.expand,
         children: [

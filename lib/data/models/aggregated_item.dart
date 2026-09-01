@@ -71,6 +71,9 @@ class AggregatedItem {
 
   String? get primaryImageItemId => rawData['PrimaryImageItemId']?.toString();
 
+  double? get primaryImageAspectRatio =>
+      (rawData['PrimaryImageAspectRatio'] as num?)?.toDouble();
+
   List<String> get backdropImageTags => _toListOfStrings(rawData['BackdropImageTags']);
 
   String? get parentBackdropItemId =>

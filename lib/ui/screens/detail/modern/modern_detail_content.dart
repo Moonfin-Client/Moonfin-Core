@@ -4410,6 +4410,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       title: '',
       description: hideOverview ? null : episode.overview?.trim(),
       imageUrl: _imageUrl(episode),
+      aspectRatio: episode.primaryImageAspectRatio,
       progress: progress,
       remainingLabel: _remainingLabel(episode, l10n),
       focusNode: _upNextFocusNode,
