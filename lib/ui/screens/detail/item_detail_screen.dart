@@ -1848,9 +1848,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.castMembers,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailCastRow(
@@ -1899,9 +1897,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.moreLikeThis,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailSimilarRow(
@@ -1974,9 +1970,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final l10n = AppLocalizations.of(context);
     final titleStyle = Theme.of(context).textTheme.titleLarge?.copyWith(
-      color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-          ? AppColorScheme.onSurface
-          : Colors.white,
+      color: AppColorScheme.onSurface,
       fontWeight: FontWeight.w700,
     );
     final seerrLabel =
@@ -2128,9 +2122,7 @@ class _DetailContentState extends State<_DetailContent> {
         Text(
           l10n.nextUp,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.bold,
             shadows: _textShadows,
             fontSize: _isCompact(context) ? 17 : null,
@@ -2175,9 +2167,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.seasons,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailSeasonsRow(
@@ -2209,9 +2199,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.castMembers,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailCastRow(
@@ -2241,9 +2229,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.moreLikeThis,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailSimilarRow(
@@ -2432,9 +2418,7 @@ class _DetailContentState extends State<_DetailContent> {
               Text(
                 l10n.nextEpisode,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                      ? AppColorScheme.onSurface
-                      : Colors.white,
+                  color: AppColorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                   shadows: _textShadows,
                   fontSize: _isCompact(context) ? 17 : null,
@@ -2477,9 +2461,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.moreFromThisSeason,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => _EpisodesRow(
@@ -2507,9 +2489,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.castMembers,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailCastRow(
@@ -2538,9 +2518,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.moreLikeThis,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailSimilarRow(
@@ -3775,9 +3753,7 @@ class _DetailContentState extends State<_DetailContent> {
         HorizontalScrollSection(
           title: l10n.castMembers,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
-                ? AppColorScheme.onSurface
-                : Colors.white,
+            color: AppColorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
           builder: (_, ctrl) => DetailCastRow(
@@ -4030,7 +4006,7 @@ class _HeaderSection extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                   ? AppColorScheme.accent
-                  : Colors.white.withValues(alpha: 0.7),
+                  : AppColorScheme.onSurface.withValues(alpha: 0.7),
               fontStyle: FontStyle.italic,
               shadows: _textShadows,
               fontSize: isMobile ? 13 : null,
@@ -4059,7 +4035,7 @@ class _HeaderSection extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                   ? AppColorScheme.onSurface
-                  : Colors.white.withValues(alpha: 0.8),
+                  : AppColorScheme.onBackground,
               shadows: _textShadows,
               height: 1.4,
               fontSize: isMobile ? 13 : null,
@@ -4586,7 +4562,7 @@ class DetailMetadataRow extends StatelessWidget {
             style: theme.textTheme.bodySmall?.copyWith(
               color: isNeon
                   ? AppColorScheme.onSurface.withValues(alpha: 0.6)
-                  : Colors.white.withValues(alpha: 0.5),
+                  : AppColorScheme.onBackground.withValues(alpha: 0.6),
               shadows: _textShadows,
             ),
           ),
@@ -4629,13 +4605,10 @@ class DetailMetadataRow extends StatelessWidget {
   }
 
   Widget _text(ThemeData theme, String value) {
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     return Text(
       value,
       style: theme.textTheme.bodySmall?.copyWith(
-        color: isNeon
-            ? AppColorScheme.onSurface
-            : Colors.white.withValues(alpha: 0.9),
+        color: AppColorScheme.onSurface,
         fontWeight: FontWeight.w700,
         shadows: _textShadows,
       ),
@@ -4647,9 +4620,7 @@ class DetailMetadataRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: isNeon
-            ? AppColorScheme.accent.withValues(alpha: 0.15)
-            : Colors.white.withValues(alpha: 0.15),
+        color: AppColorScheme.accent.withValues(alpha: 0.15),
         border: isNeon
             ? Border.fromBorderSide(
                 ThemeRegistry.active.borders.chipBorder.copyWith(
@@ -4662,9 +4633,7 @@ class DetailMetadataRow extends StatelessWidget {
       child: Text(
         label,
         style: theme.textTheme.labelSmall?.copyWith(
-          color: isNeon
-              ? AppColorScheme.onSurface
-              : Colors.white.withValues(alpha: 0.9),
+          color: AppColorScheme.onSurface,
           shadows: _textShadows,
         ),
       ),
@@ -4708,9 +4677,7 @@ class DetailMetadataRow extends StatelessWidget {
       child: Text(
         label,
         style: theme.textTheme.labelSmall?.copyWith(
-          color: isNeon
-              ? AppColorScheme.onSurface
-              : Colors.white.withValues(alpha: 0.8),
+          color: AppColorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -11215,12 +11182,12 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final iconColor = showHighlight
         ? AppColorScheme.onButtonFocused
         : (widget.isActive
-              ? (widget.activeColor ?? (isNeon ? neonAccent : Colors.white))
-              : (isNeon ? neonAccent : Colors.white));
+              ? (widget.activeColor ?? (isNeon ? neonAccent : AppColorScheme.onButtonNormal))
+              : (isNeon ? neonAccent : AppColorScheme.onButtonNormal));
     final showLabelInside = modern && (widget.isPrimary || !isMobile);
     final labelColor = (showHighlight && showLabelInside)
         ? AppColorScheme.onButtonFocused
-        : (isNeon ? neonAccent : Colors.white);
+        : (isNeon ? neonAccent : AppColorScheme.onButtonNormal);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -11404,7 +11371,7 @@ class _SectionHeader extends StatelessWidget {
     return Text(
       title,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        color: isNeon ? AppColorScheme.accent : Colors.white,
+        color: isNeon ? AppColorScheme.accent : AppColorScheme.onBackground,
         fontWeight: FontWeight.bold,
         shadows: _textShadows,
         fontSize: _isCompact(context) ? 17 : null,
@@ -11609,7 +11576,7 @@ class _CastPersonCardState extends State<_CastPersonCard> with FocusStateMixin {
                   Text(
                     widget.name,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isNeon ? AppColorScheme.accent : Colors.white,
+                      color: isNeon ? AppColorScheme.accent : AppColorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                       fontSize: widget.isMobile ? 11 : null,
                     ),
@@ -11623,7 +11590,7 @@ class _CastPersonCardState extends State<_CastPersonCard> with FocusStateMixin {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: isNeon
                             ? AppColorScheme.onSurface
-                            : Colors.white.withValues(alpha: 0.6),
+                            : AppColorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: widget.isMobile ? 10 : 11,
                       ),
                       textAlign: TextAlign.center,
@@ -12680,7 +12647,7 @@ class _OverviewText extends StatelessWidget {
           Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: isNeon
                 ? AppColorScheme.onSurface
-                : Colors.white.withValues(alpha: 0.9),
+                : AppColorScheme.onBackground,
             shadows: _textShadows,
             height: 1.5,
           ),
@@ -13187,11 +13154,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                               'E$epNum',
                               style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
-                                    color: isNeon
-                                        ? AppColorScheme.onSurface.withValues(
-                                            alpha: 0.85,
-                                          )
-                                        : Colors.white.withValues(alpha: 0.5),
+                                    color: AppColorScheme.onSurface.withValues(alpha: 0.85),
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
@@ -13203,7 +13166,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                                   ?.copyWith(
                                     color: isNeon
                                         ? AppColorScheme.accent
-                                        : Colors.white,
+                                        : AppColorScheme.onSurface,
                                     fontWeight: FontWeight.w600,
                                   ),
                               maxLines: 1,
@@ -13216,11 +13179,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                               runtimeText,
                               style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
-                                    color: isNeon
-                                        ? AppColorScheme.onSurface.withValues(
-                                            alpha: 0.8,
-                                          )
-                                        : Colors.white.withValues(alpha: 0.5),
+                                    color: AppColorScheme.onSurface.withValues(alpha: 0.8),
                                   ),
                             ),
                           ],
@@ -13399,7 +13358,7 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                                   ?.copyWith(
                                     color: isNeon
                                         ? AppColorScheme.accent
-                                        : Colors.white,
+                                        : AppColorScheme.onSurface,
                                     fontWeight: FontWeight.w600,
                                   ),
                               maxLines: 1,
@@ -13413,7 +13372,7 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                                     ?.copyWith(
                                       color: isNeon
                                           ? AppColorScheme.onSurface
-                                          : Colors.white.withValues(alpha: 0.7),
+                                          : AppColorScheme.onSurface.withValues(alpha: 0.7),
                                     ),
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
@@ -13656,7 +13615,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                     ?.copyWith(
                                       color: isNeon
                                           ? AppColorScheme.accent
-                                          : Colors.white,
+                                          : AppColorScheme.onSurface,
                                       fontWeight: FontWeight.w600,
                                     ),
                                 maxLines: 1,
@@ -13668,11 +13627,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                   runtimeText,
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
-                                        color: isNeon
-                                            ? AppColorScheme.onSurface.withValues(
-                                                alpha: 0.8,
-                                              )
-                                            : Colors.white.withValues(alpha: 0.5),
+                                        color: AppColorScheme.onSurface.withValues(alpha: 0.8),
                                       ),
                                 ),
                               ],
@@ -13682,9 +13637,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                   episode.overview!,
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
-                                        color: isNeon
-                                            ? AppColorScheme.onSurface
-                                            : Colors.white.withValues(alpha: 0.7),
+                                        color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                                       ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,

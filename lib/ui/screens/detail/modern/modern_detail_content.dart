@@ -3524,6 +3524,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     double maxWidth = 800,
     VoidCallback? onArrowRight,
   }) {
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: _landscape ? maxWidth : double.infinity,
@@ -3547,7 +3548,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         onCollapse: widget.onCollapseBiography,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           height: 1.45,
-          color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+          color: isNeon
+              ? AppColorScheme.onSurface.withValues(alpha: 0.85)
+              : AppColorScheme.onBackground.withValues(alpha: 0.85),
         ),
       ),
     );
@@ -4143,7 +4146,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _metadataRow(BuildContext context, AggregatedItem item, Map<String, dynamic>? selectedMediaSource) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final muted = AppColorScheme.onSurface.withValues(alpha: 0.75);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final muted = isNeon ? AppColorScheme.onSurface.withValues(alpha: 0.75) : AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
     final pieces = <Widget>[];
@@ -4272,9 +4276,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       child: Text(
         label,
         style: theme.textTheme.labelSmall?.copyWith(
-          color: isNeon
-              ? AppColorScheme.onSurface
-              : Colors.white.withValues(alpha: 0.8),
+          color: AppColorScheme.onSurface,
           shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
         ),
       ),
@@ -4316,7 +4318,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             style: theme.textTheme.bodySmall?.copyWith(
               color: isNeon
                   ? AppColorScheme.onSurface.withValues(alpha: 0.6)
-                  : Colors.white.withValues(alpha: 0.5),
+                  : AppColorScheme.onBackground.withValues(alpha: 0.6),
               shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
             ),
           ),
