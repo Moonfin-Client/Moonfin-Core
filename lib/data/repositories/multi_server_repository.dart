@@ -205,7 +205,7 @@ class MultiServerRepository {
       sessions,
       (session) async {
         final response = await session.client.itemsApi.getResumeItems(
-          includeItemTypes: ['Movie', 'Episode'],
+          mediaTypes: 'Video',
           limit: perServer,
           fields: _fields,
           enableImageTypes: _imageTypes,
@@ -234,7 +234,7 @@ class MultiServerRepository {
       sessions.map(
         (session) => _withTimeout(() async {
           final response = await session.client.itemsApi.getResumeItems(
-            includeItemTypes: ['Audio'],
+            mediaTypes: 'Audio',
             limit: perServer,
             fields: _fields,
             enableImageTypes: _imageTypes,

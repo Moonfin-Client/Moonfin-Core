@@ -562,15 +562,21 @@ class OfflineItemsApi implements ItemsApi {
   Future<Map<String, dynamic>> getResumeItems({
     String? parentId,
     List<String>? includeItemTypes,
+    String? mediaTypes,
     int? startIndex,
     int? limit,
     String? fields,
     String? enableImageTypes,
     int? imageTypeLimit,
   }) async {
-    final types = (includeItemTypes != null && includeItemTypes.isNotEmpty)
-        ? includeItemTypes
-        : const ['Movie', 'Episode', 'Video', 'MusicVideo', 'AudioBook'];
+    final List<String> types;
+    if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
+      types = includeItemTypes;
+    } else if (mediaTypes == 'Audio') {
+      types = const ['Audio', 'AudioBook'];
+    } else {
+      types = const ['Movie', 'Episode', 'Video', 'MusicVideo', 'AudioBook'];
+    }
     final resumable =
         _catalog.entries
             .where((e) => types.contains(e.type) && _isResumable(e))

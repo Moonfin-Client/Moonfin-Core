@@ -258,6 +258,7 @@ class EmbyItemsApi implements ItemsApi {
   Future<Map<String, dynamic>> getResumeItems({
     String? parentId,
     List<String>? includeItemTypes,
+    String? mediaTypes,
     int? startIndex,
     int? limit,
     String? fields,
@@ -271,6 +272,8 @@ class EmbyItemsApi implements ItemsApi {
         'ParentId': ?parentId,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
+        if (mediaTypes != null)
+          'MediaTypes': mediaTypes,
         'StartIndex': ?startIndex,
         'Limit': ?limit,
         'Fields': ?_knownFields(fields),

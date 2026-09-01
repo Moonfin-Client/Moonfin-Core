@@ -153,7 +153,7 @@ class RowDataSource {
 
   Future<HomeRow> loadResume(String serverId, {int? startIndex}) async {
     final response = await _getResumeItemsWithFallback(
-      includeItemTypes: ['Movie', 'Episode'],
+      mediaTypes: 'Video',
       startIndex: startIndex,
       limit: _defaultLimit,
     );
@@ -168,7 +168,7 @@ class RowDataSource {
 
   Future<HomeRow> loadResumeAudio(String serverId) async {
     final response = await _getResumeItemsWithFallback(
-      includeItemTypes: ['Audio'],
+      mediaTypes: 'Audio',
       limit: _defaultLimit,
     );
     return _buildRow(
@@ -201,7 +201,7 @@ class RowDataSource {
 
   Future<HomeRow> loadResumeRelaxed(String serverId) async {
     final response = await getResumeItemsRelaxed(
-      includeItemTypes: const ['Movie', 'Episode'],
+      mediaTypes: 'Video',
       limit: _defaultLimit,
     );
     return _buildRow(
@@ -944,7 +944,7 @@ class RowDataSource {
   Future<HomeRow> loadLibraryResume(String parentId, String serverId) async {
     final response = await _getResumeItemsWithFallback(
       parentId: parentId,
-      includeItemTypes: ['Video'],
+      mediaTypes: 'Video',
       limit: _defaultLimit,
     );
     return _buildRow(
@@ -1529,13 +1529,13 @@ class RowDataSource {
         }
       case HomeRowType.resume:
         response = await _getResumeItemsWithFallback(
-          includeItemTypes: const ['Movie', 'Episode'],
+          mediaTypes: 'Video',
           startIndex: currentOffset,
           limit: _defaultLimit,
         );
       case HomeRowType.resumeAudio:
         response = await _getResumeItemsWithFallback(
-          includeItemTypes: const ['Audio'],
+          mediaTypes: 'Audio',
           startIndex: currentOffset,
           limit: _defaultLimit,
         );
@@ -1645,6 +1645,7 @@ class RowDataSource {
   Future<Map<String, dynamic>> _getResumeItemsWithFallback({
     String? parentId,
     List<String>? includeItemTypes,
+    String? mediaTypes,
     int? startIndex,
     required int limit,
   }) async {
@@ -1653,6 +1654,7 @@ class RowDataSource {
           .getResumeItems(
             parentId: parentId,
             includeItemTypes: includeItemTypes,
+            mediaTypes: mediaTypes,
             startIndex: startIndex,
             limit: limit,
             fields: _fields,
@@ -1666,6 +1668,7 @@ class RowDataSource {
           .getResumeItems(
             parentId: parentId,
             includeItemTypes: includeItemTypes,
+            mediaTypes: mediaTypes,
             startIndex: startIndex,
             limit: limit,
             fields: _fallbackFields,
@@ -1680,6 +1683,7 @@ class RowDataSource {
       final response = await _client.itemsApi.getResumeItems(
         parentId: parentId,
         includeItemTypes: includeItemTypes,
+        mediaTypes: mediaTypes,
         startIndex: startIndex,
         limit: limit,
         fields: _fallbackFields,
@@ -1744,6 +1748,7 @@ class RowDataSource {
   Future<Map<String, dynamic>> getResumeItemsRelaxed({
     String? parentId,
     List<String>? includeItemTypes,
+    String? mediaTypes,
     required int limit,
   }) async {
     try {
@@ -1751,6 +1756,7 @@ class RowDataSource {
           .getResumeItems(
             parentId: parentId,
             includeItemTypes: includeItemTypes,
+            mediaTypes: mediaTypes,
             limit: limit,
             fields: _fields,
             enableImageTypes: _imageTypes,
@@ -1764,6 +1770,7 @@ class RowDataSource {
             .getResumeItems(
               parentId: parentId,
               includeItemTypes: includeItemTypes,
+              mediaTypes: mediaTypes,
               limit: limit,
               fields: _minimalFields,
               enableImageTypes: _imageTypes,

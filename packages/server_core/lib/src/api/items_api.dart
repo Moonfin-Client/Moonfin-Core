@@ -89,6 +89,7 @@ abstract class ItemsApi {
   Future<Map<String, dynamic>> getResumeItems({
     String? parentId,
     List<String>? includeItemTypes,
+    String? mediaTypes,
     int? startIndex,
     int? limit,
     String? fields,
