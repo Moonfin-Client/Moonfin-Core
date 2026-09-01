@@ -6,14 +6,21 @@ class _VideoPlaybackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
     return Scaffold(
       appBar: buildSettingsAppBar(
         context,
         Text(l10n.settingsVideoPlaybackPreferences),
       ),
-      body: ListView(
-        children: [
-          const _SectionHeader('Media Player Behavior'),
+      body: ListenableBuilder(
+        listenable: prefs,
+        builder: (context, _) {
+          final isTrickplayEnabled =
+              prefs.get(UserPreferences.trickPlayMode) !=
+              TrickplayMode.disabled;
+          return ListView(
+            children: [
+              const _SectionHeader('Media Player Behavior'),
           adaptiveListSection(
             children: [
               SwitchPreferenceTile(
@@ -139,7 +146,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
           _SectionHeader(l10n.trickPlay),
           adaptiveListSection(
             children: [
-              const TrickplaySettingsPreview(),
+              if (isTrickplayEnabled) const TrickplaySettingsPreview(),
               EnumPreferenceTile<TrickplayMode>(
                 preference: UserPreferences.trickPlayMode,
                 title: l10n.trickPlay,
@@ -152,30 +159,32 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   TrickplayMode.full => l10n.trickplayModeFull,
                 },
               ),
-              SliderPreferenceTile(
-                preference: UserPreferences.trickPlayPreviewScalePercent,
-                title: l10n.trickplayPreviewScale,
-                icon: Icons.photo_size_select_large_outlined,
-                min: 10,
-                max: 100,
-                divisions: 18,
-                labelOf: (v) => l10n.percentValue(v),
-              ),
-              SliderPreferenceTile(
-                preference: UserPreferences.trickPlayVerticalPositionPercent,
-                title: l10n.trickplayVerticalOffset,
-                icon: Icons.height,
-                min: 0,
-                max: 100,
-                divisions: 20,
-                labelOf: (v) => l10n.percentValue(v),
-              ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.trickPlayFollowScrubPosition,
-                title: l10n.trickplayFollowScrubPosition,
-                subtitle: l10n.trickplayFollowScrubPositionSubtitle,
-                icon: Icons.swipe,
-              ),
+              if (isTrickplayEnabled) ...[
+                SliderPreferenceTile(
+                  preference: UserPreferences.trickPlayPreviewScalePercent,
+                  title: l10n.trickplayPreviewScale,
+                  icon: Icons.photo_size_select_large_outlined,
+                  min: 10,
+                  max: 100,
+                  divisions: 18,
+                  labelOf: (v) => l10n.percentValue(v),
+                ),
+                SliderPreferenceTile(
+                  preference: UserPreferences.trickPlayVerticalPositionPercent,
+                  title: l10n.trickplayVerticalOffset,
+                  icon: Icons.height,
+                  min: 0,
+                  max: 100,
+                  divisions: 20,
+                  labelOf: (v) => l10n.percentValue(v),
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.trickPlayFollowScrubPosition,
+                  title: l10n.trickplayFollowScrubPosition,
+                  subtitle: l10n.trickplayFollowScrubPositionSubtitle,
+                  icon: Icons.swipe,
+                ),
+              ],
             ],
           ),
 
@@ -315,9 +324,11 @@ class _VideoPlaybackScreen extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
+      );
+    },
+  ),
+);
+}
 }
 
 class _ExternalPlayerAppPickerTile extends StatefulWidget {
