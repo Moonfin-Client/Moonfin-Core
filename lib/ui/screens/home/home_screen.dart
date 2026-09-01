@@ -45,6 +45,7 @@ import '../../widgets/quick_return_wrapper.dart';
 import '../../../util/app_exit.dart';
 import '../../../util/overview_text.dart';
 import '../../../util/global_shortcut_focus.dart';
+import '../../../util/home_refresh_helper.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -4473,8 +4474,11 @@ class _ContentRowsState extends State<_ContentRows>
           ),
           onLeftEdge: _onRowLeftEdge,
           onTap: (_, item) => _navigateToLibrary(context, item),
-          onLongPress: (_, item) =>
-              showContextMenu(context, item, onChanged: () => setState(() {})),
+          onLongPress: (_, item) => showContextMenu(
+            context,
+            item,
+            onChanged: () => triggerHomeAndImageCacheRefresh(),
+          ),
           itemBuilder: (ctx, item, idx, isFocused) {
             final collectionType =
                 (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
@@ -4497,12 +4501,12 @@ class _ContentRowsState extends State<_ContentRows>
                   onLongPress: () => showContextMenu(
                     context,
                     item,
-                    onChanged: () => setState(() {}),
+                    onChanged: () => triggerHomeAndImageCacheRefresh(),
                   ),
                   onSecondaryTap: () => showContextMenu(
                     context,
                     item,
-                    onChanged: () => setState(() {}),
+                    onChanged: () => triggerHomeAndImageCacheRefresh(),
                   ),
                 ),
               ),
@@ -4661,8 +4665,11 @@ class _ContentRowsState extends State<_ContentRows>
             widget.viewModel.loadMoreForRow(rowIndex);
           }
         },
-        onLongPress: (_, item) =>
-            showContextMenu(context, item, onChanged: () => setState(() {})),
+        onLongPress: (_, item) => showContextMenu(
+          context,
+          item,
+          onChanged: () => triggerHomeAndImageCacheRefresh(),
+        ),
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
           if (row.rowType == HomeRowType.libraryTiles) {
@@ -4925,7 +4932,7 @@ class _ContentRowsState extends State<_ContentRows>
                     onLongPress: () => showContextMenu(
                       context,
                       item,
-                      onChanged: () => setState(() {}),
+                      onChanged: () => triggerHomeAndImageCacheRefresh(),
                     ),
                     onTap: () {
                       if (isV2MobileTouch) {

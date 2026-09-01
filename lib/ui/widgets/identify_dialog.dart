@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -7,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/focus/dpad_keys.dart';
+import '../../util/home_refresh_helper.dart';
 import '../../util/platform_detection.dart';
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_button.dart';
@@ -522,6 +525,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
         result,
         replaceAllImages: replaceAllImages,
       );
+      unawaited(triggerHomeAndImageCacheRefresh(scheduleFollowUp: true));
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.adminRemoteMetadataApplied)),
