@@ -216,6 +216,9 @@ class CustomExternalListsService {
   }
 
   // --- Caching ---
+
+  static const cacheMaxAge = Duration(hours: 24);
+
   Future<File> cacheFile(HomeSectionConfig config) async {
     final dir = PlatformDetection.isAppleTV
         ? await getApplicationCacheDirectory()
@@ -234,16 +237,20 @@ class CustomExternalListsService {
     }
   }
 
+  /// [maxAge] is for callers that mean to go to the network when the row is
+  /// old. The fallbacks below leave it unset, since a stale row beats an empty
+  /// one when the server cant be reached.
   Future<List<ImdbExternalListItem>> loadCustomRowFromCache(
     HomeSectionConfig config, {
-    Duration maxAge = const Duration(hours: 24),
+    Duration? maxAge,
   }) async {
     try {
       final file = await cacheFile(config);
       if (file.existsSync()) {
         try {
           final lastModified = file.lastModifiedSync();
-          if (DateTime.now().difference(lastModified) > maxAge) {
+          if (maxAge != null &&
+              DateTime.now().difference(lastModified) > maxAge) {
             return [];
           }
         } catch (_) {}

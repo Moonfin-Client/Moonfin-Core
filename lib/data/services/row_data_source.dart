@@ -2033,7 +2033,10 @@ class RowDataSource {
           if (forceRefresh) {
             items = await customService.fetchCustomRow(config, forceRefresh: true);
           } else {
-            items = await customService.loadCustomRowFromCache(config);
+            items = await customService.loadCustomRowFromCache(
+              config,
+              maxAge: CustomExternalListsService.cacheMaxAge,
+            );
             if (items.isEmpty) {
               items = await customService.fetchCustomRow(config);
             }

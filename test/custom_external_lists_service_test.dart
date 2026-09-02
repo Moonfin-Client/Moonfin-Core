@@ -60,6 +60,75 @@ void main() {
     });
   });
 
+  group('CustomExternalLists cache age', () {
+    late CustomExternalListsService service;
+    late HomeSectionConfig config;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      service = CustomExternalListsService();
+      config = HomeSectionConfig.pluginDynamic(
+        serverId: 'custom',
+        pluginSection: 'custom_row_cache_age',
+        pluginDisplayText: 'Watchlist',
+        pluginAdditionalData: jsonEncode({
+          'source': 'letterboxd',
+          'type': 'watchlist',
+          'params': {'user': 'someone'},
+        }),
+        pluginSource: HomeSectionPluginSource.custom,
+        enabled: true,
+        order: 1,
+      );
+      await service.saveCustomRowToCache(config, [
+        ImdbExternalListItem(
+          imdbId: 'tt1',
+          tmdbId: '1',
+          title: 'Cached Film',
+          type: 'Movie',
+          backdropUrl: 'http://server/backdrop.jpg',
+        ),
+      ]);
+    });
+
+    Future<void> ageCacheBy(Duration age) async {
+      final file = await service.cacheFile(config);
+      file.setLastModifiedSync(DateTime.now().subtract(age));
+    }
+
+    test('a cache-first caller refetches once the row is a day old', () async {
+      await ageCacheBy(const Duration(hours: 30));
+
+      final items = await service.loadCustomRowFromCache(
+        config,
+        maxAge: CustomExternalListsService.cacheMaxAge,
+      );
+
+      expect(items, isEmpty);
+    });
+
+    test('a cache-first caller keeps a row that is still fresh', () async {
+      await ageCacheBy(const Duration(hours: 2));
+
+      final items = await service.loadCustomRowFromCache(
+        config,
+        maxAge: CustomExternalListsService.cacheMaxAge,
+      );
+
+      expect(items, hasLength(1));
+    });
+
+    test('an old row still answers when there is no server to ask', () async {
+      await ageCacheBy(const Duration(days: 5));
+
+      expect(await service.loadCustomRowFromCache(config), hasLength(1));
+      // No MediaServerClient is registered, which is the offline path.
+      expect(await service.fetchCustomRow(config), hasLength(1));
+    });
+  });
+
   group('CustomExternalLists sorting logic', () {
     late CustomExternalListsService service;
 
