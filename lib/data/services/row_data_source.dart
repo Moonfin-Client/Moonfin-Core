@@ -307,25 +307,31 @@ class RowDataSource {
       defaultLimit: _defaultLimit,
       maxLimit: _maxItems,
     );
-    List<String>? seriesType;
-    var recursive = false;
-    if (collectionType == 'tvshows') {
+    List<String>? includeItemTypes;
+    final normalizedType = collectionType?.toLowerCase();
+    if (normalizedType == 'tvshows' || normalizedType == 'shows') {
       final prefSeriesType = GetIt.instance<UserPreferences>().get(
         UserPreferences.recentlyReleasedSeriesType,
       );
-      seriesType = switch (prefSeriesType) {
+      includeItemTypes = switch (prefSeriesType) {
         RecentlyReleasedSeriesType.series => const ['Series'],
         RecentlyReleasedSeriesType.season => const ['Season'],
         RecentlyReleasedSeriesType.episode => const ['Episode'],
       };
-      // Seasons and episodes sit below the library rather than directly in it.
-      recursive = prefSeriesType != RecentlyReleasedSeriesType.series;
+    } else if (normalizedType == 'movies') {
+      includeItemTypes = const ['Movie'];
+    } else if (normalizedType == 'music') {
+      includeItemTypes = const ['MusicAlbum'];
+    } else if (normalizedType == 'books') {
+      includeItemTypes = const ['Book'];
+    } else if (normalizedType == 'audiobooks') {
+      includeItemTypes = const ['AudioBook', 'Audio'];
     }
     final response = await _getRecentlyReleasedItemsWithFallback(
       parentId: parentId,
       limit: fetchLimit,
-      includeItemTypes: seriesType,
-      recursive: recursive,
+      includeItemTypes: includeItemTypes,
+      recursive: true,
     );
     final items = normalizeLatestMediaItems(
       _parseItems(response, serverId),
