@@ -154,6 +154,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Tab Diperluas';
 
   @override

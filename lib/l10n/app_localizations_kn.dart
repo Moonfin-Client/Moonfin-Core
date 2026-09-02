@@ -154,6 +154,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get detailScreenStyleModern => 'ಮಾಡರ್ನ್';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'ವಿಸ್ತರಿಸಿದ ಟ್ಯಾಬ್‌ಗಳು';
 
   @override

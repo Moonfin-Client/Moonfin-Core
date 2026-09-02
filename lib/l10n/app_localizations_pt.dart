@@ -154,6 +154,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderno';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Abas Expandidas';
 
   @override

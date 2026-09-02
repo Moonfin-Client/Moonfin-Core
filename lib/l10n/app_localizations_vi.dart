@@ -154,6 +154,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get detailScreenStyleModern => 'Hiện đại';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Thẻ mở rộng';
 
   @override

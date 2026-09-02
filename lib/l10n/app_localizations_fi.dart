@@ -156,6 +156,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderni';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Laajennetut välilehdet';
 
   @override
@@ -273,14 +276,14 @@ class AppLocalizationsFi extends AppLocalizations {
       'Käytä oletusarvoisesti laitteesi syöttötapaa tekstin syöttämiseen';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'Ohjain';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'Ohjainlaitteen avulla liikkuminen';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'Annetaan liitetyn peliohjaimen siirtää kohdistusta ja valita kohteita';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -737,48 +740,47 @@ class AppLocalizationsFi extends AppLocalizations {
   String get readyWhenYouAre => 'Valmiina kun olet';
 
   @override
-  String get details => 'Yksityiskohdat';
+  String get details => 'Tekniset tiedot';
 
   @override
-  String get listeningRoom => 'Kuunteluhuone';
+  String get listeningRoom => 'Kuuntelutila';
 
   @override
-  String get bookmarksAndProgress => 'Kirjanmerkit ja edistyminen';
+  String get bookmarksAndProgress => 'Kirjanmerkit & Edistyminen';
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count otsikot, jotka on järjestetty luettavaksi ensimmäiseksi selaamiseksi.';
+    return '$count  otsikot on järjestetty niin, että niitä on helppo selata.';
   }
 
   @override
-  String get titles => 'Nimikkeet';
+  String get titles => 'Otsikot';
 
   @override
-  String get allTitles => 'Kaikki otsikot';
+  String get allTitles => 'Kaikki nimikkeet';
 
   @override
-  String get authors => 'Tekijät';
+  String get authors => 'Kirjoittaja';
 
   @override
-  String get browseByAuthor => 'Selaa tekijän mukaan';
+  String get browseByAuthor => 'Selaa kirjoittajien mukaan';
 
   @override
-  String get browseByGenre => 'Selaa genren mukaan';
+  String get browseByGenre => 'Selaa tyylilajin mukaan';
 
   @override
   String get discover => 'Tutustu';
 
   @override
   String get trendingTitlesOpenLibrary =>
-      'Nousussa olevat otsikot aiheittain alkaen Open Library.';
+      'Open Libraryn suosittuja teoksia aiheittain.';
 
   @override
-  String get noBookmarkedItems =>
-      'Ei vielä kirjanmerkkeihin merkittyjä kohteita';
+  String get noBookmarkedItems => 'Ei vielä merkittyjä kohteita';
 
   @override
   String get nothingMatchesSection =>
-      'Mikään ei vielä vastaa tätä osiota. Kokeile toista välilehteä tai palaa kirjaston synkronoinnin päätyttyä.';
+      'Tälle jaksolle ei ole vielä löydetty vastaavuutta. Kokeile toista välilehteä tai palaa takaisin, kun kirjaston synkronointi on valmis.';
 
   @override
   String get audiobooks => 'Äänikirjat';
@@ -795,13 +797,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get filters => 'Suodattimet';
 
   @override
-  String get readingStatus => 'Lukemisen tila';
+  String get readingStatus => 'Lukutilanne';
 
   @override
-  String get playedStatus => 'Pelin tila';
+  String get playedStatus => 'Pelitilanne';
 
   @override
-  String get readStatus => 'Lukea';
+  String get readStatus => 'Lue';
 
   @override
   String get watched => 'Katsotut';
@@ -1270,10 +1272,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get downloadSubtitles => 'Lataa tekstitykset';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'Etsitään tekstityksiä…';
 
   @override
-  String get downloadingSubtitle => 'Downloading subtitle…';
+  String get downloadingSubtitle => 'Lataa tekstitys…';
 
   @override
   String get selectedSubtitleInvalid => 'Valittu tekstitys on virheellinen.';
@@ -1340,7 +1342,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get deleteFiles => 'Poista tiedostot';
 
   @override
-  String get director => 'JOHTAJA';
+  String get director => 'OHJAAJA';
 
   @override
   String get starring => 'PÄÄOSASSA';
@@ -1449,10 +1451,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get perfectMatch => 'Täydellinen ottelu';
 
   @override
-  String get aiTranslated => 'AI Translated';
+  String get aiTranslated => 'Tekoälyn kääntämä';
 
   @override
-  String get machineTranslated => 'Machine Translated';
+  String get machineTranslated => 'Koneellisesti käännetty';
 
   @override
   String get hearingImpaired => 'SDH';
@@ -1464,7 +1466,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String channelsCount(int count) {
-    return '$count kan.';
+    return '$count ch';
   }
 
   @override
@@ -2473,7 +2475,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get autoCrop => 'Automaattinen rajaus';
 
   @override
-  String get stretch => 'Venyttää';
+  String get stretch => 'Venytä';
 
   @override
   String get refreshRateSwitching => 'Virkistystaajuuden vaihto';
@@ -2488,46 +2490,46 @@ class AppLocalizationsFi extends AppLocalizations {
   String get autoDetect => 'Automaattinen tunnistus';
 
   @override
-  String get scaleOnTv => 'Asteikko televisiossa';
+  String get scaleOnTv => 'Skaalaa televisiossa';
 
   @override
   String get scaleOnDevice => 'Skaalaa laitteessa';
 
   @override
-  String get trickPlay => 'Kelauksen esikatselu';
+  String get trickPlay => 'Trick Play';
 
   @override
   String get showPreviewThumbnailsWhenSeeking =>
       'Näytä esikatselupikkukuvat etsiessäsi';
 
   @override
-  String get trickplayDisplayStyleSingle => 'Single Thumbnail';
+  String get trickplayDisplayStyleSingle => 'Yksi pikkukuva';
 
   @override
-  String get trickplayDisplayStyleStrip => 'Filmstrip';
+  String get trickplayDisplayStyleStrip => 'Filmikaistale';
 
   @override
-  String get trickplayModeFull => 'Full Screen';
+  String get trickplayModeFull => 'Koko näyttö';
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Vedä liukusäädintä nähdäksesi esikatselun liu’uttamisesta';
 
   @override
-  String get trickplayPreviewScale => 'Preview Size';
+  String get trickplayPreviewScale => 'Esikatselukoko';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset => 'Etäisyys hakupalkista';
 
   @override
   String get trickplayFollowScrubPosition => 'Follow Scrub Position';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
-      'Preview slides along the seekbar as you scrub, instead of staying centered';
+      'Esikatsele hakupalkilla, kun liu’utat, sen sijaan että ne pysyisivät keskellä';
 
   @override
-  String get showDescriptionOnPause => 'Näytä kuvaus tauolla';
+  String get showDescriptionOnPause => 'Näytä kuvaus tauon aikana';
 
   @override
   String get dimVideoShowOverview =>
@@ -2782,7 +2784,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsAudioDtsHdPassthrough => 'DTS-HD MA -läpivienti';
 
   @override
-  String get settingsAudioPassthroughMode => 'Passthrough';
+  String get settingsAudioPassthroughMode => 'Läpivienti';
 
   @override
   String get settingsAudioPassthroughModeDescription =>
@@ -3965,7 +3967,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr-löytörivit';
 
   @override
-  String get yourWatchlist => 'Seurantalistat';
+  String get yourWatchlist => 'Seurantaluettelosi';
 
   @override
   String get resetRowsToDefaults => 'Palauta rivit oletusarvoihin';
@@ -4186,7 +4188,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seerrRequestedStatus => 'Pyydetty';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Ladataan';
 
   @override
   String seerrDownloadingSize(String done, String total) {
@@ -4226,7 +4228,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get requestMore4k => 'Pyydä lisää 4K-laadulla';
 
   @override
-  String get request => 'Pyytää';
+  String get request => 'Pyydä';
 
   @override
   String get request4k => 'Pyydä 4K';
@@ -4252,10 +4254,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get manageRequests => 'Hallitse pyyntöjä';
 
   @override
-  String get watchlist => 'Seurantaluettelo';
+  String get watchlist => 'Seuraa';
 
   @override
-  String get onWatchlist => 'Seurantaluettelossa';
+  String get onWatchlist => 'Seurannassa';
 
   @override
   String get approve => 'Hyväksyä';
@@ -4305,7 +4307,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Pyyntö $type';
+    return 'Pyydä $type';
   }
 
   @override
@@ -4317,7 +4319,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get submitRequest => 'Lähetä pyyntö';
 
   @override
-  String get allSeasons => 'Kaikki vuodenajat';
+  String get allSeasons => 'Kaikki kaudet';
 
   @override
   String get seerrSeriesContinuing =>
@@ -7973,7 +7975,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String adminActivityDateShort(int month, int day) {
-    return '$day.$month.';
+    return '$day/$month';
   }
 
   @override
@@ -8644,7 +8646,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get imageTypeBanner => 'Banneri';
 
   @override
-  String get playlistAddFailed => 'Lisääminen soittolistaan ​​epäonnistui';
+  String get playlistAddFailed => 'Lisääminen soittolistaan epäonnistui';
 
   @override
   String get playlistCreateFailed => 'Soittolistan luominen epäonnistui';
@@ -9441,7 +9443,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Piilotetaanko taustakuvat selattaessa?';
 
   @override
-  String get useDetailedSubHeadings => 'Käytä yksityiskohtaisia ​​alaotsikoita';
+  String get useDetailedSubHeadings => 'Käytä yksityiskohtaisia alaotsikoita';
 
   @override
   String get useDetailedSubHeadingsDescription =>
@@ -10812,10 +10814,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'IMDb:n parhaat englanninkieliset elokuvat';
 
   @override
-  String get addToWatchlist => 'Lisää seurantalistalle';
+  String get addToWatchlist => 'Lisää seurantaan';
 
   @override
-  String get removeFromWatchlist => 'Poista seurantalistalta';
+  String get removeFromWatchlist => 'Poista seurannasta';
 
   @override
   String get watchlistUpdateFailed => 'Seurantaluetteloa ei voitu päivittää';

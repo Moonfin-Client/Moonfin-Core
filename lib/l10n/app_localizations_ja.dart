@@ -153,6 +153,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailScreenStyleModern => 'モダン';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'タブの自動展開';
 
   @override

@@ -155,6 +155,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get detailScreenStyleModern => 'Moodne';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Laiendatud vahekaardid';
 
   @override

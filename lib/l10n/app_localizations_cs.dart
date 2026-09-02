@@ -155,6 +155,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderní';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Rozbalené karty';
 
   @override

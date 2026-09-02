@@ -154,6 +154,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get detailScreenStyleModern => 'মডার্ন';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'বিস্তৃত ট্যাব';
 
   @override

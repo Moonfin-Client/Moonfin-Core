@@ -484,6 +484,12 @@ abstract class AppLocalizations {
   /// **'Modern'**
   String get detailScreenStyleModern;
 
+  /// Detail screen style option: immersive full-screen layout with integrated sections
+  ///
+  /// In en, this message translates to:
+  /// **'Immersive'**
+  String get detailScreenStyleImmersive;
+
   /// Label for the detail screen expanded tabs setting
   ///
   /// In en, this message translates to:

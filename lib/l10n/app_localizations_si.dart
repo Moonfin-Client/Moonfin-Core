@@ -154,6 +154,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get detailScreenStyleModern => 'නවීන';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'විස්තීරණ ටැබ';
 
   @override

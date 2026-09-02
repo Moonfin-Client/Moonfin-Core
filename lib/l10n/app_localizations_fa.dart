@@ -154,6 +154,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get detailScreenStyleModern => 'مدرن';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'برگه‌های گسترده';
 
   @override

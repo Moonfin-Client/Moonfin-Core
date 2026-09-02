@@ -35,6 +35,8 @@ import '../../navigation/home_refresh_bus.dart';
 import '../../navigation/app_router.dart';
 import '../../navigation/playback_launcher.dart';
 import 'detail_buttons.dart';
+import 'immersive/immersive_detail_content.dart';
+import 'immersive/hero/immersive_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
@@ -279,6 +281,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropItemId;
+  final GlobalKey<ImmersiveDetailContentState> _immersiveContentKey =
+      GlobalKey<ImmersiveDetailContentState>();
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
       <String, String>{};
   FocusNode? _initialContentFocusNode;
@@ -338,14 +342,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   @override
   void didPopNext() {
     super.didPopNext();
-    final item = _viewModel.item;
-    if (item != null) {
-      _backgroundService.setBackground(item, context: BlurContext.details);
-      final nextUrl = _backgroundService.currentUrl;
-      // Keep the last good backdrop if the service has none to give (e.g. after
-      // returning from a child with no backdrop that cleared the shared service).
-      if (nextUrl != null && nextUrl != _backdropUrl.value) {
-        _backdropUrl.value = nextUrl;
+    final immersiveState = _immersiveContentKey.currentState;
+    if (immersiveState != null) {
+      _lastFocusedBackdropItemId = null;
+    }
+    final immersiveHandled =
+        immersiveState?.restoreBackdropAfterResume() ?? false;
+    if (!immersiveHandled) {
+      final item = _viewModel.item;
+      if (item != null) {
+        _backgroundService.setBackground(item, context: BlurContext.details);
+        final nextUrl = _backgroundService.currentUrl;
+        // Keep the last good backdrop if the service has none to give (e.g. after
+        // returning from a child with no backdrop that cleared the shared service).
+        if (nextUrl != null && nextUrl != _backdropUrl.value) {
+          _backdropUrl.value = nextUrl;
+        }
       }
     }
     // A pushed child screen (e.g. a similar item) clears the shared play-button
@@ -360,6 +372,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   @override
   void didPushNext() {
     super.didPushNext();
+    _focusedBackdropDebounce?.cancel();
     // This screen stays mounted under the pushed route, so dispose does not run.
     // Stop the theme so it does not keep playing over the screen on top; the
     // paired didPopNext resumes it on return.
@@ -619,48 +632,76 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           ],
         ),
       ),
-      ItemDetailState.ready =>
-        _prefs.get(UserPreferences.detailScreenStyle) ==
-                DetailScreenStyle.modern
-            ? ModernDetailContent(
-                viewModel: _viewModel,
-                prefs: _prefs,
-                backdropUrl: _backdropUrl,
-                selectedMediaSourceId: _selectedMediaSourceId,
-                initialFocusNode: _ensureInitialFocusNode(),
-                onSelectedMediaSourceChanged: (id) {
-                  setState(() => _selectedMediaSourceId = id);
-                  _viewModel.load(mediaSourceId: id);
-                },
-                onBackdropItemFocused: _onBackdropItemFocused,
-                autoPlay: widget.autoPlay,
-                onPlayFromChapter: (position) => unawaited(
-                  _playFromChapter(
-                    context,
-                    _viewModel.item!,
-                    position,
-                    _selectedMediaSourceId,
-                  ),
-                ),
-                onToggleNavbar: (show) => setState(() => _showNavbar = show),
-                actionsExpanded: _actionsExpanded,
-                onActionsExpandedChanged: (val) =>
-                    setState(() => _actionsExpanded = val),
-                onCollapseBiography: () => setState(() {}),
-              )
-            : _DetailContent(
-                viewModel: _viewModel,
-                prefs: _prefs,
-                backdropUrl: _backdropUrl,
-                selectedMediaSourceId: _selectedMediaSourceId,
-                initialFocusNode: _ensureInitialFocusNode(),
-                onSelectedMediaSourceChanged: (id) {
-                  setState(() => _selectedMediaSourceId = id);
-                  _viewModel.load(mediaSourceId: id);
-                },
-                onBackdropItemFocused: _onBackdropItemFocused,
-                autoPlay: widget.autoPlay,
-              ),
+      ItemDetailState.ready => switch (
+      _prefs.get(UserPreferences.detailScreenStyle)
+      ) {
+        DetailScreenStyle.classic => _DetailContent(
+          viewModel: _viewModel,
+          prefs: _prefs,
+          backdropUrl: _backdropUrl,
+          selectedMediaSourceId: _selectedMediaSourceId,
+          initialFocusNode: _ensureInitialFocusNode(),
+          onSelectedMediaSourceChanged: (id) {
+            setState(() => _selectedMediaSourceId = id);
+            _viewModel.load(mediaSourceId: id);
+          },
+          onBackdropItemFocused: _onBackdropItemFocused,
+          autoPlay: widget.autoPlay,
+        ),
+
+        DetailScreenStyle.modern => ModernDetailContent(
+          viewModel: _viewModel,
+          prefs: _prefs,
+          backdropUrl: _backdropUrl,
+          selectedMediaSourceId: _selectedMediaSourceId,
+          initialFocusNode: _ensureInitialFocusNode(),
+          onSelectedMediaSourceChanged: (id) {
+            setState(() => _selectedMediaSourceId = id);
+            _viewModel.load(mediaSourceId: id);
+          },
+          onBackdropItemFocused: _onBackdropItemFocused,
+          autoPlay: widget.autoPlay,
+          onPlayFromChapter: (position) => unawaited(
+            _playFromChapter(
+              context,
+              _viewModel.item!,
+              position,
+              _selectedMediaSourceId,
+            ),
+          ),
+          onToggleNavbar: (show) => setState(() => _showNavbar = show),
+          actionsExpanded: _actionsExpanded,
+          onActionsExpandedChanged: (val) =>
+              setState(() => _actionsExpanded = val),
+          onCollapseBiography: () => setState(() {}),
+        ),
+
+        DetailScreenStyle.immersive => ImmersiveDetailContent(
+          key: _immersiveContentKey,
+          viewModel: _viewModel,
+          prefs: _prefs,
+          backdropUrl: _backdropUrl,
+          selectedMediaSourceId: _selectedMediaSourceId,
+          initialFocusNode: _ensureInitialFocusNode(),
+          onSelectedMediaSourceChanged: (id) {
+            setState(() => _selectedMediaSourceId = id);
+            _viewModel.load(mediaSourceId: id);
+          },
+          onBackdropItemFocused: _onBackdropItemFocused,
+          autoPlay: widget.autoPlay,
+          onPlayFromChapter: (position) => unawaited(
+            _playFromChapter(
+              context,
+              _viewModel.item!,
+              position,
+              _selectedMediaSourceId,
+            ),
+          ),
+          actionsExpanded: _actionsExpanded,
+          onActionsExpandedChanged: (val) =>
+              setState(() => _actionsExpanded = val),
+        ),
+      },
     };
   }
 }
@@ -4759,6 +4800,10 @@ class DetailActionButtons extends StatefulWidget {
   /// secondary icon buttons. Defaults to the classic square layout.
   final bool modernStyle;
 
+  /// Renders the "immersive" detail style: a dedicated cinematic action layout
+  /// with Immersive-specific overflow, progress, and directional focus behavior.
+  final bool immersiveStyle;
+
   /// In modern style, render the primary Play as a full-width pill (portrait).
   /// When false the pill is content-width and sits inline with the secondary
   /// circular buttons (landscape).
@@ -4775,6 +4820,7 @@ class DetailActionButtons extends StatefulWidget {
   final ValueChanged<bool>? onActionsExpandedChanged;
 
   const DetailActionButtons({
+    super.key,
     required this.viewModel,
     this.itemId,
     this.selectedMediaSourceId,
@@ -4787,6 +4833,7 @@ class DetailActionButtons extends StatefulWidget {
     this.maxVisibleButtonsOverride,
     this.onArrowRightAtEnd,
     this.modernStyle = false,
+    this.immersiveStyle = false,
     this.fullWidthPrimary = false,
     this.rowMaxWidth,
     this.actionRowRightFocusNode,
@@ -5770,6 +5817,37 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return button;
   }
 
+  ImmersiveAction _toImmersiveAction(
+      DetailButton? detailButton,
+      _DetailActionButton button, {
+        FocusNode? focusNode,
+        VoidCallback? onFocused,
+        VoidCallback? onArrowUp,
+        VoidCallback? onArrowDown,
+        VoidCallback? onArrowLeft,
+        VoidCallback? onArrowRight,
+        double? progress,
+        String? trailingLabel,
+      }) {
+    return ImmersiveAction(
+      label: button.label,
+      icon: button.icon,
+      iconBuilder: button.iconBuilder,
+      onPressed: button.onPressed,
+      onLongPress: button.onLongPress,
+      onFocused: onFocused ?? button.onFocused,
+      onArrowUp: onArrowUp ?? button.onArrowUp,
+      onArrowDown: onArrowDown ?? button.onArrowDown,
+      onArrowLeft: onArrowLeft ?? button.onArrowLeft,
+      onArrowRight: onArrowRight ?? button.onArrowRight,
+      focusNode: focusNode ?? button.focusNode,
+      autofocus: button.autofocus,
+      isActive: button.isActive,
+      activeColor: button.activeColor,
+      progress: progress,
+    );
+  }
+
   bool _tryFocusSidebar() {
     if (GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition) !=
         NavbarPosition.left) {
@@ -5781,6 +5859,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return true;
     }
     return FocusScope.of(context).previousFocus();
+  }
+
+  bool focusImmersiveSecondaryActionAt(int index) {
+    final focusNode = _primaryFocusNode(index + 1);
+
+    if (!focusNode.canRequestFocus || focusNode.context == null) {
+      return false;
+    }
+
+    focusNode.requestFocus();
+    return true;
   }
 
   void _focusSidebar() {
@@ -6736,6 +6825,149 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           suppressAutoScrollToTop: widget.suppressAutoScrollToTop,
         );
       }).toList();
+    }
+
+    if (widget.immersiveStyle) {
+      final orderedSecondaryEntries =
+      <(DetailButton, _DetailActionButton)>[
+        for (final detailButton in detailButtonLayout.ordered(
+          DetailButton.values,
+              (button) => button.id,
+          prefs,
+        )) ...[
+          if (byButton[detailButton] case final _DetailActionButton button)
+            (detailButton, button),
+          if (cancelByButton[detailButton]
+          case final _DetailActionButton button)
+            (detailButton, button),
+        ],
+      ];
+
+      if (primaryAction is! _DetailActionButton) {
+        return const SizedBox.shrink();
+      }
+
+      final primaryButton = primaryAction;
+
+      final primaryFocusNode =
+          widget.tvPlayFocusNode ?? _primaryFocusNode(0);
+
+      final runtime = item.runtime;
+      final playbackPosition =
+          item.playbackPosition ?? Duration.zero;
+
+      double? playbackProgress;
+      String? remainingLabel;
+
+      if (runtime != null &&
+          runtime.inMilliseconds > 0 &&
+          playbackPosition.inMilliseconds > 0 &&
+          playbackPosition < runtime) {
+        playbackProgress =
+            (playbackPosition.inMilliseconds /
+                runtime.inMilliseconds)
+                .clamp(0.0, 1.0);
+
+        final remaining = runtime - playbackPosition;
+
+        final remainingMinutes =
+        (remaining.inSeconds / 60).ceil();
+
+        if (remainingMinutes >= 60) {
+          final hours = remainingMinutes ~/ 60;
+          final minutes = remainingMinutes % 60;
+
+          final formatted = minutes > 0
+              ? '${hours}h ${minutes}m'
+              : '${hours}h';
+
+          remainingLabel = l10n.timeRemaining(formatted);
+        } else if (remainingMinutes > 0) {
+          remainingLabel =
+              l10n.timeRemaining('${remainingMinutes}m');
+        }
+      }
+
+      final immersivePrimaryAction = _toImmersiveAction(
+        null,
+        primaryButton,
+        focusNode: primaryFocusNode,
+        progress: playbackProgress,
+        trailingLabel: remainingLabel,
+        onArrowUp:
+        NavigationLayout.focusNavbarNotifier.value != null ||
+            widget.upTarget != null
+            ? _focusUpTarget
+            : null,
+        onArrowDown: widget.downTarget != null
+            ? _focusDownTarget
+            : null,
+        onArrowLeft: _focusSidebar,
+        onArrowRight: orderedSecondaryEntries.isNotEmpty
+            ? () => _primaryFocusNode(1).requestFocus()
+            : (widget.onArrowRightAtEnd ?? () {}),
+      );
+
+      final secondaryActions =
+      orderedSecondaryEntries.asMap().entries.map((entry) {
+        final index = entry.key;
+
+        final detailButton = entry.value.$1;
+        final button = entry.value.$2;
+
+        final focusIndex = index + 1;
+
+        return _toImmersiveAction(
+          detailButton,
+          button,
+          focusNode: _primaryFocusNode(focusIndex),
+          onArrowUp:
+          NavigationLayout.focusNavbarNotifier.value != null ||
+              widget.upTarget != null
+              ? _focusUpTarget
+              : null,
+          onArrowDown: widget.downTarget != null
+              ? _focusDownTarget
+              : null,
+          onArrowLeft: index == 0
+              ? () => primaryFocusNode.requestFocus()
+              : () => _primaryFocusNode(
+            focusIndex - 1,
+          ).requestFocus(),
+          onArrowRight:
+          index == orderedSecondaryEntries.length - 1
+              ? (widget.onArrowRightAtEnd ?? () {})
+              : () => _primaryFocusNode(
+            focusIndex + 1,
+          ).requestFocus(),
+        );
+      }).toList();
+
+      final rowContent = ImmersiveActionButtons(
+        primaryAction: immersivePrimaryAction,
+        secondaryActions: secondaryActions,
+      );
+
+      final downloads = seerrItemDownloads(viewModel);
+
+      final withDownloads = downloads == null
+          ? rowContent
+          : Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          rowContent,
+          SeerrItemDownloadBars(
+            state: downloads,
+          ),
+        ],
+      );
+
+      return Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        child: withDownloads,
+      );
     }
 
     final compact =
@@ -7705,7 +7937,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
   }
 
-  void _play(
+  Future<void> _play(
     BuildContext context,
     AggregatedItem item, {
     bool resume = false,
@@ -7737,6 +7969,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     } finally {
       _playLaunchInFlight = false;
     }
+  }
+
+  Future<void> playItem(
+      BuildContext context,
+      AggregatedItem item, {
+        bool resume = false,
+      }) {
+    return _play(
+      context,
+      item,
+      resume: resume,
+    );
   }
 
   void _shuffle(BuildContext context, AggregatedItem item) async {

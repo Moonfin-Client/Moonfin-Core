@@ -154,6 +154,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get detailScreenStyleModern => 'Kisasa';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Vichupo Vilivyopanuliwa';
 
   @override

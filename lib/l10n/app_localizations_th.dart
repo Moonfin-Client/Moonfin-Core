@@ -155,6 +155,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get detailScreenStyleModern => 'โมเดิร์น';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'แท็บแบบขยาย';
 
   @override

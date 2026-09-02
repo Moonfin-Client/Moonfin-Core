@@ -153,6 +153,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get detailScreenStyleModern => '現代';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => '展開分頁';
 
   @override

@@ -153,6 +153,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailScreenStyleModern => '모던';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => '탭 자동 펼치기';
 
   @override

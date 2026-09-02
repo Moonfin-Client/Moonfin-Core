@@ -250,7 +250,8 @@ enum VisualThemeId {
 /// Stored per server and user.
 enum DetailScreenStyle {
   classic,
-  modern;
+  modern,
+  immersive;
 }
 
 /// Selectable algorithm source for similarity recommendation system.

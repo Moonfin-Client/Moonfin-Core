@@ -154,6 +154,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get detailScreenStyleModern => 'మోడర్న్';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'విస్తరించిన ట్యాబ్‌లు';
 
   @override

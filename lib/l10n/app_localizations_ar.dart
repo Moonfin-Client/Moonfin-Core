@@ -154,6 +154,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get detailScreenStyleModern => 'حديث';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'علامات تبويب موسّعة';
 
   @override

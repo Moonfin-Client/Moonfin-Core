@@ -47,7 +47,10 @@ class _DetailsScreenSettingsScreenState
                     labelOf: (v) => switch (v) {
                       DetailScreenStyle.classic =>
                         l10n.detailScreenStyleMoonfin,
-                      DetailScreenStyle.modern => l10n.detailScreenStyleModern,
+                      DetailScreenStyle.modern =>
+                        l10n.detailScreenStyleModern,
+                      DetailScreenStyle.immersive =>
+                        l10n.detailScreenStyleImmersive,
                     },
                   ),
                   EnumPreferenceTile<PersonalRatingStyle>(

@@ -154,6 +154,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderne';
 
   @override
+  String get detailScreenStyleImmersive => 'Immersive';
+
+  @override
   String get expandedTabs => 'Utvidede faner';
 
   @override

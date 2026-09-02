@@ -341,6 +341,9 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   SeerrMediaDetailState _state = const SeerrMediaDetailState();
   SeerrMediaDetailState get state => _state;
 
+  bool _relatedLoadComplete = false;
+  bool get relatedLoadComplete => _relatedLoadComplete;
+
   // Whether the server has a default 4K Radarr or Sonarr. These start true so
   // that until the fetch lands, or if it fails, 4K stays gated on permission
   // alone rather than disappearing.
@@ -348,11 +351,22 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   bool _series4kEnabled = true;
 
   Timer? _downloadPollTimer;
+  bool _isDisposed = false;
 
   SeerrMediaDetailViewModel(this._repo, this._prefs);
 
   @override
+  void notifyListeners() {
+    if (_isDisposed) {
+      return;
+    }
+
+    super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _isDisposed = true;
     _downloadPollTimer?.cancel();
     super.dispose();
   }
@@ -438,6 +452,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> load(String itemId, String mediaType, {String? title}) async {
+    _relatedLoadComplete = false;
+
     _state = const SeerrMediaDetailState(isLoading: true);
     notifyListeners();
 
@@ -549,8 +565,10 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         recommendations:
             futures[1].results.where((i) => !i.isBlacklisted).toList(),
       );
-      notifyListeners();
     } catch (_) {
+    } finally {
+      _relatedLoadComplete = true;
+      notifyListeners();
     }
   }
 
