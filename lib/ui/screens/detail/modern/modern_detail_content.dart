@@ -2549,12 +2549,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           child: HorizontalScrollSection(
             title: '',
             contentSpacing: 0,
-            builder: (context, controller) => DetailFeaturesRow(
-              items: items,
-              imageApi: _vm.imageApi,
-              prefs: widget.prefs,
-              scrollController: controller,
-              firstItemFocusNode: firstItemFocusNode,
+            // The row asks for 280 but its cards only paint 139, so hold it
+            // at 200 rather than reserve space nothing fills.
+            builder: (context, controller) => SizedBox(
+              height: 200,
+              child: DetailFeaturesRow(
+                items: items,
+                imageApi: _vm.imageApi,
+                prefs: widget.prefs,
+                scrollController: controller,
+                firstItemFocusNode: firstItemFocusNode,
+              ),
             ),
           ),
         );

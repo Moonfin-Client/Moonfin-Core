@@ -55,16 +55,17 @@ void main() {
     expect(chevrons(), findsOneWidget);
   });
 
-  testWidgets('on phone layout, chevrons are hidden and untitled sections have no header', (
-    tester,
-  ) async {
-    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
-    await pump(tester, title: '');
+  testWidgets(
+    'on phone layout, chevrons are hidden and untitled sections have no header',
+    (tester) async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+      await pump(tester, title: '');
 
-    expect(chevrons(), findsNothing);
-    expect(find.byType(Spacer), findsNothing);
-    expect(tester.getSize(find.byType(HorizontalScrollSection)).height, 80);
-  });
+      expect(chevrons(), findsNothing);
+      expect(find.byType(Spacer), findsNothing);
+      expect(tester.getSize(find.byType(HorizontalScrollSection)).height, 80);
+    },
+  );
 
   testWidgets('an untitled section with no controls has no header at all', (
     tester,
