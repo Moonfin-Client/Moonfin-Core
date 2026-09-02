@@ -4778,9 +4778,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     ),
                     if (item.mediaSources.length > 1) ...[
                       const SizedBox(width: 16),
-                      () {
-                        final versionName = selectedSource?['Name'] as String? ?? 'Default';
-                        return Container(
+                      // The logo keeps the width it needs, so a narrow window
+                      // shortens the version name instead of overflowing the row.
+                      Flexible(
+                        child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColorScheme.accent.withValues(alpha: 0.15),
@@ -4791,14 +4792,16 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             ),
                           ),
                           child: Text(
-                            versionName,
+                            selectedSource?['Name'] as String? ?? 'Default',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: textTheme.bodySmall?.copyWith(
                               color: AppColorScheme.accent,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      }(),
+                        ),
+                      ),
                     ],
                   ],
                 ),

@@ -226,40 +226,7 @@ class _UpNextCardState extends State<UpNextCard> {
                                           ?.copyWith(color: muted),
                                     ),
                                     const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        if (widget.progress > 0)
-                                          Expanded(
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  AppRadius.circular(2),
-                                              child: LinearProgressIndicator(
-                                                value: widget.progress
-                                                    .clamp(0.0, 1.0),
-                                                minHeight: 4,
-                                                backgroundColor: AppColorScheme
-                                                    .onSurface
-                                                    .withValues(alpha: 0.20),
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                      Color
-                                                    >(AppColorScheme.accent),
-                                              ),
-                                            ),
-                                          )
-                                        else
-                                          const Spacer(),
-                                        if (widget.remainingLabel != null) ...[
-                                          if (widget.progress > 0)
-                                            const SizedBox(width: 12),
-                                          Text(
-                                            widget.remainingLabel!,
-                                            style: textTheme.labelSmall
-                                                ?.copyWith(color: muted),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
+                                    _progressRow(textTheme, muted),
                                   ],
                                 ),
                               ),
@@ -283,37 +250,7 @@ class _UpNextCardState extends State<UpNextCard> {
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                        child: Row(
-                          children: [
-                            if (widget.progress > 0)
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: AppRadius.circular(2),
-                                  child: LinearProgressIndicator(
-                                    value: widget.progress.clamp(0.0, 1.0),
-                                    minHeight: 4,
-                                    backgroundColor: AppColorScheme.onSurface
-                                        .withValues(alpha: 0.20),
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColorScheme.accent,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            else
-                              const Spacer(),
-                            if (widget.remainingLabel != null) ...[
-                              if (widget.progress > 0)
-                                const SizedBox(width: 12),
-                              Text(
-                                widget.remainingLabel!,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: muted,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+                        child: _progressRow(textTheme, muted),
                       ),
                     ],
                   ],
@@ -325,6 +262,33 @@ class _UpNextCardState extends State<UpNextCard> {
       ),
     );
   }
+
+  Widget _progressRow(TextTheme textTheme, Color muted) => Row(
+    children: [
+      if (widget.progress > 0)
+        Expanded(
+          child: ClipRRect(
+            borderRadius: AppRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: widget.progress.clamp(0.0, 1.0),
+              minHeight: 4,
+              backgroundColor:
+                  AppColorScheme.onSurface.withValues(alpha: 0.20),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColorScheme.accent),
+            ),
+          ),
+        )
+      else
+        const Spacer(),
+      if (widget.remainingLabel != null) ...[
+        if (widget.progress > 0) const SizedBox(width: 12),
+        Text(
+          widget.remainingLabel!,
+          style: textTheme.labelSmall?.copyWith(color: muted),
+        ),
+      ],
+    ],
+  );
 
   Widget _thumbnail({bool isMinimal = false, bool isFullWidth = false}) {
     return SizedBox(
