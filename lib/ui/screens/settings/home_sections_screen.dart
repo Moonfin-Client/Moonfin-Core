@@ -147,7 +147,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             tasks.add(() async {
               try {
                 final response = await client.itemsApi.getResumeItems(
-                  includeItemTypes: const ['Audio'],
+                  mediaTypes: 'Audio',
                   limit: 1,
                 );
                 final items = response['Items'] as List? ?? [];

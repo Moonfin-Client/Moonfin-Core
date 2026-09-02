@@ -507,7 +507,7 @@ class MediaBrowseService {
     List<AggregatedItem> serverResume = const [];
     try {
       final resumeResponse = await client.itemsApi.getResumeItems(
-        includeItemTypes: const ['AudioBook', 'Audio'],
+        mediaTypes: 'Audio',
         limit: 40,
       );
       serverResume = _toItems(resumeResponse, serverId);
@@ -871,7 +871,7 @@ class MediaBrowseService {
       }
       try {
         final resumeResponse = await client.itemsApi.getResumeItems(
-          includeItemTypes: const ['Audio'],
+          mediaTypes: 'Audio',
           limit: 1,
         );
         final resume = _toItems(resumeResponse, serverId);

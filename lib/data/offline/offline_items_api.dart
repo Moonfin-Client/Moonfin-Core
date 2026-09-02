@@ -575,7 +575,7 @@ class OfflineItemsApi implements ItemsApi {
     } else if (mediaTypes == 'Audio') {
       types = const ['Audio', 'AudioBook'];
     } else {
-      types = const ['Movie', 'Episode', 'Video', 'MusicVideo', 'AudioBook'];
+      types = const ['Movie', 'Episode', 'Video', 'MusicVideo'];
     }
     final resumable =
         _catalog.entries

@@ -55,6 +55,28 @@ void main() {
     expect(request?.queryParameters['Limit'], 15);
   });
 
+  test('resume items send MediaTypes instead of a type list', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => 'user-1',
+    ).getResumeItems(mediaTypes: 'Video', limit: 12);
+
+    expect(request?.path, '/UserItems/Resume');
+    expect(request?.queryParameters['MediaTypes'], 'Video');
+    expect(request?.queryParameters.containsKey('IncludeItemTypes'), isFalse);
+  });
+
   test('next up pages through StartIndex', () async {
     RequestOptions? request;
     final dio = Dio()
