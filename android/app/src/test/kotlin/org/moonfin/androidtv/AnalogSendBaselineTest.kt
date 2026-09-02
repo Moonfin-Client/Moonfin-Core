@@ -15,8 +15,12 @@ class AnalogSendBaselineTest {
             return publish
         }
 
-        assertFalse(offer(52))
-        assertFalse(offer(103))
-        assertTrue(offer(154))
+        // Steps too small to publish on their own, so each one only counts
+        // because the baseline stayed where the core last saw it.
+        val step = ANALOG_MIN_SEND_DELTA / 2
+        assertFalse(offer(step))
+        // Exactly the delta is still not past it.
+        assertFalse(offer(step * 2))
+        assertTrue(offer(step * 3))
     }
 }

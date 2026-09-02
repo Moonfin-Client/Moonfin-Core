@@ -29,21 +29,17 @@ class NativeKeyStateTest {
 
     @Test
     fun `another remote button cannot cancel a physically held direction`() {
-        val left = 1 shl NativeMappingTables.RETRO_LEFT
-        var mask = NativeDigitalKeyState.transition(0, left, pressed = true)
-
-        val ignoreCanceledRelease = NativeKeyEventPolicy.shouldIgnoreCanceledRemoteDpadRelease(
-            action = KeyEvent.ACTION_UP,
-            canceled = true,
-            keyCode = KeyEvent.KEYCODE_DPAD_LEFT,
-            isRemote = true,
+        assertTrue(
+            NativeKeyEventPolicy.shouldIgnoreCanceledRemoteDpadRelease(
+                action = KeyEvent.ACTION_UP,
+                canceled = true,
+                keyCode = KeyEvent.KEYCODE_DPAD_LEFT,
+                isRemote = true,
+            ),
         )
-        if (!ignoreCanceledRelease) {
-            mask = NativeDigitalKeyState.transition(mask, left, pressed = false)
-        }
-        assertTrue(ignoreCanceledRelease)
-        assertEquals(left, mask)
 
+        // The release the user actually makes still comes through, so a
+        // direction cannot be left held.
         assertFalse(
             NativeKeyEventPolicy.shouldIgnoreCanceledRemoteDpadRelease(
                 action = KeyEvent.ACTION_UP,

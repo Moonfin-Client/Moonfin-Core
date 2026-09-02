@@ -373,14 +373,10 @@ internal class NativePadInput(
             SWALLOW -> return true
             else -> {
                 val bit = 1 shl index
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    releaseLostHolds(state, index, bit)
-                }
-                state.keyMask = NativeDigitalKeyState.transition(
-                    state.keyMask,
-                    bit,
-                    event.action == KeyEvent.ACTION_DOWN,
-                )
+                val pressed = event.action == KeyEvent.ACTION_DOWN
+                if (pressed) releaseLostHolds(state, index, bit)
+                state.keyMask =
+                    NativeDigitalKeyState.transition(state.keyMask, bit, pressed)
                 publishMask(state)
             }
         }
@@ -865,7 +861,7 @@ internal class NativePadInput(
     }
 
     private fun analogMoved(new: Int, old: Int): Boolean =
-        analogMovedPastSendBaseline(new, old, ANALOG_MIN_SEND_DELTA)
+        analogMovedPastSendBaseline(new, old)
 
     private fun updateComposedMask(state: PadState): Int =
         if (state === keyboardState) maskComposer.setKeyboard(state.sentMask)
@@ -987,10 +983,6 @@ internal class NativePadInput(
         // low hundreds), so a stored binding can never collide with one.
         const val SYNTHETIC_KEYCODE_L2 = NativeMappingTables.SYNTHETIC_KEYCODE_L2
         const val SYNTHETIC_KEYCODE_R2 = NativeMappingTables.SYNTHETIC_KEYCODE_R2
-        // Minimum accumulated change from the last value sent to the core.
-        // About 0.4% of the int16 analog range: enough to filter sensor noise
-        // without losing gradual movement.
-        const val ANALOG_MIN_SEND_DELTA = 128
         // Every 64th publishPadState call re-reads analogDescriptorPorts. Chosen
         // to be cheap even at Gauntlet's measured ~56 ANALOG queries/frame
         // (an unrelated, much hotter path) while still reacting within a
@@ -1040,12 +1032,14 @@ internal object NativePadStateGuard {
         state === keyboardState || registeredState === state
 }
 
+// Minimum accumulated change from the last value sent to the core. About 0.4%
+// of the int16 analog range: enough to filter sensor noise without losing
+// gradual movement. Top level so the test can name it.
+internal const val ANALOG_MIN_SEND_DELTA = 128
+
 /** True once movement has accumulated far enough from the last value sent. */
-internal fun analogMovedPastSendBaseline(
-    new: Int,
-    lastSent: Int,
-    minSendDelta: Int = 128,
-): Boolean = abs(new - lastSent) > minSendDelta
+internal fun analogMovedPastSendBaseline(new: Int, lastSent: Int): Boolean =
+    abs(new - lastSent) > ANALOG_MIN_SEND_DELTA
 
 internal object NativeKeyEventPolicy {
     fun shouldIgnoreRepeat(action: Int, repeatCount: Int): Boolean =
