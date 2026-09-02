@@ -13661,13 +13661,13 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                [
-                                  if (epNum != null)
-                                    AppLocalizations.of(
-                                      context,
-                                    ).episodeLabel(epNum),
-                                  episode.name,
-                                ].join(' - '),
+                                episode.name.isNotEmpty
+                                    ? episode.name
+                                    : (epNum != null
+                                        ? AppLocalizations.of(
+                                            context,
+                                          ).episodeLabel(epNum)
+                                        : ''),
                                 style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(
                                       color: isNeon
