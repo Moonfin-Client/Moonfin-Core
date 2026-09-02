@@ -36,7 +36,6 @@ static atomic_int g_frames_ready;
 // square or symmetric geometry.
 #define SRC_W 64
 #define SRC_H 48
-static _Atomic uint16_t g_mask;
 static atomic_int g_shutdowns;
 static atomic_int g_late_runs;
 static char g_last_message[128];
@@ -59,11 +58,13 @@ static int on_controller_count(void *user) {
   (void)user;
   return 1;
 }
+static atomic_int g_geometry_calls;
 static void on_geometry(void *user, int w, int h, double aspect) {
   (void)user;
   (void)w;
   (void)h;
   (void)aspect;
+  g_geometry_calls++;
 }
 
 static void on_message(void *user, const char *text) {
@@ -110,6 +111,16 @@ static void write_rom(const char *path, const char *contents) {
 // wall-clock pacing.
 // ---------------------------------------------------------------------------
 
+// Observes every port, discarding the result, so an edge deliberately left
+// unread by one section cannot bleed into the next. Under the delivery
+// contract an unacknowledged bit survives polls on purpose - that is the whole
+// point - so sections that peek with lh_test_read_input rather than reading
+// like a core have to hand the latch back before the next one starts.
+// Isolation only; no assertion here relies on it.
+static void drain_latch(lh_host *host) {
+  for (int p = 0; p < 4; p++) (void)lh_test_observe_input(host, p);
+}
+
 static void test_input_latch(void) {
   printf("input latch:\n");
   lh_callbacks cb;
@@ -123,17 +134,17 @@ static void test_input_latch(void) {
   lh_set_input(host, 0, 0x0001);
   lh_set_input(host, 0, 0x0000);
   lh_test_poll_input(host);
-  CHECK(lh_test_read_input(host, 0) == 0x0001,
+  CHECK(lh_test_observe_input(host, 0) == 0x0001,
         "a press+release inside one poll window is observed on the next poll");
   lh_test_poll_input(host);
-  CHECK(lh_test_read_input(host, 0) == 0x0000,
+  CHECK(lh_test_observe_input(host, 0) == 0x0000,
         "and is gone by the poll after that");
 
   // A bit held continuously stays set in every frame it's held, not just the
   // first one after it went down.
   lh_set_input(host, 0, 0x0002);
   lh_test_poll_input(host);
-  CHECK(lh_test_read_input(host, 0) == 0x0002, "held bit observed frame 1");
+  CHECK(lh_test_observe_input(host, 0) == 0x0002, "held bit observed frame 1");
   lh_test_poll_input(host);
   CHECK(lh_test_read_input(host, 0) == 0x0002, "held bit still observed frame 2");
   lh_test_poll_input(host);
@@ -157,16 +168,18 @@ static void test_input_latch(void) {
   lh_set_input(host, 0, 0x0000);
   lh_test_poll_input(host);
 
+  drain_latch(host);
   // Clearing with no poll between the press and the release still yields
   // exactly one observation - this is an OR-latch, not "last write wins".
   lh_set_input(host, 0, 0x0004);
   lh_set_input(host, 0, 0x0000);
   lh_test_poll_input(host);
-  CHECK(lh_test_read_input(host, 0) == 0x0004,
+  CHECK(lh_test_observe_input(host, 0) == 0x0004,
         "clearing without an intervening poll still yields one observation");
   lh_test_poll_input(host);
-  CHECK(lh_test_read_input(host, 0) == 0x0000, "and is gone on the poll after that");
+  CHECK(lh_test_observe_input(host, 0) == 0x0000, "and is gone on the poll after that");
 
+  drain_latch(host);
   // Pausing suspends polling, so without lh_resume dropping the latch a button
   // pressed while paused would fire on the first frame after resuming -- the
   // reported bug: a button tested in the controller panel peppering in game.
@@ -189,6 +202,7 @@ static void test_input_latch(void) {
   lh_set_input(host, 0, 0x0000);
   lh_test_poll_input(host);
 
+  drain_latch(host);
   // Ports latch independently.
   lh_set_input(host, 0, 0x0010);
   lh_set_input(host, 1, 0x0020);
@@ -305,6 +319,74 @@ static void test_analog_passthrough(void) {
 // input_state_cb queries itself and reports every result through SET_MESSAGE
 // (see probe_analog in stub_core.c).
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// A core is free to re-send SET_GEOMETRY every frame with values it has
+// already reported, and mupen64plus-next does exactly that. notify_geometry
+// used to forward each one, so geometry_changed fired ~60x/second for the life
+// of a session. On Android every call crosses JNI, posts a Runnable to the
+// main thread and ships a platform-channel message to Dart, so the cost is
+// real. The host now reports only actual changes.
+// ---------------------------------------------------------------------------
+
+static void test_geometry_reported_once(const char *core_path,
+                                        const char *rom_path,
+                                        const char *work_dir) {
+  printf("unchanged geometry is reported once:\n");
+  const char *keys[] = {"stub_repeat_geometry"};
+  const char *vals[] = {"on"};
+  g_geometry_calls = 0;
+  g_frames_ready = 0;
+
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  lh_av_info av;
+  int rc = lh_load(host, core_path, rom_path, work_dir, work_dir,
+                   "repeatgeometry", keys, vals, 1, &av);
+  CHECK(rc == 0, "core loads with the repeat-geometry variable set");
+  if (rc != 0) {
+    lh_destroy(host);
+    return;
+  }
+
+  lh_start(host);
+  msleep(300);
+
+  // Without enough frames the call count below would pass vacuously.
+  int frames = g_frames_ready;
+  CHECK(frames > 4, "several frames ran");
+  // The core re-sent identical geometry on every one of those frames. Exactly
+  // one report is expected: load_content seeds h->av without notifying, so the
+  // core's first SET_GEOMETRY is the platform's first word on the subject and
+  // has to go through.
+  int calls = g_geometry_calls;
+  if (calls != 1) {
+    printf("  (geometry_changed fired %d times across %d frames)\n", calls,
+           frames);
+  }
+  CHECK(calls == 1, "geometry_changed fires once, not once per frame");
+
+  // An internal restart rebuilds the core without re-entering lh_load, so the
+  // core's first SET_GEOMETRY afterwards is the only word the platform gets on
+  // the new render size - even when it names the same dimensions as before.
+  // Suppressing it as a duplicate would strand the presentation surface at the
+  // old size, so load_content clears the record and this report must arrive.
+  g_geometry_calls = 0;
+  g_frames_ready = 0;
+  // lh_restart runs as a job on the emulation thread, so the host stays
+  // started across it.
+  CHECK(lh_restart(host) == 0, "core restarts");
+  msleep(300);
+  lh_stop(host);
+
+  CHECK(g_frames_ready > 4, "several frames ran after the restart");
+  calls = g_geometry_calls;
+  if (calls != 1) {
+    printf("  (geometry_changed fired %d times after the restart)\n", calls);
+  }
+  CHECK(calls == 1, "restart re-reports geometry it had already sent");
+
+  lh_destroy(host);
+}
 
 static void test_analog_via_core(const char *core_path, const char *rom_path,
                                  const char *work_dir) {
@@ -734,8 +816,10 @@ static void test_format(const char *core_path, const char *rom_path,
 
   if (fmt == LH_FORMAT_RGBA8888) {
     // stub_speed, stub_pattern, stub_rotation, stub_format, stub_huge_frame,
-    // stub_bad_pitch, stub_vfs_dir_check, stub_analog_check.
-    CHECK(lh_option_count(host) == 8, "eight core options");
+    // stub_bad_pitch, stub_vfs_dir_check, stub_analog_check,
+    // stub_repeat_geometry, stub_unserved, stub_input_thread, stub_no_poll,
+    // stub_waits_report.
+    CHECK(lh_option_count(host) == 13, "thirteen core options");
     lh_option opt;
     int opt_rc = lh_get_option(host, 0, &opt);
     CHECK(opt_rc == 0 && strcmp(opt.id, "stub_speed") == 0, "option id");
@@ -763,7 +847,7 @@ static void test_format(const char *core_path, const char *rom_path,
     uint8_t blob_a[64], blob_b[64], blob_c[64];
     CHECK(size > 0, "serialize size");
     CHECK(lh_serialize(host, blob_a, size) == 0, "serialize after restart");
-    CHECK(lh_option_count(host) == 8, "restart replaces option definitions");
+    CHECK(lh_option_count(host) == 13, "restart replaces option definitions");
     lh_get_option(host, 0, &opt);
     CHECK(strcmp(opt.current, "fast") == 0, "restart retains option value");
     int32_t restart_marker;
@@ -1391,6 +1475,292 @@ int main(int argc, char **argv) {
   snprintf(rom_path, sizeof(rom_path), "%s/dummy.rom", work_dir);
   write_rom(rom_path, "stub-rom");
 
+  // bug-175. mupen64plus-next asks for this in retro_set_environment, stores
+  // it in a variable initialised to NULL, and - whenever its threaded renderer
+  // is enabled - calls it with no null check from retro_unload_game,
+  // retro_serialize and retro_unserialize. This host used to fall through to
+  // the default false and never touch the out-param, so the core jumped to
+  // address 0 a few seconds into a save-state load on the Shield. The contract
+  // is that the pointer is written and callable, not merely that we say no
+  // politely.
+  {
+    printf("GET_CLEAR_ALL_THREAD_WAITS_CB:\n");
+    lh_host *tw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    g_last_message[0] = '\0';
+    lh_av_info av;
+    const char *keys[] = {"stub_waits_report"};
+    const char *vals[] = {"on"};
+    CHECK(lh_load(tw, core_path, rom_path, work_dir, work_dir, "waits", keys,
+                  vals, 1, &av) == 0,
+          "a core that calls the thread-waits callback still loads");
+    lh_start(tw);
+    msleep(120);
+    lh_stop(tw);
+    // waitscb: 0 = written as NULL, 1 = never written (still the stub's own
+    // marker), 2 = the host wrote its own callback.
+    CHECK(strstr(g_last_message, "waitscb=2") != NULL,
+          "the host writes a callback of its own into the out-param");
+    CHECK(strstr(g_last_message, "waitscb=1") == NULL,
+          "the out-param is not left untouched");
+    CHECK(strstr(g_last_message, "waitsrc=1") != NULL,
+          "and the environment call reports success");
+    CHECK(strstr(g_last_message, "waitscalls=2") != NULL,
+          "the core completes both the blocking and the resuming call");
+    CHECK(strstr(g_last_message, "waitsok=1") != NULL,
+          "and the callback returns true both times");
+    lh_destroy(tw);
+  }
+
+  // The other half of bug-175: an unserved command must be visible, not
+  // silent. The diagnostic itself lands on stderr or in logcat, neither of
+  // which this harness reads, so what is asserted here is the record behind
+  // it - one entry per distinct command, however many times it is asked.
+  {
+    printf("unhandled environment commands are recorded once each:\n");
+    lh_host *ue = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    g_last_message[0] = '\0';
+    const char *keys[] = {"stub_unserved"};
+    const char *vals[] = {"on"};
+    lh_av_info av;
+    CHECK(lh_load(ue, core_path, rom_path, work_dir, work_dir, "unserved",
+                  keys, vals, 1, &av) == 0,
+          "a core probing unserved commands still loads");
+    CHECK(strstr(g_last_message, "false=3") != NULL,
+          "every unserved command answers false");
+    CHECK(lh_test_unhandled_env_count(ue) == 2,
+          "three calls across two commands record two entries, not three");
+    lh_destroy(ue);
+  }
+
+  // bug-177, the delivery contract. Atomics stopped the frame being published
+  // unsafely, but they never guaranteed anyone READ it: latch_input recomputes
+  // the frame every poll, so a press nothing looked at was erased by the next
+  // one. These assertions are the contract - a transient press survives polls
+  // until it is observed, is then delivered EXACTLY once, and cannot wedge a
+  // button on if the core never reads that id. Deliberately driven through the
+  // test hooks rather than a running core, so none of it depends on timing.
+  {
+    printf("a transient press is delivered exactly once:\n");
+    lh_host *ed = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const uint16_t start_bit = 1u << 3;  // RETRO_DEVICE_ID_JOYPAD_START
+
+    // A press whose down and up both land between polls - the Start pulse.
+    lh_set_input(ed, 0, start_bit);
+    lh_set_input(ed, 0, 0);
+
+    lh_test_poll_input(ed);
+    CHECK((lh_test_read_input(ed, 0) & start_bit) != 0,
+          "the press reaches the first polled frame");
+
+    // The regression: without an acknowledgment this second poll erased it.
+    lh_test_poll_input(ed);
+    CHECK((lh_test_read_input(ed, 0) & start_bit) != 0,
+          "and survives a further poll while nothing has read it");
+
+    CHECK((lh_test_observe_input(ed, 0) & start_bit) != 0,
+          "a read observes it");
+    lh_test_poll_input(ed);
+    CHECK((lh_test_read_input(ed, 0) & start_bit) == 0,
+          "and having been observed once, it is gone - not repeated");
+    lh_destroy(ed);
+  }
+
+  // bug-177, the actual fault. libretro REQUIRES a core to poll ("During
+  // retro_run(), the retro_input_poll_t callback must be called at least
+  // once", libretro.h), but mupen64plus-next does not always honour it: with
+  // its threaded renderer enabled nothing called poll_cb at all. latch_input
+  // is the only writer of input_frame, so such a core received NO input
+  // whatsoever. Device evidence is the poll heartbeat in
+  // input_poll_cb staying silent for an entire session while presses were
+  // provably reaching lh_set_input - and that heartbeat alone; the edge trace
+  // captured at the same time was itself broken and proves nothing.
+  //
+  // The assertion is on what the CORE observed, not on the host's own frame:
+  // the stub reads RETRO_DEVICE_ID_JOYPAD_MASK through input_state_cb and
+  // paints it into the green channel, so a green byte carrying the bit is
+  // proof the core saw it. Peeking input_frame instead would pass even if
+  // input_state_cb had returned zero every time.
+  {
+    printf("input reaches a core that never calls input_poll:\n");
+    lh_host *np = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_av_info av;
+    const char *keys[] = {"stub_no_poll"};
+    const char *vals[] = {"on"};
+    CHECK(lh_load(np, core_path, rom_path, work_dir, work_dir, "nopoll", keys,
+                  vals, 1, &av) == 0,
+          "a core that never polls still loads");
+    lh_start(np);
+    msleep(80);
+    lh_set_input(np, 0, 1u << 3);  // Start, held
+    msleep(200);                   // several frames
+
+    const void *data = NULL;
+    int w = 0, hh = 0, stride = 0;
+    int got = lh_get_frame(np, &data, &w, &hh, &stride);
+    CHECK(got == 1, "the never-polling core still produces frames");
+    if (got) {
+      const uint8_t *px = (const uint8_t *)data;
+      CHECK(px[1] == (uint8_t)(1u << 3),
+            "the core observed the button through input_state_cb");
+    }
+    lh_stop(np);
+    lh_destroy(np);
+  }
+
+  // A compliant core polls inside retro_run, so with the run loop latching too
+  // there are two latches per frame. Only one may advance the expiry clock:
+  // aging on both would halve LH_UNACKED_MAX_POLLS for exactly the cores that
+  // honour the API. Raised in review of the run-loop latch.
+  {
+    printf("a core polling on top of the run loop does not shorten expiry:\n");
+    lh_host *dp = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const uint16_t start_bit = 1u << 3;
+    lh_set_input(dp, 0, start_bit);
+    lh_set_input(dp, 0, 0);
+
+    int held = 0;
+    for (int i = 0; i < 12; i++) {
+      lh_test_poll_input(dp);       // the frontend frame
+      lh_test_core_poll_input(dp);  // the core polling within it
+      if (lh_test_read_input(dp, 0) & start_bit) held++;
+    }
+    // Same window as the frontend-only case: the core's extra latch must not
+    // have consumed half of it.
+    CHECK(held > 2 && held <= 5,
+          "the expiry window is counted in frames, not in latches");
+    lh_destroy(dp);
+  }
+
+  // Acknowledgment scope. A core that queries ids one at a time must not have
+  // one button's read deliver another's edge: if querying B acknowledged Start,
+  // a poll landing before Start was queried would drop it and the press would
+  // be gone. Only a MASK query, which hands over every bit at once, may
+  // acknowledge the lot.
+  {
+    printf("one button's query does not acknowledge another's:\n");
+    lh_host *sc = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const unsigned id_b = 0;      // RETRO_DEVICE_ID_JOYPAD_B
+    const unsigned id_start = 3;  // RETRO_DEVICE_ID_JOYPAD_START
+
+    lh_set_input(sc, 0, (uint16_t)((1u << id_b) | (1u << id_start)));
+    lh_set_input(sc, 0, 0);
+    lh_test_poll_input(sc);
+
+    CHECK(lh_test_observe_input_id(sc, 0, id_b) == 1,
+          "querying B delivers B");
+    // The interleaving that loses presses: a poll between the two queries.
+    lh_test_poll_input(sc);
+    CHECK(lh_test_observe_input_id(sc, 0, id_start) == 1,
+          "and Start still arrives, having never been asked for until now");
+    lh_destroy(sc);
+
+    // The MASK query is the one caller that legitimately takes everything.
+    lh_host *mk = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(mk, 0, (uint16_t)((1u << id_b) | (1u << id_start)));
+    lh_set_input(mk, 0, 0);
+    lh_test_poll_input(mk);
+    CHECK(lh_test_observe_input(mk, 0) ==
+              (uint16_t)((1u << id_b) | (1u << id_start)),
+          "a mask query delivers every pressed bit at once");
+    lh_test_poll_input(mk);
+    CHECK(lh_test_observe_input(mk, 0) == 0,
+          "and having delivered them all, acknowledges them all");
+    lh_destroy(mk);
+  }
+
+  // The case the first contract MISSED, and the one that matters in the app:
+  // the Start pulse is ~34ms, so a poll usually lands while the bit is still
+  // HELD rather than after it was released. The original rule only tracked
+  // bits absent from input_level, so a press caught mid-hold never entered the
+  // unacked set at all and got the old one-frame treatment - published once,
+  // erased by the next poll, gone if nothing read that exact frame.
+  {
+    printf("a press caught while still held is still delivered:\n");
+    lh_host *mh = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const unsigned id_start = 3;
+
+    lh_set_input(mh, 0, (uint16_t)(1u << id_start));  // press, still held
+    lh_test_poll_input(mh);                            // poll inside the hold
+    // Nothing reads here: this is the interleaving that loses the press.
+    lh_set_input(mh, 0, 0);                            // release
+    lh_test_poll_input(mh);
+    CHECK(lh_test_observe_input_id(mh, 0, id_start) == 1,
+          "a press held across one poll survives to be read after release");
+    lh_destroy(mh);
+  }
+
+  // The bound that stops the contract becoming a stuck button.
+  {
+    printf("an unread press expires instead of wedging on:\n");
+    lh_host *ex = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const uint16_t start_bit = 1u << 3;
+    lh_set_input(ex, 0, start_bit);
+    lh_set_input(ex, 0, 0);
+    int held = 0;
+    for (int i = 0; i < 12; i++) {
+      lh_test_poll_input(ex);
+      if (lh_test_read_input(ex, 0) & start_bit) held++;
+    }
+    CHECK(held > 0 && held <= 5,
+          "an unobserved press is held for a bounded number of polls, not forever");
+    lh_destroy(ex);
+  }
+
+  // A held button must not be touched by any of this: it lives in input_level,
+  // never enters the unacked set, and so is reported every poll, read or not.
+  {
+    printf("a held button is unaffected by the edge contract:\n");
+    lh_host *hb = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const uint16_t a_bit = 1u << 8;  // RETRO_DEVICE_ID_JOYPAD_A
+    lh_set_input(hb, 0, a_bit);
+    int seen = 0;
+    for (int i = 0; i < 6; i++) {
+      lh_test_poll_input(hb);
+      if (lh_test_observe_input(hb, 0) & a_bit) seen++;
+    }
+    CHECK(seen == 6, "a held button is reported on every poll despite being read");
+    lh_set_input(hb, 0, 0);
+    lh_test_poll_input(hb);
+    CHECK((lh_test_observe_input(hb, 0) & a_bit) == 0, "and clears on release");
+    lh_destroy(hb);
+  }
+
+  // bug-177. latch_input publishes the polled frame into plain, non-atomic
+  // arrays and documents that polling and reading share the emulation thread.
+  // mupen64plus-next with ThreadedRenderer breaks that, and the symptom is
+  // that a synthesised two-frame Start pulse vanishes while held buttons are
+  // fine. The host cannot stop a core doing this, so it detects and reports
+  // it instead of leaving the hazard silent.
+  {
+    printf("cross-thread input reads are detected:\n");
+    lh_host *nt = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_av_info av;
+    const char *okeys[] = {"stub_input_thread"};
+    const char *ovals[] = {"off"};
+    CHECK(lh_load(nt, core_path, rom_path, work_dir, work_dir, "samethread",
+                  okeys, ovals, 1, &av) == 0,
+          "core loads with same-thread input");
+    lh_start(nt);
+    msleep(150);
+    lh_stop(nt);
+    CHECK(lh_test_input_thread_mismatch(nt) == 0,
+          "a core reading input on the polling thread raises nothing");
+    lh_destroy(nt);
+
+    lh_host *ot = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const char *keys[] = {"stub_input_thread"};
+    const char *vals[] = {"on"};
+    CHECK(lh_load(ot, core_path, rom_path, work_dir, work_dir, "offthread",
+                  keys, vals, 1, &av) == 0,
+          "core loads with off-thread input");
+    lh_start(ot);
+    msleep(150);
+    lh_stop(ot);
+    CHECK(lh_test_input_thread_mismatch(ot) > 0,
+          "a core reading input off the polling thread is detected");
+    lh_destroy(ot);
+  }
+
   // A stick left deflected when one game exits must not still be deflected for
   // the first frames of the next: the platform's session reset is mask-only and
   // never clears these words, so lh_load has to.
@@ -1483,6 +1853,8 @@ int main(int argc, char **argv) {
   test_option_snapshot_survives_invalidation(core_path, rom_path, work_dir);
 
   test_option_value_outlives_set_option(core_path, rom_path, work_dir);
+
+  test_geometry_reported_once(core_path, rom_path, work_dir);
 
   test_rejects_bad_frame(core_path, rom_path, work_dir, "stub_huge_frame",
                         "hugeframegame", "oversized geometry frame rejected");

@@ -22,6 +22,13 @@ endif()
 set(LH_DEBUG_OPT "$<$<AND:$<CONFIG:Debug>,$<NOT:$<C_COMPILER_ID:MSVC>>>:-O2>")
 target_compile_options(libretro_host PRIVATE ${LH_DEBUG_OPT})
 
+# Warnings were not enabled here, so "warning-free" meant nothing: two unused
+# symbols sat in the tree unnoticed. On by default; not -Werror, since the
+# five platform builds that consume this file have not been swept yet.
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  add_compile_options(-Wall -Wextra)
+endif()
+
 find_package(Threads REQUIRED)
 target_link_libraries(libretro_host PUBLIC Threads::Threads)
 if(NOT WIN32)
@@ -55,6 +62,9 @@ option(LIBRETRO_HOST_TESTS "Build the libretro host self-test" OFF)
 if(LIBRETRO_HOST_TESTS)
   add_library(stub_core SHARED test/stub_core.c)
   set_target_properties(stub_core PROPERTIES PREFIX "" C_VISIBILITY_PRESET default)
+  # The stub reads input from a second thread under stub_input_thread, to
+  # exercise the host's cross-thread input detector.
+  target_link_libraries(stub_core PRIVATE Threads::Threads)
 
   add_executable(libretro_host_test test/test_harness.c)
   target_link_libraries(libretro_host_test PRIVATE libretro_host)

@@ -289,6 +289,8 @@ unsigned lh_analog_descriptor_ports(lh_host *host);
 // a live run loop's wall-clock pacing. Not part of the platform-facing
 // contract; no shipping caller should need these.
 void lh_test_poll_input(lh_host *host);
+// A core-driven poll inside retro_run: latches without advancing expiry.
+void lh_test_core_poll_input(lh_host *host);
 uint16_t lh_test_read_input(lh_host *host, int port);
 // Test-only: reads the post-latch analog snapshot ([index] 0=left, 1=right
 // stick; [axis] 0=X, 1=Y) and trigger snapshot ([which] 0=L2, 1=R2) for
@@ -296,6 +298,25 @@ uint16_t lh_test_read_input(lh_host *host, int port);
 // comment for why these hooks exist.
 int16_t lh_test_read_analog(lh_host *host, int port, int index, int axis);
 uint16_t lh_test_read_trigger(lh_host *host, int port, int which);
+
+// Distinct environment commands this host has answered with the default
+// false. Test-only: the diagnostic those commands emit goes to stderr or
+// logcat, which the harness cannot read, so the dedupe is observed here.
+int lh_test_unhandled_env_count(lh_host *host);
+
+// How many times a core read input from a thread other than the one that
+// latched it. Non-zero means the input frame is being published across
+// threads without synchronisation.
+int lh_test_input_thread_mismatch(lh_host *host);
+
+// Reads a port the way a core does, INCLUDING acknowledging the edge bits it
+// returns. lh_test_read_input peeks without acknowledging; use this one to
+// assert the delivered-once contract.
+uint16_t lh_test_observe_input(lh_host *host, int port);
+
+// Reads one button the way a core querying ids individually does: returns that
+// bit and acknowledges only it, leaving other buttons' edges undelivered.
+int lh_test_observe_input_id(lh_host *host, int port, unsigned id);
 
 #ifdef __cplusplus
 }

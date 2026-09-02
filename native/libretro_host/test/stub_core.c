@@ -7,6 +7,11 @@
 // handling: stub_rotation drives RETRO_ENVIRONMENT_SET_ROTATION and
 // stub_format drives RETRO_ENVIRONMENT_SET_PIXEL_FORMAT.
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +50,50 @@ static int32_t bad_pitch_mode;
 // and id mapping, derivation from the digital mask), which the frame-snapshot
 // test hooks (lh_test_read_analog/lh_test_read_trigger) intentionally bypass.
 static int32_t analog_check_mode;
+// When on, retro_run re-sends SET_GEOMETRY every frame with the base geometry,
+// the way cores that re-report unchanged geometry each frame do.
+static int32_t repeat_geometry_mode;
+// When on, retro_load_game asks for two real environment commands this host
+// does not serve, one of them twice. Exercises the default case: the calls
+// must report false, and the host must record two DISTINCT commands rather
+// than three, so the diagnostic is emitted once per command and not per call.
+static int32_t unserved_mode;
+static int32_t unserved_false_count;
+// When on, retro_run reads input from a SECOND thread rather than the one the
+// frontend polled on. This is what mupen64plus-next does with its threaded
+// renderer enabled, and it is the condition the host's input-thread detector
+// exists to catch: the frame must still be published safely across threads.
+static int32_t input_thread_mode;
+// When on, retro_run never calls input_poll_cb - which is what
+// mupen64plus-next does with its threaded renderer enabled. The frontend must
+// still deliver input to such a core.
+static int32_t no_poll_mode;
+// Gates the thread-waits SET_MESSAGE. Off by default and deliberately so:
+// g_last_message is shared, and a message emitted on every load makes any
+// test that samples it before its own message arrives depend on timing. That
+// showed up as a flake under ThreadSanitizer, not in a normal build.
+static int32_t waits_report_mode;
+// GET_CLEAR_ALL_THREAD_WAITS_CB: mupen64plus-next stores this in a variable
+// initialised to NULL and calls it with no null check whenever its threaded
+// renderer is on, so a frontend that does not write the out-param crashes the
+// core rather than degrading. The stub reproduces that: it asks, then CALLS
+// what it was given.
+//
+// Seeded with a real function of the stub's own rather than NULL or a bogus
+// address. A real core would fault on an unwritten out-param, but a harness
+// that segfaults reports nothing and takes the other 300-odd checks with it.
+// Pointing at a marker keeps the call below safe either way, so "the host
+// never wrote it" arrives as a failed assertion instead of a crashed process.
+static bool RETRO_CALLCONV stub_thread_waits_marker(unsigned clear_threads,
+                                                   void *data) {
+  (void)clear_threads;
+  (void)data;
+  return false;
+}
+static retro_environment_t thread_waits_cb = stub_thread_waits_marker;
+static int thread_waits_rc;
+static int thread_waits_called;
+static int thread_waits_result;
 
 // Holds onto a GET_VARIABLE pointer across frames the way a real core does,
 // so the host's promise that the pointer stays readable for the life of the
@@ -167,6 +216,13 @@ static void stash_step(void) {
 
 void retro_set_environment(retro_environment_t cb) {
   env_cb = cb;
+  // Asked here, not in retro_load_game, because that is where
+  // mupen64plus-next asks and the ordering is part of what is under test:
+  // the host must answer before any content exists.
+  thread_waits_rc =
+      cb(RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB, &thread_waits_cb)
+          ? 1
+          : 0;
   static const struct retro_variable vars[] = {
       {"stub_speed", "Speed; normal|fast"},
       {"stub_pattern", "Pattern; off|on"},
@@ -176,6 +232,11 @@ void retro_set_environment(retro_environment_t cb) {
       {"stub_bad_pitch", "Bad pitch; off|on"},
       {"stub_vfs_dir_check", "VFS dir check; off|on"},
       {"stub_analog_check", "Analog check; off|on"},
+      {"stub_repeat_geometry", "Repeat geometry; off|on"},
+      {"stub_unserved", "Probe unserved env commands; off|on"},
+      {"stub_input_thread", "Read input off-thread; off|on"},
+      {"stub_no_poll", "Never call input_poll; off|on"},
+      {"stub_waits_report", "Report thread-waits state; off|on"},
       {NULL, NULL},
   };
   env_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void *)vars);
@@ -434,6 +495,14 @@ static void write_pixel(uint8_t *dst, enum retro_pixel_format fmt, unsigned r,
 bool retro_load_game(const struct retro_game_info *game) {
   shutdown_frame = 0;
   did_shutdown = 0;
+  // No null check, deliberately. This is what mupen64plus-next does at four
+  // sites when its threaded renderer is on; a host that left the pointer
+  // unwritten faults right here, which is the regression under test.
+  thread_waits_called = 0;
+  thread_waits_result = thread_waits_cb(1, NULL) ? 1 : 0;
+  thread_waits_called++;
+  thread_waits_result &= thread_waits_cb(0, NULL) ? 1 : 0;
+  thread_waits_called++;
   if (game && game->path) {
     size_t path_len = strlen(game->path);
     if (path_len >= 7 && strcmp(game->path + path_len - 7, "vfs.zip") == 0 &&
@@ -492,13 +561,95 @@ bool retro_load_game(const struct retro_game_info *game) {
   env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &analog_var);
   analog_check_mode = analog_var.value && strcmp(analog_var.value, "on") == 0;
 
+  struct retro_variable repeat_geo_var = {"stub_repeat_geometry", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &repeat_geo_var);
+  repeat_geometry_mode =
+      repeat_geo_var.value && strcmp(repeat_geo_var.value, "on") == 0;
+
+  struct retro_variable no_poll_var = {"stub_no_poll", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &no_poll_var);
+  no_poll_mode = no_poll_var.value && strcmp(no_poll_var.value, "on") == 0;
+
+  struct retro_variable waits_report_var = {"stub_waits_report", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &waits_report_var);
+  waits_report_mode =
+      waits_report_var.value && strcmp(waits_report_var.value, "on") == 0;
+  if (waits_report_mode) {
+    char wbuf[128];
+    snprintf(wbuf, sizeof(wbuf),
+             "stub waitscb=%d waitsrc=%d waitscalls=%d waitsok=%d",
+             thread_waits_cb == NULL
+                 ? 0
+                 : (thread_waits_cb == stub_thread_waits_marker ? 1 : 2),
+             thread_waits_rc, thread_waits_called, thread_waits_result);
+    struct retro_message wmsg = {wbuf, 180};
+    env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &wmsg);
+  }
+
+  struct retro_variable input_thread_var = {"stub_input_thread", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &input_thread_var);
+  input_thread_mode = input_thread_var.value &&
+                      strcmp(input_thread_var.value, "on") == 0;
+
+  struct retro_variable unserved_var = {"stub_unserved", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &unserved_var);
+  unserved_mode = unserved_var.value && strcmp(unserved_var.value, "on") == 0;
+  unserved_false_count = 0;
+  if (unserved_mode) {
+    float refresh = 0.0f;
+    int throttle = 0;
+    // Both are real commands this host does not implement. Asking twice for
+    // the same one is the point: the record is per command, not per call.
+    unserved_false_count +=
+        env_cb(RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE, &refresh) ? 0 : 1;
+    unserved_false_count +=
+        env_cb(RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE, &refresh) ? 0 : 1;
+    unserved_false_count +=
+        env_cb(RETRO_ENVIRONMENT_GET_THROTTLE_STATE, &throttle) ? 0 : 1;
+    char ubuf[64];
+    snprintf(ubuf, sizeof(ubuf), "stub unserved false=%d",
+             (int)unserved_false_count);
+    struct retro_message umsg = {ubuf, 180};
+    env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &umsg);
+  }
+
   return true;
 }
 
 void retro_unload_game(void) {}
 
+// Reads one button through input_state_cb. Run on a thread the frontend never
+// polled on, so the host sees a read from somewhere other than its latch.
+#ifdef _WIN32
+static DWORD WINAPI off_thread_read(LPVOID arg) {
+  (void)arg;
+  input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
+  return 0;
+}
+static void read_input_off_thread(void) {
+  HANDLE t = CreateThread(NULL, 0, off_thread_read, NULL, 0, NULL);
+  if (!t) return;
+  WaitForSingleObject(t, INFINITE);
+  CloseHandle(t);
+}
+#else
+static void *off_thread_read(void *arg) {
+  (void)arg;
+  input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
+  return NULL;
+}
+static void read_input_off_thread(void) {
+  pthread_t t;
+  if (pthread_create(&t, NULL, off_thread_read, NULL) != 0) return;
+  pthread_join(t, NULL);
+}
+#endif
+
 void retro_run(void) {
   stash_step();
+  // Joined before returning, so the read is strictly inside this retro_run
+  // and the harness can assert on it right after a frame.
+  if (input_thread_mode) read_input_off_thread();
   if (did_shutdown) {
     // A real core would fault here. Say so instead, so the harness can tell.
     struct retro_message late = {"stub ran after shutdown", 180};
@@ -512,10 +663,20 @@ void retro_run(void) {
     env_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
     return;
   }
-  input_poll_cb();
+  if (!no_poll_mode) input_poll_cb();
   int16_t mask =
       input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
   if (analog_check_mode) probe_analog();
+  if (repeat_geometry_mode) {
+    struct retro_game_geometry geo;
+    memset(&geo, 0, sizeof(geo));
+    geo.base_width = STUB_WIDTH;
+    geo.base_height = STUB_HEIGHT;
+    geo.max_width = STUB_WIDTH;
+    geo.max_height = STUB_HEIGHT;
+    geo.aspect_ratio = (float)STUB_WIDTH / (float)STUB_HEIGHT;
+    env_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &geo);
+  }
   frame_counter += speed_fast ? 2 : 1;
 
   int bpp = pixel_fmt == RETRO_PIXEL_FORMAT_XRGB8888 ? 4 : 2;

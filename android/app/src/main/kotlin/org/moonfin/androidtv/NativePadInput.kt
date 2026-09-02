@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.input.InputManager
 import android.os.Handler
 import android.os.SystemClock
+import android.util.Log
 import android.util.SparseArray
 import android.view.InputDevice
 import android.view.KeyEvent
@@ -217,6 +218,7 @@ internal class NativePadInput(
         analogPortMask = 0
         if (value) {
             val connections = registry.activate(discoverCandidates(logDiagnostics = true))
+            for (connection in connections) logPort("session start", connection)
             for (connection in connections) addPadState(connection)
             // Input descriptors can arrive a few ms after load returns (FBNeo
             // sends them late), so a single refresh shortly after activation
@@ -631,16 +633,35 @@ internal class NativePadInput(
         }
     }
 
+    /**
+     * One line whenever a device gains or is refused a player slot. The
+     * refusal is the case that matters: an unsupported gamepad has its keys
+     * consumed by onKeyDown and goes nowhere, which from the outside is
+     * indistinguishable from a dead controller. bug-176 could not be answered
+     * from a log because nothing recorded this.
+     */
+    private fun logPort(reason: String, connection: NativeControllerConnection) {
+        val slot = connection.port?.let { "player ${it + 1}" }
+            ?: if (connection.isGamepad) "NO PORT - input is dropped" else "navigation only"
+        Log.i(
+            TAG,
+            "controller $reason: ${connection.name} class=${connection.deviceClass} " +
+                "$slot pinned=${connection.pinned} deviceId=${connection.deviceId}",
+        )
+    }
+
     private fun onDeviceAdded(deviceId: Int) {
         releaseVanishedPadStates()
         val candidate = candidateFor(deviceId) ?: return
         val connection = registry.addOrUpdate(candidate)
+        logPort("added", connection)
         if (active && connection.supported && padStates.get(deviceId) == null) addPadState(connection)
         if (active) bridge.setControllerCount(playableCount(), navigationOnly = navigationOnly(), force = true)
     }
 
     private fun onDeviceRemoved(deviceId: Int) {
         removeDevice(deviceId)
+        Log.i(TAG, "controller removed deviceId=$deviceId")
         if (active) bridge.setControllerCount(playableCount(), navigationOnly = navigationOnly(), force = true)
     }
 
@@ -706,8 +727,12 @@ internal class NativePadInput(
             }
         }
 
+    // Logs, unlike the bulk enumeration path it used to mirror. A device that
+    // arrives mid-session is exactly the one whose classification nobody can
+    // reconstruct afterwards -- a pad connected 90s into a session left no
+    // trace at all, which is what made bug-176 unanswerable from a log.
     private fun candidateFor(deviceId: Int): NativeControllerCandidate? =
-        candidateFor(deviceId, logDiagnostics = false)
+        candidateFor(deviceId, logDiagnostics = true)
 
     /**
      * Every routable device becomes a candidate, not only gamepads, so a
@@ -996,6 +1021,9 @@ internal class NativePadInput(
         // ~30Hz, per the design's "Cost" section; button transitions bypass
         // this and are always sent immediately since they are rare.
         const val DIAGNOSTICS_AXIS_THROTTLE_MS = 33L
+        // Shared with NativeInputDeviceClassifier so one grep shows a device's
+        // classification and the slot it was then given or refused.
+        const val TAG = "moonfin_input"
         const val START_HOLD_MS = 1500L
         const val START_PULSE_MS = 34L
         const val KEYBOARD_DEVICE_ID = -1
