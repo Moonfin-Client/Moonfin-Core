@@ -4618,7 +4618,7 @@ class _ContentRowsState extends State<_ContentRows>
           controller: _rowHorizontalController(rowIndex),
           height: maxCardHeight + (10 * metadataScale),
           itemExtent: firstCardWidth,
-          itemSpacing: 12,
+          itemSpacing: (cardExpansion ? 16.0 : 12.0) * (PlatformDetection.useMobileUi ? 1.0 : desktopScale),
           leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
           clipBehavior: (isRowsV2 || cardExpansion) ? Clip.none : Clip.hardEdge,
           padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),

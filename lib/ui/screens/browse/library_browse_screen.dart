@@ -1112,7 +1112,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _buildVerticalGrid() {
     final cardWidth = _cardWidth();
-    const spacing = 12.0;
+    final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+    final spacing = cardFocusExpansion ? 16.0 : 12.0;
     final watchedBehavior = _prefs.get(
       UserPreferences.watchedIndicatorBehavior,
     );
@@ -1528,9 +1529,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.isGrouping) {
       return _buildGroupedHorizontalRows();
     }
-    const spacing = 12.0;
-    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
     final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+    final spacing = cardFocusExpansion ? 16.0 : 12.0;
+    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 

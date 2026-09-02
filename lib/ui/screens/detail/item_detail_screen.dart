@@ -11695,10 +11695,11 @@ class DetailSimilarRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(6, 10, 6, 4),
+        padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
         itemCount: items.length,
-        separatorBuilder: (_, _) =>
-            SizedBox(width: isMobile ? 8 : 12 * desktopScale),
+        separatorBuilder: (_, _) => SizedBox(
+          width: (cardExpansion ? 16.0 : 12.0) * (isMobile ? 1.0 : desktopScale),
+        ),
         itemBuilder: (context, index) {
           final item = items[index];
           final ar = MediaCard.aspectRatioForType(item.type);
@@ -14448,8 +14449,9 @@ class SeerrAppearancesRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         itemCount: items.length,
-        separatorBuilder: (_, _) =>
-            SizedBox(width: isMobile ? 8 : 12 * desktopScale),
+        separatorBuilder: (_, _) => SizedBox(
+          width: (cardExpansion ? 16.0 : 12.0) * (isMobile ? 1.0 : desktopScale),
+        ),
         itemBuilder: (context, index) {
           final item = items[index];
 
