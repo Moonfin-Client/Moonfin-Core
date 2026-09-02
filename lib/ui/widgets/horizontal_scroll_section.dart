@@ -118,15 +118,16 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
             padding: widget.headerPadding,
             child: Row(
               children: [
-                Expanded(
-                  child: widget.title.isNotEmpty
-                      ? Text(
-                          widget.title,
-                          style: widget.titleStyle ??
-                              Theme.of(context).textTheme.titleLarge,
-                        )
-                      : const SizedBox.shrink(),
-                ),
+                if (widget.title.isEmpty)
+                  const Spacer()
+                else
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: widget.titleStyle ??
+                          Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
                 if (widget.trailing != null) widget.trailing!,
                 if (hasControls) ...[
                   Focus(
