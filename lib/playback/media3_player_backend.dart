@@ -258,8 +258,10 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
       case 'playerError':
+        final cause = map['cause']?.toString();
         _diag(
-          'Media3 player error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}',
+          'Media3 player error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}'
+          '${cause == null || cause.isEmpty ? '' : ' caused by $cause'}',
           level: LogLevel.error,
         );
         _errorStream.add(map.cast<String, dynamic>());

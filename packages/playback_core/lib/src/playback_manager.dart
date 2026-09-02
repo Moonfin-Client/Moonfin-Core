@@ -168,6 +168,7 @@ class PlaybackManager implements AudioOwnable {
   bool _forceExternalPlayerOnce = false;
   bool _forceExternalChooserOnce = false;
   bool _unsupportedAudioRecoveryInFlight = false;
+  bool _audioTranscodeRecoveryAttempted = false;
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
   bool _teardownForReResolve = false;
@@ -988,7 +989,6 @@ class PlaybackManager implements AudioOwnable {
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
-        !_waitingForMedia &&
         !_unsupportedAudioRecoveryInFlight;
 
     Future<void> recoverViaTranscode() async {
@@ -1045,12 +1045,18 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    if (_audioTranscodeRecoveryAttempted) {
+      emitFailedBringupState('Playback failed after audio transcode recovery.');
+      return;
+    }
+
     // The device just proved it can't play this audio codec, so a retry has
     // to stop offering it or the server copies the same track into the next
     // stream and the failure repeats.
     final vetoAdded = resolution != null && _vetoSelectedAudioCodec(resolution);
 
     if (canReResolve()) {
+      _audioTranscodeRecoveryAttempted = true;
       await recoverViaTranscode();
       return;
     }
@@ -1306,6 +1312,9 @@ class PlaybackManager implements AudioOwnable {
     _lastKnownPosition = startPosition;
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
+    if (_lastItemId != itemId) {
+      _audioTranscodeRecoveryAttempted = false;
+    }
     final appliedOverrides = _applyPendingItemOverridesIfNeeded(itemId);
     if (!appliedOverrides && _lastItemId != null && _lastItemId != itemId) {
       _translateTrackSelectionsForNewItem(item);

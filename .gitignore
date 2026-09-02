@@ -96,6 +96,7 @@ app.*.map.json
 /Moonfin_Android_v*.apk
 /Moonfin_Android_v*.aab
 /*.apk
+/*.aab
 
 # Tizen TPK artifacts and generated dependency metadata
 /Moonfin_Tizen_v*.tpk
