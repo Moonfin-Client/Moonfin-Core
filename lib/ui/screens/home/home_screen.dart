@@ -908,7 +908,9 @@ class _ContentRowsState extends State<_ContentRows>
             ? 45.0
             : (PlatformDetection.useMobileUi ? 60.0 : 80.0))
         : 0.0;
-    return (safeTop + navbarHeight + 8.0).clamp(0.0, viewportHeight * 0.85);
+    final desktopScale = _desktopUiScaleFactor();
+    final topPeekSpacing = PlatformDetection.isTV ? (32.0 * desktopScale) : 8.0;
+    return (safeTop + navbarHeight + topPeekSpacing).clamp(0.0, viewportHeight * 0.85);
   }
 
   List<double> _rowTargetOffsetsForScroll({required bool fullScreenRows}) {
@@ -2301,11 +2303,15 @@ class _ContentRowsState extends State<_ContentRows>
     _suppressNextRowPreviewFromMediaBar = true;
     _forceRevealOnNextRowFocusFromMediaBar = true;
     final isBanner = _isBannerMode();
-    if (mounted && _mediaBarVisible && !isBanner) {
+    if (mounted &&
+        _mediaBarVisible &&
+        !isBanner &&
+        !_isAyaMode() &&
+        !_isBookshelfMode()) {
       _mediaBarVisible = false;
     }
     if (!isBanner && _scrollController.hasClients) {
-      final offsetAdjustment = _isBookshelfMode() ? (_overlayBottom + 8) : 0.0;
+      final offsetAdjustment = _desktopRowFocusTargetTop();
       final target = (_mediaBarHeight() - offsetAdjustment).clamp(
         0.0,
         _scrollController.position.maxScrollExtent,
@@ -2615,6 +2621,28 @@ class _ContentRowsState extends State<_ContentRows>
     final isRowsV2 = widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
         !_isWideArtworkRow(row);
 
+    final fullScreenRows = _fullScreenRowsEnabled(widget.prefs);
+    if (fullScreenRows) {
+      final stackRender = context.findRenderObject();
+      final viewportHeight = (stackRender is RenderBox && stackRender.hasSize)
+          ? stackRender.size.height
+          : MediaQuery.sizeOf(context).height;
+      final desktopScale = widget.prefs
+          .get(UserPreferences.desktopUiScale)
+          .scaleFactor;
+      final ratingsEnabled =
+          widget.prefs.get(UserPreferences.enableAdditionalRatings) as bool? ??
+          false;
+      final extraHeight = ratingsEnabled ? (32.0 * desktopScale) : 0.0;
+      final rowHeight = _staticRowHeight(rowIndex) + extraHeight;
+
+      if (isRowsV2) {
+        final targetTop = (viewportHeight - rowHeight) / 2.0;
+        return targetTop.clamp(defaultTop, double.infinity);
+      }
+      return defaultTop;
+    }
+
     if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
       if (_isMediaBarIncluded() && !_isBannerMode()) {
         return defaultTop;
@@ -2624,42 +2652,7 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
-    final stackRender = context.findRenderObject();
-    if (stackRender is! RenderBox || !stackRender.hasSize) {
-      return rowIndex == 0 && _rowTopOffsets.isNotEmpty ? _rowTopOffsets[0] : defaultTop;
-    }
-
-    final viewportHeight = stackRender.size.height;
-    final desktopScale = widget.prefs
-        .get(UserPreferences.desktopUiScale)
-        .scaleFactor;
-    final ratingsEnabled =
-        widget.prefs.get(UserPreferences.enableAdditionalRatings) as bool? ??
-        false;
-    final extraHeight = ratingsEnabled ? (32.0 * desktopScale) : 0.0;
-    final rowHeight = _staticRowHeight(rowIndex) + extraHeight;
-
-    if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
-      final safeBottomMargin = 40.0 * desktopScale;
-      final preferredTop = viewportHeight - rowHeight - safeBottomMargin;
-      return preferredTop.clamp(defaultTop, _rowTopOffsets[0]);
-    }
-
-    final fullScreenRows = _fullScreenRowsEnabled(widget.prefs);
-    if (fullScreenRows) {
-      if (isRowsV2) {
-        final targetTop = (viewportHeight - rowHeight) / 2.0;
-        return targetTop.clamp(defaultTop, double.infinity);
-      }
-      return defaultTop;
-    } else {
-      final isMyMedia = row.rowType == HomeRowType.libraryTilesSmall ||
-          row.rowType == HomeRowType.libraryTiles;
-      if (isMyMedia) {
-        return defaultTop;
-      }
-      return 0.0;
-    }
+    return defaultTop;
   }
 
   Future<void> _scrollTvRowIntoOverlayBand(int rowIndex) async {
@@ -2681,9 +2674,7 @@ class _ContentRowsState extends State<_ContentRows>
   double? _restingOffsetForRow(int rowIndex) {
     if (!_scrollController.hasClients) return null;
     if (rowIndex < 0 || rowIndex >= _rowTopOffsets.length) return null;
-    final useTvBand =
-        _fullScreenRowsEnabled(widget.prefs) ||
-        (PlatformDetection.isTV && _isHomeRowsStyleV2());
+    final useTvBand = _fullScreenRowsEnabled(widget.prefs);
     final targetTop = useTvBand
         ? _tvTargetTopForRow(rowIndex)
         : _desktopRowFocusTargetTop();
@@ -2965,9 +2956,7 @@ class _ContentRowsState extends State<_ContentRows>
           _scrollController.hasClients &&
           rowIndex >= 0 &&
           rowIndex < _rowTopOffsets.length) {
-        final offsetAdjustment = _isBookshelfMode()
-            ? (_overlayBottom + 8)
-            : 0.0;
+        final offsetAdjustment = _desktopRowFocusTargetTop();
         final targetOffset = (_rowTopOffsets[rowIndex] - offsetAdjustment)
             .clamp(0.0, _scrollController.position.maxScrollExtent);
         if ((_scrollController.offset - targetOffset).abs() > 10) {
@@ -3031,9 +3020,7 @@ class _ContentRowsState extends State<_ContentRows>
             final fullScreenRows =
                 !PlatformDetection.useMobileUi &&
                 widget.prefs.get(UserPreferences.fullScreenRows);
-            final isRowsV2 = _isHomeRowsStyleV2();
-            if ((fullScreenRows || (PlatformDetection.isTV && isRowsV2)) &&
-                _scrollController.hasClients) {
+            if (fullScreenRows && _scrollController.hasClients) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!mounted || !_scrollController.hasClients) {
                   if (!navComplete.isCompleted) navComplete.complete();
@@ -3056,26 +3043,6 @@ class _ContentRowsState extends State<_ContentRows>
               return;
             }
 
-            if (!PlatformDetection.isTV &&
-                _showHomeRowInfoOverlay() &&
-                _scrollController.hasClients &&
-                target < _rowTopOffsets.length) {
-              final targetOffset =
-                  (_rowTopOffsets[target] - _desktopRowFocusTargetTop()).clamp(
-                    0.0,
-                    _scrollController.position.maxScrollExtent,
-                  );
-              _scrollController
-                  .animateTo(
-                    targetOffset,
-                    duration: _focusHandoffDuration,
-                    curve: _focusHandoffCurve,
-                  )
-                  .whenComplete(() {
-                    if (!navComplete.isCompleted) navComplete.complete();
-                  });
-              return;
-            }
 
             if (_scrollController.hasClients) {
               final rowObj = _rowContainerKey(
@@ -3196,7 +3163,9 @@ class _ContentRowsState extends State<_ContentRows>
       if (!PlatformDetection.useMobileUi &&
           _mediaBarVisible &&
           !_verticalNavInFlight &&
-          !_isBannerMode()) {
+          !_isBannerMode() &&
+          !_isAyaMode() &&
+          !_isBookshelfMode()) {
         setState(() => _mediaBarVisible = false);
       }
     } else if (_activeFocusedRowIndex == rowIndex) {
