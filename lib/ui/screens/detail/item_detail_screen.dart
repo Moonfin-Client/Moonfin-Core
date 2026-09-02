@@ -5855,8 +5855,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (label == null) return _modernFocusedFloor;
     // Matching what _buildModernChild lays out around the label.
     const iconWidth = 24.0;
-    const iconGap = 2.0;
-    const horizontalPadding = 24.0;
+    const iconGap = 8.0;
+    const horizontalPadding = 36.0;
     final painter = TextPainter(
       text: TextSpan(
         text: label,
@@ -5864,7 +5864,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         // both at the larger size can only leave room to spare.
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          fontSize: 13,
+          fontSize: 14,
           height: 1.1,
         ),
       ),
@@ -5873,30 +5873,27 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     )..layout();
     final measured = painter.width + iconWidth + iconGap + horizontalPadding;
     painter.dispose();
-    return measured < _modernFocusedFloor ? _modernFocusedFloor : measured;
+    return measured < 140.0 ? 140.0 : measured;
   }
 
   /// The widest a modern row of [buttonCount] buttons can get. Only one
-  /// button is focused at a time, so the worst case is everything at rest
-  /// except the one grown to its focused width, whichever of the two that
-  /// leaves wider. The sizes match what _buildModernChild lays out.
+  /// button is focused at a time, so the worst case is the primary button plus
+  /// all secondary buttons at rest, except when one secondary button is grown
+  /// to its focused width.
   double _modernRowWorstWidth(
     int buttonCount,
     double spacing,
     double playFocused,
   ) {
-    const playResting = 54.0;
     const circleResting = 52.0;
     const circleFocused = _modernFocusedFloor;
 
     final circles = buttonCount - 1;
     if (circles <= 0) return playFocused;
 
-    final playGrown = playFocused + circles * circleResting;
     final circleGrown =
-        playResting + circleFocused + (circles - 1) * circleResting;
-    return circles * spacing +
-        (playGrown > circleGrown ? playGrown : circleGrown);
+        playFocused + circleFocused + (circles - 1) * circleResting;
+    return circles * spacing + circleGrown;
   }
 
   void _focusUpTarget() {
@@ -10894,134 +10891,89 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         ? (isMobile ? (hasNewline ? 56.0 : 50.0) : (hasNewline ? 64.0 : 54.0))
         : (isMobile ? 48.0 : 52.0);
 
-    if (widget.isPrimary) {
+    // Portrait spans the primary Play full width (circular secondary actions
+    // wrap beneath); landscape keeps it content-width, inline with them.
+    final fullWidth = widget.isPrimary &&
+        (context
+                .findAncestorWidgetOfExactType<DetailActionButtons>()
+                ?.fullWidthPrimary ??
+            false);
+
+    if (fullWidth) {
       final fg = showHighlight
           ? AppColorScheme.onButtonFocused
           : AppColorScheme.onAccent;
       final heartColor = (widget.icon == Icons.favorite && widget.isActive)
           ? const Color(0xFFE50914)
           : fg;
-      // Portrait spans the primary Play full width (circular secondary actions
-      // wrap beneath); landscape keeps it content-width, inline with them.
-      final fullWidth =
-          context
-              .findAncestorWidgetOfExactType<DetailActionButtons>()
-              ?.fullWidthPrimary ??
-          false;
-
-      // When expanded (focused): use ConstrainedBox with a minWidth floor
-      // so the pill always has enough room for labels like "Resume S12:E24".
-      // Flexible in the parent Row lets the pill grow beyond the minimum.
-      final Widget pill;
-      final shouldExpand = isExpanded || fullWidth || isMobile;
-      if (shouldExpand) {
-        final pillInner = Container(
-          height: height,
-          width: fullWidth ? double.infinity : null,
-          padding: EdgeInsets.only(
-            left: fullWidth ? 10 : 10,
-            right: fullWidth ? 10 : 14,
+      final pillInner = Container(
+        height: height,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: showHighlight
+              ? AppColorScheme.buttonFocused
+              : AppColorScheme.accent,
+          borderRadius: AppRadius.circular(height / 2),
+          border: Border.all(
+            color: showHighlight ? focusColor : Colors.transparent,
+            width: 3,
           ),
-          alignment: fullWidth ? Alignment.center : null,
-          decoration: BoxDecoration(
-            color: showHighlight
-                ? AppColorScheme.buttonFocused
-                : AppColorScheme.accent,
-            borderRadius: AppRadius.circular(height / 2),
-            border: Border.all(
-              color: showHighlight ? focusColor : Colors.transparent,
-              width: 3,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AdaptiveIcon(
+              widget.icon ?? Icons.play_arrow,
+              color: heartColor,
+              size: 24,
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AdaptiveIcon(
-                widget.icon ?? Icons.play_arrow,
-                color: heartColor,
-                size: 24,
-              ),
-              const SizedBox(width: 2),
-              widget.label.contains('\n')
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.label.split('\n')[0],
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: fg,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                height: 1.1,
-                              ),
-                        ),
-                        Text(
-                          widget.label.split('\n')[1],
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: fg.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                height: 1.1,
-                              ),
-                        ),
-                      ],
-                    )
-                  : Text(
-                      widget.label,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: fg,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        height: 1.1,
+            const SizedBox(width: 8),
+            widget.label.contains('\n')
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.label.split('\n')[0],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: fg,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              height: 1.1,
+                            ),
                       ),
-                    ),
-            ],
-          ),
-        );
-        // Landscape: wrap with a minWidth so text always has room.
-        // Flexible in the parent Row allows growing beyond minWidth.
-        pill = fullWidth
-            ? pillInner
-            : ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 200),
-                child: pillInner,
-              );
-      } else {
-        // Collapsed: animate from/to a circle
-        pill = AnimatedSize(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          child: SizedBox.square(
-            dimension: height,
-            child: Container(
-              height: height,
-              width: height,
-              decoration: BoxDecoration(
-                color: AppColorScheme.accent,
-                borderRadius: AppRadius.circular(height / 2),
-                border: Border.all(color: Colors.transparent, width: 3),
-              ),
-              child: Center(
-                child: AdaptiveIcon(
-                  widget.icon ?? Icons.play_arrow,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
-        );
-      }
-      return fullWidth ? SizedBox(width: double.infinity, child: pill) : pill;
+                      Text(
+                        widget.label.split('\n')[1],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: fg.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              height: 1.1,
+                            ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    widget.label,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: fg,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          height: 1.1,
+                        ),
+                  ),
+          ],
+        ),
+      );
+      return SizedBox(width: double.infinity, child: pillInner);
     }
 
-    if (isMobile) {
+    if (isMobile && !widget.isPrimary) {
       // Vertical tile: circular icon with its label always shown underneath.
       final iconWidget = widget.iconBuilder != null
           ? widget.iconBuilder!(36, iconColor)
@@ -11082,6 +11034,48 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final double minWidth = height;
     final double maxWidth = isExpanded ? 200.0 : height;
 
+    final containerColor = showHighlight
+        ? AppColorScheme.buttonFocused
+        : (widget.isPrimary
+            ? AppColorScheme.accent
+            : (widget.isActive
+                ? (widget.activeColor ?? AppColorScheme.accent).withValues(
+                    alpha: 0.18,
+                  )
+                : Colors.white.withValues(alpha: 0.06)));
+
+    final borderColor = showHighlight
+        ? focusColor
+        : (widget.isPrimary
+            ? Colors.transparent
+            : AppColorScheme.onSurface.withValues(alpha: 0.35));
+
+    final iconWidget = widget.isPrimary
+        ? AdaptiveIcon(
+            widget.icon ?? Icons.play_arrow,
+            color: (widget.icon == Icons.favorite && widget.isActive)
+                ? const Color(0xFFE50914)
+                : (showHighlight
+                    ? AppColorScheme.onButtonFocused
+                    : AppColorScheme.onAccent),
+            size: 24,
+          )
+        : (widget.iconBuilder != null
+            ? widget.iconBuilder!(36, iconColor)
+            : AdaptiveIcon(
+                widget.icon!,
+                color: (widget.icon == Icons.favorite && widget.isActive)
+                    ? const Color(0xFFE50914)
+                    : iconColor,
+                size: 24,
+              ));
+
+    final effectiveLabelColor = widget.isPrimary
+        ? (showHighlight
+            ? AppColorScheme.onButtonFocused
+            : AppColorScheme.onAccent)
+        : labelColor;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
@@ -11093,58 +11087,75 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       ),
       decoration: BoxDecoration(
         borderRadius: AppRadius.circular(height / 2),
-        color: showHighlight
-            ? AppColorScheme.buttonFocused
-            : (widget.isActive
-                  ? (widget.activeColor ?? AppColorScheme.accent).withValues(
-                      alpha: 0.18,
-                    )
-                  : Colors.white.withValues(alpha: 0.06)),
+        color: containerColor,
         border: Border.all(
-          color: showHighlight
-              ? focusColor
-              : AppColorScheme.onSurface.withValues(alpha: 0.35),
+          color: borderColor,
           width: showHighlight ? 2.5 : 1.5,
         ),
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const NeverScrollableScrollPhysics(),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: height - 4, // keep icon centered when collapsed
-              child: Center(
-                child: widget.iconBuilder != null
-                    ? widget.iconBuilder!(36, iconColor)
-                    : AdaptiveIcon(
-                        widget.icon!,
-                        color:
-                            (widget.icon == Icons.favorite && widget.isActive)
-                            ? const Color(0xFFE50914)
-                            : iconColor,
-                        size: 24,
+      child: ClipRRect(
+        borderRadius: AppRadius.circular(height / 2),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: height - 4, // keep icon centered when collapsed
+                child: Center(child: iconWidget),
+              ),
+              if (isExpanded && widget.label.isNotEmpty) ...[
+                const SizedBox(width: 6),
+                widget.label.contains('\n')
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.label.split('\n')[0],
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: effectiveLabelColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  height: 1.1,
+                                ),
+                          ),
+                          Text(
+                            widget.label.split('\n')[1],
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: effectiveLabelColor.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  height: 1.1,
+                                ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        widget.label,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: effectiveLabelColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              height: 1.1,
+                            ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-              ),
-            ),
-            if (isExpanded && widget.label.isNotEmpty) ...[
-              const SizedBox(width: 6),
-              Text(
-                widget.label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: labelColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  height: 1.1,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
