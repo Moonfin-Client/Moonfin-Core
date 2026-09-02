@@ -3888,6 +3888,7 @@ class _HeaderSection extends StatelessWidget {
         useDesktopLayout && isMusicItem && viewModel.lyrics.isNotEmpty;
     final isCollection = item.type == 'BoxSet';
     final seerrStatus = seerrItemStatus(viewModel);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     final infoColumn = Column(
       crossAxisAlignment: isMobile
@@ -3963,7 +3964,9 @@ class _HeaderSection extends StatelessWidget {
           Text(
             item.name,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              color: Colors.white,
+              color: isNeon
+                  ? AppColorScheme.accent
+                  : AppColorScheme.onBackground,
               fontWeight: FontWeight.bold,
               shadows: _textShadows,
               fontSize: isMobile ? 24 : null,
@@ -4004,7 +4007,7 @@ class _HeaderSection extends StatelessWidget {
           Text(
             item.tagline!,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+              color: isNeon
                   ? AppColorScheme.accent
                   : AppColorScheme.onSurface.withValues(alpha: 0.7),
               fontStyle: FontStyle.italic,
@@ -4033,7 +4036,7 @@ class _HeaderSection extends StatelessWidget {
             onArrowLeft: onArrowLeft,
             onCollapse: onCollapseBiography,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+              color: isNeon
                   ? AppColorScheme.onSurface
                   : AppColorScheme.onBackground,
               shadows: _textShadows,
@@ -10847,7 +10850,9 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         : (isMobile ? 48.0 : 52.0);
 
     if (widget.isPrimary) {
-      final fg = showHighlight ? AppColorScheme.onButtonFocused : Colors.white;
+      final fg = showHighlight
+          ? AppColorScheme.onButtonFocused
+          : AppColorScheme.onAccent;
       final heartColor = (widget.icon == Icons.favorite && widget.isActive)
           ? const Color(0xFFE50914)
           : fg;
@@ -13637,7 +13642,9 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                   episode.overview!,
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
-                                        color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                                        color: isNeon
+                                            ? AppColorScheme.onSurface
+                                            : AppColorScheme.onSurface.withValues(alpha: 0.7),
                                       ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,

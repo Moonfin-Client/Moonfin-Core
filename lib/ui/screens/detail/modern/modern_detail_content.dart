@@ -3512,6 +3512,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
+  Color get _titleColor =>
+      ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+          ? AppColorScheme.accent
+          : AppColorScheme.onBackground;
+
   List<Shadow>? _neonTextGlow(double blurRadius) =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId
           ? [Shadow(color: AppColorScheme.accent, blurRadius: blurRadius)]
@@ -3524,7 +3529,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     double maxWidth = 800,
     VoidCallback? onArrowRight,
   }) {
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: _landscape ? maxWidth : double.infinity,
@@ -3548,9 +3552,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         onCollapse: widget.onCollapseBiography,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           height: 1.45,
-          color: isNeon
-              ? AppColorScheme.onSurface.withValues(alpha: 0.85)
-              : AppColorScheme.onBackground.withValues(alpha: 0.85),
+          color: AppColorScheme.onBackground.withValues(alpha: 0.85),
         ),
       ),
     );
@@ -3604,7 +3606,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             item.name,
             style: textTheme.displaySmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: _titleColor,
             ),
           ),
           const SizedBox(height: 8),
@@ -3737,7 +3739,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               text: item.name,
               style: textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: _titleColor,
                 shadows: _neonTextGlow(12),
               ) ?? const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
             ),
@@ -3929,7 +3931,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   style: (_landscape
                           ? textTheme.displaySmall
                           : textTheme.headlineMedium)
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                      ?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
                 ),
               ],
             ),
@@ -3961,7 +3963,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               style: (_landscape
                       ? textTheme.displaySmall
                       : textTheme.headlineMedium)
-                  ?.copyWith(fontWeight: FontWeight.w700),
+                  ?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
             ),
           ] else if (logoTag != null && logoId != null) ...[
             Padding(
@@ -4013,7 +4015,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   style: (_landscape
                           ? textTheme.displaySmall
                           : textTheme.headlineMedium)
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                      ?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
                 ),
                 if (item.mediaSources.length > 1) ...[
                   const SizedBox(width: 16),
@@ -4146,8 +4148,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _metadataRow(BuildContext context, AggregatedItem item, Map<String, dynamic>? selectedMediaSource) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    final muted = isNeon ? AppColorScheme.onSurface.withValues(alpha: 0.75) : AppColorScheme.onBackground.withValues(alpha: 0.75);
+    final muted = AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
     final pieces = <Widget>[];
@@ -4811,7 +4812,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   children: [
                     Text(
                       item.name,
-                      style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
+                      style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700, color: _titleColor),
                     ),
                     if (item.mediaSources.length > 1) ...[
                       const SizedBox(width: 16),

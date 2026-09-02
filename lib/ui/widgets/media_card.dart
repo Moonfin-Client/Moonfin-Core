@@ -282,7 +282,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     final titleStyle = baseTextStyle.copyWith(
       color:
           widget.titleColor ??
-          (isNeon ? AppColorScheme.accent : baseTextStyle.color),
+          (isNeon ? AppColorScheme.accent : AppColorScheme.onSurface),
       fontWeight: FontWeight.bold,
       fontSize: (baseTextStyle.fontSize ?? 12) + 1.0,
       shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
