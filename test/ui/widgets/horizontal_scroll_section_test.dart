@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/horizontal_scroll_section.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 void main() {
+  setUp(() {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+  });
+
+  tearDown(() {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+  });
+
   Future<void> pump(
     WidgetTester tester, {
     required String title,
@@ -29,7 +38,7 @@ void main() {
 
   Finder chevrons() => find.byIcon(Icons.chevron_right);
 
-  testWidgets('a titled section keeps its title and its chevrons', (
+  testWidgets('a titled section keeps its title and its chevrons on desktop', (
     tester,
   ) async {
     await pump(tester, title: 'Recommendations');
@@ -38,10 +47,23 @@ void main() {
     expect(chevrons(), findsOneWidget);
   });
 
-  testWidgets('an untitled section still shows the chevrons', (tester) async {
+  testWidgets('an untitled section still shows the chevrons on desktop', (
+    tester,
+  ) async {
     await pump(tester, title: '');
 
     expect(chevrons(), findsOneWidget);
+  });
+
+  testWidgets('on phone layout, chevrons are hidden and untitled sections have no header', (
+    tester,
+  ) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.phone);
+    await pump(tester, title: '');
+
+    expect(chevrons(), findsNothing);
+    expect(find.byType(Spacer), findsNothing);
+    expect(tester.getSize(find.byType(HorizontalScrollSection)).height, 80);
   });
 
   testWidgets('an untitled section with no controls has no header at all', (

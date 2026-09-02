@@ -105,7 +105,8 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
 
   @override
   Widget build(BuildContext context) {
-    final hasControls = widget.showControls && !PlatformDetection.isTV;
+    final hasControls =
+        widget.showControls && PlatformDetection.useDesktopUi;
     final hasHeader =
         widget.title.isNotEmpty || widget.trailing != null || hasControls;
 
