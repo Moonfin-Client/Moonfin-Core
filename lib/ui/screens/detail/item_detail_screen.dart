@@ -694,6 +694,11 @@ class _DetailContentState extends State<_DetailContent> {
   late ScrollController _scrollController;
   late FocusNode _contentFocusNode;
   final Map<String, FocusNode> _sectionFocusNodes = <String, FocusNode>{};
+
+  /// The last target this screen put on the shared toolbar notifier, so it
+  /// only releases one it still owns. A screen underneath may have reclaimed
+  /// it while this one was covered.
+  FocusNode? _publishedNavbarTarget;
   final Map<FocusNode, ScrollController> _sectionScrollControllers =
       <FocusNode, ScrollController>{};
   final Set<FocusNode> _pendingSectionFocusRetries = <FocusNode>{};
@@ -1155,8 +1160,43 @@ class _DetailContentState extends State<_DetailContent> {
     _featureFocusNodes.clear();
     _nextEpisodeFocusNode.dispose();
     _seriesNextUpFocusNode.dispose();
-    NavigationLayout.focusDetailsPlayButtonNotifier.value = null;
+    if (NavigationLayout.focusDetailsPlayButtonNotifier.value ==
+        _publishedNavbarTarget) {
+      NavigationLayout.focusDetailsPlayButtonNotifier.value = null;
+    }
     super.dispose();
+  }
+
+  /// Where a Down press on the top toolbar should land, which is the overview
+  /// when there is one because that is what sits directly beneath the toolbar.
+  FocusNode? _topNavbarFocusTarget(
+    AggregatedItem item,
+    FocusNode? overviewFocusNode,
+  ) {
+    if (overviewFocusNode != null) return overviewFocusNode;
+    return switch (item.type) {
+      'Person' =>
+        widget.initialFocusNode ?? _sectionFocusNode('detailPersonFavorite'),
+      'MusicAlbum' || 'Playlist' => _albumPlayFocusNode,
+      'BoxSet' => _sectionFocusNode('detailBoxSetActionButtons'),
+      _ => widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons'),
+    };
+  }
+
+  /// Hands the toolbar its target after the frame that laid the nodes out.
+  ///
+  /// Assigning during build would be a side effect on a notifier other
+  /// widgets listen to, and the nodes it names have no context until the
+  /// frame is done anyway.
+  void _publishTopNavbarTarget(AggregatedItem item, FocusNode? overview) {
+    if (!PlatformDetection.isTV) return;
+    final target = _topNavbarFocusTarget(item, overview);
+    _publishedNavbarTarget = target;
+    if (NavigationLayout.focusDetailsPlayButtonNotifier.value == target) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      NavigationLayout.focusDetailsPlayButtonNotifier.value = target;
+    });
   }
 
   Widget _buildStaticPersonProfilePanel(
@@ -1256,16 +1296,7 @@ class _DetailContentState extends State<_DetailContent> {
     final item = widget.viewModel.item!;
     final headerOverviewFocusNode = _headerOverviewFocusNode(item);
     _ensureTvAlbumPlayFocus(item);
-    final topNavbarTarget = headerOverviewFocusNode ??
-        (item.type == 'Person'
-            ? (widget.initialFocusNode ?? _sectionFocusNode('detailPersonFavorite'))
-            : (item.type == 'MusicAlbum' || item.type == 'Playlist'
-                ? _albumPlayFocusNode
-                : (item.type == 'BoxSet'
-                    ? _sectionFocusNode('detailBoxSetActionButtons')
-                    : (widget.initialFocusNode ??
-                        _sectionFocusNode('detailActionButtons')))));
-    NavigationLayout.focusDetailsPlayButtonNotifier.value = topNavbarTarget;
+    _publishTopNavbarTarget(item, headerOverviewFocusNode);
     final isReadableBook = _isReadableBookItem(item);
     final selectedMediaSource = selectedMediaSourceForItem(
       item,
