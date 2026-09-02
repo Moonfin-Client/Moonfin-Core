@@ -39,6 +39,7 @@ import 'modern/modern_detail_content.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/progress_snack_bar.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
@@ -540,9 +541,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _viewModel.state == ItemDetailState.ready &&
         _showNavbar &&
         (!isAlbumOrPlaylist || _isCompact(context));
+    final showBackButton =
+        _viewModel.state != ItemDetailState.ready || showNavigationChrome;
 
     Widget body = NavigationLayout(
-      showBackButton: true,
+      showBackButton: showBackButton,
       showNavigationChrome: showNavigationChrome,
       child: _buildBody(context),
     );
@@ -1311,8 +1314,11 @@ class _DetailContentState extends State<_DetailContent> {
     final isAlbumOrPlaylist =
         item.type == 'MusicAlbum' || item.type == 'Playlist';
 
-    return Focus(
-      focusNode: _contentFocusNode,
+    return QuickReturnWrapper(
+      scrollController: _scrollController,
+      topFocusNode: widget.initialFocusNode,
+      child: Focus(
+        focusNode: _contentFocusNode,
       onKeyEvent: (node, event) {
         final primaryFocus = FocusManager.instance.primaryFocus;
         if (!identical(primaryFocus, _contentFocusNode)) {
@@ -1458,6 +1464,7 @@ class _DetailContentState extends State<_DetailContent> {
             ),
         ],
       ),
+    ),
     );
   }
 

@@ -34,6 +34,7 @@ import '../../../widgets/rating_display.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
 import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/navigation_layout.dart';
+import '../../../widgets/quick_return_wrapper.dart';
 import '../../../widgets/top_toolbar.dart';
 import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
@@ -4908,7 +4909,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           )
         : null;
 
-    return _landscape
+    final layout = _landscape
         ? ModernLandscapeLayout(
             backdrop: backdrop,
             hero: hero,
@@ -4929,6 +4930,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             topInset: topInset,
             scrollController: _scrollController,
           );
+
+    return QuickReturnWrapper(
+      scrollController: _scrollController,
+      topFocusNode: widget.initialFocusNode,
+      child: layout,
+    );
   }
 }
 
