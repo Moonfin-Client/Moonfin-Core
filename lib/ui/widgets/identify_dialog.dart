@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -525,7 +523,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
         result,
         replaceAllImages: replaceAllImages,
       );
-      unawaited(triggerHomeAndImageCacheRefresh(scheduleFollowUp: true));
+      refreshHomeRows(followUp: true);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.adminRemoteMetadataApplied)),

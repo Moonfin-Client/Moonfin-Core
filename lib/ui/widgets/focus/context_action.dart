@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -201,7 +199,7 @@ List<ItemContextAction> contextActionsFor(
         onSelect: () async {
           try {
             await mutations.refreshMetadata(item.id);
-            unawaited(triggerHomeAndImageCacheRefresh(scheduleFollowUp: true));
+            refreshHomeRows(followUp: true);
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(l10n.adminMetadataRefreshRequested)),

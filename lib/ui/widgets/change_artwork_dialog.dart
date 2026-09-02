@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
@@ -185,7 +184,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   @override
   void dispose() {
     if (_hasChanged) {
-      unawaited(triggerHomeAndImageCacheRefresh());
+      refreshHomeRows();
     }
     _clearAllFocusNode.dispose();
     _sourcesFocusNode.dispose();
