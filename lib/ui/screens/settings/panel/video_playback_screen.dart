@@ -12,15 +12,9 @@ class _VideoPlaybackScreen extends StatelessWidget {
         context,
         Text(l10n.settingsVideoPlaybackPreferences),
       ),
-      body: ListenableBuilder(
-        listenable: prefs,
-        builder: (context, _) {
-          final isTrickplayEnabled =
-              prefs.get(UserPreferences.trickPlayMode) !=
-              TrickplayMode.disabled;
-          return ListView(
-            children: [
-              const _SectionHeader('Media Player Behavior'),
+      body: ListView(
+        children: [
+          const _SectionHeader('Media Player Behavior'),
           adaptiveListSection(
             children: [
               SwitchPreferenceTile(
@@ -144,48 +138,62 @@ class _VideoPlaybackScreen extends StatelessWidget {
           ),
 
           _SectionHeader(l10n.trickPlay),
-          adaptiveListSection(
-            children: [
-              if (isTrickplayEnabled) const TrickplaySettingsPreview(),
-              EnumPreferenceTile<TrickplayMode>(
-                preference: UserPreferences.trickPlayMode,
-                title: l10n.trickPlay,
-                description: l10n.showPreviewThumbnailsWhenSeeking,
-                icon: Icons.image_search,
-                labelOf: (v) => switch (v) {
-                  TrickplayMode.disabled => l10n.disabled,
-                  TrickplayMode.single => l10n.trickplayDisplayStyleSingle,
-                  TrickplayMode.strip => l10n.trickplayDisplayStyleStrip,
-                  TrickplayMode.full => l10n.trickplayModeFull,
-                },
-              ),
-              if (isTrickplayEnabled) ...[
-                SliderPreferenceTile(
-                  preference: UserPreferences.trickPlayPreviewScalePercent,
-                  title: l10n.trickplayPreviewScale,
-                  icon: Icons.photo_size_select_large_outlined,
-                  min: 10,
-                  max: 100,
-                  divisions: 18,
-                  labelOf: (v) => l10n.percentValue(v),
-                ),
-                SliderPreferenceTile(
-                  preference: UserPreferences.trickPlayVerticalPositionPercent,
-                  title: l10n.trickplayVerticalOffset,
-                  icon: Icons.height,
-                  min: 0,
-                  max: 100,
-                  divisions: 20,
-                  labelOf: (v) => l10n.percentValue(v),
-                ),
-                SwitchPreferenceTile(
-                  preference: UserPreferences.trickPlayFollowScrubPosition,
-                  title: l10n.trickplayFollowScrubPosition,
-                  subtitle: l10n.trickplayFollowScrubPositionSubtitle,
-                  icon: Icons.swipe,
-                ),
-              ],
-            ],
+          // Only this section reacts to the mode, so the rest of the page is
+          // not rebuilt every time any preference anywhere changes.
+          ListenableBuilder(
+            listenable: prefs,
+            builder: (context, _) {
+              final showsPreviews =
+                  prefs.get(UserPreferences.trickPlayMode) !=
+                  TrickplayMode.disabled;
+              return adaptiveListSection(
+                children: [
+                  EnumPreferenceTile<TrickplayMode>(
+                    preference: UserPreferences.trickPlayMode,
+                    title: l10n.trickPlay,
+                    description: l10n.showPreviewThumbnailsWhenSeeking,
+                    icon: Icons.image_search,
+                    labelOf: (v) => switch (v) {
+                      TrickplayMode.disabled => l10n.disabled,
+                      TrickplayMode.single => l10n.trickplayDisplayStyleSingle,
+                      TrickplayMode.strip => l10n.trickplayDisplayStyleStrip,
+                      TrickplayMode.full => l10n.trickplayModeFull,
+                    },
+                  ),
+                  // Everything the mode governs sits after the mode itself, so
+                  // turning it on adds rows below the one being used rather
+                  // than shifting it down and taking its focus with it.
+                  if (showsPreviews) ...[
+                    const TrickplaySettingsPreview(),
+                    SliderPreferenceTile(
+                      preference: UserPreferences.trickPlayPreviewScalePercent,
+                      title: l10n.trickplayPreviewScale,
+                      icon: Icons.photo_size_select_large_outlined,
+                      min: 10,
+                      max: 100,
+                      divisions: 18,
+                      labelOf: (v) => l10n.percentValue(v),
+                    ),
+                    SliderPreferenceTile(
+                      preference:
+                          UserPreferences.trickPlayVerticalPositionPercent,
+                      title: l10n.trickplayVerticalOffset,
+                      icon: Icons.height,
+                      min: 0,
+                      max: 100,
+                      divisions: 20,
+                      labelOf: (v) => l10n.percentValue(v),
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.trickPlayFollowScrubPosition,
+                      title: l10n.trickplayFollowScrubPosition,
+                      subtitle: l10n.trickplayFollowScrubPositionSubtitle,
+                      icon: Icons.swipe,
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
 
           const _SectionHeader('Decoding & Rendering'),
@@ -324,11 +332,9 @@ class _VideoPlaybackScreen extends StatelessWidget {
             ],
           ),
         ],
-      );
-    },
-  ),
-);
-}
+      ),
+    );
+  }
 }
 
 class _ExternalPlayerAppPickerTile extends StatefulWidget {
