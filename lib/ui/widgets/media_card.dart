@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
@@ -21,6 +23,16 @@ class MediaCard extends StatefulWidget {
   /// cards against a clip boundary or each other has to leave that much room
   /// or the focused card loses its edges.
   static double get focusScale => PlatformDetection.isAppleTV ? 1.12 : 1.05;
+
+  /// How much room to leave beside a card of [extent] so a focused one keeps
+  /// its edges.
+  ///
+  /// Cards paint in the order they are laid out, so the one after the focused
+  /// card covers whatever the growth pushed into the gap. Wide artwork grows
+  /// by the same fraction of a much larger number, so a gap that suits a
+  /// poster does not suit a banner.
+  static double focusGap(double extent, {double minimum = 12.0}) =>
+      math.max(minimum, extent * (focusScale - 1) / 2);
 
   final String? title;
   final String? subtitle;

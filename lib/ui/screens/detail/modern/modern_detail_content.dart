@@ -34,6 +34,7 @@ import '../../../widgets/rating_display.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
 import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/navigation_layout.dart';
+import '../../../widgets/quick_return_wrapper.dart';
 import '../../../widgets/top_toolbar.dart';
 import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
@@ -3183,21 +3184,37 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _itemGrid(List<AggregatedItem> items, {double aspectRatio = 2 / 3, FocusNode? focusNode}) {
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final cardExpansion = widget.prefs.get(UserPreferences.cardFocusExpansion);
+    final focusColor = isNeon
+        ? AppColorScheme.accent
+        : Color(widget.prefs.get(UserPreferences.focusColor).colorValue);
+    final titleColor = isNeon ? AppColorScheme.accent : null;
+    final watchedBehavior =
+        widget.prefs.get(UserPreferences.watchedIndicatorBehavior);
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 12.0;
+        const minSpacing = 12.0;
         const desiredWidth = 150.0;
         final crossAxisCount =
-            ((constraints.maxWidth + spacing) / (desiredWidth + spacing))
+            ((constraints.maxWidth + minSpacing) / (desiredWidth + minSpacing))
                 .floor()
                 .clamp(2, 8);
-        final cellWidth =
-            (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
-                crossAxisCount;
+        double cellWidthWith(double gap) =>
+            (constraints.maxWidth - (crossAxisCount - 1) * gap) /
+            crossAxisCount;
+        final spacing = cardExpansion
+            ? MediaCard.focusGap(cellWidthWith(minSpacing), minimum: minSpacing)
+            : minSpacing;
+        final cellWidth = cellWidthWith(spacing);
         final cardRatio = aspectRatio;
         const textHeight = 44.0;
-        final childAspectRatio =
-            cellWidth / (cellWidth / cardRatio + textHeight);
+        final cellHeight = cellWidth / cardRatio + textHeight;
+        final childAspectRatio = cellWidth / cellHeight;
+        final rowSpacing = cardExpansion
+            ? MediaCard.focusGap(cellHeight, minimum: minSpacing)
+            : minSpacing;
         return Focus(
           canRequestFocus: false,
           onFocusChange: (focused) {
@@ -3217,27 +3234,32 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
+            padding: cardExpansion
+                ? EdgeInsets.symmetric(vertical: rowSpacing)
+                : EdgeInsets.zero,
             itemCount: items.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: spacing,
-              mainAxisSpacing: spacing,
+              mainAxisSpacing: rowSpacing,
               childAspectRatio: childAspectRatio,
             ),
             itemBuilder: (context, i) {
               final entry = items[i];
               return MediaCard(
                 title: entry.name,
+                titleColor: titleColor,
                 focusNode: i == 0 ? (focusNode ?? _gridFirstFocusNode) : null,
+                focusColor: focusColor,
+                cardFocusExpansion: cardExpansion,
+                suppressFocusGlow: isNeon,
                 imageUrl: _imageUrl(entry),
                 width: double.infinity,
                 aspectRatio: cardRatio,
                 isPlayed: entry.isPlayed,
                 isFavorite: entry.isFavorite,
                 itemType: entry.type,
-                watchedBehavior:
-                    widget.prefs.get(UserPreferences.watchedIndicatorBehavior),
+                watchedBehavior: watchedBehavior,
                 onTap: () {
                   if (entry.serverId == 'seerr') {
                     final mediaType = entry.seerrMediaType ??
@@ -3273,70 +3295,97 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }) {
     if (items.isEmpty) return const SizedBox.shrink();
     const cardRatio = 2 / 3;
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final cardExpansion = widget.prefs.get(UserPreferences.cardFocusExpansion);
+    final focusColor = isNeon
+        ? AppColorScheme.accent
+        : Color(widget.prefs.get(UserPreferences.focusColor).colorValue);
+    final titleColor = isNeon ? AppColorScheme.accent : null;
+    final watchedBehavior =
+        widget.prefs.get(UserPreferences.watchedIndicatorBehavior);
 
     final grid = LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 12.0;
+        const minSpacing = 12.0;
+        const minRunSpacing = 16.0;
         final columns = (constraints.maxWidth / (_landscape ? 160.0 : 130.0))
             .floor()
             .clamp(3, _landscape ? 10 : 6);
-        final cardWidth =
-            (((constraints.maxWidth - spacing * (columns - 1)) / columns)
-                .floorToDouble())
-            .clamp(0.0, 260.0 * _desktopUiScale(prefs: widget.prefs));
-        return Wrap(
-          spacing: spacing,
-          runSpacing: 16,
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Builder(
-                builder: (cellContext) {
-                  final entry = items[i];
-                  final topRow = i < columns;
-                  return MediaCard(
-                    title: entry.name,
-                    imageUrl: _imageUrl(entry),
-                    width: cardWidth,
-                    aspectRatio: cardRatio,
-                    isPlayed: entry.isPlayed,
-                    isFavorite: entry.isFavorite,
-                    itemType: entry.type,
-                    focusNode: i == 0 ? firstFocusNode : null,
-                    onFocus: () => Scrollable.ensureVisible(
-                      cellContext,
-                      alignment: 0.5,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                    ),
-                    onKeyEvent: topRow
-                        ? (node, event) {
-                            if (event is KeyDownEvent &&
-                                event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                              _focusSelectedTab();
-                              return KeyEventResult.handled;
+        double cardWidthWith(double gap) =>
+            (((constraints.maxWidth - gap * (columns - 1)) / columns)
+                    .floorToDouble())
+                .clamp(0.0, 260.0 * _desktopUiScale(prefs: widget.prefs));
+        final spacing = cardExpansion
+            ? MediaCard.focusGap(cardWidthWith(minSpacing), minimum: minSpacing)
+            : minSpacing;
+        final cardWidth = cardWidthWith(spacing);
+        final runSpacing = cardExpansion
+            ? MediaCard.focusGap(cardWidth / cardRatio, minimum: minRunSpacing)
+            : minRunSpacing;
+        return Padding(
+          padding: cardExpansion
+              ? EdgeInsets.symmetric(vertical: runSpacing)
+              : EdgeInsets.zero,
+          child: Wrap(
+            spacing: spacing,
+            runSpacing: runSpacing,
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Builder(
+                  builder: (cellContext) {
+                    final entry = items[i];
+                    final topRow = i < columns;
+                    return MediaCard(
+                      title: entry.name,
+                      titleColor: titleColor,
+                      imageUrl: _imageUrl(entry),
+                      width: cardWidth,
+                      aspectRatio: cardRatio,
+                      isPlayed: entry.isPlayed,
+                      isFavorite: entry.isFavorite,
+                      itemType: entry.type,
+                      focusNode: i == 0 ? firstFocusNode : null,
+                      focusColor: focusColor,
+                      cardFocusExpansion: cardExpansion,
+                      suppressFocusGlow: isNeon,
+                      onFocus: () => Scrollable.ensureVisible(
+                        cellContext,
+                        alignment: 0.5,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                      ),
+                      onKeyEvent: topRow
+                          ? (node, event) {
+                              if (event is KeyDownEvent &&
+                                  event.logicalKey ==
+                                      LogicalKeyboardKey.arrowUp) {
+                                _focusSelectedTab();
+                                return KeyEventResult.handled;
+                              }
+                              return KeyEventResult.ignored;
                             }
-                            return KeyEventResult.ignored;
-                          }
-                        : null,
-                    watchedBehavior: widget.prefs
-                        .get(UserPreferences.watchedIndicatorBehavior),
-                    onTap: () {
-                      if (entry.serverId == 'seerr') {
-                        final mediaType = entry.seerrMediaType ??
-                            (entry.type == 'Series' ? 'tv' : 'movie');
-                        context.push(
-                          Destinations.seerrMedia(entry.id, mediaType: mediaType),
-                        );
-                      } else {
-                        context.push(
-                          Destinations.item(entry.id, serverId: entry.serverId),
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
-          ],
+                          : null,
+                      watchedBehavior: watchedBehavior,
+                      onTap: () {
+                        if (entry.serverId == 'seerr') {
+                          final mediaType = entry.seerrMediaType ??
+                              (entry.type == 'Series' ? 'tv' : 'movie');
+                          context.push(
+                            Destinations.seerrMedia(entry.id,
+                                mediaType: mediaType),
+                          );
+                        } else {
+                          context.push(
+                            Destinations.item(entry.id,
+                                serverId: entry.serverId),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+            ],
+          ),
         );
       },
     );
@@ -4908,7 +4957,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           )
         : null;
 
-    return _landscape
+    final layout = _landscape
         ? ModernLandscapeLayout(
             backdrop: backdrop,
             hero: hero,
@@ -4929,6 +4978,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             topInset: topInset,
             scrollController: _scrollController,
           );
+
+    return QuickReturnWrapper(
+      scrollController: _scrollController,
+      topFocusNode: widget.initialFocusNode,
+      child: layout,
+    );
   }
 }
 

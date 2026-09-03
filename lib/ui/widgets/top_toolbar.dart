@@ -1928,12 +1928,42 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
   // back. Registering it lets the key close it instead of leaving the page.
   void _closeFromBack() => _hideDropdown(focusButton: true);
 
+  double _calculateMenuWidth(BuildContext context, double screenWidth) {
+    final baseStyle = (Theme.of(context).textTheme.bodyMedium ??
+            const TextStyle())
+        .copyWith(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        );
+    final textPainter = TextPainter(
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    );
+    double maxTextWidth = 0.0;
+    for (final lib in widget.libraries) {
+      textPainter.text = TextSpan(
+        text: lib.name,
+        style: baseStyle,
+      );
+      textPainter.layout();
+      if (textPainter.width > maxTextWidth) {
+        maxTextWidth = textPainter.width;
+      }
+    }
+    textPainter.dispose();
+
+    const horizontalPadding = 44.0;
+    final contentWidth = maxTextWidth + horizontalPadding;
+    final maxAllowed = (screenWidth - 24).clamp(140.0, 320.0);
+    return contentWidth.clamp(140.0, maxAllowed);
+  }
+
   void _showDropdown({bool focusFirstItem = false}) {
     _hideTimer?.cancel();
     if (_overlayEntry != null) return;
 
     final screenWidth = MediaQuery.of(context).size.width;
-    _menuWidth = (screenWidth - 16).clamp(180.0, 280.0);
+    _menuWidth = _calculateMenuWidth(context, screenWidth);
 
     final targetBox =
         _targetKey.currentContext?.findRenderObject() as RenderBox?;
@@ -2020,7 +2050,7 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
       link: _layerLink,
       targetAnchor: _openToLeft ? Alignment.bottomRight : Alignment.bottomLeft,
       followerAnchor: _openToLeft ? Alignment.topRight : Alignment.topLeft,
-      offset: Offset.zero,
+      offset: const Offset(0, 4),
       child: content,
     );
 
@@ -2040,16 +2070,30 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
   }
 
   Widget _dropdownContent(double maxMenuHeight) {
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final borderColor = isNeon
+        ? AppColorScheme.accent
+        : ThemeRegistry.active.borders.chipBorder.color;
+
     return Container(
+      width: _menuWidth,
       constraints: BoxConstraints(
-        minWidth: 180,
-        maxWidth: _menuWidth,
         maxHeight: maxMenuHeight,
       ),
       decoration: BoxDecoration(
         color: widget.surfaceColor,
         borderRadius: AppRadius.circular(12),
+        border: Border.all(
+          color: borderColor,
+          width: 1.2,
+        ),
         boxShadow: [
+          if (isNeon)
+            BoxShadow(
+              color: AppColorScheme.accent.withValues(alpha: 0.25),
+              blurRadius: 16,
+              spreadRadius: 1,
+            ),
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 24,
@@ -2217,11 +2261,16 @@ class _LibraryDropdownItemState extends State<_LibraryDropdownItem> {
                 : Colors.transparent,
             child: Text(
               widget.name,
-              style: TextStyle(
-                color: (_isHovered || _isFocused) ? focusColor : Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: (Theme.of(context).textTheme.bodyMedium ??
+                      const TextStyle())
+                  .copyWith(
+                    color:
+                        (_isHovered || _isFocused) ? focusColor : Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
         ),

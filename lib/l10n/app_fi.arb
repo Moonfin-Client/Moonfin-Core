@@ -4549,7 +4549,7 @@
     "revoke": "Peruuttaa",
     "role": "Rooli",
     "root": "Juuri",
-    "run": "Juokse",
+    "run": "Aja",
     "search": "Haku",
     "select": "Valitse",
     "send": "Lähetä",
@@ -5129,7 +5129,6 @@
             }
         }
     },
-    "adminRunNow": "Juokse nyt",
     "adminTriggerRemoveFailed": "Liipaisimen poistaminen epäonnistui: {error}",
     "@adminTriggerRemoveFailed": {
         "placeholders": {
@@ -5982,10 +5981,10 @@
     "adminTasksEmpty": "Ajastettuja tehtäviä ei löytynyt",
     "adminTasksNoFilterMatch": "Yksikään tehtävä ei vastaa nykyistä suodatinta",
     "adminTaskCancelling": "Peruutetaan...",
-    "adminTaskRunning": "Juokse...",
-    "adminTaskNeverRun": "Älä koskaan juokse",
+    "adminTaskRunning": "Suoritetaan...",
+    "adminTaskNeverRun": "Älä koskaan suorita",
     "adminTaskStop": "Pysäytä",
-    "adminTaskRun": "Juokse",
+    "adminTaskRun": "Suorita",
     "adminTaskDetailLastExecution": "Viimeinen teloitus",
     "adminTaskDetailStarted": "Aloitettu",
     "adminTaskDetailEnded": "Päättyi",

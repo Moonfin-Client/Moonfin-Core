@@ -1112,7 +1112,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _buildVerticalGrid() {
     final cardWidth = _cardWidth();
-    const spacing = 12.0;
+    final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
     final watchedBehavior = _prefs.get(
       UserPreferences.watchedIndicatorBehavior,
     );
@@ -1123,6 +1123,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final l10n = AppLocalizations.of(context);
         final isMobile = _isCompact(context);
         final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+        final spacing = cardFocusExpansion && !isMobile
+            ? MediaCard.focusGap(cardWidth)
+            : 12.0;
         final minClamp = _vm.imageType == ImageType.banner
             ? (constraints.maxWidth < 600 ? 1 : 2)
             : 2;
@@ -1149,7 +1152,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         // finger is down.
         final focusOverhang = isMobile
             ? 0.0
-            : cellHeight * (MediaCard.focusScale - 1) / 2;
+            : MediaCard.focusGap(cellHeight, minimum: 0.0);
         final rowSpacing = math.max(8.0, focusOverhang);
         _gridGeometry = (
           perLine: crossAxisCount,
@@ -1528,9 +1531,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (_vm.isGrouping) {
       return _buildGroupedHorizontalRows();
     }
-    const spacing = 12.0;
-    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
     final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
@@ -1545,6 +1547,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final textHeight = (_hasSubtitles ? 46.0 : 30.0) * desktopTextScale;
 
         final cellWidth = _cardWidth();
+        final spacing = cardFocusExpansion && !isMobile
+            ? MediaCard.focusGap(cellWidth)
+            : 12.0;
         final targetImageHeight = cellWidth / ar;
         final targetCellHeight = targetImageHeight + textHeight;
 

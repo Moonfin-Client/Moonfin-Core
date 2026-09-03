@@ -71,6 +71,8 @@ class Win32Window {
   // Called when Destroy is called.
   virtual void OnDestroy();
 
+  void SizeChildContent(int width, int height);
+
  private:
   friend class WindowClassRegistrar;
 

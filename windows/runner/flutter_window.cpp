@@ -15,6 +15,9 @@ namespace {
 std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>>
     g_hdr_display_channel;
 
+// Posted after a nested WM_SIZE. WM_APP + 1 is native_game's.
+constexpr UINT kResyncViewMessage = WM_APP + 2;
+
 struct HdrDisplayState {
   bool supported = false;
   bool enabled = false;
@@ -263,10 +266,53 @@ void FlutterWindow::OnDestroy() {
   Win32Window::OnDestroy();
 }
 
+void FlutterWindow::SizeChildToClientArea() {
+  if (IsIconic(GetHandle())) {
+    return;
+  }
+  const RECT frame = GetClientArea();
+  SizeChildContent(frame.right, frame.bottom);
+}
+
 LRESULT
 FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
                               WPARAM const wparam,
                               LPARAM const lparam) noexcept {
+  if (message == kResyncViewMessage) {
+    SizeChildToClientArea();
+    return 0;
+  }
+  if (message != WM_SIZE) {
+    return RouteMessage(hwnd, message, wparam, lparam);
+  }
+
+  // The engine pumps its task queue while answering a child resize, so a task
+  // that resizes the window re-enters here. A nested resize leaves the engine
+  // with a stale target (white, half-size or corner-drawn UI), so the child
+  // is sized once, after both have unwound.
+  ++size_depth_;
+  LRESULT result = 0;
+  if (size_depth_ == 1) {
+    result = RouteMessage(hwnd, message, wparam, lparam);
+  } else {
+    nested_size_ = true;
+    if (flutter_controller_) {
+      result = flutter_controller_
+                   ->HandleTopLevelWindowProc(hwnd, message, wparam, lparam)
+                   .value_or(0);
+    }
+  }
+  if (--size_depth_ == 0 && nested_size_) {
+    nested_size_ = false;
+    PostMessage(hwnd, kResyncViewMessage, 0, 0);
+  }
+  return result;
+}
+
+LRESULT
+FlutterWindow::RouteMessage(HWND hwnd, UINT const message,
+                            WPARAM const wparam,
+                            LPARAM const lparam) noexcept {
   // Give Flutter, including plugins, an opportunity to handle window messages.
   if (flutter_controller_) {
     std::optional<LRESULT> result =

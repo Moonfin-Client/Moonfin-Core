@@ -26,6 +26,15 @@ class FlutterWindow : public Win32Window {
                          LPARAM const lparam) noexcept override;
 
  private:
+  LRESULT RouteMessage(HWND window, UINT const message, WPARAM const wparam,
+                       LPARAM const lparam) noexcept;
+
+  void SizeChildToClientArea();
+
+  // WM_SIZE re-entrancy - see MessageHandler.
+  int size_depth_ = 0;
+  bool nested_size_ = false;
+
   // The project to run.
   flutter::DartProject project_;
 

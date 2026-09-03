@@ -150,7 +150,8 @@ bool Win32Window::Create(const std::wstring& title,
 }
 
 bool Win32Window::Show() {
-  return ShowWindow(window_handle_, SW_SHOWNORMAL);
+  // SW_SHOW keeps the current placement; SW_SHOWNORMAL would un-maximise.
+  return ShowWindow(window_handle_, SW_SHOW);
 }
 
 // static
@@ -199,11 +200,7 @@ Win32Window::MessageHandler(HWND hwnd,
     }
     case WM_SIZE: {
       RECT rect = GetClientArea();
-      if (child_content_ != nullptr) {
-        // Size and position the child window.
-        MoveWindow(child_content_, rect.left, rect.top, rect.right - rect.left,
-                   rect.bottom - rect.top, TRUE);
-      }
+      SizeChildContent(rect.right - rect.left, rect.bottom - rect.top);
       return 0;
     }
 
@@ -242,11 +239,14 @@ void Win32Window::SetChildContent(HWND content) {
   child_content_ = content;
   SetParent(content, window_handle_);
   RECT frame = GetClientArea();
-
-  MoveWindow(content, frame.left, frame.top, frame.right - frame.left,
-             frame.bottom - frame.top, true);
-
+  SizeChildContent(frame.right - frame.left, frame.bottom - frame.top);
   SetFocus(child_content_);
+}
+
+void Win32Window::SizeChildContent(int width, int height) {
+  if (child_content_ != nullptr) {
+    MoveWindow(child_content_, 0, 0, width, height, TRUE);
+  }
 }
 
 RECT Win32Window::GetClientArea() {
