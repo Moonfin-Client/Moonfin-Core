@@ -3543,6 +3543,12 @@ class _ContentRowsState extends State<_ContentRows>
     return posterSize.portraitHeight.toDouble() * platformScale;
   }
 
+  /// Touch never leaves a card grown, so phones keep the tighter layout.
+  double _rowItemSpacing(double itemExtent, bool cardExpansion) =>
+      cardExpansion && !PlatformDetection.useMobileUi
+      ? MediaCard.focusGap(itemExtent)
+      : 12.0;
+
   double _rowContentHeight(
     HomeRow row,
     PosterSize posterSize,
@@ -4396,7 +4402,7 @@ class _ContentRowsState extends State<_ContentRows>
           controller: _rowHorizontalController(rowIndex),
           height: rowHeight,
           itemExtent: squarePosterSide,
-          itemSpacing: 12,
+          itemSpacing: _rowItemSpacing(squarePosterSide, cardExpansion),
           leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
           clipBehavior: cardExpansion ? Clip.none : Clip.hardEdge,
           padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
@@ -4458,7 +4464,7 @@ class _ContentRowsState extends State<_ContentRows>
           controller: _rowHorizontalController(rowIndex),
           height: rowHeight,
           itemExtent: squarePosterSide,
-          itemSpacing: 12,
+          itemSpacing: _rowItemSpacing(squarePosterSide, cardExpansion),
           leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
           clipBehavior: cardExpansion ? Clip.none : Clip.hardEdge,
           padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
@@ -4618,7 +4624,7 @@ class _ContentRowsState extends State<_ContentRows>
           controller: _rowHorizontalController(rowIndex),
           height: maxCardHeight + (10 * metadataScale),
           itemExtent: firstCardWidth,
-          itemSpacing: (cardExpansion ? 16.0 : 12.0) * (PlatformDetection.useMobileUi ? 1.0 : desktopScale),
+          itemSpacing: _rowItemSpacing(firstCardWidth, cardExpansion),
           leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
           clipBehavior: (isRowsV2 || cardExpansion) ? Clip.none : Clip.hardEdge,
           padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),

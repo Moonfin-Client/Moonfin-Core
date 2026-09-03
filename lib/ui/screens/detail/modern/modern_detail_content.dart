@@ -3194,19 +3194,26 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 16.0;
+        const minSpacing = 12.0;
         const desiredWidth = 150.0;
         final crossAxisCount =
-            ((constraints.maxWidth + spacing) / (desiredWidth + spacing))
+            ((constraints.maxWidth + minSpacing) / (desiredWidth + minSpacing))
                 .floor()
                 .clamp(2, 8);
-        final cellWidth =
-            (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
-                crossAxisCount;
+        double cellWidthWith(double gap) =>
+            (constraints.maxWidth - (crossAxisCount - 1) * gap) /
+            crossAxisCount;
+        final spacing = cardExpansion
+            ? MediaCard.focusGap(cellWidthWith(minSpacing), minimum: minSpacing)
+            : minSpacing;
+        final cellWidth = cellWidthWith(spacing);
         final cardRatio = aspectRatio;
         const textHeight = 44.0;
-        final childAspectRatio =
-            cellWidth / (cellWidth / cardRatio + textHeight);
+        final cellHeight = cellWidth / cardRatio + textHeight;
+        final childAspectRatio = cellWidth / cellHeight;
+        final rowSpacing = cardExpansion
+            ? MediaCard.focusGap(cellHeight, minimum: minSpacing)
+            : minSpacing;
         return Focus(
           canRequestFocus: false,
           onFocusChange: (focused) {
@@ -3226,12 +3233,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(top: 14, bottom: 20),
+            padding: cardExpansion
+                ? EdgeInsets.symmetric(vertical: rowSpacing)
+                : EdgeInsets.zero,
             itemCount: items.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: spacing,
-              mainAxisSpacing: spacing,
+              mainAxisSpacing: rowSpacing,
               childAspectRatio: childAspectRatio,
             ),
             itemBuilder: (context, i) {
@@ -3296,17 +3305,26 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final grid = LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 16.0;
-        const runSpacing = 20.0;
+        const minSpacing = 12.0;
+        const minRunSpacing = 16.0;
         final columns = (constraints.maxWidth / (_landscape ? 160.0 : 130.0))
             .floor()
             .clamp(3, _landscape ? 10 : 6);
-        final cardWidth =
-            (((constraints.maxWidth - spacing * (columns - 1)) / columns)
-                .floorToDouble())
-            .clamp(0.0, 260.0 * _desktopUiScale(prefs: widget.prefs));
+        double cardWidthWith(double gap) =>
+            (((constraints.maxWidth - gap * (columns - 1)) / columns)
+                    .floorToDouble())
+                .clamp(0.0, 260.0 * _desktopUiScale(prefs: widget.prefs));
+        final spacing = cardExpansion
+            ? MediaCard.focusGap(cardWidthWith(minSpacing), minimum: minSpacing)
+            : minSpacing;
+        final cardWidth = cardWidthWith(spacing);
+        final runSpacing = cardExpansion
+            ? MediaCard.focusGap(cardWidth / cardRatio, minimum: minRunSpacing)
+            : minRunSpacing;
         return Padding(
-          padding: const EdgeInsets.only(top: 14, bottom: 20),
+          padding: cardExpansion
+              ? EdgeInsets.symmetric(vertical: runSpacing)
+              : EdgeInsets.zero,
           child: Wrap(
             spacing: spacing,
             runSpacing: runSpacing,

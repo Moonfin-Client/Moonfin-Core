@@ -11688,6 +11688,10 @@ class DetailSimilarRow extends StatelessWidget {
     final isMobile = _isCompact(context);
     final desktopScale = _desktopUiScale(prefs: prefs);
     final cardWidth = customCardWidth ?? (isMobile ? 120.0 : 150.0 * desktopScale);
+    final baseGap = isMobile ? 8.0 : 12 * desktopScale;
+    final separatorWidth = cardExpansion && !isMobile
+        ? MediaCard.focusGap(cardWidth, minimum: baseGap)
+        : baseGap;
 
     return SizedBox(
       height: customHeight ?? (isMobile ? 228 : 282 * desktopScale),
@@ -11695,11 +11699,9 @@ class DetailSimilarRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
+        padding: const EdgeInsets.fromLTRB(6, 10, 6, 4),
         itemCount: items.length,
-        separatorBuilder: (_, _) => SizedBox(
-          width: (cardExpansion ? 16.0 : 12.0) * (isMobile ? 1.0 : desktopScale),
-        ),
+        separatorBuilder: (_, _) => SizedBox(width: separatorWidth),
         itemBuilder: (context, index) {
           final item = items[index];
           final ar = MediaCard.aspectRatioForType(item.type);
@@ -14441,6 +14443,10 @@ class SeerrAppearancesRow extends StatelessWidget {
     final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
+    final baseGap = isMobile ? 8.0 : 12 * desktopScale;
+    final separatorWidth = cardExpansion && !isMobile
+        ? MediaCard.focusGap(cardWidth, minimum: baseGap)
+        : baseGap;
 
     return SizedBox(
       height: rowHeight,
@@ -14449,9 +14455,7 @@ class SeerrAppearancesRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         itemCount: items.length,
-        separatorBuilder: (_, _) => SizedBox(
-          width: (cardExpansion ? 16.0 : 12.0) * (isMobile ? 1.0 : desktopScale),
-        ),
+        separatorBuilder: (_, _) => SizedBox(width: separatorWidth),
         itemBuilder: (context, index) {
           final item = items[index];
 
