@@ -3827,8 +3827,7 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   bool _hasMetadata(AggregatedItem item) {
-    return item.type == 'BoxSet' ||
-        viewModel.directors.isNotEmpty ||
+    return viewModel.directors.isNotEmpty ||
         viewModel.writers.isNotEmpty ||
         item.studios.isNotEmpty;
   }
