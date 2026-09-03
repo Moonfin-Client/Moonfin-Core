@@ -1,4 +1,5 @@
 import '../../l10n/app_localizations.dart';
+import '../../preference/preference_constants.dart';
 import '../models/aggregated_item.dart';
 
 int latestMediaFetchLimitForCollection(
@@ -17,6 +18,32 @@ int latestMediaFetchLimitForCollection(
 
   return defaultLimit;
 }
+
+/// The item types a Recently Released row asks a library for.
+///
+/// Asking by type is what lets the query recurse and reach a title the server
+/// left sitting inside a folder of its own. A library that reports no type, or
+/// one nothing here covers, gets null, and the caller then leaves recursion off
+/// so the row keeps to the titles sitting directly in the library.
+///
+/// [seriesType] is only called for a TV library, so nothing else has to have
+/// the setting to hand.
+List<String>? recentlyReleasedItemTypesFor(
+  String? collectionType, {
+  required RecentlyReleasedSeriesType Function() seriesType,
+}) => switch (collectionType?.toLowerCase()) {
+  'tvshows' || 'shows' => switch (seriesType()) {
+    RecentlyReleasedSeriesType.series => const ['Series'],
+    RecentlyReleasedSeriesType.season => const ['Season'],
+    RecentlyReleasedSeriesType.episode => const ['Episode'],
+  },
+  'movies' => const ['Movie'],
+  'music' => const ['MusicAlbum'],
+  // A books library holds both kinds.
+  'books' => const ['Book', 'AudioBook'],
+  'audiobooks' => const ['AudioBook', 'Audio'],
+  _ => null,
+};
 
 /// Marks a row stitched together from several libraries of one kind. Such a row
 /// has no single parent library, so nothing can ask the server for more of it.

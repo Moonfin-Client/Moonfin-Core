@@ -307,31 +307,17 @@ class RowDataSource {
       defaultLimit: _defaultLimit,
       maxLimit: _maxItems,
     );
-    List<String>? includeItemTypes;
-    final normalizedType = collectionType?.toLowerCase();
-    if (normalizedType == 'tvshows' || normalizedType == 'shows') {
-      final prefSeriesType = GetIt.instance<UserPreferences>().get(
+    final includeItemTypes = recentlyReleasedItemTypesFor(
+      collectionType,
+      seriesType: () => GetIt.instance<UserPreferences>().get(
         UserPreferences.recentlyReleasedSeriesType,
-      );
-      includeItemTypes = switch (prefSeriesType) {
-        RecentlyReleasedSeriesType.series => const ['Series'],
-        RecentlyReleasedSeriesType.season => const ['Season'],
-        RecentlyReleasedSeriesType.episode => const ['Episode'],
-      };
-    } else if (normalizedType == 'movies') {
-      includeItemTypes = const ['Movie'];
-    } else if (normalizedType == 'music') {
-      includeItemTypes = const ['MusicAlbum'];
-    } else if (normalizedType == 'books') {
-      includeItemTypes = const ['Book'];
-    } else if (normalizedType == 'audiobooks') {
-      includeItemTypes = const ['AudioBook', 'Audio'];
-    }
+      ),
+    );
     final response = await _getRecentlyReleasedItemsWithFallback(
       parentId: parentId,
       limit: fetchLimit,
       includeItemTypes: includeItemTypes,
-      recursive: true,
+      recursive: includeItemTypes != null,
     );
     final items = normalizeLatestMediaItems(
       _parseItems(response, serverId),
