@@ -5846,11 +5846,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   /// circles are actually capped to.
   static const _modernFocusedFloor = 200.0;
 
+  /// The narrowest the focused Play pill is drawn at, below
+  /// [_modernFocusedFloor] so a short label does not reserve the width of a
+  /// long one.
+  static const _modernPlayFocusedFloor = 140.0;
+
   /// The width the focused Play pill actually takes, which is its label plus
-  /// the icon, the gap and the padding around them. The circles are capped at
-  /// [_modernFocusedFloor] but the pill only has that as a floor, so a long
-  /// label makes it wider and the row has to be measured against the real
-  /// thing rather than the floor.
+  /// the icon, the gap and the padding around them. Bounded by the same cap
+  /// the pill is drawn within, so a label too long to fit is measured at the
+  /// width it ends up ellipsised to rather than the width it wanted.
   double _modernPlayFocusedWidth(String? label) {
     if (label == null) return _modernFocusedFloor;
     // Matching what _buildModernChild lays out around the label.
@@ -5873,27 +5877,33 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     )..layout();
     final measured = painter.width + iconWidth + iconGap + horizontalPadding;
     painter.dispose();
-    return measured < 140.0 ? 140.0 : measured;
+    return measured.clamp(_modernPlayFocusedFloor, _modernFocusedFloor);
   }
 
-  /// The widest a modern row of [buttonCount] buttons can get. Only one
-  /// button is focused at a time, so the worst case is the primary button plus
-  /// all secondary buttons at rest, except when one secondary button is grown
-  /// to its focused width.
-  double _modernRowWorstWidth(
+  /// The widest a modern row of [buttonCount] buttons can get. One button
+  /// holds focus and every grown button stops at the same cap, so the widest
+  /// row is that cap plus the rest at rest, and Play rests wider than a
+  /// circle. Counting Play grown as well describes a row that cannot happen
+  /// and sends buttons to the overflow menu that had room to stay.
+  ///
+  /// Public for the width tests. Every production caller lives in this file.
+  @visibleForTesting
+  static double modernRowWorstWidth(
     int buttonCount,
     double spacing,
     double playFocused,
   ) {
+    const playResting = 54.0;
     const circleResting = 52.0;
     const circleFocused = _modernFocusedFloor;
 
     final circles = buttonCount - 1;
     if (circles <= 0) return playFocused;
 
-    final circleGrown =
-        playFocused + circleFocused + (circles - 1) * circleResting;
-    return circles * spacing + circleGrown;
+    return circles * spacing +
+        circleFocused +
+        playResting +
+        (circles - 1) * circleResting;
   }
 
   void _focusUpTarget() {
@@ -6769,7 +6779,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .map((button) => button.label)
         .firstOrNull;
     final fitsOneLine = widget.modernStyle && rowBudget != null
-        ? _modernRowWorstWidth(
+        ? modernRowWorstWidth(
                 allButtons.length,
                 buttonSpacing,
                 _modernPlayFocusedWidth(playLabel),
@@ -11095,6 +11105,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       ),
       child: ClipRRect(
         borderRadius: AppRadius.circular(height / 2),
+        clipBehavior: Clip.hardEdge,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const NeverScrollableScrollPhysics(),
