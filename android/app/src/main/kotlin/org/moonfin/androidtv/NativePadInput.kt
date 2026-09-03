@@ -60,13 +60,11 @@ internal class NativePadInput(
     // transitions are rare and always sent immediately.
     private var lastDiagnosticsAxisEmitUptimeMs = 0L
 
-    // Counts publishPadState calls across every port; every ANALOG_POLL_INTERVAL
-    // of them, one JNI call re-reads which ports the core has queried
-    // RETRO_DEVICE_ANALOG on. Tied to actual analog activity rather than a
-    // wall-clock tick: a Handler timer would keep firing (and need explicit
-    // start/stop bookkeeping around setActive/dispose) even while no stick is
-    // moving, whereas this piggybacks on a call site that already only runs
-    // while a pad is live.
+    // Counts joystick motion events across every port; every
+    // ANALOG_POLL_INTERVAL of them, one JNI call re-reads which ports take an
+    // analog stick. Tied to real stick activity rather than a wall-clock tick:
+    // a Handler timer would keep firing, and need start/stop bookkeeping around
+    // setActive/dispose, even while nothing is moving.
     private var analogPollCounter = 0
 
     // Seeds coreReadsAnalog for pads added between polls.
@@ -144,39 +142,22 @@ internal class NativePadInput(
     }
 
     /**
-     * Polls [LibretroBridge.analogDescriptorPorts] once and applies its
-     * bitmask to every live [PadState] via [setCoreReadsAnalog]. Called from
-     * [setActive] shortly after activation and periodically from
-     * [publishPadState] (see [analogPollCounter]) rather than per event,
-     * since this crosses JNI and the digital/analog rule only needs to react
-     * within a handful of frames, not on every single one.
+     * Polls [LibretroBridge.analogStickPorts] once and applies its bitmask
+     * to every live [PadState] via [setCoreReadsAnalog]. Called from
+     * [setActive] shortly after activation, and thereafter every
+     * ANALOG_POLL_INTERVAL joystick motion events (see [analogPollCounter]),
+     * since this crosses JNI and the rule only needs to react within a handful
+     * of frames.
      *
-     * The signal is the core's published RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS
-     * for the current game, not "did the core query RETRO_DEVICE_ANALOG" --
-     * that older signal was accurate about what it measured but answered the
-     * wrong question, and using it as an analog/digital gate made real games
-     * worse:
-     *
-     *  - FBNeo queries analog for every game, including 4-way ones. BurgerTime
-     *    became unplayable: our old digital path ignored sideways drift below
-     *    0.40, but FBNeo's own analog->digital conversion uses a far lower
-     *    threshold, so a slight lean while climbing produced a diagonal a 4-way
-     *    game cannot act on, and the character stopped.
-     *  - Stella queries analog for Breakout, where the control is an absolute
-     *    paddle; feeding it stick position made it wild.
-     *
-     * Input descriptors are per-game and authoritative instead: BurgerTime
-     * publishes 64 descriptors, all device=JOYPAD, zero analog; Capcom
-     * Bowling publishes 48 device=JOYPAD entries plus 8 device=ANALOG entries
-     * ('Trackball X'/'Trackball Y'). A port only leaves the d-pad-conversion
-     * path when the current game itself describes analog controls for it.
+     * The host decides which ports are analog and why (see
+     * lh_analog_stick_ports); this only applies the answer.
      *
      * Descriptors can arrive a few ms after [LibretroBridge] finishes loading
      * (FBNeo sends them late), which is why [setActive] schedules a delayed
      * refresh instead of relying solely on the periodic one.
      */
     private fun refreshAnalogPorts() {
-        val mask = bridge.analogDescriptorPorts()
+        val mask = bridge.analogStickPorts()
         analogPortMask = mask
         for (port in 0 until NativeControllerPortRegistry.MAX_PORTS) {
             setCoreReadsAnalog(port, (mask shr port) and 1 != 0)
@@ -396,6 +377,20 @@ internal class NativePadInput(
         // through to Flutter's normal focus handling.
         if (!connection.supported) return connection.isGamepad
         val state = padStates.get(event.deviceId) ?: return true
+
+        // Refreshed here, before ANY of this event reads coreReadsAnalog. The
+        // mode picks both the digital direction bits below and the analog axes
+        // in publishPadState, so flipping it midway would publish one half
+        // under the old mode and the other under the new -- the stick sample
+        // that caused the switch discarded, or the old direction re-sent with
+        // the axes zeroed. Counted per event rather than per publish, so a port
+        // held in digital mode (which suppresses its own publishes) still polls
+        // its way back out.
+        analogPollCounter++
+        if (analogPollCounter >= ANALOG_POLL_INTERVAL) {
+            analogPollCounter = 0
+            refreshAnalogPorts()
+        }
 
         // Every axis is read exactly once: getAxisValue is a native call, and
         // this runs on the UI thread for every motion event of every pad.
@@ -877,12 +872,6 @@ internal class NativePadInput(
             maskComposer.combined(state.port)
         }
         bridge.onPadState(state.port, combined, lx, ly, rx, ry, trigL, trigR)
-
-        analogPollCounter++
-        if (analogPollCounter >= ANALOG_POLL_INTERVAL) {
-            analogPollCounter = 0
-            refreshAnalogPorts()
-        }
     }
 
     private fun analogMoved(new: Int, old: Int): Boolean =
@@ -1008,7 +997,7 @@ internal class NativePadInput(
         // low hundreds), so a stored binding can never collide with one.
         const val SYNTHETIC_KEYCODE_L2 = NativeMappingTables.SYNTHETIC_KEYCODE_L2
         const val SYNTHETIC_KEYCODE_R2 = NativeMappingTables.SYNTHETIC_KEYCODE_R2
-        // Every 64th publishPadState call re-reads analogDescriptorPorts. Chosen
+        // Every 64th joystick motion event re-reads analogStickPorts. Chosen
         // to be cheap even at Gauntlet's measured ~56 ANALOG queries/frame
         // (an unrelated, much hotter path) while still reacting within a
         // fraction of a second of real stick movement.

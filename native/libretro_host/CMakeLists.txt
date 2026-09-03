@@ -25,7 +25,13 @@ target_compile_options(libretro_host PRIVATE ${LH_DEBUG_OPT})
 # Warnings were not enabled here, so "warning-free" meant nothing: two unused
 # symbols sat in the tree unnoticed. On by default; not -Werror, since the
 # five platform builds that consume this file have not been swept yet.
+#
+# target_compile_options, NOT add_compile_options: the directory property is
+# only inherited by targets created after the call, and libretro_host is
+# declared above it -- so the directory form reached the test targets and left
+# the one file this project actually maintains compiling without either flag.
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(libretro_host PRIVATE -Wall -Wextra)
   add_compile_options(-Wall -Wextra)
 endif()
 

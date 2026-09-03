@@ -98,14 +98,12 @@ static void write_rom(const char *path, const char *contents) {
 }
 
 // ---------------------------------------------------------------------------
-// Regression tests for the input OR-latch. Before this fix, poll_input
+// Regression tests for the digital input latch. Before this fix, poll_input
 // returned the platform's raw instantaneous mask, and input_poll_cb was a
 // no-op - so a press whose down and up both landed inside one ~16.7ms poll
-// window was never observed by the core at all. lh_set_input now folds every
-// write into a pending OR mask, and lh_test_poll_input runs the same latch
-// step input_poll_cb runs on every real libretro poll, exchanging pending
-// back down to the current level and handing the exchanged value to the
-// frame the core reads. Driven directly through lh_set_input/
+// window was never observed by the core at all. lh_set_input now records
+// transitions, and lh_test_poll_input runs the same latch step the run loop
+// executes before retro_run. Driven directly through lh_set_input/
 // lh_test_poll_input/lh_test_read_input rather than a loaded core, so the
 // exact poll boundaries are deterministic instead of racing the run loop's
 // wall-clock pacing.
@@ -170,7 +168,7 @@ static void test_input_latch(void) {
 
   drain_latch(host);
   // Clearing with no poll between the press and the release still yields
-  // exactly one observation - this is an OR-latch, not "last write wins".
+  // exactly one complete DOWN/UP sequence, not "last write wins".
   lh_set_input(host, 0, 0x0004);
   lh_set_input(host, 0, 0x0000);
   lh_test_poll_input(host);
@@ -211,6 +209,119 @@ static void test_input_latch(void) {
   CHECK(lh_test_read_input(host, 1) == 0x0020, "port 1 unaffected by port 0's write");
 
   lh_destroy(host);
+}
+
+// Regression coverage for the transition-preserving digital latch. The
+// existing test_input_latch checks the original one-frame delivery contract;
+// these cases specifically require a release and a following press to remain
+// distinct when they arrive between frontend frames. Every assertion that
+// represents a core read goes through read_joypad via the test hooks, rather
+// than inspecting the host's private frame slot alone.
+static void test_input_transition_latch(void) {
+  printf("input transition latch:\n");
+  const uint16_t b = (uint16_t)(1u << RETRO_DEVICE_ID_JOYPAD_B);
+
+  // This is the measured bug: after DOWN was delivered, UP+DOWN between
+  // frames must expose a real release before the second rising edge.
+  {
+    lh_host *h = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "the first B press is observed");
+
+    lh_set_input(h, 0, 0);
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 0,
+          "a release before a re-press is observable as UP");
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "the re-press is observable as a second rising edge");
+    lh_destroy(h);
+  }
+
+  // When an extra-fast sequence ends held, retained transitions must settle
+  // back to the real physical level instead of leaving the core released.
+  {
+    lh_host *h = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(h, 0, b);
+    lh_set_input(h, 0, 0);
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == b,
+          "a rapid sequence ending held first exposes DOWN");
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == 0,
+          "the intervening release remains observable");
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == b,
+          "then the core settles on the final held level");
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == b,
+          "the final held level remains stable");
+    lh_destroy(h);
+  }
+
+  // A zero-valued release must acknowledge the transition at both supported
+  // query granularities. Otherwise a following DOWN remains blocked forever.
+  {
+    lh_host *h = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == b, "a mask query observes DOWN");
+    lh_set_input(h, 0, 0);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == 0,
+          "a mask query observes and acknowledges zero-valued UP");
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input(h, 0) == b,
+          "a mask-acknowledged release permits the next DOWN");
+    lh_destroy(h);
+
+    h = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "an individual query observes DOWN");
+    lh_set_input(h, 0, 0);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 0,
+          "an individual query observes and acknowledges zero-valued UP");
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "an individually acknowledged release permits the next DOWN");
+    lh_destroy(h);
+  }
+
+  // The run loop latches once before retro_run, and a compliant core may call
+  // input_poll inside that run. The second call must not consume the deferred
+  // DOWN in the same emulation frame, or UP+DOWN collapses again.
+  {
+    lh_host *h = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    lh_test_core_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "the first frame exposes DOWN once to a polling core");
+    lh_set_input(h, 0, 0);
+    lh_set_input(h, 0, b);
+    lh_test_poll_input(h);
+    lh_test_core_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 0,
+          "a compliant core sees UP, not a second transition, that frame");
+    lh_test_core_poll_input(h);
+    CHECK((lh_test_read_input(h, 0) & b) == 0,
+          "another core poll cannot advance DOWN in the same frame");
+    lh_test_poll_input(h);
+    lh_test_core_poll_input(h);
+    CHECK(lh_test_observe_input_id(h, 0, RETRO_DEVICE_ID_JOYPAD_B) == 1,
+          "the deferred DOWN waits for the following frame");
+    lh_destroy(h);
+  }
+
 }
 
 // ---------------------------------------------------------------------------
@@ -258,8 +369,8 @@ static void test_analog_passthrough(void) {
             lh_test_read_analog(host, 0, 0, 1) == 4000,
         "pair B reads back as pair B, not torn");
 
-  // NOT OR-latched: two successive writes inside one poll window yield the
-  // SECOND value, unlike the digital edge-latch (see test_input_latch's
+  // NOT transition-latched: two writes inside one poll window yield the
+  // SECOND value, unlike the digital latch (see test_input_latch's
   // "clearing without an intervening poll" case, which preserves an edge that
   // landed entirely inside one window instead of discarding it). An axis has
   // no press/release semantics to preserve, so this is deliberately the
@@ -279,7 +390,7 @@ static void test_analog_passthrough(void) {
   CHECK(lh_test_read_trigger(host, 0, 1) == 0x5678, "R2 pressure round-trips");
 
   // Digital is unaffected by lh_set_pad_state: the mask half still goes
-  // through the same OR-latch as lh_set_input.
+  // through the same transition latch as lh_set_input.
   lh_set_pad_state(host, 0, 0x0003, 0, 0, 0, 0, 0, 0);
   lh_test_poll_input(host);
   CHECK(lh_test_read_input(host, 0) == 0x0003,
@@ -374,7 +485,27 @@ static void test_geometry_reported_once(const char *core_path,
   g_frames_ready = 0;
   // lh_restart runs as a job on the emulation thread, so the host stays
   // started across it.
+  lh_pause(host);
+  msleep(30);
+  const uint16_t stale_edge = 0x0040;
+  lh_set_input(host, 0, stale_edge);
+  lh_set_input(host, 0, 0);
   CHECK(lh_restart(host) == 0, "core restarts");
+  CHECK(lh_test_read_input(host, 0) == 0,
+        "restart clears pending digital edges and old acknowledgments");
+
+  // Resume is requested by the caller but its reset runs at the emulation
+  // loop boundary. This stale tap must not be latched into the first resumed
+  // frame; the check is made after pausing again so it cannot race a frame.
+  lh_set_input(host, 0, stale_edge);
+  lh_set_input(host, 0, 0);
+  lh_resume(host);
+  msleep(50);
+  lh_pause(host);
+  msleep(30);
+  CHECK(lh_test_read_input(host, 0) == 0,
+        "resume clears paused digital edges on the emulation thread");
+  lh_resume(host);
   msleep(300);
   lh_stop(host);
 
@@ -445,64 +576,198 @@ static void test_analog_via_core(const char *core_path, const char *rom_path,
 }
 
 // ---------------------------------------------------------------------------
-// lh_analog_descriptor_ports: the per-port "does the CURRENT GAME describe
-// RETRO_DEVICE_ANALOG controls on this port" signal, from the descriptors
-// SET_INPUT_DESCRIPTORS publishes. This replaced an older "did the core query
-// analog" gate, since that signal answers "did the
-// core call input_state_cb with RETRO_DEVICE_ANALOG", which FBNeo does for
-// every game including purely 4-way ones (BurgerTime), and which Stella does
-// for an absolute paddle game (Breakout) - accurate about what it measures,
-// wrong question. Descriptors are per-game and authoritative instead: a port
-// only has real analog controls in this game when one of its descriptors has
-// device == RETRO_DEVICE_ANALOG, which is exactly what stub_core.c's
-// input_descriptors table exercises - port 1 gets one ANALOG descriptor
-// alongside its JOYPAD one, port 0 stays JOYPAD-only, like BurgerTime's.
+// lh_analog_stick_ports: the AND of "the game describes a stick" and "the core
+// actually reads one". Each signal alone is wrong on a real core, in opposite
+// directions - Stella describes an axis for every ROM, FBNeo reads analog for
+// every game - so the cases below cover all four quadrants. stub_core.c is
+// shaped for it: port 1 has a stick descriptor, port 0 is JOYPAD-only, port 2
+// has a BUTTON descriptor only, and stub_analog_query picks what the core
+// reads.
 // ---------------------------------------------------------------------------
 
-static void test_analog_descriptor_ports(const char *core_path,
-                                          const char *rom_path,
-                                          const char *work_dir) {
-  printf("analog-descriptor-ports tracking:\n");
+#define STICK_PORTS_LOAD_FAILED 0xFFFFFFFFu
+
+// Loads the stub with [query_mode], runs it, and reports the mask. The fixed
+// settle comes first so a "stayed 0" result means the core really ran frames
+// rather than never getting going; the poll after it keeps positive cases off
+// a fixed deadline.
+static unsigned stick_ports_after_run(const char *core_path,
+                                      const char *rom_path,
+                                      const char *work_dir,
+                                      const char *game_id,
+                                      const char *query_mode, unsigned want) {
+  const char *keys[] = {"stub_analog_query"};
+  const char *vals[] = {query_mode};
   lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
-  CHECK(lh_analog_descriptor_ports(host) == 0,
-        "a freshly created host reports no analog-descriptor ports");
-  CHECK(lh_analog_descriptor_ports(NULL) == 0, "a NULL host reports 0");
-
   lh_av_info av;
-  int rc = lh_load(host, core_path, rom_path, work_dir, work_dir,
-                   "analogdescriptorports", NULL, NULL, 0, &av);
-  CHECK(rc == 0, "core loads for analog-descriptor discovery");
-  if (rc != 0) {
+  if (lh_load(host, core_path, rom_path, work_dir, work_dir, game_id, keys,
+              vals, 1, &av) != 0) {
     lh_destroy(host);
-    return;
+    return STICK_PORTS_LOAD_FAILED;
   }
-
-  unsigned ports = lh_analog_descriptor_ports(host);
-  CHECK((ports & (1u << 1)) != 0,
-        "port 1's bit is set - the stub publishes a RETRO_DEVICE_ANALOG "
-        "descriptor for it");
-  CHECK((ports & (1u << 0)) == 0,
-        "port 0's bit is NOT set - the stub only publishes JOYPAD "
-        "descriptors for it, like a 4-way game's");
-  CHECK((ports & (1u << 2)) == 0,
-        "port 2's bit is NOT set - it has only an analog BUTTON descriptor, "
-        "which says nothing about whether movement is analog");
-  CHECK((ports & ~((1u << 0) | (1u << 1))) == 0,
-        "no port beyond what the stub actually described is set");
-
-  // Reloading is a new game: recompute from the freshly-published descriptors
-  // rather than letting a stale bit survive from the previous load.
+  lh_start(host);
+  // Fast forward so the settle window passes in well under a second of wall
+  // clock instead of the two seconds it takes at the stub's 60fps.
+  lh_set_fast_forward(host, 20);
+  msleep(300);
+  unsigned ports = lh_analog_stick_ports(host);
+  for (int waited = 0; waited < 500 && ports != want; waited += 10) {
+    msleep(10);
+    ports = lh_analog_stick_ports(host);
+  }
   lh_stop(host);
-  rc = lh_load(host, core_path, rom_path, work_dir, work_dir,
-              "analogdescriptorportsreload", NULL, NULL, 0, &av);
-  CHECK(rc == 0, "core reloads for the reload-recomputes case");
-  CHECK((lh_analog_descriptor_ports(host) & (1u << 1)) != 0,
-        "reloading content recomputes the mask from the new descriptors, "
-        "port 1 set again");
+  lh_destroy(host);
+  return ports;
+}
 
-  lh_stop(host);
-  CHECK(lh_analog_descriptor_ports(host) == 0,
-        "analog-descriptor ports clear when the core unloads");
+static void test_analog_stick_ports(const char *core_path,
+                                    const char *rom_path,
+                                    const char *work_dir) {
+  printf("analog-stick-ports (descriptor AND query):\n");
+  const unsigned p1 = 1u << 1;
+
+  lh_host *host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  CHECK(lh_analog_stick_ports(host) == 0,
+        "a freshly created host reports no analog-stick ports");
+  CHECK(lh_analog_stick_ports(NULL) == 0, "a NULL host reports 0");
+  lh_destroy(host);
+
+  // Described AND read: a real analog stick. Breakout, Capcom Bowling.
+  unsigned ports = stick_ports_after_run(core_path, rom_path, work_dir,
+                                         "stickboth", "p1", p1);
+  CHECK(ports == p1,
+        "a port the game describes AND the core reads is an analog stick");
+
+  // Described, never read: Stella advertises an axis for Asteroids and never
+  // touches it, and the stick must keep steering.
+  ports = stick_ports_after_run(core_path, rom_path, work_dir, "stickdesc",
+                                "off", 0);
+  CHECK(ports == 0,
+        "a described stick the core never reads stays digital");
+
+  // Read, never described. FBNeo reading analog for a 4-way game.
+  ports = stick_ports_after_run(core_path, rom_path, work_dir, "stickquery",
+                                "p0", 0);
+  CHECK(ports == 0,
+        "a stick the core reads but the game never describes stays digital");
+
+  // Both ports read; only port 1 is described, so only port 1 turns analog.
+  ports = stick_ports_after_run(core_path, rom_path, work_dir, "stickmixed",
+                                "p0p1", p1);
+  CHECK(ports == p1,
+        "only the described port turns analog when the core reads both");
+
+  // Reading an analog BUTTON is trigger pressure. It must not promote port 1,
+  // which IS described, or a game with pressure triggers and digital movement
+  // would lose its d-pad conversion.
+  ports = stick_ports_after_run(core_path, rom_path, work_dir, "stickbtn",
+                                "p1btn", 0);
+  CHECK(ports == 0,
+        "an analog BUTTON read does not make a described port analog");
+
+  // The mirror, on the descriptor side: port 2 is described with an
+  // ANALOG_BUTTON entry only, so a genuine stick read there must not qualify
+  // it. Fails if the descriptor scan stops checking the index.
+  ports = stick_ports_after_run(core_path, rom_path, work_dir, "stickbtndesc",
+                                "p2", 0);
+  CHECK(ports == 0,
+        "a port described only with an analog BUTTON stays digital even when "
+        "the core reads a stick on it");
+
+  // Before the core has read any input, a described port is analog on the
+  // descriptor alone. Concluding digital here is what made Hydro Thunder steer
+  // like a d-pad. Asserted on a loaded but unstarted core, so it turns on the
+  // core having answered rather than on any amount of elapsed time.
+  host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  lh_av_info settle_av;
+  const char *settle_keys[] = {"stub_analog_query"};
+  const char *settle_off[] = {"off"};
+  int settle_rc = lh_load(host, core_path, rom_path, work_dir, work_dir,
+                          "sticksettle", settle_keys, settle_off, 1,
+                          &settle_av);
+  CHECK(settle_rc == 0, "core loads for the settle-window case");
+  if (settle_rc == 0) {
+    CHECK(lh_analog_stick_ports(host) == p1,
+          "a described port is analog before the core has read any input");
+    lh_start(host);
+    lh_set_fast_forward(host, 20);
+    unsigned settled = lh_analog_stick_ports(host);
+    for (int waited = 0; waited < 800 && settled != 0; waited += 10) {
+      msleep(10);
+      settled = lh_analog_stick_ports(host);
+    }
+    CHECK(settled == 0,
+          "once the core has read input and never a stick, it demotes to "
+          "digital");
+    lh_stop(host);
+  }
+  lh_destroy(host);
+
+  // The read half is per-game, so a port that was analog in the last load must
+  // not start the next one analog.
+  host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  lh_av_info av;
+  const char *keys[] = {"stub_analog_query"};
+  const char *on_vals[] = {"p1"};
+  const char *off_vals[] = {"off"};
+  int rc = lh_load(host, core_path, rom_path, work_dir, work_dir, "stickreload",
+                   keys, on_vals, 1, &av);
+  CHECK(rc == 0, "core loads for the reload-re-decides case");
+  if (rc == 0) {
+    lh_start(host);
+    lh_set_fast_forward(host, 20);
+    msleep(300);
+    CHECK(lh_analog_stick_ports(host) == p1, "port 1 is analog in this load");
+    lh_stop(host);
+    rc = lh_load(host, core_path, rom_path, work_dir, work_dir,
+                 "stickreload2", keys, off_vals, 1, &av);
+    CHECK(rc == 0, "core reloads without the stick read");
+    if (rc == 0) {
+      lh_start(host);
+      lh_set_fast_forward(host, 20);
+      msleep(300);
+      CHECK(lh_analog_stick_ports(host) == 0,
+            "reloading clears a stick port the previous game had earned");
+      lh_stop(host);
+    }
+  }
+  CHECK(lh_analog_stick_ports(host) == 0,
+        "analog-stick ports clear when the core unloads");
+  lh_destroy(host);
+
+  // A controller-type change re-opens the decision, since the new type may stop
+  // reading a stick the old one read. Driven with the read half off so the
+  // demote either side of the change is observable. Paused across the change so
+  // the running core cannot settle it mid-assertion; jobs still drain paused.
+  host = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+  rc = lh_load(host, core_path, rom_path, work_dir, work_dir, "stickdevice",
+               keys, off_vals, 1, &av);
+  CHECK(rc == 0, "core loads for the controller-type-change case");
+  if (rc == 0) {
+    lh_start(host);
+    lh_set_fast_forward(host, 20);
+    unsigned settled = lh_analog_stick_ports(host);
+    for (int waited = 0; waited < 800 && settled != 0; waited += 10) {
+      msleep(10);
+      settled = lh_analog_stick_ports(host);
+    }
+    CHECK(settled == 0, "port 1 has demoted to digital before the change");
+    lh_pause(host);
+    msleep(50);
+    CHECK(lh_set_controller_type(host, 1, RETRO_DEVICE_JOYPAD) >= 0,
+          "the controller type change is accepted");
+    CHECK(lh_analog_stick_ports(host) == p1,
+          "the change re-opens the decision, so the descriptor answer returns");
+    lh_resume(host);
+    unsigned again = lh_analog_stick_ports(host);
+    for (int waited = 0; waited < 800 && again != 0; waited += 10) {
+      msleep(10);
+      again = lh_analog_stick_ports(host);
+    }
+    CHECK(again == 0,
+          "and it settles back to digital while the core still does not read");
+    lh_stop(host);
+  }
   lh_destroy(host);
 }
 
@@ -817,9 +1082,9 @@ static void test_format(const char *core_path, const char *rom_path,
   if (fmt == LH_FORMAT_RGBA8888) {
     // stub_speed, stub_pattern, stub_rotation, stub_format, stub_huge_frame,
     // stub_bad_pitch, stub_vfs_dir_check, stub_analog_check,
-    // stub_repeat_geometry, stub_unserved, stub_input_thread, stub_no_poll,
-    // stub_waits_report.
-    CHECK(lh_option_count(host) == 13, "thirteen core options");
+    // stub_analog_query, stub_repeat_geometry, stub_unserved,
+    // stub_input_thread, stub_no_poll, stub_waits_report.
+    CHECK(lh_option_count(host) == 14, "fourteen core options");
     lh_option opt;
     int opt_rc = lh_get_option(host, 0, &opt);
     CHECK(opt_rc == 0 && strcmp(opt.id, "stub_speed") == 0, "option id");
@@ -847,7 +1112,7 @@ static void test_format(const char *core_path, const char *rom_path,
     uint8_t blob_a[64], blob_b[64], blob_c[64];
     CHECK(size > 0, "serialize size");
     CHECK(lh_serialize(host, blob_a, size) == 0, "serialize after restart");
-    CHECK(lh_option_count(host) == 13, "restart replaces option definitions");
+    CHECK(lh_option_count(host) == 14, "restart replaces option definitions");
     lh_get_option(host, 0, &opt);
     CHECK(strcmp(opt.current, "fast") == 0, "restart retains option value");
     int32_t restart_marker;
@@ -1532,13 +1797,10 @@ int main(int argc, char **argv) {
     lh_destroy(ue);
   }
 
-  // bug-177, the delivery contract. Atomics stopped the frame being published
-  // unsafely, but they never guaranteed anyone READ it: latch_input recomputes
-  // the frame every poll, so a press nothing looked at was erased by the next
-  // one. These assertions are the contract - a transient press survives polls
-  // until it is observed, is then delivered EXACTLY once, and cannot wedge a
-  // button on if the core never reads that id. Deliberately driven through the
-  // test hooks rather than a running core, so none of it depends on timing.
+  // bug-177, the delivery contract. A published transition remains blocked
+  // until the core reads it, so a transient press survives frontend frames,
+  // is delivered exactly once, and cannot wedge a button if the core never
+  // reads that id. Test hooks keep the frame boundaries deterministic.
   {
     printf("a transient press is delivered exactly once:\n");
     lh_host *ed = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1607,10 +1869,9 @@ int main(int argc, char **argv) {
     lh_destroy(np);
   }
 
-  // A compliant core polls inside retro_run, so with the run loop latching too
-  // there are two latches per frame. Only one may advance the expiry clock:
-  // aging on both would halve LH_UNACKED_MAX_POLLS for exactly the cores that
-  // honour the API. Raised in review of the run-loop latch.
+  // A compliant core polls inside retro_run after the host's run-loop latch.
+  // That callback refreshes analog state but must not advance digital state or
+  // its expiry clock a second time.
   {
     printf("a core polling on top of the run loop does not shorten expiry:\n");
     lh_host *dp = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1624,8 +1885,7 @@ int main(int argc, char **argv) {
       lh_test_core_poll_input(dp);  // the core polling within it
       if (lh_test_read_input(dp, 0) & start_bit) held++;
     }
-    // Same window as the frontend-only case: the core's extra latch must not
-    // have consumed half of it.
+    // Same window as the frontend-only case: core polls do not age the edge.
     CHECK(held > 2 && held <= 5,
           "the expiry window is counted in frames, not in latches");
     lh_destroy(dp);
@@ -1704,10 +1964,27 @@ int main(int argc, char **argv) {
     CHECK(held > 0 && held <= 5,
           "an unobserved press is held for a bounded number of polls, not forever");
     lh_destroy(ex);
+
+    // Other button activity on the same port must not restart Start's age.
+    ex = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    const uint16_t a_bit = 1u << 8;
+    lh_set_input(ex, 0, start_bit);
+    lh_set_input(ex, 0, 0);
+    lh_test_poll_input(ex);  // Start DOWN, deliberately unread.
+    int released = 0;
+    for (int i = 0; i < 8; i++) {
+      lh_set_input(ex, 0, (i & 1) ? 0 : a_bit);
+      lh_test_poll_input(ex);
+      (void)lh_test_observe_input_id(ex, 0, RETRO_DEVICE_ID_JOYPAD_A);
+      if (!(lh_test_read_input(ex, 0) & start_bit)) released = 1;
+    }
+    CHECK(released,
+          "other button activity cannot postpone an unread edge timeout");
+    lh_destroy(ex);
   }
 
-  // A held button must not be touched by any of this: it lives in input_level,
-  // never enters the unacked set, and so is reported every poll, read or not.
+  // After its initial transition is acknowledged, a held button remains in
+  // the published level and is reported every frame without being re-queued.
   {
     printf("a held button is unaffected by the edge contract:\n");
     lh_host *hb = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1791,6 +2068,26 @@ int main(int argc, char **argv) {
     CHECK(lh_test_read_trigger(stale, 0, 0) == 0 &&
               lh_test_read_trigger(stale, 0, 1) == 0,
           "the new game starts with triggers released");
+
+    // A host can be reused while a physical button remains held. The load
+    // reset must preserve that latest level, but discard a transient edge and
+    // its old acknowledgment barrier from the previous core.
+    const uint16_t held_bit = 0x0040;
+    const uint16_t transient_bit = 0x0080;
+    lh_set_input(stale, 0, held_bit);
+    lh_test_poll_input(stale);
+    lh_set_input(stale, 0, (uint16_t)(held_bit | transient_bit));
+    lh_set_input(stale, 0, held_bit);
+    lh_stop(stale);
+    CHECK(lh_load(stale, core_path, rom_path, work_dir, work_dir, "stale3",
+                  NULL, NULL, 0, &stale_av) == 0,
+          "the host loads a third game for digital lifecycle reuse");
+    CHECK(lh_test_read_input(stale, 0) == held_bit,
+          "load preserves the current held level but drops stale edges");
+    lh_set_input(stale, 0, 0);
+    lh_test_poll_input(stale);
+    CHECK(lh_test_read_input(stale, 0) == 0,
+          "a release after host reuse is not blocked by the old edge");
     lh_destroy(stale);
   }
 
@@ -1823,9 +2120,10 @@ int main(int argc, char **argv) {
   test_probe_refused_during_session(core_path, rom_path, work_dir);
   test_probe_bad_path_leaves_host_usable(core_path, rom_path, work_dir);
   test_input_latch();
+  test_input_transition_latch();
   test_analog_passthrough();
   test_analog_via_core(core_path, rom_path, work_dir);
-  test_analog_descriptor_ports(core_path, rom_path, work_dir);
+  test_analog_stick_ports(core_path, rom_path, work_dir);
   test_vfs_zip(core_path, work_dir);
   test_vfs_dir_reports_subdir(core_path, rom_path, work_dir);
   test_controller_types(core_path, rom_path, work_dir);

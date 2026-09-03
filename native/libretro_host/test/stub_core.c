@@ -50,6 +50,9 @@ static int32_t bad_pitch_mode;
 // and id mapping, derivation from the digital mask), which the frame-snapshot
 // test hooks (lh_test_read_analog/lh_test_read_trigger) intentionally bypass.
 static int32_t analog_check_mode;
+// Drives the "core actually read a stick" half of lh_analog_stick_ports per
+// port. 0 off, 1 p0, 2 p1, 3 p0p1, 4 p1btn, 5 p2.
+static int32_t analog_query_mode;
 // When on, retro_run re-sends SET_GEOMETRY every frame with the base geometry,
 // the way cores that re-report unchanged geometry each frame do.
 static int32_t repeat_geometry_mode;
@@ -158,9 +161,9 @@ static unsigned controller_devices[4];
 // and id 8 (RETRO_DEVICE_ID_JOYPAD_A) to catch an off-by-default-zero bug in
 // the id field specifically. Port 1 also gets one RETRO_DEVICE_ANALOG entry
 // alongside its JOYPAD one, mirroring a real mixed core (e.g. Capcom
-// Bowling's JOYPAD buttons plus ANALOG trackball), so lh_analog_descriptor_ports
-// tests have a real device=ANALOG descriptor to key off, distinct from port 0
-// which stays JOYPAD-only like a 4-way game's descriptors.
+// Bowling's JOYPAD buttons plus ANALOG trackball), so lh_analog_stick_ports
+// tests have a real device=ANALOG stick descriptor to key off, distinct from
+// port 0 which stays JOYPAD-only like a 4-way game's descriptors.
 static char id_label_port0_b[32];
 static char id_label_port0_a[32];
 static char id_label_port0_start[32];
@@ -232,6 +235,7 @@ void retro_set_environment(retro_environment_t cb) {
       {"stub_bad_pitch", "Bad pitch; off|on"},
       {"stub_vfs_dir_check", "VFS dir check; off|on"},
       {"stub_analog_check", "Analog check; off|on"},
+      {"stub_analog_query", "Analog query ports; off|p0|p1|p0p1|p1btn|p2"},
       {"stub_repeat_geometry", "Repeat geometry; off|on"},
       {"stub_unserved", "Probe unserved env commands; off|on"},
       {"stub_input_thread", "Read input off-thread; off|on"},
@@ -428,6 +432,39 @@ static void probe_analog(void) {
   env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
 }
 
+// The stick reads stub_analog_query asks for. p1btn queries ANALOG_BUTTON
+// only, so a test can confirm trigger pressure is not a stick read.
+static void probe_analog_query(void) {
+  if (analog_query_mode == 1 || analog_query_mode == 3) {
+    (void)input_state_cb(0, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_LEFT,
+                         RETRO_DEVICE_ID_ANALOG_X);
+    (void)input_state_cb(0, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_LEFT,
+                         RETRO_DEVICE_ID_ANALOG_Y);
+  }
+  if (analog_query_mode == 2 || analog_query_mode == 3) {
+    (void)input_state_cb(1, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_LEFT,
+                         RETRO_DEVICE_ID_ANALOG_X);
+    (void)input_state_cb(1, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_LEFT,
+                         RETRO_DEVICE_ID_ANALOG_Y);
+  }
+  if (analog_query_mode == 4) {
+    (void)input_state_cb(1, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_BUTTON,
+                         RETRO_DEVICE_ID_JOYPAD_R2);
+  }
+  // Port 2 is described with an ANALOG_BUTTON entry only, so a stick read
+  // there tests the descriptor side's index check.
+  if (analog_query_mode == 5) {
+    (void)input_state_cb(2, RETRO_DEVICE_ANALOG,
+                         RETRO_DEVICE_INDEX_ANALOG_LEFT,
+                         RETRO_DEVICE_ID_ANALOG_X);
+  }
+}
+
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 void retro_set_audio_sample(retro_audio_sample_t cb) { (void)cb; }
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) {
@@ -561,6 +598,23 @@ bool retro_load_game(const struct retro_game_info *game) {
   env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &analog_var);
   analog_check_mode = analog_var.value && strcmp(analog_var.value, "on") == 0;
 
+  struct retro_variable analog_query_var = {"stub_analog_query", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &analog_query_var);
+  analog_query_mode = 0;
+  if (analog_query_var.value) {
+    if (strcmp(analog_query_var.value, "p0") == 0) {
+      analog_query_mode = 1;
+    } else if (strcmp(analog_query_var.value, "p1") == 0) {
+      analog_query_mode = 2;
+    } else if (strcmp(analog_query_var.value, "p0p1") == 0) {
+      analog_query_mode = 3;
+    } else if (strcmp(analog_query_var.value, "p1btn") == 0) {
+      analog_query_mode = 4;
+    } else if (strcmp(analog_query_var.value, "p2") == 0) {
+      analog_query_mode = 5;
+    }
+  }
+
   struct retro_variable repeat_geo_var = {"stub_repeat_geometry", NULL};
   env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &repeat_geo_var);
   repeat_geometry_mode =
@@ -667,6 +721,7 @@ void retro_run(void) {
   int16_t mask =
       input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
   if (analog_check_mode) probe_analog();
+  if (analog_query_mode) probe_analog_query();
   if (repeat_geometry_mode) {
     struct retro_game_geometry geo;
     memset(&geo, 0, sizeof(geo));

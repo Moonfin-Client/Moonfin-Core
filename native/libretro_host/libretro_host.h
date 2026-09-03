@@ -147,11 +147,9 @@ lh_host *lh_create(lh_output_format fmt, lh_callbacks cb);
 // held on [port]. Call this every time the platform's raw input state
 // changes - on a key/button edge, a controller value-changed callback, a
 // method-channel message, whatever the platform's transport is - not once
-// per frame. The host does not sample this instantaneously: every mask
-// reported between two core polls is OR'd into a pending latch, so a press
-// whose down and up both land inside one ~16.7ms poll window is still
-// observed by the core for exactly one frame, and reads of different button
-// ids within the same frame stay coherent (RetroArch does the same thing).
+// per frame. The host records press and release transitions between frontend
+// frames, so a complete short tap is exposed as DOWN and then UP instead of
+// disappearing. Every button read comes from one complete atomic mask.
 // A bit held continuously across many frames stays set in every one of them.
 // Thread-safe and safe to call before a core is loaded or after lh_stop; the
 // write just has nothing to be read by yet. [port] outside
@@ -183,6 +181,9 @@ int lh_load(lh_host *host, const char *core_path, const char *rom_path,
 // already was), non-zero when it could not be created.
 int lh_start(lh_host *host);
 void lh_pause(lh_host *host);
+// Resumes asynchronously with respect to input lifecycle state: the native
+// emulation loop clears queued/stale digital transitions before its next
+// frame, while preserving buttons that remain physically held.
 void lh_resume(lh_host *host);
 // Fully recreates the core and reloads its current content. Unlike lh_reset,
 // this applies options that a core only reads during initialization.
@@ -272,24 +273,31 @@ int lh_get_input_descriptor(lh_host *host, int index,
 // retro_set_controller_port_device, or the host can no longer run a job.
 int lh_set_controller_type(lh_host *host, int port, unsigned device);
 
-// Bitmask of ports the current game describes ANALOG controls for, from
-// RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS. Bit N = port N.
+// Bitmask of ports whose left stick is passed through as an analog stick
+// rather than converted to d-pad bits. Bit N = port N.
 //
-// This is per-GAME and authoritative, unlike "did the core query analog":
-// FBNeo queries analog for every game including purely 4-way ones, so that
-// signal cannot distinguish BurgerTime (no analog descriptors) from Capcom
-// Bowling (Trackball X/Y).
-unsigned lh_analog_descriptor_ports(lh_host *host);
+// Set only where the game DESCRIBES a stick (SET_INPUT_DESCRIPTORS at
+// ANALOG_LEFT/RIGHT) and the core has actually READ one. Both are needed:
+// FBNeo describes accurately but reads analog for every game including 4-way
+// ones, while Stella reads accurately but describes an axis for every ROM.
+// An ANALOG_BUTTON entry or read is trigger pressure and counts for neither.
+//
+// Until the core has completed a frame in which it read input, a described port
+// reports analog on the descriptor alone: the core has not answered yet, and
+// concluding digital early costs binary steering in a driving game. This waits
+// on the core's own behaviour rather than on elapsed frames or time, so it does
+// not shift on slower hardware.
+//
+// The read half is per-game: cleared by lh_load, by an internal restart, and
+// by lh_set_controller_type. Thread-safe.
+unsigned lh_analog_stick_ports(lh_host *host);
 
-// Test-only: drives one input-latch step directly, without a running core or
-// run loop, and reads the value that step produced for [port]. This is the
-// exact same latch step input_poll_cb runs once per real libretro poll (see
-// lh_set_input) - these exist so its exactly-once-per-edge semantics can be
-// verified deterministically in native/libretro_host/test, instead of racing
-// a live run loop's wall-clock pacing. Not part of the platform-facing
-// contract; no shipping caller should need these.
+// Test-only: drives the frontend-frame input latch directly, without a running
+// core or run loop. This is the same step the host runs before retro_run, so
+// its transition delivery can be tested without wall-clock timing. Not part of
+// the platform-facing contract; no shipping caller should need these.
 void lh_test_poll_input(lh_host *host);
-// A core-driven poll inside retro_run: latches without advancing expiry.
+// A core-driven poll inside retro_run: refreshes analog only, like input_poll_cb.
 void lh_test_core_poll_input(lh_host *host);
 uint16_t lh_test_read_input(lh_host *host, int port);
 // Test-only: reads the post-latch analog snapshot ([index] 0=left, 1=right
@@ -308,6 +316,7 @@ int lh_test_unhandled_env_count(lh_host *host);
 // latched it. Non-zero means the input frame is being published across
 // threads without synchronisation.
 int lh_test_input_thread_mismatch(lh_host *host);
+
 
 // Reads a port the way a core does, INCLUDING acknowledging the edge bits it
 // returns. lh_test_read_input peeks without acknowledging; use this one to

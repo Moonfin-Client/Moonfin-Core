@@ -546,14 +546,15 @@ JNI(void, nativeSetPadState)(JNIEnv *env, jobject thiz, jint port, jint mask,
                    (uint16_t)l2, (uint16_t)r2);
 }
 
-// Bitmask of ports the current game describes ANALOG controls for, from
-// RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS. Drives the digital/analog rule in
-// NativePadInput: see lh_analog_descriptor_ports's doc comment.
-JNI(jint, nativeAnalogDescriptorPorts)(JNIEnv *env, jobject thiz) {
+// Bitmask of ports whose stick is passed through as analog instead of being
+// converted to d-pad bits. This is the AND of the game's analog-stick
+// descriptors and the core actually reading a stick - see
+// lh_analog_stick_ports's doc comment for why both are required.
+JNI(jint, nativeAnalogStickPorts)(JNIEnv *env, jobject thiz) {
   (void)env;
   (void)thiz;
   if (!g_ctx.host) return 0;
-  return (jint)lh_analog_descriptor_ports(g_ctx.host);
+  return (jint)lh_analog_stick_ports(g_ctx.host);
 }
 
 JNI(jint, nativeReadAudio)(JNIEnv *env, jobject thiz, jshortArray buffer,
