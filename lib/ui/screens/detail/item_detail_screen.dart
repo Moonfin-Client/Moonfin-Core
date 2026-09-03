@@ -541,8 +541,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _viewModel.state == ItemDetailState.ready &&
         _showNavbar &&
         (!isAlbumOrPlaylist || _isCompact(context));
+    // Follows the scroll flag rather than the chrome. Albums and playlists
+    // switch the chrome off at every scroll position on TV and desktop, so
+    // gating on it leaves those pages with no way back at all.
     final showBackButton =
-        _viewModel.state != ItemDetailState.ready || showNavigationChrome;
+        _viewModel.state != ItemDetailState.ready || _showNavbar;
 
     Widget body = NavigationLayout(
       showBackButton: showBackButton,
@@ -1319,152 +1322,152 @@ class _DetailContentState extends State<_DetailContent> {
       topFocusNode: widget.initialFocusNode,
       child: Focus(
         focusNode: _contentFocusNode,
-      onKeyEvent: (node, event) {
-        final primaryFocus = FocusManager.instance.primaryFocus;
-        if (!identical(primaryFocus, _contentFocusNode)) {
+        onKeyEvent: (node, event) {
+          final primaryFocus = FocusManager.instance.primaryFocus;
+          if (!identical(primaryFocus, _contentFocusNode)) {
+            return KeyEventResult.ignored;
+          }
+          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+              event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            final navbarPos = prefs.get(UserPreferences.navbarPosition);
+            if (navbarPos == NavbarPosition.top) {
+              _scrollMainToTop();
+              NavigationLayout.focusNavbarNotifier.value?.call();
+              return KeyEventResult.handled;
+            }
+            final isAtTop =
+                !_scrollController.hasClients || _scrollController.offset <= 0;
+            if (isAtTop) {
+              NavigationLayout.focusNavbarNotifier.value?.call();
+              return KeyEventResult.handled;
+            }
+          }
           return KeyEventResult.ignored;
-        }
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          final navbarPos = prefs.get(UserPreferences.navbarPosition);
-          if (navbarPos == NavbarPosition.top) {
-            _scrollMainToTop();
-            NavigationLayout.focusNavbarNotifier.value?.call();
-            return KeyEventResult.handled;
-          }
-          final isAtTop =
-              !_scrollController.hasClients || _scrollController.offset <= 0;
-          if (isAtTop) {
-            NavigationLayout.focusNavbarNotifier.value?.call();
-            return KeyEventResult.handled;
-          }
-        }
-        return KeyEventResult.ignored;
-      },
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (isReadableBook)
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: Color(0xFF0F182A)),
-              ),
-            ),
-          if (backdropEnabled && !isReadableBook)
-            ValueListenableBuilder<String?>(
-              valueListenable: widget.backdropUrl,
-              builder: (context, url, _) =>
-                  _Backdrop(url: url, blurAmount: blurAmount),
-            ),
-          if (isReadableBook)
-            const Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0x000F182A), Color(0x440A1324)],
-                  ),
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (isReadableBook)
+              const Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: Color(0xFF0F182A)),
                 ),
               ),
-            )
-          else
-            const RepaintBoundary(child: _GradientScrim()),
-          if (useSplitLayout)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildStaticPersonProfilePanel(context, item),
-                Expanded(
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    cacheExtent: 4000,
-                    slivers: [
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(
-                          48,
-                          MediaQuery.of(context).padding.top + 80.0,
-                          48,
-                          48 * _desktopUiScale(),
-                        ),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate(
-                            _buildContentForType(context, item),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          else
-            CustomScrollView(
-              controller: _scrollController,
-              cacheExtent: 4000,
-              slivers: [
-                if (item.type != 'Person' &&
-                    item.type != 'MusicArtist' &&
-                    item.type != 'MusicAlbum' &&
-                    item.type != 'Playlist' &&
-                    !_isReadableBookItem(item))
-                  SliverToBoxAdapter(
-                    child: _HeaderSection(
-                      viewModel: widget.viewModel,
-                      prefs: widget.prefs,
-                      selectedMediaSource: selectedMediaSource,
-                      overviewFocusNode: headerOverviewFocusNode,
-                      onArrowUp: _tryFocusNavbar,
-                      onArrowDown: () {
-                        final type = item.type;
-                        final targetNode = switch (type) {
-                          'BoxSet' => _sectionFocusNode(
-                            'detailBoxSetActionButtons',
-                          ),
-                          _ =>
-                            widget.initialFocusNode ??
-                                _sectionFocusNode('detailActionButtons'),
-                        };
-                        _requestSectionFocus(targetNode);
-                      },
-                      onArrowLeft: () => _tryFocusSidebar(),
-                      onCollapseBiography: () => setState(() {}),
+            if (backdropEnabled && !isReadableBook)
+              ValueListenableBuilder<String?>(
+                valueListenable: widget.backdropUrl,
+                builder: (context, url, _) =>
+                    _Backdrop(url: url, blurAmount: blurAmount),
+              ),
+            if (isReadableBook)
+              const Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x000F182A), Color(0x440A1324)],
                     ),
                   ),
-                SliverPadding(
-                  padding: isReadableBook
-                      ? EdgeInsets.fromLTRB(
-                          _isCompact(context) ? 16 : 48,
-                          MediaQuery.of(context).padding.top +
-                              (_isCompact(context) ? 60 : 80),
-                          _isCompact(context) ? 16 : 48,
-                          0,
-                        )
-                      : EdgeInsets.fromLTRB(
-                          _isCompact(context) ? 16 : 48,
-                          0,
-                          _isCompact(context) ? 16 : 48,
-                          (MediaQuery.of(context).padding.bottom + 48.0) *
-                              _desktopUiScale(),
-                        ),
-                  sliver: isAlbumOrPlaylist
-                      ? SliverToBoxAdapter(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: _buildContentForType(context, item),
-                          ),
-                        )
-                      : SliverList(
-                          delegate: SliverChildListDelegate(
-                            _buildContentForType(context, item),
-                          ),
-                        ),
                 ),
-              ],
-            ),
-        ],
+              )
+            else
+              const RepaintBoundary(child: _GradientScrim()),
+            if (useSplitLayout)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildStaticPersonProfilePanel(context, item),
+                  Expanded(
+                    child: CustomScrollView(
+                      controller: _scrollController,
+                      cacheExtent: 4000,
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            48,
+                            MediaQuery.of(context).padding.top + 80.0,
+                            48,
+                            48 * _desktopUiScale(),
+                          ),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate(
+                              _buildContentForType(context, item),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            else
+              CustomScrollView(
+                controller: _scrollController,
+                cacheExtent: 4000,
+                slivers: [
+                  if (item.type != 'Person' &&
+                      item.type != 'MusicArtist' &&
+                      item.type != 'MusicAlbum' &&
+                      item.type != 'Playlist' &&
+                      !_isReadableBookItem(item))
+                    SliverToBoxAdapter(
+                      child: _HeaderSection(
+                        viewModel: widget.viewModel,
+                        prefs: widget.prefs,
+                        selectedMediaSource: selectedMediaSource,
+                        overviewFocusNode: headerOverviewFocusNode,
+                        onArrowUp: _tryFocusNavbar,
+                        onArrowDown: () {
+                          final type = item.type;
+                          final targetNode = switch (type) {
+                            'BoxSet' => _sectionFocusNode(
+                              'detailBoxSetActionButtons',
+                            ),
+                            _ =>
+                              widget.initialFocusNode ??
+                                  _sectionFocusNode('detailActionButtons'),
+                          };
+                          _requestSectionFocus(targetNode);
+                        },
+                        onArrowLeft: () => _tryFocusSidebar(),
+                        onCollapseBiography: () => setState(() {}),
+                      ),
+                    ),
+                  SliverPadding(
+                    padding: isReadableBook
+                        ? EdgeInsets.fromLTRB(
+                            _isCompact(context) ? 16 : 48,
+                            MediaQuery.of(context).padding.top +
+                                (_isCompact(context) ? 60 : 80),
+                            _isCompact(context) ? 16 : 48,
+                            0,
+                          )
+                        : EdgeInsets.fromLTRB(
+                            _isCompact(context) ? 16 : 48,
+                            0,
+                            _isCompact(context) ? 16 : 48,
+                            (MediaQuery.of(context).padding.bottom + 48.0) *
+                                _desktopUiScale(),
+                          ),
+                    sliver: isAlbumOrPlaylist
+                        ? SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: _buildContentForType(context, item),
+                            ),
+                          )
+                        : SliverList(
+                            delegate: SliverChildListDelegate(
+                              _buildContentForType(context, item),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -13473,6 +13476,21 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
   }
 }
 
+/// Numbers the episode without spelling out the word, which is what made long
+/// titles unreadable on a phone. An episode with no title of its own still
+/// gets the spelled out label, since a bare number says nothing on its own.
+///
+/// Public for the title tests. Every production caller lives in this file.
+@visibleForTesting
+String episodeCardTitle(BuildContext context, String name, int? number) {
+  if (name.isEmpty) {
+    return number == null
+        ? ''
+        : AppLocalizations.of(context).episodeLabel(number);
+  }
+  return number == null ? name : 'E$number: $name';
+}
+
 class DetailEpisodeCard extends StatefulWidget {
   final AggregatedItem episode;
   final ImageApi imageApi;
@@ -13661,13 +13679,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                episode.name.isNotEmpty
-                                    ? episode.name
-                                    : (epNum != null
-                                        ? AppLocalizations.of(
-                                            context,
-                                          ).episodeLabel(epNum)
-                                        : ''),
+                                episodeCardTitle(context, episode.name, epNum),
                                 style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(
                                       color: isNeon
