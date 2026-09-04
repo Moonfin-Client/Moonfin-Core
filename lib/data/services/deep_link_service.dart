@@ -39,15 +39,22 @@ class DeepLinkService {
   /// the link isn't recognized.
   ///
   /// Recognized forms:
-  ///  - `moonfin://item?id=<itemId>[&serverId=<serverId>]`
-  ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>]` (starts playback)
+  ///  - `moonfin://item?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
+  ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
+  ///    (starts playback)
+  ///
+  /// `userId` optionally pins a stored user for cold starts, skipping the
+  /// profile picker. It is only honored for users already signed in on this
+  /// device, and never bypasses a PIN or an always-authenticate setting.
   static String? routeForDeepLink(Uri uri) {
     if (uri.scheme != 'moonfin') return null;
     final id = uri.queryParameters['id'];
     if (id == null || id.isEmpty) return null;
     final serverId = uri.queryParameters['serverId'];
+    final userId = uri.queryParameters['userId'];
     final params = <String, String>{
       if (serverId != null && serverId.isNotEmpty) 'serverId': serverId,
+      if (userId != null && userId.isNotEmpty) 'userId': userId,
       if (uri.host == 'play') 'autoPlay': 'true',
     };
     final query = params.entries
