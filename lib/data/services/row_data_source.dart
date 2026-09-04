@@ -2081,6 +2081,12 @@ class RowDataSource {
             rowType: HomeRowType.pluginDynamic,
           );
         }
+      case HomeSectionPluginSource.seerr:
+        return HomeRow(
+          id: rowId,
+          title: title,
+          rowType: HomeRowType.pluginDynamic,
+        );
     }
   }
 

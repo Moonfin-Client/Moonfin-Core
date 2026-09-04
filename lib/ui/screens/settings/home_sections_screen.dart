@@ -476,6 +476,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       if (section.pluginSource == HomeSectionPluginSource.playlists) {
         return 5;
       }
+      if (section.pluginSource == HomeSectionPluginSource.seerr) {
+        return 6;
+      }
       return 7;
     }
     // is builtin
@@ -641,6 +644,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
+    final seerrEnabled = GetIt.instance<SeerrPreferences>().enabled;
     final showImdbRows = _isAnyImdbSectionEnabled();
     final showTmdbRows = _isAnyTmdbSectionEnabled();
 
@@ -662,11 +666,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr =
-        _isSeerrSectionType(section.type) &&
-        (!showSeerrRows ||
-            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
-              section.type,
-            ));
+        (_isSeerrSectionType(section.type) &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
+                  section.type,
+                ))) ||
+        (section.isSeerrCustomSlider && (!showSeerrRows || !seerrEnabled));
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -2724,6 +2729,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
+      HomeSectionPluginSource.seerr => 'Seerr custom slider',
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {

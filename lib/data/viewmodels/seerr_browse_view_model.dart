@@ -440,7 +440,7 @@ class SeerrBrowseViewModel extends ChangeNotifier {
         sortBy: _state.sortBy.value,
         genre: genre,
         network: filterType == 'network' ? id : null,
-        keywords: filterType == 'keyword' ? id : null,
+        keywords: filterType == 'keyword' ? id?.toString() : null,
         language: language,
         status: _state.tvStatuses.isEmpty
             ? null
@@ -458,7 +458,7 @@ class SeerrBrowseViewModel extends ChangeNotifier {
       sortBy: _state.sortBy.value,
       genre: genre,
       studio: filterType == 'studio' ? id : null,
-      keywords: filterType == 'keyword' ? id : null,
+      keywords: filterType == 'keyword' ? id?.toString() : null,
       language: language,
       voteAverageGte: voteAverageGte,
       voteCountGte: voteCountGte,
