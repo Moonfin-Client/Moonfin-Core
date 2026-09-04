@@ -15,6 +15,8 @@ class MarqueeText extends StatefulWidget {
   final double millisPerPixel;
   final double gap;
   final int pauseDurationMs;
+  final bool showDotSeparator;
+  final double dotSize;
 
   const MarqueeText({
     super.key,
@@ -24,8 +26,10 @@ class MarqueeText extends StatefulWidget {
     this.minDurationMs = 2200,
     this.maxDurationMs = 12000,
     this.millisPerPixel = 50,
-    this.gap = 30.0,
+    this.gap = 16.0,
     this.pauseDurationMs = 1500,
+    this.showDotSeparator = true,
+    this.dotSize = 4.0,
   });
 
   @override
@@ -146,6 +150,33 @@ class _MarqueeTextState extends State<MarqueeText>
           return Text.rich(span, maxLines: 1, overflow: TextOverflow.ellipsis);
         }
 
+        final Widget separatorWidget;
+        if (widget.showDotSeparator) {
+          final pad =
+              ((widget.gap - widget.dotSize) / 2).clamp(0.0, widget.gap);
+          final dotColor =
+              widget.style.color?.withValues(alpha: 0.7) ?? Colors.white70;
+          separatorWidget = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(width: pad),
+              Center(
+                child: Container(
+                  width: widget.dotSize,
+                  height: widget.dotSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: dotColor,
+                  ),
+                ),
+              ),
+              SizedBox(width: pad),
+            ],
+          );
+        } else {
+          separatorWidget = SizedBox(width: widget.gap);
+        }
+
         return SingleChildScrollView(
           controller: _controller,
           scrollDirection: Axis.horizontal,
@@ -153,7 +184,7 @@ class _MarqueeTextState extends State<MarqueeText>
           child: Row(
             children: [
               Text.rich(span, maxLines: 1),
-              SizedBox(width: widget.gap),
+              separatorWidget,
               Text.rich(span, maxLines: 1),
             ],
           ),

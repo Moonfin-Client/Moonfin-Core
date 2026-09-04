@@ -57,6 +57,7 @@ import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/add_to_playlist_dialog.dart';
 import '../../widgets/logo_view.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/marquee_text.dart';
 import '../../widgets/seerr/seerr_cancel_request_dialog.dart';
 import '../../widgets/seerr/seerr_collection_banner.dart';
 import '../../widgets/seerr/seerr_image_urls.dart';
@@ -5867,24 +5868,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   double _modernPlayFocusedWidth(String? label) {
     if (label == null) return _modernFocusedFloor;
     // Matching what _buildModernChild lays out around the label.
-    const iconWidth = 24.0;
-    const iconGap = 8.0;
-    const horizontalPadding = 36.0;
+    const iconWidth = 50.0; // height (54) - 4
+    const iconGap = 6.0;
+    const horizontalPadding = 22.0; // left (6) + right (16)
+    const borderWidth = 5.0; // showHighlight ? 2.5 * 2
     final painter = TextPainter(
       text: TextSpan(
         text: label,
-        // The second line of a two line label is a point smaller, so measuring
-        // both at the larger size can only leave room to spare.
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          fontSize: 14,
+          fontSize: 13,
           height: 1.1,
         ),
       ),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
-    final measured = painter.width + iconWidth + iconGap + horizontalPadding;
+    final measured =
+        painter.width + iconWidth + iconGap + horizontalPadding + borderWidth;
     painter.dispose();
     return measured.clamp(_modernPlayFocusedFloor, _modernFocusedFloor);
   }
@@ -10905,9 +10906,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color labelColor,
   }) {
     final isExpanded = showHighlight;
-    final hasNewline = widget.label.contains('\n');
     final double height = widget.isPrimary
-        ? (isMobile ? (hasNewline ? 56.0 : 50.0) : (hasNewline ? 64.0 : 54.0))
+        ? (isMobile ? 50.0 : 54.0)
         : (isMobile ? 48.0 : 52.0);
 
     // Portrait spans the primary Play full width (circular secondary actions
@@ -10950,42 +10950,17 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               size: 24,
             ),
             const SizedBox(width: 8),
-            widget.label.contains('\n')
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.label.split('\n')[0],
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: fg,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              height: 1.1,
-                            ),
-                      ),
-                      Text(
-                        widget.label.split('\n')[1],
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: fg.withValues(alpha: 0.8),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              height: 1.1,
-                            ),
-                      ),
-                    ],
-                  )
-                : Text(
-                    widget.label,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: fg,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          height: 1.1,
-                        ),
+            Text(
+              widget.label,
+              maxLines: 1,
+              softWrap: false,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: fg,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    height: 1.1,
                   ),
+            ),
           ],
         ),
       );
@@ -11052,6 +11027,12 @@ class _DetailActionButtonState extends State<_DetailActionButton>
 
     final double minWidth = height;
     final double maxWidth = isExpanded ? 200.0 : height;
+    final double maxLabelWidth = (maxWidth -
+            (isExpanded ? 22.0 : 0.0) -
+            (showHighlight ? 5.0 : 3.0) -
+            (height - 4) -
+            6.0)
+        .clamp(0.0, maxWidth);
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
@@ -11128,51 +11109,24 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               ),
               if (isExpanded && widget.label.isNotEmpty) ...[
                 const SizedBox(width: 6),
-                widget.label.contains('\n')
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.label.split('\n')[0],
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: effectiveLabelColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  height: 1.1,
-                                ),
-                          ),
-                          Text(
-                            widget.label.split('\n')[1],
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: effectiveLabelColor.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  height: 1.1,
-                                ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        widget.label,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: effectiveLabelColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              height: 1.1,
-                            ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxLabelWidth),
+                  child: MarqueeText(
+                    text: widget.label,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: effectiveLabelColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          height: 1.1,
+                        ) ??
+                        TextStyle(
+                          color: effectiveLabelColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          height: 1.1,
+                        ),
+                  ),
+                ),
               ],
             ],
           ),
