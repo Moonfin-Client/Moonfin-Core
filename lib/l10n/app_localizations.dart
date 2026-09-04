@@ -7282,6 +7282,126 @@ abstract class AppLocalizations {
   /// **'Your Watchlist'**
   String get yourWatchlist;
 
+  /// Foreseerr Discover row: Trakt recommendations
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt Recommendations'**
+  String get seerrTraktRecommendations;
+
+  /// Foreseerr Discover row: Trakt watchlist
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt Watchlist'**
+  String get seerrTraktWatchlist;
+
+  /// Foreseerr Discover row: Trakt history
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt History'**
+  String get seerrTraktHistory;
+
+  /// Fallback title for an unnamed Foreseerr Trakt list slider
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt List'**
+  String get seerrTraktList;
+
+  /// Foreseerr Discover row: AniList trending
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Trending'**
+  String get seerrAnilistTrending;
+
+  /// Foreseerr Discover row: AniList current season
+  ///
+  /// In en, this message translates to:
+  /// **'AniList This Season'**
+  String get seerrAnilistThisSeason;
+
+  /// Foreseerr Discover row: AniList popular
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Popular'**
+  String get seerrAnilistPopular;
+
+  /// Foreseerr Discover row: AniList top 100
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Top 100'**
+  String get seerrAnilistTop100;
+
+  /// Foreseerr Discover row: AniList next season
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Next Season'**
+  String get seerrAnilistNextSeason;
+
+  /// Foreseerr Discover row: AniList watching
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Watching'**
+  String get seerrAnilistWatching;
+
+  /// Foreseerr Discover row: AniList planning
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Planning'**
+  String get seerrAnilistPlanning;
+
+  /// Foreseerr Discover row: AniList completed
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Completed'**
+  String get seerrAnilistCompleted;
+
+  /// Fallback title for an unnamed Foreseerr AniList list slider
+  ///
+  /// In en, this message translates to:
+  /// **'AniList List'**
+  String get seerrAnilistList;
+
+  /// Fallback title for an unnamed Foreseerr MDBList slider
+  ///
+  /// In en, this message translates to:
+  /// **'MDBList List'**
+  String get seerrMdblistList;
+
+  /// Foreseerr Discover row: Simkl trending
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Trending'**
+  String get seerrSimklTrending;
+
+  /// Foreseerr Discover row: Simkl plan to watch
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Plan to Watch'**
+  String get seerrSimklPlanToWatch;
+
+  /// Foreseerr Discover row: Simkl watching
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Watching'**
+  String get seerrSimklWatching;
+
+  /// Foreseerr Discover row: Simkl on hold
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl On Hold'**
+  String get seerrSimklOnHold;
+
+  /// Foreseerr Discover row: Simkl completed
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Completed'**
+  String get seerrSimklCompleted;
+
+  /// Foreseerr Discover row: Simkl dropped
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Dropped'**
+  String get seerrSimklDropped;
+
   /// Tooltip for reset rows to defaults
   ///
   /// In en, this message translates to:

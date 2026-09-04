@@ -1346,6 +1346,18 @@ class PluginSyncService extends ChangeNotifier {
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
         }
+        final incomingSeerr = sections
+            .where((s) => s.isSeerrCustomSlider)
+            .map((s) => s.pluginAdditionalData)
+            .toSet();
+        final existingSeerr = _prefs.homeSectionsConfig.where(
+          (c) =>
+              c.isSeerrCustomSlider &&
+              !incomingSeerr.contains(c.pluginAdditionalData),
+        );
+        for (final slider in existingSeerr) {
+          sections.add(slider.copyWith(order: order++));
+        }
         _appendDisabledBuiltinSections(sections, order);
         await _prefs.setHomeSectionsConfig(sections);
         await _syncSeerrHomeRowsWithSections(sections);

@@ -141,7 +141,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsAppearanceTheme => 'موضوع التطبيق';
 
   @override
-  String get detailScreenStyle => 'نمط شاشة التفاصيل';
+  String get detailScreenStyle => 'شكل صفحة التفاصيل';
 
   @override
   String get detailScreenStyleSubtitle =>
@@ -205,14 +205,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get interfaceLayout => 'Interface Layout';
+  String get interfaceLayout => 'شكل الواجهة';
 
   @override
   String get interfaceLayoutSubtitle =>
-      'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
+      'غير شكل الواجهة إذا تم التعرّف على الجهاز بشكل خاطئ. أعد تشغيل Moonfin حتى تظهر التغييرات.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => 'أوتوماتيك';
 
   @override
   String get interfaceLayoutTv => 'TV';
@@ -221,17 +221,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get interfaceLayoutDesktop => 'Desktop';
 
   @override
-  String get interfaceLayoutPhone => 'Phone';
+  String get interfaceLayoutPhone => 'واجهة الهاتف';
 
   @override
   String get glassQuality => 'جودة الزجاج';
 
   @override
-  String get oledMode => 'OLED Mode';
+  String get oledMode => 'وضع OLED';
 
   @override
   String get oledModeSubtitle =>
-      'Deepen blacks and enrich artwork. Best on OLED displays.';
+      'خلّي اللون الأسود أغمق والصور أوضح وأجمل. يُفضّل استخدامه على شاشات OLED.';
 
   @override
   String get oledModeSubtle => 'Subtle';
@@ -253,11 +253,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get glassQualityReduced => 'مخفّض';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'الأداء';
 
   @override
   String get performanceModeSubtitle =>
-      'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
+      'يحدد إمكانيات جهازك تلقائيًا ويخفف الإعدادات إذا كانت الذاكرة محدودة، مع الاحتفاظ بعدد أقل من الصور وعرض المقاطع الدعائية كصور ثابتة. أعد تشغيل التطبيق لتطبيق التغييرات.';
 
   @override
   String get performanceModeAuto => 'Auto';
@@ -270,7 +270,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trailerPreviewHeldBack =>
-      'Off because Performance is set to Reduced for this device';
+      'متوقف لأن وضع الأداء مضبوط على منخفض لهذا الجهاز.';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -291,20 +291,20 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدم طريقة إدخال جهازك بشكل افتراضي لإدخال النص';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'يد التحكم';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'التنقل بيد التحكم';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'استخدم يد تحكم متصلة للتنقل بين العناصر واختيارها';
 
   @override
   String get themeMoonfin => 'Moonfin';
 
   @override
-  String get themeMoonfinSubtitle => 'المظهر الحالي Moonfin الذي أحببته جميعًا';
+  String get themeMoonfinSubtitle => 'مظهر Moonfin الأصلي والبسيط.';
 
   @override
   String get themeNeonPulse => 'نبض النيون';
@@ -551,13 +551,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get extraLarge => 'كبير جدا';
 
   @override
-  String get scrollDirection => 'Scroll Direction';
+  String get scrollDirection => 'اتجاه التمرير';
 
   @override
-  String get scrollDirectionVertical => 'Vertical';
+  String get scrollDirectionVertical => 'عمودي';
 
   @override
-  String get scrollDirectionHorizontal => 'Horizontal';
+  String get scrollDirectionHorizontal => 'أفقي';
 
   @override
   String libraryGenresTitle(String name) {
@@ -654,7 +654,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scrollRight => 'قم بالتمرير إلى اليمين';
 
   @override
-  String get scrollToTop => 'Scroll to top';
+  String get scrollToTop => 'التمرير إلى الأعلى';
 
   @override
   String get couldNotLoadGenre => 'تعذر تحميل هذا النوع الآن.';
@@ -1152,7 +1152,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cast => 'إرسال';
 
   @override
-  String get castMembers => 'Cast';
+  String get castMembers => 'طاقم التمثيل';
 
   @override
   String get trailer => 'الإعلان التشويقي';
@@ -1173,10 +1173,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get downloaded => 'تم التنزيل';
 
   @override
-  String get finalizingDownload => 'Finalizing…';
+  String get finalizingDownload => 'جار الإنهاء…';
 
   @override
-  String get queuedDownload => 'Queued';
+  String get queuedDownload => 'في الانتظار';
 
   @override
   String get downloadAll => 'تحميل الكل';
@@ -1220,7 +1220,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'تعذّر حذف العنصر بسبب الخطأ التالي: $error';
   }
 
   @override
@@ -1294,10 +1294,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get downloadSubtitles => 'تحميل ترجمات';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'جارٍ البحث عن الترجمة…';
 
   @override
-  String get downloadingSubtitle => 'Downloading subtitle…';
+  String get downloadingSubtitle => 'يتم تحميل الترجمة…';
 
   @override
   String get selectedSubtitleInvalid => 'العنوان الفرعي المحدد غير صالح.';
@@ -1365,7 +1365,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get director => 'مخرج';
 
   @override
-  String get starring => 'STARRING';
+  String get starring => 'بطولة';
 
   @override
   String get directors => 'المخرجون';
@@ -1459,7 +1459,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shuffle => 'تشغيل عشوائي';
 
   @override
-  String get shuffleAll => 'Shuffle All';
+  String get shuffleAll => 'الكل عشوائي';
 
   @override
   String get shuffleAllMusic => 'تشغيل كل الموسيقى عشوائيًا';
@@ -1479,17 +1479,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get perfectMatch => 'مباراة مثالية';
 
   @override
-  String get aiTranslated => 'AI Translated';
+  String get aiTranslated => 'مترجمة بالذكاء الإصطناعي';
 
   @override
   String get machineTranslated => 'Machine Translated';
 
   @override
-  String get hearingImpaired => 'SDH';
+  String get hearingImpaired => 'لضعاف السمع';
 
   @override
   String framerateFps(String rate) {
-    return '$rate fps';
+    return '$rate إطار/ثانية';
   }
 
   @override
@@ -2008,7 +2008,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unableToCreateRecording => 'غير قادر على إنشاء التسجيل';
 
   @override
-  String get recordSeries => 'Record Series';
+  String get recordSeries => 'إقتراحات Moonfin';
 
   @override
   String get seriesSetToRecord => 'Series set to record';
@@ -4013,6 +4013,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get yourWatchlist => 'Your Watchlist';
+
+  @override
+  String get seerrTraktRecommendations => 'Trakt Recommendations';
+
+  @override
+  String get seerrTraktWatchlist => 'Trakt Watchlist';
+
+  @override
+  String get seerrTraktHistory => 'Trakt History';
+
+  @override
+  String get seerrTraktList => 'Trakt List';
+
+  @override
+  String get seerrAnilistTrending => 'AniList Trending';
+
+  @override
+  String get seerrAnilistThisSeason => 'AniList This Season';
+
+  @override
+  String get seerrAnilistPopular => 'AniList Popular';
+
+  @override
+  String get seerrAnilistTop100 => 'AniList Top 100';
+
+  @override
+  String get seerrAnilistNextSeason => 'AniList Next Season';
+
+  @override
+  String get seerrAnilistWatching => 'AniList Watching';
+
+  @override
+  String get seerrAnilistPlanning => 'AniList Planning';
+
+  @override
+  String get seerrAnilistCompleted => 'AniList Completed';
+
+  @override
+  String get seerrAnilistList => 'AniList List';
+
+  @override
+  String get seerrMdblistList => 'MDBList List';
+
+  @override
+  String get seerrSimklTrending => 'Simkl Trending';
+
+  @override
+  String get seerrSimklPlanToWatch => 'Simkl Plan to Watch';
+
+  @override
+  String get seerrSimklWatching => 'Simkl Watching';
+
+  @override
+  String get seerrSimklOnHold => 'Simkl On Hold';
+
+  @override
+  String get seerrSimklCompleted => 'Simkl Completed';
+
+  @override
+  String get seerrSimklDropped => 'Simkl Dropped';
 
   @override
   String get resetRowsToDefaults =>
@@ -9209,7 +9269,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'يتحكم في ما إذا كان Dolby Vision يجب أن يقوم تدفقات طبقة التحسين الخاصة بالملف الشخصي 7 بالتشغيل المباشر.';
 
   @override
-  String get settingsAutoAftkrtEnabled => 'تلقائي (تمكين AFTKRT)';
+  String get settingsAutoAftkrtEnabled => 'تلقائي';
 
   @override
   String get settingsEnabledOnThisDevice => 'تم التفعيل على هذا الجهاز';

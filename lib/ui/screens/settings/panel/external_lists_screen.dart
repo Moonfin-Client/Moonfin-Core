@@ -1172,6 +1172,7 @@ class _SeerrListsScreen extends StatefulWidget {
 
 class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   late List<SeerrRowConfig> _rows;
+  List<(SeerrDiscoverSlider, SeerrSliderCatalog)> _customSliders = [];
   final _syncService = GetIt.instance<PluginSyncService>();
   final _seerrPrefs = GetIt.instance<SeerrPreferences>();
   final _scope = FocusScopeNode(debugLabel: 'SeerrListsScope');
@@ -1181,6 +1182,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   void initState() {
     super.initState();
     _rows = List.of(_seerrPrefs.homeRowsConfig);
+    _loadCustomSliders();
   }
 
   @override
@@ -1230,6 +1232,51 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     if (mounted) setState(() {});
   }
 
+  Future<void> _loadCustomSliders() async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return;
+      final resolved = resolveSeerrCustomSliders(await repo.getDiscoverSliders());
+      final prefs = GetIt.instance<UserPreferences>();
+      final merged = mergeSeerrCustomSliderHomeSections(
+        prefs.homeSectionsConfig,
+        resolved,
+      );
+      if (HomeSectionConfig.toJsonString(merged) !=
+          HomeSectionConfig.toJsonString(prefs.homeSectionsConfig)) {
+        await prefs.setHomeSectionsConfig(merged);
+        _pushPersonalizationSync();
+      }
+      if (!mounted) return;
+      setState(() => _customSliders = resolved);
+    } catch (e) {
+      debugPrint('[SeerrLists] Failed to load custom sliders: $e');
+    }
+  }
+
+  bool _isCustomHomeEnabled(int sliderId) {
+    return GetIt.instance<UserPreferences>().homeSectionsConfig.any(
+      (c) =>
+          c.isSeerrCustomSlider &&
+          c.pluginAdditionalData == '$sliderId' &&
+          c.enabled,
+    );
+  }
+
+  Future<void> _toggleCustomHome(int sliderId, bool enabled) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
+    final idx = configs.indexWhere(
+      (c) => c.isSeerrCustomSlider && c.pluginAdditionalData == '$sliderId',
+    );
+    if (idx < 0) return;
+    configs[idx] = configs[idx].copyWith(enabled: enabled);
+    await prefs.setHomeSectionsConfig(configs);
+    _pushPersonalizationSync();
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1265,6 +1312,24 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     );
                   }).toList(),
                 ),
+                if (_customSliders.isNotEmpty) ...[
+                  const _SectionHeader('Seerr Discover Sliders'),
+                  adaptiveListSection(
+                    children: [
+                      for (final (slider, catalog) in _customSliders)
+                        _SeerrRowSwitchTile(
+                          title: localizeSeerrSliderTitle(
+                            slider.type,
+                            l10n,
+                            serverTitle: catalog.title,
+                          ),
+                          value: _isCustomHomeEnabled(slider.id),
+                          onChanged: (enabled) =>
+                              _toggleCustomHome(slider.id, enabled),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -2580,4 +2645,3 @@ class _SettingsTextFieldState extends State<_SettingsTextField> {
     }
   }
 }
-

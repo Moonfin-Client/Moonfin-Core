@@ -5,6 +5,7 @@ import '../../auth/repositories/session_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_http_client.dart';
 import '../services/seerr/seerr_models.dart';
+import '../services/seerr/seerr_slider_catalog.dart';
 
 class SeerrRepository {
   final PreferenceStore _store;
@@ -432,13 +433,37 @@ class SeerrRepository {
   Future<void> removeFromWatchlist({required int tmdbId, required String mediaType}) =>
       _withClient((c) => c.removeFromWatchlist(tmdbId: tmdbId, mediaType: mediaType));
 
+  Future<List<SeerrDiscoverSlider>> getDiscoverSliders() => _withClient(
+    (c) async => (await c.getDiscoverSliders())
+        .map(SeerrDiscoverSlider.fromJson)
+        .toList(),
+  );
+
+  Future<SeerrDiscoverPage> getCatalog(
+    String path, {
+    Map<String, String> query = const {},
+    int page = 1,
+    String? mediaTypeHint,
+  }) => _withClient(
+    (c) async => SeerrDiscoverPage.fromJson(
+      await c.getCatalog(
+        path,
+        query: query,
+        page: page,
+        mediaTypeHint: mediaTypeHint,
+      ),
+    ),
+  );
+
   Future<SeerrDiscoverPage> discoverMovies({
     int page = 1,
     String sortBy = 'popularity.desc',
     String? genre,
     int? studio,
-    int? keywords,
+    String? keywords,
     String? language,
+    String? watchRegion,
+    String? watchProviders,
     double? voteAverageGte,
     int? voteCountGte,
     int? withRuntimeGte,
@@ -454,6 +479,8 @@ class SeerrRepository {
         studio: studio,
         keywords: keywords,
         language: language,
+        watchRegion: watchRegion,
+        watchProviders: watchProviders,
         voteAverageGte: voteAverageGte,
         voteCountGte: voteCountGte,
         withRuntimeGte: withRuntimeGte,
@@ -469,8 +496,10 @@ class SeerrRepository {
     String sortBy = 'popularity.desc',
     String? genre,
     int? network,
-    int? keywords,
+    String? keywords,
     String? language,
+    String? watchRegion,
+    String? watchProviders,
     String? status,
     double? voteAverageGte,
     int? voteCountGte,
@@ -487,6 +516,8 @@ class SeerrRepository {
         network: network,
         keywords: keywords,
         language: language,
+        watchRegion: watchRegion,
+        watchProviders: watchProviders,
         status: status,
         voteAverageGte: voteAverageGte,
         voteCountGte: voteCountGte,

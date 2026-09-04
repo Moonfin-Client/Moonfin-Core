@@ -5422,6 +5422,86 @@
   "@yourWatchlist": {
     "description": "Seerr row: watchlist"
   },
+  "seerrTraktRecommendations": "Trakt Recommendations",
+  "@seerrTraktRecommendations": {
+    "description": "Foreseerr Discover row: Trakt recommendations"
+  },
+  "seerrTraktWatchlist": "Trakt Watchlist",
+  "@seerrTraktWatchlist": {
+    "description": "Foreseerr Discover row: Trakt watchlist"
+  },
+  "seerrTraktHistory": "Trakt History",
+  "@seerrTraktHistory": {
+    "description": "Foreseerr Discover row: Trakt history"
+  },
+  "seerrTraktList": "Trakt List",
+  "@seerrTraktList": {
+    "description": "Fallback title for an unnamed Foreseerr Trakt list slider"
+  },
+  "seerrAnilistTrending": "AniList Trending",
+  "@seerrAnilistTrending": {
+    "description": "Foreseerr Discover row: AniList trending"
+  },
+  "seerrAnilistThisSeason": "AniList This Season",
+  "@seerrAnilistThisSeason": {
+    "description": "Foreseerr Discover row: AniList current season"
+  },
+  "seerrAnilistPopular": "AniList Popular",
+  "@seerrAnilistPopular": {
+    "description": "Foreseerr Discover row: AniList popular"
+  },
+  "seerrAnilistTop100": "AniList Top 100",
+  "@seerrAnilistTop100": {
+    "description": "Foreseerr Discover row: AniList top 100"
+  },
+  "seerrAnilistNextSeason": "AniList Next Season",
+  "@seerrAnilistNextSeason": {
+    "description": "Foreseerr Discover row: AniList next season"
+  },
+  "seerrAnilistWatching": "AniList Watching",
+  "@seerrAnilistWatching": {
+    "description": "Foreseerr Discover row: AniList watching"
+  },
+  "seerrAnilistPlanning": "AniList Planning",
+  "@seerrAnilistPlanning": {
+    "description": "Foreseerr Discover row: AniList planning"
+  },
+  "seerrAnilistCompleted": "AniList Completed",
+  "@seerrAnilistCompleted": {
+    "description": "Foreseerr Discover row: AniList completed"
+  },
+  "seerrAnilistList": "AniList List",
+  "@seerrAnilistList": {
+    "description": "Fallback title for an unnamed Foreseerr AniList list slider"
+  },
+  "seerrMdblistList": "MDBList List",
+  "@seerrMdblistList": {
+    "description": "Fallback title for an unnamed Foreseerr MDBList slider"
+  },
+  "seerrSimklTrending": "Simkl Trending",
+  "@seerrSimklTrending": {
+    "description": "Foreseerr Discover row: Simkl trending"
+  },
+  "seerrSimklPlanToWatch": "Simkl Plan to Watch",
+  "@seerrSimklPlanToWatch": {
+    "description": "Foreseerr Discover row: Simkl plan to watch"
+  },
+  "seerrSimklWatching": "Simkl Watching",
+  "@seerrSimklWatching": {
+    "description": "Foreseerr Discover row: Simkl watching"
+  },
+  "seerrSimklOnHold": "Simkl On Hold",
+  "@seerrSimklOnHold": {
+    "description": "Foreseerr Discover row: Simkl on hold"
+  },
+  "seerrSimklCompleted": "Simkl Completed",
+  "@seerrSimklCompleted": {
+    "description": "Foreseerr Discover row: Simkl completed"
+  },
+  "seerrSimklDropped": "Simkl Dropped",
+  "@seerrSimklDropped": {
+    "description": "Foreseerr Discover row: Simkl dropped"
+  },
   "resetRowsToDefaults": "Reset rows to defaults",
   "@resetRowsToDefaults": {
     "description": "Tooltip for reset rows to defaults"
