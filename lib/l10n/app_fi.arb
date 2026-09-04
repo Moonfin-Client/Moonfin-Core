@@ -8741,7 +8741,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 min} muut{{count} min}}",
+    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {

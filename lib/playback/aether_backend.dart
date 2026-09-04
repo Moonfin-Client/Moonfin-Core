@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 
@@ -59,6 +60,16 @@ class AetherBackend implements PlayerBackend {
   bool? _allowUntrustedTls;
   Timer? _audioDelayDebounce;
 
+  // A torn down session stops pushing state, so the last buffering value the
+  // channel sent stays latched and the player keeps its loading overlay with
+  // nothing left to clear it. This does not resume playback, it turns a silent
+  // hang into a failure the manager can surface.
+  static const _stallTimeoutMs = 30000;
+  Timer? _stallTimer;
+  bool _stallSawPlayback = false;
+  int _stallSinceMs = 0;
+  int _stallLastPositionMs = -1;
+
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
   final _bufferStream = StreamController<Duration>.broadcast();
@@ -91,6 +102,7 @@ class AetherBackend implements PlayerBackend {
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
+        if (_isPlaying) _stallSawPlayback = true;
 
         _positionStream.add(_position);
         _durationStream.add(_duration);
@@ -206,6 +218,7 @@ class AetherBackend implements PlayerBackend {
     _activeSubtitleTrackIndex = null;
     _tracksReadyCompleter = null;
     _embeddedCaptionTracks = const [];
+    _startStallWatchdog();
 
     await _invoke<void>('setSource', {
       'url': url,
@@ -237,10 +250,60 @@ class AetherBackend implements PlayerBackend {
   @override
   Future<void> stop() async {
     await _invoke<void>('stop');
+    _stopStallWatchdog();
     if (_isPlaying) {
       _isPlaying = false;
       _playingStream.add(false);
     }
+    // The state timer dies with the session, so a stop taken while buffering
+    // left this latched with nothing to push it back down.
+    if (_isBuffering) {
+      _isBuffering = false;
+      _bufferingStream.add(false);
+    }
+  }
+
+  void _startStallWatchdog() {
+    _stallSawPlayback = false;
+    _stallSinceMs = 0;
+    _stallLastPositionMs = -1;
+    _stallTimer ??= Timer.periodic(
+      const Duration(seconds: 2),
+      (_) => _checkStall(),
+    );
+  }
+
+  void _stopStallWatchdog() {
+    _stallTimer?.cancel();
+    _stallTimer = null;
+  }
+
+  void _checkStall() {
+    // Only a session that reached playback can stall. A slow open is a slow
+    // server, which this must not fail.
+    if (_disposed || !_stallSawPlayback) return;
+    // A backgrounded session is torn down deliberately and reloaded on return.
+    if (!_isBuffering ||
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      _stallSinceMs = 0;
+      return;
+    }
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final positionMs = _position.inMilliseconds;
+    if (_stallSinceMs == 0 || positionMs != _stallLastPositionMs) {
+      _stallSinceMs = nowMs;
+      _stallLastPositionMs = positionMs;
+      return;
+    }
+    if (nowMs - _stallSinceMs < _stallTimeoutMs) return;
+
+    _stopStallWatchdog();
+    _handleEvent(<String, dynamic>{
+      'event': 'playerError',
+      'kind': 'playback_stalled',
+      'recoverable': false,
+    });
   }
 
   @override
@@ -538,6 +601,7 @@ class AetherBackend implements PlayerBackend {
     _prefs.removeListener(_syncAllowUntrustedTls);
     _prefs.removeListener(_syncEngineLogForwarding);
     _audioDelayDebounce?.cancel();
+    _stopStallWatchdog();
     _eventSub?.cancel();
     _positionStream.close();
     _durationStream.close();
