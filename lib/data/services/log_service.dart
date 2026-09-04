@@ -73,8 +73,26 @@ class LogService extends ChangeNotifier {
   static const int _maxEntries = 2000;
 
   static final _redactRegex = RegExp(
-    r'((?:https?|wss?)://)[A-Za-z0-9._~%\-:@\[\]]+',
+    r'''((?:https?|wss?)://)[^\s<>"',;()\]}]+''',
     caseSensitive: false,
+  );
+
+  static final _hostLookupRegex = RegExp(
+    r'''((?:Failed host lookup|Unable to resolve host):? ['"])[^'"]+''',
+    caseSensitive: false,
+  );
+
+  static final _genericErrorRedactRegex = RegExp(
+    r'''\b(host(?:name)?|address|ip)(\s*[:=]\s*)([^\s,;()<>"{}\[\]']+)''',
+    caseSensitive: false,
+  );
+
+  static final _ipv4Regex = RegExp(
+    r'\b(?:\d{1,3}\.){3}\d{1,3}\b',
+  );
+
+  static final _ipv6Regex = RegExp(
+    r'\b(?:[A-Fa-f0-9]{1,4}:){2,7}[A-Fa-f0-9]{1,4}\b',
   );
 
   final UserPreferences _prefs;
@@ -283,11 +301,36 @@ class LogService extends ChangeNotifier {
   };
 
   String _redact(String text) {
-    if (!text.contains('://')) {
-      return text;
+    var result = text;
+
+    if (result.contains('://')) {
+      result = result.replaceAllMapped(_redactRegex, (match) {
+        return '${match.group(1)}[REDACTED]';
+      });
     }
-    return text.replaceAllMapped(_redactRegex, (match) {
-      return '${match.group(1)}[REDACTED]';
-    });
+
+    final lower = result.toLowerCase();
+    if (lower.contains('host') || lower.contains('address') || lower.contains('ip')) {
+      result = result.replaceAllMapped(_genericErrorRedactRegex, (match) {
+        return '${match.group(1)}${match.group(2)}[REDACTED]';
+      });
+
+      if (lower.contains('host')) {
+        result = result.replaceAllMapped(_hostLookupRegex, (match) {
+          return "${match.group(1)}[REDACTED]";
+        });
+      }
+    }
+
+    // catch any ipv4's
+    if (result.contains('.')) {
+      result = result.replaceAll(_ipv4Regex, '[REDACTED]');
+    }
+    // catch any ipv6's
+    if (result.contains(':')) {
+      result = result.replaceAll(_ipv6Regex, '[REDACTED]');
+    }
+
+    return result;
   }
 }
