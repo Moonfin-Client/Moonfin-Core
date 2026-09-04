@@ -1,2 +1,4 @@
+MOONFIN_ENTITLEMENTS = Runner/Runner.entitlements
+#include "Shared.xcconfig"
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"

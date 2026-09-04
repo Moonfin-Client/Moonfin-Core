@@ -108,6 +108,7 @@ app.*.map.json
 /Moonfin_iOS_v*.ipa
 /Moonfin_iOS_v*_unsigned.ipa
 /build-ios.private.env
+/ios/Flutter/Local.xcconfig
 
 # Linux package artifacts
 /Moonfin-linux-*

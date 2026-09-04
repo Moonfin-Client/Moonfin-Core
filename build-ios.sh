@@ -12,6 +12,7 @@ ARCHIVE_DIR="$REPO_ROOT/build/ios/archive"
 IPA_DIR="$REPO_ROOT/build/ios/ipa"
 ROOT_IPA_OUTPUT=""
 ROOT_UNSIGNED_IPA_OUTPUT=""
+IOS_CODESIGN="${IOS_CODESIGN:-"0"}"
 
 # Optional local overrides for private values.
 PRIVATE_ENV_FILE="$REPO_ROOT/build-ios.private.env"
@@ -144,28 +145,32 @@ echo "Unsigned iOS archive created in: $ARCHIVE_DIR"
 echo "Unsigned IPA created: $UNSIGNED_IPA_SOURCE"
 echo "Unsigned IPA copied to root: $ROOT_UNSIGNED_IPA_OUTPUT"
 
-if [ -n "$IOS_EXPORT_OPTIONS_PLIST" ]; then
-  if [ ! -f "$IOS_EXPORT_OPTIONS_PLIST" ]; then
-    echo "Error: export options plist not found: $IOS_EXPORT_OPTIONS_PLIST" >&2
+if [ -v IOS_CODESIGN ] && [ "$IOS_CODESIGN" != "1" ]; then
+  exit
+else
+  if [ -n "$IOS_EXPORT_OPTIONS_PLIST" ]; then
+    if [ ! -f "$IOS_EXPORT_OPTIONS_PLIST" ]; then
+      echo "Error: export options plist not found: $IOS_EXPORT_OPTIONS_PLIST" >&2
+      exit 1
+    fi
+    echo "Building signed App Store IPA with export options plist..."
+    "$FLUTTER" build ipa --release --export-options-plist="$IOS_EXPORT_OPTIONS_PLIST" \
+      --dart-define=DISTRIBUTION_CHANNEL=ios_signed
+  else
+    echo "Building signed App Store IPA with export method: $IOS_EXPORT_METHOD"
+    "$FLUTTER" build ipa --release --export-method="$IOS_EXPORT_METHOD" \
+      --dart-define=DISTRIBUTION_CHANNEL=ios_signed
+  fi
+
+  IPA_SOURCE="$(find "$IPA_DIR" -maxdepth 1 -type f -name '*.ipa' ! -name '*-unsigned.ipa' | head -n 1)"
+  if [ -z "$IPA_SOURCE" ]; then
+    echo "Error: IPA not found in $IPA_DIR" >&2
     exit 1
   fi
-  echo "Building signed App Store IPA with export options plist..."
-  "$FLUTTER" build ipa --release --export-options-plist="$IOS_EXPORT_OPTIONS_PLIST" \
-    --dart-define=DISTRIBUTION_CHANNEL=ios_signed
-else
-  echo "Building signed App Store IPA with export method: $IOS_EXPORT_METHOD"
-  "$FLUTTER" build ipa --release --export-method="$IOS_EXPORT_METHOD" \
-    --dart-define=DISTRIBUTION_CHANNEL=ios_signed
+
+  cp "$IPA_SOURCE" "$ROOT_IPA_OUTPUT"
+
+  echo "IPA created: $IPA_SOURCE"
+  echo "IPA copied to root: $ROOT_IPA_OUTPUT"
+  echo "Export method: $IOS_EXPORT_METHOD"
 fi
-
-IPA_SOURCE="$(find "$IPA_DIR" -maxdepth 1 -type f -name '*.ipa' ! -name '*-unsigned.ipa' | head -n 1)"
-if [ -z "$IPA_SOURCE" ]; then
-  echo "Error: IPA not found in $IPA_DIR" >&2
-  exit 1
-fi
-
-cp "$IPA_SOURCE" "$ROOT_IPA_OUTPUT"
-
-echo "IPA created: $IPA_SOURCE"
-echo "IPA copied to root: $ROOT_IPA_OUTPUT"
-echo "Export method: $IOS_EXPORT_METHOD"
