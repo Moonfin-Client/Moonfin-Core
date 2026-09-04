@@ -177,6 +177,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+    await applyRowConfig();
   }
 
   Future<void> refresh() async {
@@ -209,24 +210,29 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
           : rows.where((t) => t != SeerrRowType.recentlyAdded).toList();
 
   Future<void> applyRowConfig() async {
-    if (_rows.isEmpty) return;
+    if (_isLoading || _rows.isEmpty) return;
     final activeTypes = _visibleRows(_prefs.activeRows);
+    final currentLocal = [
+      for (final row in _rows)
+        if (row.type != null) row.type!,
+    ];
+    if (listEquals(currentLocal, activeTypes)) return;
+
     final rowMap = {
       for (final r in _rows) ?r.type: r,
     };
-    final newRows = <SeerrDiscoverRow>[];
+    final custom = [for (final r in _rows) if (r.isCustomSlider) r];
+    final local = <SeerrDiscoverRow>[];
     for (final type in activeTypes) {
       final existing = rowMap[type];
-      if (existing != null) {
-        newRows.add(existing);
-      } else {
+      if (existing == null) {
         await refresh();
         return;
       }
+      local.add(existing);
     }
-    _rows = newRows;
+    _rows = [...local, ...custom];
     notifyListeners();
-    await _appendCustomSliders();
   }
 
   Future<void> loadMore(int rowIndex) async {
