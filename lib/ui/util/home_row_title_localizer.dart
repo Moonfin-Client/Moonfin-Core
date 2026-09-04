@@ -1,4 +1,5 @@
 import '../../data/models/home_row.dart';
+import '../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 
@@ -20,6 +21,40 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.upcomingSeries => l10n.upcomingSeries,
       SeerrRowType.networks => l10n.networks,
     };
+
+/// Admin-named custom sliders keep [serverTitle]. Built-in Foreseerr rows
+/// use the translation catalog.
+String localizeSeerrSliderTitle(
+  int type,
+  AppLocalizations l10n, {
+  String? serverTitle,
+}) {
+  final server = serverTitle?.trim() ?? '';
+  if (server.isNotEmpty && seerrSliderUsesServerTitle(type)) return server;
+  return switch (type) {
+    SeerrSliderType.traktRecommendations => l10n.seerrTraktRecommendations,
+    SeerrSliderType.traktWatchlist => l10n.seerrTraktWatchlist,
+    SeerrSliderType.traktHistory => l10n.seerrTraktHistory,
+    SeerrSliderType.traktList => l10n.seerrTraktList,
+    SeerrSliderType.anilistTrending => l10n.seerrAnilistTrending,
+    SeerrSliderType.anilistSeason => l10n.seerrAnilistThisSeason,
+    SeerrSliderType.anilistWatching => l10n.seerrAnilistWatching,
+    SeerrSliderType.anilistPlanning => l10n.seerrAnilistPlanning,
+    SeerrSliderType.anilistCompleted => l10n.seerrAnilistCompleted,
+    SeerrSliderType.anilistList => l10n.seerrAnilistList,
+    SeerrSliderType.anilistPopular => l10n.seerrAnilistPopular,
+    SeerrSliderType.anilistTop => l10n.seerrAnilistTop100,
+    SeerrSliderType.anilistNextSeason => l10n.seerrAnilistNextSeason,
+    SeerrSliderType.mdblistList => l10n.seerrMdblistList,
+    SeerrSliderType.simklTrending => l10n.seerrSimklTrending,
+    SeerrSliderType.simklPlanToWatch => l10n.seerrSimklPlanToWatch,
+    SeerrSliderType.simklWatching => l10n.seerrSimklWatching,
+    SeerrSliderType.simklOnHold => l10n.seerrSimklOnHold,
+    SeerrSliderType.simklCompleted => l10n.seerrSimklCompleted,
+    SeerrSliderType.simklDropped => l10n.seerrSimklDropped,
+    _ => server.isNotEmpty ? server : seerrSliderFallbackTitle(type),
+  };
+}
 
 String localizeHomeRowTitle({
   required HomeRow row,
