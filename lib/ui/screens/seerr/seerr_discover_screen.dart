@@ -519,7 +519,11 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   }) {
     final l10n = AppLocalizations.of(context);
     final title = row.isCustomSlider
-        ? (row.title ?? '')
+        ? localizeSeerrSliderTitle(
+            row.slider!.type,
+            l10n,
+            serverTitle: row.slider?.title,
+          )
         : localizeSeerrRowTitle(row.type!, l10n);
     final desktopScale = GetIt.instance<UserPreferences>()
         .get(UserPreferences.desktopUiScale)

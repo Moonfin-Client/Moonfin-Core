@@ -253,24 +253,24 @@ class AppLocalizationsCa extends AppLocalizations {
   String get glassQualityReduced => 'Reduït';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'Rendiment';
 
   @override
   String get performanceModeSubtitle =>
-      'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
+      'El mode automàtic avalua aquest dispositiu i es modera en aquells que van justos de memòria, cosa que manté menys imatges a la memòria i deixa els tràilers com a imatges fixes. Té ple efecte a partir del següent inici.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => 'Automàtic';
 
   @override
-  String get performanceModeStandard => 'Standard';
+  String get performanceModeStandard => 'Estàndard';
 
   @override
-  String get performanceModeReduced => 'Reduced';
+  String get performanceModeReduced => 'Reduït';
 
   @override
   String get trailerPreviewHeldBack =>
-      'Off because Performance is set to Reduced for this device';
+      'Desactivat perquè el Rendiment està configurat com a Reduït per a aquest dispositiu';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -291,14 +291,14 @@ class AppLocalizationsCa extends AppLocalizations {
       'Utilitzeu el mètode d\'entrada del dispositiu de manera predeterminada per a l\'entrada de text';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'Controlador';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'Navegació amb comandament';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'Permet que un comandament de joc connectat mogui el focus i seleccioni elements';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -1295,10 +1295,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get downloadSubtitles => 'Descarrega els subtítols';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'Cercant subtítols…';
 
   @override
-  String get downloadingSubtitle => 'Downloading subtitle…';
+  String get downloadingSubtitle => 'Descarregant subtítols…';
 
   @override
   String get selectedSubtitleInvalid => 'El subtítol seleccionat no és vàlid.';
@@ -1473,10 +1473,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get perfectMatch => 'Coincidència perfecte';
 
   @override
-  String get aiTranslated => 'AI Translated';
+  String get aiTranslated => 'Traduït per IA';
 
   @override
-  String get machineTranslated => 'Machine Translated';
+  String get machineTranslated => 'Traduït automàticament';
 
   @override
   String get hearingImpaired => 'SDH';
@@ -2583,30 +2583,31 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra les miniatures de previsualització quan cerques';
 
   @override
-  String get trickplayDisplayStyleSingle => 'Single Thumbnail';
+  String get trickplayDisplayStyleSingle => 'Miniatura única';
 
   @override
-  String get trickplayDisplayStyleStrip => 'Filmstrip';
+  String get trickplayDisplayStyleStrip => 'Tira de fotogrames';
 
   @override
-  String get trickplayModeFull => 'Full Screen';
+  String get trickplayModeFull => 'Pantalla completa';
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Arrossega el control lliscant per previsualitzar la cerca';
 
   @override
-  String get trickplayPreviewScale => 'Preview Size';
+  String get trickplayPreviewScale => 'Mida de les previsualitzacions';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset =>
+      'Distància respecte a la barra de cerca';
 
   @override
-  String get trickplayFollowScrubPosition => 'Follow Scrub Position';
+  String get trickplayFollowScrubPosition => 'Segueix la posició de cerca';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
-      'Preview slides along the seekbar as you scrub, instead of staying centered';
+      'La previsualització es desplaça al llarg de la barra de cerca mentre cerques, en lloc de mantenir-se centrada';
 
   @override
   String get showDescriptionOnPause => 'Mostra la descripció a Pausa';
@@ -4060,6 +4061,66 @@ class AppLocalizationsCa extends AppLocalizations {
   String get yourWatchlist => 'La teva llista de seguiment';
 
   @override
+  String get seerrTraktRecommendations => 'Trakt Recommendations';
+
+  @override
+  String get seerrTraktWatchlist => 'Trakt Watchlist';
+
+  @override
+  String get seerrTraktHistory => 'Trakt History';
+
+  @override
+  String get seerrTraktList => 'Trakt List';
+
+  @override
+  String get seerrAnilistTrending => 'AniList Trending';
+
+  @override
+  String get seerrAnilistThisSeason => 'AniList This Season';
+
+  @override
+  String get seerrAnilistPopular => 'AniList Popular';
+
+  @override
+  String get seerrAnilistTop100 => 'AniList Top 100';
+
+  @override
+  String get seerrAnilistNextSeason => 'AniList Next Season';
+
+  @override
+  String get seerrAnilistWatching => 'AniList Watching';
+
+  @override
+  String get seerrAnilistPlanning => 'AniList Planning';
+
+  @override
+  String get seerrAnilistCompleted => 'AniList Completed';
+
+  @override
+  String get seerrAnilistList => 'AniList List';
+
+  @override
+  String get seerrMdblistList => 'MDBList List';
+
+  @override
+  String get seerrSimklTrending => 'Simkl Trending';
+
+  @override
+  String get seerrSimklPlanToWatch => 'Simkl Plan to Watch';
+
+  @override
+  String get seerrSimklWatching => 'Simkl Watching';
+
+  @override
+  String get seerrSimklOnHold => 'Simkl On Hold';
+
+  @override
+  String get seerrSimklCompleted => 'Simkl Completed';
+
+  @override
+  String get seerrSimklDropped => 'Simkl Dropped';
+
+  @override
   String get resetRowsToDefaults =>
       'Restableix les files als valors predeterminats';
 
@@ -4283,11 +4344,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get seerrRequestedStatus => 'Sol·licitat';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Descarregant';
 
   @override
   String seerrDownloadingSize(String done, String total) {
-    return 'Downloading · $done / $total';
+    return 'Descarregant · $done / $total';
   }
 
   @override
@@ -11383,18 +11444,19 @@ class AppLocalizationsCa extends AppLocalizations {
   String get runSetupAgain => 'Iniciar la configuració de nou';
 
   @override
-  String get serverMessages => 'Messages';
+  String get serverMessages => 'Missatges';
 
   @override
-  String get serverMessagesEmpty => 'No messages from your server yet';
+  String get serverMessagesEmpty =>
+      'Encara no hi ha missatges del teu servidor';
 
   @override
-  String get serverMessagesMarkAllRead => 'Mark all as read';
+  String get serverMessagesMarkAllRead => 'Marca-ho tot com a llegit';
 
   @override
-  String get serverMessagesShowButton => 'Show messages button';
+  String get serverMessagesShowButton => 'Botó de mostrar missatges';
 
   @override
   String get serverMessagesShowButtonSubtitle =>
-      'Adds a button to the menu for messages sent by your server admin';
+      'Afegeix un botó al menú per als missatges enviats per l\'administrador del teu servidor';
 }

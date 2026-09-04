@@ -1313,12 +1313,16 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                   }).toList(),
                 ),
                 if (_customSliders.isNotEmpty) ...[
-                  const _SectionHeader('Seerr Custom Sliders'),
+                  const _SectionHeader('Seerr Discover Sliders'),
                   adaptiveListSection(
                     children: [
                       for (final (slider, catalog) in _customSliders)
                         _SeerrRowSwitchTile(
-                          title: catalog.title,
+                          title: localizeSeerrSliderTitle(
+                            slider.type,
+                            l10n,
+                            serverTitle: catalog.title,
+                          ),
                           value: _isCustomHomeEnabled(slider.id),
                           onChanged: (enabled) =>
                               _toggleCustomHome(slider.id, enabled),

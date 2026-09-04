@@ -9,6 +9,7 @@ SeerrDiscoverSlider _slider({
   bool enabled = true,
   bool isBuiltIn = false,
   int order = 0,
+  String? sort,
 }) => SeerrDiscoverSlider(
   id: id,
   type: type,
@@ -17,6 +18,7 @@ SeerrDiscoverSlider _slider({
   enabled: enabled,
   isBuiltIn: isBuiltIn,
   order: order,
+  sort: sort,
 );
 
 void main() {
@@ -112,6 +114,90 @@ void main() {
       );
     });
 
+    test('maps trakt list', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(
+          type: SeerrSliderType.traktList,
+          data: 'https://trakt.tv/users/foo/lists/bar',
+        ),
+      );
+      expect(catalog?.path, 'discover/trakt/list');
+      expect(catalog?.query, {'url': 'https://trakt.tv/users/foo/lists/bar'});
+    });
+
+    test('maps anilist list', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(type: SeerrSliderType.anilistList, data: 'Watching'),
+      );
+      expect(catalog?.path, 'discover/anilist/list');
+      expect(catalog?.query, {'name': 'Watching'});
+    });
+
+    test('maps mdblist list', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(
+          type: SeerrSliderType.mdblistList,
+          data: 'https://mdblist.com/lists/foo/bar',
+        ),
+      );
+      expect(catalog?.path, 'discover/mdblist/list');
+      expect(catalog?.query, {'url': 'https://mdblist.com/lists/foo/bar'});
+    });
+
+    test('maps built-in trakt recommendations with no data', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(
+          type: SeerrSliderType.traktRecommendations,
+          title: null,
+          data: '',
+          isBuiltIn: true,
+        ),
+      );
+      expect(catalog?.path, 'discover/trakt/recommendations');
+      expect(catalog?.query, isEmpty);
+      expect(catalog?.title, 'Trakt Recommendations');
+      expect(catalog?.type, SeerrSliderType.traktRecommendations);
+    });
+
+    test('maps built-in anilist watching and simkl library status', () {
+      expect(
+        resolveSeerrSliderCatalog(
+          _slider(
+            type: SeerrSliderType.anilistWatching,
+            title: null,
+            data: '',
+            isBuiltIn: true,
+          ),
+        )?.path,
+        'discover/anilist/watching',
+      );
+      expect(
+        resolveSeerrSliderCatalog(
+          _slider(
+            type: SeerrSliderType.simklPlanToWatch,
+            title: null,
+            data: '',
+            isBuiltIn: true,
+          ),
+        )?.query,
+        {'status': 'plantowatch'},
+      );
+    });
+
+    test('passes sort through when set', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(
+          type: SeerrSliderType.traktList,
+          data: 'https://trakt.tv/users/foo/lists/bar',
+          sort: 'rank',
+        ),
+      );
+      expect(catalog?.query, {
+        'url': 'https://trakt.tv/users/foo/lists/bar',
+        'sort': 'rank',
+      });
+    });
+
     test('skips unknown types', () {
       expect(resolveSeerrSliderCatalog(_slider(type: 99)), isNull);
     });
@@ -125,10 +211,19 @@ void main() {
       );
     });
 
-    test('skips built-in sliders', () {
+    test('skips stock built-in trending that Moonfin already renders locally', () {
       expect(
         resolveSeerrSliderCatalog(
-          _slider(type: SeerrSliderType.tmdbMovieKeyword, isBuiltIn: true),
+          _slider(type: 4, title: 'Trending', data: '', isBuiltIn: true),
+        ),
+        isNull,
+      );
+    });
+
+    test('skips retired simkl premiere types', () {
+      expect(
+        resolveSeerrSliderCatalog(
+          _slider(type: 38, title: null, data: '', isBuiltIn: true),
         ),
         isNull,
       );
@@ -177,9 +272,21 @@ void main() {
         order: 2,
         title: 'Christmas',
       ),
+      _slider(
+        id: 4,
+        type: SeerrSliderType.traktRecommendations,
+        order: 3,
+        title: null,
+        data: '',
+        isBuiltIn: true,
+      ),
     ]);
-    expect(resolved.map((e) => e.$1.id), [3, 2]);
-    expect(resolved.map((e) => e.$2.title), ['Christmas', 'Drama']);
+    expect(resolved.map((e) => e.$1.id), [3, 4, 2]);
+    expect(resolved.map((e) => e.$2.title), [
+      'Christmas',
+      'Trakt Recommendations',
+      'Drama',
+    ]);
   });
 
   group('SeerrDiscoverSlider.fromJson', () {
@@ -192,6 +299,7 @@ void main() {
         'enabled': true,
         'title': 'Christmas',
         'data': '123,456',
+        'sort': 'rank',
       });
       expect(slider.id, 12);
       expect(slider.type, SeerrSliderType.tmdbMovieKeyword);
@@ -200,6 +308,7 @@ void main() {
       expect(slider.enabled, isTrue);
       expect(slider.title, 'Christmas');
       expect(slider.data, '123,456');
+      expect(slider.sort, 'rank');
     });
 
     test('treats a missing enabled flag as on, matching Seerr defaults', () {
@@ -211,6 +320,7 @@ void main() {
       });
       expect(slider.enabled, isTrue);
       expect(slider.isBuiltIn, isFalse);
+      expect(slider.sort, isNull);
     });
 
     test('does not treat a built-in trending row as custom', () {

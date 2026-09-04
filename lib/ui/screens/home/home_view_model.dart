@@ -31,6 +31,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../../data/services/seerr/seerr_slider_home_sections.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -2312,7 +2313,11 @@ class HomeViewModel extends ChangeNotifier {
       return [
         _seerrRow(
           cfg.stableId,
-          cfg.pluginDisplayText ?? catalog.title,
+          localizeSeerrSliderTitle(
+            catalog.type,
+            currentAppLocalizations(),
+            serverTitle: cfg.pluginDisplayText ?? catalog.title,
+          ),
           items,
           totalCount: page.totalPages > 1 ? items.length + 1 : items.length,
         ),
@@ -2341,14 +2346,16 @@ class HomeViewModel extends ChangeNotifier {
     );
     final rawItems = page.results;
     _seerrRowPages[row.id] = nextPage;
-    final existingIds = row.items.map((item) => item.id).toSet();
+    final existingIds = row.items.map(_seerrCatalogItemIdentity).toSet();
     final items = [
       ...row.items,
       ..._seerrAggregatedItems(
         rawItems,
         hideAvailable: true,
         blockNsfw: seerrPrefs.blockNsfw,
-      ).where((item) => !existingIds.contains(item.id)),
+      ).where(
+        (item) => !existingIds.contains(_seerrCatalogItemIdentity(item)),
+      ),
     ];
     _rows = List.of(_rows);
     _rows[rowIndex] = row.copyWith(
@@ -2357,6 +2364,9 @@ class HomeViewModel extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  static String _seerrCatalogItemIdentity(AggregatedItem item) =>
+      '${item.seerrMediaType ?? item.type ?? ''}:${item.id}';
 
   Future<List<HomeRow>> _loadSeerrRow(
     SeerrRowType type,

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../log_service.dart';
+import 'seerr_catalog_item.dart';
 import 'seerr_error.dart';
 import 'seerr_models.dart';
 
@@ -464,14 +465,15 @@ class SeerrHttpClient {
     );
     _requireSuccess(response, 'getWatchlist');
     final body = Map<String, dynamic>.from(response.data as Map<String, dynamic>);
-    final results = (body['results'] as List? ?? []).map((raw) {
-      final item = Map<String, dynamic>.from(raw as Map<String, dynamic>);
-      if (item['tmdbId'] != null) item['id'] = item['tmdbId'];
-      if (item.containsKey('media') && !item.containsKey('mediaInfo')) {
-        item['mediaInfo'] = item['media'];
-      }
-      return item;
-    }).toList();
+    final results = (body['results'] as List? ?? [])
+        .whereType<Map>()
+        .map(
+          (raw) => normalizeSeerrCatalogItem(
+            Map<String, dynamic>.from(raw),
+          ),
+        )
+        .whereType<Map<String, dynamic>>()
+        .toList();
     return {...body, 'results': results};
   }
 
@@ -533,12 +535,10 @@ class SeerrHttpClient {
   }) {
     final results = (body['results'] as List? ?? []).map((raw) {
       if (raw is! Map) return null;
-      final item = Map<String, dynamic>.from(raw);
-      if (item['mediaType'] == 'person') return null;
-      if (item['mediaType'] == null && mediaTypeHint != null) {
-        item['mediaType'] = mediaTypeHint;
-      }
-      return item;
+      return normalizeSeerrCatalogItem(
+        Map<String, dynamic>.from(raw),
+        mediaTypeHint: mediaTypeHint,
+      );
     }).whereType<Map<String, dynamic>>().toList();
 
     final currentPage = (body['page'] as num?)?.toInt() ?? page;

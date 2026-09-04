@@ -4130,6 +4130,66 @@ class AppLocalizationsHr extends AppLocalizations {
   String get yourWatchlist => 'Your Watchlist';
 
   @override
+  String get seerrTraktRecommendations => 'Trakt Recommendations';
+
+  @override
+  String get seerrTraktWatchlist => 'Trakt Watchlist';
+
+  @override
+  String get seerrTraktHistory => 'Trakt History';
+
+  @override
+  String get seerrTraktList => 'Trakt List';
+
+  @override
+  String get seerrAnilistTrending => 'AniList Trending';
+
+  @override
+  String get seerrAnilistThisSeason => 'AniList This Season';
+
+  @override
+  String get seerrAnilistPopular => 'AniList Popular';
+
+  @override
+  String get seerrAnilistTop100 => 'AniList Top 100';
+
+  @override
+  String get seerrAnilistNextSeason => 'AniList Next Season';
+
+  @override
+  String get seerrAnilistWatching => 'AniList Watching';
+
+  @override
+  String get seerrAnilistPlanning => 'AniList Planning';
+
+  @override
+  String get seerrAnilistCompleted => 'AniList Completed';
+
+  @override
+  String get seerrAnilistList => 'AniList List';
+
+  @override
+  String get seerrMdblistList => 'MDBList List';
+
+  @override
+  String get seerrSimklTrending => 'Simkl Trending';
+
+  @override
+  String get seerrSimklPlanToWatch => 'Simkl Plan to Watch';
+
+  @override
+  String get seerrSimklWatching => 'Simkl Watching';
+
+  @override
+  String get seerrSimklOnHold => 'Simkl On Hold';
+
+  @override
+  String get seerrSimklCompleted => 'Simkl Completed';
+
+  @override
+  String get seerrSimklDropped => 'Simkl Dropped';
+
+  @override
   String get resetRowsToDefaults => 'Vrati retke na zadane vrijednosti';
 
   @override
