@@ -49,10 +49,43 @@ static native_ctx g_ctx;
 // window.
 static pthread_mutex_t g_window_lock = PTHREAD_MUTEX_INITIALIZER;
 
+// Keep the software render thread attached to the JVM for the frame loop.
+// This avoids creating thousands of Java Thread registrations during a game session.
+typedef struct {
+  int attempted;
+  int attached_here;
+} render_thread_jvm;
+
+static void ensure_render_thread_attached(native_ctx *c,
+                                          render_thread_jvm *jvm) {
+  if (jvm->attempted) return;
+  jvm->attempted = 1;
+  if (!c->vm) return;
+
+  JNIEnv *env = NULL;
+  jint state = (*c->vm)->GetEnv(c->vm, (void **)&env, JNI_VERSION_1_6);
+  if (state == JNI_OK) return;
+  if (state != JNI_EDETACHED) {
+    LOGE("Could not query software render thread JVM state (%d)", state);
+    return;
+  }
+
+  JavaVMAttachArgs args = {
+      .version = JNI_VERSION_1_6,
+      .name = "moonfin.retro",
+      .group = NULL,
+  };
+  if ((*c->vm)->AttachCurrentThreadAsDaemon(c->vm, &env, &args) == JNI_OK) {
+    jvm->attached_here = 1;
+  } else {
+    LOGE("Could not attach software render thread to the JVM");
+  }
+}
+
 // Copies the host's latest frame into the output surface. ANativeWindow_lock
 // blocks while the compositor holds the buffers, so this runs on its own thread
 // rather than the emulation thread, which stays paced by audio.
-static void blit_frame(native_ctx *c) {
+static void blit_frame(native_ctx *c, render_thread_jvm *jvm) {
   pthread_mutex_lock(&g_window_lock);
   ANativeWindow *window = c->window;
   if (!window) {
@@ -66,6 +99,8 @@ static void blit_frame(native_ctx *c) {
     pthread_mutex_unlock(&g_window_lock);
     return;
   }
+
+  ensure_render_thread_attached(c, jvm);
 
   // Renegotiating the buffer queue every frame stalls rendering, so only set
   // the geometry when the frame size changes.
@@ -95,13 +130,15 @@ static void blit_frame(native_ctx *c) {
 
 static void *render_loop(void *arg) {
   native_ctx *c = (native_ctx *)arg;
+  render_thread_jvm jvm = {0};
   while (atomic_load(&c->render_running)) {
     if (atomic_exchange(&c->frame_dirty, 0)) {
-      blit_frame(c);
+      blit_frame(c, &jvm);
     } else {
       usleep(2000);
     }
   }
+  if (jvm.attached_here) (*c->vm)->DetachCurrentThread(c->vm);
   return NULL;
 }
 
