@@ -31,7 +31,11 @@ enum HomeSectionPluginSource {
 
   playlists('playlists'),
 
-  custom('custom');
+  custom('custom'),
+
+  /// Seerr `GET /settings/discover` custom sliders. One home row per slider;
+  /// they are not [HomeSectionType] / [SeerrRowType] values.
+  seerr('seerr');
 
   const HomeSectionPluginSource(this.serializedName);
   final String serializedName;
@@ -159,11 +163,14 @@ class HomeSectionConfig {
   static String? _normalizedServerId(
     String? serverId,
     HomeSectionPluginSource source,
-  ) =>
-      (serverId == null || serverId.isEmpty) &&
-              source == HomeSectionPluginSource.custom
-          ? 'custom'
-          : serverId;
+  ) {
+    if (serverId != null && serverId.isNotEmpty) return serverId;
+    return switch (source) {
+      HomeSectionPluginSource.custom => 'custom',
+      HomeSectionPluginSource.seerr => 'seerr',
+      _ => serverId,
+    };
+  }
 
   /// Stable identifier suitable for use as a row id / list key. Plugin
   /// entries combine the originating plugin, server, section and additional
@@ -179,6 +186,8 @@ class HomeSectionConfig {
 
   bool get isBuiltin => kind == HomeSectionKind.builtin;
   bool get isPluginDynamic => kind == HomeSectionKind.pluginDynamic;
+  bool get isSeerrCustomSlider =>
+      isPluginDynamic && pluginSource == HomeSectionPluginSource.seerr;
 
   static List<HomeSectionConfig> defaults() => const [
     HomeSectionConfig(

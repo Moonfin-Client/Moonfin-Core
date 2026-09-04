@@ -6,10 +6,13 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../services/seerr/seerr_slider_catalog.dart';
 import '../utils/bounded_concurrency.dart';
 
 class SeerrDiscoverRow {
-  final SeerrRowType type;
+  final SeerrRowType? type;
+  final SeerrDiscoverSlider? slider;
+  final SeerrSliderCatalog? catalog;
   final List<SeerrDiscoverItem> items;
   final List<SeerrGenre> genres;
   final List<SeerrNetwork> networks;
@@ -19,7 +22,9 @@ class SeerrDiscoverRow {
   final int totalPages;
 
   const SeerrDiscoverRow({
-    required this.type,
+    this.type,
+    this.slider,
+    this.catalog,
     this.items = const [],
     this.genres = const [],
     this.networks = const [],
@@ -40,6 +45,8 @@ class SeerrDiscoverRow {
   }) =>
       SeerrDiscoverRow(
         type: type,
+        slider: slider,
+        catalog: catalog,
         items: items ?? this.items,
         genres: genres ?? this.genres,
         networks: networks ?? this.networks,
@@ -50,12 +57,22 @@ class SeerrDiscoverRow {
       );
 
   bool get hasMore => page < totalPages;
-  bool get isGenreRow => type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
+  bool get isCustomSlider => catalog != null;
+  bool get isGenreRow =>
+      type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
   bool get isStudioRow => type == SeerrRowType.studios;
   bool get isShortcutsRow => type == SeerrRowType.shortcuts;
   bool get isMediaRow =>
       !isGenreRow && !isNetworkRow && !isStudioRow && !isShortcutsRow;
+  String? get title => slider?.title;
+
+  /// Stable D-pad column id. Index is not part of this: custom rows
+  /// appearing or vanishing would otherwise reuse another row's memory.
+  String get focusHubKey => seerrDiscoverFocusHubKey(
+        sliderId: slider?.id,
+        typeName: type?.name,
+      );
 }
 
 class SeerrDiscoverViewModel extends ChangeNotifier {
@@ -152,6 +169,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       notifyListeners();
 
       await _loadAllRows();
+      await _appendCustomSliders();
     } catch (e) {
       _error = e.toString();
       debugPrint('[SeerrDiscover] Failed to load: $e');
@@ -193,7 +211,9 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> applyRowConfig() async {
     if (_rows.isEmpty) return;
     final activeTypes = _visibleRows(_prefs.activeRows);
-    final rowMap = {for (final r in _rows) r.type: r};
+    final rowMap = {
+      for (final r in _rows) ?r.type: r,
+    };
     final newRows = <SeerrDiscoverRow>[];
     for (final type in activeTypes) {
       final existing = rowMap[type];
@@ -206,6 +226,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
     _rows = newRows;
     notifyListeners();
+    await _appendCustomSliders();
   }
 
   Future<void> loadMore(int rowIndex) async {
@@ -218,7 +239,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final page = await _loadPage(row.type, row.page + 1);
+      final page = await _loadPage(row, row.page + 1);
       if (page != null) {
         List<SeerrDiscoverItem> newItems;
         if (row.type == SeerrRowType.yourWatchlist) {
@@ -253,7 +274,16 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> _loadRow(int index) async {
     final row = _rows[index];
     try {
-      switch (row.type) {
+      if (row.isCustomSlider) {
+        await _loadCatalogRow(index);
+        return;
+      }
+      final type = row.type;
+      if (type == null) {
+        _updateRow(index, row.copyWith(isLoading: false));
+        return;
+      }
+      switch (type) {
         case SeerrRowType.shortcuts:
           await _loadShortcutArtwork(index);
         case SeerrRowType.recentRequests:
@@ -276,8 +306,12 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
             studios: popularStudios,
             isLoading: false,
           ));
-        default:
-          final page = await _loadPage(row.type, 1);
+        case SeerrRowType.trending:
+        case SeerrRowType.popularMovies:
+        case SeerrRowType.popularSeries:
+        case SeerrRowType.upcomingMovies:
+        case SeerrRowType.upcomingSeries:
+          final page = await _loadPage(row, 1);
           if (page != null) {
             final filtered = _filterItems(page.results);
             _updateRow(index, row.copyWith(
@@ -294,6 +328,22 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       debugPrint('[SeerrDiscover] Failed to load row ${row.type}: $e');
       _updateRow(index, row.copyWith(isLoading: false));
     }
+  }
+
+  Future<void> _loadCatalogRow(int index) async {
+    final row = _rows[index];
+    final page = await _loadPage(row, 1);
+    if (page == null) {
+      _updateRow(index, row.copyWith(isLoading: false));
+      return;
+    }
+    final filtered = _filterItems(page.results);
+    _updateRow(index, row.copyWith(
+      items: filtered,
+      page: page.page,
+      totalPages: page.totalPages,
+      isLoading: false,
+    ));
   }
 
   /// Artwork for the shortcut tiles. One trending read covers every tile, and
@@ -475,7 +525,17 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SeerrDiscoverPage?> _loadPage(SeerrRowType type, int page) async {
+  Future<SeerrDiscoverPage?> _loadPage(SeerrDiscoverRow row, int page) async {
+    final catalog = row.catalog;
+    if (catalog != null) {
+      return _repo.getCatalog(
+        catalog.path,
+        query: catalog.query,
+        page: page,
+        mediaTypeHint: catalog.mediaTypeHint,
+      );
+    }
+    final type = row.type;
     final limit = _prefs.fetchLimit.limit;
     final offset = (page - 1) * limit;
     switch (type) {
@@ -493,6 +553,40 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         return _repo.getWatchlist(page: page);
       default:
         return null;
+    }
+  }
+
+  Future<void> _appendCustomSliders() async {
+    try {
+      final sliders = await _repo.getDiscoverSliders();
+      final resolved = resolveSeerrCustomSliders(sliders);
+      _rows = _rows.where((row) => !row.isCustomSlider).toList();
+      if (resolved.isEmpty) {
+        notifyListeners();
+        return;
+      }
+
+      final start = _rows.length;
+      _rows = [
+        ..._rows,
+        for (final (slider, catalog) in resolved)
+          SeerrDiscoverRow(
+            slider: slider,
+            catalog: catalog,
+            isLoading: true,
+          ),
+      ];
+      notifyListeners();
+
+      final indices = List.generate(resolved.length, (i) => start + i);
+      await mapBounded<int, void>(indices, 2, (index) => _loadRow(index));
+
+      _rows = _rows
+          .where((row) => !row.isCustomSlider || row.items.isNotEmpty)
+          .toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[SeerrDiscover] Failed to load custom sliders: $e');
     }
   }
 
