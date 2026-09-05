@@ -83,7 +83,8 @@ class LogService extends ChangeNotifier {
   );
 
   static final _genericErrorRedactRegex = RegExp(
-    r'''\b(host(?:name)?|address|ip)(\s*[:=]\s*)([^\s,;()<>"{}\[\]']+)''',
+    r'''\b(host(?:name)?|address|ip|server|url|uri|domain|origin)'''
+    r'''(\s*"?\s*[:=]\s*"?\s*)([^\s,;()<>"{}\[\]']*[.0-9][^\s,;()<>"{}\[\]']*)("?)''',
     caseSensitive: false,
   );
 
@@ -92,7 +93,10 @@ class LogService extends ChangeNotifier {
   );
 
   static final _ipv6Regex = RegExp(
-    r'\b(?:[A-Fa-f0-9]{1,4}:){2,7}[A-Fa-f0-9]{1,4}\b',
+    r'(?<![:.\w])(?:'
+    r'(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}'
+    r'|[A-Fa-f0-9:]*::[A-Fa-f0-9:]*'
+    r')(?![:.\w])',
   );
 
   final UserPreferences _prefs;
@@ -303,16 +307,17 @@ class LogService extends ChangeNotifier {
   String _redact(String text) {
     var result = text;
 
-    if (result.contains('://')) {
-      result = result.replaceAllMapped(_redactRegex, (match) {
-        return '${match.group(1)}[REDACTED]';
-      });
-    }
-
     final lower = result.toLowerCase();
-    if (lower.contains('host') || lower.contains('address') || lower.contains('ip')) {
+    if (lower.contains('host') ||
+        lower.contains('address') ||
+        lower.contains('ip') ||
+        lower.contains('server') ||
+        lower.contains('url') ||
+        lower.contains('uri') ||
+        lower.contains('domain') ||
+        lower.contains('origin')) {
       result = result.replaceAllMapped(_genericErrorRedactRegex, (match) {
-        return '${match.group(1)}${match.group(2)}[REDACTED]';
+        return '${match.group(1)}${match.group(2)}[REDACTED]${match.group(4)}';
       });
 
       if (lower.contains('host')) {
@@ -322,6 +327,12 @@ class LogService extends ChangeNotifier {
       }
     }
 
+    if (lower.contains('://')) {
+      result = result.replaceAllMapped(_redactRegex, (match) {
+        return '${match.group(1)}[REDACTED]';
+      });
+    }
+    
     // catch any ipv4's
     if (result.contains('.')) {
       result = result.replaceAll(_ipv4Regex, '[REDACTED]');

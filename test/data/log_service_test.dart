@@ -104,16 +104,66 @@ void main() {
       assertRedacted('Client ip: 127.0.0.1', 'Client ip: [REDACTED]');
     });
 
+    test('redacts JSON-style keys and values with different spacing', () {
+      assertRedacted('"host":"moonfin.io"', '"host":"[REDACTED]"');
+      assertRedacted('"server": "1.2.3.4"', '"server": "[REDACTED]"');
+      assertRedacted('{"domain":"example.com"}', '{"domain":"[REDACTED]"}');
+    });
+
+    test('handles multiple field replacements and case sensitivity', () {
+      assertRedacted(
+        'SERVER: 1.1.1.1, ORIGIN: https://moonfin.io',
+        'SERVER: [REDACTED], ORIGIN: [REDACTED]',
+      );
+      assertRedacted(
+        'host: a.com and ip: 1.2.3.4',
+        'host: [REDACTED] and ip: [REDACTED]',
+      );
+    });
+
+    test('respects keyword boundaries to avoid false positives (e.g. ghost, stripping, addressable)', () {
+      // Each keyword from the regex embedded in another word followed by a separator
+      assertRedacted('ghost: value', 'ghost: value'); // host
+      assertRedacted('ghostname: value', 'ghostname: value'); // hostname
+      assertRedacted('addressable: true', 'addressable: true'); // address
+      assertRedacted('description: text', 'description: text'); // ip
+      assertRedacted('serverless: cloud', 'serverless: cloud'); // server
+      assertRedacted('surly: value', 'surly: value'); // url
+      assertRedacted('purify: water', 'purify: water'); // uri
+      assertRedacted('predominate: factor', 'predominate: factor'); // domain
+      assertRedacted('original: source', 'original: source'); // origin
+    });
+
+    test('redacts specific values after keywords but ignores friendly names and empty values', () {
+      // Redacts if it contains a dot or digit
+      assertRedacted('server: 1.2.3.4', 'server: [REDACTED]');
+      assertRedacted('domain=moonfin.io', 'domain=[REDACTED]');
+      assertRedacted('host: server7', 'host: [REDACTED]');
+
+      // Should NOT match because they don't contain a dot or digit (friendly names)
+      assertRedacted('server: Production', 'server: Production');
+      assertRedacted('domain=Development', 'domain=Development');
+
+      // Should NOT match because there is no value after the separator
+      assertRedacted('Connecting to host: ', 'Connecting to host: ');
+    });
+
     test('redacts standalone IPv4 and IPv6 addresses', () {
       assertRedacted('Error connecting to 192.168.1.1', 'Error connecting to [REDACTED]');
       assertRedacted(
         'IPv6 failure at 2001:0db8:85a3:0000:0000:8a2e:0370:7334',
         'IPv6 failure at [REDACTED]',
       );
+      assertRedacted('Compressed IPv6: fe80::1', 'Compressed IPv6: [REDACTED]');
+      assertRedacted('Loopback: ::1', 'Loopback: [REDACTED]');
+      assertRedacted('Common shorthand: 2001:db8::1', 'Common shorthand: [REDACTED]');
     });
 
-    test('does not redact version numbers or non-IP dots', () {
+    test('does not redact version numbers, UUIDs, or clock times', () {
       assertRedacted('App version 1.2.3', 'App version 1.2.3');
+      assertRedacted('Playback at 0:00:15.000000', 'Playback at 0:00:15.000000');
+      assertRedacted('UUID is 550e8400-e29b-41d4-a716-446655440000', 'UUID is 550e8400-e29b-41d4-a716-446655440000');
+      assertRedacted('Version with port v1.2.3:8080', 'Version with port v1.2.3:8080');
       assertRedacted('Simple sentence.', 'Simple sentence.');
     });
   });
