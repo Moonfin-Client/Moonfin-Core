@@ -646,18 +646,18 @@ class LibretroBridge(
     NativeInputDescriptorParser.parse(entries)
 
   /**
-   * Bitmask of ports the current game describes ANALOG controls for, from
-   * RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS (bit N = port N). Drives
-   * [NativePadInput]'s digital\analog rule: a port stops getting stick->D-pad
-   * conversion once its bit is set. Returns 0 (no analog descriptors) when no
-   * core is loaded, same guard as [refreshControllerTypes]/[refreshInputDescriptors].
+   * Bitmask of ports whose left stick is passed through as analog instead of
+   * being converted to d-pad bits (bit N = port N). A port qualifies only
+   * when the game describes an analog stick for it AND the core has actually
+   * read one. Returns 0 when no core is loaded, same guard as the
+   * neighbouring functions.
    */
-  fun analogDescriptorPorts(): Int {
+  fun analogStickPorts(): Int {
     if (!isActive || loadedCore == null) return 0
-    return nativeAnalogDescriptorPorts()
+    return nativeAnalogStickPorts()
   }
 
-  private external fun nativeAnalogDescriptorPorts(): Int
+  private external fun nativeAnalogStickPorts(): Int
 
   private external fun nativeLoad(
     core: String, corePath: String, romPath: String, systemDir: String,

@@ -117,6 +117,19 @@ static void sleep_ns(uint64_t ns) {
 static char *lh_strdup(const char *s) { return strdup(s); }
 #endif
 
+// Identifies the calling thread for the input-hazard diagnostic below. Only
+// ever compared for equality and printed; never dereferenced, and never used
+// for control flow. pthread_t is not required by POSIX to be an integer, but
+// is a pointer or unsigned long on every platform this host builds for, and a
+// diagnostic is the right blast radius for that assumption.
+static uint64_t current_thread_id(void) {
+#ifdef _WIN32
+  return (uint64_t)GetCurrentThreadId();
+#else
+  return (uint64_t)(uintptr_t)pthread_self();
+#endif
+}
+
 // Truncating copy into a fixed buffer. Always NUL-terminates and tolerates a
 // NULL source, so the option snapshot below never leaves a caller with an
 // unterminated buffer to read past. strncpy is deliberately avoided: it does
@@ -262,6 +275,23 @@ typedef struct {
 // around it.
 #define LH_MAX_FRAME_DIMENSION 8192
 
+// Distinct unserved environment commands remembered per host, purely to keep
+// the diagnostic from repeating. Cores probe well under this many.
+#define LH_UNHANDLED_ENV_SLOTS 48
+
+// How many polls an unread edge bit is held before being dropped. Four is a
+// little over the two frames the old 34ms pulse covered, so a core that does
+// read gets a wider window than before, while a core that never reads a given
+// id cannot wedge it on.
+#define LH_UNACKED_MAX_POLLS 4
+
+// Completed frames in which the core read input before its silence about the
+// stick is taken as an answer. Not a timeout: a core that has read input and
+// not touched the stick has told us it does not want one, however long that
+// took in wall clock. Two rather than one only so a core that splits its
+// joypad and analog reads across its first frames is not misread.
+#define LH_ANALOG_DECIDE_FRAMES 2
+
 struct lh_host {
   lh_output_format format;
   lh_callbacks cb;
@@ -270,6 +300,13 @@ struct lh_host {
   int core_loaded;
 
   lh_av_info av;
+  // Last geometry handed to cb.geometry_changed, so unchanged repeats are not
+  // forwarded. Emulation-thread only, like av. load_content resets these to -1
+  // (never a valid dimension) so the first report after a load or an internal
+  // restart always goes through.
+  int notified_width;
+  int notified_height;
+  double notified_aspect;
 
   char *system_dir;
   char *save_dir;
@@ -340,6 +377,13 @@ struct lh_host {
   lh_mutex audio_lock;
   atomic_int audio_paced;
 
+  // Environment commands this host answered with the default false, recorded
+  // so each is reported once instead of every frame. Best-effort: two threads
+  // racing here can duplicate one line, which is harmless, and the table
+  // filling up costs repeat lines rather than silence.
+  unsigned unhandled_env[LH_UNHANDLED_ENV_SLOTS];
+  atomic_int unhandled_env_count;
+
   // Run loop. running/paused/fast_forward are shared with the loop thread.
   lh_thread thread;
   int has_thread;
@@ -347,6 +391,7 @@ struct lh_host {
   atomic_int paused;
   atomic_int fast_forward;
   atomic_int restart_requested;
+  atomic_int resume_requested;
   atomic_uint restart_generation;
   atomic_int shutdown_requested;
   uint64_t last_sram_flush_ns;
@@ -360,27 +405,74 @@ struct lh_host {
   lh_cond jobs_cond;
 
   // Input latch. Writers (any thread, any platform) call lh_set_input, which
-  // ORs into input_pending and replaces input_level. Once per real libretro
-  // poll, latch_input exchanges input_pending back down to the current level
-  // and hands the exchanged value to input_frame - the value the core reads
-  // for the rest of that frame via input_state_cb. See lh_set_input's comment
-  // for why this, rather than a plain instantaneous read, is required.
-  // input_frame is touched only from the emulation thread (inside
-  // input_poll_cb/input_state_cb, or the equivalent test hooks called with no
-  // core running), so it is a plain array, not atomic.
+  // records rising and falling transitions and replaces input_level. Once per
+  // frontend frame, latch_input exposes at most one transition per button to
+  // input_frame - the value the core reads for the rest of that frame via
+  // input_state_cb. See lh_set_input's comment for why this, rather than a
+  // plain instantaneous read, is required.
+  // input_frame WAS a plain array, on the documented assumption that polling
+  // and reading both happen on the emulation thread. bug-177 measured that
+  // assumption false: mupen64plus-next with its threaded renderer reads input
+  // from a thread the host never latched on, and the detector below fired on
+  // the first game load. Pending transitions make a short pulse survive until
+  // a frame latch drains it; the atomic published word then makes that frame
+  // safe for a core reading on another thread. The hot steady-state read is a
+  // single acquire load; no lock or atomic write is needed unless a transition
+  // is actually being acknowledged.
   atomic_uint input_level[LH_MAX_PORTS];
-  atomic_uint input_pending[LH_MAX_PORTS];
-  uint16_t input_frame[LH_MAX_PORTS];
+  // Queued transitions: low 16 bits pending DOWNs, high 16 pending UPs, in one
+  // word so the latch drains both in a single exchange. As two words it could
+  // read a press without the release that followed it, publish the press next
+  // frame, and leave the button held with nothing left to release it.
+  atomic_uint input_transitions[LH_MAX_PORTS];
+  // Low 16 bits are the published digital state and high 16 bits are
+  // transitions awaiting acknowledgment. Keeping these together lets a
+  // threaded core acknowledge the snapshot it read without racing a later
+  // publication, using one lock-free 32-bit word even on armeabi-v7a.
+  atomic_uint input_frame[LH_MAX_PORTS];
+
+  // Edge bits published but not yet READ by the core, and how many frontend
+  // frames they have waited. The bits live in input_frame with the published
+  // snapshot so acknowledgment cannot clear a newer transition by mistake.
+  //
+  // The age bound is what keeps that from becoming a stuck button: a core that
+  // never reads a given id would otherwise see it held forever. After
+  // LH_UNACKED_MAX_POLLS the bit is dropped regardless. A core that reads
+  // immediately after polling - which is every single-threaded core -
+  // acknowledges within the same frame and sees no behaviour change at all.
+  unsigned char unacked_age[LH_MAX_PORTS][16];  // latch thread only
+  // The thread input_poll_cb last latched on, and how many times a core has
+  // read input from a DIFFERENT one. Kept after the frames were made atomic:
+  // the publication is now safe, so this is no longer a defect report, but a
+  // core reading input off the polling thread is still worth knowing about -
+  // it is the condition under which any future non-atomic addition to the
+  // frame state would silently rot, and it is how bug-177 was proven.
+  atomic_ullong input_poll_thread;
+  atomic_int input_poll_thread_known;
+  atomic_int input_thread_mismatch;
 
   // Analog is a level, not an edge, so it deliberately does NOT use the
-  // OR-latch above. X and Y share one 32-bit word so a diagonal cannot tear:
+  // transition latch above. X and Y share one 32-bit word so a diagonal cannot
+  // tear:
   // cores read each axis many times per frame (measured ~7x), and two
   // independent atomics would be read at different instants.
   atomic_uint analog_level[LH_MAX_PORTS][2];   // [port][0=left,1=right]
-  uint32_t analog_frame[LH_MAX_PORTS][2];      // emulation thread only
+  atomic_uint analog_frame[LH_MAX_PORTS][2];   // published, read cross-thread
   // l2 packed in the high 16 bits, r2 in the low, for the same reason.
   atomic_uint trigger_level[LH_MAX_PORTS];
-  uint32_t trigger_frame[LH_MAX_PORTS];        // emulation thread only
+  atomic_uint trigger_frame[LH_MAX_PORTS];     // published, read cross-thread
+
+  // Ports the core has actually READ an analog stick on, bit N = port N; half
+  // of lh_analog_stick_ports' answer. Written from whatever thread the core
+  // reads input on, so atomic, and relaxed because nothing is published
+  // through it.
+  atomic_uint analog_queried_ports;
+  // Whether the core read any input during the frame now running, and how many
+  // completed frames it has done so in, saturating at the decision threshold.
+  // "The core has not read a stick" only means something once the core has
+  // read input at all.
+  atomic_uint input_read_seen;
+  atomic_uint input_read_frames;
 };
 
 // libretro's callbacks carry no user pointer, so the single live host is global.
@@ -875,6 +967,22 @@ static void notify_geometry(struct lh_host *h, unsigned width, unsigned height,
   h->av.height = (int)height;
   if (aspect_ratio > 0) h->av.aspect = (double)aspect_ratio;
   apply_rotation_to_av(h, aspect_ratio > 0);
+
+  // Cores may re-send SET_GEOMETRY every frame with values they already
+  // reported; mupen64plus-next does, and forwarding those costs a JNI call, a
+  // main-thread Runnable and a platform-channel message per frame on Android
+  // for no change. Compared after apply_rotation_to_av so the values checked
+  // are the ones the callback carries. Exact double comparison holds because
+  // equal inputs take the same conversion and divide.
+  if (h->av.width == h->notified_width &&
+      h->av.height == h->notified_height &&
+      h->av.aspect == h->notified_aspect) {
+    return;
+  }
+  h->notified_width = h->av.width;
+  h->notified_height = h->av.height;
+  h->notified_aspect = h->av.aspect;
+
   if (h->cb.geometry_changed) {
     h->cb.geometry_changed(h->cb.user, h->av.width, h->av.height, h->av.aspect);
   }
@@ -1017,10 +1125,19 @@ static void reset_analog_state(struct lh_host *h) {
     atomic_store(&h->analog_level[p][0], 0u);
     atomic_store(&h->analog_level[p][1], 0u);
     atomic_store(&h->trigger_level[p], 0u);
-    h->analog_frame[p][0] = 0;
-    h->analog_frame[p][1] = 0;
-    h->trigger_frame[p] = 0;
+    atomic_store(&h->analog_frame[p][0], 0u);
+    atomic_store(&h->analog_frame[p][1], 0u);
+    atomic_store(&h->trigger_frame[p], 0u);
   }
+}
+
+// Forgets which ports the core has read a stick on. Separate from
+// reset_analog_state so a controller-type change can re-decide stick mode
+// without zeroing a live deflection.
+static void reset_analog_queries(struct lh_host *h) {
+  atomic_store_explicit(&h->analog_queried_ports, 0u, memory_order_relaxed);
+  atomic_store_explicit(&h->input_read_seen, 0u, memory_order_relaxed);
+  atomic_store_explicit(&h->input_read_frames, 0u, memory_order_relaxed);
 }
 
 static void reset_controller_devices(struct lh_host *h) {
@@ -1149,6 +1266,46 @@ static void reapply_controller_devices(struct lh_host *h) {
       atomic_store(&h->controller_devices[port], (unsigned)RETRO_DEVICE_JOYPAD);
     }
   }
+}
+
+// Reports an environment command this host does not serve, once per command.
+// See the default case in environment_cb for why this is not silent.
+static void note_unhandled_env(struct lh_host *h, unsigned cmd) {
+  int count = atomic_load(&h->unhandled_env_count);
+  if (count > LH_UNHANDLED_ENV_SLOTS) count = LH_UNHANDLED_ENV_SLOTS;
+  for (int i = 0; i < count; i++) {
+    if (h->unhandled_env[i] == cmd) return;
+  }
+  if (count < LH_UNHANDLED_ENV_SLOTS) {
+    h->unhandled_env[count] = cmd;
+    atomic_store(&h->unhandled_env_count, count + 1);
+  }
+  // The 0x800000 bit marks a libretro-common command and the 0x10000 bit an
+  // experimental one; printing the raw value keeps both greppable against the
+  // header.
+  diagnostic_log("Environment command %u (0x%x) is not served by this host",
+                 cmd, cmd);
+}
+
+// Handed to cores through RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB. A
+// core calls this around an operation that blocks its emulation thread:
+// clear_threads non-zero before it blocks, zero once it is done.
+//
+// RetroArch starts and stops its audio driver here, because its threaded audio
+// driver can leave a blocked core waiting on a consumer that never runs. This
+// host has nothing to release: audio_batch_cb hands samples to audio_push,
+// which drops rather than blocks when the ring is full, so a core inside
+// retro_unserialize is never waiting on us. The work is genuinely zero.
+//
+// It still must EXIST. The out-param is a function pointer that cores call
+// without a null check, so answering false and leaving it NULL is not a
+// degraded mode, it is a crash inside the core (see the header note on the
+// command). Returning a real no-op is the honest implementation, not a stub.
+static bool RETRO_CALLCONV clear_all_thread_waits_cb(unsigned clear_threads,
+                                                    void *data) {
+  (void)clear_threads;
+  (void)data;
+  return true;
 }
 
 static bool RETRO_CALLCONV environment_cb(unsigned cmd, void *data) {
@@ -1288,6 +1445,12 @@ static bool RETRO_CALLCONV environment_cb(unsigned cmd, void *data) {
         int w = h->av.width;
         h->av.width = h->av.height;
         h->av.height = w;
+        // Keep notify_geometry's record in step with what the platform has
+        // actually been told, so the core's next SET_GEOMETRY is judged
+        // against these swapped dimensions.
+        h->notified_width = h->av.width;
+        h->notified_height = h->av.height;
+        h->notified_aspect = h->av.aspect;
         if (h->cb.geometry_changed) {
           h->cb.geometry_changed(h->cb.user, h->av.width, h->av.height,
                                  h->av.aspect);
@@ -1324,7 +1487,23 @@ static bool RETRO_CALLCONV environment_cb(unsigned cmd, void *data) {
     }
     case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
       return false;
+    case RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB: {
+      // Write the out-param before anything else can return early: a core
+      // that gets false here still calls whatever is in its variable.
+      if (!data) return false;
+      *(retro_environment_t *)data = clear_all_thread_waits_cb;
+      return true;
+    }
     default:
+      // Silence here cost hours once already: mupen64plus-next asked for the
+      // command above, got a quiet false, and jumped to address 0 four frames
+      // into a save-state load. An unserved command is not necessarily a bug,
+      // so this is a diagnostic rather than a host_log, but it must be
+      // visible. Reported once per command for the life of this host - the
+      // core asks during set_environment, before any load, so a per-load reset
+      // would only re-report what it just reported. Cores probe the same
+      // handful every frame and a per-call line would bury the log.
+      note_unhandled_env(h, cmd);
       return false;
   }
 }
@@ -1562,88 +1741,289 @@ static inline uint32_t pack_axes(int16_t x, int16_t y) {
 static inline int16_t unpack_x(uint32_t v) { return (int16_t)(v >> 16); }
 static inline int16_t unpack_y(uint32_t v) { return (int16_t)(v & 0xffff); }
 
-// The one implementation of the OR-latch: every platform writer calls
-// lh_set_input, and this is the only place that ever drains it. Called once
-// per real libretro poll from input_poll_cb (on the emulation thread), and
-// directly by lh_test_poll_input for deterministic tests that don't want to
-// race a running core's frame timing.
+#define LH_INPUT_MASK UINT32_C(0xffff)
+#define LH_INPUT_UNACK_SHIFT 16
+
+static inline unsigned pack_input_frame(uint16_t frame, uint16_t unacked) {
+  return (unsigned)frame | ((unsigned)unacked << LH_INPUT_UNACK_SHIFT);
+}
+
+// Reset the digital lifecycle state without changing the latest physical
+// level. This is called when a session/core is replaced and on the emulation
+// thread before the first frame after resume. Keeping the level means a
+// genuinely held button remains held, while pending edges and stale
+// acknowledgments from the previous lifecycle cannot leak into the new one.
+static void reset_digital_input(struct lh_host *h) {
+  for (int p = 0; p < LH_MAX_PORTS; p++) {
+    atomic_store(&h->input_transitions[p], 0u);
+    unsigned level = atomic_load(&h->input_level[p]) & LH_INPUT_MASK;
+    atomic_store_explicit(&h->input_frame[p],
+                          pack_input_frame((uint16_t)level, 0),
+                          memory_order_release);
+    memset(h->unacked_age[p], 0, sizeof(h->unacked_age[p]));
+  }
+}
+
+static void apply_resume_request(struct lh_host *h) {
+  if (atomic_exchange(&h->resume_requested, 0)) reset_digital_input(h);
+}
+
+// Publish the latest analog values. Analog is a level, not an edge, and may be
+// refreshed by a core's input_poll without changing digital transition state.
+static void latch_analog(struct lh_host *h) {
+  for (int p = 0; p < LH_MAX_PORTS; p++) {
+    atomic_store_explicit(&h->analog_frame[p][0],
+                          atomic_load(&h->analog_level[p][0]),
+                          memory_order_release);
+    atomic_store_explicit(&h->analog_frame[p][1],
+                          atomic_load(&h->analog_level[p][1]),
+                          memory_order_release);
+    atomic_store_explicit(&h->trigger_frame[p],
+                          atomic_load(&h->trigger_level[p]),
+                          memory_order_release);
+  }
+}
+
+// The one implementation of the digital transition latch. Every platform
+// writer records one pending DOWN and one pending UP bit per button. The run
+// loop calls this once per frontend frame; a core's input_poll callback only
+// refreshes analog values and must not consume another digital transition in
+// the same retro_run.
+// Only the run loop (and the test hook standing in for it) calls this, so the
+// expiry clock advances exactly once per frontend frame.
 static void latch_input(struct lh_host *h) {
   for (int p = 0; p < LH_MAX_PORTS; p++) {
-    // Drain the edges first, then read the level, and never write a level back
-    // into pending. Seeding pending with a previously read level is a race: a
-    // write landing between the read and the exchange publishes its bit into
-    // level and into pending, and the exchange then overwrites pending with
-    // the stale level -- erasing a bit that is still physically held, so the
-    // next poll reports the button released mid-press.
-    //
-    // Ordering here is the mirror of lh_set_input's: it ORs the edge into
-    // pending before publishing the level, and this drains pending before
-    // reading the level, so a write that straddles either pair is caught by
-    // one half or the other. Worst case a bit is reported one poll later
-    // rather than lost.
-    unsigned observed = atomic_exchange(&h->input_pending[p], 0u);
-    unsigned level = atomic_load(&h->input_level[p]);
-    h->input_frame[p] = (uint16_t)(observed | level);
-  }
+    unsigned queued = atomic_exchange(&h->input_transitions[p], 0u);
+    unsigned downs = queued & LH_INPUT_MASK;
+    unsigned ups = queued >> LH_INPUT_UNACK_SHIFT;
+    unsigned level = atomic_load(&h->input_level[p]) & 0xffffu;
+    unsigned published = atomic_load_explicit(&h->input_frame[p],
+                                              memory_order_acquire);
+    unsigned frame = published & LH_INPUT_MASK;
+    unsigned blocked = published >> LH_INPUT_UNACK_SHIFT;
+    unsigned ready = ~blocked & 0xffffu;
+    unsigned go_down = downs & ~frame & ready;
+    unsigned go_up = ups & frame & ready;
 
-  // Analog is a level, not an edge: no OR-latch, just a plain snapshot of
-  // whatever was last written. See the struct comment on analog_level.
-  for (int p = 0; p < LH_MAX_PORTS; p++) {
-    h->analog_frame[p][0] = atomic_load(&h->analog_level[p][0]);
-    h->analog_frame[p][1] = atomic_load(&h->analog_level[p][1]);
-    h->trigger_frame[p]   = atomic_load(&h->trigger_level[p]);
+    // Both directions may be pending for one button. Its current published
+    // state determines their order: UP then DOWN when currently held, DOWN
+    // then UP when currently released. Requeue the second edge for the next
+    // frame instead of collapsing it into the current level.
+    // Same-state edges are redundant unless the opposite edge is also
+    // pending; in that case they are the second half of a real transition
+    // pair and must remain queued. A blocked transition is always retained.
+    unsigned deferred_downs = downs & (blocked | (frame & ups));
+    unsigned deferred_ups = ups & (blocked | (~frame & downs));
+    unsigned applied = go_down | go_up;
+    unsigned next = (frame | go_down) & ~go_up;
+
+    // If more than one cycle arrived in this window, the two direction masks
+    // cannot count every edge. Preserve the final physical level after the
+    // retained opposite edge so a rapid tap ending in a hold cannot leave the
+    // core stuck in the wrong state.
+    deferred_downs |= go_down & ups & level;
+    deferred_ups |= go_up & downs & ~level;
+    if (deferred_downs || deferred_ups) {
+      atomic_fetch_or(&h->input_transitions[p],
+                      deferred_downs | (deferred_ups << LH_INPUT_UNACK_SHIFT));
+    }
+
+    unsigned unacked = blocked;
+    if (applied != 0) {
+      // Publish the transition and its acknowledgment barrier together. The
+      // CAS preserves any concurrent core acknowledgment.
+      unsigned expected = published;
+      for (;;) {
+        unsigned current_unacked = expected >> LH_INPUT_UNACK_SHIFT;
+        unacked = current_unacked | applied;
+        unsigned desired = pack_input_frame((uint16_t)next,
+                                            (uint16_t)unacked);
+        if (atomic_compare_exchange_weak_explicit(
+                &h->input_frame[p], &expected, desired,
+                memory_order_release, memory_order_acquire)) {
+          break;
+        }
+      }
+    }
+
+    // Age each button independently. Activity on A must not keep an unread B
+    // transition alive forever and block B's queued opposite edge.
+    unsigned expired = 0;
+    for (unsigned id = 0; id < 16; id++) {
+      unsigned bit = 1u << id;
+      if (!(unacked & bit)) continue;
+      if (applied & bit) {
+        h->unacked_age[p][id] = 1;
+      } else if (++h->unacked_age[p][id] > LH_UNACKED_MAX_POLLS) {
+        expired |= bit;
+        h->unacked_age[p][id] = 0;
+      }
+    }
+    if (expired) {
+      unsigned current = atomic_load_explicit(&h->input_frame[p],
+                                              memory_order_acquire);
+      for (;;) {
+        unsigned desired = current &
+                           ~(expired << LH_INPUT_UNACK_SHIFT);
+        if (atomic_compare_exchange_weak_explicit(
+                &h->input_frame[p], &current, desired,
+                memory_order_release, memory_order_acquire)) {
+          break;
+        }
+      }
+    }
+  }
+  latch_analog(h);
+  // Runs before retro_run, so the flag being rolled up here belongs to the
+  // frame that just finished - by which point every read it made is in.
+  if (atomic_exchange_explicit(&h->input_read_seen, 0u, memory_order_relaxed)) {
+    unsigned seen = atomic_load_explicit(&h->input_read_frames,
+                                         memory_order_relaxed);
+    if (seen < LH_ANALOG_DECIDE_FRAMES) {
+      atomic_store_explicit(&h->input_read_frames, seen + 1,
+                            memory_order_relaxed);
+    }
   }
 }
 
-// Was a no-op: the core polled input by immediately re-reading whatever the
-// platform's atomic mask held at that instant, so a press whose down and up
-// both landed inside one poll window was never observed at all (see
-// lh_set_input's comment). Latching here, once per poll, is what fixes that.
+// The run loop has already advanced digital input for this retro_run. Keep
+// this callback for core diagnostics and analog snapshot refresh, but do not
+// consume a second digital transition when a compliant core calls it.
 static void RETRO_CALLCONV input_poll_cb(void) {
   struct lh_host *h = g_session;
-  if (h) latch_input(h);
+  if (!h) return;
+  atomic_store(&h->input_poll_thread, current_thread_id());
+  atomic_store(&h->input_poll_thread_known, 1);
+  latch_analog(h);
 }
+
+// Flags a core reading input from a thread other than the one that latched
+// it. Reported once, then counted silently - a core that does this does it
+// every frame, and the count is what the harness asserts on.
+static void note_input_thread(struct lh_host *h) {
+  if (!atomic_load(&h->input_poll_thread_known)) return;
+  uint64_t polled = (uint64_t)atomic_load(&h->input_poll_thread);
+  uint64_t reading = current_thread_id();
+  if (polled == reading) return;
+  if (atomic_fetch_add(&h->input_thread_mismatch, 1) == 0) {
+    diagnostic_log(
+        "Core reads input on thread %llu but it was latched on %llu; the "
+        "published frame is atomic, so this is safe - noted because any "
+        "non-atomic state added alongside it would not be",
+        (unsigned long long)reading, (unsigned long long)polled);
+  }
+}
+
+// A read of [port]'s digital frame, acknowledging only [ack_mask]. Both DOWN
+// and zero-valued UP transitions require acknowledgment before the opposite
+// transition may advance. Held state remains in the low half of input_frame;
+// acknowledgment never releases a physically held button.
+//
+// The SCOPE matters, and getting it wrong loses presses. A core that queries
+// buttons one id at a time must acknowledge only the id it asked for: if an
+// early query for B acknowledged Start too, a poll landing before the core got
+// round to querying Start would drop it from the frame, and the press would be
+// gone by the time it was asked for. That interleaving is not hypothetical -
+// polling and reading are on different threads for any core with a threaded
+// renderer. Only RETRO_DEVICE_ID_JOYPAD_MASK, which hands the core every bit
+// at once, may acknowledge the lot.
+static uint16_t observe_input_bits(struct lh_host *h, int port,
+                                   unsigned ack_mask) {
+  unsigned observed = atomic_load_explicit(&h->input_frame[port],
+                                           memory_order_acquire);
+  uint16_t mask = (uint16_t)(observed & LH_INPUT_MASK);
+  if (ack_mask) {
+    unsigned expected = observed;
+    for (;;) {
+      unsigned ack = (expected >> LH_INPUT_UNACK_SHIFT) & ack_mask;
+      if (ack == 0) return mask;
+      unsigned desired = expected & ~(ack << LH_INPUT_UNACK_SHIFT);
+      if (atomic_compare_exchange_weak_explicit(
+              &h->input_frame[port], &expected, desired,
+              memory_order_acq_rel, memory_order_acquire)) {
+        break;
+      }
+      // A concurrent latch or acknowledgment changed the word. Retry from the
+      // newer snapshot and return exactly the state eventually acknowledged.
+      mask = (uint16_t)(expected & LH_INPUT_MASK);
+    }
+  }
+  return mask;
+}
+
+// The JOYPAD read, in one place. input_state_cb and the test hooks both go
+// through here so the acknowledgment scope is decided once and can actually be
+// regression-tested; a hook that reached past this into observe_input_bits
+// would happily keep passing while the dispatch above it broke.
+static int16_t read_joypad(struct lh_host *h, int port, unsigned id) {
+  // Only a MASK query delivers every bit, so only it may acknowledge them all.
+  unsigned ack = id == RETRO_DEVICE_ID_JOYPAD_MASK ? 0xFFFFu
+                 : id < 16                         ? (1u << id)
+                                                   : 0u;
+  uint16_t mask = observe_input_bits(h, port, ack);
+  if (id == RETRO_DEVICE_ID_JOYPAD_MASK) return (int16_t)mask;
+  if (id >= 16) return 0;
+  return (mask & (1u << id)) ? 1 : 0;
+}
+
 
 static int16_t RETRO_CALLCONV input_state_cb(unsigned port, unsigned device,
                                              unsigned index, unsigned id) {
   struct lh_host *h = g_session;
   if (!h || port >= LH_MAX_PORTS) return 0;
+  note_input_thread(h);
+  // Any read counts, not just an analog one: this records that the core polls
+  // input at all, which is what makes its silence about the stick meaningful.
+  if (!atomic_load_explicit(&h->input_read_seen, memory_order_relaxed)) {
+    atomic_store_explicit(&h->input_read_seen, 1u, memory_order_relaxed);
+  }
 
   if (device == RETRO_DEVICE_ANALOG) {
-    // Latched by input_poll_cb above, not a fresh read - see the digital
-    // comment below for why that matters (torn diagonals here, instead of
-    // torn button combinations).
+    // Snapshot by the run-loop latch and refreshed by input_poll_cb, rather
+    // than read as two separate live axis values that could tear.
     if (index == RETRO_DEVICE_INDEX_ANALOG_LEFT ||
         index == RETRO_DEVICE_INDEX_ANALOG_RIGHT) {
-      uint32_t packed = h->analog_frame[port][index];
+      // Only a STICK read counts; ANALOG_BUTTON is trigger pressure. Cores
+      // read these ~56x/frame, so only the first read on a port pays the RMW.
+      unsigned bit = 1u << port;
+      if (!(atomic_load_explicit(&h->analog_queried_ports,
+                                 memory_order_relaxed) &
+            bit)) {
+        atomic_fetch_or_explicit(&h->analog_queried_ports, bit,
+                                 memory_order_relaxed);
+      }
+      uint32_t packed = atomic_load_explicit(&h->analog_frame[port][index],
+                                             memory_order_acquire);
       if (id == RETRO_DEVICE_ID_ANALOG_X) return unpack_x(packed);
       if (id == RETRO_DEVICE_ID_ANALOG_Y) return unpack_y(packed);
       return 0;
     }
     if (index == RETRO_DEVICE_INDEX_ANALOG_BUTTON) {
       if (id == RETRO_DEVICE_ID_JOYPAD_L2) {
-        return unpack_x((uint32_t)h->trigger_frame[port]);
+        return unpack_x(atomic_load_explicit(&h->trigger_frame[port],
+                                            memory_order_acquire));
       }
       if (id == RETRO_DEVICE_ID_JOYPAD_R2) {
-        return unpack_y((uint32_t)h->trigger_frame[port]);
+        return unpack_y(atomic_load_explicit(&h->trigger_frame[port],
+                                            memory_order_acquire));
       }
       // Derived, not stored: every other analog-button id just reflects the
       // matching digital bit at full deflection, so a core reading this
       // plane instead of JOYPAD directly still sees the button.
       if (id >= 16) return 0;
-      return (h->input_frame[port] & (1u << id)) ? 0x7fff : 0;
+      // Acknowledges this id alone, like the JOYPAD path: a core reading only
+      // this plane still acknowledges, but never on another button's behalf.
+      return (observe_input_bits(h, (int)port, 1u << id) & (1u << id))
+                 ? 0x7fff
+                 : 0;
     }
     return 0;
   }
 
   if (device != RETRO_DEVICE_JOYPAD) return 0;
-  // Latched by input_poll_cb above, not a fresh read: every id read during
-  // this frame sees the same snapshot, so composing e.g. up and left from two
-  // different instants of the same frame (a torn read) can't happen.
-  uint16_t mask = h->input_frame[port];
-  if (id == RETRO_DEVICE_ID_JOYPAD_MASK) return (int16_t)mask;
-  if (id >= 16) return 0;
-  return (mask & (1u << id)) ? 1 : 0;
+  // Latched by the host before retro_run. Each read observes one complete
+  // atomic mask rather than independently sampled button bits.
+  return read_joypad(h, (int)port, id);
 }
 
 // ---------------------------------------------------------------------------
@@ -1687,6 +2067,9 @@ static void execute_job(struct lh_host *h, lh_job *job) {
       if (h->core.set_controller_port_device) {
         h->core.set_controller_port_device((unsigned)job->port, job->device);
         atomic_store(&h->controller_devices[job->port], job->device);
+        // The signal only latches ON, so without this a game switched from
+        // paddles back to a joystick would keep its stick in analog mode.
+        reset_analog_queries(h);
         job->result_ok = 1;
       }
       break;
@@ -1792,13 +2175,36 @@ static void *run_loop(void *arg) {
       }
       continue;
     }
-    if (h->paused) {
+    apply_resume_request(h);
+    if (atomic_load(&h->paused)) {
       sleep_ns(16000000);
       drain_jobs(h);
       continue;
     }
     int iterations = h->fast_forward;
     for (int i = 0; i < iterations && h->running; i++) {
+      // Latch here rather than trusting the core to call input_poll.
+      //
+      // libretro REQUIRES a core to call it: "During retro_run(), the
+      // retro_input_poll_t callback must be called at least once"
+      // (libretro.h). mupen64plus-next does not always honour that: its
+      // libretro.c declares poll_cb as a non-static global and never invokes
+      // it, and with its threaded renderer enabled nothing else does either.
+      // With that renderer OFF the same core polls fine, so something in
+      // another translation unit reaches poll_cb on that path - which was
+      // never established. Either way this is the host defensively
+      // accommodating a core that can break the contract, not filling a gap
+      // the API leaves open.
+      //
+      // latch_input is the only writer of input_frame, so such a core
+      // received NO input at all. Measured on device: the poll heartbeat in
+      // input_poll_cb stayed silent for an entire session while presses were
+      // provably reaching lh_set_input.
+      //
+      // This is the only digital latch for the frame. A compliant core's
+      // input_poll callback may refresh analog state, but it must not consume
+      // another queued digital transition inside the same retro_run.
+      latch_input(h);
       if (h->core.run) h->core.run();
     }
     drain_jobs(h);
@@ -1951,14 +2357,19 @@ lh_host *lh_create(lh_output_format fmt, lh_callbacks cb) {
   return h;
 }
 
+static void set_digital_input(lh_host *host, int port, uint16_t mask) {
+  unsigned old = atomic_exchange(&host->input_level[port], (unsigned)mask);
+  unsigned rising = (unsigned)mask & ~old;
+  unsigned falling = old & ~(unsigned)mask;
+  if (rising || falling) {
+    atomic_fetch_or(&host->input_transitions[port],
+                    rising | (falling << LH_INPUT_UNACK_SHIFT));
+  }
+}
+
 void lh_set_input(lh_host *host, int port, uint16_t mask) {
   if (!host || port < 0 || port >= LH_MAX_PORTS) return;
-  // Order matters: OR the edge into pending before publishing the new level,
-  // so a poll landing between these two lines still sees the bit that just
-  // went low in level - it was already folded into pending on the line
-  // above, which is exactly the case latch_input exists to preserve.
-  atomic_fetch_or(&host->input_pending[port], (unsigned)mask);
-  atomic_store(&host->input_level[port], (unsigned)mask);
+  set_digital_input(host, port, mask);
 }
 
 void lh_set_pad_state(lh_host *host, int port, uint16_t mask, int16_t lx,
@@ -1979,33 +2390,59 @@ void lh_set_pad_state(lh_host *host, int port, uint16_t mask, int16_t lx,
   atomic_store(&host->trigger_level[port],
               pack_axes((int16_t)l2, (int16_t)r2));
 
-  // Same digital ordering as lh_set_input, and for the same reason - see its
-  // comment. lh_set_input stays a separate entry point (other platforms and
-  // tests call it directly) and leaves the analog words above untouched.
-  atomic_fetch_or(&host->input_pending[port], (unsigned)mask);
-  atomic_store(&host->input_level[port], (unsigned)mask);
+  // Same digital transition recording as lh_set_input. That entry point stays
+  // separate for platforms and tests that do not publish analog state.
+  set_digital_input(host, port, mask);
 }
 
 void lh_test_poll_input(lh_host *host) {
-  if (host) latch_input(host);
+  if (host) {
+    apply_resume_request(host);
+    latch_input(host);  // stands in for a frontend frame
+  }
+}
+
+// Stands in for a core-driven poll inside retro_run. Digital input was already
+// advanced by the frontend-frame latch, so this mirrors input_poll_cb and only
+// refreshes analog state.
+void lh_test_core_poll_input(lh_host *host) {
+  if (host) latch_analog(host);
 }
 
 uint16_t lh_test_read_input(lh_host *host, int port) {
   if (!host || port < 0 || port >= LH_MAX_PORTS) return 0;
-  return host->input_frame[port];
+  return (uint16_t)(atomic_load(&host->input_frame[port]) & LH_INPUT_MASK);
 }
 
 int16_t lh_test_read_analog(lh_host *host, int port, int index, int axis) {
   if (!host || port < 0 || port >= LH_MAX_PORTS || index < 0 || index > 1) {
     return 0;
   }
-  uint32_t packed = host->analog_frame[port][index];
+  uint32_t packed = atomic_load(&host->analog_frame[port][index]);
   return axis == 0 ? unpack_x(packed) : unpack_y(packed);
+}
+
+int lh_test_observe_input_id(lh_host *host, int port, unsigned id) {
+  if (!host || port < 0 || port >= LH_MAX_PORTS || id >= 16) return 0;
+  return (int)read_joypad(host, port, id);
+}
+
+uint16_t lh_test_observe_input(lh_host *host, int port) {
+  if (!host || port < 0 || port >= LH_MAX_PORTS) return 0;
+  return (uint16_t)read_joypad(host, port, RETRO_DEVICE_ID_JOYPAD_MASK);
+}
+
+int lh_test_input_thread_mismatch(lh_host *host) {
+  return host ? atomic_load(&host->input_thread_mismatch) : 0;
+}
+
+int lh_test_unhandled_env_count(lh_host *host) {
+  return host ? atomic_load(&host->unhandled_env_count) : 0;
 }
 
 uint16_t lh_test_read_trigger(lh_host *host, int port, int which) {
   if (!host || port < 0 || port >= LH_MAX_PORTS) return 0;
-  uint32_t packed = host->trigger_frame[port];
+  uint32_t packed = atomic_load(&host->trigger_frame[port]);
   return which == 0 ? (uint16_t)unpack_x(packed) : (uint16_t)unpack_y(packed);
 }
 
@@ -2189,6 +2626,13 @@ static int load_content(struct lh_host *h) {
   }
   // load_game is where SET_ROTATION arrives, so it is already known here.
   apply_rotation_to_av(h, av.geometry.aspect_ratio > 0);
+  // Seeded av does not notify - lh_load hands the caller av directly, and an
+  // internal restart reaches the platform through the core's first
+  // SET_GEOMETRY. Clearing the record keeps that first report from being
+  // mistaken for a duplicate when a restart lands on the same geometry.
+  h->notified_width = -1;
+  h->notified_height = -1;
+  h->notified_aspect = -1.0;
   h->av.fps = av.timing.fps > 0 ? av.timing.fps : 60;
   h->av.sample_rate = av.timing.sample_rate > 0 ? av.timing.sample_rate : 44100;
 
@@ -2225,12 +2669,15 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
             int opt_count, lh_av_info *out_info) {
   if (g_session) return LH_ERR_SESSION_BUSY;
   h->shutdown_requested = 0;
+  atomic_store(&h->resume_requested, 0);
+  reset_digital_input(h);
   // A fresh load is a new session, so do not carry a choice from a different
   // core/content forward. Internal restart deliberately does not call this.
   reset_controller_devices(h);
   // Analog-queried is per-game, not per-core (see the struct comment): clear
   // it, and the analog values with it, so neither a stale "reads analog"
   // signal nor a stale stick deflection leaks into new content.
+  reset_analog_queries(h);
   reset_analog_state(h);
 
   // FIX 5: game_id names the SRAM file below and ultimately originates from a
@@ -2292,7 +2739,7 @@ int lh_start(lh_host *h) {
   if (h->has_thread) return 0;  // already running
   if (!h->core_loaded || h->shutdown_requested) return -1;
   h->running = 1;
-  h->paused = 0;
+  atomic_store(&h->paused, 0);
   // Opened before thread_start, or run_job could run a job inline while the
   // loop is already live.
   mutex_lock(&h->jobs_lock);
@@ -2314,7 +2761,7 @@ int lh_start(lh_host *h) {
   return 0;
 }
 
-void lh_pause(lh_host *h) { h->paused = 1; }
+void lh_pause(lh_host *h) { atomic_store(&h->paused, 1); }
 void lh_resume(lh_host *h) {
   // The pending latch exists so a press+release falling entirely between two
   // polls is still observed for one frame (see test_input_latch). While paused
@@ -2322,14 +2769,12 @@ void lh_resume(lh_host *h) {
   // panel most obviously, where pressing buttons is the whole point -- stays
   // latched and fires on the first frame after resuming.
   //
-  // Only the latch is dropped. input_level is left alone, so a button that is
-  // genuinely still held across the resume keeps working. The platform layers
-  // cannot do this themselves: they can only publish a mask, and publishing 0
-  // ORs nothing into pending, so the stale edge would survive.
-  for (int p = 0; p < LH_MAX_PORTS; p++) {
-    atomic_store(&h->input_pending[p], 0u);
-  }
-  h->paused = 0;
+  // The reset must run on the emulation thread: it clears unacked_age, which
+  // is latch-thread-only state, and publishes the frame that the next core
+  // run will read. The atomic request lets resume return without racing that
+  // state; the run loop applies it before its next latch.
+  atomic_store(&h->resume_requested, 1);
+  atomic_store(&h->paused, 0);
 }
 
 void lh_set_fast_forward(lh_host *h, int factor) {
@@ -2353,6 +2798,10 @@ static int restart_core(struct lh_host *h) {
     return -1;
   }
 
+  // restart_core is executed by the emulation thread (or inline only when no
+  // run loop exists), so this shared lifecycle reset cannot race latch_input's
+  // plain per-button ages. The latest physical level intentionally survives.
+  reset_digital_input(h);
   sram_flush(h);
   if (h->core.unload_game) h->core.unload_game();
   if (h->core.deinit) h->core.deinit();
@@ -2364,6 +2813,7 @@ static int restart_core(struct lh_host *h) {
   // so a restart clears it -- and the analog values with it -- even though it
   // keeps most other state (e.g. controller_devices, reapplied below) alive
   // across the new core instance.
+  reset_analog_queries(h);
   reset_analog_state(h);
 
   mutex_lock(&h->vars_lock);
@@ -2654,7 +3104,7 @@ int lh_get_input_descriptor(lh_host *h, int index, lh_input_descriptor *out) {
   return 0;
 }
 
-unsigned lh_analog_descriptor_ports(lh_host *h) {
+unsigned lh_analog_stick_ports(lh_host *h) {
   if (!h) return 0;
   unsigned ports = 0;
   mutex_lock(&h->input_descriptor_lock);
@@ -2672,7 +3122,14 @@ unsigned lh_analog_descriptor_ports(lh_host *h) {
     }
   }
   mutex_unlock(&h->input_descriptor_lock);
-  return ports;
+  // Until the core has read input at all, the descriptor is the only evidence
+  // there is, so trust it; see the header.
+  if (atomic_load_explicit(&h->input_read_frames, memory_order_relaxed) <
+      LH_ANALOG_DECIDE_FRAMES) {
+    return ports;
+  }
+  return ports & atomic_load_explicit(&h->analog_queried_ports,
+                                      memory_order_relaxed);
 }
 
 int lh_set_controller_type(lh_host *h, int port, unsigned device) {

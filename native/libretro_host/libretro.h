@@ -2716,6 +2716,28 @@ enum retro_mod
 #define RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS 87
 
 /**
+ * Asks the frontend for a callback the core invokes around operations that
+ * block its emulation thread.
+ *
+ * @param[out] data <tt>retro_environment_t *</tt>.
+ * The frontend writes a callback the core then calls as
+ * <tt>cb(1, NULL)</tt> before it blocks and <tt>cb(0, NULL)</tt> afterwards.
+ *
+ * The 0x800000 bit marks a command originating in libretro-common rather than
+ * the core API proper. It is absent from many vendored copies of this header,
+ * which is why it is spelled out here.
+ *
+ * Cores do not reliably null-check the result. mupen64plus-next keeps it in a
+ * file-scope retro_environment_t initialised to NULL and, whenever its threaded
+ * renderer is enabled, calls it unconditionally from retro_unload_game,
+ * retro_serialize and retro_unserialize. A frontend that answers false without
+ * writing the out-param does not get graceful degradation - it gets a jump to
+ * address 0 inside the core.
+ * @return \c true if this environment call is supported.
+ */
+#define RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB (3 | 0x800000)
+
+/**
  * Result of \c RETRO_ENVIRONMENT_GET_MEMORY_STATUS.
  *
  * Sizes are in bytes; a field the frontend cannot determine is left at 0.
