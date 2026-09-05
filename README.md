@@ -105,7 +105,7 @@ Per-platform notes and the Tizen toolchain setup are on [Installation](https://g
 
 ## Building
 
-Flutter stable 3.41+ and Dart 3.11+ are the only prerequisites.
+Flutter stable 3.47+ and Dart 3.13+ are the only prerequisites.
 
 ```bash
 git clone https://github.com/Moonfin-Client/Moonfin-Core.git
