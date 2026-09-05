@@ -837,3 +837,41 @@ enum RecentlyReleasedSeriesType { series, season, episode }
 /// When a home row card shows its MOVIE or SERIES label. Only external rows
 /// carry a media type, so the rest are unaffected either way.
 enum MediaTypeBadgeBehavior { always, mixedRowsOnly, never }
+
+enum LoadingAnimationImage {
+  none,
+  moonfinLogo,
+  spinner,
+  runner,
+  moonPhases,
+  moonfinPhases,
+  neonfinPhases,
+}
+
+enum LoadingAnimationSize {
+  thumbnail,
+  small,
+  medium,
+  large,
+}
+
+enum LoadingAnimationPosition {
+  topLeft,
+  topCenter,
+  topRight,
+  middleLeft,
+  middle,
+  middleRight,
+  bottomLeft,
+  bottomCenter,
+  bottomRight,
+  bouncing,
+}
+
+enum LoadingAnimationSpeed {
+  slow,
+  moderate,
+  fast,
+  ultra,
+}
+

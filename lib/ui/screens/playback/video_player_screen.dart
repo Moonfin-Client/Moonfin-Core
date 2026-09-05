@@ -69,6 +69,7 @@ import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
+import '../../widgets/playback/loading_animation_widget.dart';
 import '../../widgets/playback/skip_segment_overlay.dart';
 import '../../widgets/playback/next_up_overlay.dart';
 import '../../widgets/playback/still_watching_dialog.dart';
@@ -4206,13 +4207,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return const SizedBox.shrink();
     }
 
+    final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
+
     return Positioned.fill(
       child: IgnorePointer(
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.45),
           ),
-          child: Center(child: PlayerLoadingOverlay(label: _bringupLabel())),
+          child: pos == LoadingAnimationPosition.bouncing
+              ? BouncingPositionWrapper(
+                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                  safePadding: const EdgeInsets.all(40.0),
+                  builder: (context, movingLeft) => PlayerLoadingOverlay(
+                    label: _bringupLabel(),
+                    flipHorizontal: movingLeft,
+                  ),
+                )
+              : Align(
+                  alignment: pos.alignment,
+                  child: Padding(
+                    padding: pos.safePadding,
+                    child: PlayerLoadingOverlay(label: _bringupLabel()),
+                  ),
+                ),
         ),
       ),
     );
@@ -4234,12 +4252,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (hasTrickplay && (_isSeeking || recentlySought)) {
           return const SizedBox.shrink();
         }
-        return const Center(
-          child: PlayerLoadingOverlay(
-            label: _streamLoadingLabel,
-            logoSize: 160,
-            labelSpacing: 40,
-          ),
+        final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
+        return Positioned.fill(
+          child: pos == LoadingAnimationPosition.bouncing
+              ? BouncingPositionWrapper(
+                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                  safePadding: const EdgeInsets.all(40.0),
+                  builder: (context, movingLeft) => PlayerLoadingOverlay(
+                    label: _streamLoadingLabel,
+                    flipHorizontal: movingLeft,
+                  ),
+                )
+              : Align(
+                  alignment: pos.alignment,
+                  child: Padding(
+                    padding: pos.safePadding,
+                    child: PlayerLoadingOverlay(
+                      label: _streamLoadingLabel,
+                    ),
+                  ),
+                ),
         );
       },
     );

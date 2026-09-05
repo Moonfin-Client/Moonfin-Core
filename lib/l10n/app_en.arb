@@ -3407,6 +3407,138 @@
   "@seasonalEffectsDescription": {
     "description": "Description for seasonal effects settings"
   },
+  "loadingAnimation": "Loading Animation",
+  "@loadingAnimation": {
+    "description": "Setting title for custom loading animation"
+  },
+  "loadingAnimationDescription": "Customize the loading animations used throughout Moonfin",
+  "@loadingAnimationDescription": {
+    "description": "Description for loading animation customization settings"
+  },
+  "loadingAnimationConfiguration": "Loading Animation Configuration",
+  "@loadingAnimationConfiguration": {
+    "description": "Subtitle header for loading animation settings"
+  },
+  "loadingAnimationImage": "Image",
+  "@loadingAnimationImage": {
+    "description": "Title for loading animation image selection"
+  },
+  "loadingAnimationImageMoonfinLogo": "Moonfin Logo",
+  "@loadingAnimationImageMoonfinLogo": {
+    "description": "Loading animation image option: Moonfin Logo"
+  },
+  "loadingAnimationImageSpinner": "Spinner",
+  "@loadingAnimationImageSpinner": {
+    "description": "Loading animation image option: Spinner"
+  },
+  "loadingAnimationImageRunner": "Runner",
+  "@loadingAnimationImageRunner": {
+    "description": "Loading animation image option: Runner"
+  },
+  "loadingAnimationImageMoonPhases": "Moon Phases",
+  "@loadingAnimationImageMoonPhases": {
+    "description": "Loading animation image option: Moon Phases"
+  },
+  "loadingAnimationImageMoonfinPhases": "Moonfin Phases",
+  "@loadingAnimationImageMoonfinPhases": {
+    "description": "Loading animation image option: Moonfin Phases in brand gradient"
+  },
+  "loadingAnimationImageNeonfinPhases": "Neonfin Phases",
+  "@loadingAnimationImageNeonfinPhases": {
+    "description": "Loading animation image option: Neonfin Phases in neon colors"
+  },
+  "loadingAnimationSize": "Animation Size",
+  "@loadingAnimationSize": {
+    "description": "Title for loading animation size selection"
+  },
+  "loadingAnimationSizeThumbnail": "Thumbnail",
+  "@loadingAnimationSizeThumbnail": {
+    "description": "Loading animation size option: Thumbnail"
+  },
+  "loadingAnimationSizeSmall": "Small",
+  "@loadingAnimationSizeSmall": {
+    "description": "Loading animation size option: Small"
+  },
+  "loadingAnimationSizeMedium": "Medium",
+  "@loadingAnimationSizeMedium": {
+    "description": "Loading animation size option: Medium"
+  },
+  "loadingAnimationSizeLarge": "Large",
+  "@loadingAnimationSizeLarge": {
+    "description": "Loading animation size option: Large"
+  },
+  "loadingAnimationPosition": "Animation Position",
+  "@loadingAnimationPosition": {
+    "description": "Title for loading animation position selection"
+  },
+  "loadingAnimationPositionTopLeft": "Top-Left",
+  "@loadingAnimationPositionTopLeft": {
+    "description": "Loading animation position: Top-Left"
+  },
+  "loadingAnimationPositionTopCenter": "Top-Center",
+  "@loadingAnimationPositionTopCenter": {
+    "description": "Loading animation position: Top-Center"
+  },
+  "loadingAnimationPositionTopRight": "Top-Right",
+  "@loadingAnimationPositionTopRight": {
+    "description": "Loading animation position: Top-Right"
+  },
+  "loadingAnimationPositionMiddleLeft": "Middle-Left",
+  "@loadingAnimationPositionMiddleLeft": {
+    "description": "Loading animation position: Middle-Left"
+  },
+  "loadingAnimationPositionMiddle": "Middle",
+  "@loadingAnimationPositionMiddle": {
+    "description": "Loading animation position: Middle"
+  },
+  "loadingAnimationPositionMiddleRight": "Middle-Right",
+  "@loadingAnimationPositionMiddleRight": {
+    "description": "Loading animation position: Middle-Right"
+  },
+  "loadingAnimationPositionBottomLeft": "Bottom-Left",
+  "@loadingAnimationPositionBottomLeft": {
+    "description": "Loading animation position: Bottom-Left"
+  },
+  "loadingAnimationPositionBottomCenter": "Bottom-Center",
+  "@loadingAnimationPositionBottomCenter": {
+    "description": "Loading animation position: Bottom-Center"
+  },
+  "loadingAnimationPositionBottomRight": "Bottom-Right",
+  "@loadingAnimationPositionBottomRight": {
+    "description": "Loading animation position: Bottom-Right"
+  },
+  "loadingAnimationPositionBouncing": "Bouncing",
+  "@loadingAnimationPositionBouncing": {
+    "description": "Loading animation position: Bouncing DVD screensaver style"
+  },
+  "loadingAnimationSpeed": "Animation Speed",
+  "@loadingAnimationSpeed": {
+    "description": "Title for loading animation speed selection"
+  },
+  "loadingAnimationSpeedSlow": "Slow",
+  "@loadingAnimationSpeedSlow": {
+    "description": "Loading animation speed option: Slow"
+  },
+  "loadingAnimationSpeedModerate": "Moderate",
+  "@loadingAnimationSpeedModerate": {
+    "description": "Loading animation speed option: Moderate"
+  },
+  "loadingAnimationSpeedFast": "Fast",
+  "@loadingAnimationSpeedFast": {
+    "description": "Loading animation speed option: Fast"
+  },
+  "loadingAnimationSpeedUltra": "Ultra",
+  "@loadingAnimationSpeedUltra": {
+    "description": "Loading animation speed option: Ultra"
+  },
+  "showLoadingAnimationText": "Show Text?",
+  "@showLoadingAnimationText": {
+    "description": "Setting toggle for showing loading animation text"
+  },
+  "loadingAnimationPreview": "Preview",
+  "@loadingAnimationPreview": {
+    "description": "Label for loading animation preview window"
+  },
   "snow": "Snow",
   "@snow": {
     "description": "Seasonal effect: snow"

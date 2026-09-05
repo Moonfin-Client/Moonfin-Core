@@ -36,7 +36,6 @@ import '../../../util/playback_time_label.dart';
 import '../../../util/tv_image_cache_stub.dart'
     if (dart.library.io) '../../../util/tv_image_cache_io.dart';
 import '../../../util/app_distribution.dart';
-import '../../../util/app_exit.dart';
 import '../../widgets/app_update_dialog.dart';
 
 import '../../../auth/store/authentication_preferences.dart';
@@ -56,6 +55,8 @@ import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/playback/playback_time_row.dart';
+import '../../widgets/playback/player_loading_overlay.dart';
+import '../../widgets/playback/loading_animation_widget.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/button_layout_list.dart';
@@ -105,6 +106,7 @@ part 'panel/home_screen_category_screen.dart';
 part 'panel/libraries_category_screen.dart';
 part 'panel/seasonal_effects_screen.dart';
 part 'panel/theme_music_screen.dart';
+part 'panel/loading_animation_screen.dart';
 part 'panel/integrations_screen.dart';
 part 'panel/external_lists_screen.dart';
 part 'panel/plugin_screen.dart';

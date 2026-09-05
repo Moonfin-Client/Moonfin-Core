@@ -2557,6 +2557,35 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 'none',
   );
 
+  static final loadingAnimationImage = EnumPreference(
+    key: 'loading_animation_image',
+    defaultValue: LoadingAnimationImage.moonfinLogo,
+    values: LoadingAnimationImage.values,
+  );
+
+  static final loadingAnimationSize = EnumPreference(
+    key: 'loading_animation_size',
+    defaultValue: LoadingAnimationSize.medium,
+    values: LoadingAnimationSize.values,
+  );
+
+  static final loadingAnimationPosition = EnumPreference(
+    key: 'loading_animation_position',
+    defaultValue: LoadingAnimationPosition.middle,
+    values: LoadingAnimationPosition.values,
+  );
+
+  static final loadingAnimationSpeed = EnumPreference(
+    key: 'loading_animation_speed',
+    defaultValue: LoadingAnimationSpeed.fast,
+    values: LoadingAnimationSpeed.values,
+  );
+
+  static final showLoadingAnimationText = Preference(
+    key: 'show_loading_animation_text',
+    defaultValue: true,
+  );
+
   static final autoLoginUserBehavior = EnumPreference(
     key: 'pref_auto_login_behavior',
     defaultValue: UserSelectBehavior.lastUser,

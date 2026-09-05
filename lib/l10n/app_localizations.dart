@@ -4390,6 +4390,204 @@ abstract class AppLocalizations {
   /// **'Visual effects and seasonal decorations'**
   String get seasonalEffectsDescription;
 
+  /// Setting title for custom loading animation
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Animation'**
+  String get loadingAnimation;
+
+  /// Description for loading animation customization settings
+  ///
+  /// In en, this message translates to:
+  /// **'Customize the loading animations used throughout Moonfin'**
+  String get loadingAnimationDescription;
+
+  /// Subtitle header for loading animation settings
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Animation Configuration'**
+  String get loadingAnimationConfiguration;
+
+  /// Title for loading animation image selection
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get loadingAnimationImage;
+
+  /// Loading animation image option: Moonfin Logo
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Logo'**
+  String get loadingAnimationImageMoonfinLogo;
+
+  /// Loading animation image option: Spinner
+  ///
+  /// In en, this message translates to:
+  /// **'Spinner'**
+  String get loadingAnimationImageSpinner;
+
+  /// Loading animation image option: Runner
+  ///
+  /// In en, this message translates to:
+  /// **'Runner'**
+  String get loadingAnimationImageRunner;
+
+  /// Loading animation image option: Moon Phases
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Phases'**
+  String get loadingAnimationImageMoonPhases;
+
+  /// Loading animation image option: Moonfin Phases in brand gradient
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Phases'**
+  String get loadingAnimationImageMoonfinPhases;
+
+  /// Loading animation image option: Neonfin Phases in neon colors
+  ///
+  /// In en, this message translates to:
+  /// **'Neonfin Phases'**
+  String get loadingAnimationImageNeonfinPhases;
+
+  /// Title for loading animation size selection
+  ///
+  /// In en, this message translates to:
+  /// **'Animation Size'**
+  String get loadingAnimationSize;
+
+  /// Loading animation size option: Thumbnail
+  ///
+  /// In en, this message translates to:
+  /// **'Thumbnail'**
+  String get loadingAnimationSizeThumbnail;
+
+  /// Loading animation size option: Small
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get loadingAnimationSizeSmall;
+
+  /// Loading animation size option: Medium
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get loadingAnimationSizeMedium;
+
+  /// Loading animation size option: Large
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get loadingAnimationSizeLarge;
+
+  /// Title for loading animation position selection
+  ///
+  /// In en, this message translates to:
+  /// **'Animation Position'**
+  String get loadingAnimationPosition;
+
+  /// Loading animation position: Top-Left
+  ///
+  /// In en, this message translates to:
+  /// **'Top-Left'**
+  String get loadingAnimationPositionTopLeft;
+
+  /// Loading animation position: Top-Center
+  ///
+  /// In en, this message translates to:
+  /// **'Top-Center'**
+  String get loadingAnimationPositionTopCenter;
+
+  /// Loading animation position: Top-Right
+  ///
+  /// In en, this message translates to:
+  /// **'Top-Right'**
+  String get loadingAnimationPositionTopRight;
+
+  /// Loading animation position: Middle-Left
+  ///
+  /// In en, this message translates to:
+  /// **'Middle-Left'**
+  String get loadingAnimationPositionMiddleLeft;
+
+  /// Loading animation position: Middle
+  ///
+  /// In en, this message translates to:
+  /// **'Middle'**
+  String get loadingAnimationPositionMiddle;
+
+  /// Loading animation position: Middle-Right
+  ///
+  /// In en, this message translates to:
+  /// **'Middle-Right'**
+  String get loadingAnimationPositionMiddleRight;
+
+  /// Loading animation position: Bottom-Left
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom-Left'**
+  String get loadingAnimationPositionBottomLeft;
+
+  /// Loading animation position: Bottom-Center
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom-Center'**
+  String get loadingAnimationPositionBottomCenter;
+
+  /// Loading animation position: Bottom-Right
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom-Right'**
+  String get loadingAnimationPositionBottomRight;
+
+  /// Loading animation position: Bouncing DVD screensaver style
+  ///
+  /// In en, this message translates to:
+  /// **'Bouncing'**
+  String get loadingAnimationPositionBouncing;
+
+  /// Title for loading animation speed selection
+  ///
+  /// In en, this message translates to:
+  /// **'Animation Speed'**
+  String get loadingAnimationSpeed;
+
+  /// Loading animation speed option: Slow
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get loadingAnimationSpeedSlow;
+
+  /// Loading animation speed option: Moderate
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get loadingAnimationSpeedModerate;
+
+  /// Loading animation speed option: Fast
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get loadingAnimationSpeedFast;
+
+  /// Loading animation speed option: Ultra
+  ///
+  /// In en, this message translates to:
+  /// **'Ultra'**
+  String get loadingAnimationSpeedUltra;
+
+  /// Setting toggle for showing loading animation text
+  ///
+  /// In en, this message translates to:
+  /// **'Show Text?'**
+  String get showLoadingAnimationText;
+
+  /// Label for loading animation preview window
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get loadingAnimationPreview;
+
   /// Seasonal effect: snow
   ///
   /// In en, this message translates to:

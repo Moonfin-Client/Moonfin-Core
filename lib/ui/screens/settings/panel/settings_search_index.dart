@@ -322,6 +322,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.music_note,
     open: () => push(const _ThemeMusicScreen()),
   );
+  final loadingAnimation = _SearchSection(
+    slug: 'loading-animation',
+    path: [l10n.settingsPersonalization, l10n.loadingAnimation],
+    icon: Icons.motion_photos_on_outlined,
+    open: () => push(const _LoadingAnimationScreen()),
+  );
   final video = _SearchSection(
     slug: 'video',
     path: [
@@ -1067,6 +1073,23 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.loopThemeMusic,
       subtitle: l10n.loopThemeMusicSubtitle,
       keywords: ['repeat'],
+    ),
+    loadingAnimation.screen(keywords: ['spinner', 'runner', 'moon', 'logo', 'loading']),
+    loadingAnimation.leaf(
+      'loadingAnimationImage',
+      l10n.loadingAnimationImage,
+    ),
+    loadingAnimation.leaf(
+      'loadingAnimationSize',
+      l10n.loadingAnimationSize,
+    ),
+    loadingAnimation.leaf(
+      'loadingAnimationPosition',
+      l10n.loadingAnimationPosition,
+    ),
+    loadingAnimation.leaf(
+      'showLoadingAnimationText',
+      l10n.showLoadingAnimationText,
     ),
 
     playback.screen(keywords: ['video', 'audio', 'subtitles', 'player']),

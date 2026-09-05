@@ -1,33 +1,48 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../preference/preference_constants.dart';
+import '../../../preference/user_preferences.dart';
+import 'loading_animation_widget.dart';
 
 class PlayerLoadingOverlay extends StatefulWidget {
   const PlayerLoadingOverlay({
     super.key,
     this.label,
     this.logoSize = 180,
-    this.labelSpacing = 60,
+    this.labelSpacing,
+    this.customImage,
+    this.customSize,
+    this.customPosition,
+    this.position,
+    this.customShowText,
+    this.customSpeed,
+    this.flipHorizontal,
   });
 
   final String? label;
   final double logoSize;
-  final double labelSpacing;
+  final double? labelSpacing;
+  final LoadingAnimationImage? customImage;
+  final double? customSize;
+  final LoadingAnimationPosition? customPosition;
+  final LoadingAnimationPosition? position;
+  final bool? customShowText;
+  final LoadingAnimationSpeed? customSpeed;
+  final bool? flipHorizontal;
 
   @override
   State<PlayerLoadingOverlay> createState() => _PlayerLoadingOverlayState();
 }
 
 class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   static const _labelGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
     colors: [Color(0xFFAA5CC3), Color(0xFF00A4DC)],
   );
 
-  late final AnimationController _logoController;
   late final AnimationController _labelController;
   late final Animation<double> _labelOpacity;
   late final Animation<double> _labelScale;
@@ -35,10 +50,6 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
   @override
   void initState() {
     super.initState();
-    _logoController = AnimationController(
-      duration: const Duration(seconds: 8),
-      vsync: this,
-    )..repeat();
     _labelController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -54,39 +65,65 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
 
   @override
   void dispose() {
-    _logoController.dispose();
     _labelController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final prefs = GetIt.instance.isRegistered<UserPreferences>()
+        ? GetIt.instance<UserPreferences>()
+        : null;
+
+    final image = widget.customImage ??
+        prefs?.get(UserPreferences.loadingAnimationImage) ??
+        LoadingAnimationImage.moonfinLogo;
+
+    final sizePref = prefs?.get(UserPreferences.loadingAnimationSize) ??
+        LoadingAnimationSize.medium;
+
+    final effectiveSize = widget.customSize ??
+        (widget.logoSize != 180 ? widget.logoSize : sizePref.pixelSize);
+
+    final effectivePosition = widget.customPosition ??
+        widget.position ??
+        prefs?.get(UserPreferences.loadingAnimationPosition) ??
+        LoadingAnimationPosition.middle;
+
+    final showText = widget.customShowText ??
+        prefs?.get(UserPreferences.showLoadingAnimationText) ??
+        true;
+
+    final effectiveSpeed = widget.customSpeed ??
+        prefs?.get(UserPreferences.loadingAnimationSpeed) ??
+        LoadingAnimationSpeed.fast;
+
     final label = widget.label?.trim();
-    final hasLabel = label != null && label.isNotEmpty;
+    final hasLabel = showText && label != null && label.isNotEmpty;
     final uppercaseLabel = hasLabel ? label.toUpperCase() : null;
+
+    if (image == LoadingAnimationImage.none && !hasLabel) {
+      return const SizedBox.shrink();
+    }
+
+    final spacing = widget.labelSpacing ?? sizePref.labelSpacing;
+    final fontSize = sizePref.labelFontSize;
+    final letterSpacing = sizePref.labelLetterSpacing;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        AnimatedBuilder(
-          animation: _logoController,
-          builder: (context, child) {
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(_logoController.value * 2 * math.pi),
-              child: child,
-            );
-          },
-          child: SvgPicture.asset(
-            'assets/icons/moonfin_logo.svg',
-            width: widget.logoSize,
-            height: widget.logoSize,
+        if (image != LoadingAnimationImage.none)
+          LoadingAnimationWidget(
+            image: image,
+            size: effectiveSize,
+            position: effectivePosition,
+            flipHorizontal: widget.flipHorizontal,
+            speed: effectiveSpeed,
           ),
-        ),
         if (hasLabel) ...[
-          SizedBox(height: widget.labelSpacing),
+          if (image != LoadingAnimationImage.none) SizedBox(height: spacing),
           FadeTransition(
             opacity: _labelOpacity,
             child: ScaleTransition(
@@ -99,10 +136,10 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
                 child: Text(
                   uppercaseLabel!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: fontSize,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 6,
+                    letterSpacing: letterSpacing,
                   ),
                 ),
               ),
