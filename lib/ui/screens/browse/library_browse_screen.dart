@@ -262,15 +262,23 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required double mainAxisSpacing,
     double gridTopPadding = 8.0,
   }) {
-    if (!mounted || !_scrollController.hasClients) return;
-    final row = index ~/ crossAxisCount;
-    final rowTop = gridTopPadding + row * (cellHeight + mainAxisSpacing);
-    final rowBottom = rowTop + cellHeight;
+    if (!mounted || !_scrollController.hasClients || _isJumpingToLetter) return;
+    final geometry = _gridGeometry;
+    final effectivePerLine =
+        (geometry?.perLine ?? crossAxisCount).clamp(1, 100);
+    final effectiveLineExtent = geometry?.lineExtent ?? cellHeight;
+    final effectiveLineSpacing = geometry?.lineSpacing ?? mainAxisSpacing;
+    final effectiveLeadingPad = geometry?.leadingPad ?? gridTopPadding;
+
+    final row = index ~/ effectivePerLine;
+    final rowTop =
+        effectiveLeadingPad + row * (effectiveLineExtent + effectiveLineSpacing);
+    final rowBottom = rowTop + effectiveLineExtent;
     final position = _scrollController.position;
     final viewportH = position.viewportDimension;
     final current = position.pixels;
-    const topPad = 8.0;
-    const bottomPad = 52.0;
+    final topPad = effectiveLeadingPad;
+    final bottomPad = 52.0 + (effectiveLeadingPad - 8.0).clamp(0.0, 32.0);
     double target = current;
     if (rowTop - topPad < current) {
       target = rowTop - topPad;
@@ -1235,6 +1243,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         isNeon: isNeon,
                         watchedBehavior: watchedBehavior,
                         isMobile: isMobile,
+                        rowSpacing: rowSpacing,
+                        gridTopPadding: 8 + focusOverhang,
                       );
                     },
                     childCount: categoryItems.length,
@@ -1299,6 +1309,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     isNeon: isNeon,
                     watchedBehavior: watchedBehavior,
                     isMobile: isMobile,
+                    rowSpacing: rowSpacing,
+                    gridTopPadding: 8 + focusOverhang,
                   );
                 }, childCount: itemsToDisplay.length),
               ),
@@ -1356,6 +1368,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required bool isMobile,
     VoidCallback? onCardFocused,
     bool paginateOnEdge = true,
+    double? rowSpacing,
+    double? gridTopPadding,
   }) {
     // Section headers throw off the uniform row maths in _scrollToGridRow, so a
     // grouped card asks the viewport to reveal it and needs its own context.
@@ -1387,12 +1401,15 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 _onItemFocused(item);
                 if (onCardFocused != null) {
                   onCardFocused();
+                } else if (_isJumpingToLetter) {
+                  return;
                 } else if (revealContext == null) {
                   _scrollToGridRow(
                     index: positionInSection,
                     crossAxisCount: crossAxisCount,
                     cellHeight: cellWidth / childAspectRatio,
-                    mainAxisSpacing: 8.0,
+                    mainAxisSpacing: rowSpacing ?? 8.0,
+                    gridTopPadding: gridTopPadding ?? 8.0,
                   );
                 } else if (revealContext.mounted) {
                   unawaited(
