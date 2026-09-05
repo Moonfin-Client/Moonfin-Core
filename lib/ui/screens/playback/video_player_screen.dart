@@ -609,7 +609,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           unawaited(
             _runSinglePlayerMutation(
               'downloaded_subtitle_$streamIndex',
-              () => _manager.changeSubtitleTrack(streamIndex),
+              () => _manager.changeSubtitleTrack(
+                streamIndex,
+                refreshStreams: true,
+              ),
             ).then((_) {
               if (mounted) _syncSubtitleActive();
             }),

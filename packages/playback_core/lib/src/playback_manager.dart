@@ -211,6 +211,15 @@ class PlaybackManager implements AudioOwnable {
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
+
+  /// Item that gained a stream on the server after this session resolved. The
+  /// resolution still lists what the item had at play time, so a selector
+  /// reading it would leave the new track out.
+  String? _streamsOutdatedItemId;
+
+  bool streamsOutdatedFor(String itemId) => _streamsOutdatedItemId == itemId;
+
+  void markStreamsOutdated(String itemId) => _streamsOutdatedItemId = itemId;
   int? get audioStreamIndex => _audioStreamIndex;
   int? get subtitleStreamIndex {
     if (_subtitleStreamIndex != null) {
@@ -1525,6 +1534,7 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _currentResolution = resolution;
+    _streamsOutdatedItemId = null;
     _lastPlaybackItem = item;
     _lastPlaybackResolution = resolution;
     _mediaSourceId = resolution.mediaSourceId;
@@ -2379,16 +2389,25 @@ class PlaybackManager implements AudioOwnable {
 
   /// Pass `userInitiated: false` when reapplying the track already playing, so
   /// it isn't mistaken for the viewer choosing it.
+  ///
+  /// [refreshStreams] is for a subtitle added to the item after this session
+  /// resolved, which the stream list this session carries has never seen.
   Future<void> changeSubtitleTrack(
     int streamIndex, {
     bool userInitiated = true,
+    bool refreshStreams = false,
   }) => _withProgressPaused(
-    () => _changeSubtitleTrackInner(streamIndex, userInitiated: userInitiated),
+    () => _changeSubtitleTrackInner(
+      streamIndex,
+      userInitiated: userInitiated,
+      refreshStreams: refreshStreams,
+    ),
   );
 
   Future<void> _changeSubtitleTrackInner(
     int streamIndex, {
     bool userInitiated = true,
+    bool refreshStreams = false,
   }) async {
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
@@ -2419,6 +2438,15 @@ class PlaybackManager implements AudioOwnable {
     }
 
     await _applySubtitleRendererModeForStream(streamIndex);
+
+    // Every branch below resolves the track through the stream list this
+    // session was built from, so an index the server added since then finds
+    // nothing and the selection quietly does nothing. Re-resolving rebuilds
+    // the list first and carries the index into it.
+    if (refreshStreams && !_isOfflinePlayback) {
+      await _reResolveAtCurrentPosition();
+      return;
+    }
 
     if (!_isOfflinePlayback &&
         !(_backend?.supportsRuntimeTrackSelection ?? true)) {

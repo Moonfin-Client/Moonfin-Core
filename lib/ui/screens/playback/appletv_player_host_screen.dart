@@ -886,7 +886,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         );
         final index = newStream?['Index'] as int?;
         if (index != null) {
-          await manager.changeSubtitleTrack(index);
+          await manager.changeSubtitleTrack(index, refreshStreams: true);
         } else {
           outcome = l10n.subtitleDownloadedPending;
         }

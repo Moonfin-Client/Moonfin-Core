@@ -123,6 +123,7 @@ class Media3PlayerBackend extends PlayerBackend {
   static const _watchdogStallMs = 6000;
   static const _watchdogBufferingStallMs = 30000;
   static const _watchdogBufferingRepeatMs = 60000;
+  static const _watchdogBufferingRunwayFloorMs = 10000;
   Timer? _watchdogTimer;
   String _watchdogItemLabel = 'item';
   bool _sawFirstFrame = false;
@@ -135,6 +136,7 @@ class Media3PlayerBackend extends PlayerBackend {
   bool _neverStartedWarned = false;
   int _bufferingSinceMs = 0;
   int _bufferingWarnedAtMs = 0;
+  bool _bufferingFailed = false;
 
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
@@ -329,6 +331,13 @@ class Media3PlayerBackend extends PlayerBackend {
           level: LogLevel.warning,
         );
         _onAudioSinkError();
+      case 'audioClockRecovery':
+        _diag(
+          'Media3: audio clock corrupted by a playback head reset '
+          '(head clock ${_toInt(map['reportedPositionUs'])}us), '
+          'reseeking in place at ${_toInt(map['positionMs'])}ms',
+          level: LogLevel.warning,
+        );
       case 'tunnelingDisabledOnAudioTrackFailure':
         _sessionTunnelingDisabled = true;
         _diag(
@@ -565,6 +574,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _loadRequestedAtMs = DateTime.now().millisecondsSinceEpoch;
     _neverStartedWarned = false;
     _bufferingSinceMs = 0;
+    _bufferingFailed = false;
     _watchdogTimer ??= Timer.periodic(
       const Duration(seconds: 2),
       (_) => _checkPlaybackWatchdogs(),
@@ -662,10 +672,42 @@ class Media3PlayerBackend extends PlayerBackend {
           level: LogLevel.warning,
         );
       }
+      // A wedge holding runway never resumes on its own, so turn it into
+      // the failure the manager can surface instead of an eternal spinner.
+      if (!_bufferingFailed &&
+          bufferingHasWedged(
+            stuckMs: stuckMs,
+            bufferedAheadMs: _bufferedAheadMs,
+          )) {
+        _bufferingFailed = true;
+        _diag(
+          'Media3 watchdog: "$_watchdogItemLabel" wedged buffering for '
+          '${stuckMs ~/ 1000}s with ${_bufferedAheadMs}ms ahead, '
+          'failing playback',
+          level: LogLevel.warning,
+        );
+        _errorStream.add(<String, dynamic>{
+          'event': 'playerError',
+          'kind': 'playback_stalled',
+          'recoverable': false,
+        });
+        _isBuffering = false;
+        _bufferingStream.add(false);
+      }
     } else {
       _bufferingSinceMs = 0;
     }
   }
+
+  /// Static and pure for tests. A player that sits buffering past the stall
+  /// window while holding this much runway has given up rather than run dry,
+  /// since an ordinary rebuffer resumes after a few seconds of loaded media.
+  static bool bufferingHasWedged({
+    required int stuckMs,
+    required int bufferedAheadMs,
+  }) =>
+      stuckMs > _watchdogBufferingStallMs &&
+      bufferedAheadMs >= _watchdogBufferingRunwayFloorMs;
 
   /// How much play time is loaded past the playhead. The player reports a
   /// buffered position rather than a runway, so the playhead comes off it.

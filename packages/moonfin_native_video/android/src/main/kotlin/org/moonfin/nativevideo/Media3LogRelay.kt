@@ -20,10 +20,35 @@ object Media3LogRelay : Log.Logger {
     // rather than written one by one.
     private const val REPEAT_WINDOW_MS = 10_000L
 
+    private const val SPURIOUS_TIMESTAMP_PREFIX =
+        "Spurious audio timestamp (frame position mismatch): "
+
     private var installed = false
     private var lastKey: String? = null
     private var lastAtMs = 0L
     private var suppressed = 0
+
+    /** Set by the live main view so a corrupt audio clock gets a recovery. */
+    @Volatile
+    var spuriousAudioPositionListener: ((Long) -> Unit)? = null
+
+    /**
+     * The playback head clock a spurious audio timestamp warning reported, in
+     * microseconds. It is the fourth value in the message. The warning fires
+     * for two opposite reasons and the value tells them apart: a HAL timestamp
+     * the sink rightly rejected reads as time the track really played, while
+     * a head misread as a 32 bit wrap reads hours longer than the player has
+     * even existed.
+     */
+    private fun spuriousAudioPositionUs(message: String): Long? {
+        if (!message.startsWith(SPURIOUS_TIMESTAMP_PREFIX)) return null
+        return message
+            .removePrefix(SPURIOUS_TIMESTAMP_PREFIX)
+            .split(", ")
+            .getOrNull(3)
+            ?.trim()
+            ?.toLongOrNull()
+    }
 
     @Synchronized
     fun install() {
@@ -40,6 +65,9 @@ object Media3LogRelay : Log.Logger {
 
     override fun w(tag: String, message: String, throwable: Throwable?) {
         Log.Logger.DEFAULT.w(tag, message, throwable)
+        spuriousAudioPositionUs(message)?.let {
+            spuriousAudioPositionListener?.invoke(it)
+        }
         relay("warning", tag, message, throwable)
     }
 

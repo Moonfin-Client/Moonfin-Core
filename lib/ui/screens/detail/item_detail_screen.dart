@@ -6144,7 +6144,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final resolution = manager.currentResolution;
     if (queued?.id == item.id &&
         resolution != null &&
-        resolution.mediaStreams.isNotEmpty) {
+        resolution.mediaStreams.isNotEmpty &&
+        !manager.streamsOutdatedFor(item.id)) {
       return resolution.mediaStreams;
     }
     return mediaStreamsForItem(item, selectedSource);
@@ -9299,6 +9300,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     );
 
     if (found != null) {
+      // The playing session resolved before the download, so its stream list
+      // has to stop standing in for the item the reload is about to bring back.
+      GetIt.instance<PlaybackManager>().markStreamsOutdated(currentItem.id);
       await viewModel.load();
     }
     return found;

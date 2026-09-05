@@ -128,7 +128,7 @@
             }
         }
     },
-    "cancel": "Peruuta",
+    "cancel": "Keskeytä",
     "@cancel": {
         "description": "Generic cancel button label"
     },
@@ -164,7 +164,7 @@
     "@ok": {
         "description": "Generic OK button label"
     },
-    "settingsAppearanceTheme": "Sovelluksen teema",
+    "settingsAppearanceTheme": "Sovelluksen Teema",
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
@@ -2228,11 +2228,11 @@
     "@noScheduledRecordings": {
         "description": "Empty state when no recordings are scheduled"
     },
-    "cancelRecording": "Peruutetaanko tallennus?",
+    "cancelRecording": "Keskeytä  tallennus?",
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Perutaanko \"{name}\" ajoitettu nauhoitus?",
+    "cancelScheduledRecordingOf": "Keskeytä  \"{name}\" ajoitettu nauhoitus?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2245,19 +2245,19 @@
     "@no": {
         "description": "Negative dialog button label"
     },
-    "yesCancel": "Kyllä, peruuta",
+    "yesCancel": "Kyllä, keskeytä",
     "@yesCancel": {
         "description": "Confirmation button to cancel a recording"
     },
-    "failedToCancelRecording": "Tallennuksen peruuttaminen epäonnistui",
+    "failedToCancelRecording": "Tallennuksen keskeytys  epäonnistui",
     "@failedToCancelRecording": {
         "description": "Error when cancelling a recording fails"
     },
-    "failedToLoadSeriesRecordings": "Sarjatallenteiden lataaminen epäonnistui",
+    "failedToLoadSeriesRecordings": "Sarjan tallenteiden lataaminen epäonnistui",
     "@failedToLoadSeriesRecordings": {
         "description": "Error when series recordings fail to load"
     },
-    "noSeriesRecordings": "Ei sarjatallenteita",
+    "noSeriesRecordings": "Ei sarjan tallenteita",
     "@noSeriesRecordings": {
         "description": "Empty state when no series recordings exist"
     },
@@ -3077,7 +3077,7 @@
     "@resumeRewind": {
         "description": "Setting for resume rewind"
     },
-    "unpauseRewind": "Peruuta kelaus taaksepäin",
+    "unpauseRewind": "Keskeytä kelaus taaksepäin",
     "@unpauseRewind": {
         "description": "Setting for rewinding a little when resuming from pause"
     },
@@ -4289,7 +4289,7 @@
     "@request": {
         "description": "Button to submit a media request"
     },
-    "cancelRequest": "Peruuta pyyntö",
+    "cancelRequest": "Keskeytä  pyyntö",
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
@@ -4531,7 +4531,7 @@
     "forward": "Eteenpäin",
     "general": "Yleiset",
     "go": "Mennä",
-    "install": "Asentaa",
+    "install": "Asenna",
     "installed": "Asennettu",
     "interval": "Intervalli",
     "name": "Nimi",
@@ -4540,15 +4540,15 @@
     "path": "Polku",
     "paused": "Keskeytetty",
     "permissions": "Käyttöoikeudet",
-    "processing": "Käsittely",
+    "processing": "Käsitellään",
     "profile": "Profiili",
     "provider": "Palveluntarjoaja",
     "refresh": "Päivitä",
     "remote": "Kaukosäädin",
     "rename": "Nimeä uudelleen",
-    "revoke": "Peruuttaa",
-    "role": "Rooli",
-    "root": "Juuri",
+    "revoke": "Peruuta",
+    "role": "Tehtävä",
+    "root": "Root",
     "run": "Aja",
     "search": "Haku",
     "select": "Valitse",
@@ -6373,7 +6373,7 @@
     "trackActionPlayNext": "Toista seuraavaksi",
     "trackActionAddToQueue": "Lisää jonoon",
     "trackActionAddToPlaylist": "Lisää soittolistaan",
-    "trackActionCancelDownload": "Peruuta lataus",
+    "trackActionCancelDownload": "Keskeytä  lataus",
     "trackActionDeleteFromPlaylist": "Poista soittolistasta",
     "trackActionMoveUp": "Siirrä ylös",
     "trackActionMoveDown": "Siirrä alas",
@@ -6766,7 +6766,7 @@
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
-    "cancelRecordingAction": "Peruuta tallennus",
+    "cancelRecordingAction": "Keskeytä tallennus",
     "@cancelRecordingAction": {
         "description": "Button label to cancel a scheduled live TV recording"
     },
@@ -7433,7 +7433,7 @@
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Nestemäisen lasin tyyli, jossa on liukuva liukuväritausta, huurteiset pinnat ja Applen sininen korostusväri",
+    "themeGlassSubtitle": "Liquid-glass tyyli, jossa on liukuva liukuväritausta, jäämaiset pinnat ja Applen sininen korostusväri",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
@@ -8802,7 +8802,7 @@
         }
     },
     "audiobookSave": "Tallenna",
-    "audiobookCancel": "Peruuta",
+    "audiobookCancel": "Keskeytä",
     "audiobookDelete": "Poista",
     "subtitlePreferences": "Tekstitysasetukset",
     "@subtitlePreferences": {
@@ -9264,7 +9264,7 @@
     "@requested4k": {
         "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
     },
-    "cancelRequest4k": "Peruuta 4K-pyyntö",
+    "cancelRequest4k": "Keskeytä 4K-pyyntö",
     "@cancelRequest4k": {
         "description": "Button/dialog title to cancel a 4K media request"
     },
@@ -10206,5 +10206,30 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "performanceMode": "Suorituskyky",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "Toiminto mittaa laitteen resurssit automaattisesti ja rajoittaa toimintoja laitteissa, joissa on vähän muistia. Näin muistiin tallennetaan vähemmän kuvia ja videot tallennetaan still-kuvina. Muutos astuu voimaan seuraavalla käynnistyskerralla.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "performanceModeStandard": "Vakio",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Rajoitettu",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "trailerPreviewHeldBack": "Pois päältä, koska tämän laitteen suorituskyky on asetettu tilaan Rajoitettu",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "adminRunNow": "Suorita nyt"
 }

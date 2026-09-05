@@ -532,6 +532,10 @@ class Media3VideoView(
         // recovery window is what stops this running on.
         private const val DISPLAY_MODE_SWITCH_MAX_RETRIES = 3
         private const val MAX_TARGET_BUFFER_BYTES = 384L * 1024 * 1024
+        // A misread wrap jumps the head clock six hours or more, so an hour
+        // of slack can never swallow one.
+        private const val AUDIO_CLOCK_CORRUPTION_MARGIN_MS = 3_600_000L
+        private const val AUDIO_CLOCK_RECOVERY_MIN_INTERVAL_MS = 60_000L
         // Broadcast captions ride inside the video as CEA-608 messages rather
         // than as their own stream, and the extractor only looks for them when
         // the transport stream announces them in a caption service descriptor.
@@ -828,6 +832,9 @@ class Media3VideoView(
     private var pendingCueRunnable: Runnable? = null
     private var isDisposed = false
     private var isDisposedByFlutter = false
+    private var lastAudioClockRecoveryAtMs = 0L
+    private var playerCreatedAtMs = 0L
+    private val audioClockListener: (Long) -> Unit = { maybeRecoverAudioClock(it) }
     private var isPlayerReleased = false
     private var firstFrameRendered = false
     private val externalSubtitleConfigurations = mutableListOf<MediaItem.SubtitleConfiguration>()
@@ -1399,6 +1406,9 @@ class Media3VideoView(
 
     override fun dispose() {
         isDisposedByFlutter = true
+        if (Media3LogRelay.spuriousAudioPositionListener === audioClockListener) {
+            Media3LogRelay.spuriousAudioPositionListener = null
+        }
         // Unregister before the audio early return so a disposed view can
         // never be re-activated.
         Media3Bridge.unregisterView(platformViewId, this)
@@ -1577,8 +1587,46 @@ class Media3VideoView(
         )
     }
 
+    // Some passthrough HALs reset the AudioTrack playback head to zero mid
+    // stream. The position tracker reads the backward jump as a 32 bit wrap
+    // and adds 2^32 frames, which throws the audio clock many hours ahead, so
+    // video chases a time that never comes and playback parks in buffering
+    // with a full runway. The sink and its position tracker are the only
+    // broken parts, and a seek to the current position rebuilds both, so
+    // playback carries on from the same frame.
+    private fun maybeRecoverAudioClock(reportedPositionUs: Long) {
+        mainHandler.post {
+            if (isDisposed || isPlayerReleased) return@post
+            // The head clock counts time since its AudioTrack started, so the
+            // player's own age bounds it. A warning under that bound is the
+            // sink rejecting a flaky HAL timestamp, which it handles itself.
+            val playerAgeMs = SystemClock.elapsedRealtime() - playerCreatedAtMs
+            if (reportedPositionUs / 1000 < playerAgeMs + AUDIO_CLOCK_CORRUPTION_MARGIN_MS) {
+                return@post
+            }
+            val nowMs = SystemClock.elapsedRealtime()
+            if (nowMs - lastAudioClockRecoveryAtMs < AUDIO_CLOCK_RECOVERY_MIN_INTERVAL_MS) {
+                return@post
+            }
+            lastAudioClockRecoveryAtMs = nowMs
+            val resumeMs = player.currentPosition
+            Media3Bridge.emitEvent(
+                mapOf(
+                    "event" to "audioClockRecovery",
+                    "positionMs" to resumeMs,
+                    "reportedPositionUs" to reportedPositionUs,
+                ),
+            )
+            player.seekTo(resumeMs)
+        }
+    }
+
     private fun createPlayer(): ExoPlayer {
         Media3LogRelay.install()
+        playerCreatedAtMs = SystemClock.elapsedRealtime()
+        if (role == "main") {
+            Media3LogRelay.spuriousAudioPositionListener = audioClockListener
+        }
         emitFfmpegDecoderDiagnosticsOnce()
         // Fresh selector for every player; see the trackSelector field comment.
         trackSelector = DefaultTrackSelector(context)
