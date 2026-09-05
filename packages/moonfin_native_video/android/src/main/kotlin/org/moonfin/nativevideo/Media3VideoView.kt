@@ -1365,6 +1365,9 @@ class Media3VideoView(
         if (!isPlayerReleased) return
         ensurePlayerAlive()
         val args = lastSourceArguments ?: return
+        // The widget that started a preview reschedules it on resume, so
+        // restoring the stale source here would race that with an old trailer.
+        if (args["preview"] == true) return
         val restored = args.toMutableMap().apply {
             this["startPositionMs"] = lastPlaybackPositionMs
             this["autoPlay"] = false
@@ -2349,7 +2352,10 @@ class Media3VideoView(
                 setUsage(C.USAGE_MEDIA)
             },
             onChange = { audioAttributes ->
-                player.setAudioAttributes(audioAttributes, true)
+                // A preview never holds Android audio focus. It is usually
+                // muted, and taking focus would duck theme music and other
+                // apps for nothing.
+                player.setAudioAttributes(audioAttributes, role != "preview")
             },
         )
     }

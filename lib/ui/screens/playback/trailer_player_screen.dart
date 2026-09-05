@@ -1,19 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:get_it/get_it.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:moonfin_native_video/moonfin_native_video.dart';
+import 'package:playback_core/playback_core.dart';
 
 import '../../../data/services/sponsorblock_service.dart';
 import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/appletv_preview_player.dart';
+import '../../../playback/media3_player_backend.dart';
+import '../../../preference/preference_constants.dart';
+import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/web_youtube_trailer.dart';
+import 'trailer_media3_controls.dart';
 
 class TrailerPlayerScreen extends StatefulWidget {
   final String? videoId;
@@ -44,11 +50,38 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
   bool _sponsorBlockSeekInFlight = false;
   int _sponsorBlockToken = 0;
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  final Media3PlayerBackend? _media3Backend =
+      GetIt.instance.isRegistered<Media3PlayerBackend>()
+      ? GetIt.instance<Media3PlayerBackend>()
+      : null;
+  bool _usingMedia3 = false;
+  StreamSubscription<bool>? _media3PlayingSub;
+  StreamSubscription<bool>? _media3CompletedSub;
+  StreamSubscription<Map<String, dynamic>>? _media3ErrorSub;
+  Timer? _media3StartTimeout;
 
   bool get _supportsEmbeddedYouTubePlatform {
     return PlatformDetection.isAndroid ||
         PlatformDetection.isIOS ||
         PlatformDetection.isMacOS;
+  }
+
+  bool get _useMedia3TrailerPath {
+    if (_media3Backend == null) return false;
+    final prefs = GetIt.instance<UserPreferences>();
+    if (prefs.get(UserPreferences.playbackEnginePreference) !=
+        PlaybackEnginePreference.media3) {
+      return false;
+    }
+    // A live Media3 main session (background music, a paused video) owns the
+    // shared native view slot. A preview attach would be refused and a main
+    // source would kill that session, so mpv plays the trailer instead.
+    final manager = GetIt.instance<PlaybackManager>();
+    if (manager.backend is Media3PlayerBackend &&
+        manager.queueService.currentItem != null) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -98,6 +131,11 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
       unawaited(_openTrailerAppleTv());
       return;
     }
+    if (_useMedia3TrailerPath) {
+      _usingMedia3 = true;
+      unawaited(_openTrailerMedia3());
+      return;
+    }
     _player ??= Player(configuration: const PlayerConfiguration(libass: false));
     _controller ??= VideoController(
       _player!,
@@ -142,6 +180,14 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     _sponsorBlockPositionSub?.cancel();
     _appleTvCompletedSub?.cancel();
     unawaited(_appleTvPlayer?.dispose());
+    _media3StartTimeout?.cancel();
+    _media3PlayingSub?.cancel();
+    _media3CompletedSub?.cancel();
+    _media3ErrorSub?.cancel();
+    // Stop rather than dispose, the backend is the shared Android singleton.
+    if (_usingMedia3) {
+      unawaited(_media3Backend?.stop());
+    }
     _player?.stop();
     _player?.dispose();
     super.dispose();
@@ -290,6 +336,101 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     }
   }
 
+  Future<void> _openTrailerMedia3() async {
+    final backend = _media3Backend!;
+    final resolved = await _resolveStreamUrl();
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final streamUrl = resolved.streamUrl;
+    // The resolver falls back to the raw watch URL, which ExoPlayer can't
+    // read, so a failed resolve is a hard error here.
+    final unresolvedYouTube =
+        streamUrl != null &&
+        !resolved.useYouTubeHeaders &&
+        YouTubeStreamResolver.extractVideoId(streamUrl) != null;
+    if (streamUrl == null || streamUrl.isEmpty || unresolvedYouTube) {
+      setState(() {
+        _loading = false;
+        _error = l10n.unableToLoadTrailerStream;
+      });
+      return;
+    }
+
+    _media3PlayingSub = backend.playingStream.listen((playing) {
+      if (!playing || !mounted) return;
+      _media3StartTimeout?.cancel();
+      if (_loading) setState(() => _loading = false);
+    });
+    _media3CompletedSub = backend.completedStream.listen((completed) {
+      if (completed && mounted) Navigator.of(context).maybePop();
+    });
+    _media3ErrorSub = backend.errorStream.listen((_) {
+      if (!mounted || _error != null) return;
+      _media3StartTimeout?.cancel();
+      setState(() {
+        _loading = false;
+        _error = l10n.playbackFailedForTrailer;
+      });
+      unawaited(backend.stop());
+    });
+
+    try {
+      await backend.setVolume(100);
+      // The singleton re-sends its stored repeat mode on play(), and a leaked
+      // repeat-one from an inline preview would loop this trailer forever.
+      await backend.setRepeatMode(RepeatMode.none);
+      if (!mounted) return;
+
+      // The preview flag disarms the backend's own stall watchdog, so this
+      // screen keeps its own started deadline.
+      _media3StartTimeout = Timer(_openTimeout, () {
+        if (!mounted || !_loading || _error != null) return;
+        setState(() {
+          _loading = false;
+          _error = l10n.trailerTimedOut;
+        });
+        unawaited(backend.stop());
+      });
+      await backend
+          .play(<String, dynamic>{
+            'url': streamUrl,
+            'mediaType': 'video',
+            'preview': true,
+            if (resolved.useYouTubeHeaders)
+              'headers': YouTubeStreamResolver.youtubeHeaders,
+          })
+          .timeout(_openTimeout);
+      if (!mounted) {
+        await backend.stop();
+        return;
+      }
+
+      final sponsorBlockVideoId = resolved.sponsorBlockVideoId;
+      if (sponsorBlockVideoId != null && sponsorBlockVideoId.isNotEmpty) {
+        _startSponsorBlockTracking(sponsorBlockVideoId);
+      } else {
+        _clearSponsorBlockTracking();
+      }
+    } on TimeoutException {
+      unawaited(backend.stop());
+      if (!mounted) return;
+      _media3StartTimeout?.cancel();
+      setState(() {
+        _loading = false;
+        _error = l10n.trailerTimedOut;
+      });
+    } catch (_) {
+      unawaited(backend.stop());
+      if (!mounted) return;
+      _media3StartTimeout?.cancel();
+      setState(() {
+        _loading = false;
+        _error = l10n.playbackFailedForTrailer;
+      });
+    }
+  }
+
   void _clearSponsorBlockTracking() {
     _sponsorBlockToken++;
     _sponsorBlockPositionSub?.cancel();
@@ -299,16 +440,19 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
   }
 
   void _startSponsorBlockTracking(String videoId) {
-    final player = _player;
-    if (player == null) {
+    final positions = _usingMedia3
+        ? _media3Backend?.positionStream
+        : _player?.stream.position;
+    final seek = _usingMedia3 ? _media3Backend?.seekTo : _player?.seek;
+    if (positions == null || seek == null) {
       _clearSponsorBlockTracking();
       return;
     }
 
     _clearSponsorBlockTracking();
     final token = ++_sponsorBlockToken;
-    _sponsorBlockPositionSub = player.stream.position.listen((position) {
-      _handleSponsorBlockPosition(position);
+    _sponsorBlockPositionSub = positions.listen((position) {
+      _handleSponsorBlockPosition(position, seek);
     });
 
     unawaited(() async {
@@ -323,9 +467,11 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     }());
   }
 
-  void _handleSponsorBlockPosition(Duration position) {
-    final player = _player;
-    if (player == null || _sponsorBlockSeekInFlight) {
+  void _handleSponsorBlockPosition(
+    Duration position,
+    Future<void> Function(Duration) seek,
+  ) {
+    if (_sponsorBlockSeekInFlight) {
       return;
     }
 
@@ -342,12 +488,23 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
     _sponsorBlockSeekInFlight = true;
     unawaited(() async {
       try {
-        await player.seek(skipTo);
+        await seek(skipTo);
       } catch (_) {
       } finally {
         _sponsorBlockSeekInFlight = false;
       }
     }());
+  }
+
+  void _stopAndPop() {
+    _player?.stop();
+    unawaited(_appleTvPlayer?.stop());
+    // Stop while our view is still attached, so the bridge doesn't queue a
+    // stale stop for whichever view mounts next.
+    if (_usingMedia3) {
+      unawaited(_media3Backend?.stop());
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -391,6 +548,20 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
                             ),
                           )
                         : const SizedBox.shrink())
+                  : _usingMedia3
+                  ? Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        const Media3VideoView(
+                          fill: Colors.black,
+                          role: 'preview',
+                        ),
+                        TrailerMedia3Controls(
+                          backend: _media3Backend!,
+                          onExit: _stopAndPop,
+                        ),
+                      ],
+                    )
                   : (_controller != null
                         ? Video(
                             controller: _controller!,
@@ -421,11 +592,7 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
                 padding: const EdgeInsets.all(16),
                 child: IconButton(
                   icon: const AdaptiveIcon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    _player?.stop();
-                    unawaited(_appleTvPlayer?.stop());
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: _stopAndPop,
                 ),
               ),
             ),

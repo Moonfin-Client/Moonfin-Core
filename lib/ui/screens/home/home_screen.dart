@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 
 import 'package:flutter/foundation.dart'
     show kIsWeb, listEquals, visibleForTesting;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -1056,7 +1056,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   bool _useMedia3InlinePreview() {
-    return usesMedia3ForInlinePreview();
+    return usesMedia3ForInlinePreview(widget.prefs);
   }
 
   void _onPreviewPrefsChanged() {
@@ -1529,7 +1529,11 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (_previewUsingMedia3) {
       _previewUsingMedia3 = false;
-      unawaited(_media3PreviewBackend!.release());
+      // The backend is a singleton and play() re-sends the stored repeat
+      // mode, so the preview's repeat-one can't be left behind for real
+      // playback to inherit.
+      unawaited(_media3PreviewBackend!.setRepeatMode(RepeatMode.none));
+      unawaited(_media3PreviewBackend.release());
       _media3PreviewBackend.resetVolumeState();
     }
     if (_previewUsingAppleTv) {
@@ -1660,6 +1664,13 @@ class _ContentRowsState extends State<_ContentRows>
       if (useMedia3) {
         _previewUsingMedia3 = true;
         await _media3PreviewBackend!.setVolume(previewVolume);
+        if (!_isPreviewRequestActive(requestId, previewKey)) {
+          return;
+        }
+
+        // Cover the tile and loop, matching the mpv branch below.
+        await _media3PreviewBackend.setZoomMode('crop');
+        await _media3PreviewBackend.setRepeatMode(RepeatMode.repeatOne);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
           return;
         }

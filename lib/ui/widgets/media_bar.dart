@@ -5,7 +5,7 @@ import 'package:moonfin/ui/widgets/top_toolbar.dart';
 
 import 'offline_aware_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -369,7 +369,7 @@ class _MediaBarState extends State<MediaBar>
   }
 
   bool _useMedia3TrailerEngine() {
-    return usesMedia3ForInlinePreview();
+    return usesMedia3ForInlinePreview(widget.prefs);
   }
 
   /// Whether the Media3 platform view stays mounted between trailers so each
@@ -970,8 +970,10 @@ class _MediaBarState extends State<MediaBar>
     _trailerPlayer?.stop();
     unawaited(_appleTvTrailerPlayer?.stop());
     // Media3 is a shared singleton (also drives row previews); only release it
-    // when the trailer owned it.
+    // when the trailer owned it. Reset repeat first so a looping trailer's
+    // repeat-one doesn't leak into the next playback.
     if (wasUsingMedia3) {
+      unawaited(_media3TrailerBackend?.setRepeatMode(RepeatMode.none));
       unawaited(_media3TrailerBackend?.release());
     }
     _activeTrailerItemId = null;
@@ -1144,6 +1146,14 @@ class _MediaBarState extends State<MediaBar>
         }
         await _media3TrailerBackend!.setVolume(0);
         await _media3TrailerBackend.configureSubtitleStyle(verticalOffset: 0.15);
+        // Fill the bar the way the mpv path does. A single slide loops its
+        // trailer, more slides advance on completion.
+        await _media3TrailerBackend.setZoomMode('crop');
+        await _media3TrailerBackend.setRepeatMode(
+          widget.viewModel.items.length <= 1
+              ? RepeatMode.repeatOne
+              : RepeatMode.none,
+        );
         if (!mounted || resolveId != _trailerResolveId) return;
 
         final payload = <String, dynamic>{
@@ -1811,6 +1821,12 @@ class _MediaBarState extends State<MediaBar>
   Map<String, dynamic> _trailerDeviceProfile() {
     if (PlatformDetection.isWeb) {
       return buildHtmlVideoBackendDeviceProfile(widget.prefs);
+    }
+    // The GetIt<PlayerBackend> singleton is registered once at startup, so
+    // after a runtime engine flip it can be the wrong engine. Ask the backend
+    // that will actually play the trailer.
+    if (_useMedia3TrailerEngine()) {
+      return _media3TrailerBackend!.getDeviceProfile();
     }
     // Reuse the real profile from the active backend so the preview advertises
     // the codecs, resolution, and bitrate the device supports instead of a bare
