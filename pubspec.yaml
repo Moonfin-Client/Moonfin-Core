@@ -29,7 +29,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
 
   # Networking
-  dio: ^5.9.2
+  dio: ^5.11.1
   dio_cookie_manager: ^3.4.0
   background_downloader: ^9.5.6
   cookie_jar: ^4.0.9
