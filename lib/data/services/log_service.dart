@@ -73,8 +73,30 @@ class LogService extends ChangeNotifier {
   static const int _maxEntries = 2000;
 
   static final _redactRegex = RegExp(
-    r'((?:https?|wss?)://)[A-Za-z0-9._~%\-:@\[\]]+',
+    r'''((?:https?|wss?)://)[^\s<>"',;()\]}]+''',
     caseSensitive: false,
+  );
+
+  static final _hostLookupRegex = RegExp(
+    r'''((?:Failed host lookup|Unable to resolve host):? ['"])[^'"]+''',
+    caseSensitive: false,
+  );
+
+  static final _genericErrorRedactRegex = RegExp(
+    r'''\b(host(?:name)?|address|ip|server|url|uri|domain|origin)'''
+    r'''(\s*"?\s*[:=]\s*"?\s*)([^\s,;()<>"{}\[\]']*[.0-9][^\s,;()<>"{}\[\]']*)("?)''',
+    caseSensitive: false,
+  );
+
+  static final _ipv4Regex = RegExp(
+    r'\b(?:\d{1,3}\.){3}\d{1,3}\b',
+  );
+
+  static final _ipv6Regex = RegExp(
+    r'(?<![:.\w])(?:'
+    r'(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}'
+    r'|[A-Fa-f0-9:]*::[A-Fa-f0-9:]*'
+    r')(?![:.\w])',
   );
 
   final UserPreferences _prefs;
@@ -283,11 +305,43 @@ class LogService extends ChangeNotifier {
   };
 
   String _redact(String text) {
-    if (!text.contains('://')) {
-      return text;
+    var result = text;
+
+    final lower = result.toLowerCase();
+    if (lower.contains('host') ||
+        lower.contains('address') ||
+        lower.contains('ip') ||
+        lower.contains('server') ||
+        lower.contains('url') ||
+        lower.contains('uri') ||
+        lower.contains('domain') ||
+        lower.contains('origin')) {
+      result = result.replaceAllMapped(_genericErrorRedactRegex, (match) {
+        return '${match.group(1)}${match.group(2)}[REDACTED]${match.group(4)}';
+      });
+
+      if (lower.contains('host')) {
+        result = result.replaceAllMapped(_hostLookupRegex, (match) {
+          return "${match.group(1)}[REDACTED]";
+        });
+      }
     }
-    return text.replaceAllMapped(_redactRegex, (match) {
-      return '${match.group(1)}[REDACTED]';
-    });
+
+    if (lower.contains('://')) {
+      result = result.replaceAllMapped(_redactRegex, (match) {
+        return '${match.group(1)}[REDACTED]';
+      });
+    }
+    
+    // catch any ipv4's
+    if (result.contains('.')) {
+      result = result.replaceAll(_ipv4Regex, '[REDACTED]');
+    }
+    // catch any ipv6's
+    if (result.contains(':')) {
+      result = result.replaceAll(_ipv6Regex, '[REDACTED]');
+    }
+
+    return result;
   }
 }
