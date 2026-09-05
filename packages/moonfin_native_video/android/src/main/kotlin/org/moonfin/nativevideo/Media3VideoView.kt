@@ -703,8 +703,8 @@ class Media3VideoView(
     // Recreated alongside the player in createPlayer(). A TrackSelector must not
     // be shared across ExoPlayer instances: it binds to the playback thread of
     // the player it is built with, so reusing it after the player is released
-    // and rebuilt throws "DefaultTrackSelector is accessed on the wrong thread" 
-    // on the new player's  playback thread, killing that thread and freezing 
+    // and rebuilt throws "DefaultTrackSelector is accessed on the wrong thread"
+    // on the new player's  playback thread, killing that thread and freezing
     // playback.
     private lateinit var trackSelector: DefaultTrackSelector
     private val audioPipeline = ExoPlayerAudioPipeline()
@@ -750,6 +750,7 @@ class Media3VideoView(
         }
     // Guards the container/source-error transcode fallback against re-emitting.
     private var containerFallbackAttempted = false
+    private var audioFallbackAttempted = false
 
     // Last audio track mapping reported, so an unchanged one stays quiet.
     private var lastAudioTrackMapping: List<Map<String, Any?>>? = null
@@ -2203,6 +2204,7 @@ class Media3VideoView(
         stereoDownmixRetryAttemptedForCurrentSource = false
         tunnelingRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
+        audioFallbackAttempted = false
         // Start each source with the downmix the user asked for or the state
         // the device has proven it needs (sticky once an AudioTrack init
         // failure was recovered).
@@ -3672,6 +3674,27 @@ class Media3VideoView(
             ?.startsWith("audio/") == true
     }
 
+    private fun errorIsNoValidVarintLengthMaskFound(error: PlaybackException): Boolean {
+        val exo = error as? ExoPlaybackException ?: return false
+        if (exo.type != ExoPlaybackException.TYPE_SOURCE) return false
+
+        var cause: Throwable? = exo.sourceException
+        var depth = 0
+
+        while (cause != null && depth < 3) {
+            if (cause is IllegalStateException &&
+                cause.message == "No valid varint length mask found"
+            ) {
+                return true
+            }
+
+            cause = cause.cause
+            depth++
+        }
+
+        return false
+    }
+
     private fun emitRecoverablePlayerError(
         error: PlaybackException,
         audioOffloadRetryTriggered: Boolean,
@@ -3698,6 +3721,19 @@ class Media3VideoView(
             PlaybackException.ERROR_CODE_DECODING_FAILED ->
                 if (errorIsFromAudioRenderer(error)) "unsupported_audio" else null
 
+            // Some MKVs contain trailing zero padding after the last real
+            // cluster while the Segment size extends to EOF. Media3 then reads
+            // 0x00 as an EBML length byte, but it has no leading 1-bit and is
+            // therefore not a valid varint length mask. A server audio
+            // transcode rewrites the stream without that malformed tail, so
+            // allow one retry for this specific parser failure.
+            PlaybackException.ERROR_CODE_IO_UNSPECIFIED ->
+                if (errorIsNoValidVarintLengthMaskFound(error)) {
+                    if (audioFallbackAttempted) null else "unsupported_audio"
+                } else {
+                    null
+                }
+
             else -> null
         }
 
@@ -3705,10 +3741,12 @@ class Media3VideoView(
             return
         }
 
+        // Guard against re-emitting for the same source; the Dart side also
+        // refuses to re-resolve when already transcoding, so this cannot loop.
         if (recoverableKind == "unsupported_container") {
-            // Guard against re-emitting for the same source; the Dart side also
-            // refuses to re-resolve when already transcoding, so this cannot loop.
             containerFallbackAttempted = true
+        } else if (recoverableKind == "unsupported_audio") {
+            audioFallbackAttempted = true
         }
 
         Media3Bridge.emitEvent(
@@ -3718,6 +3756,7 @@ class Media3VideoView(
                 "kind" to recoverableKind,
                 "code" to error.errorCode,
                 "message" to (error.localizedMessage ?: ""),
+                "cause" to describeCauseChain(error),
                 "audioOffloadRetryTriggered" to audioOffloadRetryTriggered,
             ),
         )

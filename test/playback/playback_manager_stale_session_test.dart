@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:playback_core/playback_core.dart';
 
 class _TestBackend extends Fake implements PlayerBackend {
+  final _errors = StreamController<Map<String, dynamic>>.broadcast();
   final List<String> playedUrls = <String>[];
   final List<Duration> startPositions = <Duration>[];
   int stopCalls = 0;
@@ -48,7 +49,9 @@ class _TestBackend extends Fake implements PlayerBackend {
   Stream<bool> get completedStream => const Stream<bool>.empty();
 
   @override
-  Stream<Map<String, dynamic>>? get errorStream => null;
+  Stream<Map<String, dynamic>>? get errorStream => _errors.stream;
+
+  void emitError(Map<String, dynamic> event) => _errors.add(event);
 
   @override
   bool get supportsRuntimeTrackSelection => false;
@@ -90,13 +93,17 @@ class _TestBackend extends Fake implements PlayerBackend {
   Future<void> setRepeatMode(RepeatMode mode) async {}
 
   @override
-  void dispose() {}
+  void dispose() => _errors.close();
 }
 
 class _TestResolver extends MediaStreamResolver {
   int calls = 0;
   final List<String?> requestedMediaSourceIds = <String?>[];
   final List<int?> requestedStartTicks = <int?>[];
+  final List<bool> requestedDirectPlay = <bool>[];
+  StreamPlayMethod playMethod = StreamPlayMethod.directStream;
+  bool isLocalMedia = false;
+  List<Map<String, dynamic>> mediaStreams = const [];
 
   @override
   Future<StreamResolutionResult> resolve(
@@ -114,6 +121,7 @@ class _TestResolver extends MediaStreamResolver {
     calls++;
     requestedMediaSourceIds.add(mediaSourceId);
     requestedStartTicks.add(startTimeTicks);
+    requestedDirectPlay.add(enableDirectPlay);
     final type = (mediaItem as Map<String, dynamic>)['Type'];
     final isLive = type == 'TvChannel' || type == 'LiveTvChannel';
     return StreamResolutionResult(
@@ -121,7 +129,9 @@ class _TestResolver extends MediaStreamResolver {
       mediaSourceId: 'source-$calls',
       liveStreamId: isLive ? 'live-$calls' : null,
       playSessionId: 'session-$calls',
-      playMethod: StreamPlayMethod.directStream,
+      playMethod: playMethod,
+      isLocalMedia: isLocalMedia,
+      mediaStreams: mediaStreams,
     );
   }
 }
@@ -409,6 +419,161 @@ void main() {
       manager.dispose();
     }
   });
+
+  test(
+    'unsupported audio retries once with transcoding and fails thereafter',
+    () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver();
+      final service = _TestService();
+      final manager = _manager(backend, resolver, service);
+      final item = <String, dynamic>{'Id': 'audio', 'Type': 'Movie'};
+
+      try {
+        await manager.playItems(<dynamic>[item]);
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'unsupported_audio',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(resolver.requestedDirectPlay, <bool>[true, false]);
+
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'unsupported_audio',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        expect(
+          manager.bringupState.error,
+          'Playback failed after audio transcode recovery.',
+        );
+      } finally {
+        manager.dispose();
+      }
+    },
+  );
+
+  test('audio transcode recovery is available again for a new item', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'first', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'second', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 4);
+      expect(resolver.requestedDirectPlay, <bool>[true, false, true, false]);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('audio offload retry does not trigger server recovery', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+    final item = <String, dynamic>{'Id': 'offload', 'Type': 'Movie'};
+
+    try {
+      await manager.playItems(<dynamic>[item]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+        'audioOffloadRetryTriggered': true,
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 1);
+      expect(manager.bringupState.phase, isNot(PlaybackBringupPhase.failed));
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('local media audio failure is surfaced without re-resolving', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver()..isLocalMedia = true;
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+    final item = <String, dynamic>{'Id': 'local', 'Type': 'Movie'};
+
+    try {
+      await manager.playItems(<dynamic>[item]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 1);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test(
+    'already-transcoded audio is retried after vetoing its selected codec',
+    () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver()
+        ..playMethod = StreamPlayMethod.transcode
+        ..mediaStreams = <Map<String, dynamic>>[
+          <String, dynamic>{
+            'Type': 'Audio',
+            'Codec': 'eac3',
+            'IsDefault': true,
+          },
+        ];
+      final service = _TestService();
+      final manager = _manager(backend, resolver, service);
+      final item = <String, dynamic>{'Id': 'transcoded', 'Type': 'Movie'};
+
+      try {
+        await manager.playItems(<dynamic>[item]);
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'unsupported_audio',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(resolver.requestedDirectPlay, <bool>[true, false]);
+      } finally {
+        manager.dispose();
+      }
+    },
+  );
 }
 
 extension<T> on Iterable<T> {
