@@ -527,6 +527,11 @@ class UserPreferences extends ChangeNotifier {
     'last_sonarr_calendar_fetch_time',
     'merge_radarr_sonarr_calendars',
     'recently_released_series_type',
+    'loading_animation_image',
+    'loading_animation_size',
+    'loading_animation_position',
+    'loading_animation_speed',
+    'show_loading_animation_text',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
