@@ -35,7 +35,6 @@ bool isTransientTransportFailure(Object error) {
     case DioExceptionType.badResponse:
       final status = error.response?.statusCode ?? 0;
       return status == 408 || status == 429 || status >= 500;
-    case DioExceptionType.transformTimeout:
     case DioExceptionType.cancel:
     case DioExceptionType.badCertificate:
     case DioExceptionType.unknown:
