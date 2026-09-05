@@ -141,7 +141,7 @@ dependencies:
   webview_flutter_android: ^4.12.0
   webview_flutter_wkwebview: ^3.25.1
   youtube_player_iframe: ^6.0.0
-  pdfrx: ^2.2.24
+  pdfrx: ^2.6.1
   flutter_widget_from_html_core: ^0.16.1
   # Vendored fork of kindle_unpack 0.1.1 (MOBI/AZW/AZW3 -> EPUB), patched to
   # build against archive 4.x. See packages/kindle_unpack and the patch note.
