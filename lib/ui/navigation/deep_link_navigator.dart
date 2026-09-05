@@ -50,7 +50,7 @@ void navigateWhenReady(String route) {
   Timer(const Duration(minutes: 5), () => finish(navigate: false));
 
   // Cold start with a pinned user: establish that stored session directly so
-  // the profile picker isn't needed. Best-effort and non-blocking — any gate
+  // the profile picker isn't needed. Best effort and non blocking, so any gate
   // or failure falls through to the picker path above, which is unchanged.
   unawaited(_pinUserIfRequested(route, onPinned: () => finish(navigate: true)));
 }
@@ -58,9 +58,10 @@ void navigateWhenReady(String route) {
 /// Cold-start user pin for a deep link that carried `userId`: establish that
 /// stored session directly so automation doesn't need the profile picker.
 /// Runs only while the app is still unauthenticated, and only after
-/// StartupScreen has settled — switching mid-restore would interleave with a
-/// second concurrent session setup. [onPinned] claims the shared navigation
-/// once the session is live, so the picker path can't double-navigate later.
+/// StartupScreen has settled, since switching mid restore would interleave
+/// with a second concurrent session setup. [onPinned] claims the shared
+/// navigation once the session is live, so the picker path can't
+/// double-navigate later.
 Future<void> _pinUserIfRequested(
   String route, {
   required void Function() onPinned,
@@ -79,7 +80,7 @@ Future<void> _pinUserIfRequested(
       return;
     }
   } catch (_) {
-    // Preferences unavailable — don't pin, let the picker handle it.
+    // Preferences unavailable, so don't pin and let the picker handle it.
     return;
   }
 
@@ -97,7 +98,8 @@ Future<void> _pinUserIfRequested(
   }
 
   final serverId = _resolveServerIdForUser(userId, query?['serverId']);
-  if (serverId == null) return; // unknown or ambiguous — let the picker decide
+  // Unknown or ambiguous, so let the picker decide.
+  if (serverId == null) return;
 
   bool pinned = false;
   try {
@@ -116,7 +118,7 @@ Future<void> _pinUserIfRequested(
 
 /// Polls until the app is no longer on the startup screen (StartupScreen's
 /// own restore finished or it gave up and showed the picker), capped so a
-/// stuck startup can't hold this forever — the picker fallback window still
+/// stuck startup can't hold this forever. The picker fallback window still
 /// applies.
 Future<bool> _startupSettled() async {
   for (var i = 0; i < 60; i++) {
@@ -127,8 +129,8 @@ Future<bool> _startupSettled() async {
 }
 
 /// Resolves which stored server [userId] belongs to. An explicit `serverId`
-/// wins when it is a known server; otherwise the user must appear on exactly
-/// one stored server — never guess across several.
+/// wins when it is a known server, otherwise the user must appear on exactly
+/// one stored server. Never guess across several.
 String? _resolveServerIdForUser(String userId, String? explicitServerId) {
   final authStore = GetIt.instance<AuthenticationStore>();
   if (explicitServerId != null &&

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../../data/services/log_service.dart';
-import 'app_router.dart';
 import 'destinations.dart';
 
 typedef PlaybackStarter = Future<bool> Function(PlaybackLaunchSession? session);
@@ -55,9 +54,9 @@ Future<bool> launchPlayerWhilePreparing(
     // A location change (go/replace) removes the player route without
     // completing its push future, so a launch whose route is already gone can
     // hold the slot for the rest of the process and swallow every later play
-    // press. A live launch always has its route on the stack; if it isn't,
-    // the holder is dead — take over its slot.
-    if (_videoPlayerRoutePresent()) {
+    // press. A live launch always has its route on the stack, so a holder
+    // without one is dead and its slot can be taken over.
+    if (_videoPlayerRoutePresent(context)) {
       return false;
     }
     final stale = _activeVideoLaunch!;
@@ -165,7 +164,9 @@ Future<bool> launchPlayerWhilePreparing(
   }
 }
 
-bool _videoPlayerRoutePresent() {
+/// Reads the router that owns [context] rather than the app-wide one, so the
+/// answer describes the stack the launch actually pushed onto.
+bool _videoPlayerRoutePresent(BuildContext context) {
   try {
     bool present(List<RouteMatchBase> matches) {
       for (final match in matches) {
@@ -175,9 +176,11 @@ bool _videoPlayerRoutePresent() {
       return false;
     }
 
-    return present(appRouter.routerDelegate.currentConfiguration.matches);
+    return present(
+      GoRouter.of(context).routerDelegate.currentConfiguration.matches,
+    );
   } catch (_) {
-    // Router not usable: treat the slot as held — never steal on uncertainty.
+    // Router not usable, so treat the slot as held and never steal on doubt.
     return true;
   }
 }
