@@ -210,6 +210,7 @@ class PlaybackProgressReport {
   final int? positionTicks;
   final bool isPaused;
   final bool isMuted;
+  final int? volumeLevel;
 
   const PlaybackProgressReport({
     required this.itemId,
@@ -220,6 +221,7 @@ class PlaybackProgressReport {
     this.positionTicks,
     this.isPaused = false,
     this.isMuted = false,
+    this.volumeLevel,
   });
 
   Map<String, dynamic> toJson() => {
@@ -231,6 +233,7 @@ class PlaybackProgressReport {
         if (positionTicks != null) 'PositionTicks': positionTicks,
         'IsPaused': isPaused,
         'IsMuted': isMuted,
+        if (volumeLevel != null) 'VolumeLevel': volumeLevel,
       };
 }
 

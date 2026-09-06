@@ -16,6 +16,8 @@ abstract class PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   });
 
   Future<void> onPlaybackStop(

@@ -34,6 +34,8 @@ class EmbyPlaySessionService implements PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   }) async {
     final report = PlaybackProgressReport(
       itemId: MediaStreamResolver.extractItemId(mediaItem),
@@ -43,6 +45,8 @@ class EmbyPlaySessionService implements PlayerService {
       isPaused: isPaused,
       audioStreamIndex: audioStreamIndex,
       subtitleStreamIndex: subtitleStreamIndex,
+      volumeLevel: volumeLevel,
+      isMuted: isMuted ?? false,
     );
     await _client.playbackApi.reportPlaybackProgress(report.toJson());
   }
