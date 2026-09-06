@@ -99,6 +99,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     final dim = _prefs.get(UserPreferences.screensaverDimming).clamp(0, 90);
     final component = _prefs.get(UserPreferences.screensaverComponent);
     final movement = _prefs.get(UserPreferences.screensaverMovement);
+    final position = _prefs.get(UserPreferences.screensaverPosition);
 
     final showSlides =
         backdrop == ScreensaverBackdrop.library &&
@@ -119,7 +120,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
                 item: _items[_index],
               ),
             )
-          else if (backdrop == ScreensaverBackdrop.synthwave ||
+          else if (backdrop == ScreensaverBackdrop.moonfin ||
               backdrop == ScreensaverBackdrop.calm ||
               backdrop == ScreensaverBackdrop.neonPulse ||
               backdrop == ScreensaverBackdrop.aurora)
@@ -136,6 +137,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
             _buildAdditionalComponent(
               component: component,
               movement: movement,
+              position: position,
               dim: dim,
             ),
         ],
@@ -146,6 +148,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
   Widget _buildAdditionalComponent({
     required ScreensaverComponent component,
     required ScreensaverMovement movement,
+    required ScreensaverPosition position,
     required int dim,
   }) {
     if (component == ScreensaverComponent.none) {
@@ -194,7 +197,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     }
 
     return Align(
-      alignment: Alignment.bottomRight,
+      alignment: position.alignment,
       child: Padding(
         padding: const EdgeInsets.all(48),
         child: SizedBox(
@@ -206,6 +209,21 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     );
   }
 }
+
+extension ScreensaverPositionX on ScreensaverPosition {
+  Alignment get alignment => switch (this) {
+        ScreensaverPosition.topLeft => Alignment.topLeft,
+        ScreensaverPosition.topCenter => Alignment.topCenter,
+        ScreensaverPosition.topRight => Alignment.topRight,
+        ScreensaverPosition.middleLeft => Alignment.centerLeft,
+        ScreensaverPosition.middle => Alignment.center,
+        ScreensaverPosition.middleRight => Alignment.centerRight,
+        ScreensaverPosition.bottomLeft => Alignment.bottomLeft,
+        ScreensaverPosition.bottomCenter => Alignment.bottomCenter,
+        ScreensaverPosition.bottomRight => Alignment.bottomRight,
+      };
+}
+
 
 class _SlideView extends StatefulWidget {
   const _SlideView({super.key, required this.item});

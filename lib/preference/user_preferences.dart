@@ -186,6 +186,14 @@ class UserPreferences extends ChangeNotifier {
   }
 
   void _migrateScreensaverPreferences() {
+    for (final key in _store.keys.toList()) {
+      if (key == screensaverBackdrop.key ||
+          key.startsWith('${screensaverBackdrop.key}_')) {
+        if (_store.getString(key) == 'synthwave') {
+          _store.setString(key, ScreensaverBackdrop.moonfin.name);
+        }
+      }
+    }
     if (!_store.containsKey(screensaverBackdrop.key)) {
       final legacyMode = _store.get(screensaverMode);
       if (legacyMode == ScreensaverMode.logo) {
@@ -347,6 +355,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_max_age_rating',
     'pref_screensaver_mode',
     'pref_screensaver_movement',
+    'pref_screensaver_position',
     'pref_screensaver_require_rating',
     'pref_screensaver_timeout',
     'pref_studios_row_selected_ids',
@@ -1595,6 +1604,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_screensaver_movement',
     defaultValue: ScreensaverMovement.fast,
     values: ScreensaverMovement.values,
+  );
+
+  static final screensaverPosition = EnumPreference(
+    key: 'pref_screensaver_position',
+    defaultValue: ScreensaverPosition.middle,
+    values: ScreensaverPosition.values,
   );
 
   static final screensaverContentType = Preference(

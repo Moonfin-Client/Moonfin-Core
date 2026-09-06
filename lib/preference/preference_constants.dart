@@ -762,10 +762,22 @@ enum ScreensaverMode { library, logo }
 enum ScreensaverBackdrop {
   library,
   black,
-  synthwave,
+  moonfin,
   calm,
   neonPulse,
   aurora,
+}
+
+enum ScreensaverPosition {
+  topLeft,
+  topCenter,
+  topRight,
+  middleLeft,
+  middle,
+  middleRight,
+  bottomLeft,
+  bottomCenter,
+  bottomRight,
 }
 
 enum ScreensaverComponent {

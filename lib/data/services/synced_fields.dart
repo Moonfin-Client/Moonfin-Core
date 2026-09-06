@@ -303,6 +303,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('screensaverMaxAgeRating', UserPreferences.screensaverMaxAgeRating, SyncCodec.text),
   SyncedField('screensaverMode', UserPreferences.screensaverMode, SyncCodec.enumName, enumValues: prefs.ScreensaverMode.values),
   SyncedField('screensaverMovement', UserPreferences.screensaverMovement, SyncCodec.enumName, enumValues: prefs.ScreensaverMovement.values),
+  SyncedField('screensaverPosition', UserPreferences.screensaverPosition, SyncCodec.enumName, enumValues: prefs.ScreensaverPosition.values),
   SyncedField('screensaverRequireRating', UserPreferences.screensaverRequireRating, SyncCodec.boolean),
   SyncedField('screensaverTimeout', UserPreferences.screensaverTimeout, SyncCodec.enumName, enumValues: prefs.ScreensaverTimeout.values),
   SyncedField('showDescriptionOnPause', UserPreferences.showDescriptionOnPause, SyncCodec.boolean),

@@ -5374,9 +5374,9 @@
   "@screensaverBackdropBlack": {
     "description": "Screensaver backdrop: Black"
   },
-  "screensaverBackdropSynthwave": "Synthwave",
-  "@screensaverBackdropSynthwave": {
-    "description": "Screensaver backdrop: Synthwave"
+  "screensaverBackdropMoonfin": "Moonfin",
+  "@screensaverBackdropMoonfin": {
+    "description": "Screensaver backdrop: Moonfin"
   },
   "screensaverBackdropCalm": "Calm",
   "@screensaverBackdropCalm": {
@@ -5405,6 +5405,10 @@
   "screensaverComponentMovement": "Component Movement",
   "@screensaverComponentMovement": {
     "description": "Setting for screensaver component movement"
+  },
+  "screensaverComponentPosition": "Component Position",
+  "@screensaverComponentPosition": {
+    "description": "Setting for screensaver component position"
   },
   "rottenTomatoesCritics": "Rotten Tomatoes (Critics)",
   "@rottenTomatoesCritics": {

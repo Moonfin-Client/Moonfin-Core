@@ -108,12 +108,27 @@ void main() {
   });
 
   group('AnimatedGradientBackdrop Rendering', () {
-    testWidgets('renders Synthwave backdrop with DecoratedBox', (tester) async {
+    testWidgets('renders Moonfin backdrop with DecoratedBox', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
             body: AnimatedGradientBackdrop(
-              backdrop: ScreensaverBackdrop.synthwave,
+              backdrop: ScreensaverBackdrop.moonfin,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(find.byType(DecoratedBox), findsWidgets);
+    });
+
+    testWidgets('renders Neon Pulse backdrop with pulsating brightness', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.neonPulse,
             ),
           ),
         ),
@@ -260,7 +275,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       prefs.set(UserPreferences.screensaverEnabled, true);
-      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.synthwave);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
 
       await tester.pumpWidget(
         const MaterialApp(
@@ -275,7 +290,7 @@ void main() {
       expect(find.text('General Settings'), findsOneWidget);
       expect(find.text('Visual Components'), findsOneWidget);
 
-      // Library Content section should be hidden for synthwave backdrop
+      // Library Content section should be hidden for moonfin backdrop
       expect(find.text('Library Content'), findsNothing);
       expect(find.text('Source Libraries'), findsNothing);
     });
@@ -287,7 +302,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       prefs.set(UserPreferences.screensaverEnabled, true);
-      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.synthwave);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
 
       await tester.pumpWidget(
         const MaterialApp(
@@ -334,6 +349,53 @@ void main() {
       expect(find.text('Timeout'), findsNothing);
       expect(find.text('Dimming Level'), findsNothing);
     });
+
+    testWidgets('shows Component Position when component is set and movement is Static', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.staticCorner);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Position'), findsOneWidget);
+      expect(find.text('Middle'), findsOneWidget);
+    });
+
+    testWidgets('hides Component Position when movement is bouncing', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.fast);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Position'), findsNothing);
+    });
   });
 
   group('ScreensaverView Runtime Rendering', () {
@@ -354,10 +416,11 @@ void main() {
       await GetIt.instance.reset();
     });
 
-    testWidgets('renders AnimatedGradientBackdrop and RunnerAnimation in static corner', (tester) async {
-      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.synthwave);
+    testWidgets('renders AnimatedGradientBackdrop and RunnerAnimation in static position', (tester) async {
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
       prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.runner);
       prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.staticCorner);
+      prefs.set(UserPreferences.screensaverPosition, ScreensaverPosition.middle);
 
       await tester.pumpWidget(
         const MaterialApp(
@@ -370,6 +433,15 @@ void main() {
       expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
       expect(find.byType(RunnerAnimation), findsOneWidget);
       expect(find.byType(BouncingBox), findsNothing);
+
+      // Verify Align widget uses Alignment.center (from ScreensaverPosition.middle)
+      final alignFinder = find.ancestor(
+        of: find.byType(RunnerAnimation),
+        matching: find.byType(Align),
+      );
+      expect(alignFinder, findsWidgets);
+      final alignWidget = tester.widget<Align>(alignFinder.first);
+      expect(alignWidget.alignment, Alignment.center);
     });
 
     testWidgets('renders BouncingBox when movement is bouncing (e.g. fast)', (tester) async {

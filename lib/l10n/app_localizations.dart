@@ -7222,11 +7222,11 @@ abstract class AppLocalizations {
   /// **'Black'**
   String get screensaverBackdropBlack;
 
-  /// Screensaver backdrop: Synthwave
+  /// Screensaver backdrop: Moonfin
   ///
   /// In en, this message translates to:
-  /// **'Synthwave'**
-  String get screensaverBackdropSynthwave;
+  /// **'Moonfin'**
+  String get screensaverBackdropMoonfin;
 
   /// Screensaver backdrop: Calm
   ///
@@ -7269,6 +7269,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Component Movement'**
   String get screensaverComponentMovement;
+
+  /// Setting for screensaver component position
+  ///
+  /// In en, this message translates to:
+  /// **'Component Position'**
+  String get screensaverComponentPosition;
 
   /// Rating source: Rotten Tomatoes Critics
   ///

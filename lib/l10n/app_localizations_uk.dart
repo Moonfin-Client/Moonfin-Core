@@ -3997,7 +3997,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get screensaverBackdropBlack => 'Black';
 
   @override
-  String get screensaverBackdropSynthwave => 'Synthwave';
+  String get screensaverBackdropMoonfin => 'Moonfin';
 
   @override
   String get screensaverBackdropCalm => 'Calm';
@@ -4019,6 +4019,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get screensaverComponentMovement => 'Component Movement';
+
+  @override
+  String get screensaverComponentPosition => 'Component Position';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Критики)';

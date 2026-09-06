@@ -206,6 +206,7 @@ void main() {
     'screensaverMaxAgeRating',
     'screensaverMode',
     'screensaverMovement',
+    'screensaverPosition',
     'screensaverRequireRating',
     'screensaverTimeout',
     'seasonalSurprise',

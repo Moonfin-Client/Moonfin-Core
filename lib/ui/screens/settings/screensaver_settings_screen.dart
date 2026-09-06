@@ -382,8 +382,8 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                       ScreensaverBackdrop.library => l10n.libraryArt,
                       ScreensaverBackdrop.black =>
                         l10n.screensaverBackdropBlack,
-                      ScreensaverBackdrop.synthwave =>
-                        l10n.screensaverBackdropSynthwave,
+                      ScreensaverBackdrop.moonfin =>
+                        l10n.screensaverBackdropMoonfin,
                       ScreensaverBackdrop.calm =>
                         l10n.screensaverBackdropCalm,
                       ScreensaverBackdrop.neonPulse =>
@@ -423,6 +423,34 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                           l10n.loadingAnimationSpeedFast,
                         ScreensaverMovement.ultra =>
                           l10n.loadingAnimationSpeedUltra,
+                      },
+                    ),
+                  if (component != ScreensaverComponent.none &&
+                      movement == ScreensaverMovement.staticCorner)
+                    EnumPreferenceTile<ScreensaverPosition>(
+                      preference: UserPreferences.screensaverPosition,
+                      title: l10n.screensaverComponentPosition,
+                      icon: Icons.grid_view_rounded,
+                      onChanged: () => setState(() {}),
+                      labelOf: (value) => switch (value) {
+                        ScreensaverPosition.topLeft =>
+                          l10n.loadingAnimationPositionTopLeft,
+                        ScreensaverPosition.topCenter =>
+                          l10n.loadingAnimationPositionTopCenter,
+                        ScreensaverPosition.topRight =>
+                          l10n.loadingAnimationPositionTopRight,
+                        ScreensaverPosition.middleLeft =>
+                          l10n.loadingAnimationPositionMiddleLeft,
+                        ScreensaverPosition.middle =>
+                          l10n.loadingAnimationPositionMiddle,
+                        ScreensaverPosition.middleRight =>
+                          l10n.loadingAnimationPositionMiddleRight,
+                        ScreensaverPosition.bottomLeft =>
+                          l10n.loadingAnimationPositionBottomLeft,
+                        ScreensaverPosition.bottomCenter =>
+                          l10n.loadingAnimationPositionBottomCenter,
+                        ScreensaverPosition.bottomRight =>
+                          l10n.loadingAnimationPositionBottomRight,
                       },
                     ),
                 ],
@@ -553,13 +581,14 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
         );
       case ScreensaverBackdrop.black:
         backdropLayer = const ColoredBox(color: Colors.black);
-      case ScreensaverBackdrop.synthwave:
+      case ScreensaverBackdrop.moonfin:
       case ScreensaverBackdrop.calm:
       case ScreensaverBackdrop.neonPulse:
       case ScreensaverBackdrop.aurora:
         backdropLayer = AnimatedGradientBackdrop(backdrop: backdrop);
     }
 
+    final position = _prefs.get(UserPreferences.screensaverPosition);
     Widget? componentWidget;
     double compWidth = 0;
     double compHeight = 0;
@@ -597,7 +626,7 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
     if (componentWidget != null) {
       if (movement == ScreensaverMovement.staticCorner) {
         componentLayer = Align(
-          alignment: Alignment.bottomRight,
+          alignment: position.alignment,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: SizedBox(

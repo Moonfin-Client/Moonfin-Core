@@ -68,8 +68,20 @@ class _AnimatedGradientBackdropState extends State<AnimatedGradientBackdrop>
         );
         final radialRadius = 0.85 + 0.75 * breath;
 
-        final colors = _getColors(widget.backdrop);
-        final accent = _getAccentColor(widget.backdrop);
+        final isNeonPulse = widget.backdrop == ScreensaverBackdrop.neonPulse;
+        final neonPulse = isNeonPulse
+            ? ((math.sin(angle * 4.0) + 1.0) / 2.0)
+            : 0.0;
+
+        final colors = _getColors(widget.backdrop, neonPulse);
+        final accent = _getAccentColor(widget.backdrop, neonPulse);
+
+        final accentCenterAlpha = isNeonPulse
+            ? (0.28 + 0.38 * neonPulse)
+            : (0.36 + 0.22 * breath);
+        final accentMidAlpha = isNeonPulse
+            ? (0.08 + 0.16 * neonPulse)
+            : (0.10 * (1.0 - breath));
 
         return ClipRect(
           child: Transform.scale(
@@ -95,8 +107,8 @@ class _AnimatedGradientBackdropState extends State<AnimatedGradientBackdrop>
                       center: radialCenter,
                       radius: radialRadius,
                       colors: [
-                        accent.withValues(alpha: 0.36 + 0.22 * breath),
-                        accent.withValues(alpha: 0.10 * (1.0 - breath)),
+                        accent.withValues(alpha: accentCenterAlpha),
+                        accent.withValues(alpha: accentMidAlpha),
                         Colors.transparent,
                       ],
                       stops: const [0.0, 0.65, 1.0],
@@ -112,14 +124,18 @@ class _AnimatedGradientBackdropState extends State<AnimatedGradientBackdrop>
     );
   }
 
-  Color _getAccentColor(ScreensaverBackdrop backdrop) {
+  Color _getAccentColor(ScreensaverBackdrop backdrop, [double pulse = 0.0]) {
     switch (backdrop) {
-      case ScreensaverBackdrop.synthwave:
+      case ScreensaverBackdrop.moonfin:
         return const Color(0xFF00C6FF);
       case ScreensaverBackdrop.calm:
         return const Color(0xFF68D388);
       case ScreensaverBackdrop.neonPulse:
-        return const Color(0xFFFF2E92);
+        return Color.lerp(
+          const Color(0xFFFF2E92),
+          const Color(0xFFFF8EC5),
+          pulse,
+        )!;
       case ScreensaverBackdrop.aurora:
         return const Color(0xFF00CEC9);
       case ScreensaverBackdrop.library:
@@ -128,9 +144,9 @@ class _AnimatedGradientBackdropState extends State<AnimatedGradientBackdrop>
     }
   }
 
-  List<Color> _getColors(ScreensaverBackdrop backdrop) {
+  List<Color> _getColors(ScreensaverBackdrop backdrop, [double pulse = 0.0]) {
     switch (backdrop) {
-      case ScreensaverBackdrop.synthwave:
+      case ScreensaverBackdrop.moonfin:
         // Moonfin logo brand palette: Royal purple to Electric Cyan
         return const [
           Color(0xFF1A0526), // Midnight plum
@@ -155,15 +171,30 @@ class _AnimatedGradientBackdropState extends State<AnimatedGradientBackdrop>
           Color(0xFF0B2414), // Dark undergrowth
         ];
       case ScreensaverBackdrop.neonPulse:
-        // Cyber-noir night with electric cyan and neon magenta
-        return const [
-          Color(0xFF080412), // Obsidian night
-          Color(0xFF2B004E), // Deep neon purple
-          Color(0xFFFF2E92), // Radiant neon pulse magenta
-          Color(0xFFBD00FF), // Bright violet neon
-          Color(0xFF00E5FF), // Radiant electric cyan
-          Color(0xFF0B2742), // Deep cyberpunk navy
-          Color(0xFF05030D), // Twilight shadow
+        // Cyber-noir night with pulsating electric cyan and neon magenta
+        final magenta = Color.lerp(
+          const Color(0xFFC41264), // Deep radiant neon pulse magenta
+          const Color(0xFFFF78BD), // Blinding electric magenta flash
+          pulse,
+        )!;
+        final cyan = Color.lerp(
+          const Color(0xFF00B4D8), // Deep electric cyan
+          const Color(0xFF7AFFFF), // Blinding electric cyan flash
+          pulse,
+        )!;
+        final violet = Color.lerp(
+          const Color(0xFF9000D0),
+          const Color(0xFFD466FF),
+          pulse,
+        )!;
+        return [
+          const Color(0xFF080412), // Obsidian night
+          const Color(0xFF2B004E), // Deep neon purple
+          magenta,
+          violet,
+          cyan,
+          const Color(0xFF0B2742), // Deep cyberpunk navy
+          const Color(0xFF05030D), // Twilight shadow
         ];
       case ScreensaverBackdrop.aurora:
         // Arctic night with boreal emerald, sapphire, and arctic violet
