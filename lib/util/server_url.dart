@@ -41,6 +41,55 @@ String normalizeServerBaseUrl(String input) {
   );
 }
 
+/// Keeps an IDN hostname in the Unicode form the user entered while retaining
+/// the resolved scheme, port, and path used for the connection.
+///
+/// Explicit Punycode input is never decoded. If the resolved endpoint uses a
+/// different hostname, the resolved address is returned unchanged.
+String serverDisplayAddress({
+  required String enteredAddress,
+  required String resolvedAddress,
+}) {
+  final entered = enteredAddress.trim();
+  if (entered.isEmpty || resolvedAddress.isEmpty) return resolvedAddress;
+
+  final enteredHasScheme = _schemeRegex.hasMatch(entered);
+  final enteredUri = Uri.tryParse(
+    enteredHasScheme ? entered : 'https://$entered',
+  );
+  final resolvedUri = Uri.tryParse(resolvedAddress);
+  if (enteredUri == null ||
+      enteredUri.host.isEmpty ||
+      resolvedUri == null ||
+      resolvedUri.host.isEmpty) {
+    return resolvedAddress;
+  }
+
+  String enteredHost;
+  try {
+    enteredHost = Uri.decodeComponent(enteredUri.host);
+  } catch (_) {
+    return resolvedAddress;
+  }
+
+  if (!enteredHost.runes.any((rune) => rune > 0x7f)) {
+    return resolvedAddress;
+  }
+
+  String enteredAscii;
+  try {
+    enteredAscii = domainToAscii(enteredHost).toLowerCase();
+  } on FormatException {
+    return resolvedAddress;
+  }
+
+  if (enteredAscii != resolvedUri.host.toLowerCase()) {
+    return resolvedAddress;
+  }
+
+  return resolvedAddress.replaceFirst(resolvedUri.host, enteredHost);
+}
+
 String _normalizeServerHost(String host) {
   if (host.isEmpty) return host;
 
