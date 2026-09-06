@@ -64,6 +64,13 @@ void main() {
       );
     });
 
+    test('a slow decode is local work, not a transport failure', () {
+      expect(
+        isTransientTransportFailure(_dio(DioExceptionType.transformTimeout)),
+        isFalse,
+      );
+    });
+
     test('a non-Dio error is an unknown, and unknowns are not retried', () {
       expect(isTransientTransportFailure(StateError('bug')), isFalse);
     });

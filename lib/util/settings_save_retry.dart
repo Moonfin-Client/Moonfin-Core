@@ -30,7 +30,6 @@ bool isTransientTransportFailure(Object error) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:
     case DioExceptionType.receiveTimeout:
-    case DioExceptionType.transformTimeout:
     case DioExceptionType.connectionError:
       return true;
     case DioExceptionType.badResponse:
@@ -39,6 +38,9 @@ bool isTransientTransportFailure(Object error) {
     case DioExceptionType.cancel:
     case DioExceptionType.badCertificate:
     case DioExceptionType.unknown:
+    // The response already arrived and decoding it ran long, so sending the
+    // write again only buys the same slow decode.
+    case DioExceptionType.transformTimeout:
       return false;
   }
 }
