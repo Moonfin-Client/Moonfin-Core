@@ -3886,6 +3886,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => '爛番茄（評論家）';
 
   @override

@@ -4023,6 +4023,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Critici)';
 
   @override

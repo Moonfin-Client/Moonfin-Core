@@ -4029,6 +4029,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => 'Domate të kalbura (Kritikë)';
 
   @override

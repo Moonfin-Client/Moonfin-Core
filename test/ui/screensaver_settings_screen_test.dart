@@ -27,18 +27,22 @@ void main() {
       );
       expect(
         prefs.get(UserPreferences.screensaverComponent),
-        ScreensaverComponent.none,
+        ScreensaverComponent.moonfinLogo,
       );
       expect(
         prefs.get(UserPreferences.screensaverMovement),
-        ScreensaverMovement.fast,
+        ScreensaverMovement.moderate,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverSize),
+        ScreensaverSize.medium,
       );
       expect(prefs.get(UserPreferences.screensaverContentType), 'both');
       expect(prefs.get(UserPreferences.screensaverLibraryIds), '');
       expect(prefs.get(UserPreferences.screensaverCollectionIds), '');
       expect(prefs.get(UserPreferences.screensaverExcludedGenres), '');
       expect(prefs.get(UserPreferences.screensaverTimeout), ScreensaverTimeout.m5);
-      expect(prefs.get(UserPreferences.screensaverDimming), 0);
+      expect(prefs.get(UserPreferences.screensaverDimming), 30);
       expect(prefs.get(UserPreferences.screensaverMaxAgeRating), 'any');
       expect(prefs.get(UserPreferences.screensaverRequireRating), false);
     });
@@ -395,6 +399,74 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.text('Component Position'), findsNothing);
+    });
+
+    testWidgets('shows Component Size when component is selected', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Size'), findsOneWidget);
+      expect(find.text('Medium'), findsOneWidget);
+    });
+
+    testWidgets('hides Component Size when component is none', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.none);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Size'), findsNothing);
+    });
+
+    testWidgets('renders Source Libraries subtitle with All (Default) when empty', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.library);
+      prefs.set(UserPreferences.screensaverLibraryIds, '');
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('All (Default)'), findsOneWidget);
     });
   });
 

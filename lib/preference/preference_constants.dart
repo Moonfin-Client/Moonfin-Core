@@ -780,6 +780,13 @@ enum ScreensaverPosition {
   bottomRight,
 }
 
+enum ScreensaverSize {
+  thumbnail,
+  small,
+  medium,
+  large,
+}
+
 enum ScreensaverComponent {
   none,
   moonfinLogo,

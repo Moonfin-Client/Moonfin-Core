@@ -208,6 +208,7 @@ void main() {
     'screensaverMovement',
     'screensaverPosition',
     'screensaverRequireRating',
+    'screensaverSize',
     'screensaverTimeout',
     'seasonalSurprise',
     'seerrBlockNsfw',

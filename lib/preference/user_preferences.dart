@@ -186,7 +186,8 @@ class UserPreferences extends ChangeNotifier {
   }
 
   void _migrateScreensaverPreferences() {
-    if (!_store.containsKey(screensaverBackdrop.key)) {
+    if (_store.containsKey(screensaverMode.key) &&
+        !_store.containsKey(screensaverBackdrop.key)) {
       final legacyMode = _store.get(screensaverMode);
       if (legacyMode == ScreensaverMode.logo) {
         _store.set(screensaverBackdrop, ScreensaverBackdrop.black);
@@ -196,7 +197,8 @@ class UserPreferences extends ChangeNotifier {
         _store.set(screensaverBackdrop, ScreensaverBackdrop.library);
       }
     }
-    if (!_store.containsKey(screensaverMovement.key)) {
+    if (_store.containsKey(screensaverClockMode.key) &&
+        !_store.containsKey(screensaverMovement.key)) {
       final legacyClock = _store.get(screensaverClockMode);
       if (legacyClock == ScreensaverClockMode.bouncing) {
         _store.set(screensaverComponent, ScreensaverComponent.clock);
@@ -349,6 +351,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_movement',
     'pref_screensaver_position',
     'pref_screensaver_require_rating',
+    'pref_screensaver_size',
     'pref_screensaver_timeout',
     'pref_studios_row_selected_ids',
     'pref_studios_row_sort_by',
@@ -1588,13 +1591,13 @@ class UserPreferences extends ChangeNotifier {
 
   static final screensaverComponent = EnumPreference(
     key: 'pref_screensaver_component',
-    defaultValue: ScreensaverComponent.none,
+    defaultValue: ScreensaverComponent.moonfinLogo,
     values: ScreensaverComponent.values,
   );
 
   static final screensaverMovement = EnumPreference(
     key: 'pref_screensaver_movement',
-    defaultValue: ScreensaverMovement.fast,
+    defaultValue: ScreensaverMovement.moderate,
     values: ScreensaverMovement.values,
   );
 
@@ -1602,6 +1605,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_screensaver_position',
     defaultValue: ScreensaverPosition.middle,
     values: ScreensaverPosition.values,
+  );
+
+  static final screensaverSize = EnumPreference(
+    key: 'pref_screensaver_size',
+    defaultValue: ScreensaverSize.medium,
+    values: ScreensaverSize.values,
   );
 
   static final screensaverContentType = Preference(
@@ -1638,7 +1647,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final screensaverDimming = Preference(
     key: 'pref_screensaver_dimming',
-    defaultValue: 0,
+    defaultValue: 30,
   );
 
   static final screensaverClockMode = EnumPreference(

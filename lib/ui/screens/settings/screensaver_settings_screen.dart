@@ -425,6 +425,23 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                           l10n.loadingAnimationSpeedUltra,
                       },
                     ),
+                  if (component != ScreensaverComponent.none)
+                    EnumPreferenceTile<ScreensaverSize>(
+                      preference: UserPreferences.screensaverSize,
+                      title: l10n.screensaverComponentSize,
+                      icon: Icons.photo_size_select_actual_outlined,
+                      onChanged: () => setState(() {}),
+                      labelOf: (value) => switch (value) {
+                        ScreensaverSize.thumbnail =>
+                          l10n.loadingAnimationSizeThumbnail,
+                        ScreensaverSize.small =>
+                          l10n.loadingAnimationSizeSmall,
+                        ScreensaverSize.medium =>
+                          l10n.loadingAnimationSizeMedium,
+                        ScreensaverSize.large =>
+                          l10n.loadingAnimationSizeLarge,
+                      },
+                    ),
                   if (component != ScreensaverComponent.none &&
                       movement == ScreensaverMovement.staticCorner)
                     EnumPreferenceTile<ScreensaverPosition>(
@@ -480,7 +497,7 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                     subtitle: Text(
                       _sourceSubtitle(
                         UserPreferences.screensaverLibraryIds,
-                        l10n.noneSelected,
+                        l10n.screensaverSourceLibrariesDefault,
                         l10n,
                       ),
                     ),
@@ -589,6 +606,8 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
     }
 
     final position = _prefs.get(UserPreferences.screensaverPosition);
+    final size = _prefs.get(UserPreferences.screensaverSize);
+    final scale = size.scaleFactor;
     Widget? componentWidget;
     double compWidth = 0;
     double compHeight = 0;
@@ -597,8 +616,8 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
       case ScreensaverComponent.none:
         componentWidget = null;
       case ScreensaverComponent.moonfinLogo:
-        compWidth = 100;
-        compHeight = 44;
+        compWidth = 100 * scale;
+        compHeight = 44 * scale;
         componentWidget = Image.asset(
           'assets/images/logo_and_text.png',
           width: compWidth,
@@ -606,18 +625,18 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
           fit: BoxFit.contain,
         );
       case ScreensaverComponent.clock:
-        compWidth = 80;
-        compHeight = 26;
+        compWidth = 80 * scale;
+        compHeight = 26 * scale;
         componentWidget = ScreensaverClock(
           opacity: 1.0,
           use24Hour: _prefs.get(UserPreferences.use24HourClock),
-          fontSize: 16,
+          fontSize: 16 * scale,
         );
       case ScreensaverComponent.runner:
-        compWidth = 44;
-        compHeight = 44;
+        compWidth = 44 * scale;
+        compHeight = 44 * scale;
         componentWidget = RunnerAnimation(
-          size: 40,
+          size: (40 * scale).clamp(16.0, 72.0),
           speed: movement.loadingSpeed,
         );
     }
@@ -644,7 +663,7 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
           builder: (context, movingLeft) {
             if (component == ScreensaverComponent.runner) {
               return RunnerAnimation(
-                size: 40,
+                size: (40 * scale).clamp(16.0, 72.0),
                 flipHorizontal: movingLeft,
                 speed: movement.loadingSpeed,
               );

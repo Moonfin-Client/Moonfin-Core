@@ -4023,6 +4023,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => 'റോട്ടൻ തക്കാളി (വിമർശകർ)';
 
   @override

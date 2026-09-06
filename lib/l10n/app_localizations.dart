@@ -7276,6 +7276,18 @@ abstract class AppLocalizations {
   /// **'Component Position'**
   String get screensaverComponentPosition;
 
+  /// Setting for screensaver component size
+  ///
+  /// In en, this message translates to:
+  /// **'Component Size'**
+  String get screensaverComponentSize;
+
+  /// Subtitle when no source libraries are explicitly filtered in screensaver
+  ///
+  /// In en, this message translates to:
+  /// **'All (Default)'**
+  String get screensaverSourceLibrariesDefault;
+
   /// Rating source: Rotten Tomatoes Critics
   ///
   /// In en, this message translates to:

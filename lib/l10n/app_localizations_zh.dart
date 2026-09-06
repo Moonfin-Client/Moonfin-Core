@@ -3864,6 +3864,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => '烂番茄（评论家）';
 
   @override

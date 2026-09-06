@@ -4019,6 +4019,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get screensaverComponentPosition => 'Component Position';
 
   @override
+  String get screensaverComponentSize => 'Component Size';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'All (Default)';
+
+  @override
   String get rottenTomatoesCritics => 'ರಾಟನ್ ಟೊಮ್ಯಾಟೋಸ್ (ವಿಮರ್ಶಕರು)';
 
   @override

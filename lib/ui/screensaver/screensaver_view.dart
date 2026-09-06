@@ -100,6 +100,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     final component = _prefs.get(UserPreferences.screensaverComponent);
     final movement = _prefs.get(UserPreferences.screensaverMovement);
     final position = _prefs.get(UserPreferences.screensaverPosition);
+    final size = _prefs.get(UserPreferences.screensaverSize);
 
     final showSlides =
         backdrop == ScreensaverBackdrop.library &&
@@ -138,6 +139,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
               component: component,
               movement: movement,
               position: position,
+              size: size,
               dim: dim,
             ),
         ],
@@ -149,17 +151,19 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     required ScreensaverComponent component,
     required ScreensaverMovement movement,
     required ScreensaverPosition position,
+    required ScreensaverSize size,
     required int dim,
   }) {
     if (component == ScreensaverComponent.none) {
       return const SizedBox.shrink();
     }
 
+    final scale = size.scaleFactor;
     final (double width, double height) = switch (component) {
       ScreensaverComponent.none => (0.0, 0.0),
-      ScreensaverComponent.moonfinLogo => (320.0, 140.0),
-      ScreensaverComponent.clock => (200.0, 56.0),
-      ScreensaverComponent.runner => (120.0, 120.0),
+      ScreensaverComponent.moonfinLogo => (320.0 * scale, 140.0 * scale),
+      ScreensaverComponent.clock => (200.0 * scale, 56.0 * scale),
+      ScreensaverComponent.runner => (120.0 * scale, 120.0 * scale),
     };
 
     Widget renderContent({required bool movingLeft}) {
@@ -175,11 +179,12 @@ class _ScreensaverViewState extends State<ScreensaverView> {
           return ScreensaverClock(
             opacity: 1 - (dim / 100) * 0.7,
             use24Hour: _prefs.get(UserPreferences.use24HourClock),
+            fontSize: 32 * scale,
           );
         case ScreensaverComponent.runner:
           return Center(
             child: RunnerAnimation(
-              size: 96,
+              size: 96 * scale,
               flipHorizontal: movingLeft,
               speed: movement.loadingSpeed,
             ),
@@ -221,6 +226,15 @@ extension ScreensaverPositionX on ScreensaverPosition {
         ScreensaverPosition.bottomLeft => Alignment.bottomLeft,
         ScreensaverPosition.bottomCenter => Alignment.bottomCenter,
         ScreensaverPosition.bottomRight => Alignment.bottomRight,
+      };
+}
+
+extension ScreensaverSizeX on ScreensaverSize {
+  double get scaleFactor => switch (this) {
+        ScreensaverSize.thumbnail => 0.45,
+        ScreensaverSize.small => 0.70,
+        ScreensaverSize.medium => 1.0,
+        ScreensaverSize.large => 1.5,
       };
 }
 

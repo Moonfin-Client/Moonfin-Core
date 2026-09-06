@@ -5410,6 +5410,14 @@
   "@screensaverComponentPosition": {
     "description": "Setting for screensaver component position"
   },
+  "screensaverComponentSize": "Component Size",
+  "@screensaverComponentSize": {
+    "description": "Setting for screensaver component size"
+  },
+  "screensaverSourceLibrariesDefault": "All (Default)",
+  "@screensaverSourceLibrariesDefault": {
+    "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
+  },
   "rottenTomatoesCritics": "Rotten Tomatoes (Critics)",
   "@rottenTomatoesCritics": {
     "description": "Rating source: Rotten Tomatoes Critics"
