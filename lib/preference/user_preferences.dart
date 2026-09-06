@@ -186,14 +186,6 @@ class UserPreferences extends ChangeNotifier {
   }
 
   void _migrateScreensaverPreferences() {
-    for (final key in _store.keys.toList()) {
-      if (key == screensaverBackdrop.key ||
-          key.startsWith('${screensaverBackdrop.key}_')) {
-        if (_store.getString(key) == 'synthwave') {
-          _store.setString(key, ScreensaverBackdrop.moonfin.name);
-        }
-      }
-    }
     if (!_store.containsKey(screensaverBackdrop.key)) {
       final legacyMode = _store.get(screensaverMode);
       if (legacyMode == ScreensaverMode.logo) {
