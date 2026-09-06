@@ -259,7 +259,10 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
                                       autofocus: i == 0,
                                       dense: true,
                                       visualDensity: VisualDensity.compact,
-                                      contentPadding: EdgeInsets.zero,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 8.0,
+                                          ),
                                       controlAffinity:
                                           ListTileControlAffinity.leading,
                                       title: Text(e.value),
