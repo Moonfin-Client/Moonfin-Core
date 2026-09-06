@@ -759,6 +759,27 @@ extension HomeSectionTypeSeerrRow on HomeSectionType {
 
 enum ScreensaverMode { library, logo }
 
+enum ScreensaverBackdrop {
+  library,
+  black,
+  synthwave,
+  calm,
+  neonPulse,
+  aurora,
+}
+
+enum ScreensaverComponent {
+  moonfinLogo,
+  clock,
+  runner,
+}
+
+enum ScreensaverMovement {
+  off,
+  staticCorner,
+  bouncing,
+}
+
 enum ScreensaverClockMode { off, staticCorner, bouncing }
 
 enum ScreensaverTimeout {

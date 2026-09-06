@@ -5354,6 +5354,58 @@
   "@clockModeBouncing": {
     "description": "Screensaver clock mode: bounces around the screen"
   },
+  "screensaverGeneralSettings": "General Settings",
+  "@screensaverGeneralSettings": {
+    "description": "Section header for screensaver general settings"
+  },
+  "screensaverVisualComponents": "Visual Components",
+  "@screensaverVisualComponents": {
+    "description": "Section header for screensaver visual components"
+  },
+  "screensaverLibraryContent": "Library Content",
+  "@screensaverLibraryContent": {
+    "description": "Section header for screensaver library content"
+  },
+  "screensaverBackdrop": "Backdrop",
+  "@screensaverBackdrop": {
+    "description": "Setting for screensaver backdrop"
+  },
+  "screensaverBackdropBlack": "Black",
+  "@screensaverBackdropBlack": {
+    "description": "Screensaver backdrop: Black"
+  },
+  "screensaverBackdropSynthwave": "Synthwave",
+  "@screensaverBackdropSynthwave": {
+    "description": "Screensaver backdrop: Synthwave"
+  },
+  "screensaverBackdropCalm": "Calm",
+  "@screensaverBackdropCalm": {
+    "description": "Screensaver backdrop: Calm"
+  },
+  "screensaverBackdropNeonPulse": "Neon Pulse",
+  "@screensaverBackdropNeonPulse": {
+    "description": "Screensaver backdrop: Neon Pulse"
+  },
+  "screensaverBackdropAurora": "Aurora",
+  "@screensaverBackdropAurora": {
+    "description": "Screensaver backdrop: Aurora"
+  },
+  "screensaverAdditionalComponent": "Additional Component",
+  "@screensaverAdditionalComponent": {
+    "description": "Setting for screensaver additional component"
+  },
+  "screensaverComponentMoonfinLogo": "Moonfin Logo",
+  "@screensaverComponentMoonfinLogo": {
+    "description": "Screensaver component: Moonfin Logo"
+  },
+  "screensaverComponentRunner": "Runner",
+  "@screensaverComponentRunner": {
+    "description": "Screensaver component: Runner"
+  },
+  "screensaverComponentMovement": "Component Movement",
+  "@screensaverComponentMovement": {
+    "description": "Setting for screensaver component movement"
+  },
   "rottenTomatoesCritics": "Rotten Tomatoes (Critics)",
   "@rottenTomatoesCritics": {
     "description": "Rating source: Rotten Tomatoes Critics"

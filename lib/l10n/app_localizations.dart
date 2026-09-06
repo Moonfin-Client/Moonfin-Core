@@ -7192,6 +7192,84 @@ abstract class AppLocalizations {
   /// **'Bouncing'**
   String get clockModeBouncing;
 
+  /// Section header for screensaver general settings
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get screensaverGeneralSettings;
+
+  /// Section header for screensaver visual components
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Components'**
+  String get screensaverVisualComponents;
+
+  /// Section header for screensaver library content
+  ///
+  /// In en, this message translates to:
+  /// **'Library Content'**
+  String get screensaverLibraryContent;
+
+  /// Setting for screensaver backdrop
+  ///
+  /// In en, this message translates to:
+  /// **'Backdrop'**
+  String get screensaverBackdrop;
+
+  /// Screensaver backdrop: Black
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get screensaverBackdropBlack;
+
+  /// Screensaver backdrop: Synthwave
+  ///
+  /// In en, this message translates to:
+  /// **'Synthwave'**
+  String get screensaverBackdropSynthwave;
+
+  /// Screensaver backdrop: Calm
+  ///
+  /// In en, this message translates to:
+  /// **'Calm'**
+  String get screensaverBackdropCalm;
+
+  /// Screensaver backdrop: Neon Pulse
+  ///
+  /// In en, this message translates to:
+  /// **'Neon Pulse'**
+  String get screensaverBackdropNeonPulse;
+
+  /// Screensaver backdrop: Aurora
+  ///
+  /// In en, this message translates to:
+  /// **'Aurora'**
+  String get screensaverBackdropAurora;
+
+  /// Setting for screensaver additional component
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Component'**
+  String get screensaverAdditionalComponent;
+
+  /// Screensaver component: Moonfin Logo
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Logo'**
+  String get screensaverComponentMoonfinLogo;
+
+  /// Screensaver component: Runner
+  ///
+  /// In en, this message translates to:
+  /// **'Runner'**
+  String get screensaverComponentRunner;
+
+  /// Setting for screensaver component movement
+  ///
+  /// In en, this message translates to:
+  /// **'Component Movement'**
+  String get screensaverComponentMovement;
+
   /// Rating source: Rotten Tomatoes Critics
   ///
   /// In en, this message translates to:

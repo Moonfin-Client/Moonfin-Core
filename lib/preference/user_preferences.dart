@@ -55,6 +55,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateSeerrRowsVisibility();
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
+    _migrateScreensaverPreferences();
     _syncInsecureCertificateFlag();
   }
 
@@ -184,6 +185,29 @@ class UserPreferences extends ChangeNotifier {
     }
   }
 
+  void _migrateScreensaverPreferences() {
+    if (!_store.containsKey(screensaverBackdrop.key)) {
+      final legacyMode = _store.get(screensaverMode);
+      if (legacyMode == ScreensaverMode.logo) {
+        _store.set(screensaverBackdrop, ScreensaverBackdrop.black);
+        _store.set(screensaverComponent, ScreensaverComponent.moonfinLogo);
+        _store.set(screensaverMovement, ScreensaverMovement.bouncing);
+      } else if (legacyMode == ScreensaverMode.library) {
+        _store.set(screensaverBackdrop, ScreensaverBackdrop.library);
+      }
+    }
+    if (!_store.containsKey(screensaverMovement.key)) {
+      final legacyClock = _store.get(screensaverClockMode);
+      if (legacyClock == ScreensaverClockMode.bouncing) {
+        _store.set(screensaverComponent, ScreensaverComponent.clock);
+        _store.set(screensaverMovement, ScreensaverMovement.bouncing);
+      } else if (legacyClock == ScreensaverClockMode.staticCorner) {
+        _store.set(screensaverComponent, ScreensaverComponent.clock);
+        _store.set(screensaverMovement, ScreensaverMovement.staticCorner);
+      }
+    }
+  }
+
   // On first run, default the 12h/24h clock to the device's locale so users in
   // 24h regions aren't stuck on 12h. Runs once; an explicit choice is kept.
   void _seedClockFormatFromSystem() {
@@ -308,11 +332,18 @@ class UserPreferences extends ChangeNotifier {
     'pref_playlists_row_sort_order',
     'pref_recommendations_apply_parental_rating_cap',
     'pref_resume_last_queue_on_play',
+     'pref_screensaver_backdrop',
     'pref_screensaver_clock_mode',
+    'pref_screensaver_collection_ids',
+    'pref_screensaver_component',
+    'pref_screensaver_content_type',
     'pref_screensaver_dimming',
     'pref_screensaver_enabled',
+    'pref_screensaver_excluded_genres',
+    'pref_screensaver_library_ids',
     'pref_screensaver_max_age_rating',
     'pref_screensaver_mode',
+    'pref_screensaver_movement',
     'pref_screensaver_require_rating',
     'pref_screensaver_timeout',
     'pref_studios_row_selected_ids',
@@ -1543,6 +1574,44 @@ class UserPreferences extends ChangeNotifier {
   static final screensaverEnabled = Preference(
     key: 'pref_screensaver_enabled',
     defaultValue: true,
+  );
+
+  static final screensaverBackdrop = EnumPreference(
+    key: 'pref_screensaver_backdrop',
+    defaultValue: ScreensaverBackdrop.library,
+    values: ScreensaverBackdrop.values,
+  );
+
+  static final screensaverComponent = EnumPreference(
+    key: 'pref_screensaver_component',
+    defaultValue: ScreensaverComponent.moonfinLogo,
+    values: ScreensaverComponent.values,
+  );
+
+  static final screensaverMovement = EnumPreference(
+    key: 'pref_screensaver_movement',
+    defaultValue: ScreensaverMovement.off,
+    values: ScreensaverMovement.values,
+  );
+
+  static final screensaverContentType = Preference(
+    key: 'pref_screensaver_content_type',
+    defaultValue: 'both',
+  );
+
+  static final screensaverLibraryIds = Preference(
+    key: 'pref_screensaver_library_ids',
+    defaultValue: '',
+  );
+
+  static final screensaverCollectionIds = Preference(
+    key: 'pref_screensaver_collection_ids',
+    defaultValue: '',
+  );
+
+  static final screensaverExcludedGenres = Preference(
+    key: 'pref_screensaver_excluded_genres',
+    defaultValue: '',
   );
 
   static final screensaverMode = EnumPreference(

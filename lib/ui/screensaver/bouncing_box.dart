@@ -8,12 +8,14 @@ class BouncingBox extends StatefulWidget {
     super.key,
     required this.childWidth,
     required this.childHeight,
-    required this.child,
-  });
+    this.child,
+    this.builder,
+  }) : assert(child != null || builder != null, 'Either child or builder must be provided');
 
   final double childWidth;
   final double childHeight;
-  final Widget child;
+  final Widget? child;
+  final Widget Function(BuildContext context, bool movingLeft)? builder;
 
   @override
   State<BouncingBox> createState() => _BouncingBoxState();
@@ -68,8 +70,11 @@ class _BouncingBoxState extends State<BouncingBox>
         final minY = _margin;
         final maxX = constraints.maxWidth - widget.childWidth - _margin;
         final maxY = constraints.maxHeight - widget.childHeight - _margin;
+        final renderedChild = widget.builder != null
+            ? widget.builder!(context, _dx < 0)
+            : widget.child!;
         if (maxX <= minX || maxY <= minY) {
-          return widget.child;
+          return renderedChild;
         }
         if (!_initialized) {
           final random = Random();
@@ -98,7 +103,7 @@ class _BouncingBoxState extends State<BouncingBox>
               top: _y,
               width: widget.childWidth,
               height: widget.childHeight,
-              child: widget.child,
+              child: renderedChild,
             ),
           ],
         );
