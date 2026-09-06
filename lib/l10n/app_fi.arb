@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Pikayhteys",
+    "quickConnect": "Pikayhdistys",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -70,7 +70,7 @@
             }
         }
     },
-    "whosWatching": "Kuka katsoo?",
+    "whosWatching": "Kuka katselee?",
     "@whosWatching": {
         "description": "Server user selection heading"
     },
@@ -111,7 +111,7 @@
     "@addServer": {
         "description": "Button to manually add a server address"
     },
-    "embyConnect": "Emby Yhdistä",
+    "embyConnect": "Yhdistä Emby",
     "@embyConnect": {
         "description": "Emby Connect sign-in option label"
     },
@@ -156,7 +156,7 @@
     "@secureStorageUnavailable": {
         "description": "Dialog title when system keyring is inaccessible"
     },
-    "secureStorageUnavailableMessage": "Moonfin ei voinut käyttää järjestelmän avainnippu. Kirjautuminen voi jatkua, mutta suojattu tunnuksen tallennus ei välttämättä ole käytettävissä, ennen kuin avainnippu on avattu.",
+    "secureStorageUnavailableMessage": "Moonfin ei voinut käyttää järjestelmän avainketjua . Kirjautuminen voi jatkua, mutta suojattu tunnuksen tallennus ei välttämättä ole käytettävissä, ennen kuin avainketju on avattu.",
     "@secureStorageUnavailableMessage": {
         "description": "Explanation when secure storage is not available"
     },
@@ -560,7 +560,7 @@
     "@librivoxDescription": {
         "description": "Subtitle for audiobook discovery section"
     },
-    "titlesCount": "{count} otsikoita",
+    "titlesCount": "{count} nimikkeet",
     "@titlesCount": {
         "description": "Label showing number of titles",
         "placeholders": {
@@ -569,11 +569,11 @@
             }
         }
     },
-    "scrollLeft": "Vieritä vasemmalle",
+    "scrollLeft": "Vieritä vasen",
     "@scrollLeft": {
         "description": "Tooltip for scroll left button"
     },
-    "scrollRight": "Vieritä oikealle",
+    "scrollRight": "Vieritä oikea",
     "@scrollRight": {
         "description": "Tooltip for scroll right button"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Katsomattomat",
+    "unwatched": "Katsomaton",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -1083,15 +1083,15 @@
     "@startOver": {
         "description": "Action button label to restart reading a book"
     },
-    "restart": "Käynnistä uudelleen",
+    "restart": "Aloita Alusta",
     "@restart": {
         "description": "Action button label to restart playing media"
     },
-    "readOffline": "Lue offline-tilassa",
+    "readOffline": "Lue offline",
     "@readOffline": {
         "description": "Action button label to read offline"
     },
-    "playOffline": "Pelaa offline-tilassa",
+    "playOffline": "Pelaa offline",
     "@playOffline": {
         "description": "Action button label to play offline"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Lähetä laitteelle",
+    "cast": "Peilaus",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1119,7 +1119,7 @@
     "@finished": {
         "description": "Status label for a finished book"
     },
-    "favorited": "Suosikkiin",
+    "favorited": "Suosikit",
     "@favorited": {
         "description": "Status label for a favorited item"
     },
@@ -1147,7 +1147,7 @@
     "@deleteDownloaded": {
         "description": "Action button label to delete downloaded album tracks"
     },
-    "goToSeries": "Siirry sarjaan",
+    "goToSeries": "Avaa sarja",
     "@goToSeries": {
         "description": "Action button label to navigate to the parent series"
     },
@@ -4579,16 +4579,16 @@
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Laitteet",
     "adminDrawerActivity": "Toiminta",
-    "adminDrawerNetworking": "Verkostoituminen",
+    "adminDrawerNetworking": "Verkkoasetukset",
     "adminDrawerApiKeys": "API-avaimet",
     "adminDrawerBackups": "Varmuuskopiot",
     "adminDrawerLogs": "Lokit",
-    "adminDrawerScheduledTasks": "Aikataulutetut tehtävät",
+    "adminDrawerScheduledTasks": "Ajastetut tehtävät",
     "adminDrawerPlugins": "Laajennukset",
-    "adminDrawerRepositories": "Tietovarastot",
+    "adminDrawerRepositories": "Pakettivarastot",
     "adminDrawerLiveTv": "Live-TV",
     "adminExitTooltip": "Poistu järjestelmänvalvojasta",
-    "adminDashboardLoadFailed": "Kojelaudan lataaminen epäonnistui",
+    "adminDashboardLoadFailed": "Koontinäyttöä ei voitu ladata",
     "adminMediaOverview": "Median yleiskatsaus",
     "adminMediaTotalsError": "Palvelimen mediakokonaisuuksia ei voitu ladata.",
     "adminMediaOverviewSubtitle": "Nopea luku siitä, kuinka paljon sisältöä tällä palvelimella on.",
@@ -5968,7 +5968,7 @@
     "adminTrickplayPriorityAboveNormal": "Normaalia korkeampi",
     "adminTrickplayPriorityNormal": "Normaali",
     "adminTrickplayPriorityBelowNormal": "Normaalin alapuolella",
-    "adminTrickplayPriorityIdle": "Tyhjäkäynti",
+    "adminTrickplayPriorityIdle": "Taustalla",
     "adminTrickplayImageSettings": "Kuva-asetukset",
     "adminTrickplayInterval": "Aikaväli (ms)",
     "adminTrickplayIntervalSubtitle": "Kuinka usein ottaa kuvia",
@@ -7317,7 +7317,7 @@
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Järjestelmän oletusasetus",
+    "systemLanguageDefault": "Oletuskieli",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
@@ -8127,7 +8127,7 @@
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Ilmoita ongelmasta",
+    "reportIssue": "Raportoi",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
@@ -9240,7 +9240,7 @@
     "@genresAndTags": {
         "description": "Button and dialog title for browsing a title's genres, networks and tags"
     },
-    "yourWatchlist": "Seurantaluettelosi",
+    "yourWatchlist": "Aktiivilistalla",
     "@yourWatchlist": {
         "description": "Seerr row: watchlist"
     },
@@ -10231,5 +10231,54 @@
     "@trailerPreviewHeldBack": {
         "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
     },
-    "adminRunNow": "Suorita nyt"
+    "adminRunNow": "Suorita nyt",
+    "showMpvStats": "Näytä mpv-tilastot (Shift+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hideMpvStats": "Piilota mpv-tilastot (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hdrOutput": "HDR-lähtö",
+    "@hdrOutput": {
+        "description": "Stream info label for whether HDR is reaching the display untouched"
+    },
+    "hdrOutputActive": "Aktiivinen — {format}",
+    "@hdrOutputActive": {
+        "description": "Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "hdrOutputActiveTonemapped": "Aktiivinen — sävykartoitus SDR:ään tälle näytölle",
+    "@hdrOutputActiveTonemapped": {
+        "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
+    },
+    "hdrOutputDisplayNotHdr": "Ei käytössä — näyttö ei ole HDR-tilassa",
+    "@hdrOutputDisplayNotHdr": {
+        "description": "Stream info value when the display has not been switched into HDR"
+    },
+    "hdrOutputContentSdr": "Ei käytössä — sisältö on SDR-muodossa",
+    "@hdrOutputContentSdr": {
+        "description": "Stream info value when the title itself is not HDR"
+    },
+    "hdrOutputDisabled": "Ei käytössä — poistettu käytöstä asetuksissa",
+    "@hdrOutputDisabled": {
+        "description": "Stream info value when the native HDR output preference is off"
+    },
+    "hdrOutputFailed": "Ei aktiivinen — käynnistystä ei voitu suorittaa, käytetään oletuspolkua",
+    "@hdrOutputFailed": {
+        "description": "Stream info value when the native HDR window could not be created"
+    },
+    "nativeHdrOutput": "Natiivi HDR-lähtö",
+    "@nativeHdrOutput": {
+        "description": "Settings label for sending HDR to the display untouched"
+    },
+    "nativeHdrOutputDescription": "Lähettää HDR-videon näytölle muokkaamattomana sen sijaan, että se muunnettaisiin SDR-muotoon. Käytetään vain silloin, kun näyttö on jo HDR-tilassa ja sisältö on HDR-muotoista.",
+    "@nativeHdrOutputDescription": {
+        "description": "Settings description for native HDR output"
+    }
 }

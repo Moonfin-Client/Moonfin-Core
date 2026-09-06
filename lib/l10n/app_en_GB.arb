@@ -10198,5 +10198,78 @@
     "serverMessagesShowButtonSubtitle": "Adds a button to the menu for messages sent by your server admin",
     "@serverMessagesShowButtonSubtitle": {
         "description": "Explains the setting that shows or hides the messages button"
+    },
+    "performanceMode": "Performance",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "performanceModeStandard": "Standard",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Reduced",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "trailerPreviewHeldBack": "Off because Performance is set to Reduced for this device",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "showMpvStats": "Show mpv Statistics (Shift+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hideMpvStats": "Hide mpv Statistics (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hdrOutput": "HDR output",
+    "@hdrOutput": {
+        "description": "Stream info label for whether HDR is reaching the display untouched"
+    },
+    "hdrOutputActive": "Active — {format}",
+    "@hdrOutputActive": {
+        "description": "Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "hdrOutputActiveTonemapped": "Active — tone-mapped to SDR for this display",
+    "@hdrOutputActiveTonemapped": {
+        "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
+    },
+    "hdrOutputDisplayNotHdr": "Inactive — display is not in HDR mode",
+    "@hdrOutputDisplayNotHdr": {
+        "description": "Stream info value when the display has not been switched into HDR"
+    },
+    "hdrOutputContentSdr": "Inactive — content is SDR",
+    "@hdrOutputContentSdr": {
+        "description": "Stream info value when the title itself is not HDR"
+    },
+    "hdrOutputDisabled": "Inactive — turned off in settings",
+    "@hdrOutputDisabled": {
+        "description": "Stream info value when the native HDR output preference is off"
+    },
+    "hdrOutputFailed": "Inactive — could not start, using the standard path",
+    "@hdrOutputFailed": {
+        "description": "Stream info value when the native HDR window could not be created"
+    },
+    "nativeHdrOutput": "Native HDR output",
+    "@nativeHdrOutput": {
+        "description": "Settings label for sending HDR to the display untouched"
+    },
+    "nativeHdrOutputDescription": "Sends HDR video to the display untouched instead of converting it to SDR. Used only when the display is already in HDR mode and the title is HDR.",
+    "@nativeHdrOutputDescription": {
+        "description": "Settings description for native HDR output"
     }
 }

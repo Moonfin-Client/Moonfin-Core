@@ -67,12 +67,19 @@ const _kChevronScrollStep = 480.0;
 const _kSongRowHeight = 56.0;
 
 /// One line of the grid, across whichever axis it scrolls.
-typedef _GridGeometry = ({
+typedef GridGeometry = ({
   int perLine,
   double lineExtent,
   double lineSpacing,
   double leadingPad,
 });
+
+/// Leading edge of the line holding [index], in the scroll view's own
+/// coordinates.
+double gridLineStart(GridGeometry geometry, int index) =>
+    geometry.leadingPad +
+    (index ~/ geometry.perLine) *
+        (geometry.lineExtent + geometry.lineSpacing);
 
 bool _isCompact(BuildContext context) =>
     !PlatformDetection.isTV &&
@@ -251,25 +258,22 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     _vm.loadMore();
   }
 
-  /// Geometry from the last grid layout, so a letter jump lands on the line the
-  /// grid really drew instead of one worked out from a second copy of the sums.
-  _GridGeometry? _gridGeometry;
+  /// Geometry from the last grid layout, so a letter jump and a focus scroll
+  /// both land on the line the grid really drew instead of one worked out from
+  /// a second copy of the sums.
+  GridGeometry? _gridGeometry;
 
-  void _scrollToGridRow({
-    required int index,
-    required int crossAxisCount,
-    required double cellHeight,
-    required double mainAxisSpacing,
-    double gridTopPadding = 8.0,
-  }) {
+  void _scrollToGridRow(int index) {
     if (!mounted || !_scrollController.hasClients) return;
-    final row = index ~/ crossAxisCount;
-    final rowTop = gridTopPadding + row * (cellHeight + mainAxisSpacing);
-    final rowBottom = rowTop + cellHeight;
+    final geometry = _gridGeometry;
+    if (geometry == null) return;
+
+    final rowTop = gridLineStart(geometry, index);
+    final rowBottom = rowTop + geometry.lineExtent;
     final position = _scrollController.position;
     final viewportH = position.viewportDimension;
     final current = position.pixels;
-    const topPad = 8.0;
+    final topPad = geometry.leadingPad;
     const bottomPad = 52.0;
     double target = current;
     if (rowTop - topPad < current) {
@@ -324,9 +328,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       } else {
         final geometry = _gridGeometry;
         if (geometry == null) return;
-        final line = targetIndex ~/ geometry.perLine;
-        targetOffset = geometry.leadingPad +
-            line * (geometry.lineExtent + geometry.lineSpacing);
+        targetOffset = gridLineStart(geometry, targetIndex);
       }
 
       // Slivers report maxScrollExtent lazily as children are laid out, so a
@@ -1229,7 +1231,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         sectionCount: categoryItems.length,
                         crossAxisCount: crossAxisCount,
                         cellWidth: cellWidth,
-                        childAspectRatio: childAspectRatio,
                         itemAspectRatio: itemAspectRatio,
                         focusColor: focusColor,
                         isNeon: isNeon,
@@ -1293,7 +1294,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     sectionCount: itemsToDisplay.length,
                     crossAxisCount: crossAxisCount,
                     cellWidth: cellWidth,
-                    childAspectRatio: childAspectRatio,
                     itemAspectRatio: itemAspectRatio,
                     focusColor: focusColor,
                     isNeon: isNeon,
@@ -1348,7 +1348,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required int sectionCount,
     required int crossAxisCount,
     required double cellWidth,
-    required double childAspectRatio,
     required double itemAspectRatio,
     required Color focusColor,
     required bool isNeon,
@@ -1388,12 +1387,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 if (onCardFocused != null) {
                   onCardFocused();
                 } else if (revealContext == null) {
-                  _scrollToGridRow(
-                    index: positionInSection,
-                    crossAxisCount: crossAxisCount,
-                    cellHeight: cellWidth / childAspectRatio,
-                    mainAxisSpacing: 8.0,
-                  );
+                  _scrollToGridRow(positionInSection);
                 } else if (revealContext.mounted) {
                   unawaited(
                     Scrollable.ensureVisible(
@@ -1512,7 +1506,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             items: catItems,
             focusIndexOffset: focusOffsets[idx],
             cardWidth: cardWidth,
-            rowCardHeight: rowCardHeight,
             rowContainerHeight: rowContainerHeight,
             gridPadding: gridPadding,
             focusColor: focusColor,
@@ -3397,7 +3390,6 @@ class _GroupedCategoryRow extends StatefulWidget {
   /// a distinct index or two rows end up sharing a node.
   final int focusIndexOffset;
   final double cardWidth;
-  final double rowCardHeight;
   final double rowContainerHeight;
   final double gridPadding;
   final Color focusColor;
@@ -3411,7 +3403,6 @@ class _GroupedCategoryRow extends StatefulWidget {
     required int sectionCount,
     required int crossAxisCount,
     required double cellWidth,
-    required double childAspectRatio,
     required double itemAspectRatio,
     required Color focusColor,
     required bool isNeon,
@@ -3427,7 +3418,6 @@ class _GroupedCategoryRow extends StatefulWidget {
     required this.items,
     required this.focusIndexOffset,
     required this.cardWidth,
-    required this.rowCardHeight,
     required this.rowContainerHeight,
     required this.gridPadding,
     required this.focusColor,
@@ -3515,7 +3505,6 @@ class _GroupedCategoryRowState extends State<_GroupedCategoryRow> {
                     sectionCount: widget.items.length,
                     crossAxisCount: widget.items.length,
                     cellWidth: widget.cardWidth,
-                    childAspectRatio: widget.cardWidth / widget.rowCardHeight,
                     itemAspectRatio: itemAspectRatio,
                     focusColor: widget.focusColor,
                     isNeon: widget.isNeon,
