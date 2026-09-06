@@ -8,12 +8,14 @@ class BouncingBox extends StatefulWidget {
     super.key,
     required this.childWidth,
     required this.childHeight,
+    this.speedMultiplier = 1.0,
     this.child,
     this.builder,
   }) : assert(child != null || builder != null, 'Either child or builder must be provided');
 
   final double childWidth;
   final double childHeight;
+  final double speedMultiplier;
   final Widget? child;
   final Widget Function(BuildContext context, bool movingLeft)? builder;
 
@@ -57,8 +59,8 @@ class _BouncingBoxState extends State<BouncingBox>
       return;
     }
     setState(() {
-      _x += _dx * _speed * dt;
-      _y += _dy * _speed * dt;
+      _x += _dx * _speed * widget.speedMultiplier * dt;
+      _y += _dy * _speed * widget.speedMultiplier * dt;
     });
   }
 

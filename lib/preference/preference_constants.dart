@@ -769,15 +769,38 @@ enum ScreensaverBackdrop {
 }
 
 enum ScreensaverComponent {
+  none,
   moonfinLogo,
   clock,
   runner,
 }
 
 enum ScreensaverMovement {
-  off,
   staticCorner,
-  bouncing,
+  slow,
+  moderate,
+  fast,
+  ultra,
+}
+
+extension ScreensaverMovementX on ScreensaverMovement {
+  bool get isBouncing => this != ScreensaverMovement.staticCorner;
+
+  double get speedMultiplier => switch (this) {
+        ScreensaverMovement.staticCorner => 0.0,
+        ScreensaverMovement.slow => 0.45,
+        ScreensaverMovement.moderate => 0.70,
+        ScreensaverMovement.fast => 1.0,
+        ScreensaverMovement.ultra => 1.60,
+      };
+
+  LoadingAnimationSpeed get loadingSpeed => switch (this) {
+        ScreensaverMovement.staticCorner => LoadingAnimationSpeed.fast,
+        ScreensaverMovement.slow => LoadingAnimationSpeed.slow,
+        ScreensaverMovement.moderate => LoadingAnimationSpeed.moderate,
+        ScreensaverMovement.fast => LoadingAnimationSpeed.fast,
+        ScreensaverMovement.ultra => LoadingAnimationSpeed.ultra,
+      };
 }
 
 enum ScreensaverClockMode { off, staticCorner, bouncing }

@@ -14,9 +14,12 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
-import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_section_header.dart';
+import '../../screensaver/bouncing_box.dart';
+import '../../screensaver/screensaver_gradient_backdrops.dart';
+import '../../screensaver/screensaver_view.dart';
+import '../../widgets/playback/loading_animation_widget.dart';
 import 'settings_app_bar.dart';
 
 class ScreensaverSettingsScreen extends StatefulWidget {
@@ -31,31 +34,7 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
   static const _collectionFetchLimit = 100;
 
   final _prefs = GetIt.instance<UserPreferences>();
-  late final PreferenceBinding<bool> _enabledBinding;
-  late final PreferenceBinding<ScreensaverBackdrop> _backdropBinding;
-
   bool _selectorOpen = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final store = GetIt.instance<PreferenceStore>();
-    _enabledBinding = PreferenceBinding(
-      store,
-      UserPreferences.screensaverEnabled,
-    );
-    _backdropBinding = PreferenceBinding(
-      store,
-      UserPreferences.screensaverBackdrop,
-    );
-  }
-
-  @override
-  void dispose() {
-    _enabledBinding.dispose();
-    _backdropBinding.dispose();
-    super.dispose();
-  }
 
   List<String> _splitCsv(Preference<String> pref) {
     return _prefs.get(pref).split(',').where((s) => s.isNotEmpty).toList();
@@ -335,181 +314,373 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final enabled = _prefs.get(UserPreferences.screensaverEnabled);
+    final backdrop = _prefs.get(UserPreferences.screensaverBackdrop);
+    final component = _prefs.get(UserPreferences.screensaverComponent);
+    final movement = _prefs.get(UserPreferences.screensaverMovement);
+    final dimming = _prefs.get(UserPreferences.screensaverDimming);
+
     return withCleanSettingsTypography(
       context,
       Scaffold(
         appBar: buildSettingsAppBar(context, Text(l10n.screensaver)),
-        body: ListenableBuilder(
-          listenable: Listenable.merge([_enabledBinding, _backdropBinding]),
-          builder: (context, _) {
-            final enabled = _enabledBinding.value;
-            final backdrop = _backdropBinding.value;
-
-            return ListView(
+        body: ListView(
+          children: [
+            // 1. General Settings
+            SettingsSectionHeader(l10n.screensaverGeneralSettings),
+            adaptiveListSection(
               children: [
-                // 1. General Settings
-                SettingsSectionHeader(l10n.screensaverGeneralSettings),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.screensaverEnabled,
-                      title: l10n.inAppScreensaver,
-                      subtitle: l10n.enableBuiltInScreensaver,
-                      icon: Icons.wallpaper,
-                    ),
-                    if (enabled) ...[
-                      EnumPreferenceTile<ScreensaverTimeout>(
-                        preference: UserPreferences.screensaverTimeout,
-                        title: l10n.timeout,
-                        icon: Icons.timer,
-                        labelOf: (value) => l10n.minutesShort(value.minutes),
-                      ),
-                      SliderPreferenceTile(
-                        preference: UserPreferences.screensaverDimming,
-                        title: l10n.dimmingLevel,
-                        icon: Icons.brightness_6,
-                        min: 0,
-                        max: 90,
-                        divisions: 9,
-                        labelOf: (value) => value == 0 ? l10n.off : '$value%',
-                      ),
-                    ],
-                  ],
+                SwitchPreferenceTile(
+                  preference: UserPreferences.screensaverEnabled,
+                  title: l10n.inAppScreensaver,
+                  subtitle: l10n.enableBuiltInScreensaver,
+                  icon: Icons.wallpaper,
+                  onChanged: () => setState(() {}),
                 ),
-
-                // 2. Visual Components
                 if (enabled) ...[
-                  SettingsSectionHeader(l10n.screensaverVisualComponents),
-                  adaptiveListSection(
-                    children: [
-                      EnumPreferenceTile<ScreensaverBackdrop>(
-                        preference: UserPreferences.screensaverBackdrop,
-                        title: l10n.screensaverBackdrop,
-                        icon: Icons.auto_awesome,
-                        labelOf: (value) => switch (value) {
-                          ScreensaverBackdrop.library => l10n.libraryArt,
-                          ScreensaverBackdrop.black =>
-                            l10n.screensaverBackdropBlack,
-                          ScreensaverBackdrop.synthwave =>
-                            l10n.screensaverBackdropSynthwave,
-                          ScreensaverBackdrop.calm =>
-                            l10n.screensaverBackdropCalm,
-                          ScreensaverBackdrop.neonPulse =>
-                            l10n.screensaverBackdropNeonPulse,
-                          ScreensaverBackdrop.aurora =>
-                            l10n.screensaverBackdropAurora,
-                        },
-                      ),
-                      EnumPreferenceTile<ScreensaverComponent>(
-                        preference: UserPreferences.screensaverComponent,
-                        title: l10n.screensaverAdditionalComponent,
-                        icon: Icons.widgets_outlined,
-                        labelOf: (value) => switch (value) {
-                          ScreensaverComponent.moonfinLogo =>
-                            l10n.screensaverComponentMoonfinLogo,
-                          ScreensaverComponent.clock => l10n.clock,
-                          ScreensaverComponent.runner =>
-                            l10n.screensaverComponentRunner,
-                        },
-                      ),
-                      EnumPreferenceTile<ScreensaverMovement>(
-                        preference: UserPreferences.screensaverMovement,
-                        title: l10n.screensaverComponentMovement,
-                        icon: Icons.animation,
-                        labelOf: (value) => switch (value) {
-                          ScreensaverMovement.off => l10n.off,
-                          ScreensaverMovement.staticCorner =>
-                            l10n.clockModeStatic,
-                          ScreensaverMovement.bouncing =>
-                            l10n.clockModeBouncing,
-                        },
-                      ),
-                    ],
+                  EnumPreferenceTile<ScreensaverTimeout>(
+                    preference: UserPreferences.screensaverTimeout,
+                    title: l10n.timeout,
+                    icon: Icons.timer,
+                    labelOf: (value) => l10n.minutesShort(value.minutes),
                   ),
-                ],
-
-                // 3. Library Content
-                if (enabled && backdrop == ScreensaverBackdrop.library) ...[
-                  SettingsSectionHeader(l10n.screensaverLibraryContent),
-                  adaptiveListSection(
-                    children: [
-                      StringPickerPreferenceTile(
-                        preference: UserPreferences.screensaverContentType,
-                        title: l10n.contentType,
-                        icon: Icons.category,
-                        options: {
-                          'both': l10n.moviesAndTvShows,
-                          'movies': l10n.moviesOnly,
-                          'tvshows': l10n.tvShowsOnly,
-                        },
-                      ),
-                      _ScreensaverActionTile(
-                        leading: Image.asset(
-                          'assets/icons/clapperboard.png',
-                          width: 24,
-                          height: 24,
-                          color: AppColorScheme.onSurface,
-                          fit: BoxFit.contain,
-                        ),
-                        title: Text(l10n.sourceLibraries),
-                        subtitle: Text(
-                          _sourceSubtitle(
-                            UserPreferences.screensaverLibraryIds,
-                            l10n.noneSelected,
-                            l10n,
-                          ),
-                        ),
-                        onTap: _showLibrarySelector,
-                      ),
-                      _ScreensaverActionTile(
-                        leading: const Icon(Icons.collections_bookmark),
-                        title: Text(l10n.sourceCollections),
-                        subtitle: Text(
-                          _sourceSubtitle(
-                            UserPreferences.screensaverCollectionIds,
-                            l10n.noneSelected,
-                            l10n,
-                          ),
-                        ),
-                        onTap: _showCollectionSelector,
-                      ),
-                      _ScreensaverActionTile(
-                        leading: const Icon(Icons.label_off),
-                        title: Text(l10n.excludedGenres),
-                        subtitle: Text(
-                          _sourceSubtitle(
-                            UserPreferences.screensaverExcludedGenres,
-                            l10n.noneExcluded,
-                            l10n,
-                          ),
-                        ),
-                        onTap: _showGenreSelector,
-                      ),
-                      StringPickerPreferenceTile(
-                        preference: UserPreferences.screensaverMaxAgeRating,
-                        title: l10n.maxAgeRating,
-                        icon: Icons.shield,
-                        options: {
-                          'any': l10n.any,
-                          '0': l10n.agePlusValue(0),
-                          '6': l10n.agePlusValue(6),
-                          '12': l10n.agePlusValue(12),
-                          '16': l10n.agePlusValue(16),
-                          '18': l10n.agePlusValue(18),
-                        },
-                      ),
-                      SwitchPreferenceTile(
-                        preference: UserPreferences.screensaverRequireRating,
-                        title: l10n.requireAgeRating,
-                        subtitle: l10n.onlyShowRatedContent,
-                        icon: Icons.verified_user,
-                      ),
-                    ],
+                  SliderPreferenceTile(
+                    preference: UserPreferences.screensaverDimming,
+                    title: l10n.dimmingLevel,
+                    icon: Icons.brightness_6,
+                    min: 0,
+                    max: 90,
+                    divisions: 9,
+                    onChangeEnd: () => setState(() {}),
+                    labelOf: (value) => value == 0 ? l10n.off : '$value%',
                   ),
                 ],
               ],
-            );
+            ),
+
+            // 2. Visual Components
+            if (enabled) ...[
+              SettingsSectionHeader(l10n.screensaverVisualComponents),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: _buildPreviewWindow(
+                  context,
+                  backdrop: backdrop,
+                  component: component,
+                  movement: movement,
+                  dimming: dimming,
+                ),
+              ),
+              adaptiveListSection(
+                children: [
+                  EnumPreferenceTile<ScreensaverBackdrop>(
+                    preference: UserPreferences.screensaverBackdrop,
+                    title: l10n.screensaverBackdrop,
+                    icon: Icons.auto_awesome,
+                    onChanged: () => setState(() {}),
+                    labelOf: (value) => switch (value) {
+                      ScreensaverBackdrop.library => l10n.libraryArt,
+                      ScreensaverBackdrop.black =>
+                        l10n.screensaverBackdropBlack,
+                      ScreensaverBackdrop.synthwave =>
+                        l10n.screensaverBackdropSynthwave,
+                      ScreensaverBackdrop.calm =>
+                        l10n.screensaverBackdropCalm,
+                      ScreensaverBackdrop.neonPulse =>
+                        l10n.screensaverBackdropNeonPulse,
+                      ScreensaverBackdrop.aurora =>
+                        l10n.screensaverBackdropAurora,
+                    },
+                  ),
+                  EnumPreferenceTile<ScreensaverComponent>(
+                    preference: UserPreferences.screensaverComponent,
+                    title: l10n.screensaverAdditionalComponent,
+                    icon: Icons.widgets_outlined,
+                    onChanged: () => setState(() {}),
+                    labelOf: (value) => switch (value) {
+                      ScreensaverComponent.none => l10n.none,
+                      ScreensaverComponent.moonfinLogo =>
+                        l10n.screensaverComponentMoonfinLogo,
+                      ScreensaverComponent.clock => l10n.clock,
+                      ScreensaverComponent.runner =>
+                        l10n.screensaverComponentRunner,
+                    },
+                  ),
+                  if (component != ScreensaverComponent.none)
+                    EnumPreferenceTile<ScreensaverMovement>(
+                      preference: UserPreferences.screensaverMovement,
+                      title: l10n.screensaverComponentMovement,
+                      icon: Icons.speed_rounded,
+                      onChanged: () => setState(() {}),
+                      labelOf: (value) => switch (value) {
+                        ScreensaverMovement.staticCorner =>
+                          l10n.clockModeStatic,
+                        ScreensaverMovement.slow =>
+                          l10n.loadingAnimationSpeedSlow,
+                        ScreensaverMovement.moderate =>
+                          l10n.loadingAnimationSpeedModerate,
+                        ScreensaverMovement.fast =>
+                          l10n.loadingAnimationSpeedFast,
+                        ScreensaverMovement.ultra =>
+                          l10n.loadingAnimationSpeedUltra,
+                      },
+                    ),
+                ],
+              ),
+            ],
+
+            // 3. Library Content
+            if (enabled && backdrop == ScreensaverBackdrop.library) ...[
+              SettingsSectionHeader(l10n.screensaverLibraryContent),
+              adaptiveListSection(
+                children: [
+                  StringPickerPreferenceTile(
+                    preference: UserPreferences.screensaverContentType,
+                    title: l10n.contentType,
+                    icon: Icons.category,
+                    options: {
+                      'both': l10n.moviesAndTvShows,
+                      'movies': l10n.moviesOnly,
+                      'tvshows': l10n.tvShowsOnly,
+                    },
+                  ),
+                  _ScreensaverActionTile(
+                    icon: const ImageIcon(
+                      AssetImage('assets/icons/clapperboard.png'),
+                    ),
+                    title: Text(l10n.sourceLibraries),
+                    subtitle: Text(
+                      _sourceSubtitle(
+                        UserPreferences.screensaverLibraryIds,
+                        l10n.noneSelected,
+                        l10n,
+                      ),
+                    ),
+                    onTap: _showLibrarySelector,
+                  ),
+                  _ScreensaverActionTile(
+                    icon: const Icon(Icons.collections_bookmark),
+                    title: Text(l10n.sourceCollections),
+                    subtitle: Text(
+                      _sourceSubtitle(
+                        UserPreferences.screensaverCollectionIds,
+                        l10n.noneSelected,
+                        l10n,
+                      ),
+                    ),
+                    onTap: _showCollectionSelector,
+                  ),
+                  _ScreensaverActionTile(
+                    icon: const Icon(Icons.label_off),
+                    title: Text(l10n.excludedGenres),
+                    subtitle: Text(
+                      _sourceSubtitle(
+                        UserPreferences.screensaverExcludedGenres,
+                        l10n.noneExcluded,
+                        l10n,
+                      ),
+                    ),
+                    onTap: _showGenreSelector,
+                  ),
+                  StringPickerPreferenceTile(
+                    preference: UserPreferences.screensaverMaxAgeRating,
+                    title: l10n.maxAgeRating,
+                    icon: Icons.shield,
+                    options: {
+                      'any': l10n.any,
+                      '0': l10n.agePlusValue(0),
+                      '6': l10n.agePlusValue(6),
+                      '12': l10n.agePlusValue(12),
+                      '16': l10n.agePlusValue(16),
+                      '18': l10n.agePlusValue(18),
+                    },
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.screensaverRequireRating,
+                    title: l10n.requireAgeRating,
+                    subtitle: l10n.onlyShowRatedContent,
+                    icon: Icons.verified_user,
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewWindow(
+    BuildContext context, {
+    required ScreensaverBackdrop backdrop,
+    required ScreensaverComponent component,
+    required ScreensaverMovement movement,
+    required int dimming,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    Widget backdropLayer;
+    switch (backdrop) {
+      case ScreensaverBackdrop.library:
+        backdropLayer = Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.0,
+                  colors: [
+                    Color(0xFF1E293B),
+                    Color(0xFF0F172A),
+                    Color(0xFF050811),
+                  ],
+                ),
+              ),
+            ),
+            Center(
+              child: Opacity(
+                opacity: 0.25,
+                child: Icon(
+                  Icons.movie_outlined,
+                  size: 64,
+                  color: AppColorScheme.accent,
+                ),
+              ),
+            ),
+          ],
+        );
+      case ScreensaverBackdrop.black:
+        backdropLayer = const ColoredBox(color: Colors.black);
+      case ScreensaverBackdrop.synthwave:
+      case ScreensaverBackdrop.calm:
+      case ScreensaverBackdrop.neonPulse:
+      case ScreensaverBackdrop.aurora:
+        backdropLayer = AnimatedGradientBackdrop(backdrop: backdrop);
+    }
+
+    Widget? componentWidget;
+    double compWidth = 0;
+    double compHeight = 0;
+
+    switch (component) {
+      case ScreensaverComponent.none:
+        componentWidget = null;
+      case ScreensaverComponent.moonfinLogo:
+        compWidth = 100;
+        compHeight = 44;
+        componentWidget = Image.asset(
+          'assets/images/logo_and_text.png',
+          width: compWidth,
+          height: compHeight,
+          fit: BoxFit.contain,
+        );
+      case ScreensaverComponent.clock:
+        compWidth = 80;
+        compHeight = 26;
+        componentWidget = ScreensaverClock(
+          opacity: 1.0,
+          use24Hour: _prefs.get(UserPreferences.use24HourClock),
+          fontSize: 16,
+        );
+      case ScreensaverComponent.runner:
+        compWidth = 44;
+        compHeight = 44;
+        componentWidget = RunnerAnimation(
+          size: 40,
+          speed: movement.loadingSpeed,
+        );
+    }
+
+    Widget? componentLayer;
+    if (componentWidget != null) {
+      if (movement == ScreensaverMovement.staticCorner) {
+        componentLayer = Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(
+              width: compWidth,
+              height: compHeight,
+              child: componentWidget,
+            ),
+          ),
+        );
+      } else {
+        componentLayer = BouncingBox(
+          childWidth: compWidth,
+          childHeight: compHeight,
+          speedMultiplier: movement.speedMultiplier,
+          builder: (context, movingLeft) {
+            if (component == ScreensaverComponent.runner) {
+              return RunnerAnimation(
+                size: 40,
+                flipHorizontal: movingLeft,
+                speed: movement.loadingSpeed,
+              );
+            }
+            return componentWidget!;
           },
+        );
+      }
+    }
+
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: theme.colorScheme.outline.withAlpha(40),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(120),
+            blurRadius: 16.0,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            backdropLayer,
+            if (dimming > 0)
+              ColoredBox(
+                color: Colors.black.withValues(alpha: dimming / 100),
+              ),
+            ?componentLayer,
+            Positioned(
+              top: 10,
+              left: 14,
+              child: Row(
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF00A4DC),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    l10n.loadingAnimationPreview.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                      color: Colors.white.withAlpha(150),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -517,13 +688,13 @@ class _ScreensaverSettingsScreenState extends State<ScreensaverSettingsScreen> {
 }
 
 class _ScreensaverActionTile extends StatelessWidget {
-  final Widget leading;
+  final Widget icon;
   final Widget title;
   final Widget subtitle;
   final VoidCallback? onTap;
 
   const _ScreensaverActionTile({
-    required this.leading,
+    required this.icon,
     required this.title,
     required this.subtitle,
     this.onTap,
@@ -532,10 +703,17 @@ class _ScreensaverActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TvFocusHighlight(
-      builder: (ctx, _) => ListTile(
+      builder: (ctx, focused) => ListTile(
         focusColor: Colors.transparent,
         hoverColor: Colors.transparent,
-        leading: leading,
+        leading: buildSettingsLeadingIconShell(
+          context,
+          icon: icon,
+          focused: focused,
+          iconColor: focused && settingsTileInvertsOnFocus
+              ? AppColors.black.withValues(alpha: 0.54)
+              : AppColorScheme.onSurface.withValues(alpha: 0.78),
+        ),
         title: title,
         subtitle: subtitle,
         onTap: onTap,

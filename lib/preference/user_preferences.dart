@@ -191,7 +191,7 @@ class UserPreferences extends ChangeNotifier {
       if (legacyMode == ScreensaverMode.logo) {
         _store.set(screensaverBackdrop, ScreensaverBackdrop.black);
         _store.set(screensaverComponent, ScreensaverComponent.moonfinLogo);
-        _store.set(screensaverMovement, ScreensaverMovement.bouncing);
+        _store.set(screensaverMovement, ScreensaverMovement.fast);
       } else if (legacyMode == ScreensaverMode.library) {
         _store.set(screensaverBackdrop, ScreensaverBackdrop.library);
       }
@@ -200,10 +200,13 @@ class UserPreferences extends ChangeNotifier {
       final legacyClock = _store.get(screensaverClockMode);
       if (legacyClock == ScreensaverClockMode.bouncing) {
         _store.set(screensaverComponent, ScreensaverComponent.clock);
-        _store.set(screensaverMovement, ScreensaverMovement.bouncing);
+        _store.set(screensaverMovement, ScreensaverMovement.fast);
       } else if (legacyClock == ScreensaverClockMode.staticCorner) {
         _store.set(screensaverComponent, ScreensaverComponent.clock);
         _store.set(screensaverMovement, ScreensaverMovement.staticCorner);
+      } else if (legacyClock == ScreensaverClockMode.off) {
+        _store.set(screensaverComponent, ScreensaverComponent.none);
+        _store.set(screensaverMovement, ScreensaverMovement.fast);
       }
     }
   }
@@ -1584,13 +1587,13 @@ class UserPreferences extends ChangeNotifier {
 
   static final screensaverComponent = EnumPreference(
     key: 'pref_screensaver_component',
-    defaultValue: ScreensaverComponent.moonfinLogo,
+    defaultValue: ScreensaverComponent.none,
     values: ScreensaverComponent.values,
   );
 
   static final screensaverMovement = EnumPreference(
     key: 'pref_screensaver_movement',
-    defaultValue: ScreensaverMovement.off,
+    defaultValue: ScreensaverMovement.fast,
     values: ScreensaverMovement.values,
   );
 

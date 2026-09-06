@@ -132,7 +132,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
             ColoredBox(color: Colors.black.withValues(alpha: dim / 100)),
 
           // Additional Component layer
-          if (movement != ScreensaverMovement.off)
+          if (component != ScreensaverComponent.none)
             _buildAdditionalComponent(
               component: component,
               movement: movement,
@@ -148,7 +148,12 @@ class _ScreensaverViewState extends State<ScreensaverView> {
     required ScreensaverMovement movement,
     required int dim,
   }) {
+    if (component == ScreensaverComponent.none) {
+      return const SizedBox.shrink();
+    }
+
     final (double width, double height) = switch (component) {
+      ScreensaverComponent.none => (0.0, 0.0),
       ScreensaverComponent.moonfinLogo => (320.0, 140.0),
       ScreensaverComponent.clock => (200.0, 56.0),
       ScreensaverComponent.runner => (120.0, 120.0),
@@ -156,13 +161,15 @@ class _ScreensaverViewState extends State<ScreensaverView> {
 
     Widget renderContent({required bool movingLeft}) {
       switch (component) {
+        case ScreensaverComponent.none:
+          return const SizedBox.shrink();
         case ScreensaverComponent.moonfinLogo:
           return Image.asset(
             'assets/images/logo_and_text.png',
             fit: BoxFit.contain,
           );
         case ScreensaverComponent.clock:
-          return _ScreensaverClock(
+          return ScreensaverClock(
             opacity: 1 - (dim / 100) * 0.7,
             use24Hour: _prefs.get(UserPreferences.use24HourClock),
           );
@@ -171,16 +178,17 @@ class _ScreensaverViewState extends State<ScreensaverView> {
             child: RunnerAnimation(
               size: 96,
               flipHorizontal: movingLeft,
-              speed: LoadingAnimationSpeed.fast,
+              speed: movement.loadingSpeed,
             ),
           );
       }
     }
 
-    if (movement == ScreensaverMovement.bouncing) {
+    if (movement.isBouncing) {
       return BouncingBox(
         childWidth: width,
         childHeight: height,
+        speedMultiplier: movement.speedMultiplier,
         builder: (context, movingLeft) => renderContent(movingLeft: movingLeft),
       );
     }
@@ -290,20 +298,23 @@ class _SlideTitle extends StatelessWidget {
   }
 }
 
-class _ScreensaverClock extends StatefulWidget {
-  const _ScreensaverClock({
+class ScreensaverClock extends StatefulWidget {
+  const ScreensaverClock({
+    super.key,
     required this.opacity,
     required this.use24Hour,
+    this.fontSize = 32,
   });
 
   final double opacity;
   final bool use24Hour;
+  final double fontSize;
 
   @override
-  State<_ScreensaverClock> createState() => _ScreensaverClockState();
+  State<ScreensaverClock> createState() => _ScreensaverClockState();
 }
 
-class _ScreensaverClockState extends State<_ScreensaverClock> {
+class _ScreensaverClockState extends State<ScreensaverClock> {
   Timer? _timer;
 
   @override
@@ -327,7 +338,7 @@ class _ScreensaverClockState extends State<_ScreensaverClock> {
         formatClockTime(DateTime.now(), use24Hour: widget.use24Hour),
         style: TextStyle(
           color: Colors.white.withValues(alpha: widget.opacity),
-          fontSize: 32,
+          fontSize: widget.fontSize,
           fontWeight: FontWeight.w500,
           fontFeatures: const [FontFeature.tabularFigures()],
         ),

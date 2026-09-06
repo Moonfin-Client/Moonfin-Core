@@ -27,11 +27,11 @@ void main() {
       );
       expect(
         prefs.get(UserPreferences.screensaverComponent),
-        ScreensaverComponent.moonfinLogo,
+        ScreensaverComponent.none,
       );
       expect(
         prefs.get(UserPreferences.screensaverMovement),
-        ScreensaverMovement.off,
+        ScreensaverMovement.fast,
       );
       expect(prefs.get(UserPreferences.screensaverContentType), 'both');
       expect(prefs.get(UserPreferences.screensaverLibraryIds), '');
@@ -61,11 +61,11 @@ void main() {
       );
       expect(
         prefs.get(UserPreferences.screensaverMovement),
-        ScreensaverMovement.bouncing,
+        ScreensaverMovement.fast,
       );
     });
 
-    test('Migrates legacy ScreensaverClockMode.bouncing to clock component and bouncing movement', () async {
+    test('Migrates legacy ScreensaverClockMode.bouncing to clock component and fast movement', () async {
       SharedPreferences.setMockInitialValues({
         'pref_screensaver_mode': 'library',
         'pref_screensaver_clock_mode': 'bouncing',
@@ -84,7 +84,7 @@ void main() {
       );
       expect(
         prefs.get(UserPreferences.screensaverMovement),
-        ScreensaverMovement.bouncing,
+        ScreensaverMovement.fast,
       );
     });
 
@@ -228,10 +228,12 @@ void main() {
           home: ScreensaverSettingsScreen(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       await tester.drag(find.byType(ListView), const Offset(0, 500));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.text('General Settings'), findsOneWidget);
       expect(find.text('In-App Screensaver'), findsOneWidget);
@@ -241,7 +243,6 @@ void main() {
       expect(find.text('Visual Components'), findsOneWidget);
       expect(find.text('Backdrop'), findsOneWidget);
       expect(find.text('Additional Component'), findsOneWidget);
-      expect(find.text('Component Movement'), findsOneWidget);
 
       expect(find.text('Library Content'), findsOneWidget);
       expect(find.text('Content Type'), findsOneWidget);
@@ -268,7 +269,8 @@ void main() {
           home: ScreensaverSettingsScreen(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.text('General Settings'), findsOneWidget);
       expect(find.text('Visual Components'), findsOneWidget);
@@ -276,6 +278,61 @@ void main() {
       // Library Content section should be hidden for synthwave backdrop
       expect(find.text('Library Content'), findsNothing);
       expect(find.text('Source Libraries'), findsNothing);
+    });
+
+    testWidgets('renders preview window in Visual Components when screensaver is enabled', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.synthwave);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('PREVIEW'), findsOneWidget);
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+    });
+
+    testWidgets('interactive toggle of In-App Screensaver hides and shows settings immediately', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Visual Components'), findsOneWidget);
+
+      // Toggle the In-App Screensaver switch to false
+      final switchTile = tester.widget<SwitchListTile>(find.byType(SwitchListTile).first);
+      switchTile.onChanged!(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      // Everything below should immediately hide
+      expect(find.text('Visual Components'), findsNothing);
+      expect(find.text('Timeout'), findsNothing);
+      expect(find.text('Dimming Level'), findsNothing);
     });
   });
 
@@ -315,10 +372,10 @@ void main() {
       expect(find.byType(BouncingBox), findsNothing);
     });
 
-    testWidgets('renders BouncingBox when movement is bouncing', (tester) async {
+    testWidgets('renders BouncingBox when movement is bouncing (e.g. fast)', (tester) async {
       prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.calm);
       prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
-      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.bouncing);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.fast);
 
       await tester.pumpWidget(
         const MaterialApp(
@@ -332,9 +389,9 @@ void main() {
       expect(find.byType(BouncingBox), findsOneWidget);
     });
 
-    testWidgets('renders no additional component when movement is off', (tester) async {
+    testWidgets('renders no additional component when component is none', (tester) async {
       prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.black);
-      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.off);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.none);
 
       await tester.pumpWidget(
         const MaterialApp(

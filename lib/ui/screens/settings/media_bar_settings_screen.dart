@@ -412,12 +412,8 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
             adaptiveListSection(
               children: [
                 _MediaBarActionTile(
-                  leading: Image.asset(
-                    'assets/icons/clapperboard.png',
-                    width: 24,
-                    height: 24,
-                    color: AppColorScheme.onSurface,
-                    fit: BoxFit.contain,
+                  icon: const ImageIcon(
+                    AssetImage('assets/icons/clapperboard.png'),
                   ),
                   title: Text(l10n.sourceLibraries),
                   subtitle: Text(
@@ -430,7 +426,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   onTap: _showLibrarySelector,
                 ),
                 _MediaBarActionTile(
-                  leading: const Icon(Icons.collections_bookmark),
+                  icon: const Icon(Icons.collections_bookmark),
                   title: Text(l10n.sourceCollections),
                   subtitle: Text(
                     _sourceSubtitle(
@@ -442,7 +438,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                   onTap: _showCollectionSelector,
                 ),
                 _MediaBarActionTile(
-                  leading: const Icon(Icons.label_off),
+                  icon: const Icon(Icons.label_off),
                   title: Text(l10n.excludedGenres),
                   subtitle: Text(
                     _sourceSubtitle(
@@ -487,13 +483,13 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
 }
 
 class _MediaBarActionTile extends StatelessWidget {
-  final Widget leading;
+  final Widget icon;
   final Widget title;
   final Widget subtitle;
   final VoidCallback? onTap;
 
   const _MediaBarActionTile({
-    required this.leading,
+    required this.icon,
     required this.title,
     required this.subtitle,
     this.onTap,
@@ -502,10 +498,17 @@ class _MediaBarActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TvFocusHighlight(
-      builder: (ctx, _) => ListTile(
+      builder: (ctx, focused) => ListTile(
         focusColor: Colors.transparent,
         hoverColor: Colors.transparent,
-        leading: leading,
+        leading: buildSettingsLeadingIconShell(
+          context,
+          icon: icon,
+          focused: focused,
+          iconColor: focused && settingsTileInvertsOnFocus
+              ? AppColors.black.withValues(alpha: 0.54)
+              : AppColorScheme.onSurface.withValues(alpha: 0.78),
+        ),
         title: title,
         subtitle: subtitle,
         onTap: onTap,
