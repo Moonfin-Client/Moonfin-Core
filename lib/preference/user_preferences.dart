@@ -185,30 +185,39 @@ class UserPreferences extends ChangeNotifier {
     }
   }
 
+  // These are stored per server, and _adoptNewlyScopedPreferences has already
+  // moved them under the active scope and dropped the bare key by the time this
+  // runs. Reading the bare key would find nothing, and writing it would land
+  // where nothing reads.
   void _migrateScreensaverPreferences() {
-    if (_store.containsKey(screensaverMode.key) &&
-        !_store.containsKey(screensaverBackdrop.key)) {
-      final legacyMode = _store.get(screensaverMode);
+    final mode = getEffectivePreference(screensaverMode);
+    final clockMode = getEffectivePreference(screensaverClockMode);
+    final backdrop = getEffectivePreference(screensaverBackdrop);
+    final component = getEffectivePreference(screensaverComponent);
+    final movement = getEffectivePreference(screensaverMovement);
+
+    if (_store.containsKey(mode.key) && !_store.containsKey(backdrop.key)) {
+      final legacyMode = _store.get(mode);
       if (legacyMode == ScreensaverMode.logo) {
-        _store.set(screensaverBackdrop, ScreensaverBackdrop.black);
-        _store.set(screensaverComponent, ScreensaverComponent.moonfinLogo);
-        _store.set(screensaverMovement, ScreensaverMovement.fast);
+        _store.set(backdrop, ScreensaverBackdrop.black);
+        _store.set(component, ScreensaverComponent.moonfinLogo);
+        _store.set(movement, ScreensaverMovement.fast);
       } else if (legacyMode == ScreensaverMode.library) {
-        _store.set(screensaverBackdrop, ScreensaverBackdrop.library);
+        _store.set(backdrop, ScreensaverBackdrop.library);
       }
     }
-    if (_store.containsKey(screensaverClockMode.key) &&
-        !_store.containsKey(screensaverMovement.key)) {
-      final legacyClock = _store.get(screensaverClockMode);
+    if (_store.containsKey(clockMode.key) &&
+        !_store.containsKey(movement.key)) {
+      final legacyClock = _store.get(clockMode);
       if (legacyClock == ScreensaverClockMode.bouncing) {
-        _store.set(screensaverComponent, ScreensaverComponent.clock);
-        _store.set(screensaverMovement, ScreensaverMovement.fast);
+        _store.set(component, ScreensaverComponent.clock);
+        _store.set(movement, ScreensaverMovement.fast);
       } else if (legacyClock == ScreensaverClockMode.staticCorner) {
-        _store.set(screensaverComponent, ScreensaverComponent.clock);
-        _store.set(screensaverMovement, ScreensaverMovement.staticCorner);
+        _store.set(component, ScreensaverComponent.clock);
+        _store.set(movement, ScreensaverMovement.staticCorner);
       } else if (legacyClock == ScreensaverClockMode.off) {
-        _store.set(screensaverComponent, ScreensaverComponent.none);
-        _store.set(screensaverMovement, ScreensaverMovement.fast);
+        _store.set(component, ScreensaverComponent.none);
+        _store.set(movement, ScreensaverMovement.fast);
       }
     }
   }
@@ -337,7 +346,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_playlists_row_sort_order',
     'pref_recommendations_apply_parental_rating_cap',
     'pref_resume_last_queue_on_play',
-     'pref_screensaver_backdrop',
+    'pref_screensaver_backdrop',
     'pref_screensaver_clock_mode',
     'pref_screensaver_collection_ids',
     'pref_screensaver_component',

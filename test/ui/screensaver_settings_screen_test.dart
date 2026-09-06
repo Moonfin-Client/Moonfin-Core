@@ -124,7 +124,13 @@ void main() {
       );
 
       expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
-      expect(find.byType(DecoratedBox), findsWidgets);
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedGradientBackdrop),
+          matching: find.byType(CustomPaint),
+        ),
+        findsWidgets,
+      );
     });
 
     testWidgets('renders Neon Pulse backdrop with pulsating brightness', (tester) async {
@@ -139,7 +145,13 @@ void main() {
       );
 
       expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
-      expect(find.byType(DecoratedBox), findsWidgets);
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedGradientBackdrop),
+          matching: find.byType(CustomPaint),
+        ),
+        findsWidgets,
+      );
     });
 
     testWidgets('renders Calm backdrop', (tester) async {
@@ -548,6 +560,67 @@ void main() {
       expect(find.byType(AnimatedGradientBackdrop), findsNothing);
       expect(find.byType(BouncingBox), findsNothing);
       expect(find.byType(RunnerAnimation), findsNothing);
+    });
+  });
+
+  group('BouncingBox', () {
+    testWidgets('moves without rebuilding its child on every frame', (
+      tester,
+    ) async {
+      // The child is the whole screensaver component and this runs for hours,
+      // so the position must not drag a rebuild along behind it.
+      var builds = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BouncingBox(
+              childWidth: 40,
+              childHeight: 20,
+              builder: (context, movingLeft) {
+                builds++;
+                return const Text('COMPONENT');
+              },
+            ),
+          ),
+        ),
+      );
+
+      final finder = find.text('COMPONENT');
+      await tester.pump(const Duration(milliseconds: 16));
+      final startPos = tester.getTopLeft(finder);
+      final buildsAfterStart = builds;
+
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(tester.getTopLeft(finder), isNot(equals(startPos)));
+      expect(builds, buildsAfterStart);
+    });
+
+    testWidgets('a plain child still renders and moves', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: BouncingBox(
+              childWidth: 40,
+              childHeight: 20,
+              child: Text('COMPONENT'),
+            ),
+          ),
+        ),
+      );
+
+      final finder = find.text('COMPONENT');
+      await tester.pump(const Duration(milliseconds: 16));
+      final startPos = tester.getTopLeft(finder);
+
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(find.text('COMPONENT'), findsOneWidget);
+      expect(tester.getTopLeft(finder), isNot(equals(startPos)));
     });
   });
 }
