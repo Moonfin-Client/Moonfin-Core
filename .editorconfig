@@ -1,0 +1,24 @@
+	# Tell text editors what Moonfin's preferred coding styles are
+# https://EditorConfig.org
+
+# Unix-style newlines, with a newline ending every file, utf-8 charset
+# default to spaces not tabs, with 2 spaces for each indent
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# Native platform sources indent with four
+[*.{kt,kts,java,swift,gradle,xml,cpp,cc,h}]
+indent_size = 4
+
+# Xcode owns the formatting of these
+[*.{pbxproj,plist,entitlements,xcscheme,xcconfig}]
+indent_style = tab
+
+# Vendored upstream code keeps its own line endings
+[packages/flutter_inappwebview_windows/**]
+end_of_line = crlf
