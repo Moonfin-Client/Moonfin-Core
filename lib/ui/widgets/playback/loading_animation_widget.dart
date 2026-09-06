@@ -116,6 +116,13 @@ class _BouncingPositionWrapperState extends State<BouncingPositionWrapper>
   double _velX = 0.42;
   double _velY = 0.54;
 
+  // The position changes every frame but the facing only flips at a wall, so
+  // they are published separately. The child is the whole loading overlay,
+  // which re-reads its preferences every time it builds.
+  late final ValueNotifier<Alignment> _alignment =
+      ValueNotifier<Alignment>(Alignment(_alignX, _alignY));
+  late final ValueNotifier<bool> _movingLeft = ValueNotifier<bool>(_velX < 0);
+
   @override
   void initState() {
     super.initState();
@@ -125,11 +132,12 @@ class _BouncingPositionWrapperState extends State<BouncingPositionWrapper>
   @override
   void dispose() {
     _ticker.dispose();
+    _alignment.dispose();
+    _movingLeft.dispose();
     super.dispose();
   }
 
   void _onTick(Duration elapsed) {
-    if (!mounted) return;
     if (_lastElapsed == null) {
       _lastElapsed = elapsed;
       return;
@@ -140,37 +148,43 @@ class _BouncingPositionWrapperState extends State<BouncingPositionWrapper>
     final dt = rawDt.clamp(0.0, 0.05);
     final speedMult = widget.speed.multiplier;
 
-    setState(() {
-      _alignX += _velX * dt * speedMult;
-      _alignY += _velY * dt * speedMult;
+    _alignX += _velX * dt * speedMult;
+    _alignY += _velY * dt * speedMult;
 
-      if (_alignX >= 1.0) {
-        _alignX = 1.0;
-        _velX = -_velX.abs();
-      } else if (_alignX <= -1.0) {
-        _alignX = -1.0;
-        _velX = _velX.abs();
-      }
+    if (_alignX >= 1.0) {
+      _alignX = 1.0;
+      _velX = -_velX.abs();
+    } else if (_alignX <= -1.0) {
+      _alignX = -1.0;
+      _velX = _velX.abs();
+    }
 
-      if (_alignY >= 1.0) {
-        _alignY = 1.0;
-        _velY = -_velY.abs();
-      } else if (_alignY <= -1.0) {
-        _alignY = -1.0;
-        _velY = _velY.abs();
-      }
-    });
+    if (_alignY >= 1.0) {
+      _alignY = 1.0;
+      _velY = -_velY.abs();
+    } else if (_alignY <= -1.0) {
+      _alignY = -1.0;
+      _velY = _velY.abs();
+    }
+
+    _alignment.value = Alignment(_alignX, _alignY);
+    _movingLeft.value = _velX < 0;
   }
 
   @override
   Widget build(BuildContext context) {
-    final movingLeft = _velX < 0;
-
     return Padding(
       padding: widget.safePadding,
-      child: Align(
-        alignment: Alignment(_alignX, _alignY),
-        child: widget.builder(context, movingLeft),
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _movingLeft,
+        builder: (context, movingLeft, _) {
+          return ValueListenableBuilder<Alignment>(
+            valueListenable: _alignment,
+            builder: (context, alignment, child) =>
+                Align(alignment: alignment, child: child),
+            child: widget.builder(context, movingLeft),
+          );
+        },
       ),
     );
   }
@@ -707,46 +721,45 @@ class _MoonPhasesAnimationState extends State<MoonPhasesAnimation>
     return SizedBox(
       width: widget.size,
       height: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          return CustomPaint(
-            painter: _MoonPhasesPainter(
-              phase: _controller.value,
-              palette: widget.palette,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // None of the backdrop changes with the phase, so it rasterizes into
+          // its own layer once rather than reblurring the glow and the maria
+          // on every frame.
+          RepaintBoundary(
+            child: CustomPaint(
+              painter: _MoonBackdropPainter(palette: widget.palette),
             ),
-          );
-        },
+          ),
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return CustomPaint(
+                painter: _MoonPhasesPainter(
+                  phase: _controller.value,
+                  palette: widget.palette,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
-class _MoonPhasesPainter extends CustomPainter {
-  /// Progress through the 8 phases:
-  /// 0.00 = New Moon (all dark)
-  /// 0.125 = Waxing Crescent (lit sliver on right)
-  /// 0.25 = First Quarter (right half lit)
-  /// 0.375 = Waxing Gibbous (mostly lit on right)
-  /// 0.50 = Full Moon (completely lit)
-  /// 0.625 = Waning Gibbous (mostly lit on left)
-  /// 0.75 = Last Quarter (left half lit)
-  /// 0.875 = Waning Crescent (lit sliver on left)
-  /// 1.00 = New Moon (all dark)
-  final double phase;
+class _MoonBackdropPainter extends CustomPainter {
   final MoonPhasesPalette palette;
 
-  _MoonPhasesPainter({
-    required this.phase,
-    this.palette = MoonPhasesPalette.natural,
-  });
+  _MoonBackdropPainter({required this.palette});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width * 0.40;
 
-    // 1. Celestial ambient glow behind the moon
+    // Celestial ambient glow behind the moon
     final glowColor = switch (palette) {
       MoonPhasesPalette.natural => const Color(0xFF38BDF8),
       MoonPhasesPalette.moonfin => const Color(0xFF00A4DC),
@@ -757,7 +770,7 @@ class _MoonPhasesPainter extends CustomPainter {
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, radius * 0.40);
     canvas.drawCircle(center, radius * 1.12, glowPaint);
 
-    // 2. Base Dark Moon Disc (Night hemisphere)
+    // Base dark moon disc, the night hemisphere
     final darkBasePaint = Paint()
       ..shader = switch (palette) {
         MoonPhasesPalette.natural => RadialGradient(
@@ -794,8 +807,146 @@ class _MoonPhasesPainter extends CustomPainter {
     if (palette == MoonPhasesPalette.natural) {
       _drawLunarMaria(canvas, center, radius, isLit: false);
     }
+  }
 
-    // 3. Continuous Astronomical Terminator & Illuminated Surface
+  @override
+  bool shouldRepaint(covariant _MoonBackdropPainter oldDelegate) =>
+      oldDelegate.palette != palette;
+}
+
+/// Draws realistic, soft-blended lunar maria (basaltic plains) and ray craters
+/// distributed across actual lunar geography rather than clustered ovals.
+void _drawLunarMaria(
+  Canvas canvas,
+  Offset center,
+  double radius, {
+  required bool isLit,
+}) {
+  // Soft blurred painter so maria blend naturally like smoky lunar terrain
+  final Color mariaColor = isLit
+      ? const Color(0xFF64748B).withAlpha(55) // Soft, natural basalt shadow
+      : const Color(0xFF000000).withAlpha(90);
+
+  final mariaPaint = Paint()
+    ..color = mariaColor
+    ..maskFilter = MaskFilter.blur(BlurStyle.normal, radius * 0.12)
+    ..style = PaintingStyle.fill;
+
+  // Mare Imbrium (large round sea in northwest)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx - radius * 0.28, center.dy - radius * 0.30),
+      width: radius * 0.44,
+      height: radius * 0.38,
+    ),
+    mariaPaint,
+  );
+
+  // Oceanus Procellarum (vast soft western expanse)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx - radius * 0.45, center.dy + radius * 0.05),
+      width: radius * 0.38,
+      height: radius * 0.55,
+    ),
+    mariaPaint,
+  );
+
+  // Mare Serenitatis & Mare Tranquillitatis (sweeping northeast basins)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx + radius * 0.22, center.dy - radius * 0.24),
+      width: radius * 0.34,
+      height: radius * 0.30,
+    ),
+    mariaPaint,
+  );
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx + radius * 0.32, center.dy - radius * 0.02),
+      width: radius * 0.38,
+      height: radius * 0.32,
+    ),
+    mariaPaint,
+  );
+
+  // Mare Fecunditatis (southeast)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx + radius * 0.36, center.dy + radius * 0.22),
+      width: radius * 0.28,
+      height: radius * 0.24,
+    ),
+    mariaPaint,
+  );
+
+  // Mare Crisium (isolated crisp oval near far eastern limb)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx + radius * 0.54, center.dy - radius * 0.14),
+      width: radius * 0.18,
+      height: radius * 0.14,
+    ),
+    mariaPaint,
+  );
+
+  // Mare Nubium & Humorum (south-southwest)
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: Offset(center.dx - radius * 0.16, center.dy + radius * 0.34),
+      width: radius * 0.36,
+      height: radius * 0.30,
+    ),
+    mariaPaint,
+  );
+
+  // If lit, add realistic bright ray impact craters (Tycho & Copernicus)
+  if (isLit) {
+    final brightCorePaint = Paint()
+      ..color = Colors.white.withAlpha(210)
+      ..style = PaintingStyle.fill;
+
+    final rayPaint = Paint()
+      ..color = Colors.white.withAlpha(35)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = (0.8 * (radius / 50)).clamp(0.5, 1.5)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.0);
+
+    // Tycho crater in the south with radiating ejecta rays
+    final tycho = Offset(center.dx - radius * 0.08, center.dy + radius * 0.52);
+    canvas.drawCircle(tycho, radius * 0.035, brightCorePaint);
+    canvas.drawLine(tycho, Offset(tycho.dx - radius * 0.25, tycho.dy - radius * 0.20), rayPaint);
+    canvas.drawLine(tycho, Offset(tycho.dx + radius * 0.28, tycho.dy - radius * 0.22), rayPaint);
+    canvas.drawLine(tycho, Offset(tycho.dx - radius * 0.05, tycho.dy - radius * 0.35), rayPaint);
+
+    // Copernicus crater in mid-northwest
+    final copernicus = Offset(center.dx - radius * 0.22, center.dy - radius * 0.08);
+    canvas.drawCircle(copernicus, radius * 0.030, brightCorePaint);
+  }
+}
+
+class _MoonPhasesPainter extends CustomPainter {
+  /// Progress through the 8 phases:
+  /// 0.00 = New Moon (all dark)
+  /// 0.125 = Waxing Crescent (lit sliver on right)
+  /// 0.25 = First Quarter (right half lit)
+  /// 0.375 = Waxing Gibbous (mostly lit on right)
+  /// 0.50 = Full Moon (completely lit)
+  /// 0.625 = Waning Gibbous (mostly lit on left)
+  /// 0.75 = Last Quarter (left half lit)
+  /// 0.875 = Waning Crescent (lit sliver on left)
+  /// 1.00 = New Moon (all dark)
+  final double phase;
+  final MoonPhasesPalette palette;
+
+  _MoonPhasesPainter({required this.phase, required this.palette});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width * 0.40;
+
+    // Continuous astronomical terminator and illuminated surface
     // theta goes from 0 to 2*pi as phase goes from 0.0 to 1.0
     final theta = phase * 2 * math.pi;
     final cosT = math.cos(theta);
@@ -878,7 +1029,7 @@ class _MoonPhasesPainter extends CustomPainter {
       canvas.restore();
     }
 
-    // 4. Crisp outer rim highlight
+    // Crisp outer rim highlight
     final rimColor = switch (palette) {
       MoonPhasesPalette.natural => Colors.white.withAlpha(45),
       MoonPhasesPalette.moonfin => const Color(0xFF00A4DC).withAlpha(40),
@@ -889,117 +1040,6 @@ class _MoonPhasesPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = (1.4 * (size.width / 100)).clamp(0.8, 2.0);
     canvas.drawCircle(center, radius, rimPaint);
-  }
-
-  /// Draws realistic, soft-blended lunar maria (basaltic plains) and ray craters
-  /// distributed across actual lunar geography rather than clustered ovals.
-  void _drawLunarMaria(
-    Canvas canvas,
-    Offset center,
-    double radius, {
-    required bool isLit,
-  }) {
-    // Soft blurred painter so maria blend naturally like smoky lunar terrain
-    final Color mariaColor = isLit
-        ? const Color(0xFF64748B).withAlpha(55) // Soft, natural basalt shadow
-        : const Color(0xFF000000).withAlpha(90);
-
-    final mariaPaint = Paint()
-      ..color = mariaColor
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, radius * 0.12)
-      ..style = PaintingStyle.fill;
-
-    // Mare Imbrium (large round sea in northwest)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx - radius * 0.28, center.dy - radius * 0.30),
-        width: radius * 0.44,
-        height: radius * 0.38,
-      ),
-      mariaPaint,
-    );
-
-    // Oceanus Procellarum (vast soft western expanse)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx - radius * 0.45, center.dy + radius * 0.05),
-        width: radius * 0.38,
-        height: radius * 0.55,
-      ),
-      mariaPaint,
-    );
-
-    // Mare Serenitatis & Mare Tranquillitatis (sweeping northeast basins)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx + radius * 0.22, center.dy - radius * 0.24),
-        width: radius * 0.34,
-        height: radius * 0.30,
-      ),
-      mariaPaint,
-    );
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx + radius * 0.32, center.dy - radius * 0.02),
-        width: radius * 0.38,
-        height: radius * 0.32,
-      ),
-      mariaPaint,
-    );
-
-    // Mare Fecunditatis (southeast)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx + radius * 0.36, center.dy + radius * 0.22),
-        width: radius * 0.28,
-        height: radius * 0.24,
-      ),
-      mariaPaint,
-    );
-
-    // Mare Crisium (isolated crisp oval near far eastern limb)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx + radius * 0.54, center.dy - radius * 0.14),
-        width: radius * 0.18,
-        height: radius * 0.14,
-      ),
-      mariaPaint,
-    );
-
-    // Mare Nubium & Humorum (south-southwest)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(center.dx - radius * 0.16, center.dy + radius * 0.34),
-        width: radius * 0.36,
-        height: radius * 0.30,
-      ),
-      mariaPaint,
-    );
-
-    // If lit, add realistic bright ray impact craters (Tycho & Copernicus)
-    if (isLit) {
-      final brightCorePaint = Paint()
-        ..color = Colors.white.withAlpha(210)
-        ..style = PaintingStyle.fill;
-
-      final rayPaint = Paint()
-        ..color = Colors.white.withAlpha(35)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = (0.8 * (radius / 50)).clamp(0.5, 1.5)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.0);
-
-      // Tycho crater in the south with radiating ejecta rays
-      final tycho = Offset(center.dx - radius * 0.08, center.dy + radius * 0.52);
-      canvas.drawCircle(tycho, radius * 0.035, brightCorePaint);
-      canvas.drawLine(tycho, Offset(tycho.dx - radius * 0.25, tycho.dy - radius * 0.20), rayPaint);
-      canvas.drawLine(tycho, Offset(tycho.dx + radius * 0.28, tycho.dy - radius * 0.22), rayPaint);
-      canvas.drawLine(tycho, Offset(tycho.dx - radius * 0.05, tycho.dy - radius * 0.35), rayPaint);
-
-      // Copernicus crater in mid-northwest
-      final copernicus = Offset(center.dx - radius * 0.22, center.dy - radius * 0.08);
-      canvas.drawCircle(copernicus, radius * 0.030, brightCorePaint);
-    }
   }
 
   @override

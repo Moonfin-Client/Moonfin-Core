@@ -9,6 +9,9 @@ class _LoadingAnimationScreen extends StatefulWidget {
 }
 
 class _LoadingAnimationScreenState extends State<_LoadingAnimationScreen> {
+  /// Matches the label the player shows while a stream comes up.
+  static const _previewLabel = 'Loading Stream...';
+
   final _prefs = GetIt.instance<UserPreferences>();
 
   @override
@@ -217,7 +220,7 @@ class _LoadingAnimationScreenState extends State<_LoadingAnimationScreen> {
                 speed: speed,
                 safePadding: const EdgeInsets.all(16.0),
                 builder: (context, movingLeft) => PlayerLoadingOverlay(
-                  label: 'Loading Stream...',
+                  label: _previewLabel,
                   customImage: image,
                   customSize: previewPixelSize,
                   customPosition: position,
@@ -233,7 +236,7 @@ class _LoadingAnimationScreenState extends State<_LoadingAnimationScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: PlayerLoadingOverlay(
-                    label: 'Loading Stream...',
+                    label: _previewLabel,
                     customImage: image,
                     customSize: previewPixelSize,
                     customPosition: position,

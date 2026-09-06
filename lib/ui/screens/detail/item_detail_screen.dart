@@ -601,7 +601,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => const Center(
-        child: PlayerLoadingOverlay(logoSize: 120),
+        child: PlayerLoadingOverlay(customSize: 120),
       ),
       ItemDetailState.error => Center(
         child: Column(

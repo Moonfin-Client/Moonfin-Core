@@ -1088,6 +1088,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.loadingAnimationPosition,
     ),
     loadingAnimation.leaf(
+      'loadingAnimationSpeed',
+      l10n.loadingAnimationSpeed,
+    ),
+    loadingAnimation.leaf(
       'showLoadingAnimationText',
       l10n.showLoadingAnimationText,
     ),

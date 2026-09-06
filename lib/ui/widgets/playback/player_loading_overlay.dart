@@ -9,24 +9,20 @@ class PlayerLoadingOverlay extends StatefulWidget {
   const PlayerLoadingOverlay({
     super.key,
     this.label,
-    this.logoSize = 180,
     this.labelSpacing,
     this.customImage,
     this.customSize,
     this.customPosition,
-    this.position,
     this.customShowText,
     this.customSpeed,
     this.flipHorizontal,
   });
 
   final String? label;
-  final double logoSize;
   final double? labelSpacing;
   final LoadingAnimationImage? customImage;
   final double? customSize;
   final LoadingAnimationPosition? customPosition;
-  final LoadingAnimationPosition? position;
   final bool? customShowText;
   final LoadingAnimationSpeed? customSpeed;
   final bool? flipHorizontal;
@@ -82,11 +78,9 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
     final sizePref = prefs?.get(UserPreferences.loadingAnimationSize) ??
         LoadingAnimationSize.medium;
 
-    final effectiveSize = widget.customSize ??
-        (widget.logoSize != 180 ? widget.logoSize : sizePref.pixelSize);
+    final effectiveSize = widget.customSize ?? sizePref.pixelSize;
 
     final effectivePosition = widget.customPosition ??
-        widget.position ??
         prefs?.get(UserPreferences.loadingAnimationPosition) ??
         LoadingAnimationPosition.middle;
 
@@ -115,12 +109,15 @@ class _PlayerLoadingOverlayState extends State<PlayerLoadingOverlay>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (image != LoadingAnimationImage.none)
-          LoadingAnimationWidget(
-            image: image,
-            size: effectiveSize,
-            position: effectivePosition,
-            flipHorizontal: widget.flipHorizontal,
-            speed: effectiveSpeed,
+          // Repaints every frame, so it gets a layer of its own.
+          RepaintBoundary(
+            child: LoadingAnimationWidget(
+              image: image,
+              size: effectiveSize,
+              position: effectivePosition,
+              flipHorizontal: widget.flipHorizontal,
+              speed: effectiveSpeed,
+            ),
           ),
         if (hasLabel) ...[
           if (image != LoadingAnimationImage.none) SizedBox(height: spacing),

@@ -1730,7 +1730,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         child: Container(
           color: theme.colorScheme.surface,
           alignment: Alignment.center,
-          child: const PlayerLoadingOverlay(logoSize: 80, labelSpacing: 20),
+          child: const PlayerLoadingOverlay(customSize: 80, labelSpacing: 20),
         ),
       ),
     );

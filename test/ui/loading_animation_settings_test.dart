@@ -339,6 +339,67 @@ void main() {
       final movedPos = tester.getTopLeft(initialTextFinder);
       expect(movedPos, isNot(equals(initialPos)));
     });
+
+    testWidgets('moves without rebuilding the child on every frame', (
+      tester,
+    ) async {
+      // The child carries the whole loading overlay behind it, which re-reads
+      // preferences each time it builds, so it must not follow the position.
+      var builds = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BouncingPositionWrapper(
+              safePadding: EdgeInsets.zero,
+              builder: (context, movingLeft) {
+                builds++;
+                return const Text('CHILD');
+              },
+            ),
+          ),
+        ),
+      );
+
+      final finder = find.byType(Text);
+      await tester.pump(const Duration(milliseconds: 16));
+      final startPos = tester.getTopLeft(finder);
+      final buildsAfterStart = builds;
+
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(tester.getTopLeft(finder), isNot(equals(startPos)));
+      expect(builds, buildsAfterStart);
+    });
+
+    testWidgets('reports facing left once it turns back off the right wall', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BouncingPositionWrapper(
+              speed: LoadingAnimationSpeed.ultra,
+              safePadding: EdgeInsets.zero,
+              builder: (context, movingLeft) => Text(
+                movingLeft ? 'MOVING_LEFT' : 'MOVING_RIGHT',
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(find.text('MOVING_RIGHT'), findsOneWidget);
+
+      // Long enough to cross the viewport and come back off the far wall.
+      for (var i = 0; i < 200; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(find.text('MOVING_LEFT'), findsOneWidget);
+    });
   });
 }
 
