@@ -12,7 +12,7 @@ on:
           - testflight
 
 env:
-  FLUTTER_TVOS_REF: 'v3.44.1-tvos.1.2.0'
+  FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
 jobs:
   build-tvos:
