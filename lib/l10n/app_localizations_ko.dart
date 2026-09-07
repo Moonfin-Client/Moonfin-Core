@@ -2991,6 +2991,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get autoCrop => '자동 자르기';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => '뻗기';
 
   @override

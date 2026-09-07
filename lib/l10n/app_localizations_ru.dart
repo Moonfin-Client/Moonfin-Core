@@ -3064,6 +3064,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get autoCrop => 'Автоматическая обрезка';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Потягиваться';
 
   @override

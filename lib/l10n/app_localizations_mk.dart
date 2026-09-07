@@ -3055,6 +3055,13 @@ class AppLocalizationsMk extends AppLocalizations {
   String get autoCrop => 'Автоматско отсекување';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Истегнете се';
 
   @override

@@ -3026,7 +3026,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Auto Crop';
+  String get autoCrop => 'Fill';
+
+  @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
 
   @override
   String get stretch => 'Stretch';
@@ -9708,7 +9715,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'How video should be scaled to fit the screen.';
+      'Fit shows the whole picture. Fill covers the screen and clips overflow. Stretch ignores aspect ratio.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
@@ -14733,7 +14740,14 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Auto Crop';
+  String get autoCrop => 'Fill';
+
+  @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
 
   @override
   String get stretch => 'Stretch';
@@ -21336,7 +21350,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'How video should be scaled to fit the screen.';
+      'Fit shows the whole picture. Fill covers the screen and clips overflow. Stretch ignores aspect ratio.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';

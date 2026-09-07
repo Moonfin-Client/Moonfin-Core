@@ -2980,6 +2980,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get autoCrop => '自動裁切';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => '拉緊';
 
   @override

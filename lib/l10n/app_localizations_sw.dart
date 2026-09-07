@@ -3057,6 +3057,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get autoCrop => 'Mazao ya Kiotomatiki';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Nyosha';
 
   @override

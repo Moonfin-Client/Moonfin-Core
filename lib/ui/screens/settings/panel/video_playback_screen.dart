@@ -23,17 +23,34 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 subtitle: l10n.dimVideoShowOverview,
                 icon: Icons.pause_circle_outline,
               ),
-              EnumPreferenceTile<ZoomMode>(
-                preference: UserPreferences.playerZoomMode,
-                title: l10n.playerZoomMode,
-                description: l10n.settingsPlayerZoomDescription,
-                icon: Icons.zoom_out_map,
-                labelOf: (v) => switch (v) {
-                  ZoomMode.fit => l10n.fit,
-                  ZoomMode.autoCrop => l10n.autoCrop,
-                  ZoomMode.stretch => l10n.stretch,
+              ListenableBuilder(
+                listenable: prefs,
+                builder: (context, _) {
+                  final cropLocksZoom = prefs.get(
+                    UserPreferences.cropBlackBars,
+                  );
+                  return EnumPreferenceTile<ZoomMode>(
+                    preference: UserPreferences.playerZoomMode,
+                    title: l10n.playerZoomMode,
+                    description: l10n.settingsPlayerZoomDescription,
+                    icon: Icons.zoom_out_map,
+                    enabled: !cropLocksZoom,
+                    labelOf: (v) => switch (v) {
+                      ZoomMode.fit => l10n.fit,
+                      ZoomMode.autoCrop => l10n.autoCrop,
+                      ZoomMode.stretch => l10n.stretch,
+                    },
+                  );
                 },
               ),
+              if (PlatformDetection.isLinux || PlatformDetection.isWindows)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.cropBlackBars,
+                  title: l10n.cropBlackBars,
+                  subtitle: l10n.settingsCropBlackBarsDescription,
+                  icon: Icons.crop_16_9_outlined,
+                  isThreeLine: true,
+                ),
               _TvSettingsListTile(
                 leading: const Icon(Icons.timer_outlined),
                 title: Text(l10n.playbackTimeDisplay),

@@ -3044,6 +3044,13 @@ class AppLocalizationsUg extends AppLocalizations {
   String get autoCrop => 'ئاپتوماتىك كېسىش';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'سوزۇش';
 
   @override

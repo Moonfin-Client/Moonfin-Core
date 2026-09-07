@@ -1144,9 +1144,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     video.leaf('player_zoom_mode', l10n.playerZoomMode, keywords: [
       'aspect ratio',
-      'crop',
+      'fill',
+      'cover',
       'stretch',
     ]),
+    if (PlatformDetection.isLinux || PlatformDetection.isWindows)
+      video.leaf('crop_black_bars', l10n.cropBlackBars, keywords: [
+        'letterbox',
+        'cropdetect',
+        'black bars',
+        'autocrop',
+        'mpv',
+      ]),
     playbackTime.screen(keywords: [
       'time left',
       'time remaining',

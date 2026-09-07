@@ -3052,6 +3052,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get autoCrop => 'ಸ್ವಯಂ ಬೆಳೆ';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'ಸ್ಟ್ರೆಚ್';
 
   @override

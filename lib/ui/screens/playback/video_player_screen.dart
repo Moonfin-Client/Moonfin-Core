@@ -239,6 +239,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   final GlobalKey _topOverlayKey = GlobalKey();
   final GlobalKey _bottomOverlayKey = GlobalKey();
   late ZoomMode _zoomMode;
+  late bool _cropLocksZoom;
   double _audioDelay = 0.0;
   double _subtitleDelay = 0.0;
   bool _subtitleActive = false;
@@ -813,6 +814,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
+    _cropLocksZoom = _prefs.get(UserPreferences.cropBlackBars);
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -827,7 +829,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       unawaited(_syncMedia3ZoomMode());
     });
     _syncPlayManager?.addListener(_onSyncPlayChanged);
-    _prefs.addListener(_syncMediaQueuingPreference);
+    _prefs.addListener(_onPlaybackPrefsChanged);
     _syncMediaQueuingPreference();
     _applySubtitleStyle();
     _scheduleHide();
@@ -1001,7 +1003,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _screensaverPlayingSub?.cancel();
     _screensaverController.setPlaybackActive(false);
-    _prefs.removeListener(_syncMediaQueuingPreference);
+    _prefs.removeListener(_onPlaybackPrefsChanged);
     _syncPlayManager?.removeListener(_onSyncPlayChanged);
     _manager.autoAdvanceEnabled = true;
     WidgetsBinding.instance.removeObserver(this);
@@ -2088,7 +2090,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       topSubtitle: topSubtitle,
       artworkUrl: artworkUrl,
       showClock: false,
-      zoomModeLabel: _zoomModeLabel(_zoomMode),
+      zoomModeLabel: _zoomModeLabel(_activeZoomMode),
       streamInfoSections: streamInfoSections,
       hasCastCrew: hasCastCrew,
       castPeople: castPeople,
@@ -2133,13 +2135,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(_pushMedia3UiMetadata());
         return;
       case 'toggleZoom':
-        final modes = ZoomMode.values;
-        final next = modes[(_zoomMode.index + 1) % modes.length];
-        setState(() => _zoomMode = next);
-        _prefs.set(UserPreferences.playerZoomMode, next);
-        _showZoomModeToast(next);
-        unawaited(_syncMedia3ZoomMode());
-        unawaited(_pushMedia3UiMetadata());
+        _cyclePlayerZoom();
         return;
       case 'castPlay':
         unawaited(_runCastAction((k) => _castService.play(k)));
@@ -2378,11 +2374,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return DateTime.now().isBefore(until);
   }
 
+  void _onPlaybackPrefsChanged() {
+    _syncMediaQueuingPreference();
+    if (!mounted) return;
+    final zoom = _prefs.get(UserPreferences.playerZoomMode);
+    final crop = _prefs.get(UserPreferences.cropBlackBars);
+    if (zoom == _zoomMode && crop == _cropLocksZoom) return;
+    setState(() {
+      _zoomMode = zoom;
+      _cropLocksZoom = crop;
+    });
+    unawaited(_syncMedia3ZoomMode());
+  }
+
   void _syncMediaQueuingPreference() {
     _manager.autoAdvanceEnabled = _prefs.get(
       UserPreferences.autoplayNextEpisode,
     );
   }
+
+  ZoomMode get _activeZoomMode =>
+      _cropLocksZoom ? ZoomMode.autoCrop : _zoomMode;
 
   void _onSyncPlayChanged() {
     if (mounted) setState(() {});
@@ -4063,7 +4075,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       child: Trickplay(
         fillFrame: true,
         content: (_) => FittedBox(
-          fit: _zoomToFit(_zoomMode),
+          fit: _zoomToFit(_activeZoomMode),
           child: SizedBox(
             width: tile.thumbWidth,
             height: tile.thumbHeight,
@@ -4077,7 +4089,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Widget _buildVideoSurface() {
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return Positioned.fill(
-        child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _zoomMode.name),
+        child: AetherVideoView(
+          key: _videoSurfaceKey,
+          zoomMode: _activeZoomMode.name,
+        ),
       );
     }
 
@@ -4094,7 +4109,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_zoomMode)),
+        child: htmlBackend.buildView(fit: _zoomToFit(_activeZoomMode)),
       );
     }
 
@@ -4127,7 +4142,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: NativeVideoView(
           player: mediaKitBackend.player,
-          zoomMode: _nativeZoomMode(_zoomMode),
+          zoomMode: _nativeZoomMode(_activeZoomMode),
           fill: Colors.black,
           videoOutput: selectedVo,
           hardwareDecodingEnabled: hwDecodingEnabled,
@@ -4149,7 +4164,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            fit: _zoomToFit(_zoomMode),
+            fit: _zoomToFit(_activeZoomMode),
             fill: Colors.black,
             pauseUponEnteringBackgroundMode:
                 !PlatformDetection.isIOS && !PlatformDetection.isAndroid,
@@ -4175,7 +4190,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future<void> _syncMedia3ZoomMode() async {
     final backend = _activeMedia3Backend;
     if (backend == null) return;
-    await backend.setZoomMode(_media3ZoomModeWire(_zoomMode));
+    await backend.setZoomMode(_media3ZoomModeWire(_activeZoomMode));
   }
 
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
@@ -5587,7 +5602,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               iconSize: secondaryIconSize,
               tooltip: l10n.playerTooltipPlaybackQuality,
             ),
-          if (shows(OsdButton.zoom))
+          if (shows(OsdButton.zoom) && !_cropLocksZoom)
             OsdButton.zoom: _buildZoomButton(
               size: secondaryIconSize,
               extent: secondaryExtent,
@@ -5652,7 +5667,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             (button) => button.id,
             _prefs,
           ))
-            ?byButton[button],
+            if (byButton[button] != null)
+              KeyedSubtree(
+                key: ValueKey(button.id),
+                child: byButton[button]!,
+              ),
         ]);
 
         final orderedSecondaryButtons = PlatformDetection.isTV
@@ -5674,31 +5693,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 isLandscape && estimatedWidth <= constraints.maxWidth;
 
             if (canFitLandscapeRow) {
-              return SizedBox(
-                height: secondaryExtent,
-                child: Row(
-                  mainAxisAlignment: PlatformDetection.isTV
-                      ? MainAxisAlignment.start
-                      : MainAxisAlignment.spaceEvenly,
-                  children: orderedSecondaryButtons,
-                ),
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: PlatformDetection.isTV
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.spaceEvenly,
+                children: orderedSecondaryButtons,
               );
             }
 
-            return SizedBox(
-              height: secondaryExtent,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    for (final button in orderedSecondaryButtons)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: button,
-                      ),
-                  ],
-                ),
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (final button in orderedSecondaryButtons)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: button,
+                    ),
+                ],
               ),
             );
           },
@@ -6579,7 +6593,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         tooltip: PlatformDetection.useDesktopUi ? tooltip : null,
         icon: AdaptiveIcon(icon, color: iconColor, size: size),
         padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
+        constraints: BoxConstraints.tightFor(width: extent, height: extent),
+        style: IconButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          minimumSize: Size(extent, extent),
+          maximumSize: Size(extent, extent),
+        ),
       ),
     );
   }
@@ -7030,6 +7051,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showControls();
   }
 
+  void _cyclePlayerZoom() {
+    if (_cropLocksZoom) return;
+    final modes = ZoomMode.values;
+    final next = modes[(_zoomMode.index + 1) % modes.length];
+    setState(() => _zoomMode = next);
+    _prefs.set(UserPreferences.playerZoomMode, next);
+    _showZoomModeToast(next);
+    unawaited(_syncMedia3ZoomMode());
+    unawaited(_pushMedia3UiMetadata());
+  }
+
   Widget _buildZoomButton({
     double size = 24,
     double extent = 48,
@@ -7037,7 +7069,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     FocusNode? focusNode,
     VoidCallback? onRightBoundary,
   }) {
-    final icon = switch (_zoomMode) {
+    final icon = switch (_activeZoomMode) {
       ZoomMode.fit => Icons.fit_screen_rounded,
       ZoomMode.autoCrop => Icons.crop_rounded,
       ZoomMode.stretch => Icons.open_in_full_rounded,
@@ -7046,15 +7078,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       icon,
       size: size,
       extent: extent,
-      onPressed: () {
-        final modes = ZoomMode.values;
-        final next = modes[(_zoomMode.index + 1) % modes.length];
-        setState(() => _zoomMode = next);
-        _prefs.set(UserPreferences.playerZoomMode, next);
-        _showZoomModeToast(next);
-        unawaited(_syncMedia3ZoomMode());
-        unawaited(_pushMedia3UiMetadata());
-      },
+      onPressed: _cyclePlayerZoom,
       tooltip: tooltip,
       focusNode: focusNode,
       onRightBoundary: onRightBoundary,
@@ -7124,10 +7148,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   String _zoomModeLabel(ZoomMode mode) {
-    final spaced = mode.name.replaceAllMapped(_camelCaseSpaceRe, (_) => ' ');
-    return spaced.isEmpty
-        ? mode.name
-        : '${spaced[0].toUpperCase()}${spaced.substring(1)}';
+    final l10n = AppLocalizations.of(context);
+    return switch (mode) {
+      ZoomMode.fit => l10n.fit,
+      ZoomMode.autoCrop => l10n.autoCrop,
+      ZoomMode.stretch => l10n.stretch,
+    };
   }
 
   String _tooltipMessage(String label, {String? shortcut}) {
