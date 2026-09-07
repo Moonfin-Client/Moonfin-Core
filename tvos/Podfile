@@ -40,7 +40,11 @@ target 'Runner' do
       plugin_name = plugin['name']
       plugin_path = plugin['path']
       tvos_dir = File.join(plugin_path, 'tvos')
-      if File.directory?(tvos_dir) && File.exist?(File.join(tvos_dir, "#{plugin_name}.podspec"))
+      # Plugins that ship a Package.swift are resolved via Swift Package Manager
+      # (see flutter-tvos's generated FlutterGeneratedPluginSwiftPackage). Skip
+      # them here so they are never linked twice (SPM + CocoaPods).
+      has_spm = File.exist?(File.join(tvos_dir, 'Package.swift'))
+      if File.directory?(tvos_dir) && !has_spm && File.exist?(File.join(tvos_dir, "#{plugin_name}.podspec"))
         pod plugin_name, :path => tvos_dir
       end
     end

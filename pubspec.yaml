@@ -155,9 +155,9 @@ dependencies:
   # 1.1.1 fixed a startup race where the configure call could be silently
   # lost, leaving the engine's aggressive default remote tuning active.
   flutter_tvos: ^1.1.2
-  path_provider_tvos: any
-  shared_preferences_tvos: any
-  flutter_secure_storage_tvos: any
+  path_provider_tvos: 0.0.2
+  shared_preferences_tvos: 0.0.2
+  flutter_secure_storage_tvos: 0.0.2
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
