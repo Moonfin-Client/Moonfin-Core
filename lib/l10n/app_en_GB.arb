@@ -2312,7 +2312,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Saved Media",
+    "savedMedia": "Downloads",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -6269,7 +6269,7 @@
     "offlineNoInternet": "You are offline. Only downloaded content is available.",
     "offlineFileNotAvailable": "File not available",
     "offlineSwitchServer": "Switch Server",
-    "offlineSavedMedia": "Saved Media",
+    "offlineSavedMedia": "Downloads",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",

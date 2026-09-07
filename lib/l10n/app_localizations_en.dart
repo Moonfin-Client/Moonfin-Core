@@ -2154,7 +2154,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get localAccount => 'Local';
 
   @override
-  String get savedMedia => 'Saved Media';
+  String get savedMedia => 'Downloads';
 
   @override
   String get tvShows => 'TV Shows';
@@ -8557,7 +8557,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offlineSwitchServer => 'Switch Server';
 
   @override
-  String get offlineSavedMedia => 'Saved Media';
+  String get offlineSavedMedia => 'Downloads';
 
   @override
   String get offlineBannerTitle => 'You\'re offline';
@@ -13438,7 +13438,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get localAccount => 'Local';
 
   @override
-  String get savedMedia => 'Saved Media';
+  String get savedMedia => 'Downloads';
 
   @override
   String get tvShows => 'TV Shows';
@@ -19690,7 +19690,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get offlineSwitchServer => 'Switch Server';
 
   @override
-  String get offlineSavedMedia => 'Saved Media';
+  String get offlineSavedMedia => 'Downloads';
 
   @override
   String get offlineBannerTitle => 'You\'re offline';

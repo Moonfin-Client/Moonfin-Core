@@ -3907,7 +3907,7 @@ abstract class AppLocalizations {
   /// Header title for saved/downloaded media screen
   ///
   /// In en, this message translates to:
-  /// **'Saved Media'**
+  /// **'Downloads'**
   String get savedMedia;
 
   /// Filter label for TV shows
@@ -15415,7 +15415,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineSavedMedia.
   ///
   /// In en, this message translates to:
-  /// **'Saved Media'**
+  /// **'Downloads'**
   String get offlineSavedMedia;
 
   /// No description provided for @offlineBannerTitle.

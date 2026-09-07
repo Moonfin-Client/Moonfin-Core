@@ -3018,7 +3018,7 @@
     "description": "Auth option label for Seerr sign in using local Seerr credentials"
   },
 
-  "savedMedia": "Saved Media",
+  "savedMedia": "Downloads",
   "@savedMedia": {
     "description": "Header title for saved/downloaded media screen"
   },
@@ -8430,7 +8430,7 @@
   "offlineNoInternet": "You are offline. Only downloaded content is available.",
   "offlineFileNotAvailable": "File not available",
   "offlineSwitchServer": "Switch Server",
-  "offlineSavedMedia": "Saved Media",
+  "offlineSavedMedia": "Downloads",
   "offlineBannerTitle": "You're offline",
   "offlineBannerSubtitle": "Showing your downloads",
   "offlineBannerAction": "Downloads",
