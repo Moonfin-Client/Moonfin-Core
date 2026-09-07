@@ -139,6 +139,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('showGenresButton', UserPreferences.showGenresButton, SyncCodec.boolean),
   SyncedField('showFavoritesButton', UserPreferences.showFavoritesButton, SyncCodec.boolean),
   SyncedField('showSyncPlayButton', UserPreferences.showSyncPlayButton, SyncCodec.boolean),
+  SyncedField('showDownloadsButton', UserPreferences.showDownloadsButton, SyncCodec.boolean),
   SyncedField('showLibrariesInToolbar', UserPreferences.showLibrariesInToolbar, SyncCodec.boolean),
   SyncedField('shuffleContentType', UserPreferences.shuffleContentType, SyncCodec.text),
   SyncedField('mergeContinueWatchingNextUp', UserPreferences.mergeContinueWatchingNextUp, SyncCodec.boolean),
