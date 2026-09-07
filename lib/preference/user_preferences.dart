@@ -490,6 +490,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_genres_button',
     'pref_show_favorites_button',
     'pref_show_syncplay_button',
+    'pref_show_downloads_button',
     'pref_show_libraries_in_toolbar',
     'pref_navbar_always_expanded',
     'pref_shuffle_content_type',

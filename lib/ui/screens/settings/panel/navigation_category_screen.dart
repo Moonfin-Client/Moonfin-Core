@@ -153,7 +153,8 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   ),
                   onChanged: _pushPersonalizationSync,
                 ),
-              if (!PlatformDetection.isWeb && !PlatformDetection.isTV)
+              if (PlatformDetection.supportsOfflineDownloads &&
+                  !PlatformDetection.isWeb)
                 SwitchPreferenceTile(
                   preference: UserPreferences.showDownloadsButton,
                   title: l10n.showDownloadsButton,

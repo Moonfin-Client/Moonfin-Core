@@ -10380,7 +10380,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
         return wire(
           label: AppLocalizations.of(context).download,
-          icon: Icons.download,
+          icon: Icons.download_for_offline,
           onPressed: () => _showDownloadOptions(context, downloadService),
         );
       },
@@ -10490,7 +10490,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                           _scopeRow(
                             sheetContext,
                             autofocus: true,
-                            icon: Icons.download,
+                            icon: Icons.download_for_offline,
                             label: isCollection
                                 ? l10n.downloadAllMovies
                                 : l10n.downloadAllEpisodes,
@@ -15131,7 +15131,7 @@ class _AlbumActions extends StatelessWidget {
       if (onDownloadAll != null)
         _DetailActionButton(
           label: l10n.download,
-          icon: Icons.download,
+          icon: Icons.download_for_offline,
           onArrowDown: onPlayDown,
           onPressed: onDownloadAll!,
         ),

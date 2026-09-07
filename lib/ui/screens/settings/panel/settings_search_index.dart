@@ -388,7 +388,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final downloads = _SearchSection(
     slug: 'downloads',
     path: [l10n.settingsPlaybackSyncplay, l10n.settingsOfflineDownloads],
-    icon: Icons.download,
+    icon: Icons.download_for_offline,
     open: () => push(const DownloadSettingsScreen()),
   );
   final emulatorCores = _SearchSection(

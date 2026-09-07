@@ -1113,11 +1113,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
               ],
               _gap(),
               if (_prefs.get(UserPreferences.showDownloadsButton) &&
-                !PlatformDetection.isWeb && !PlatformDetection.isTV)
+                PlatformDetection.supportsOfflineDownloads &&
+                !PlatformDetection.isWeb)
                 _orderButton(
                   order: 97,
                   child: ExpandableIconButton(
-                    key: const ValueKey('sidebar-downloads'),
+                    key: const ValueKey('toolbar-downloads'),
                     forceExpanded: alwaysExpanded,
                     icon: Icons.download_for_offline,
                     label: l10n.savedMedia,

@@ -6,6 +6,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/overlay_color_palette.dart';
+import '../../../util/platform_detection.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -122,14 +123,14 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
                   ),
                   onChanged: _pushSync,
                 ),
-                if (!PlatformDetection.isWeb && !PlatformDetection.isTV) {
+                if (PlatformDetection.supportsOfflineDownloads &&
+                    !PlatformDetection.isWeb)
                   SwitchPreferenceTile(
                     preference: UserPreferences.showDownloadsButton,
                     title: l10n.showDownloadsButton,
-                    icon: Icons.download,
+                    icon: Icons.download_for_offline,
                     onChanged: _pushSync,
                   ),
-                }
               ],
             ),
             SettingsSectionHeader(l10n.appearance),

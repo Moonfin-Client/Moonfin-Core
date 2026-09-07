@@ -1102,7 +1102,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                   ),
                 ],
                 if (_prefs.get(UserPreferences.showDownloadsButton) &&
-                    !PlatformDetection.isWeb && !PlatformDetection.isTV)
+                    PlatformDetection.supportsOfflineDownloads &&
+                    !PlatformDetection.isWeb)
                   _SidebarItem(
                     key: const ValueKey('sidebar-downloads'),
                     icon: Icons.download_for_offline,

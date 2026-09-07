@@ -214,6 +214,7 @@ void main() {
     'seerrBlockNsfw',
     'seerrEnabled',
     'showDescriptionOnPause',
+    'showDownloadsButton',
     'showFavoritesButton',
     'showGenresButton',
     'showLibrariesInToolbar',

@@ -65,7 +65,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
                 children: [
                   DpadSwitchListTile(
                     useSettingsIconShell: true,
-                    secondary: const Icon(Icons.download),
+                    secondary: const Icon(Icons.download_for_offline),
                     title: Text(l10n.tvOfflineDownloads),
                     subtitle: Text(l10n.tvOfflineDownloadsSubtitle),
                     value: tvOfflineDownloads,
