@@ -172,31 +172,38 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
       skipTraversal: true,
       child: widget.child,
     );
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            Expanded(child: content),
-            const DownloadProgressBar(),
-            const BottomMusicBar(),
-            AnimatedOpacity(
-              opacity: widget.showNavigationChrome ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: IgnorePointer(
-                ignoring: !widget.showNavigationChrome,
-                child: MobileBottomNavBar(activeRoute: widget.activeRoute),
+        Expanded(
+          child: Stack(
+            children: [
+              Positioned.fill(child: content),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: AnimatedOpacity(
+                  opacity: widget.showNavigationChrome ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: IgnorePointer(
+                    ignoring: !widget.showNavigationChrome,
+                    child: MobileBottomNavBar(activeRoute: widget.activeRoute),
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-        if (widget.showBackButton)
-          Positioned(
-            top: 16,
-            left: 16,
-            child: SafeArea(
-              child: _buildFloatingBackButton(),
-            ),
+              if (widget.showBackButton)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: SafeArea(
+                    child: _buildFloatingBackButton(),
+                  ),
+                ),
+            ],
           ),
+        ),
+        const DownloadProgressBar(),
+        const BottomMusicBar(),
       ],
     );
   }

@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../util/platform_detection.dart';
+import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../navigation/route_lifecycle_observer.dart';
 import 'overlay_sheet.dart';
 
@@ -31,6 +34,7 @@ class QuickReturnWrapper extends StatefulWidget {
     this.topFocusNode,
     this.isAtStart,
     this.onReturn,
+    this.hideNavbar = false,
   }) : assert(
          scrollController != null || isAtStart != null,
          'Give it a controller to watch or a notifier telling it where it is.',
@@ -39,6 +43,7 @@ class QuickReturnWrapper extends StatefulWidget {
   final Widget child;
   final ScrollController? scrollController;
   final Axis scrollDirection;
+  final bool hideNavbar;
 
   /// Focused after the scroll finishes, so a remote carries on from the first
   /// card rather than from wherever the old focus scrolled away to.
@@ -175,13 +180,18 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   Widget build(BuildContext context) {
     if (PlatformDetection.isTV) return widget.child;
 
+    final _prefs = GetIt.instance<UserPreferences>();
+    final navbarPosition = _prefs.get(UserPreferences.navbarPosition);
+    final raiseButton = navbarPosition == NavbarPosition.bottom && !widget.hideNavbar;
+    final bottomPadding = raiseButton ? 78.0 : 24.0;
+
     return Stack(
       fit: StackFit.expand,
       children: [
         widget.child,
         Positioned(
           right: 24,
-          bottom: 24,
+          bottom: bottomPadding,
           child: SafeArea(
             child: AnimatedOpacity(
               opacity: _isScrolledAway ? 1.0 : 0.0,

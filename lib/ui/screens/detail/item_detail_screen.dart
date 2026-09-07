@@ -1320,6 +1320,7 @@ class _DetailContentState extends State<_DetailContent> {
     return QuickReturnWrapper(
       scrollController: _scrollController,
       topFocusNode: widget.initialFocusNode,
+      hideNavbar: true,
       child: Focus(
         focusNode: _contentFocusNode,
         onKeyEvent: (node, event) {
