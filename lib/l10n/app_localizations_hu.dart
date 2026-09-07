@@ -3055,6 +3055,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get autoCrop => 'Automatikus kivágás';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Nyújtás';
 
   @override

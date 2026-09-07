@@ -3128,6 +3128,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get autoCrop => 'Automatisch zuschneiden';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Strecken';
 
   @override

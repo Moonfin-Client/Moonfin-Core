@@ -3048,6 +3048,13 @@ class AppLocalizationsEt extends AppLocalizations {
   String get autoCrop => 'Automaatne kärpimine';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Venitada';
 
   @override

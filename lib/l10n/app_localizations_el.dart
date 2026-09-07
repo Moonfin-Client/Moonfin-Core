@@ -3070,6 +3070,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get autoCrop => 'Αυτόματη περικοπή';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Τέντωμα';
 
   @override

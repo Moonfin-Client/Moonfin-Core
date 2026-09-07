@@ -1806,6 +1806,12 @@ class UserPreferences extends ChangeNotifier {
     values: ZoomMode.values,
   );
 
+  /// One-shot libmpv cropdetect → `video-crop`. Desktop mpv only.
+  static final cropBlackBars = Preference(
+    key: 'crop_black_bars',
+    defaultValue: false,
+  );
+
   static final desktopScrollWheelAction = EnumPreference(
     key: 'desktop_scroll_wheel_action',
     defaultValue: DesktopScrollWheelAction.volume,

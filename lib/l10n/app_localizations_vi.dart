@@ -3045,6 +3045,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get autoCrop => 'Tự động cắt';
 
   @override
+  String get cropBlackBars => 'Crop black bars';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+
+  @override
   String get stretch => 'Kéo dài';
 
   @override
