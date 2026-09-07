@@ -43,13 +43,13 @@ class RowDataSource {
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
+      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio,People,Artists';
   static const _fallbackFields =
       'DateCreated,Type,UserData,OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag';
+      'ParentLogoItemId,ParentLogoImageTag,People,Artists';
   static const _minimalFields =
       'Type,UserData,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,SeriesId';
@@ -973,7 +973,7 @@ class RowDataSource {
     String sortBy = 'SortName',
     String sortOrder = 'Ascending',
   }) async {
-    final response = await _getItemsWithFallback(
+    var response = await _getItemsWithFallback(
       parentId: parentId,
       isFavorite: true,
       sortBy: sortBy,
@@ -982,6 +982,35 @@ class RowDataSource {
       limit: _defaultLimit,
       includeItemTypes: includeItemTypes,
     );
+    final favList = response['Items'] as List? ?? const [];
+    if (includeItemTypes != null &&
+        (includeItemTypes.contains('Book') ||
+            includeItemTypes.contains('AudioBook') ||
+            includeItemTypes.contains('Comic'))) {
+      final fallbackResponse = await _getItemsWithFallback(
+        parentId: parentId,
+        isFavorite: true,
+        excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: _defaultLimit,
+      );
+      final rawItems = (fallbackResponse['Items'] as List? ?? const [])
+          .whereType<Map>()
+          .where((m) {
+            final t = m['Type']?.toString();
+            return t != null && includeItemTypes.contains(t);
+          })
+          .toList();
+      if (rawItems.length > favList.length) {
+        response = {
+          ...fallbackResponse,
+          'Items': rawItems,
+          'TotalRecordCount': rawItems.length,
+        };
+      }
+    }
     return _buildRow(
       id: 'favorites_$parentId',
       title: _l10n.favorites,
@@ -1017,7 +1046,7 @@ class RowDataSource {
     String serverId, {
     List<String>? includeItemTypes,
   }) async {
-    final response = await _getItemsWithFallback(
+    var response = await _getItemsWithFallback(
       parentId: parentId,
       sortBy: 'DatePlayed',
       sortOrder: 'Descending',
@@ -1026,6 +1055,35 @@ class RowDataSource {
       limit: _defaultLimit,
       includeItemTypes: includeItemTypes,
     );
+    final lastList = response['Items'] as List? ?? const [];
+    if (includeItemTypes != null &&
+        (includeItemTypes.contains('Book') ||
+            includeItemTypes.contains('AudioBook') ||
+            includeItemTypes.contains('Comic'))) {
+      final fallbackResponse = await _getItemsWithFallback(
+        parentId: parentId,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        filters: ['IsPlayed'],
+        excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
+        recursive: true,
+        limit: _defaultLimit,
+      );
+      final rawItems = (fallbackResponse['Items'] as List? ?? const [])
+          .whereType<Map>()
+          .where((m) {
+            final t = m['Type']?.toString();
+            return t != null && includeItemTypes.contains(t);
+          })
+          .toList();
+      if (rawItems.length > lastList.length) {
+        response = {
+          ...fallbackResponse,
+          'Items': rawItems,
+          'TotalRecordCount': rawItems.length,
+        };
+      }
+    }
     return _buildRow(
       id: 'lastPlayed_$parentId',
       title: _l10n.lastPlayed,
@@ -1045,7 +1103,7 @@ class RowDataSource {
   }) async {
     final isAlbumArtistBrowse =
         includeItemTypes.length == 1 && includeItemTypes.first == 'AlbumArtist';
-    final response = isAlbumArtistBrowse
+    var response = isAlbumArtistBrowse
         ? await _client.itemsApi.getAlbumArtists(
             parentId: parentId,
             userId: _client.userId,
@@ -1063,6 +1121,36 @@ class RowDataSource {
             recursive: true,
             limit: _defaultLimit,
           );
+
+    final itemsList = response['Items'] as List? ?? const [];
+    if (!isAlbumArtistBrowse &&
+        (includeItemTypes.contains('Book') ||
+            includeItemTypes.contains('AudioBook') ||
+            includeItemTypes.contains('Comic'))) {
+      final fallbackResponse = await _getItemsWithFallback(
+        parentId: parentId,
+        excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: _defaultLimit,
+      );
+      final rawItems = (fallbackResponse['Items'] as List? ?? const [])
+          .whereType<Map>()
+          .where((m) {
+            final t = m['Type']?.toString();
+            return t != null && includeItemTypes.contains(t);
+          })
+          .toList();
+      if (rawItems.length > itemsList.length) {
+        response = {
+          ...fallbackResponse,
+          'Items': rawItems,
+          'TotalRecordCount': rawItems.length,
+        };
+      }
+    }
+
     return _buildRow(
       id: '${includeItemTypes.first.toLowerCase()}_$parentId',
       title: title,
@@ -1116,6 +1204,39 @@ class RowDataSource {
           serverId: serverId,
           rowType: HomeRowType.resume,
         );
+      } catch (_) {}
+    }
+    if (row.items.isEmpty) {
+      try {
+        final fallback2 = await _getItemsWithFallback(
+          parentId: parentId,
+          excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
+          filters: ['IsResumable'],
+          sortBy: 'DatePlayed',
+          sortOrder: 'Descending',
+          recursive: true,
+          limit: _defaultLimit,
+        );
+        final rawItems = (fallback2['Items'] as List? ?? const [])
+            .whereType<Map>()
+            .where((m) {
+              final t = m['Type']?.toString();
+              return t != null && includeItemTypes.contains(t);
+            })
+            .toList();
+        if (rawItems.isNotEmpty) {
+          row = _buildRow(
+            id: 'bookResume_$parentId',
+            title: title,
+            response: {
+              ...fallback2,
+              'Items': rawItems,
+              'TotalRecordCount': rawItems.length,
+            },
+            serverId: serverId,
+            rowType: HomeRowType.resume,
+          );
+        }
       } catch (_) {}
     }
     return row;
@@ -3123,7 +3244,7 @@ class RowDataSource {
           includeItemTypes: const ['BoxSet'],
           recursive: true,
           limit: 50,
-          fields: '$_fields',
+          fields: _fields,
         );
         final collections = _parseItems(res, serverId);
         

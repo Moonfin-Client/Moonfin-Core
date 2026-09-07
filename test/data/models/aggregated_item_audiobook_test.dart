@@ -71,5 +71,41 @@ void main() {
 
       expect(item.isAudiobook, isFalse);
     });
+
+    test('a comic archive is not an audiobook even in a books library', () {
+      final item = _item({
+        'Type': 'Book',
+        'MediaType': 'Book',
+        'Container': 'cbz',
+        'CollectionType': 'books',
+      });
+
+      expect(item.isAudiobook, isFalse);
+      expect(item.isComic, isTrue);
+    });
+  });
+
+  group('AggregatedItem.isComic', () {
+    test('detects Comic type from server', () {
+      expect(_item({'Type': 'Comic'}).isComic, isTrue);
+    });
+
+    test('detects comic archive containers (cbz, cbr, cb7, cbt)', () {
+      expect(_item({'Type': 'Book', 'Container': 'cbz'}).isComic, isTrue);
+      expect(_item({'Type': 'Book', 'Container': 'cbr'}).isComic, isTrue);
+      expect(_item({'Type': 'Book', 'Container': 'cb7'}).isComic, isTrue);
+      expect(_item({'Type': 'Book', 'Container': 'cbt'}).isComic, isTrue);
+    });
+
+    test('detects comic file extension in path or file name', () {
+      expect(_item({'Path': '/media/comics/Spider-Man.cbz'}).isComic, isTrue);
+      expect(_item({'FileName': 'Batman.cbr'}).isComic, isTrue);
+      expect(_item({'Name': 'X-Men.cbt'}).isComic, isTrue);
+    });
+
+    test('ordinary books and audiobooks are not comics', () {
+      expect(_item({'Type': 'Book', 'Path': '/media/books/Dune.epub'}).isComic, isFalse);
+      expect(_item({'Type': 'AudioBook', 'Container': 'm4b'}).isComic, isFalse);
+    });
   });
 }

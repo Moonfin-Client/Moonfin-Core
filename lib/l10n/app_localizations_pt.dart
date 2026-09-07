@@ -846,6 +846,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get latestAudiobooks => 'Audiolivros Recentes';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -861,6 +867,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Audiolivro';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Nenhum livro encontrado para este autor.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1038,9 +1054,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get noBiographyAvailable =>
       'Nenhuma biografia disponível para este autor.';
-
-  @override
-  String get noBooksFound => 'Nenhum livro encontrado para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -12300,6 +12313,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get bookFormatAudiobook => 'Audiolivro';
 
   @override
+  String get noBooksFound => 'Nenhum livro encontrado deste autor.';
+
+  @override
   String bookPercentRead(int percent) {
     return '$percent% lido';
   }
@@ -12475,9 +12491,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get noBiographyAvailable =>
       'Nenhuma biografia disponível para este autor.';
-
-  @override
-  String get noBooksFound => 'Nenhum livro encontrado deste autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -22382,6 +22395,9 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get bookFormatAudiobook => 'Audiolivro';
 
   @override
+  String get noBooksFound => 'Nenhum livro encontrado deste autor.';
+
+  @override
   String bookPercentRead(int percent) {
     return '$percent% lido';
   }
@@ -22557,9 +22573,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get noBiographyAvailable =>
       'Nenhuma biografia disponível para este autor.';
-
-  @override
-  String get noBooksFound => 'Nenhum livro encontrado deste autor.';
 
   @override
   String get unableToLoadAuthorDetails =>

@@ -850,6 +850,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get latestAudiobooks => 'Sách nói mới nhất';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -865,6 +871,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Sách nói';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Không tìm thấy sách nào cho tác giả này.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1040,9 +1056,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => 'Không có tiểu sử có sẵn cho tác giả này.';
-
-  @override
-  String get noBooksFound => 'Không tìm thấy sách nào cho tác giả này.';
 
   @override
   String get unableToLoadAuthorDetails =>

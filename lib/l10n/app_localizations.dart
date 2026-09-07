@@ -1726,6 +1726,18 @@ abstract class AppLocalizations {
   /// **'Latest Audiobooks'**
   String get latestAudiobooks;
 
+  /// Row title for recently added comics in the book library
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Comics'**
+  String get latestComics;
+
+  /// Label for comic media format or section
+  ///
+  /// In en, this message translates to:
+  /// **'Comics'**
+  String get comics;
+
   /// Subtitle for a book series shelf entry showing how many books it contains
   ///
   /// In en, this message translates to:
@@ -1743,6 +1755,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Audiobook'**
   String get bookFormatAudiobook;
+
+  /// Semantic label for the comic format badge on library cards
+  ///
+  /// In en, this message translates to:
+  /// **'Comic'**
+  String get bookFormatComic;
+
+  /// Placeholder when no books are found for an author
+  ///
+  /// In en, this message translates to:
+  /// **'No books found for this author.'**
+  String get noBooksFound;
+
+  /// Description shown when a books library has no items
+  ///
+  /// In en, this message translates to:
+  /// **'This library does not contain any books, audiobooks, or comics yet.'**
+  String get noBooksFoundDescription;
 
   /// Reading progress label on book cards
   ///
@@ -2043,12 +2073,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No biography available for this author.'**
   String get noBiographyAvailable;
-
-  /// Placeholder when no books are found for an author
-  ///
-  /// In en, this message translates to:
-  /// **'No books found for this author.'**
-  String get noBooksFound;
 
   /// Error message when author details fail to load
   ///

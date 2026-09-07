@@ -1102,6 +1102,14 @@
   "@latestAudiobooks": {
     "description": "Row title for recently added audiobooks in the book library"
   },
+  "latestComics": "Latest Comics",
+  "@latestComics": {
+    "description": "Row title for recently added comics in the book library"
+  },
+  "comics": "Comics",
+  "@comics": {
+    "description": "Label for comic media format or section"
+  },
   "bookSeriesItemCount": "{count, plural, =1{1 book} other{{count} books}}",
   "@bookSeriesItemCount": {
     "description": "Subtitle for a book series shelf entry showing how many books it contains",
@@ -1118,6 +1126,18 @@
   "bookFormatAudiobook": "Audiobook",
   "@bookFormatAudiobook": {
     "description": "Semantic label for the audiobook format badge on library cards"
+  },
+  "bookFormatComic": "Comic",
+  "@bookFormatComic": {
+    "description": "Semantic label for the comic format badge on library cards"
+  },
+  "noBooksFound": "No Books Found",
+  "@noBooksFound": {
+    "description": "Title shown when a books library has no items"
+  },
+  "noBooksFoundDescription": "This library does not contain any books, audiobooks, or comics yet.",
+  "@noBooksFoundDescription": {
+    "description": "Description shown when a books library has no items"
   },
   "bookPercentRead": "{percent}% read",
   "@bookPercentRead": {

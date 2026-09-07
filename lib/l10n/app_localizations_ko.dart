@@ -822,6 +822,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get latestAudiobooks => '최신 오디오북';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -837,6 +843,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => '오디오북';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => '이 저자에 대한 도서를 찾을 수 없습니다.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1009,9 +1025,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => '이 저자의 전기가 없습니다.';
-
-  @override
-  String get noBooksFound => '이 저자에 대한 도서를 찾을 수 없습니다.';
 
   @override
   String get unableToLoadAuthorDetails => '지금은 작성자 세부정보를 로드할 수 없습니다.';

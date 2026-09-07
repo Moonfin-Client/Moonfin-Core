@@ -848,6 +848,12 @@ class AppLocalizationsCy extends AppLocalizations {
   String get latestAudiobooks => 'Llyfrau Sain Diweddaraf';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -865,6 +871,16 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Llyfr sain';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Ni chafwyd hyd i lyfrau ar gyfer yr awdur hwn.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1043,9 +1059,6 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get noBiographyAvailable =>
       'Nid oes bywgraffiad ar gael i\'r awdur hwn.';
-
-  @override
-  String get noBooksFound => 'Ni chafwyd hyd i lyfrau ar gyfer yr awdur hwn.';
 
   @override
   String get unableToLoadAuthorDetails =>

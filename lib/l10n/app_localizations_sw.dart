@@ -852,6 +852,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get latestAudiobooks => 'Vitabu vya Sauti vya Hivi Punde';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -867,6 +873,17 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Kitabu cha Sauti';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound =>
+      'Hakuna vitabu vilivyopatikana vya mwandishi huyu.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1042,10 +1059,6 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get noBiographyAvailable =>
       'Hakuna wasifu unaopatikana kwa mwandishi huyu.';
-
-  @override
-  String get noBooksFound =>
-      'Hakuna vitabu vilivyopatikana vya mwandishi huyu.';
 
   @override
   String get unableToLoadAuthorDetails =>

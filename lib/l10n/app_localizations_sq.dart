@@ -851,6 +851,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get latestAudiobooks => 'Audiolibrat më të fundit';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -866,6 +872,16 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Audiolibër';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Nuk u gjetën libra për këtë autor.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1042,9 +1058,6 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => 'Nuk ka biografi për këtë autor.';
-
-  @override
-  String get noBooksFound => 'Nuk u gjetën libra për këtë autor.';
 
   @override
   String get unableToLoadAuthorDetails =>

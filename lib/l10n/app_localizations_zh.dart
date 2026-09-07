@@ -810,6 +810,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get latestAudiobooks => '最新有声读物';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -825,6 +831,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => '有声读物';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => '未找到该作者的图书。';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -997,9 +1013,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => '此作者暂无传记。';
-
-  @override
-  String get noBooksFound => '未找到该作者的图书。';
 
   @override
   String get unableToLoadAuthorDetails => '目前无法加载作者详情。';
@@ -11717,6 +11730,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get bookFormatAudiobook => '有聲書';
 
   @override
+  String get noBooksFound => '沒有找到該作者的書籍。';
+
+  @override
   String bookPercentRead(int percent) {
     return '已讀 $percent%';
   }
@@ -11887,9 +11903,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get noBiographyAvailable => '沒有該作者的傳記。';
-
-  @override
-  String get noBooksFound => '沒有找到該作者的書籍。';
 
   @override
   String get unableToLoadAuthorDetails => '目前無法載入作者詳細資訊。';

@@ -848,6 +848,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get latestAudiobooks => 'Audiobook Terbaru';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -863,6 +869,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Audiobook';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Tidak ada buku yang ditemukan untuk penulis ini.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1039,9 +1055,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get noBiographyAvailable =>
       'Belum ada biografi yang tersedia untuk penulis ini.';
-
-  @override
-  String get noBooksFound => 'Tidak ada buku yang ditemukan untuk penulis ini.';
 
   @override
   String get unableToLoadAuthorDetails =>

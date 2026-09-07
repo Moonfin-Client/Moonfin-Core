@@ -850,6 +850,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get latestAudiobooks => 'Legújabb hangoskönyvek';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -865,6 +871,16 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Hangoskönyv';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'Nem található könyv ehhez a szerzőhöz.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1040,9 +1056,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => 'A szerző életrajza nem érhető el.';
-
-  @override
-  String get noBooksFound => 'Nem található könyv ehhez a szerzőhöz.';
 
   @override
   String get unableToLoadAuthorDetails =>

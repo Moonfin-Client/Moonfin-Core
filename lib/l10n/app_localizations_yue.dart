@@ -813,6 +813,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get latestAudiobooks => '最新有聲書';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -828,6 +834,16 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => '有聲書';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => '沒有找到該作者的書籍。';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1000,9 +1016,6 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get noBiographyAvailable => '沒有該作者的傳記。';
-
-  @override
-  String get noBooksFound => '沒有找到該作者的書籍。';
 
   @override
   String get unableToLoadAuthorDetails => '目前無法載入作者詳細資料。';
@@ -11617,6 +11630,9 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get books => '图书';
 
   @override
+  String get noBooksFound => '没有找到该作者的书籍。';
+
+  @override
   String get author => '作者';
 
   @override
@@ -11768,9 +11784,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
 
   @override
   String get noBiographyAvailable => '没有该作者的传记。';
-
-  @override
-  String get noBooksFound => '没有找到该作者的书籍。';
 
   @override
   String get unableToLoadAuthorDetails => '目前无法加载作者详细信息。';
@@ -19066,6 +19079,9 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get books => '圖書';
 
   @override
+  String get noBooksFound => '沒有找到該作者的書籍。';
+
+  @override
   String get author => '作者';
 
   @override
@@ -19217,9 +19233,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get noBiographyAvailable => '沒有該作者的傳記。';
-
-  @override
-  String get noBooksFound => '沒有找到該作者的書籍。';
 
   @override
   String get unableToLoadAuthorDetails => '目前無法載入作者詳細資料。';

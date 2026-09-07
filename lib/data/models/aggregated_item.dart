@@ -252,6 +252,44 @@ class AggregatedItem {
 
   List<Map<String, dynamic>> get chapters => _toListOfMaps(rawData['Chapters']);
 
+  static const _comicExtensions = {'cbz', 'cbr', 'cb7', 'cbt'};
+
+  /// Whether this item is a comic / graphic novel (archive or server Comic type).
+  bool get isComic {
+    final t = (type ?? '').toLowerCase();
+    if (t == 'comic') return true;
+    final container = (rawData['Container'] as String? ?? '').toLowerCase();
+    if (_comicExtensions.contains(container)) return true;
+    for (final source in mediaSources) {
+      final sc = (source['Container'] as String? ?? '').toLowerCase();
+      if (_comicExtensions.contains(sc)) return true;
+      final path =
+          (source['Path'] as String? ?? source['Name'] as String? ?? '')
+              .toLowerCase();
+      final dot = path.lastIndexOf('.');
+      if (dot >= 0 && dot < path.length - 1) {
+        if (_comicExtensions.contains(path.substring(dot + 1))) return true;
+      }
+    }
+    for (final candidate in [
+      rawData['Path'],
+      rawData['FileName'],
+      rawData['FilePath'],
+      rawData['Name'],
+      name,
+    ]) {
+      if (candidate is String && candidate.isNotEmpty) {
+        final lower = candidate.toLowerCase();
+        final dot = lower.lastIndexOf('.');
+        if (dot >= 0 && dot < lower.length - 1) {
+          final ext = lower.substring(dot + 1).split('?').first;
+          if (_comicExtensions.contains(ext)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /// Whether this item should use the audiobook player experience.
   ///
   /// Jellyfin marks audiobook collections with Type "AudioBook" and audiobook
@@ -261,6 +299,7 @@ class AggregatedItem {
   bool get isAudiobook {
     final t = (type ?? '').toLowerCase();
     if (t == 'audiobook') return true;
+    if (isComic) return false;
     final mediaType = (rawData['MediaType'] as String? ?? '').toLowerCase();
     // A books library holds readable books next to audio, so a Book that is
     // not audio stays a book whatever the collection says below.

@@ -848,6 +848,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get latestAudiobooks => 'Últimos audiolibros';
 
   @override
+  String get latestComics => 'Latest Comics';
+
+  @override
+  String get comics => 'Comics';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -863,6 +869,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get bookFormatAudiobook => 'Audiolibro';
+
+  @override
+  String get bookFormatComic => 'Comic';
+
+  @override
+  String get noBooksFound => 'No se encontraron libros para este autor.';
+
+  @override
+  String get noBooksFoundDescription =>
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1040,9 +1056,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noBiographyAvailable =>
       'No hay biografía disponible para este autor.';
-
-  @override
-  String get noBooksFound => 'No se encontraron libros para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -12233,6 +12246,9 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get books => 'Libros';
 
   @override
+  String get noBooksFound => 'No se encontraron libros para este autor.';
+
+  @override
   String get author => 'Autor';
 
   @override
@@ -12389,9 +12405,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   @override
   String get noBiographyAvailable =>
       'No hay biografía disponible para este autor.';
-
-  @override
-  String get noBooksFound => 'No se encontraron libros para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -20129,6 +20142,9 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String get books => 'Libros';
 
   @override
+  String get noBooksFound => 'No se encontraron libros para este autor.';
+
+  @override
   String get author => 'Autor';
 
   @override
@@ -20285,9 +20301,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get noBiographyAvailable =>
       'No hay biografía disponible para este autor.';
-
-  @override
-  String get noBooksFound => 'No se encontraron libros para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -27909,6 +27922,9 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   String get books => 'Libros';
 
   @override
+  String get noBooksFound => 'No se encontraron libros para este autor.';
+
+  @override
   String get author => 'Autor';
 
   @override
@@ -28065,9 +28081,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   @override
   String get noBiographyAvailable =>
       'No hay biografía disponible para este autor.';
-
-  @override
-  String get noBooksFound => 'No se encontraron libros para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
@@ -35742,6 +35755,9 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   String get books => 'Libros';
 
   @override
+  String get noBooksFound => 'No se encontraron libros para este autor.';
+
+  @override
   String get author => 'Autor';
 
   @override
@@ -35898,9 +35914,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   @override
   String get noBiographyAvailable =>
       'No hay biografía disponible para este autor.';
-
-  @override
-  String get noBooksFound => 'No se encontraron libros para este autor.';
 
   @override
   String get unableToLoadAuthorDetails =>
