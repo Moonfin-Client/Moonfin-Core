@@ -1105,7 +1105,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                     !PlatformDetection.isWeb && !PlatformDetection.isTV)
                   _SidebarItem(
                     key: const ValueKey('sidebar-downloads'),
-                    icon: Icons.download,
+                    icon: Icons.download_for_offline,
                     label: l10n.savedMedia,
                     baseColor: nextMainSidebarColor(),
                     showLabel: _showLabels,

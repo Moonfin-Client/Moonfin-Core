@@ -1119,7 +1119,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                   child: ExpandableIconButton(
                     key: const ValueKey('sidebar-downloads'),
                     forceExpanded: alwaysExpanded,
-                    icon: Icons.download,
+                    icon: Icons.download_for_offline,
                     label: l10n.savedMedia,
                     baseColor: nextNavColor(),
                     onPressed: () {

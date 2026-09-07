@@ -308,7 +308,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     if (_prefs.get(UserPreferences.showDownloadsButton)) {
       actions.add(
         _BottomNavAction(
-          icon: Icons.download,
+          icon: Icons.download_for_offline,
           label: l10n.savedMedia,
           isActive: true,
           onTap: () {

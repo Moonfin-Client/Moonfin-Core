@@ -157,7 +157,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                 SwitchPreferenceTile(
                   preference: UserPreferences.showDownloadsButton,
                   title: l10n.showDownloadsButton,
-                  icon: Icons.download,
+                  icon: Icons.download_for_offline,
                   onChanged: _pushPersonalizationSync,
                 ),
               SwitchPreferenceTile(
