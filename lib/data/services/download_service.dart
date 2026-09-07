@@ -16,6 +16,7 @@ import 'package:uuid/uuid.dart';
 import '../../platform/ios_storage.dart';
 import '../../playback/subtitle_formats.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/disk_free_space.dart';
 import '../../util/download_utils.dart';
 import '../../util/platform_detection.dart';
 import '../database/offline_database.dart';
@@ -161,6 +162,54 @@ bool downloadUsesPluginEngine({
   if (isAndroidTv && qualityTranscoded) return false;
   if (destinationOnRemovableStorage) return false;
   return true;
+}
+
+/// Headroom the free-space preflight keeps beyond the estimated download
+/// size, so a download can't run the volume down to its last bytes.
+const int _freeSpaceHeadroomBytes = 500 * 1024 * 1024;
+
+/// Disk-full error numbers as they appear in exception text: 28 ENOSPC,
+/// 122 Linux EDQUOT, 69 macOS EDQUOT, 112 Windows ERROR_DISK_FULL.
+final RegExp _diskFullErrno = RegExp(r'errno = (28|69|112|122)\b');
+
+/// Maps a raw engine failure description onto an actionable message when it
+/// is a full disk, and returns it unchanged otherwise.
+@visibleForTesting
+String friendlyDownloadFailure(String? description) {
+  final raw = description ?? 'Download failed';
+  final lower = raw.toLowerCase();
+  final looksFull =
+      lower.contains('no space left on device') ||
+      lower.contains('disk quota exceeded') ||
+      _diskFullErrno.hasMatch(raw);
+  if (looksFull) {
+    return 'The download disk is full. '
+        'Free up space in the download location and retry.';
+  }
+  return raw;
+}
+
+/// Filter for [DownloadService.sweepStagingDir]: whether one directory entry
+/// is a staging leftover that is safe to delete. Fresh files may belong to a
+/// running task or carry resume data the plugin retries from, so they only
+/// go when nothing is downloading at all.
+@visibleForTesting
+bool isSweepableStagingFile(
+  FileSystemEntity entity, {
+  required DateTime now,
+  required bool downloadsIdle,
+}) {
+  if (entity is! File) return false;
+  if (!p.basename(entity.path).startsWith('com.bbflight.background_downloader')) {
+    return false;
+  }
+  if (downloadsIdle) return true;
+  try {
+    final age = now.difference(entity.statSync().modified);
+    return age > const Duration(days: 7);
+  } catch (_) {
+    return false;
+  }
 }
 
 /// The native engine rejected the server's TLS certificate, so the download
@@ -1249,7 +1298,7 @@ class DownloadService extends ChangeNotifier {
             ? DioExceptionType.badResponse
             : DioExceptionType.unknown,
         requestOptions: RequestOptions(path: url),
-        message: update.exception?.description ?? 'Download failed',
+        message: friendlyDownloadFailure(update.exception?.description),
         response: hasStatus
             ? Response(
                 requestOptions: RequestOptions(path: url),
@@ -1279,7 +1328,7 @@ class DownloadService extends ChangeNotifier {
           await _offlineRepo.updateDownloadStatus(
             itemId,
             3,
-            error: update.exception?.description ?? 'Download failed',
+            error: friendlyDownloadFailure(update.exception?.description),
           );
           await bgd.FileDownloader().database.deleteRecordWithId(
             update.task.taskId,
@@ -1594,14 +1643,19 @@ class DownloadService extends ChangeNotifier {
     if (status == 404) {
       return 'Download source not found (404). The file may no longer be available.';
     }
-    return e.message ?? 'Download failed';
+    if (e.error is FileSystemException) {
+      return friendlyDownloadFailure(e.error.toString());
+    }
+    return friendlyDownloadFailure(e.message);
   }
 
   String _friendlyGenericError(Object e) {
     if (e is TimeoutException) {
       return 'Download timed out while waiting for transfer completion.';
     }
-
+    if (e is FileSystemException) {
+      return friendlyDownloadFailure(e.toString());
+    }
     return e.toString();
   }
 
@@ -1983,8 +2037,28 @@ class DownloadService extends ChangeNotifier {
         notifyListeners();
         return;
       }
-      _reservedStorageBytes[item.id] = estimatedSize;
       final downloadsDir = await _storagePath.getOfflineRoot();
+      if (PlatformDetection.isDesktop || PlatformDetection.isAndroid) {
+        final free = await availableDiskSpaceBytes(downloadsDir.path);
+        // Staging and destination share the root's volume, so one check
+        // covers both. An unknown size still requires the headroom.
+        if (free != null && free < estimatedSize + _freeSpaceHeadroomBytes) {
+          final message =
+              'Not enough free space in ${downloadsDir.path}. '
+              'Needs about ${formatBytes(estimatedSize + _freeSpaceHeadroomBytes)}, '
+              '${formatBytes(free)} available.';
+          _activeDownloads[item.id] = DownloadProgress(
+            itemId: item.id,
+            fileName: item.name,
+            error: message,
+            quality: quality,
+          );
+          _emitError('${item.name}: $message');
+          notifyListeners();
+          return;
+        }
+      }
+      _reservedStorageBytes[item.id] = estimatedSize;
       final subFolder = _buildSubFolder(fullItem);
       final fileName = _buildFileName(fullItem, quality);
       late final Directory dir;
@@ -3090,6 +3164,50 @@ class DownloadService extends ChangeNotifier {
         }
       }
     }
+
+    unawaited(sweepStagingDir());
+  }
+
+  /// Deletes staging leftovers the engine will never finish: everything once
+  /// nothing is downloading, otherwise only files old enough that no live
+  /// task or plugin retry can still be writing them. The staging dir holds
+  /// nothing but engine temp files, so nothing else is ever touched.
+  Future<void> sweepStagingDir({Directory? dir}) async {
+    if (!PlatformDetection.isDesktop && !PlatformDetection.isAndroid) return;
+    try {
+      final staging = dir ?? await _storagePath.getStagingDir();
+      if (!await staging.exists()) return;
+      var downloadsIdle =
+          _activeDownloads.isEmpty && _pendingDownloads.isEmpty;
+      if (downloadsIdle && _pluginEngineSupported) {
+        try {
+          final records = await bgd.FileDownloader().database.allRecords(
+            group: BackgroundDownloadCoordinator.mediaGroup,
+          );
+          downloadsIdle = !records.any(
+            (r) =>
+                r.status == bgd.TaskStatus.enqueued ||
+                r.status == bgd.TaskStatus.running ||
+                r.status == bgd.TaskStatus.paused ||
+                r.status == bgd.TaskStatus.waitingToRetry,
+          );
+        } catch (_) {
+          downloadsIdle = false;
+        }
+      }
+      final now = DateTime.now();
+      await for (final entity in staging.list(followLinks: false)) {
+        if (isSweepableStagingFile(
+          entity,
+          now: now,
+          downloadsIdle: downloadsIdle,
+        )) {
+          try {
+            await entity.delete();
+          } catch (_) {}
+        }
+      }
+    } catch (_) {}
   }
 
   /// Resolves an in-progress drift row against its native task record.
@@ -3120,7 +3238,7 @@ class DownloadService extends ChangeNotifier {
         await _offlineRepo.updateDownloadStatus(
           row.itemId,
           3,
-          error: record.exception?.description ?? 'Download failed',
+          error: friendlyDownloadFailure(record.exception?.description),
         );
         await bgd.FileDownloader().database.deleteRecordWithId(
           record.task.taskId,

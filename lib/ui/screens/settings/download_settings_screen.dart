@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../data/models/download_quality.dart';
 import '../../../data/providers/offline_providers.dart';
+import '../../../data/services/background_download_coordinator.dart';
 import '../../../data/services/download_service.dart';
 import '../../../data/services/macos_download_dir.dart';
 import '../../../data/services/storage_path_service.dart';
@@ -538,11 +540,13 @@ class DownloadSettingsScreen extends ConsumerWidget {
       return;
     }
 
+    final oldRoot = await storage.getOfflineRoot();
     if (bookmark != null) {
       await prefs.set(UserPreferences.customDownloadPathBookmark, bookmark);
     }
     await prefs.set(UserPreferences.customDownloadPath, result);
     storage.clearCache();
+    unawaited(_onDownloadLocationChanged(oldRoot));
   }
 
   /// Picks between the folders Android allows, which is the default plus
@@ -613,8 +617,33 @@ class DownloadSettingsScreen extends ConsumerWidget {
       return;
     }
 
+    final oldRoot = await storage.getOfflineRoot();
     await prefs.set(UserPreferences.customDownloadPath, choice);
     storage.clearCache();
+    unawaited(_onDownloadLocationChanged(oldRoot));
+  }
+
+  /// Clears out the old root's staging folder and points the download engine
+  /// at the new root, so staged bytes land on the same volume as their
+  /// destination. The sweep applies the same protective filter as the startup
+  /// sweep, so an in-flight download finishing into the old root keeps its
+  /// staging file.
+  Future<void> _onDownloadLocationChanged(Directory oldRoot) async {
+    final oldStaging = Directory(
+      '${oldRoot.path}/${StoragePathService.stagingDirName}',
+    );
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<DownloadService>()) {
+      await getIt<DownloadService>().sweepStagingDir(dir: oldStaging);
+    }
+    try {
+      if (await oldStaging.exists() && await oldStaging.list().isEmpty) {
+        await oldStaging.delete();
+      }
+    } catch (_) {}
+    if (getIt.isRegistered<BackgroundDownloadCoordinator>()) {
+      await getIt<BackgroundDownloadCoordinator>().applyStagingDirectory();
+    }
   }
 
   /// Existing downloads stay where they are, so the move is worth confirming.
@@ -646,8 +675,11 @@ class DownloadSettingsScreen extends ConsumerWidget {
     bool enable,
   ) async {
     if (!enable) {
+      final storage = GetIt.instance<StoragePathService>();
+      final oldRoot = await storage.getOfflineRoot();
       await prefs.set(UserPreferences.customDownloadPath, '');
-      GetIt.instance<StoragePathService>().clearCache();
+      storage.clearCache();
+      unawaited(_onDownloadLocationChanged(oldRoot));
       return;
     }
 
@@ -689,8 +721,11 @@ class DownloadSettingsScreen extends ConsumerWidget {
       }
     }
 
+    final storage = GetIt.instance<StoragePathService>();
+    final oldRoot = await storage.getOfflineRoot();
     await prefs.set(UserPreferences.customDownloadPath, 'mediastore');
-    GetIt.instance<StoragePathService>().clearCache();
+    storage.clearCache();
+    unawaited(_onDownloadLocationChanged(oldRoot));
   }
 
   Future<void> _confirmClearAll(BuildContext context) async {

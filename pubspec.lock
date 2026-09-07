@@ -139,11 +139,12 @@ packages:
   background_downloader:
     dependency: "direct main"
     description:
-      name: background_downloader
-      sha256: d27fcaf94f738032f1e6db098230799bf31ae7bf184f173fc9a752fcdae75c0e
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.5.6"
+      path: "."
+      ref: "1e39e0c0c66d06483acc01208bc5cbb5e707de69"
+      resolved-ref: "1e39e0c0c66d06483acc01208bc5cbb5e707de69"
+      url: "https://github.com/RadicalMuffinMan/background_downloader.git"
+    source: git
+    version: "9.6.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -496,7 +497,7 @@ packages:
     source: hosted
     version: "1.3.3"
   ffi:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ffi
       sha256: "6d7fd89431262d8f3125e81b50d3847a091d846eafcd4fdb88dd06f36d705a45"
