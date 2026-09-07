@@ -3550,6 +3550,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get showFavoritesButton => 'Показване на бутона за любими';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Показване на библиотеки в лентата с инструменти';
 

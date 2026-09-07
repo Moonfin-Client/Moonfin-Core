@@ -3548,6 +3548,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get showFavoritesButton => 'Näytä suosikit-painike';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Näytä kirjastot työkalupalkissa';
 
   @override

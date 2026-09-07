@@ -3548,6 +3548,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get showFavoritesButton => 'Zobrazit tlačítko Oblíbené';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Zobrazit knihovny na liště Toolbar';
 
   @override

@@ -28,6 +28,7 @@ import '../navigation/home_refresh_bus.dart';
 import '../navigation/route_lifecycle_observer.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
+import '../screens/downloads/downloads_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'seerr_icons.dart';
@@ -1100,13 +1101,27 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                         : const SizedBox.shrink(),
                   ),
                 ],
+                if (_prefs.get(UserPreferences.showDownloadsButton) &&
+                    !PlatformDetection.isWeb && !PlatformDetection.isTV)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-downloads'),
+                    icon: Icons.download,
+                    label: l10n.savedMedia,
+                    baseColor: nextMainSidebarColor(),
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      showDownloadsDialog(context);
+                    },
+                  ),
                 // The slot is taken here rather than inside the builder, so the
                 // settings row keeps its colour whether or not there are any
                 // messages to show.
-                _serverMessagesSidebarItem(
-                  navColor: nextMainSidebarColor(),
-                  label: l10n.serverMessages,
-                ),
+                if (_prefs.get(UserPreferences.showServerMessagesButton))
+                  _serverMessagesSidebarItem(
+                    navColor: nextMainSidebarColor(),
+                    label: l10n.serverMessages,
+                  ),
                 _SidebarItem(
                   key: const ValueKey('sidebar-settings'),
                   icon: Icons.settings_rounded,

@@ -3549,6 +3549,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get showFavoritesButton => 'Knop Favorieten tonen';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Bibliotheken weergeven in de werkbalk';
 
   @override

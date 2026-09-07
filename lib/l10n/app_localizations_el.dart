@@ -3570,6 +3570,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get showFavoritesButton => 'Εμφάνιση κουμπιού αγαπημένων';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Εμφάνιση βιβλιοθηκών στο Toolbar';
 
   @override

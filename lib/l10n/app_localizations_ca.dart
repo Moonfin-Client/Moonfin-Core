@@ -3575,6 +3575,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get showFavoritesButton => 'Mostra el botó de Preferits';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Mostra les biblioteques a la barra d\'eines';
 

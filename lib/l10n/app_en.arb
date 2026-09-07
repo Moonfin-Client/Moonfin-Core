@@ -4782,6 +4782,10 @@
   "@showFavoritesButton": {
     "description": "Setting for showing favorites button"
   },
+  "showDownloadsButton": "Show Downloads Button",
+  "@showDownloadsButton": {
+    "description": "Setting for showing downloads button"
+  },
   "showLibrariesInToolbar": "Show Libraries in Toolbar",
   "@showLibrariesInToolbar": {
     "description": "Setting for showing libraries in toolbar"

@@ -3457,6 +3457,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showFavoritesButton => '즐겨찾기 버튼 표시';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => '툴바에 라이브러리 표시';
 
   @override

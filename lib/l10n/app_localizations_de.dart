@@ -3623,6 +3623,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showFavoritesButton => 'Favoriten-Schaltfläche anzeigen';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Bibliotheken in der Symbolleiste anzeigen';
 

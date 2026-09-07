@@ -3533,6 +3533,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get showFavoritesButton => 'Knappen Vis favoritter';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Vis biblioteker i værktøjslinjen';
 
   @override

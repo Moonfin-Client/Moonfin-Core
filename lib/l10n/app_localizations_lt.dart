@@ -3551,6 +3551,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get showFavoritesButton => 'Rodyti mėgstamiausių mygtuką';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Rodyti bibliotekas įrankių juostoje';
 
   @override

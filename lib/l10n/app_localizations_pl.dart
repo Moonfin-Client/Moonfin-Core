@@ -3679,6 +3679,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get showFavoritesButton => 'Pokaż przycisk Ulubione';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Pokaż biblioteki na pasku narzędzi';
 
   @override

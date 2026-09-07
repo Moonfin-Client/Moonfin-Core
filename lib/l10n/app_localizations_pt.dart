@@ -3546,6 +3546,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get showFavoritesButton => 'Mostrar Botão de Favoritos';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Mostrar Bibliotecas na Barra de Ferramentas';
 

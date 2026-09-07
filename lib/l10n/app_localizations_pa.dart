@@ -3525,6 +3525,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get showFavoritesButton => 'ਮਨਪਸੰਦ ਬਟਨ ਦਿਖਾਓ';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'ਟੂਲਬਾਰ ਵਿੱਚ ਲਾਇਬ੍ਰੇਰੀਆਂ ਦਿਖਾਓ';
 
   @override

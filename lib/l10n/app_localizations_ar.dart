@@ -3546,6 +3546,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showFavoritesButton => 'إظهار زر المفضلة';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'إظهار المكتبات في شريط الأدوات';
 
   @override

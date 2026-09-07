@@ -3443,6 +3443,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showFavoritesButton => '顯示收藏夾按鈕';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => '在工具列中顯示庫';
 
   @override

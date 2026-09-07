@@ -3514,6 +3514,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showFavoritesButton => 'دکمه نمایش موارد دلخواه';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'نمایش کتابخانه ها در نوار ابزار';
 
   @override

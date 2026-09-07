@@ -29,6 +29,7 @@ import 'expandable_icon_button.dart';
 import 'overlay_sheet.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
+import '../screens/downloads/downloads_panel.dart';
 import '../screens/settings/settings_side_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import 'seerr_icons.dart';
@@ -1111,17 +1112,33 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 ),
               ],
               _gap(),
-              _orderButton(
-                order: 98,
-                // The slot is taken here rather than inside the builder, so the
-                // settings icon keeps its colour whether or not there are any
-                // messages to show.
-                child: _buildServerMessagesButton(
-                  navColor: nextNavColor(),
-                  alwaysExpanded: alwaysExpanded,
-                  label: l10n.serverMessages,
+              if (_prefs.get(UserPreferences.showDownloadsButton) &&
+                !PlatformDetection.isWeb && !PlatformDetection.isTV)
+                _orderButton(
+                  order: 97,
+                  child: ExpandableIconButton(
+                    key: const ValueKey('sidebar-downloads'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.download,
+                    label: l10n.savedMedia,
+                    baseColor: nextNavColor(),
+                    onPressed: () {
+                      showDownloadsDialog(context);
+                    },
+                  ),
                 ),
-              ),
+              if (_prefs.get(UserPreferences.showServerMessagesButton))
+                _orderButton(
+                  order: 98,
+                  // The slot is taken here rather than inside the builder, so the
+                  // settings icon keeps its colour whether or not there are any
+                  // messages to show.
+                  child: _buildServerMessagesButton(
+                    navColor: nextNavColor(),
+                    alwaysExpanded: alwaysExpanded,
+                    label: l10n.serverMessages,
+                  ),
+                ),
               _orderButton(
                 order: 99,
                 child: ExpandableIconButton(

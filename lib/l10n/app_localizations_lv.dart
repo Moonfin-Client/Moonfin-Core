@@ -3551,6 +3551,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get showFavoritesButton => 'Rādīt pogu Izlase';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Rādīt bibliotēkas rīkjoslā';
 
   @override

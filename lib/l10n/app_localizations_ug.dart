@@ -3537,6 +3537,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get showFavoritesButton => 'ياقتۇرىدىغان كۇنۇپكىنى كۆرسەت';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'قورالبالدىقىدا كۈتۈپخانىلارنى كۆرسەت';
 
   @override

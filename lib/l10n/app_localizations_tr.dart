@@ -3538,6 +3538,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get showFavoritesButton => 'Favoriler Butonunu Göster';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Kitaplıkları Araç Çubuğunda Göster';
 
   @override

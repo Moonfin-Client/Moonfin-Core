@@ -3536,6 +3536,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get showFavoritesButton => 'Wys gunstelinge-knoppie';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Wys biblioteke in Toolbar';
 
   @override

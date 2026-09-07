@@ -3553,6 +3553,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get showFavoritesButton => 'പ്രിയപ്പെട്ടവ ബട്ടൺ കാണിക്കുക';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'ടൂൾബാറിൽ ലൈബ്രറികൾ കാണിക്കുക';
 
   @override

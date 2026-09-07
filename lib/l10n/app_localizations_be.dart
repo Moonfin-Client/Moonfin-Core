@@ -3550,6 +3550,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get showFavoritesButton => 'Паказаць кнопку \"Выбранае\".';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Паказаць бібліятэкі на панэлі інструментаў';
 

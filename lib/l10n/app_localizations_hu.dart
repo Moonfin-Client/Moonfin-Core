@@ -3552,6 +3552,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get showFavoritesButton => 'Kedvencek gomb megjelenítése';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Könyvtárak megjelenítése az eszköztárban';
 

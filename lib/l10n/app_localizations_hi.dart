@@ -3524,6 +3524,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get showFavoritesButton => 'पसंदीदा बटन दिखाएँ';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'टूलबार में लाइब्रेरी दिखाएं';
 
   @override

@@ -3537,6 +3537,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get showFavoritesButton => 'Hiển thị nút yêu thích';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Hiển thị Thư viện trong Thanh công cụ';
 
   @override

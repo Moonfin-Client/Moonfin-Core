@@ -6382,6 +6382,12 @@ abstract class AppLocalizations {
   /// **'Show Favorites Button'**
   String get showFavoritesButton;
 
+  /// Setting for showing downloads button
+  ///
+  /// In en, this message translates to:
+  /// **'Show Downloads Button'**
+  String get showDownloadsButton;
+
   /// Setting for showing libraries in toolbar
   ///
   /// In en, this message translates to:

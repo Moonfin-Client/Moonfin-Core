@@ -3511,6 +3511,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get showFavoritesButton => 'לחצן הצג מועדפים';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'הצג ספריות בסרגל הכלים';
 
   @override

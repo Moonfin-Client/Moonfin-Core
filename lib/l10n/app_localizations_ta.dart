@@ -3555,6 +3555,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get showFavoritesButton => 'பிடித்தவை பட்டனைக் காட்டு';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'கருவிப்பட்டியில் நூலகங்களைக் காட்டு';
 
   @override

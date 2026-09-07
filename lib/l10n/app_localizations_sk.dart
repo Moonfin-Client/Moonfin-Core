@@ -3555,6 +3555,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get showFavoritesButton => 'Zobraziť tlačidlo Obľúbené';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Zobraziť knižnice na paneli s nástrojmi';
 

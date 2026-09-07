@@ -1433,6 +1433,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final showDownloadsButton = Preference(
+    key: 'pref_show_downloads_button',
+    defaultValue: true,
+  );
+
   static final showAlphabeticalFilters = Preference(
     key: 'pref_show_alphabetical_filters',
     defaultValue: false,

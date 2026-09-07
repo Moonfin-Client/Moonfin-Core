@@ -3554,6 +3554,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get showFavoritesButton => 'Onyesha Kitufe cha Vipendwa';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Onyesha Maktaba kwenye Upauzana';
 
   @override

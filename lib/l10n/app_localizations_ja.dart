@@ -3470,6 +3470,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showFavoritesButton => 'お気に入りボタンを表示';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'ツールバーにライブラリを表示';
 
   @override

@@ -3557,6 +3557,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get showFavoritesButton => 'Показати кнопку «Вибране».';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Показати бібліотеки на панелі інструментів';
 

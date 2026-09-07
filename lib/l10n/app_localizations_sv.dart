@@ -3539,6 +3539,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get showFavoritesButton => 'Knappen Visa favoriter';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Visa bibliotek i verktygsfältet';
 
   @override

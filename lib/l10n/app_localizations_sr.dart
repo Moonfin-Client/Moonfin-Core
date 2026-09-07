@@ -3649,6 +3649,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get showFavoritesButton => 'Прикажи дугме Фаворити';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Прикажи библиотеке на траци са алаткама';
 

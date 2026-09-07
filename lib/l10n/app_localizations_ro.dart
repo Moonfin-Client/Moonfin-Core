@@ -3555,6 +3555,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get showFavoritesButton => 'Butonul Afișați Favorite';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Afișați bibliotecile în bara de instrumente';
 

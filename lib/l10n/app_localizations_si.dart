@@ -3531,6 +3531,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get showFavoritesButton => 'ප්‍රියතම බොත්තම පෙන්වන්න';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'මෙවලම් තීරුවේ පුස්තකාල පෙන්වන්න';
 
   @override

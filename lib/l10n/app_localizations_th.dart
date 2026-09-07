@@ -3514,6 +3514,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get showFavoritesButton => 'แสดงปุ่มรายการโปรด';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'แสดงไลบรารีในแถบเครื่องมือ';
 
   @override

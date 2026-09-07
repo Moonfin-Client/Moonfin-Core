@@ -3543,6 +3543,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get showFavoritesButton => 'Таңдаулыларды көрсету түймесі';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Құралдар тақтасында кітапханаларды көрсету';
 

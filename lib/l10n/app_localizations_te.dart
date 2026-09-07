@@ -3551,6 +3551,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get showFavoritesButton => 'ఇష్టమైనవి బటన్‌ను చూపించు';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'టూల్‌బార్‌లో లైబ్రరీలను చూపండి';
 
   @override

@@ -3424,6 +3424,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showFavoritesButton => '显示收藏按钮';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => '在工具栏中显示媒体库';
 
   @override

@@ -3556,6 +3556,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get showFavoritesButton => 'Shfaq butonin e të preferuarave';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Shfaq bibliotekat në shiritin e veglave';
 

@@ -3535,6 +3535,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get showFavoritesButton => 'Tampilkan Tombol Favorit';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Tampilkan Pustaka di Toolbar';
 
   @override

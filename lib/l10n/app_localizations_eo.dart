@@ -3531,6 +3531,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get showFavoritesButton => 'Montri Preferatajn Butonon';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Montru Bibliotekojn en Ilobreto';
 
   @override

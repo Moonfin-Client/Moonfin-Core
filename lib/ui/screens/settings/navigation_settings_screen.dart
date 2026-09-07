@@ -122,6 +122,14 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
                   ),
                   onChanged: _pushSync,
                 ),
+                if (!PlatformDetection.isWeb && !PlatformDetection.isTV) {
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.showDownloadsButton,
+                    title: l10n.showDownloadsButton,
+                    icon: Icons.download,
+                    onChanged: _pushSync,
+                  ),
+                }
               ],
             ),
             SettingsSectionHeader(l10n.appearance),

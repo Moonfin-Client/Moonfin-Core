@@ -3651,6 +3651,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get showFavoritesButton => 'Prikaži gumb Favoriti';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Prikaži biblioteke na alatnoj traci';
 
   @override

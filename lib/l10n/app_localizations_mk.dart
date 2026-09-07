@@ -3550,6 +3550,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get showFavoritesButton => 'Копче за прикажување омилени';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Прикажи библиотеки во лентата со алатки';
 

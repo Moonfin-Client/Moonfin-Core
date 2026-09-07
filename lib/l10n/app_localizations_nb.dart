@@ -3530,6 +3530,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get showFavoritesButton => 'Vis favoritter-knappen';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Vis biblioteker i verktøylinjen';
 
   @override

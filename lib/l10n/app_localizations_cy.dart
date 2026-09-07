@@ -3560,6 +3560,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get showFavoritesButton => 'Dangos y Botwm Ffefrynnau';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Dangos Llyfrgelloedd yn y Bar Offer';
 
   @override

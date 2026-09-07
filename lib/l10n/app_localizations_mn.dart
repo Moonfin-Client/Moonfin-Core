@@ -3536,6 +3536,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get showFavoritesButton => 'Дуртайг харуулах товч';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Хэрэгслийн самбарт номын санг харуулах';
 
   @override

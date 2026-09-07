@@ -3557,6 +3557,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get showFavoritesButton => 'Button ng Ipakita ang Mga Paborito';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Ipakita ang Mga Aklatan sa Toolbar';
 
   @override

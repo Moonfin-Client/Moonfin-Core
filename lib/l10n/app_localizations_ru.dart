@@ -3561,6 +3561,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get showFavoritesButton => 'Показать кнопку «Избранное»';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar =>
       'Показать библиотеки на панели инструментов';
 

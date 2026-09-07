@@ -3558,6 +3558,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get showFavoritesButton => 'Prikaži gumb za priljubljene';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'Prikaži knjižnice v orodni vrstici';
 
   @override

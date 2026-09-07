@@ -3550,6 +3550,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get showFavoritesButton => 'ಮೆಚ್ಚಿನವುಗಳ ಬಟನ್ ತೋರಿಸಿ';
 
   @override
+  String get showDownloadsButton => 'Show Downloads Button';
+
+  @override
   String get showLibrariesInToolbar => 'ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ ಲೈಬ್ರರಿಗಳನ್ನು ತೋರಿಸಿ';
 
   @override
