@@ -16,9 +16,9 @@
 
 > **[← Back to main Moonfin project](https://github.com/Moonfin-Client)**
 
-Moonfin is a cross-platform media client built with Flutter, designed for Jellyfin and Emby users who want a modern, customizable experience across mobile, tablet, desktop, TV, and web. A single shared codebase powers phones and tablets, Windows, macOS, and Linux, Android TV and Apple TV, and the browser.
+Moonfin is a media client for Jellyfin and Emby servers, built with Flutter. One shared codebase powers phones and tablets, Windows, macOS, and Linux, Android TV, Fire TV, and Apple TV, and the browser. It's made for people who want a modern, customizable experience on every screen they own.
 
-## All Moonfin-Core Clients
+## Where to get it
 
 | Platform            | Download                                                                                                                                                                                                                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,8 +41,9 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 
 | Platform | Minimum Version | Status |
 |----------|------------------|--------|
-| **Android** | 6.0 (API 23) | Full support |
-| **Android TV / Google TV** | Android 6.0 (API 23) | Full support |
+| **Android** | 7.0 (API 24) | Full support |
+| **Android TV / Google TV** | Android 7.0 (API 24) | Full support |
+| **Fire TV** | Fire OS 6 | Full support |
 | **iOS** | 16.0 | Full support |
 | **Apple TV (tvOS)** | 17.0 | Full support |
 | **macOS** | 14.0 (Sonoma) | Full support |
@@ -50,27 +51,27 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 | **Linux** | GTK 3+, CMake 3.13+ | Full support (Wayland only) |
 | **Web** | Modern browsers (installable PWA) | Full support |
 
-> Android TV and Apple TV ship from this same codebase with a TV-tuned interface and D-pad navigation, each on its own native backend. Web runs as an installable PWA through the Moonbase server plugin.
+> Android TV, Fire TV, and Apple TV ship from this same codebase with a TV-tuned interface and D-pad navigation. Fire TV runs the same native backend as Android TV. Web runs as an installable PWA through the Moonbase server plugin.
 
 ## Features
 
-- **One codebase, every screen** spanning phones, tablets, desktop, Android TV, Apple TV, web, and Samsung TV, with navigation tuned for touch, pointer, and remote.
-- **Broad playback support** through AetherEngine on iOS, Apple TV, and macOS, native Media3 by default on Android and Android TV with libmpv  available as a backup, libmpv on Windows and Linux, and the browser's own player on web, covering AV1, HEVC, Dolby Vision, Dolby Atmos, HDR10+, and bitstream audio passthrough. Dolby Vision Profile 7 direct plays on both Apple and Android TV, converted in real time instead of transcoded. See [Playback and Codecs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Playback-and-Codecs).
-- **Offline downloads** in original or server-transcoded quality, with automatic folder organization and offline subtitles. See [Downloads](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Downloads).
-- **Ebooks and audiobooks** with EPUB, MOBI, AZW/AZW3, PDF, and comic archive reading, plus M4B audiobooks with chapter navigation.
-- **Retro games** browsed and played in-app from a server game library, with native libretro playback, gamepad support, and synced save states. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
-- **Multi-server unified library** that merges content from several Jellyfin and Emby servers into one browsable, searchable UI, with Group By options and quick return to the top.
-- **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork, and skips anything you have already chosen.
-- **Featured media bar** with six layouts, Moonfin, MakD, Bookshelf, Gallery, Banner, and the rounded Aya hero, plus optional in-bar trailer previews.
-- **Themes and Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks.
-- **Integrated admin panel** for settings, users, libraries, logs, devices, and analytics without leaving the client, plus a messages window for what your server admin sends you.
-- **Discovery with Seerr** built into the media details screen, plus trending, popular, and upcoming rows with request status overlays.
-- **Live TV and DVR** with an EPG-style guide and recording management.
-- **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, with prefetching and configurable size and placement, on both Jellyfin and Emby.
+- **One codebase, every screen.** Phones, tablets, desktop, Android TV, Apple TV, and web, with navigation tuned for touch, pointer, and remote.
+- **Playback that just works.** Wide codec support including AV1, HEVC, Dolby Vision, Dolby Atmos, HDR10+, and audio passthrough. Dolby Vision Profile 7 direct plays on Apple and Android TV, converted in real time instead of transcoded. See [Playback and Codecs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Playback-and-Codecs).
+- **Offline downloads** in original or smaller server-transcoded quality, with automatic folder organization and offline subtitles. See [Downloads](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Downloads).
+- **Ebooks and audiobooks.** Read EPUB, MOBI, AZW/AZW3, PDF, and comic archives. Play M4B audiobooks with chapter navigation.
+- **Retro games** browsed and played in-app from a server game library, with gamepad support and save states that sync between devices. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
+- **Multi-server unified library** that merges several Jellyfin and Emby servers into one browsable, searchable UI.
+- **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork.
+- **Featured media bar** with six layouts, plus optional in-bar trailer previews.
+- **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks.
+- **An integrated admin panel** for settings, users, libraries, logs, devices, and analytics, plus a messages window for notes from your server admin.
+- **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
+- **Live TV and DVR** with a program guide and recording management.
+- **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.
 - **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network.
 - **SyncPlay** for synchronized group watching.
-- **Personal ratings** as a like, five stars, or a score out of ten, shown alongside the other rating sources and usable to sort or filter a library.
+- **Personal ratings** as a like, five stars, or a score out of ten, usable to sort or filter a library.
 - **Ratings from MDBList and TMDB**, home row customization, parental controls with PIN, and in-app update checks.
 
 The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Features) wiki page.
@@ -86,17 +87,20 @@ More in the [Screenshots](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Sc
 
 ## Installation
 
-Download platform artifacts from the [Releases page](https://github.com/Moonfin-Client/Moonfin-Core/releases).
+The store links above are the easy route. To install a file yourself, download it from the [Releases page](https://github.com/Moonfin-Client/Moonfin-Core/releases) and pick the one for your device:
 
 | Platform | File |
 |---|---|
-| Android / Android TV | `Moonfin_Android_v<version>.apk` |
-| iOS | `Moonfin_iOS_v<version>.ipa` |
-| Windows (x64 and ARM64) | `Moonfin_Windows_v<version>.exe` |
+| Android (phones and tablets) | `Moonfin_Android_v<version>.apk` |
+| Android TV / Google TV / Fire TV | `Moonfin_AndroidTV_v<version>.apk` |
+| iOS | `Moonfin_iOS_v<version>_unsigned.ipa` (for self-signing) |
+| Apple TV | `Moonfin_tvOS_v<version>_unsigned.ipa` (for self-signing) |
+| Windows x64 | `Moonfin_Windows_v<version>.exe` |
+| Windows ARM64 | `Moonfin_WindowsARM64_v<version>.exe` |
 | macOS | `Moonfin_macOS_v<version>.dmg` |
 | Linux x64 | `Moonfin_Linux_v<version>.<ext>` (AppImage, deb, rpm, snap, flatpak, tarball) |
 | Linux ARM64 | `Moonfin_LinuxARM64_v<version>.<ext>` (same formats) |
-| Web | Served as a PWA by the [Moonbase](https://github.com/Moonfin-Client/Plugin) server plugin |
+| Web | Served as a PWA by the [Moonbase](https://github.com/Moonfin-Client/Plugin) server plugin, no download needed |
 
 On Arch Linux, install from the AUR with `yay -S moonfin` (or `paru`, `pamac build`).
 
@@ -126,6 +130,7 @@ The deeper reference material lives in the [Wiki](https://github.com/Moonfin-Cli
 | [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games) | Playing server game libraries in-app, cores, controllers, and save states |
 | [Installation](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Installation) | Which release file to pick, and the AUR package |
 | [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | Keyboard shortcuts, subtitle downloads, and remote device control |
+| [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs) | Capturing a diagnostic report for a bug report |
 | [Custom mpv Configuration](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Custom-mpv-Configuration) | Tuning playback with your own `mpv.conf`, allowed options, and SVP on Windows |
 | [Building from Source](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Building-from-Source) | Toolchain versions, quick start, and per-platform build commands |
 | [Development](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Development) | Developer notes, contributing guidelines, and the pull request process |
