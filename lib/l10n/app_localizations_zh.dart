@@ -10435,6 +10435,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return '显示全部 ($count) 音轨';
   }

@@ -2783,6 +2783,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final String path = mediaSource['Path'] as String? ?? '';
     final String fileName = path.split('/').last.split('\\').last;
     final String container = mediaSource['Container']?.toString().toUpperCase() ?? 'Unknown';
+    final String dateCreated = item.dateCreated.toString().split(' ')[0] ?? '';
 
     // Parse streams
     final List<Map<String, dynamic>> rawStreams = (mediaSource['MediaStreams'] as List?)
@@ -2901,6 +2902,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 l10n.fileSizeFormat(formattedSize, container),
                 style: textTheme.bodySmall?.copyWith(color: Colors.white70),
               ),
+              Text(
+                l10n.dateCreatedFormat(dateCreated),
+                style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+              )
             ],
           ),
         ),

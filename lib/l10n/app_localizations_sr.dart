@@ -2604,104 +2604,105 @@ class AppLocalizationsSr extends AppLocalizations {
   String get seasonalEffectsDescription => 'Визуелни ефекти и сезонски украси';
 
   @override
-  String get loadingAnimation => 'Loading Animation';
+  String get loadingAnimation => 'Анимација учитавања';
 
   @override
   String get loadingAnimationDescription =>
-      'Customize the loading animations used throughout Moonfin';
+      'Прилагодите анимације учитавања које се користе широм Мунфина (Moonfin)';
 
   @override
-  String get loadingAnimationConfiguration => 'Loading Animation Configuration';
+  String get loadingAnimationConfiguration =>
+      'Конфигурација анимације учитавања';
 
   @override
-  String get loadingAnimationImage => 'Image';
+  String get loadingAnimationImage => 'Слика';
 
   @override
-  String get loadingAnimationImageMoonfinLogo => 'Moonfin Logo';
+  String get loadingAnimationImageMoonfinLogo => 'Мунфин лого (Moonfin Logo)';
 
   @override
-  String get loadingAnimationImageSpinner => 'Spinner';
+  String get loadingAnimationImageSpinner => 'Спинер';
 
   @override
-  String get loadingAnimationImageRunner => 'Runner';
+  String get loadingAnimationImageRunner => 'Ранер';
 
   @override
-  String get loadingAnimationImageMoonPhases => 'Moon Phases';
+  String get loadingAnimationImageMoonPhases => 'Месечеве мене';
 
   @override
-  String get loadingAnimationImageMoonfinPhases => 'Moonfin Phases';
+  String get loadingAnimationImageMoonfinPhases => 'Мунфин мене';
 
   @override
-  String get loadingAnimationImageNeonfinPhases => 'Neonfin Phases';
+  String get loadingAnimationImageNeonfinPhases => 'Неонфим мене';
 
   @override
-  String get loadingAnimationSize => 'Animation Size';
+  String get loadingAnimationSize => 'Величина анимације';
 
   @override
-  String get loadingAnimationSizeThumbnail => 'Thumbnail';
+  String get loadingAnimationSizeThumbnail => 'Сличица';
 
   @override
-  String get loadingAnimationSizeSmall => 'Small';
+  String get loadingAnimationSizeSmall => 'Мала';
 
   @override
-  String get loadingAnimationSizeMedium => 'Medium';
+  String get loadingAnimationSizeMedium => 'Средња';
 
   @override
-  String get loadingAnimationSizeLarge => 'Large';
+  String get loadingAnimationSizeLarge => 'Велика';
 
   @override
-  String get loadingAnimationPosition => 'Animation Position';
+  String get loadingAnimationPosition => 'Позиција анимације';
 
   @override
-  String get loadingAnimationPositionTopLeft => 'Top-Left';
+  String get loadingAnimationPositionTopLeft => 'Горе лево';
 
   @override
-  String get loadingAnimationPositionTopCenter => 'Top-Center';
+  String get loadingAnimationPositionTopCenter => 'Горе центар';
 
   @override
-  String get loadingAnimationPositionTopRight => 'Top-Right';
+  String get loadingAnimationPositionTopRight => 'Горе десно';
 
   @override
-  String get loadingAnimationPositionMiddleLeft => 'Middle-Left';
+  String get loadingAnimationPositionMiddleLeft => 'Средина лево';
 
   @override
-  String get loadingAnimationPositionMiddle => 'Middle';
+  String get loadingAnimationPositionMiddle => 'Средина';
 
   @override
-  String get loadingAnimationPositionMiddleRight => 'Middle-Right';
+  String get loadingAnimationPositionMiddleRight => 'Средина десно';
 
   @override
-  String get loadingAnimationPositionBottomLeft => 'Bottom-Left';
+  String get loadingAnimationPositionBottomLeft => 'Доле лево';
 
   @override
-  String get loadingAnimationPositionBottomCenter => 'Bottom-Center';
+  String get loadingAnimationPositionBottomCenter => 'Доле центар';
 
   @override
-  String get loadingAnimationPositionBottomRight => 'Bottom-Right';
+  String get loadingAnimationPositionBottomRight => 'Доле десно';
 
   @override
-  String get loadingAnimationPositionBouncing => 'Bouncing';
+  String get loadingAnimationPositionBouncing => 'Скакутање';
 
   @override
-  String get loadingAnimationSpeed => 'Animation Speed';
+  String get loadingAnimationSpeed => 'Брзина анимације';
 
   @override
-  String get loadingAnimationSpeedSlow => 'Slow';
+  String get loadingAnimationSpeedSlow => 'Споро';
 
   @override
-  String get loadingAnimationSpeedModerate => 'Moderate';
+  String get loadingAnimationSpeedModerate => 'Умерено';
 
   @override
-  String get loadingAnimationSpeedFast => 'Fast';
+  String get loadingAnimationSpeedFast => 'Брзо';
 
   @override
-  String get loadingAnimationSpeedUltra => 'Ultra';
+  String get loadingAnimationSpeedUltra => 'Ултра брзо';
 
   @override
-  String get showLoadingAnimationText => 'Show Text?';
+  String get showLoadingAnimationText => 'Прикажи текст?';
 
   @override
-  String get loadingAnimationPreview => 'Preview';
+  String get loadingAnimationPreview => 'Преглед';
 
   @override
   String get snow => 'Снег';
@@ -2825,26 +2826,26 @@ class AppLocalizationsSr extends AppLocalizations {
       'Прикажи сличице за преглед када тражите';
 
   @override
-  String get trickplayDisplayStyleSingle => 'Single Thumbnail';
+  String get trickplayDisplayStyleSingle => 'Једна сличица';
 
   @override
-  String get trickplayDisplayStyleStrip => 'Filmstrip';
+  String get trickplayDisplayStyleStrip => 'Филмска трака';
 
   @override
-  String get trickplayModeFull => 'Full Screen';
+  String get trickplayModeFull => 'Цео екран';
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Drag the slider to preview scrubbing';
+      'Превуците клизач да бисте прегледали премотавање';
 
   @override
-  String get trickplayPreviewScale => 'Preview Size';
+  String get trickplayPreviewScale => 'Величина прегледа';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset => 'Удаљеност од траке за претрагу';
 
   @override
-  String get trickplayFollowScrubPosition => 'Follow Scrub Position';
+  String get trickplayFollowScrubPosition => 'Прати позицију претраживања';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
@@ -3830,16 +3831,16 @@ class AppLocalizationsSr extends AppLocalizations {
   String get mediaBarModeOff => 'Искључено';
 
   @override
-  String get mediaBarModeBookshelf => 'Bookshelf';
+  String get mediaBarModeBookshelf => 'Полица';
 
   @override
-  String get mediaBarModeGallery => 'Gallery';
+  String get mediaBarModeGallery => 'Галерија';
 
   @override
-  String get mediaBarModeBanner => 'Banner';
+  String get mediaBarModeBanner => 'Банер';
 
   @override
-  String get mediaBarModeAya => 'Aya';
+  String get mediaBarModeAya => 'Аја';
 
   @override
   String get enableMediaBar => 'Омогући траку медија';
@@ -3852,10 +3853,10 @@ class AppLocalizationsSr extends AppLocalizations {
   String get contentType => 'Цонтент Типе';
 
   @override
-  String get mediaBarSourceType => 'Source';
+  String get mediaBarSourceType => 'Извор';
 
   @override
-  String get mediaBarSourceRandom => 'Random';
+  String get mediaBarSourceRandom => 'Насумично';
 
   @override
   String get moviesAndTvShows => 'Филмови и ТВ емисије';
@@ -3898,11 +3899,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get enableTrailerAudio => 'Омогући звук за најаве у медијској траци';
 
   @override
-  String get trailerCaptions => 'Trailer Captions';
+  String get trailerCaptions => 'Титлови најаве';
 
   @override
   String get trailerCaptionsDescription =>
-      'Show captions on YouTube trailers in the media bar';
+      'Приказуј титлове за Јутјуб (YouTube) најаве унутар медијске траке';
 
   @override
   String get episodePreview => 'Преглед епизоде';
@@ -3922,21 +3923,21 @@ class AppLocalizationsSr extends AppLocalizations {
   String get previewAudio => 'Превиев Аудио';
 
   @override
-  String get enablePreviewAudio =>
-      'Омогућите звук за прегледе трејлера и епизода';
+  String get enablePreviewAudio => 'Омогући аудио за прегледе медија';
 
   @override
-  String get latestMedia => 'Латест Медиа';
+  String get latestMedia => 'Недавно додати садржај';
 
   @override
   String get recentlyReleased => 'Недавно објављено';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Sort By';
+  String get recentlyReleasedSeriesType =>
+      'Недавно објављене серије Сортирај по';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>
-      'Sort Recently Released Series home rows by series, latest season, or latest episode air date';
+      'Сортирајте редове на почетној страници за недавно објављене серије према наслову серије, последњој сезони или датуму емитовања последње епизоде';
 
   @override
   String get myMedia => 'Моји медији';
@@ -3963,7 +3964,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get liveTV => 'ТВ уживо';
 
   @override
-  String get favoriteChannels => 'Favorite Channels';
+  String get favoriteChannels => 'Омиљени канали';
 
   @override
   String get homeSections => 'Хоме Сецтионс';
@@ -3989,15 +3990,15 @@ class AppLocalizationsSr extends AppLocalizations {
   String get combineBothRows => 'Комбинујте оба реда у један кућни одељак';
 
   @override
-  String get nextUpMaxDays => 'Max days in Next Up';
+  String get nextUpMaxDays => 'Ограничење дана у листи „Следеће“';
 
   @override
   String get nextUpMaxDaysDescription =>
-      'How long a show stays in Next Up after you last watched it';
+      'Колико дуго серија остаје у секцији „Следеће“ након што сте је последњи пут гледали';
 
   @override
   String daysValue(int days) {
-    return '$days days';
+    return '$days дана';
   }
 
   @override
@@ -4007,11 +4008,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get fullScreenRowsDescription => 'Ограничи на 1 ред по екрану';
 
   @override
-  String get homeRowsPadding => 'Home Row Padding';
+  String get homeRowsPadding => 'Попуњавање основног реда';
 
   @override
   String get homeRowsPaddingDescription =>
-      'Customize padding between home rows';
+      'Прилагодите размак између редова на почетном екрану';
 
   @override
   String get perRowImageType => 'Тип слике по реду';
@@ -4138,52 +4139,52 @@ class AppLocalizationsSr extends AppLocalizations {
   String get clockModeBouncing => 'Одбијајући';
 
   @override
-  String get screensaverGeneralSettings => 'General Settings';
+  String get screensaverGeneralSettings => 'Општа подешавања';
 
   @override
-  String get screensaverVisualComponents => 'Visual Components';
+  String get screensaverVisualComponents => 'Визуалне компоненте';
 
   @override
-  String get screensaverLibraryContent => 'Library Content';
+  String get screensaverLibraryContent => 'Садржај библиотеке';
 
   @override
-  String get screensaverBackdrop => 'Backdrop';
+  String get screensaverBackdrop => 'Зачеље';
 
   @override
-  String get screensaverBackdropBlack => 'Black';
+  String get screensaverBackdropBlack => 'Црно';
 
   @override
-  String get screensaverBackdropMoonfin => 'Moonfin';
+  String get screensaverBackdropMoonfin => 'Мунфин (Moonfin)';
 
   @override
-  String get screensaverBackdropCalm => 'Calm';
+  String get screensaverBackdropCalm => 'Смирено';
 
   @override
-  String get screensaverBackdropNeonPulse => 'Neon Pulse';
+  String get screensaverBackdropNeonPulse => 'Неонски пулс';
 
   @override
-  String get screensaverBackdropAurora => 'Aurora';
+  String get screensaverBackdropAurora => 'Аурора';
 
   @override
-  String get screensaverAdditionalComponent => 'Additional Component';
+  String get screensaverAdditionalComponent => 'Додатне компоненте';
 
   @override
-  String get screensaverComponentMoonfinLogo => 'Moonfin Logo';
+  String get screensaverComponentMoonfinLogo => 'Мунфин лого (Moonfin Logo)';
 
   @override
-  String get screensaverComponentRunner => 'Runner';
+  String get screensaverComponentRunner => 'Покретач';
 
   @override
-  String get screensaverComponentMovement => 'Component Movement';
+  String get screensaverComponentMovement => 'Кретање компоненти';
 
   @override
-  String get screensaverComponentPosition => 'Component Position';
+  String get screensaverComponentPosition => 'Позиција компоненти';
 
   @override
-  String get screensaverComponentSize => 'Component Size';
+  String get screensaverComponentSize => 'Величина компоненте';
 
   @override
-  String get screensaverSourceLibrariesDefault => 'All (Default)';
+  String get screensaverSourceLibrariesDefault => 'Све (Подразумевано)';
 
   @override
   String get rottenTomatoesCritics => 'Роттен Томатоес (критичари)';
@@ -4325,16 +4326,16 @@ class AppLocalizationsSr extends AppLocalizations {
   String get networks => 'Мреже';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Ознаке';
 
   @override
-  String get genresAndTags => 'Genres and Tags';
+  String get genresAndTags => 'Жанрови и ознаке';
 
   @override
   String get seerrDiscoveryRows => 'Seerr редови откривања';
 
   @override
-  String get yourWatchlist => 'Your Watchlist';
+  String get yourWatchlist => 'Ваша листа за гледање';
 
   @override
   String get resetRowsToDefaults =>
@@ -4381,11 +4382,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get seerrNotifyIssuesSubtitle => 'Нови проблеми, одговори и решења';
 
   @override
-  String get seerrNotifyNewMediaTitle => 'New media added';
+  String get seerrNotifyNewMediaTitle => 'Додат је нови медијски садржај';
 
   @override
   String get seerrNotifyNewMediaSubtitle =>
-      'Anything new added to the server library';
+      'Било шта ново додато у библиотеку сервера';
 
   @override
   String loggedInAs(String username) {
@@ -4508,7 +4509,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get reorderToggleHomeRows =>
-      'Промените редослед и укључите почетне редове';
+      'Промените редослед и укључите/искључите почетне редове засноване на библиотеци и спољним изворима';
 
   @override
   String get featuredContentAppearance => 'Истакнути садржај, изглед';
@@ -4555,11 +4556,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get seerrRequestedStatus => 'Захтевано';
 
   @override
-  String get seerrDownloading => 'Downloading';
+  String get seerrDownloading => 'Преузимање';
 
   @override
   String seerrDownloadingSize(String done, String total) {
-    return 'Downloading · $done / $total';
+    return 'Преузимање · $done / $total';
   }
 
   @override
@@ -4599,22 +4600,22 @@ class AppLocalizationsSr extends AppLocalizations {
   String get requestMore => 'Захтевајте више';
 
   @override
-  String get requestMore4k => 'Request More in 4K';
+  String get requestMore4k => 'Тражите више у 4К';
 
   @override
   String get request => 'Захтев';
 
   @override
-  String get request4k => 'Request 4K';
+  String get request4k => 'Потражи 4К';
 
   @override
-  String get requested4k => '4K Requested';
+  String get requested4k => 'Затражен 4К';
 
   @override
   String get cancelRequest => 'Откажи захтев';
 
   @override
-  String get cancelRequest4k => 'Cancel 4K Request';
+  String get cancelRequest4k => 'Откажи 4К захтев';
 
   @override
   String get playInMoonfin => 'Пусти у Moonfin-у';
@@ -4625,13 +4626,13 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
-  String get manageRequests => 'Manage Requests';
+  String get manageRequests => 'Управљај захтевима';
 
   @override
-  String get watchlist => 'Watchlist';
+  String get watchlist => 'Листа за гледање';
 
   @override
-  String get onWatchlist => 'On Watchlist';
+  String get onWatchlist => 'На листи за гледање';
 
   @override
   String get approve => 'Одобре';
@@ -4694,7 +4695,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie4k(String type) {
-    return 'Request 4K $type';
+    return '4К захтев $type';
   }
 
   @override
@@ -4705,7 +4706,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get seerrSeriesContinuing =>
-      'Series Continuing · Future Seasons Can Be Requested';
+      'Серија се наставља · Могуће је затражити наредне сезоне';
 
   @override
   String get advancedOptions => 'Напредне опције';
@@ -7440,7 +7441,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get adminMetadataFieldCriticRating => 'Оцена критичара';
 
   @override
-  String get adminMetadataFieldCustomRating => 'Custom rating';
+  String get adminMetadataFieldCustomRating => 'Корисничка оцена';
 
   @override
   String get adminMetadataFieldTagline => 'Таглине';
@@ -7449,153 +7450,153 @@ class AppLocalizationsSr extends AppLocalizations {
   String get adminMetadataFieldOverview => 'Преглед';
 
   @override
-  String get adminMetadataFieldDisplayOrder => 'Display order';
+  String get adminMetadataFieldDisplayOrder => 'Редослед приказа';
 
   @override
-  String get adminMetadataDisplayOrderAired => 'Aired';
+  String get adminMetadataDisplayOrderAired => 'Емитовано';
 
   @override
-  String get adminMetadataDisplayOrderOriginalAirDate => 'Original air date';
+  String get adminMetadataDisplayOrderOriginalAirDate => 'Првобитно емитовано';
 
   @override
-  String get adminMetadataDisplayOrderAbsolute => 'Absolute';
+  String get adminMetadataDisplayOrderAbsolute => 'Апсолутно';
 
   @override
-  String get adminMetadataDisplayOrderDvd => 'DVD';
+  String get adminMetadataDisplayOrderDvd => 'ДВД (DVD)';
 
   @override
-  String get adminMetadataDisplayOrderDigital => 'Digital';
+  String get adminMetadataDisplayOrderDigital => 'Дигитално';
 
   @override
-  String get adminMetadataDisplayOrderStoryArc => 'Story arc';
+  String get adminMetadataDisplayOrderStoryArc => 'Наративни лук';
 
   @override
-  String get adminMetadataDisplayOrderProduction => 'Production';
+  String get adminMetadataDisplayOrderProduction => 'Продукција';
 
   @override
-  String get adminMetadataDisplayOrderTv => 'TV';
+  String get adminMetadataDisplayOrderTv => 'ТВ';
 
   @override
-  String get adminMetadataDisplayOrderAlternate => 'Alternate';
+  String get adminMetadataDisplayOrderAlternate => 'Алтернативни';
 
   @override
-  String get adminMetadataDisplayOrderRegional => 'Regional';
+  String get adminMetadataDisplayOrderRegional => 'Регионални';
 
   @override
-  String get adminMetadataDisplayOrderAlternateDvd => 'Alternate DVD';
+  String get adminMetadataDisplayOrderAlternateDvd => 'Алтернативни ДВД';
 
   @override
-  String get adminMetadataDisplayOrderDateModified => 'Date modified';
+  String get adminMetadataDisplayOrderDateModified => 'Датум измене';
 
   @override
-  String get adminMetadataDisplayOrderSortName => 'Sort name';
+  String get adminMetadataDisplayOrderSortName => 'Назив за сортирање';
 
   @override
-  String get adminMetadataDisplayOrderReleaseDate => 'Release date';
+  String get adminMetadataDisplayOrderReleaseDate => 'Датум изласка';
 
   @override
-  String get adminMetadataSettings => 'Metadata Settings';
+  String get adminMetadataSettings => 'Подешавање метаподатака';
 
   @override
-  String get adminMetadataDownloadLanguage => 'Preferred download language';
+  String get adminMetadataDownloadLanguage => 'Жељени језик преузимања';
 
   @override
-  String get adminMetadataCountryRegion => 'Country/Region';
+  String get adminMetadataCountryRegion => 'Земља/Регион';
 
   @override
   String get adminMetadataInheritHelp =>
-      'Leave this on Default to inherit the setting from a parent item, or from the server default.';
+      'Оставите ово на Подразумевано како бисте наследили подешавање од надређене ставке или са подразумеваних подешавања сервера.';
 
   @override
-  String get adminMetadataField3DFormat => '3D format';
+  String get adminMetadataField3DFormat => '3Д формат';
 
   @override
-  String get adminMetadataPersonKindUnknown => 'Unknown';
+  String get adminMetadataPersonKindUnknown => 'Непознато';
 
   @override
-  String get adminMetadataPersonKindActor => 'Actor';
+  String get adminMetadataPersonKindActor => 'Глумац';
 
   @override
-  String get adminMetadataPersonKindDirector => 'Director';
+  String get adminMetadataPersonKindDirector => 'Режисер';
 
   @override
-  String get adminMetadataPersonKindComposer => 'Composer';
+  String get adminMetadataPersonKindComposer => 'Композитор';
 
   @override
-  String get adminMetadataPersonKindWriter => 'Writer';
+  String get adminMetadataPersonKindWriter => 'Писац';
 
   @override
-  String get adminMetadataPersonKindGuestStar => 'Guest star';
+  String get adminMetadataPersonKindGuestStar => 'Гостујућа звезда';
 
   @override
-  String get adminMetadataPersonKindProducer => 'Producer';
+  String get adminMetadataPersonKindProducer => 'Продуцент';
 
   @override
-  String get adminMetadataPersonKindConductor => 'Conductor';
+  String get adminMetadataPersonKindConductor => 'Диригент';
 
   @override
-  String get adminMetadataPersonKindLyricist => 'Lyricist';
+  String get adminMetadataPersonKindLyricist => 'Текстописац';
 
   @override
-  String get adminMetadataPersonKindArranger => 'Arranger';
+  String get adminMetadataPersonKindArranger => 'Аранжер';
 
   @override
-  String get adminMetadataPersonKindEngineer => 'Engineer';
+  String get adminMetadataPersonKindEngineer => 'Инжењер';
 
   @override
-  String get adminMetadataPersonKindMixer => 'Mixer';
+  String get adminMetadataPersonKindMixer => 'Микс-инжењер';
 
   @override
-  String get adminMetadataPersonKindRemixer => 'Remixer';
+  String get adminMetadataPersonKindRemixer => 'Обрађивач звука';
 
   @override
-  String get adminMetadataPersonKindCreator => 'Creator';
+  String get adminMetadataPersonKindCreator => 'Креатор';
 
   @override
-  String get adminMetadataPersonKindArtist => 'Artist';
+  String get adminMetadataPersonKindArtist => 'Извођач';
 
   @override
-  String get adminMetadataPersonKindAlbumArtist => 'Album artist';
+  String get adminMetadataPersonKindAlbumArtist => 'Извођач албума';
 
   @override
-  String get adminMetadataPersonKindAuthor => 'Author';
+  String get adminMetadataPersonKindAuthor => 'Аутор';
 
   @override
-  String get adminMetadataPersonKindIllustrator => 'Illustrator';
+  String get adminMetadataPersonKindIllustrator => 'Илустратор';
 
   @override
-  String get adminMetadataPersonKindPenciller => 'Penciller';
+  String get adminMetadataPersonKindPenciller => 'Цртач оловкар';
 
   @override
-  String get adminMetadataPersonKindInker => 'Inker';
+  String get adminMetadataPersonKindInker => 'Тушер';
 
   @override
-  String get adminMetadataPersonKindColorist => 'Colorist';
+  String get adminMetadataPersonKindColorist => 'Колориста';
 
   @override
-  String get adminMetadataPersonKindLetterer => 'Letterer';
+  String get adminMetadataPersonKindLetterer => 'Словослагач';
 
   @override
-  String get adminMetadataPersonKindCoverArtist => 'Cover artist';
+  String get adminMetadataPersonKindCoverArtist => 'Аутор обраде';
 
   @override
-  String get adminMetadataPersonKindEditor => 'Editor';
+  String get adminMetadataPersonKindEditor => 'Уредник';
 
   @override
-  String get adminMetadataPersonKindTranslator => 'Translator';
+  String get adminMetadataPersonKindTranslator => 'Преводилац';
 
   @override
-  String get adminMetadataPersonKindNarrator => 'Narrator';
+  String get adminMetadataPersonKindNarrator => 'Приповедач';
 
   @override
-  String get adminMetadataAirDays => 'Air days';
+  String get adminMetadataAirDays => 'Дани емитовања';
 
   @override
   String get adminMetadataLockItem =>
-      'Lock this item to prevent future metadata changes';
+      'Закључајте ову ставку како бисте спречили будуће измене метаподатака';
 
   @override
-  String get adminMetadataEnabledFields => 'Enabled Fields';
+  String get adminMetadataEnabledFields => 'Омогућена поља';
 
   @override
   String get adminMetadataEnabledFieldsHelp =>
@@ -11083,6 +11084,11 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String fileSizeFormat(Object size, Object format) {
     return 'Величина: $size  •  Формат: $format';
+  }
+
+  @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
   }
 
   @override

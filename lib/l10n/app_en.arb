@@ -9670,6 +9670,10 @@
   "@fileSizeFormat": {
     "placeholders": { "size": {}, "format": {} }
   },
+  "dateCreatedFormat": "Date Added: {date}",
+  "@dateCreatedFormat": {
+    "placeholders": { "date": {} }
+  },
   "showAllAudioTracks": "Show All ({count}) Audio Tracks",
   "@showAllAudioTracks": {
     "placeholders": { "count": { "type": "int" } }

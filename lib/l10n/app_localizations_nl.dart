@@ -10932,6 +10932,11 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'Alle ($count) audiotracks tonen';
   }

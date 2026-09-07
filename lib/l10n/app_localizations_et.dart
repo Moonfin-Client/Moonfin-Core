@@ -10883,6 +10883,11 @@ class AppLocalizationsEt extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'Näita kõiki ($count) helirada';
   }

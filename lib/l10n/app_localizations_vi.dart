@@ -10873,6 +10873,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'Hiện tất cả ($count) bản âm thanh';
   }

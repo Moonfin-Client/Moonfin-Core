@@ -10960,6 +10960,11 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'Показати всі аудіодоріжки ($count)';
   }

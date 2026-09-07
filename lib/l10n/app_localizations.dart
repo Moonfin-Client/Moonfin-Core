@@ -19324,6 +19324,12 @@ abstract class AppLocalizations {
   /// **'Size: {size}  •  Format: {format}'**
   String fileSizeFormat(Object size, Object format);
 
+  /// No description provided for @dateCreatedFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Added: {date}'**
+  String dateCreatedFormat(Object date);
+
   /// No description provided for @showAllAudioTracks.
   ///
   /// In en, this message translates to:

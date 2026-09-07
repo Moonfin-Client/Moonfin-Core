@@ -10941,6 +10941,11 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'ಎಲ್ಲಾ ($count) ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್‌ಗಳನ್ನು ತೋರಿಸಿ';
   }

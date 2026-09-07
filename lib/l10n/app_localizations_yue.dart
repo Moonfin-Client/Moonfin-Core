@@ -10483,6 +10483,11 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return '顯示全部（$count）音軌';
   }

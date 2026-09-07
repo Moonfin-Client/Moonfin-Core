@@ -10864,6 +10864,11 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Date Added: $date';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'සියලු ($count) ශ්‍රව්‍ය පථ පෙන්වන්න';
   }
