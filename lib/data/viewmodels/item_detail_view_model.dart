@@ -1962,11 +1962,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
           // Auto-detect server recommendations via Moonbase if "Moonfin Recommends" is selected
           // and Moonbase announces recommendationsSupported.
-          if (isLocal) {
-            final pluginSync = GetIt.instance.isRegistered<PluginSyncService>()
-                ? GetIt.instance<PluginSyncService>()
-                : null;
-            if (pluginSync != null && pluginSync.recommendationsSupported) {
+          if (isLocal && GetIt.instance.isRegistered<PluginSyncService>()) {
+            final pluginSync = GetIt.instance<PluginSyncService>();
+            if (pluginSync.recommendationsSupported) {
               try {
                 final data = await pluginSync.fetchSimilarItems(
                   _client,
