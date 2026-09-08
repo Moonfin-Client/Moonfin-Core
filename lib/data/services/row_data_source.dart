@@ -2579,7 +2579,11 @@ class RowDataSource {
     List<AggregatedItem> recommendedItems = const [];
     if (source == SinceYouWatchedSource.server) {
       try {
-        final data = await _client.itemsApi.getSimilarItems(baseItem.id, limit: 30);
+        final data = await _client.itemsApi.getSimilarItems(
+          baseItem.id,
+          limit: 30,
+          bypass: 'moonfin',
+        );
         final parsed = _parseItems(data, serverId);
 
         final bool effectiveIncludeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
@@ -2601,23 +2605,29 @@ class RowDataSource {
         final pluginSync = GetIt.instance.isRegistered<PluginSyncService>()
             ? GetIt.instance<PluginSyncService>()
             : null;
-        if (pluginSync?.recommendationsSupported == true) {
+        if (pluginSync != null && pluginSync.recommendationsSupported) {
           try {
-            final data = await _client.itemsApi.getSimilarItems(baseItem.id, limit: 30);
-            final parsed = _parseItems(data, serverId);
-            final bool effectiveIncludeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
-            final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
-            final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
+            final data = await pluginSync.fetchSimilarItems(
+              _client,
+              baseItem.id,
+              limit: 30,
+            );
+            if (data != null) {
+              final parsed = _parseItems(data, serverId);
+              final bool effectiveIncludeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
+              final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
+              final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
 
-            final filtered = parsed.where((item) {
-              if (!effectiveIncludeWatched && item.isPlayed) return false;
-              if (applyRatingCap && _getRatingLevel(item.officialRating) > sourceRatingLevel) return false;
-              return true;
-            }).toList();
+              final filtered = parsed.where((item) {
+                if (!effectiveIncludeWatched && item.isPlayed) return false;
+                if (applyRatingCap && _getRatingLevel(item.officialRating) > sourceRatingLevel) return false;
+                return true;
+              }).toList();
 
-            if (filtered.isNotEmpty) {
-              recommendedItems = filtered;
-              usedServerRecs = true;
+              if (filtered.isNotEmpty) {
+                recommendedItems = filtered;
+                usedServerRecs = true;
+              }
             }
           } catch (e) {
             debugPrint('[RowDataSource] Moonbase server recommendation failed, falling back to local: $e');

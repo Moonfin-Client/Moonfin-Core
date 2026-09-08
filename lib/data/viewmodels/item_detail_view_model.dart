@@ -1947,7 +1947,11 @@ class ItemDetailViewModel extends ChangeNotifier {
           final sourceSetting = prefs.get(UserPreferences.recommendationSystemSource);
 
           if (sourceSetting == RecommendationSystemSource.server) {
-            final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
+            final data = await _client.itemsApi.getSimilarItems(
+              itemId,
+              limit: 15,
+              bypass: 'moonfin',
+            );
             final items = (data['Items'] as List?) ?? [];
             _similar = _mapItems(items);
             _similarSource = SimilarSource.jellyfin;
@@ -1962,10 +1966,14 @@ class ItemDetailViewModel extends ChangeNotifier {
             final pluginSync = GetIt.instance.isRegistered<PluginSyncService>()
                 ? GetIt.instance<PluginSyncService>()
                 : null;
-            if (pluginSync?.recommendationsSupported == true) {
+            if (pluginSync != null && pluginSync.recommendationsSupported) {
               try {
-                final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
-                final items = (data['Items'] as List?) ?? [];
+                final data = await pluginSync.fetchSimilarItems(
+                  _client,
+                  itemId,
+                  limit: 15,
+                );
+                final items = (data?['Items'] as List?) ?? [];
                 if (items.isNotEmpty) {
                   _similar = _mapItems(items);
                   _similarSource = SimilarSource.moonfin;

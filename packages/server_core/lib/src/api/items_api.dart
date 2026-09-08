@@ -72,7 +72,11 @@ abstract class ItemsApi {
     String? fields,
   });
   Future<List<Map<String, dynamic>>> getAncestors(String itemId);
-  Future<Map<String, dynamic>> getSimilarItems(String itemId, {int? limit});
+  Future<Map<String, dynamic>> getSimilarItems(
+    String itemId, {
+    int? limit,
+    String? bypass,
+  });
 
   Future<Map<String, dynamic>> getNextUp({
     String? seriesId,

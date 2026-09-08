@@ -192,10 +192,15 @@ class JellyfinItemsApi implements ItemsApi {
   Future<Map<String, dynamic>> getSimilarItems(
     String itemId, {
     int? limit,
+    String? bypass,
   }) async {
+    final params = <String, dynamic>{
+      'Limit': ?limit,
+      'bypass': ?bypass,
+    };
     final response = await _dio.get(
       '/Items/$itemId/Similar',
-      queryParameters: {'Limit': ?limit},
+      queryParameters: params,
     );
     return response.data as Map<String, dynamic>;
   }

@@ -1035,6 +1035,29 @@ class PluginSyncService extends ChangeNotifier {
     return null;
   }
 
+  Future<Map<String, dynamic>?> fetchSimilarItems(
+    MediaServerClient client,
+    String itemId, {
+    int limit = 30,
+  }) async {
+    final headers = _authHeaders(client);
+    if (headers == null) return null;
+
+    try {
+      final response = await _dio.get(
+        '${client.baseUrl}/Moonfin/Items/$itemId/Similar',
+        queryParameters: {'limit': limit},
+        options: Options(headers: headers),
+      );
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      }
+    } catch (e) {
+      debugPrint('[PluginSyncService] fetchSimilarItems failed: $e');
+    }
+    return null;
+  }
+
   Future<dynamic> _fetchThemesPayload(MediaServerClient client) async {
     final headers = _authHeaders(client);
     if (headers == null) return null;

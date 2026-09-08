@@ -481,6 +481,7 @@ class OfflineItemsApi implements ItemsApi {
   Future<Map<String, dynamic>> getSimilarItems(
     String itemId, {
     int? limit,
+    String? bypass,
   }) async {
     final entry = _catalog.byId(itemId);
     if (entry == null) return _envelope(const []);
