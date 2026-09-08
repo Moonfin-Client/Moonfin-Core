@@ -1038,7 +1038,7 @@ class PluginSyncService extends ChangeNotifier {
   Future<Map<String, dynamic>?> fetchSimilarItems(
     MediaServerClient client,
     String itemId, {
-    int limit = 30,
+    int limit = 100,
   }) async {
     final headers = _authHeaders(client);
     if (headers == null) return null;

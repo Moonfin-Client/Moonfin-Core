@@ -2581,7 +2581,7 @@ class RowDataSource {
       try {
         final data = await _client.itemsApi.getSimilarItems(
           baseItem.id,
-          limit: 30,
+          limit: 100,
           bypass: 'moonfin',
         );
         final parsed = _parseItems(data, serverId);
@@ -2610,7 +2610,7 @@ class RowDataSource {
             final data = await pluginSync.fetchSimilarItems(
               _client,
               baseItem.id,
-              limit: 30,
+              limit: 100,
             );
             if (data != null) {
               final parsed = _parseItems(data, serverId);

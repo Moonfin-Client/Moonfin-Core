@@ -1949,7 +1949,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           if (sourceSetting == RecommendationSystemSource.server) {
             final data = await _client.itemsApi.getSimilarItems(
               itemId,
-              limit: 15,
+              limit: 100,
               bypass: 'moonfin',
             );
             final items = (data['Items'] as List?) ?? [];
@@ -1971,7 +1971,7 @@ class ItemDetailViewModel extends ChangeNotifier {
                 final data = await pluginSync.fetchSimilarItems(
                   _client,
                   itemId,
-                  limit: 15,
+                  limit: 100,
                 );
                 final items = (data?['Items'] as List?) ?? [];
                 if (items.isNotEmpty) {
@@ -2009,7 +2009,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
 
       try {
-        final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
+        final data = await _client.itemsApi.getSimilarItems(itemId, limit: 100);
         final items = (data['Items'] as List?) ?? [];
         _similar = _mapItems(items);
         _similarSource = SimilarSource.jellyfin;
