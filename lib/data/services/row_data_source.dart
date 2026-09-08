@@ -983,10 +983,10 @@ class RowDataSource {
       includeItemTypes: includeItemTypes,
     );
     final favList = response['Items'] as List? ?? const [];
-    if (includeItemTypes != null &&
+    if (favList.isEmpty &&
+        includeItemTypes != null &&
         (includeItemTypes.contains('Book') ||
-            includeItemTypes.contains('AudioBook') ||
-            includeItemTypes.contains('Comic'))) {
+            includeItemTypes.contains('AudioBook'))) {
       final fallbackResponse = await _getItemsWithFallback(
         parentId: parentId,
         isFavorite: true,
@@ -1003,7 +1003,7 @@ class RowDataSource {
             return t != null && includeItemTypes.contains(t);
           })
           .toList();
-      if (rawItems.length > favList.length) {
+      if (rawItems.isNotEmpty) {
         response = {
           ...fallbackResponse,
           'Items': rawItems,
@@ -1056,10 +1056,10 @@ class RowDataSource {
       includeItemTypes: includeItemTypes,
     );
     final lastList = response['Items'] as List? ?? const [];
-    if (includeItemTypes != null &&
+    if (lastList.isEmpty &&
+        includeItemTypes != null &&
         (includeItemTypes.contains('Book') ||
-            includeItemTypes.contains('AudioBook') ||
-            includeItemTypes.contains('Comic'))) {
+            includeItemTypes.contains('AudioBook'))) {
       final fallbackResponse = await _getItemsWithFallback(
         parentId: parentId,
         sortBy: 'DatePlayed',
@@ -1076,7 +1076,7 @@ class RowDataSource {
             return t != null && includeItemTypes.contains(t);
           })
           .toList();
-      if (rawItems.length > lastList.length) {
+      if (rawItems.isNotEmpty) {
         response = {
           ...fallbackResponse,
           'Items': rawItems,
@@ -1123,10 +1123,10 @@ class RowDataSource {
           );
 
     final itemsList = response['Items'] as List? ?? const [];
-    if (!isAlbumArtistBrowse &&
+    if (itemsList.isEmpty &&
+        !isAlbumArtistBrowse &&
         (includeItemTypes.contains('Book') ||
-            includeItemTypes.contains('AudioBook') ||
-            includeItemTypes.contains('Comic'))) {
+            includeItemTypes.contains('AudioBook'))) {
       final fallbackResponse = await _getItemsWithFallback(
         parentId: parentId,
         excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
@@ -1142,7 +1142,7 @@ class RowDataSource {
             return t != null && includeItemTypes.contains(t);
           })
           .toList();
-      if (rawItems.length > itemsList.length) {
+      if (rawItems.isNotEmpty) {
         response = {
           ...fallbackResponse,
           'Items': rawItems,

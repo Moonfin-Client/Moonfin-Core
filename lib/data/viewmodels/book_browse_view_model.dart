@@ -94,6 +94,7 @@ class BookBrowseViewModel extends ChangeNotifier {
   HomeRow? _allRow;
   HomeRow? _allBooksRow;
   HomeRow? _allAudiobooksRow;
+  HomeRow? _allComicsRow;
   Set<String> _bookAuthorNames = const {};
   Set<String> _bookAuthorIds = const {};
   Set<String> _audioAuthorNames = const {};
@@ -115,6 +116,7 @@ class BookBrowseViewModel extends ChangeNotifier {
   String get _latestBooksRowId => 'latestBooks_$libraryId';
   String get _latestAudiobooksRowId => 'latestAudiobooks_$libraryId';
   String get _latestComicsRowId => 'latestComics_$libraryId';
+  String get _allComicsRowId => 'allComics_$libraryId';
   String get _lastPlayedRowId => 'lastPlayed_$libraryId';
   String get _favoritesRowId => 'favorites_$libraryId';
   String get _allRowId => 'allTitles_$libraryId';
@@ -164,7 +166,11 @@ class BookBrowseViewModel extends ChangeNotifier {
         row.id.startsWith('allAudiobooks_')) {
       return _audiobookTypes;
     }
-    if (row.id == _latestComicsRowId) return const ['Comic', 'Book'];
+    // Comic is not a type the server knows, so asking for it is rejected.
+    // Book is the type comics carry and the nearest the grid can request.
+    if (row.id == _latestComicsRowId || row.id == _allComicsRowId) {
+      return const ['Book'];
+    }
     return scopedTypes;
   }
 
@@ -176,6 +182,11 @@ class BookBrowseViewModel extends ChangeNotifier {
         row.id == _favoritesRowId ||
         row.id == _allRowId;
   }
+
+  static int _bySortName(AggregatedItem a, AggregatedItem b) =>
+      (a.sortName ?? a.name).toLowerCase().compareTo(
+        (b.sortName ?? b.name).toLowerCase(),
+      );
 
   bool _matchesScope(AggregatedItem item) => switch (_scope) {
     BookScope.all => true,
@@ -239,16 +250,6 @@ class BookBrowseViewModel extends ChangeNotifier {
         sortBy: 'DateCreated',
         sortOrder: 'Descending',
       );
-      final latestComicsF = isAudiobookLibrary
-          ? null
-          : _dataSource.loadLibraryItemsByType(
-              libraryId,
-              _serverId,
-              title: l10n.latestComics,
-              includeItemTypes: const ['Book'],
-              sortBy: 'DateCreated',
-              sortOrder: 'Descending',
-            );
       final lastPlayedF = isAudiobookLibrary
           ? _dataSource.loadLibraryLastPlayed(
               libraryId,
@@ -301,7 +302,6 @@ class BookBrowseViewModel extends ChangeNotifier {
         resumeF,
         ?latestBooksF,
         latestAudiobooksF,
-        ?latestComicsF,
         ?lastPlayedF,
         authorsF,
         favoritesF,
@@ -321,6 +321,11 @@ class BookBrowseViewModel extends ChangeNotifier {
 
       var latestBooks = await latestBooksF;
       var allBooks = await allBooksF;
+      // Comics are Book typed on the server, so the book responses already
+      // carry them and no separate request is needed to find them.
+      final comicsByRecency = (latestBooks?.items ?? const <AggregatedItem>[])
+          .where(isComicItem)
+          .toList();
       if (latestBooks != null) {
         final filteredBooks = latestBooks.items.where(isBookItem).toList();
         latestBooks = latestBooks.copyWith(items: filteredBooks);
@@ -361,37 +366,42 @@ class BookBrowseViewModel extends ChangeNotifier {
       final audioFromAll = _allAudiobooksRow?.items ?? const <AggregatedItem>[];
       final comicsFromAll = allItems.where(isComicItem).toList();
 
+      // Comics belong here too, and totalCount stays the server's because
+      // these items are one page of the library rather than all of it.
       final combinedAllItems = [
         ...booksFromAll,
         ...audioFromAll,
-      ]..sort((a, b) => (a.sortName ?? a.name).toLowerCase().compareTo((b.sortName ?? b.name).toLowerCase()));
+        ...comicsFromAll,
+      ]..sort(_bySortName);
       if (combinedAllItems.isNotEmpty) {
-        _allRow = _allRow!.copyWith(
-          items: combinedAllItems,
-          totalCount: combinedAllItems.length,
-        );
+        _allRow = _allRow!.copyWith(items: combinedAllItems);
       }
 
-      if (!isAudiobookLibrary && comicsFromAll.isNotEmpty) {
-        var latestComics = await latestComicsF;
-        final filteredComics = (latestComics?.items ?? const <AggregatedItem>[])
-            .where(isComicItem)
-            .toList();
-        final finalComics =
-            filteredComics.isNotEmpty ? filteredComics : comicsFromAll;
-        if (finalComics.isNotEmpty) {
-          _latestComicsRow = HomeRow(
-            id: _latestComicsRowId,
-            title: l10n.latestComics,
-            items: finalComics,
-            rowType: HomeRowType.latestMedia,
-            totalCount: finalComics.length,
-          );
-        } else {
-          _latestComicsRow = null;
-        }
-      } else {
+      final comicsById = <String, AggregatedItem>{
+        for (final comic in [...comicsByRecency, ...comicsFromAll])
+          comic.id: comic,
+      };
+      if (isAudiobookLibrary || comicsById.isEmpty) {
         _latestComicsRow = null;
+        _allComicsRow = null;
+      } else {
+        _latestComicsRow = HomeRow(
+          id: _latestComicsRowId,
+          title: l10n.latestComics,
+          items: comicsByRecency.isNotEmpty
+              ? comicsByRecency
+              : comicsById.values.toList(),
+          rowType: HomeRowType.latestMedia,
+          totalCount: comicsById.length,
+        );
+        final byName = comicsById.values.toList()..sort(_bySortName);
+        _allComicsRow = HomeRow(
+          id: _allComicsRowId,
+          title: l10n.comics,
+          items: byName,
+          rowType: HomeRowType.latestMedia,
+          totalCount: byName.length,
+        );
       }
 
       _lastPlayedRow = lastPlayedF == null ? null : await lastPlayedF;
@@ -504,9 +514,13 @@ class BookBrowseViewModel extends ChangeNotifier {
       _collectionsRow = await collectionsF;
       _seriesSource = await seriesSourceF;
 
-      _bookCount = math.max(await bookCountF, booksFromAll.length);
+      // The server counts comics as books, so a library holding nothing but
+      // comics would otherwise offer a Books tab with nothing behind it.
+      _bookCount = booksFromAll.isEmpty
+          ? 0
+          : math.max(await bookCountF, booksFromAll.length);
       _audiobookCount = math.max(await audiobookCountF, audioFromAll.length);
-      _comicCount = comicsFromAll.length;
+      _comicCount = comicsById.length;
 
       final resume = _resumeRow!;
       _featured = resume.items.isNotEmpty
@@ -520,6 +534,11 @@ class BookBrowseViewModel extends ChangeNotifier {
       _authorCount = (_authorsRow?.totalCount ?? 0) > 0
           ? _authorsRow!.totalCount
           : (_authorsRow?.items.length ?? 0);
+      // A refresh can drop the format the user was on, and leaving the scope
+      // there strands them on a tab the filter no longer offers.
+      if (!availableScopes.contains(_scope)) {
+        _scope = BookScope.all;
+      }
       _composeRows();
     } catch (_) {}
 
@@ -605,8 +624,9 @@ class BookBrowseViewModel extends ChangeNotifier {
       case BookScope.audiobooks:
         return _allAudiobooksRow?.copyWith(title: l10n.audiobooks);
       case BookScope.comics:
-        if (_comicCount == 0) return null;
-        return _latestComicsRow?.copyWith(title: l10n.comics);
+        // Its own row rather than the latest one retitled, which would put
+        // the same id on two shelves and collide their keys.
+        return _allComicsRow;
       case BookScope.all:
         return isMixedLibrary
             ? _allRow?.copyWith(title: l10n.allTitles)
@@ -616,25 +636,8 @@ class BookBrowseViewModel extends ChangeNotifier {
 
   HomeRow? _scopedRow(HomeRow? row) {
     if (row == null) return null;
-    final l10n = currentAppLocalizations();
-    final isAllTitles = row.id.startsWith('allTitles_');
-    if (_scope == BookScope.all) {
-      if (isAllTitles && isMixedLibrary) {
-        return row.copyWith(title: l10n.allTitles);
-      }
-      return row;
-    }
-    final scopedItems = row.items.where(_matchesScope).toList();
-    final dynamicTitle = switch (_scope) {
-      BookScope.audiobooks => l10n.audiobooks,
-      BookScope.comics => l10n.comics,
-      BookScope.books => l10n.books,
-      BookScope.all => row.title,
-    };
-    return row.copyWith(
-      title: isAllTitles ? dynamicTitle : row.title,
-      items: scopedItems,
-    );
+    if (_scope == BookScope.all) return row;
+    return row.copyWith(items: row.items.where(_matchesScope).toList());
   }
 
   Future<int> _countOf(List<String> types) async {
@@ -647,6 +650,9 @@ class BookBrowseViewModel extends ChangeNotifier {
         enableTotalRecordCount: true,
       );
       final count = resp['TotalRecordCount'] as int? ?? 0;
+      // The wide sweep only earns its size when the typed count came back
+      // empty, which is what this counts around.
+      if (count > 0) return count;
       final fallbackResp = await _client.itemsApi.getItems(
         parentId: libraryId,
         excludeItemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
@@ -655,11 +661,10 @@ class BookBrowseViewModel extends ChangeNotifier {
       );
       final items =
           (fallbackResp['Items'] as List? ?? const []).whereType<Map>();
-      final fallbackCount = items.where((it) {
+      return items.where((it) {
         final t = it['Type']?.toString();
         return t != null && types.contains(t);
       }).length;
-      return math.max(count, fallbackCount);
     } catch (_) {
       return 0;
     }
