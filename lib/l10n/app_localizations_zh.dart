@@ -2860,7 +2860,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get trickplayFollowScrubPositionSubtitle => '预览画面跟随滑块沿进度条移动，而非固定居中';
-
   @override
   String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
 
