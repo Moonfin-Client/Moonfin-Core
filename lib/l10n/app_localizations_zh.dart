@@ -10710,6 +10710,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mixedPlaylistsSection => '混合播放列表';
 
   @override
+  String get currentTime => 'Current Time';
+
+  @override
   String get playbackTimeDisplay => '进度条时间';
 
   @override

@@ -19846,6 +19846,12 @@ abstract class AppLocalizations {
   /// **'Mixed Playlists'**
   String get mixedPlaylistsSection;
 
+  /// The current time as it appears on a clock
+  ///
+  /// In en, this message translates to:
+  /// **'Current Time'**
+  String get currentTime;
+
   /// Setting title for what is shown next to the playback progress bar
   ///
   /// In en, this message translates to:

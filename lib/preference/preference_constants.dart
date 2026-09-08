@@ -189,6 +189,9 @@ enum PlaybackTimeSlot {
 
   /// Wall-clock time the item will finish at, e.g. `Ends at 21:45`.
   endsAt,
+
+  /// The current time
+  time,
 }
 
 enum DesktopScrollWheelAction {

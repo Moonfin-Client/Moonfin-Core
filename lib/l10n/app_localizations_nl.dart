@@ -11221,6 +11221,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get mixedPlaylistsSection => 'Algemene afspeellijst';
 
   @override
+  String get currentTime => 'Current Time';
+
+  @override
   String get playbackTimeDisplay => 'Tijd voortgangsbalk';
 
   @override

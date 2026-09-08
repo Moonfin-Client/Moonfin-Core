@@ -11451,6 +11451,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mixedPlaylistsSection => 'Playlisty mieszane';
 
   @override
+  String get currentTime => 'Current Time';
+
+  @override
   String get playbackTimeDisplay => 'Czas przy pasku postępu';
 
   @override
