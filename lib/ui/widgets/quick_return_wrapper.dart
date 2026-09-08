@@ -180,8 +180,8 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   Widget build(BuildContext context) {
     if (PlatformDetection.isTV) return widget.child;
 
-    final _prefs = GetIt.instance<UserPreferences>();
-    final navbarPosition = _prefs.get(UserPreferences.navbarPosition);
+    final prefs = GetIt.instance<UserPreferences>();
+    final navbarPosition = prefs.get(UserPreferences.navbarPosition);
     final raiseButton = navbarPosition == NavbarPosition.bottom && !widget.hideNavbar;
     final bottomPadding = raiseButton ? 78.0 : 24.0;
 
