@@ -108,4 +108,20 @@ void main() {
       expect(_item({'Type': 'AudioBook', 'Container': 'm4b'}).isComic, isFalse);
     });
   });
+
+  group('AggregatedItem.isFolder', () {
+    test('detects folder from IsFolder flag', () {
+      expect(_item({'IsFolder': true}).isFolder, isTrue);
+      expect(_item({'IsFolder': false}).isFolder, isFalse);
+    });
+
+    test('detects folder when ChildCount is greater than zero', () {
+      expect(_item({'ChildCount': 5}).isFolder, isTrue);
+      expect(_item({'ChildCount': 0}).isFolder, isFalse);
+    });
+
+    test('defaults to false when flags are missing', () {
+      expect(_item({'Type': 'AudioBook'}).isFolder, isFalse);
+    });
+  });
 }
