@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -2783,7 +2784,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final String path = mediaSource['Path'] as String? ?? '';
     final String fileName = path.split('/').last.split('\\').last;
     final String container = mediaSource['Container']?.toString().toUpperCase() ?? 'Unknown';
-    final String dateCreated = item.dateCreated.toString().split(' ')[0] ?? '';
+    // Sent as UTC, so an evening west of UTC would otherwise read as tomorrow.
+    final DateTime? addedOn = item.dateCreated?.toLocal();
+    final String? addedLabel = addedOn == null
+        ? null
+        : DateFormat.yMMMd(
+            Localizations.localeOf(context).toString(),
+          ).format(addedOn);
 
     // Parse streams
     final List<Map<String, dynamic>> rawStreams = (mediaSource['MediaStreams'] as List?)
@@ -2902,10 +2909,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 l10n.fileSizeFormat(formattedSize, container),
                 style: textTheme.bodySmall?.copyWith(color: Colors.white70),
               ),
-              Text(
-                l10n.dateCreatedFormat(dateCreated),
-                style: textTheme.bodySmall?.copyWith(color: Colors.white70),
-              )
+              if (addedLabel != null)
+                Text(
+                  l10n.dateCreatedFormat(addedLabel),
+                  style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+                ),
             ],
           ),
         ),
