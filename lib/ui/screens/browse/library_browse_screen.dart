@@ -624,7 +624,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
     if (_vm.isPlaylistBrowse) {
       return item.primaryImageTag != null
-          ? api.getPrimaryImageUrl(item.id, maxWidth: posterMaxW)
+          ? api.getPrimaryImageUrl(
+              item.id,
+              maxWidth: posterMaxW,
+              tag: item.primaryImageTag,
+            )
           : null;
     }
 
