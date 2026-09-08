@@ -180,6 +180,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin priporoča';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'Podobnost TMDb';
 
   @override

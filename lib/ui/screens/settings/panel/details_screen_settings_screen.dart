@@ -150,6 +150,8 @@ class _DetailsScreenSettingsScreenState
                     labelOf: (v) => switch (v) {
                       RecommendationSystemSource.local =>
                         l10n.recommendationSystemMoonfin,
+                      RecommendationSystemSource.server =>
+                        l10n.recommendationSystemJellyfin,
                       RecommendationSystemSource.online =>
                         l10n.recommendationSystemTmdb,
                     },

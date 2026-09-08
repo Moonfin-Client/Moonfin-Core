@@ -179,6 +179,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin ұсынады';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'TMDb ұқсастығы';
 
   @override

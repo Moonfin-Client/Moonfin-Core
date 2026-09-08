@@ -224,13 +224,17 @@
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"
   },
-  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
+  "recommendationSystemSubtitle": "Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb's Similarity Metrics. Note: Online recommendations require Seerr integration.",
   "@recommendationSystemSubtitle": {
     "description": "Explanation under the recommendation system setting"
   },
   "recommendationSystemMoonfin": "Moonfin Recommends",
   "@recommendationSystemMoonfin": {
     "description": "Recommendation system option: Moonfin Recommends"
+  },
+  "recommendationSystemJellyfin": "Jellyfin Recommends",
+  "@recommendationSystemJellyfin": {
+    "description": "Recommendation system option: Jellyfin Recommends"
   },
   "recommendationSystemTmdb": "TMDb Similarity",
   "@recommendationSystemTmdb": {

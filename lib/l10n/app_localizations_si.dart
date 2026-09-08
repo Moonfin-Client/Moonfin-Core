@@ -179,6 +179,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin නිර්දේශ';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'TMDb සමානතාව';
 
   @override

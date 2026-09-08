@@ -180,6 +180,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin แนะนำ';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'ความคล้ายคลึงจาก TMDb';
 
   @override

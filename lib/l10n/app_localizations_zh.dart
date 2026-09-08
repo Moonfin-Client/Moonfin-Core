@@ -175,6 +175,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin 智能推荐';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'TMDb 相似影片推荐';
 
   @override

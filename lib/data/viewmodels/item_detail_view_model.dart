@@ -1484,7 +1484,38 @@ class ItemDetailViewModel extends ChangeNotifier {
       try {
         final prefs = GetIt.instance<UserPreferences>();
         final sourceSetting = prefs.get(UserPreferences.recommendationSystemSource);
+
+        if (sourceSetting == RecommendationSystemSource.server) {
+          final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
+          final items = (data['Items'] as List?) ?? [];
+          _similar = _mapItems(items);
+          notifyListeners();
+          return;
+        }
+
         final isLocal = sourceSetting == RecommendationSystemSource.local;
+
+        // Auto-detect server recommendations via Moonbase if "Moonfin Recommends" is selected
+        // and Moonbase announces recommendationsSupported.
+        if (isLocal) {
+          final pluginSync = GetIt.instance.isRegistered<PluginSyncService>()
+              ? GetIt.instance<PluginSyncService>()
+              : null;
+          if (pluginSync?.recommendationsSupported == true) {
+            try {
+              final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
+              final items = (data['Items'] as List?) ?? [];
+              if (items.isNotEmpty) {
+                _similar = _mapItems(items);
+                notifyListeners();
+                return;
+              }
+            } catch (e) {
+              debugPrint('[ItemDetailViewModel] Moonbase server recommendation failed, falling back to local: $e');
+            }
+          }
+        }
+
         final serverId = _serverId ?? _client.baseUrl;
         final dataSource = GetIt.instance<RowDataSource>();
 
