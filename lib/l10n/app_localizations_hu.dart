@@ -179,9 +179,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin ajánlásai';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
-
-  @override
   String get recommendationSystemTmdb => 'TMDb hasonlóság';
 
   @override

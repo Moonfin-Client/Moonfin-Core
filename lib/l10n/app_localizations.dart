@@ -517,7 +517,7 @@ abstract class AppLocalizations {
   /// Explanation under the recommendation system setting
   ///
   /// In en, this message translates to:
-  /// **'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
+  /// **'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
   String get recommendationSystemSubtitle;
 
   /// Recommendation system option: Moonfin Recommends
@@ -525,12 +525,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Moonfin Recommends'**
   String get recommendationSystemMoonfin;
-
-  /// Recommendation system option: Jellyfin Recommends
-  ///
-  /// In en, this message translates to:
-  /// **'Jellyfin Recommends'**
-  String get recommendationSystemJellyfin;
 
   /// Recommendation system option: TMDb Similarity
   ///

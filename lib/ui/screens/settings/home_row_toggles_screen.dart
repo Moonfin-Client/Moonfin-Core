@@ -669,8 +669,8 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                   if (showSinceYouWatchedRows) ...[
                     EnumPreferenceTile<SinceYouWatchedSource>(
                       preference: UserPreferences.sinceYouWatchedSource,
-                      title: 'Recommendation Source',
-                      description: "Choose recommendation source (Moonfin Recommends custom local algorithm, Jellyfin Recommends server engine, or TMDb's similarity metrics. Note: Online recommendations require Seerr integration).",
+                      title: 'Source',
+                      description: "Choose recommendation source (the local-content-only Moonfin special or TMDB's similarity metric. Note: Online recommendations require Seerr integration).",
                       icon: Icons.source,
                       values: SinceYouWatchedSource.values,
                       labelOf: (v) => v.displayName,

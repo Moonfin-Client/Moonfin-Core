@@ -213,6 +213,11 @@ class AggregatedItem {
     return v != null ? DateTime.tryParse(v) : null;
   }
 
+  DateTime? get dateCreated {
+    final v = rawData['DateCreated'] as String?;
+    return v != null ? DateTime.tryParse(v) : null;
+  }
+
   List<String> get productionLocations =>
       _toListOfStrings(rawData['ProductionLocations']);
 

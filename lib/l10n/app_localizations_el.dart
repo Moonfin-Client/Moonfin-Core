@@ -181,9 +181,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Προτάσεις Moonfin';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
-
-  @override
   String get recommendationSystemTmdb => 'Ομοιότητα TMDb';
 
   @override

@@ -177,9 +177,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin 추천';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
-
-  @override
   String get recommendationSystemTmdb => 'TMDb 유사도';
 
   @override

@@ -179,9 +179,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin Gợi ý';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
-
-  @override
   String get recommendationSystemTmdb => 'Độ tương đồng TMDb';
 
   @override

@@ -263,7 +263,6 @@ enum DetailScreenStyle {
 /// Selectable algorithm source for similarity recommendation system.
 enum RecommendationSystemSource {
   local,
-  server,
   online;
 }
 
@@ -843,14 +842,9 @@ enum ScreensaverTimeout {
 
 enum SinceYouWatchedSource {
   local,
-  server,
   online;
 
-  String get displayName => switch (this) {
-    SinceYouWatchedSource.local => 'Moonfin Recommends',
-    SinceYouWatchedSource.server => 'Jellyfin Recommends',
-    SinceYouWatchedSource.online => 'TMDb Similarity',
-  };
+  String get displayName => this == local ? 'Local' : 'Online';
 }
 
 enum SinceYouWatchedSourceType {

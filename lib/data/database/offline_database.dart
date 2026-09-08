@@ -79,16 +79,8 @@ class OfflineDatabase extends _$OfflineDatabase {
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
       if (from < 2) {
-        try {
-          await m.addColumn(downloadedItems, downloadedItems.downloadSource);
-        } catch (_) {
-          // Column may already exist from an unversioned migration or previous partial run
-        }
-        try {
-          await m.createTable(autoDownloadSubscriptions);
-        } catch (_) {
-          // Table may already exist
-        }
+        await m.addColumn(downloadedItems, downloadedItems.downloadSource);
+        await m.createTable(autoDownloadSubscriptions);
       }
     },
   );
