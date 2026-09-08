@@ -8836,10 +8836,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               return childType == 'Audio' || childType == 'AudioBook';
             }
 
-            // A container audiobook lists its chapters as child items. Only
-            // query children if the item is actually a folder/container; on a
-            // leaf file (e.g. single-file m4b), querying ParentId against the file
-            // causes server timeouts on JF12 and redundant queries on JF11.
+            // A container audiobook lists its chapters as child items, so only
+            // a folder is worth asking about. A ParentId query against a leaf
+            // times the server out, and where it answers it ignores the filter
+            // and hands back the top level libraries, which the check drops.
             if (item.isFolder) {
               final data = await client.itemsApi.getItems(
                 parentId: item.id,

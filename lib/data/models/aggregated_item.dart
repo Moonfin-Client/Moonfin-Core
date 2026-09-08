@@ -38,7 +38,7 @@ class AggregatedItem {
 
   /// Whether the item is a container/folder on the server.
   bool get isFolder =>
-      rawData['IsFolder'] == true || (rawData['ChildCount'] as num? ?? 0) > 0;
+      rawData['IsFolder'] == true || (childCount ?? 0) > 0;
 
   bool get canDelete => rawData['CanDelete'] as bool? ?? false;
   String? get seriesName => rawData['SeriesName'] as String?;

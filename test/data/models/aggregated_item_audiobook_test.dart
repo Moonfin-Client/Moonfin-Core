@@ -123,5 +123,11 @@ void main() {
     test('defaults to false when flags are missing', () {
       expect(_item({'Type': 'AudioBook'}).isFolder, isFalse);
     });
+
+    test('reads a child count the server sent as something else', () {
+      expect(_item({'ChildCount': '5'}).isFolder, isTrue);
+      expect(_item({'ChildCount': '0'}).isFolder, isFalse);
+      expect(_item({'ChildCount': true}).isFolder, isFalse);
+    });
   });
 }
