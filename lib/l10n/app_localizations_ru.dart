@@ -364,6 +364,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin рекомендует';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'Схожесть TMDb';
 
   @override

@@ -365,6 +365,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Aanbeveling Moonfin';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'TMDb-gelijkenis';
 
   @override

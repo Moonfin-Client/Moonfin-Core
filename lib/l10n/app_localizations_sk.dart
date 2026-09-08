@@ -365,6 +365,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get recommendationSystemMoonfin => 'Moonfin odporúča';
 
   @override
+  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+
+  @override
   String get recommendationSystemTmdb => 'Podobnosť TMDb';
 
   @override
