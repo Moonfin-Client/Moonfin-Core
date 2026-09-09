@@ -3893,7 +3893,7 @@ class _ContentRowsState extends State<_ContentRows>
   String _localizedRowTitle(HomeRow row, AppLocalizations l10n) {
     final config = widget.prefs.homeSectionsConfig
         .firstWhereOrNull((c) => c.stableId == row.id);
-    if (config != null && config.isSeerrCustomSlider) {
+    if (config != null && config.isSeerrSlider) {
       return localizeSeerrSliderConfigTitle(config, l10n);
     }
     final merge = widget.prefs.get(UserPreferences.mergeContinueWatchingNextUp);

@@ -805,6 +805,24 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
+  /// Foreseer linked-account status. Null when the route is missing (Jellyseerr)
+  /// or the body has no `connected` flag.
+  Future<bool?> getLinkedAccountConnected(int userId, String provider) async {
+    final response = await _dio.get(
+      _apiUrl('user/$userId/settings/linked-accounts/$provider'),
+      options: _authOptions(),
+    );
+    if (response.statusCode == null ||
+        response.statusCode! < 200 ||
+        response.statusCode! > 299) {
+      return null;
+    }
+    final data = response.data;
+    if (data is! Map) return null;
+    final connected = data['connected'];
+    return connected is bool ? connected : null;
+  }
+
   Future<bool> testConnection() async {
     try {
       final response = await _dio.get(

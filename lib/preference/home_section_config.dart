@@ -247,12 +247,12 @@ class HomeSectionConfig {
 
   bool get isBuiltin => kind == HomeSectionKind.builtin;
   bool get isPluginDynamic => kind == HomeSectionKind.pluginDynamic;
-  bool get isSeerrCustomSlider => kind == HomeSectionKind.seerrSlider;
+  bool get isSeerrSlider => kind == HomeSectionKind.seerrSlider;
 
-  /// False for slider rows with no id, and for the seerrSlider sentinel saved
-  /// as a builtin (legacy `homeRowOrder` pollution).
+  /// False for slider rows with no id, and for builtin [HomeSectionType.none]
+  /// leftovers from legacy `homeRowOrder` pollution.
   bool get isPersistable {
-    if (isSeerrCustomSlider) {
+    if (isSeerrSlider) {
       return sliderId != null && sliderId!.isNotEmpty;
     }
     if (isBuiltin && type == HomeSectionType.none) {

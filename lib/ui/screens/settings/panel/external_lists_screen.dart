@@ -1182,7 +1182,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   void initState() {
     super.initState();
     _rows = List.of(_seerrPrefs.homeRowsConfig);
-    _loadCustomSliders();
+    _loadSeerrSliders();
   }
 
   @override
@@ -1232,14 +1232,14 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     if (mounted) setState(() {});
   }
 
-  Future<void> _loadCustomSliders() async {
+  Future<void> _loadSeerrSliders() async {
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.ensureInitialized();
       if (!repo.isAvailable) return;
-      final resolved = resolveSeerrCustomSliders(await repo.getDiscoverSliders());
+      final resolved = resolveSeerrSliders(await repo.getDiscoverSliders());
       final prefs = GetIt.instance<UserPreferences>();
-      final merged = mergeSeerrCustomSliderHomeSections(
+      final merged = mergeSeerrSliderHomeSections(
         prefs.homeSectionsConfig,
         resolved,
       );
@@ -1251,13 +1251,13 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
       if (!mounted) return;
       setState(() => _customSliders = resolved);
     } catch (e) {
-      debugPrint('[SeerrLists] Failed to load custom sliders: $e');
+      debugPrint('[SeerrLists] Failed to load Seerr sliders: $e');
     }
   }
 
   bool _isCustomHomeEnabled(int sliderId) {
     return GetIt.instance<UserPreferences>().homeSectionsConfig.any(
-      (c) => c.isSeerrCustomSlider && c.seerrSliderId == sliderId && c.enabled,
+      (c) => c.isSeerrSlider && c.seerrSliderId == sliderId && c.enabled,
     );
   }
 
@@ -1265,7 +1265,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     final prefs = GetIt.instance<UserPreferences>();
     final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
     final idx = configs.indexWhere(
-      (c) => c.isSeerrCustomSlider && c.seerrSliderId == sliderId,
+      (c) => c.isSeerrSlider && c.seerrSliderId == sliderId,
     );
     if (idx < 0) return;
     configs[idx] = configs[idx].copyWith(enabled: enabled);

@@ -483,7 +483,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       }
       return 7;
     }
-    if (section.isSeerrCustomSlider) {
+    if (section.isSeerrSlider) {
       return 6;
     }
     // is builtin
@@ -676,7 +676,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
                   section.type,
                 ))) ||
-        (section.isSeerrCustomSlider && (!showSeerrRows || !seerrEnabled));
+        (section.isSeerrSlider && (!showSeerrRows || !seerrEnabled));
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -917,12 +917,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.ensureInitialized();
       if (!repo.isAvailable) return false;
-      final resolved = resolveSeerrCustomSliders(await repo.getDiscoverSliders());
+      final resolved = resolveSeerrSliders(await repo.getDiscoverSliders());
       final current = [
         ?_mediaBarConfig,
         ..._sections,
       ];
-      final merged = mergeSeerrCustomSliderHomeSections(current, resolved);
+      final merged = mergeSeerrSliderHomeSections(current, resolved);
       if (HomeSectionConfig.toJsonString(merged) ==
           HomeSectionConfig.toJsonString(current)) {
         return false;
@@ -1643,7 +1643,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
-    if (cfg.isSeerrCustomSlider) {
+    if (cfg.isSeerrSlider) {
       return localizeSeerrSliderConfigTitle(cfg, l10n);
     }
     if (cfg.isPluginDynamic) {
@@ -2725,7 +2725,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 ],
               ],
             ),
-            subtitle: section.isSeerrCustomSlider
+            subtitle: section.isSeerrSlider
                 ? const Text('Seerr Discovery Rows')
                 : (section.isPluginDynamic
                 ? Text(_pluginSubtitle(section))

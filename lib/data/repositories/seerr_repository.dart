@@ -843,6 +843,40 @@ class SeerrRepository {
     return settings;
   }
 
+  /// Foreseer-style pre-gate for discover slider catalog fetches.
+  Future<SeerrSliderFetchGate> loadSliderFetchGate() async {
+    Map<String, dynamic> settings;
+    try {
+      settings = await getPublicSettings();
+    } catch (_) {
+      return const SeerrSliderFetchGate();
+    }
+    final gate = SeerrSliderFetchGate.fromPublicSettings(settings);
+    return SeerrSliderFetchGate.fromPublicSettings(
+      settings,
+      traktLinked: gate.traktConfigured == true
+          ? await _linkedAccountConnected('trakt')
+          : null,
+      anilistLinked: gate.anilistConfigured == true
+          ? await _linkedAccountConnected('anilist')
+          : null,
+      simklLinked: gate.simklConfigured == true
+          ? await _linkedAccountConnected('simkl')
+          : null,
+    );
+  }
+
+  Future<bool?> _linkedAccountConnected(String provider) async {
+    try {
+      final user = await getCurrentUser();
+      return await _withClient(
+        (c) => c.getLinkedAccountConnected(user.id, provider),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<List<SeerrServiceServer>> getRadarrServers() => _withClient(
     (c) async => (await c.getRadarrServers())
         .cast<Map<String, dynamic>>()

@@ -1347,13 +1347,13 @@ class PluginSyncService extends ChangeNotifier {
           sections.add(custom.copyWith(order: order++));
         }
         final incomingSliderIds = sections
-            .where((s) => s.isSeerrCustomSlider)
+            .where((s) => s.isSeerrSlider)
             .map((s) => s.sliderId)
             .whereType<String>()
             .toSet();
         final existingSliders = _prefs.homeSectionsConfig.where(
           (c) =>
-              c.isSeerrCustomSlider &&
+              c.isSeerrSlider &&
               c.sliderId != null &&
               c.sliderId!.isNotEmpty &&
               !incomingSliderIds.contains(c.sliderId),
@@ -1373,7 +1373,7 @@ class PluginSyncService extends ChangeNotifier {
       // Preserve plugin-discovered and Seerr slider rows so they survive a
       // server-driven preference sync that only sent homeRowOrder.
       final pluginEntries = _prefs.homeSectionsConfig
-          .where((c) => c.isPluginDynamic || c.isSeerrCustomSlider)
+          .where((c) => c.isPluginDynamic || c.isSeerrSlider)
           .toList(growable: false);
       if (serverOrder.isEmpty) {
         await _applyFallbackHomeRows(preserve: pluginEntries);
@@ -1576,7 +1576,8 @@ class PluginSyncService extends ChangeNotifier {
     List<HomeSectionConfig> sections,
   ) async {
     final enabledByType = {
-      for (final section in sections) section.type: section.enabled,
+      for (final section in sections)
+        if (section.isBuiltin) section.type: section.enabled,
     };
     final updated = _seerrPrefs.homeRowsConfig
         .map(

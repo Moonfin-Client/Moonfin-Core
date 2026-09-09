@@ -518,7 +518,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     required Widget child,
   }) {
     final l10n = AppLocalizations.of(context);
-    final title = row.isCustomSlider
+    final title = row.isSeerrSlider
         ? localizeSeerrSliderTitle(
             row.slider!.type,
             l10n,

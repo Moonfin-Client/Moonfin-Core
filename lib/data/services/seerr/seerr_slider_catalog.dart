@@ -38,6 +38,127 @@ bool seerrSliderIsLocalMoonfinBuiltin(int type) => type >= 1 && type <= 12;
 /// Simkl Best/Premieres: no TMDB ids. Numbers stay reserved.
 bool seerrSliderIsRetired(int type) => type >= 38 && type <= 43;
 
+/// Provider that backs a discover slider. TMDB keyword/genre rows have none.
+enum SeerrSliderProvider { none, trakt, anilist, simkl, mdblist }
+
+SeerrSliderProvider seerrSliderProvider(int type) {
+  switch (type) {
+    case SeerrSliderType.traktRecommendations:
+    case SeerrSliderType.traktWatchlist:
+    case SeerrSliderType.traktList:
+    case SeerrSliderType.traktHistory:
+      return SeerrSliderProvider.trakt;
+    case SeerrSliderType.anilistTrending:
+    case SeerrSliderType.anilistSeason:
+    case SeerrSliderType.anilistWatching:
+    case SeerrSliderType.anilistPlanning:
+    case SeerrSliderType.anilistCompleted:
+    case SeerrSliderType.anilistList:
+    case SeerrSliderType.anilistPopular:
+    case SeerrSliderType.anilistTop:
+    case SeerrSliderType.anilistNextSeason:
+      return SeerrSliderProvider.anilist;
+    case SeerrSliderType.simklTrending:
+    case SeerrSliderType.simklPlanToWatch:
+    case SeerrSliderType.simklWatching:
+    case SeerrSliderType.simklOnHold:
+    case SeerrSliderType.simklCompleted:
+    case SeerrSliderType.simklDropped:
+      return SeerrSliderProvider.simkl;
+    case SeerrSliderType.mdblistList:
+      return SeerrSliderProvider.mdblist;
+    default:
+      return SeerrSliderProvider.none;
+  }
+}
+
+/// Foreseer skips the catalog request until the user has linked this provider.
+bool seerrSliderRequiresLinkedAccount(int type) {
+  switch (type) {
+    case SeerrSliderType.traktRecommendations:
+    case SeerrSliderType.traktWatchlist:
+    case SeerrSliderType.traktHistory:
+    case SeerrSliderType.anilistWatching:
+    case SeerrSliderType.anilistPlanning:
+    case SeerrSliderType.anilistCompleted:
+    case SeerrSliderType.simklPlanToWatch:
+    case SeerrSliderType.simklWatching:
+    case SeerrSliderType.simklOnHold:
+    case SeerrSliderType.simklCompleted:
+    case SeerrSliderType.simklDropped:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/// Whether this client should call the catalog endpoint.
+///
+/// `null` flags mean "unknown" (Jellyseerr has no these keys / linked-account
+/// routes): try the fetch and hide on error. Skip only when Foreseer said the
+/// provider is off or the account is not linked.
+class SeerrSliderFetchGate {
+  final bool? traktConfigured;
+  final bool? anilistConfigured;
+  final bool? simklConfigured;
+  final bool? mdblistConfigured;
+  final bool? traktLinked;
+  final bool? anilistLinked;
+  final bool? simklLinked;
+
+  const SeerrSliderFetchGate({
+    this.traktConfigured,
+    this.anilistConfigured,
+    this.simklConfigured,
+    this.mdblistConfigured,
+    this.traktLinked,
+    this.anilistLinked,
+    this.simklLinked,
+  });
+
+  factory SeerrSliderFetchGate.fromPublicSettings(
+    Map<String, dynamic> settings, {
+    bool? traktLinked,
+    bool? anilistLinked,
+    bool? simklLinked,
+  }) =>
+      SeerrSliderFetchGate(
+        traktConfigured: _optionalBool(settings, 'traktConfigured'),
+        anilistConfigured: _optionalBool(settings, 'anilistConfigured'),
+        simklConfigured: _optionalBool(settings, 'simklConfigured'),
+        mdblistConfigured: _optionalBool(settings, 'mdblistConfigured'),
+        traktLinked: traktLinked,
+        anilistLinked: anilistLinked,
+        simklLinked: simklLinked,
+      );
+
+  bool canFetch(int type) {
+    final provider = seerrSliderProvider(type);
+    final configured = switch (provider) {
+      SeerrSliderProvider.none => true,
+      SeerrSliderProvider.trakt => traktConfigured,
+      SeerrSliderProvider.anilist => anilistConfigured,
+      SeerrSliderProvider.simkl => simklConfigured,
+      SeerrSliderProvider.mdblist => mdblistConfigured,
+    };
+    if (configured == false) return false;
+    if (!seerrSliderRequiresLinkedAccount(type)) return true;
+    final linked = switch (provider) {
+      SeerrSliderProvider.trakt => traktLinked,
+      SeerrSliderProvider.anilist => anilistLinked,
+      SeerrSliderProvider.simkl => simklLinked,
+      SeerrSliderProvider.mdblist || SeerrSliderProvider.none => true,
+    };
+    return linked != false;
+  }
+}
+
+bool? _optionalBool(Map<String, dynamic> json, String key) {
+  if (!json.containsKey(key)) return null;
+  final value = json[key];
+  return value is bool ? value : null;
+}
+
 /// Admin-named keyword/genre/studio/list sliders keep the server title.
 bool seerrSliderUsesServerTitle(int type) {
   switch (type) {
@@ -167,7 +288,7 @@ SeerrSliderCatalog? resolveSeerrSliderCatalog(SeerrDiscoverSlider slider) {
   );
 }
 
-List<(SeerrDiscoverSlider, SeerrSliderCatalog)> resolveSeerrCustomSliders(
+List<(SeerrDiscoverSlider, SeerrSliderCatalog)> resolveSeerrSliders(
   Iterable<SeerrDiscoverSlider> sliders,
 ) {
   final resolved = <(SeerrDiscoverSlider, SeerrSliderCatalog)>[];

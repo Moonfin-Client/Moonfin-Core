@@ -257,8 +257,8 @@ void main() {
     });
   });
 
-  test('resolveSeerrCustomSliders keeps server order and drops skips', () {
-    final resolved = resolveSeerrCustomSliders([
+  test('resolveSeerrSliders keeps server order and drops skips', () {
+    final resolved = resolveSeerrSliders([
       _slider(
         id: 2,
         type: SeerrSliderType.tmdbTvGenre,
@@ -370,6 +370,71 @@ void main() {
         seerrSliderUsesServerTitle(SeerrSliderType.traktRecommendations),
         isFalse,
       );
+    });
+  });
+
+  group('SeerrSliderFetchGate', () {
+    test('allows TMDB sliders regardless of provider flags', () {
+      const gate = SeerrSliderFetchGate(
+        traktConfigured: false,
+        anilistConfigured: false,
+        simklConfigured: false,
+        mdblistConfigured: false,
+      );
+      expect(gate.canFetch(SeerrSliderType.tmdbMovieKeyword), isTrue);
+    });
+
+    test('skips Trakt recs when Trakt is not configured', () {
+      const gate = SeerrSliderFetchGate(traktConfigured: false);
+      expect(gate.canFetch(SeerrSliderType.traktRecommendations), isFalse);
+      expect(gate.canFetch(SeerrSliderType.traktList), isFalse);
+    });
+
+    test('skips Trakt recs when the account is not linked', () {
+      const gate = SeerrSliderFetchGate(
+        traktConfigured: true,
+        traktLinked: false,
+      );
+      expect(gate.canFetch(SeerrSliderType.traktRecommendations), isFalse);
+      expect(gate.canFetch(SeerrSliderType.traktList), isTrue);
+    });
+
+    test('allows Trakt recs when configured and linked', () {
+      const gate = SeerrSliderFetchGate(
+        traktConfigured: true,
+        traktLinked: true,
+      );
+      expect(gate.canFetch(SeerrSliderType.traktRecommendations), isTrue);
+    });
+
+    test('tries the fetch when Jellyseerr omits Foreseer flags', () {
+      final gate = SeerrSliderFetchGate.fromPublicSettings(const {});
+      expect(gate.canFetch(SeerrSliderType.traktRecommendations), isTrue);
+      expect(gate.canFetch(SeerrSliderType.anilistWatching), isTrue);
+      expect(gate.canFetch(SeerrSliderType.simklWatching), isTrue);
+    });
+
+    test('skips Simkl library rows until linked, not trending', () {
+      const gate = SeerrSliderFetchGate(
+        simklConfigured: true,
+        simklLinked: false,
+      );
+      expect(gate.canFetch(SeerrSliderType.simklWatching), isFalse);
+      expect(gate.canFetch(SeerrSliderType.simklTrending), isTrue);
+    });
+
+    test('skips AniList user lists until linked', () {
+      const gate = SeerrSliderFetchGate(
+        anilistConfigured: true,
+        anilistLinked: false,
+      );
+      expect(gate.canFetch(SeerrSliderType.anilistWatching), isFalse);
+      expect(gate.canFetch(SeerrSliderType.anilistTrending), isTrue);
+    });
+
+    test('skips Mdblist when the server says it is off', () {
+      const gate = SeerrSliderFetchGate(mdblistConfigured: false);
+      expect(gate.canFetch(SeerrSliderType.mdblistList), isFalse);
     });
   });
 }

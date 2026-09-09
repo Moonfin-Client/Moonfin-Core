@@ -1,10 +1,10 @@
 import '../../../preference/home_section_config.dart';
 import 'seerr_slider_catalog.dart';
 
-/// Upserts a disabled home section per custom slider. Existing enable/order
+/// Upserts a disabled home section per discover slider. Existing enable/order
 /// flags stay. Sliders that left the server are dropped. Refreshes
 /// [HomeSectionConfig.sliderType] and [HomeSectionConfig.pluginDisplayText].
-List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
+List<HomeSectionConfig> mergeSeerrSliderHomeSections(
   List<HomeSectionConfig> current,
   Iterable<(SeerrDiscoverSlider, SeerrSliderCatalog)> sliders,
 ) {
@@ -15,7 +15,7 @@ List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
   final seen = <int>{};
 
   for (final config in current) {
-    if (!config.isSeerrCustomSlider) {
+    if (!config.isSeerrSlider) {
       kept.add(config);
       continue;
     }
@@ -41,7 +41,7 @@ List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
   return kept;
 }
 
-int? seerrCustomSliderIdFromStableId(String id) {
+int? seerrSliderIdFromStableId(String id) {
   const prefix = 'seerrSlider:';
   if (id.startsWith(prefix)) {
     return int.tryParse(id.substring(prefix.length));

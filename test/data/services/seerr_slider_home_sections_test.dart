@@ -13,7 +13,7 @@ SeerrDiscoverSlider _slider({int id = 1, String title = 'Trending Anime'}) =>
     );
 
 void main() {
-  group('mergeSeerrCustomSliderHomeSections', () {
+  group('mergeSeerrSliderHomeSections', () {
     test('appends missing sliders disabled at the end', () {
       final current = [
         const HomeSectionConfig(
@@ -23,13 +23,13 @@ void main() {
         ),
       ];
       final catalog = resolveSeerrSliderCatalog(_slider())!;
-      final merged = mergeSeerrCustomSliderHomeSections(current, [
+      final merged = mergeSeerrSliderHomeSections(current, [
         (_slider(), catalog),
       ]);
 
       expect(merged, hasLength(2));
       expect(merged.first.type, HomeSectionType.resume);
-      expect(merged.last.isSeerrCustomSlider, isTrue);
+      expect(merged.last.isSeerrSlider, isTrue);
       expect(merged.last.enabled, isFalse);
       expect(merged.last.type, HomeSectionType.none);
       expect(merged.last.sliderId, '1');
@@ -46,7 +46,7 @@ void main() {
         order: 4,
       );
       final catalog = resolveSeerrSliderCatalog(_slider(title: 'New title'))!;
-      final merged = mergeSeerrCustomSliderHomeSections(
+      final merged = mergeSeerrSliderHomeSections(
         [existing],
         [(_slider(title: 'New title'), catalog)],
       );
@@ -65,7 +65,7 @@ void main() {
         sliderId: '99',
         sliderType: SeerrSliderType.tmdbSearch,
       );
-      final merged = mergeSeerrCustomSliderHomeSections([stale], const []);
+      final merged = mergeSeerrSliderHomeSections([stale], const []);
       expect(merged, isEmpty);
     });
 
@@ -80,7 +80,7 @@ void main() {
       final duplicate = first.copyWith(order: 8);
       final catalog = resolveSeerrSliderCatalog(_slider())!;
 
-      final merged = mergeSeerrCustomSliderHomeSections(
+      final merged = mergeSeerrSliderHomeSections(
         [first, duplicate],
         [(_slider(), catalog)],
       );
@@ -89,24 +89,24 @@ void main() {
     });
   });
 
-  group('seerrCustomSliderIdFromStableId', () {
+  group('seerrSliderIdFromStableId', () {
     test('reads the slider id off the home row id', () {
       final config = HomeSectionConfig.seerrSlider(
         sliderId: '42',
         sliderType: SeerrSliderType.tmdbSearch,
       );
-      expect(seerrCustomSliderIdFromStableId(config.stableId), 42);
+      expect(seerrSliderIdFromStableId(config.stableId), 42);
     });
 
     test('reads the legacy pluginDynamic seerr row id', () {
       expect(
-        seerrCustomSliderIdFromStableId('pluginDynamic:seerr:seerr:slider:42'),
+        seerrSliderIdFromStableId('pluginDynamic:seerr:seerr:slider:42'),
         42,
       );
     });
 
     test('ignores builtin seerr rows', () {
-      expect(seerrCustomSliderIdFromStableId('seerr_trending'), isNull);
+      expect(seerrSliderIdFromStableId('seerr_trending'), isNull);
     });
   });
 
@@ -206,7 +206,7 @@ void main() {
         '[{"type":"resume","enabled":true,"order":0},'
         '{"type":"seerr_slider","enabled":true,"order":1}]',
       );
-      expect(restored.where((c) => c.isSeerrCustomSlider), isEmpty);
+      expect(restored.where((c) => c.isSeerrSlider), isEmpty);
       expect(
         restored.any((c) => c.type == HomeSectionType.resume && c.enabled),
         isTrue,
@@ -215,7 +215,7 @@ void main() {
       final noId = HomeSectionConfig.fromJsonString(
         '[{"kind":"seerrSlider","type":"seerr_slider","enabled":true,"order":0}]',
       );
-      expect(noId.where((c) => c.isSeerrCustomSlider), isEmpty);
+      expect(noId.where((c) => c.isSeerrSlider), isEmpty);
 
       final kept = HomeSectionConfig.fromJsonString(
         HomeSectionConfig.toJsonString([
@@ -228,7 +228,7 @@ void main() {
         ]),
       );
       expect(
-        kept.where((c) => c.isSeerrCustomSlider && c.sliderId == '47'),
+        kept.where((c) => c.isSeerrSlider && c.sliderId == '47'),
         hasLength(1),
       );
     });

@@ -57,7 +57,7 @@ class SeerrDiscoverRow {
       );
 
   bool get hasMore => page < totalPages;
-  bool get isCustomSlider => catalog != null;
+  bool get isSeerrSlider => catalog != null;
   bool get isGenreRow =>
       type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
@@ -81,6 +81,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
 
   List<SeerrDiscoverRow> _rows = [];
   List<SeerrDiscoverRow> get rows => _rows;
+  SeerrSliderFetchGate _seerrSliderFetchGate = const SeerrSliderFetchGate();
 
   bool _canViewRecentlyAdded = true;
 
@@ -169,7 +170,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       notifyListeners();
 
       await _loadAllRows();
-      await _appendCustomSliders();
+      await _appendSeerrSliders();
     } catch (e) {
       _error = e.toString();
       debugPrint('[SeerrDiscover] Failed to load: $e');
@@ -221,7 +222,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     final rowMap = {
       for (final r in _rows) ?r.type: r,
     };
-    final custom = [for (final r in _rows) if (r.isCustomSlider) r];
+    final custom = [for (final r in _rows) if (r.isSeerrSlider) r];
     final local = <SeerrDiscoverRow>[];
     for (final type in activeTypes) {
       final existing = rowMap[type];
@@ -280,7 +281,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> _loadRow(int index) async {
     final row = _rows[index];
     try {
-      if (row.isCustomSlider) {
+      if (row.isSeerrSlider) {
         await _loadCatalogRow(index);
         return;
       }
@@ -534,6 +535,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<SeerrDiscoverPage?> _loadPage(SeerrDiscoverRow row, int page) async {
     final catalog = row.catalog;
     if (catalog != null) {
+      if (!_seerrSliderFetchGate.canFetch(catalog.type)) return null;
       return _repo.getCatalog(
         catalog.path,
         query: catalog.query,
@@ -562,11 +564,14 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _appendCustomSliders() async {
+  Future<void> _appendSeerrSliders() async {
     try {
       final sliders = await _repo.getDiscoverSliders();
-      final resolved = resolveSeerrCustomSliders(sliders);
-      _rows = _rows.where((row) => !row.isCustomSlider).toList();
+      _seerrSliderFetchGate = await _repo.loadSliderFetchGate();
+      final resolved = resolveSeerrSliders(sliders)
+          .where((pair) => _seerrSliderFetchGate.canFetch(pair.$2.type))
+          .toList();
+      _rows = _rows.where((row) => !row.isSeerrSlider).toList();
       if (resolved.isEmpty) {
         notifyListeners();
         return;
@@ -588,11 +593,11 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       await mapBounded<int, void>(indices, 2, (index) => _loadRow(index));
 
       _rows = _rows
-          .where((row) => !row.isCustomSlider || row.items.isNotEmpty)
+          .where((row) => !row.isSeerrSlider || row.items.isNotEmpty)
           .toList();
       notifyListeners();
     } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load custom sliders: $e');
+      debugPrint('[SeerrDiscover] Failed to load sliders: $e');
     }
   }
 

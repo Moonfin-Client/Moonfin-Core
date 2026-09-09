@@ -105,7 +105,7 @@ class HomeViewModel extends ChangeNotifier {
   bool _belongsToThisServer(HomeSectionConfig cfg) {
     if (cfg.isBuiltin ||
         cfg.pluginSource == HomeSectionPluginSource.custom ||
-        cfg.isSeerrCustomSlider) {
+        cfg.isSeerrSlider) {
       return true;
     }
     if (!_multiServerEnabled) return true;
@@ -401,7 +401,7 @@ class HomeViewModel extends ChangeNotifier {
       final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
       final seerrPrefs = GetIt.instance<SeerrPreferences>();
       if (showSeerrRows && seerrPrefs.enabled) {
-        await _cacheSeerrCustomSliderCatalogs();
+        await _cacheSeerrSliderCatalogs();
       }
 
       final activeConfigs = _prefs.activeHomeSectionConfigs;
@@ -476,7 +476,7 @@ class HomeViewModel extends ChangeNotifier {
                 (!_isSeerrSectionType(c.type) ||
                     (showSeerrRows &&
                         seerrPrefs.isSeerrHomeRowEnabled(c.type))) &&
-                (!c.isSeerrCustomSlider ||
+                (!c.isSeerrSlider ||
                     (showSeerrRows && seerrPrefs.enabled)) &&
                 (!_isImdbSectionType(c.type) ||
                     (showImdbRows && _isImdbSectionEnabled(c.type))) &&
@@ -717,7 +717,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   bool _rowBelongsToConfig(HomeRow row, HomeSectionConfig cfg) {
-    if (cfg.isPluginDynamic || cfg.isSeerrCustomSlider) {
+    if (cfg.isPluginDynamic || cfg.isSeerrSlider) {
       return row.id == cfg.stableId;
     }
 
@@ -955,7 +955,7 @@ class HomeViewModel extends ChangeNotifier {
         await _loadMoreSeerrRow(rowIndex, seerrType);
         return;
       }
-      final sliderId = seerrCustomSliderIdFromStableId(row.id);
+      final sliderId = seerrSliderIdFromStableId(row.id);
       if (sliderId != null) {
         await _loadMoreSeerrCatalogRow(rowIndex, sliderId);
         return;
@@ -1003,7 +1003,7 @@ class HomeViewModel extends ChangeNotifier {
     HomeSectionConfig cfg, {
     bool forceRefresh = false,
   }) async {
-    if (cfg.isSeerrCustomSlider) {
+    if (cfg.isSeerrSlider) {
       return _loadSeerrCatalogRow(cfg);
     }
     if (cfg.isPluginDynamic) {
@@ -1024,7 +1024,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   HomeRow? _placeholderForConfig(HomeSectionConfig cfg) {
-    if (cfg.isSeerrCustomSlider) {
+    if (cfg.isSeerrSlider) {
       return HomeRow(
         id: cfg.stableId,
         title: localizeSeerrSliderConfigTitle(cfg, currentAppLocalizations()),
@@ -2362,28 +2362,31 @@ class HomeViewModel extends ChangeNotifier {
   /// Last page fetched per Seerr row. Seerr counts in pages where the rest of
   /// the home rows count in items, so this can't share `_rowOffsets`.
   final Map<String, int> _seerrRowPages = {};
-  Map<int, SeerrSliderCatalog> _seerrCustomCatalogs = {};
+  Map<int, SeerrSliderCatalog> _seerrSliderCatalogs = {};
+  SeerrSliderFetchGate _seerrSliderFetchGate = const SeerrSliderFetchGate();
 
-  Future<void> _cacheSeerrCustomSliderCatalogs() async {
+  Future<void> _cacheSeerrSliderCatalogs() async {
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.ensureInitialized();
       if (!repo.isAvailable) return;
-      final resolved = resolveSeerrCustomSliders(
+      _seerrSliderFetchGate = await repo.loadSliderFetchGate();
+      final resolved = resolveSeerrSliders(
         await repo.getDiscoverSliders(),
       );
-      _seerrCustomCatalogs = {
+      _seerrSliderCatalogs = {
         for (final (slider, catalog) in resolved) slider.id: catalog,
       };
     } catch (e) {
-      debugPrint('[SeerrHomeRow] Failed to load custom sliders: $e');
+      debugPrint('[SeerrHomeRow] Failed to load sliders: $e');
     }
   }
 
   Future<List<HomeRow>> _loadSeerrCatalogRow(HomeSectionConfig cfg) async {
     final sliderId = cfg.seerrSliderId;
-    final catalog = sliderId == null ? null : _seerrCustomCatalogs[sliderId];
+    final catalog = sliderId == null ? null : _seerrSliderCatalogs[sliderId];
     if (sliderId == null || catalog == null) return const [];
+    if (!_seerrSliderFetchGate.canFetch(catalog.type)) return const [];
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       final seerrPrefs = GetIt.instance<SeerrPreferences>();
@@ -2416,14 +2419,15 @@ class HomeViewModel extends ChangeNotifier {
         ),
       ];
     } catch (e) {
-      debugPrint('[SeerrHomeRow] Failed to load custom slider $sliderId: $e');
+      debugPrint('[SeerrHomeRow] Failed to load slider $sliderId: $e');
       return const [];
     }
   }
 
   Future<void> _loadMoreSeerrCatalogRow(int rowIndex, int sliderId) async {
-    final catalog = _seerrCustomCatalogs[sliderId];
+    final catalog = _seerrSliderCatalogs[sliderId];
     if (catalog == null) return;
+    if (!_seerrSliderFetchGate.canFetch(catalog.type)) return;
     final row = _rows[rowIndex];
     final repo = await GetIt.instance.getAsync<SeerrRepository>();
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
