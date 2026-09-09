@@ -3891,6 +3891,11 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   String _localizedRowTitle(HomeRow row, AppLocalizations l10n) {
+    final config = widget.prefs.homeSectionsConfig
+        .firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null && config.isSeerrCustomSlider) {
+      return localizeSeerrSliderConfigTitle(config, l10n);
+    }
     final merge = widget.prefs.get(UserPreferences.mergeContinueWatchingNextUp);
     return localizeHomeRowTitle(
       row: row,
@@ -3903,7 +3908,11 @@ class _ContentRowsState extends State<_ContentRows>
     if (row.id == 'merged_calendar' || row.id == 'radarr_calendar' || row.id == 'sonarr_calendar') {
       return 'Radarr and Sonarr Calendars';
     }
-    if (row.id.startsWith('seerr_')) return l10n.seerrDiscoveryRows;
+    if (row.rowType == HomeRowType.seerr ||
+        row.id.startsWith('seerr_') ||
+        row.id.startsWith('seerrSlider:')) {
+      return l10n.seerrDiscoveryRows;
+    }
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
     if (row.id.startsWith('imdb_')) return 'IMDb List';
 

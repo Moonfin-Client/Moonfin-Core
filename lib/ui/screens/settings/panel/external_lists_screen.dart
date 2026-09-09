@@ -1257,10 +1257,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
 
   bool _isCustomHomeEnabled(int sliderId) {
     return GetIt.instance<UserPreferences>().homeSectionsConfig.any(
-      (c) =>
-          c.isSeerrCustomSlider &&
-          c.pluginAdditionalData == '$sliderId' &&
-          c.enabled,
+      (c) => c.isSeerrCustomSlider && c.seerrSliderId == sliderId && c.enabled,
     );
   }
 
@@ -1268,7 +1265,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     final prefs = GetIt.instance<UserPreferences>();
     final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
     final idx = configs.indexWhere(
-      (c) => c.isSeerrCustomSlider && c.pluginAdditionalData == '$sliderId',
+      (c) => c.isSeerrCustomSlider && c.seerrSliderId == sliderId,
     );
     if (idx < 0) return;
     configs[idx] = configs[idx].copyWith(enabled: enabled);

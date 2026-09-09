@@ -2557,13 +2557,16 @@ class UserPreferences extends ChangeNotifier {
         .toList();
   }
 
-  /// Ordered list of all enabled section configs (builtin + plugin dynamic).
-  /// Built-in `none` entries are filtered out.
+  /// Ordered list of all enabled section configs (builtin + plugin dynamic +
+  /// Seerr custom sliders). Built-in `none` entries are filtered out.
   List<HomeSectionConfig> get activeHomeSectionConfigs {
     final enabled = homeSectionsConfig.where((c) => c.enabled).toList()
       ..sort((a, b) => a.order.compareTo(b.order));
     return enabled
-        .where((c) => c.isPluginDynamic || c.type != HomeSectionType.none)
+        .where((c) =>
+            c.isPluginDynamic ||
+            c.isSeerrCustomSlider ||
+            c.type != HomeSectionType.none)
         .toList();
   }
 

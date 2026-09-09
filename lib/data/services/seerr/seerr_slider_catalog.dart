@@ -38,13 +38,26 @@ bool seerrSliderIsLocalMoonfinBuiltin(int type) => type >= 1 && type <= 12;
 /// Simkl Best/Premieres: no TMDB ids. Numbers stay reserved.
 bool seerrSliderIsRetired(int type) => type >= 38 && type <= 43;
 
-/// Admin-named rows (TMDB custom + list URLs). Built-ins use l10n instead.
-bool seerrSliderUsesServerTitle(int type) =>
-    (type >= SeerrSliderType.tmdbMovieKeyword &&
-        type <= SeerrSliderType.tmdbTvStreaming) ||
-    type == SeerrSliderType.traktList ||
-    type == SeerrSliderType.anilistList ||
-    type == SeerrSliderType.mdblistList;
+/// Admin-named keyword/genre/studio/list sliders keep the server title.
+bool seerrSliderUsesServerTitle(int type) {
+  switch (type) {
+    case SeerrSliderType.tmdbMovieKeyword:
+    case SeerrSliderType.tmdbMovieGenre:
+    case SeerrSliderType.tmdbTvKeyword:
+    case SeerrSliderType.tmdbTvGenre:
+    case SeerrSliderType.tmdbSearch:
+    case SeerrSliderType.tmdbStudio:
+    case SeerrSliderType.tmdbNetwork:
+    case SeerrSliderType.tmdbMovieStreaming:
+    case SeerrSliderType.tmdbTvStreaming:
+    case SeerrSliderType.traktList:
+    case SeerrSliderType.anilistList:
+    case SeerrSliderType.mdblistList:
+      return true;
+    default:
+      return false;
+  }
+}
 
 /// English fallback when UI has no [AppLocalizations] yet. Keep in lockstep
 /// with `app_en.arb` `seerr*` keys.

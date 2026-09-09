@@ -1,6 +1,7 @@
 import '../../data/models/home_row.dart';
 import '../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 
 /// The Seerr page builds its rows from the type alone, so it localizes the
@@ -55,6 +56,15 @@ String localizeSeerrSliderTitle(
     _ => server.isNotEmpty ? server : seerrSliderFallbackTitle(type),
   };
 }
+
+String localizeSeerrSliderConfigTitle(
+  HomeSectionConfig config,
+  AppLocalizations l10n,
+) => localizeSeerrSliderTitle(
+  config.sliderType ?? 0,
+  l10n,
+  serverTitle: config.pluginDisplayText,
+);
 
 String localizeHomeRowTitle({
   required HomeRow row,

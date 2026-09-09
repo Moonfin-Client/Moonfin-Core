@@ -282,6 +282,11 @@ void main() {
       ),
     ]);
     expect(resolved.map((e) => e.$1.id), [3, 4, 2]);
+    expect(resolved.map((e) => e.$2.type), [
+      SeerrSliderType.tmdbMovieKeyword,
+      SeerrSliderType.traktRecommendations,
+      SeerrSliderType.tmdbTvGenre,
+    ]);
     expect(resolved.map((e) => e.$2.title), [
       'Christmas',
       'Trakt Recommendations',
@@ -353,6 +358,17 @@ void main() {
       expect(
         seerrDiscoverFocusHubKey(sliderId: 1),
         isNot(seerrDiscoverFocusHubKey(sliderId: 2)),
+      );
+    });
+  });
+
+  group('seerrSliderUsesServerTitle', () {
+    test('is true for admin-named list and TMDB sliders', () {
+      expect(seerrSliderUsesServerTitle(SeerrSliderType.traktList), isTrue);
+      expect(seerrSliderUsesServerTitle(SeerrSliderType.tmdbSearch), isTrue);
+      expect(
+        seerrSliderUsesServerTitle(SeerrSliderType.traktRecommendations),
+        isFalse,
       );
     });
   });

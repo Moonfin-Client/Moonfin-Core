@@ -1314,7 +1314,7 @@ class PluginSyncService extends ChangeNotifier {
         for (final e in homeSectionsRaw)
           if (e is Map && HomeSectionConfig.isSupportedJson(Map<String, dynamic>.from(e)))
             HomeSectionConfig.fromJson(Map<String, dynamic>.from(e)),
-      ];
+      ].where((c) => c.isPersistable).toList();
       if (parsed.isNotEmpty) {
         parsed.sort((a, b) => a.order.compareTo(b.order));
         final sections = <HomeSectionConfig>[];
@@ -1346,16 +1346,19 @@ class PluginSyncService extends ChangeNotifier {
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
         }
-        final incomingSeerr = sections
+        final incomingSliderIds = sections
             .where((s) => s.isSeerrCustomSlider)
-            .map((s) => s.pluginAdditionalData)
+            .map((s) => s.sliderId)
+            .whereType<String>()
             .toSet();
-        final existingSeerr = _prefs.homeSectionsConfig.where(
+        final existingSliders = _prefs.homeSectionsConfig.where(
           (c) =>
               c.isSeerrCustomSlider &&
-              !incomingSeerr.contains(c.pluginAdditionalData),
+              c.sliderId != null &&
+              c.sliderId!.isNotEmpty &&
+              !incomingSliderIds.contains(c.sliderId),
         );
-        for (final slider in existingSeerr) {
+        for (final slider in existingSliders) {
           sections.add(slider.copyWith(order: order++));
         }
         _appendDisabledBuiltinSections(sections, order);
@@ -1367,10 +1370,10 @@ class PluginSyncService extends ChangeNotifier {
 
     if (!appliedHomeSections && resolved['homeRowOrder'] is List) {
       final serverOrder = (resolved['homeRowOrder'] as List).cast<String>();
-      // Preserve any plugin-discovered dynamic sections so they survive a
-      // server-driven preference sync.
+      // Preserve plugin-discovered and Seerr slider rows so they survive a
+      // server-driven preference sync that only sent homeRowOrder.
       final pluginEntries = _prefs.homeSectionsConfig
-          .where((c) => c.isPluginDynamic)
+          .where((c) => c.isPluginDynamic || c.isSeerrCustomSlider)
           .toList(growable: false);
       if (serverOrder.isEmpty) {
         await _applyFallbackHomeRows(preserve: pluginEntries);
@@ -1379,7 +1382,9 @@ class PluginSyncService extends ChangeNotifier {
         var order = 0;
         for (final name in serverOrder) {
           final type = prefs.HomeSectionType.fromSerialized(name);
-          if (type == prefs.HomeSectionType.none) continue;
+          if (type == prefs.HomeSectionType.none) {
+            continue;
+          }
           sections.add(
             HomeSectionConfig(type: type, enabled: true, order: order++),
           );
@@ -1389,7 +1394,9 @@ class PluginSyncService extends ChangeNotifier {
         } else {
           final enabledTypes = sections.map((s) => s.type).toSet();
           for (final type in prefs.HomeSectionType.values) {
-            if (type == prefs.HomeSectionType.none) continue;
+            if (type == prefs.HomeSectionType.none) {
+              continue;
+            }
             if (_isTmdbSectionType(type)) {
               final localEnabled = _prefs.get(_tmdbPrefForType(type));
               final idx = sections.indexWhere((s) => s.type == type);
@@ -1551,7 +1558,8 @@ class PluginSyncService extends ChangeNotifier {
   ) {
     final present = sections.map((s) => s.type).toSet();
     for (final type in prefs.HomeSectionType.values) {
-      if (type == prefs.HomeSectionType.none || present.contains(type)) {
+      if (type == prefs.HomeSectionType.none ||
+          present.contains(type)) {
         continue;
       }
       sections.add(
@@ -1846,10 +1854,9 @@ class PluginSyncService extends ChangeNotifier {
       'mdblistRatingSources': _csvToList(UserPreferences.enabledRatings)
           .map((s) => _clientToServerRatingSource[s] ?? s)
           .toList(),
-      'homeRowOrder': _prefs.homeSectionsConfig
-          .where((c) => c.enabled)
-          .map((c) => c.type.serializedName)
-          .toList(),
+      'homeRowOrder': HomeSectionConfig.homeRowOrderNames(
+        _prefs.homeSectionsConfig,
+      ),
       'homeSections':
           _prefs.homeSectionsConfig.map((c) => c.toJson()).toList(),
       'seerrRows': {

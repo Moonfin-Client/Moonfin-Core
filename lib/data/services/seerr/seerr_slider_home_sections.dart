@@ -1,14 +1,9 @@
 import '../../../preference/home_section_config.dart';
 import 'seerr_slider_catalog.dart';
 
-/// pluginDynamic identity for one Seerr custom Discover slider on Home.
-abstract final class SeerrHomeSliderSection {
-  static const serverId = 'seerr';
-  static const pluginSection = 'slider';
-}
-
 /// Upserts a disabled home section per custom slider. Existing enable/order
-/// flags stay. Sliders that left the server are dropped.
+/// flags stay. Sliders that left the server are dropped. Refreshes
+/// [HomeSectionConfig.sliderType] and [HomeSectionConfig.pluginDisplayText].
 List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
   List<HomeSectionConfig> current,
   Iterable<(SeerrDiscoverSlider, SeerrSliderCatalog)> sliders,
@@ -24,27 +19,20 @@ List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
       kept.add(config);
       continue;
     }
-    final id = int.tryParse(config.pluginAdditionalData ?? '');
+    final id = config.seerrSliderId;
     final pair = id == null ? null : byId[id];
     if (id == null || pair == null || !seen.add(id)) continue;
-    final title = pair.$2.title;
-    kept.add(
-      config.pluginDisplayText == title
-          ? config
-          : config.copyWith(pluginDisplayText: title),
-    );
+    kept.add(_withSliderCatalog(config, pair.$2));
   }
 
   var order = kept.fold<int>(-1, (m, c) => c.order > m ? c.order : m) + 1;
   for (final (slider, catalog) in sliders) {
     if (seen.contains(slider.id)) continue;
     kept.add(
-      HomeSectionConfig.pluginDynamic(
-        serverId: SeerrHomeSliderSection.serverId,
-        pluginSection: SeerrHomeSliderSection.pluginSection,
-        pluginAdditionalData: '${slider.id}',
-        pluginDisplayText: catalog.title,
-        pluginSource: HomeSectionPluginSource.seerr,
+      HomeSectionConfig.seerrSlider(
+        sliderId: '${slider.id}',
+        sliderType: catalog.type,
+        pluginDisplayText: _displayTextForCatalog(catalog),
         enabled: false,
         order: order++,
       ),
@@ -54,7 +42,33 @@ List<HomeSectionConfig> mergeSeerrCustomSliderHomeSections(
 }
 
 int? seerrCustomSliderIdFromStableId(String id) {
-  const prefix = 'pluginDynamic:seerr:seerr:slider:';
-  if (!id.startsWith(prefix)) return null;
-  return int.tryParse(id.substring(prefix.length));
+  const prefix = 'seerrSlider:';
+  if (id.startsWith(prefix)) {
+    return int.tryParse(id.substring(prefix.length));
+  }
+  const legacy = 'pluginDynamic:seerr:seerr:slider:';
+  if (id.startsWith(legacy)) {
+    return int.tryParse(id.substring(legacy.length));
+  }
+  return null;
+}
+
+HomeSectionConfig _withSliderCatalog(
+  HomeSectionConfig config,
+  SeerrSliderCatalog catalog,
+) {
+  final displayText = _displayTextForCatalog(catalog) ?? config.pluginDisplayText;
+  if (config.sliderType == catalog.type &&
+      config.pluginDisplayText == displayText) {
+    return config;
+  }
+  return config.copyWith(
+    sliderType: catalog.type,
+    pluginDisplayText: displayText,
+  );
+}
+
+String? _displayTextForCatalog(SeerrSliderCatalog catalog) {
+  final title = catalog.title.trim();
+  return title.isEmpty ? null : title;
 }

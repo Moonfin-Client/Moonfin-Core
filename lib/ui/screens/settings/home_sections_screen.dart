@@ -11,7 +11,10 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
+import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/seerr/seerr_slider_catalog.dart';
+import '../../../data/services/seerr/seerr_slider_home_sections.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -20,6 +23,7 @@ import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
@@ -451,7 +455,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   bool _isSeerrSectionType(HomeSectionType type) {
-    return type == HomeSectionType.seerrRecentRequests ||
+    return type == HomeSectionType.seerrShortcuts ||
+        type == HomeSectionType.seerrRecentRequests ||
         type == HomeSectionType.seerrWatchlist ||
         type == HomeSectionType.seerrRecentlyAdded ||
         type == HomeSectionType.seerrPopularMovies ||
@@ -476,10 +481,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       if (section.pluginSource == HomeSectionPluginSource.playlists) {
         return 5;
       }
-      if (section.pluginSource == HomeSectionPluginSource.seerr) {
-        return 6;
-      }
       return 7;
+    }
+    if (section.isSeerrCustomSlider) {
+      return 6;
     }
     // is builtin
     if (section.type == HomeSectionType.collections) {
@@ -814,7 +819,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     var changed = false;
 
     for (final type in HomeSectionType.values) {
-      if (type == HomeSectionType.none || type == HomeSectionType.mediaBar) {
+      if (type == HomeSectionType.none ||
+          type == HomeSectionType.mediaBar) {
         continue;
       }
       if (existingTypes.contains(type)) continue;
@@ -843,11 +849,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final seerrChanged = await _mergeSeerrSliderSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
       if (!mounted) return;
-      var changed = false;
+      var changed = seerrChanged;
       setState(() {
         final mergedPluginSections = _mergeDiscoveredPluginSections();
         final mergedCollectionSections = _mergeCollectionSections(
@@ -901,6 +908,37 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   bool _mergeDiscoveredPluginSections() {
     return false;
+  }
+
+  Future<bool> _mergeSeerrSliderSections() async {
+    try {
+      if (!GetIt.instance<SeerrPreferences>().enabled) return false;
+      if (!GetIt.instance<PluginSyncService>().seerrAvailable) return false;
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return false;
+      final resolved = resolveSeerrCustomSliders(await repo.getDiscoverSliders());
+      final current = [
+        ?_mediaBarConfig,
+        ..._sections,
+      ];
+      final merged = mergeSeerrCustomSliderHomeSections(current, resolved);
+      if (HomeSectionConfig.toJsonString(merged) ==
+          HomeSectionConfig.toJsonString(current)) {
+        return false;
+      }
+      _mediaBarConfig = merged
+          .where((s) => s.type == HomeSectionType.mediaBar)
+          .firstOrNull;
+      _sections = merged
+          .where((s) => s.type != HomeSectionType.mediaBar)
+          .toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
+      return true;
+    } catch (e) {
+      debugPrint('[HomeSections] Failed to merge Seerr sliders: $e');
+      return false;
+    }
   }
 
   Future<List<_DiscoveredCollectionRow>>
@@ -1605,6 +1643,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
+    if (cfg.isSeerrCustomSlider) {
+      return localizeSeerrSliderConfigTitle(cfg, l10n);
+    }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true
           ? cfg.pluginDisplayText!
@@ -2684,7 +2725,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 ],
               ],
             ),
-            subtitle: section.isPluginDynamic
+            subtitle: section.isSeerrCustomSlider
+                ? const Text('Seerr Discovery Rows')
+                : (section.isPluginDynamic
                 ? Text(_pluginSubtitle(section))
                 : (_isAudioSectionType(section.type)
                       ? const Text('Audio row')
@@ -2694,7 +2737,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                                   ? const Text('IMDb List')
                                   : (_isTmdbSectionType(section.type)
                                         ? const Text('TMDB Lists')
-                                        : null)))),
+                                        : null))))),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -2729,7 +2772,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
-      HomeSectionPluginSource.seerr => 'Seerr custom slider',
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {
