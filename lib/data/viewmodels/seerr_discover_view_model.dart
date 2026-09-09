@@ -58,6 +58,7 @@ class SeerrDiscoverRow {
 
   bool get hasMore => page < totalPages;
   bool get isSeerrSlider => catalog != null;
+  String get debugLabel => catalog?.path ?? type?.name ?? 'unknown';
   bool get isGenreRow =>
       type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
@@ -266,7 +267,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         _rows[rowIndex] = row.copyWith(isLoading: false);
       }
     } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load more for ${row.type}: $e');
+      debugPrint('[SeerrDiscover] Failed to load more for ${row.debugLabel}: $e');
       _rows = List.of(_rows);
       _rows[rowIndex] = row.copyWith(isLoading: false);
     }
@@ -332,7 +333,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
           }
       }
     } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load row ${row.type}: $e');
+      debugPrint('[SeerrDiscover] Failed to load row ${row.debugLabel}: $e');
       _updateRow(index, row.copyWith(isLoading: false));
     }
   }
