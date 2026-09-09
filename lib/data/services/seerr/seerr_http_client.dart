@@ -9,6 +9,30 @@ import 'seerr_catalog_item.dart';
 import 'seerr_error.dart';
 import 'seerr_models.dart';
 
+/// Percent-encode a Seerr/TMDB query value with `%20` for spaces.
+///
+/// Dio `queryParameters` uses `Uri.encodeQueryComponent`, which turns spaces
+/// into `+`. Seerr/TMDB treat that as a literal plus and return empty search
+/// results for multi-word queries.
+String encodeSeerrQueryComponent(String value) {
+  return Uri.encodeComponent(value)
+      .replaceAll("'", '%27')
+      .replaceAll('!', '%21')
+      .replaceAll('*', '%2A')
+      .replaceAll('(', '%28')
+      .replaceAll(')', '%29');
+}
+
+String seerrEncodedQueryString(Map<String, String> params) {
+  return params.entries
+      .map(
+        (e) =>
+            '${encodeSeerrQueryComponent(e.key)}='
+            '${encodeSeerrQueryComponent(e.value)}',
+      )
+      .join('&');
+}
+
 class SeerrHttpClient {
   final MoonfinProxyConfig proxyConfig;
 
@@ -503,12 +527,9 @@ class SeerrHttpClient {
     int page = 1,
     String? mediaTypeHint,
   }) async {
+    final qs = seerrEncodedQueryString({...query, 'page': '$page'});
     final response = await _dio.get(
-      _apiUrl(path),
-      queryParameters: {
-        ...query,
-        'page': page,
-      },
+      '${_apiUrl(path)}?$qs',
       options: _authOptions(),
     );
     _requireSuccess(response, 'getCatalog');
@@ -660,20 +681,10 @@ class SeerrHttpClient {
     int offset = 0,
   }) async {
     final page = (offset ~/ limit) + 1;
-    // Percent-encode query string explicitly using %20 for spaces and %27 for
-    // apostrophes. Passing query directly to Dio queryParameters uses
-    // x-www-form-urlencoded format (+ for spaces), which causes Seerr/TMDB
-    // to search for literal '+' characters and return 0 results.
-    final encodedQuery = Uri.encodeComponent(query)
-        .replaceAll("'", '%27')
-        .replaceAll('!', '%21')
-        .replaceAll('*', '%2A')
-        .replaceAll('(', '%28')
-        .replaceAll(')', '%29');
-
-    var url = '${_apiUrl('search')}?query=$encodedQuery&page=$page';
+    var url =
+        '${_apiUrl('search')}?${seerrEncodedQueryString({'query': query, 'page': '$page'})}';
     if (mediaType != null) {
-      url += '&type=${Uri.encodeComponent(mediaType)}';
+      url += '&type=${encodeSeerrQueryComponent(mediaType)}';
     }
 
     final response = await _dio.get(
