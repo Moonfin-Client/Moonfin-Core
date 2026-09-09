@@ -9919,6 +9919,13 @@ class AppLocalizationsRu extends AppLocalizations {
       '«Классический» сохраняет тип изображения для каждого ряда и информационный оверлей. «Современный» использует ряды с переходом от постера к фону.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

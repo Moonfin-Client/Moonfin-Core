@@ -9956,6 +9956,13 @@ class AppLocalizationsMl extends AppLocalizations {
       'ക്ലാസിക് ഓരോ വരി ചിത്ര തരവും വിവര ഓവർലേയും നിലനിർത്തുന്നു. മോഡേൺ പോർട്രെയ്‌റ്റ്-ടു-ബാക്ക്‌ഡ്രോപ്പ് വരികൾ ഉപയോഗിക്കുന്നു.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

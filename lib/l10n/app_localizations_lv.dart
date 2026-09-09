@@ -9893,6 +9893,13 @@ class AppLocalizationsLv extends AppLocalizations {
       'Classic saglabā katras rindas attēla veidu un informācijas pārklājumu. Modern izmanto rindas no portreta uz fonu.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

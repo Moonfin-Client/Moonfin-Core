@@ -9921,6 +9921,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Classico mantiene il tipo di immagine per riga e l\'overlay informativo. Moderno usa righe da verticale a sfondo.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Ordine';
 
   @override

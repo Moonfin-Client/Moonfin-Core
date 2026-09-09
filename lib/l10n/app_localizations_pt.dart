@@ -9913,6 +9913,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Classic mantém o tipo de imagem por linha e a sobreposição de informações. Moderno usa linhas do retrato ao pano de fundo.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

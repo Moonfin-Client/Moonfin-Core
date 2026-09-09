@@ -107,6 +107,7 @@ void main() {
     'homeRowsStyle',
     'modernHomeRowsPadding',
     'classicHomeRowsPadding',
+    'modernCardsOnMyMediaRow',
     'imdbLowestRatedMoviesEnabled',
     'imdbMostPopularMoviesEnabled',
     'imdbMostPopularTvShowsEnabled',

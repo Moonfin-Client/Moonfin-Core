@@ -9939,6 +9939,13 @@ class AppLocalizationsBg extends AppLocalizations {
       'Classic запазва типа на изображението на ред и наслагването на информация. Modern използва редове от портрет към фон.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

@@ -9540,6 +9540,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '클래식은 행별 이미지 유형과 정보 오버레이를 유지합니다. 모던은 세로형에서 가로형으로 이어지는 행을 사용합니다.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => '정렬 순서';
 
   @override

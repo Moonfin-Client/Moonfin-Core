@@ -9971,6 +9971,13 @@ class AppLocalizationsGl extends AppLocalizations {
       'Clásico mantén o tipo de imaxe e a superposición de información por fila. Moderno usa filas de retrato a imaxe de fondo.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

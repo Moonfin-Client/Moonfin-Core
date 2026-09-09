@@ -9906,6 +9906,13 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಕ್ಲಾಸಿಕ್ ಪ್ರತಿ-ಸಾಲಿನ ಚಿತ್ರ ಪ್ರಕಾರ ಮತ್ತು ಮಾಹಿತಿ ಓವರ್‌ಲೇ ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳುತ್ತದೆ. ಮಾಡರ್ನ್ ಪೋರ್ಟ್ರೇಟ್-ನಿಂದ-ಬ್ಯಾಕ್‌ಡ್ರಾಪ್ ಸಾಲುಗಳನ್ನು ಬಳಸುತ್ತದೆ.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

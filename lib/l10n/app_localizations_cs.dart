@@ -9873,6 +9873,13 @@ class AppLocalizationsCs extends AppLocalizations {
       'Classic zachovává typ obrázku na řádku a překryvné informace. Moderní používá řady na výšku na pozadí.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

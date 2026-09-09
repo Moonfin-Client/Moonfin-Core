@@ -55,6 +55,19 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                   setState(() {});
                 },
               ),
+              if (rowsStyle == HomeRowsStyle.v2)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.modernCardsOnMyMediaRow,
+                  title: l10n.modernCardsOnMyMediaRow,
+                  subtitle: l10n.modernCardsOnMyMediaRowDescription,
+                  icon: Icons.photo_library_outlined,
+                  onChanged: () {
+                    _pushPersonalizationSync();
+                    _reloadHomeRows();
+                    if (!mounted) return;
+                    setState(() {});
+                  },
+                ),
               EnumPreferenceTile<PosterSize>(
                 preference: UserPreferences.posterSize,
                 title: l10n.cardSize,

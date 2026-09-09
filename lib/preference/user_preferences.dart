@@ -484,6 +484,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_home_rows_style',
     'pref_modern_home_rows_padding',
     'pref_classic_home_rows_padding',
+    'pref_modern_cards_my_media',
     'poster_size',
     'pref_display_favorites_rows',
     'pref_display_collections_rows',
@@ -972,6 +973,11 @@ class UserPreferences extends ChangeNotifier {
   static final classicHomeRowsPadding = Preference<int>(
     key: 'pref_classic_home_rows_padding',
     defaultValue: 30,
+  );
+
+  static final modernCardsOnMyMediaRow = Preference<bool>(
+    key: 'pref_modern_cards_my_media',
+    defaultValue: true,
   );
 
   /// How far a mouse wheel notch scrolls, as a percentage of what the platform

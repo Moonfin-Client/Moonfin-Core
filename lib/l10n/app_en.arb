@@ -9185,6 +9185,8 @@
   "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
   "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "modernCardsOnMyMediaRow": "Modern cards on My Media row",
+  "modernCardsOnMyMediaRowDescription": "Display customizable posters that expand on focus. Disable to always show landscape thumbnail.",
   "sortOrder": "Sort Order",
   "ascending": "Ascending",
   "descending": "Descending",

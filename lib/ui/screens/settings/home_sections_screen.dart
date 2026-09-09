@@ -1806,6 +1806,20 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             _pushSyncSettings();
           },
         ),
+        if (_prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2) ...[
+          const Divider(),
+          SwitchListTile.adaptive(
+            secondary: const Icon(Icons.photo_library_outlined),
+            title: Text(l10n.modernCardsOnMyMediaRow),
+            subtitle: Text(l10n.modernCardsOnMyMediaRowDescription),
+            value: _prefs.get(UserPreferences.modernCardsOnMyMediaRow),
+            onChanged: (value) async {
+              await _prefs.set(UserPreferences.modernCardsOnMyMediaRow, value);
+              setState(() {});
+              _pushSyncSettings();
+            },
+          ),
+        ],
         const Divider(),
         SwitchListTile.adaptive(
           secondary: const Icon(Icons.merge_type),

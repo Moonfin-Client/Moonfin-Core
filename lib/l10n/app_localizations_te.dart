@@ -9910,6 +9910,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'క్లాసిక్ ప్రతి వరుస చిత్ర రకాన్ని మరియు సమాచార అతివ్యాప్తిని ఉంచుతుంది. ఆధునిక పోర్ట్రెయిట్-టు-బ్యాక్‌డ్రాప్ అడ్డు వరుసలను ఉపయోగిస్తుంది.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

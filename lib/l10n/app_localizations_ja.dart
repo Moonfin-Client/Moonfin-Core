@@ -9564,6 +9564,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'クラシックは行ごとの画像タイプと情報オーバーレイを維持します。モダンは縦長から横長へ変化する行を使用します。';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

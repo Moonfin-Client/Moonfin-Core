@@ -9900,6 +9900,13 @@ class AppLocalizationsBe extends AppLocalizations {
       'Classic захоўвае тып выявы і накладанне інфармацыі для кожнага радка. У Modern выкарыстоўваюцца радкі з партрэтам на фон.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

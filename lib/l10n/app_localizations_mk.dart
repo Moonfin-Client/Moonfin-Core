@@ -9915,6 +9915,13 @@ class AppLocalizationsMk extends AppLocalizations {
       'Класичниот задржува тип на слика по ред и информативен слој. Модерниот користи редови од портрет до позадина.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

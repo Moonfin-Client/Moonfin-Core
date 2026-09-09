@@ -95,6 +95,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('homeRowsStyle', UserPreferences.homeRowsStyle, SyncCodec.enumName, enumValues: prefs.HomeRowsStyle.values),
   SyncedField('modernHomeRowsPadding', UserPreferences.modernHomeRowsPadding, SyncCodec.integer),
   SyncedField('classicHomeRowsPadding', UserPreferences.classicHomeRowsPadding, SyncCodec.integer),
+  SyncedField('modernCardsOnMyMediaRow', UserPreferences.modernCardsOnMyMediaRow, SyncCodec.boolean),
   SyncedField('recommendationSystemSource', UserPreferences.recommendationSystemSource, SyncCodec.enumName, enumValues: prefs.RecommendationSystemSource.values),
   SyncedField('detailScreenStyle', UserPreferences.detailScreenStyle, SyncCodec.enumName, enumValues: prefs.DetailScreenStyle.values),
   SyncedField('personalRatingStyle', UserPreferences.personalRatingStyle, SyncCodec.enumName, enumValues: prefs.PersonalRatingStyle.values),

@@ -100,6 +100,14 @@ double classicHomeRowOverlayClipTop({
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  @visibleForTesting
+  static bool isRowModern(HomeRow row, UserPreferences prefs) =>
+      _ContentRowsState._isRowModern(row, prefs);
+
+  @visibleForTesting
+  static bool isModernMyMediaStatic(HomeRow row, UserPreferences prefs) =>
+      _ContentRowsState._isModernMyMediaStatic(row, prefs);
+
   @override
   Widget build(BuildContext context) {
     return const ResponsiveLayout(
@@ -2559,7 +2567,7 @@ class _ContentRowsState extends State<_ContentRows>
 
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
+    final isRowsV2 = _isRowModern(row, prefs);
     final fullScreenRows = _fullScreenRowsEnabled(prefs);
     final platformScale = _rowPlatformScale(row, desktopScale);
 
@@ -2647,8 +2655,7 @@ class _ContentRowsState extends State<_ContentRows>
     final defaultTop = _overlayBottom + 8.0;
     final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
     if (row == null) return defaultTop;
-    final isRowsV2 = widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-        !_isWideArtworkRow(row);
+    final isRowsV2 = _isRowModern(row, widget.prefs);
 
     final fullScreenRows = _fullScreenRowsEnabled(widget.prefs);
     if (fullScreenRows) {
@@ -3566,9 +3573,7 @@ class _ContentRowsState extends State<_ContentRows>
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
       final isSeerrRowOverride = _isSeerrFilterRow(row);
-      final isRowsV2 =
-          prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-          !_isWideArtworkRow(row);
+      final isRowsV2 = _isRowModern(row, prefs);
       final rowImageType = isSeerrRowOverride
           ? ImageType.thumb
           : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
@@ -3617,9 +3622,7 @@ class _ContentRowsState extends State<_ContentRows>
       final desktopScale = _desktopUiScaleFactor();
       final viewportHeight = MediaQuery.sizeOf(context).height;
       final safeTop = MediaQuery.paddingOf(context).top;
-      final isRowsV2 =
-          prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-          !_isWideArtworkRow(row);
+      final isRowsV2 = _isRowModern(row, prefs);
 
       final navbarIsTop =
           prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
@@ -4239,7 +4242,7 @@ class _ContentRowsState extends State<_ContentRows>
 
                     final contentHeight = _rowContentHeight(row, posterSize, prefs);
                     final targetExtent = rowExtents[rowIndex];
-                    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isWideArtworkRow(row);
+                    final isRowsV2 = _isRowModern(row, prefs);
                     final extraTopPadding = isRowsV2
                         ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
                         : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity);
@@ -4543,12 +4546,13 @@ class _ContentRowsState extends State<_ContentRows>
       row.items,
     );
     final isSeerrRowOverride = _isSeerrFilterRow(row);
-    final isRowsV2 =
-        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
-        !_isWideArtworkRow(row);
+    final isRowsV2 = _isRowModern(row, prefs);
+    final isModernMyMediaStatic = _isModernMyMediaStatic(row, prefs);
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
-        : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
+        : (isRowsV2
+            ? (isModernMyMediaStatic ? ImageType.thumb : ImageType.poster)
+            : _homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
     final platformScale = _rowPlatformScale(row, desktopScale);
@@ -4582,13 +4586,15 @@ class _ContentRowsState extends State<_ContentRows>
     double firstCardWidth = 0;
     if (isRowsV2) {
       maxCardHeight = v2ImageHeight + (v2MetadataHeightBudget * metadataScale);
-      firstCardWidth = v2PortraitWidth;
-      _prefetchV2RowLeadImage(
-        row: row,
-        v2ImageHeight: v2ImageHeight,
-        v2FocusedWidth: v2FocusedWidth,
-        useSeriesThumbs: useSeriesThumbs,
-      );
+      firstCardWidth = isModernMyMediaStatic ? v2FocusedWidth : v2PortraitWidth;
+      if (!isModernMyMediaStatic) {
+        _prefetchV2RowLeadImage(
+          row: row,
+          v2ImageHeight: v2ImageHeight,
+          v2FocusedWidth: v2FocusedWidth,
+          useSeriesThumbs: useSeriesThumbs,
+        );
+      }
     } else {
       for (final item in row.items) {
         final ar = _aspectRatioForRowItem(item, row, rowImageType);
@@ -4646,7 +4652,7 @@ class _ContentRowsState extends State<_ContentRows>
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
-          if (isRowsV2 && !row.isAudio) {
+          if (isRowsV2 && !row.isAudio && !isModernMyMediaStatic) {
             _primeV2FocusedRatings(item);
             _prefetchV2FocusNeighbors(
               row: row,
@@ -4723,32 +4729,47 @@ class _ContentRowsState extends State<_ContentRows>
                     .clamp(v2PortraitWidth, v2ExtendedWidth)
                     .toDouble()
               : v2FocusedWidth;
-          final canUseExpandedV2Card = isRowsV2 && effectiveV2Focused && !row.isAudio;
+          final canUseExpandedV2Card =
+              isRowsV2 && effectiveV2Focused && !row.isAudio && !isModernMyMediaStatic;
 
           if (isRowsV2) {
-            ar = canUseExpandedV2Card ? v2FocusedAspect : v2PortraitAspect;
-            width = canUseExpandedV2Card
-                ? v2FocusedWidthForCurrentViewport
-                : v2PortraitWidth;
-            final posterUrl = _cachedRowImageUrl(
-              item,
-              imageApi,
-              v2ImageHeight,
-              ImageType.poster,
-              item.type == 'Episode' ? true : useSeriesThumbs,
-              requestScale,
-              isMyMediaRow: row.rowType == HomeRowType.libraryTiles,
-            );
-            imageUrl = canUseExpandedV2Card
-                ? (_resolveV2FocusedImageUrl(
-                        item,
-                        imageApi,
-                        v2ImageHeight,
-                        useSeriesThumbs,
-                        requestScale,
-                      ) ??
-                      posterUrl)
-                : posterUrl;
+            if (isModernMyMediaStatic) {
+              ar = v2FocusedAspect;
+              width = v2FocusedWidth;
+              imageUrl = _cachedRowImageUrl(
+                item,
+                imageApi,
+                v2ImageHeight,
+                ImageType.thumb,
+                false,
+                requestScale,
+                isMyMediaRow: true,
+              );
+            } else {
+              ar = canUseExpandedV2Card ? v2FocusedAspect : v2PortraitAspect;
+              width = canUseExpandedV2Card
+                  ? v2FocusedWidthForCurrentViewport
+                  : v2PortraitWidth;
+              final posterUrl = _cachedRowImageUrl(
+                item,
+                imageApi,
+                v2ImageHeight,
+                ImageType.poster,
+                item.type == 'Episode' ? true : useSeriesThumbs,
+                requestScale,
+                isMyMediaRow: row.rowType == HomeRowType.libraryTiles,
+              );
+              imageUrl = canUseExpandedV2Card
+                  ? (_resolveV2FocusedImageUrl(
+                          item,
+                          imageApi,
+                          v2ImageHeight,
+                          useSeriesThumbs,
+                          requestScale,
+                        ) ??
+                        posterUrl)
+                  : posterUrl;
+            }
           } else {
             final itemAr = _aspectRatioForRowItem(item, row, rowImageType);
             final itemHeight =
@@ -5284,6 +5305,23 @@ class _ContentRowsState extends State<_ContentRows>
       _isSeerrFilterRow(row) ||
       (row.rowType == HomeRowType.studios && row.id == 'studios');
 
+  static bool _isRowModern(HomeRow row, UserPreferences prefs) {
+    if (prefs.get(UserPreferences.homeRowsStyle) != HomeRowsStyle.v2) {
+      return false;
+    }
+    if (_isWideArtworkRow(row)) {
+      return false;
+    }
+    return true;
+  }
+
+  static bool _isModernMyMediaStatic(HomeRow row, UserPreferences prefs) {
+    return _isRowModern(row, prefs) &&
+        (row.rowType == HomeRowType.libraryTiles ||
+            row.rowType == HomeRowType.libraryTilesSmall) &&
+        !prefs.get(UserPreferences.modernCardsOnMyMediaRow);
+  }
+
   static String? _seerrTmdbImageUrl(String? path, int width) {
     if (path == null || path.isEmpty) return null;
     if (path.startsWith('http')) return path;
@@ -5597,6 +5635,11 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (row.rowType == HomeRowType.latestMedia && _isLatestMusicRow(row)) {
       return ImageType.poster;
+    }
+    if ((row.rowType == HomeRowType.libraryTiles ||
+            row.rowType == HomeRowType.libraryTilesSmall) &&
+        !prefs.get(UserPreferences.modernCardsOnMyMediaRow)) {
+      return ImageType.thumb;
     }
 
     if (prefs.get(UserPreferences.homeRowsUniversalOverride)) {

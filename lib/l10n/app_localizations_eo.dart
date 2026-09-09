@@ -9827,6 +9827,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Klasika konservas po-vican bildspecon kaj informan tegmenton. Modernaj uzoj portret-al-fono vicoj.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

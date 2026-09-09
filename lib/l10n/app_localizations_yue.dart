@@ -9494,6 +9494,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get rowsTypeDescription => '「經典」保留逐行嘅圖片類型同資訊覆蓋層。「現代」用直度轉背景圖嘅列表。';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

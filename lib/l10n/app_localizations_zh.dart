@@ -9450,6 +9450,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowsTypeDescription => '经典模式保留每行的图片类型和信息浮层。现代模式使用竖版图到背景图的行布局。';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => '排序顺序';
 
   @override

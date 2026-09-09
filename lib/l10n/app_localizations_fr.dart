@@ -9965,6 +9965,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Classique conserve la disposition classique en portrait. Moderne passe du portrait à la vignette au survol.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Ordre de tri';
 
   @override

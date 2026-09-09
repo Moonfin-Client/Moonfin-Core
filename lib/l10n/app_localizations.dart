@@ -17518,6 +17518,18 @@ abstract class AppLocalizations {
   /// **'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.'**
   String get rowsTypeDescription;
 
+  /// No description provided for @modernCardsOnMyMediaRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern cards on My Media row'**
+  String get modernCardsOnMyMediaRow;
+
+  /// No description provided for @modernCardsOnMyMediaRowDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.'**
+  String get modernCardsOnMyMediaRowDescription;
+
   /// No description provided for @sortOrder.
   ///
   /// In en, this message translates to:

@@ -9916,6 +9916,13 @@ class AppLocalizationsTa extends AppLocalizations {
       'கிளாசிக் ஒவ்வொரு வரிசைக்கும் படவகை மற்றும் தகவல் மேலடுக்கைத் தக்கவைக்கும். மாடர்ன் போர்ட்ரெய்ட்-டு-பேக்டிராப் வரிசைகளைப் பயன்படுத்தும்.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override

@@ -9892,6 +9892,13 @@ class AppLocalizationsCy extends AppLocalizations {
       'Mae Classic yn cadw\'r math o ddelwedd fesul rhes a throshaen gwybodaeth. Mae Modern yn defnyddio rhesi portread-i-gefndir.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+
+  @override
   String get sortOrder => 'Sort Order';
 
   @override
