@@ -10129,6 +10129,47 @@
   "transcodeVideoBitrateExceedsLimit": "Video bitrate exceeds streaming limit.",
   "transcodeAudioBitrateExceedsLimit": "Audio bitrate exceeds streaming limit.",
   "transcodeAudioChannelsNotSupported": "Number of audio channels is not supported.",
+  "transcodeAudioCodecWithCodec": "Audio codec ({codec}) is not supported directly.",
+  "@transcodeAudioCodecWithCodec": {
+    "placeholders": { "codec": { "type": "String" } }
+  },
+  "transcodeAudioCodecHintPassthrough": "Tip: If your audio receiver or soundbar supports {codec}, enable Audio Passthrough in Audio settings.",
+  "@transcodeAudioCodecHintPassthrough": {
+    "placeholders": { "codec": { "type": "String" } }
+  },
+  "transcodeAudioChannelsExceeded": "Audio channel count ({channels}ch) exceeds the player limit.",
+  "@transcodeAudioChannelsExceeded": {
+    "placeholders": { "channels": { "type": "int" } }
+  },
+  "transcodeAudioChannelsHint": "Tip: Adjust 'Max Audio Channels' or multichannel downmixing in Audio settings.",
+  "transcodeSubtitleBurnInAssDisabled": "ASS/SSA subtitles require transcoding because direct play is turned off.",
+  "transcodeSubtitleBurnInAssHint": "Tip: Enable 'ASS/SSA Direct Play' in Playback settings to play directly without transcoding.",
+  "transcodeSubtitleBurnInPgsDisabled": "PGS subtitles require transcoding because direct play is turned off.",
+  "transcodeSubtitleBurnInPgsHint": "Tip: Enable 'PGS Direct Play' in Playback settings to play directly without transcoding.",
+  "transcodeSubtitleNotSupportedWithCodec": "Subtitle format ({codec}) is not supported directly and must be burned in.",
+  "@transcodeSubtitleNotSupportedWithCodec": {
+    "placeholders": { "codec": { "type": "String" } }
+  },
+  "transcodeBitrateExceededWithValues": "File bitrate ({fileBitrate}) exceeds the configured streaming limit ({maxBitrate}).",
+  "@transcodeBitrateExceededWithValues": {
+    "placeholders": { "fileBitrate": { "type": "String" }, "maxBitrate": { "type": "String" } }
+  },
+  "transcodeBitrateHint": "Tip: Increase 'Maximum Bitrate' in Playback settings to allow direct streaming.",
+  "transcodeResolutionHint": "Tip: Increase 'Maximum Resolution' in Playback settings to allow direct streaming.",
+  "transcodeVideoRangeNotSupported": "Video dynamic range (e.g. Dolby Vision / HDR) is not supported by this display.",
+  "transcodeDolbyVisionProfile7ElDisabled": "Dolby Vision Profile 7 enhancement layer direct play is disabled.",
+  "transcodeDolbyVisionProfile7ElHint": "Tip: Enable 'Dolby Vision Profile 7 Direct Play' in Playback settings if your display supports it.",
+  "transcodeDolbyVisionFallbackPreferenceTranscode": "Transcoding is preferred for Dolby Vision fallback per user settings.",
+  "transcodeDolbyVisionFallbackHint": "Tip: Set 'Dolby Vision Fallback' to 'Play as HDR10' in Playback settings to avoid transcoding.",
+  "transcodeDisplayReportsNoHdr": "Connected display does not report support for HDR or Dolby Vision.",
+  "transcodeDisplayLacksHdr10ForFallback": "Connected display lacks HDR10 support needed for Dolby Vision fallback.",
+  "transcodeAudioSampleRateNotSupported": "Audio sample rate is not supported.",
+  "transcodeAudioBitDepthNotSupported": "Audio bit depth is not supported.",
+  "transcodeRefFramesNotSupported": "Video reference frames exceed player limits.",
+  "transcodeAnamorphicVideoNotSupported": "Anamorphic video is not supported.",
+  "transcodeInterlacedVideoNotSupported": "Interlaced video is not supported.",
+  "transcodeSecondaryAudioNotSupported": "Secondary audio stream requires transcoding.",
+  "transcodeDirectPlayError": "Direct play is not supported for this media format.",
   "sortAlphabetical": "Alphabetical",
   "sortReleaseAscending": "Release Order (Ascending)",
   "sortReleaseDescending": "Release Order (Descending)",

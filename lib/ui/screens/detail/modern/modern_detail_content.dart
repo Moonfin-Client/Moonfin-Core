@@ -22,6 +22,7 @@ import '../../../../preference/preference_constants.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
+import '../../../../util/direct_play_reasons_formatter.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/play_method_label.dart';
@@ -270,6 +271,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   // a request every frame.
   bool _playbackInfoFailed = false;
   String? _loadedPlaybackInfoItemId;
+  String? _loadedMediaSourceId;
 
   bool _upNextResolvedThisBuild = false;
   Widget? _upNextCard;
@@ -278,6 +280,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (_loadingPlaybackInfo) return;
     if ((_playbackInfo != null || _playbackInfoFailed) &&
         _loadedPlaybackInfoItemId == item.id &&
+        _loadedMediaSourceId == widget.selectedMediaSourceId &&
         _loadedAudioIndex == _vm.selectedAudioIndex &&
         _loadedSubtitleIndex == _vm.selectedSubtitleIndex) {
       return;
@@ -286,6 +289,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _loadingPlaybackInfo = true;
     _playbackInfoFailed = false;
     _loadedPlaybackInfoItemId = item.id;
+    _loadedMediaSourceId = widget.selectedMediaSourceId;
     _loadedAudioIndex = _vm.selectedAudioIndex;
     _loadedSubtitleIndex = _vm.selectedSubtitleIndex;
     // Delay state change slightly to prevent setstate during build
@@ -296,16 +300,44 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     try {
       final mediaSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
 
+      final manager = GetIt.instance<PlaybackManager>();
+      final rawStreams = (mediaSource?['MediaStreams'] as List?)
+              ?.whereType<Map>()
+              .map((e) => e.cast<String, dynamic>())
+              .toList() ??
+          [];
+      final audioStreams = rawStreams.where((s) => s['Type'] == 'Audio').toList();
+      final subtitleStreams = rawStreams.where((s) => s['Type'] == 'Subtitle').toList();
+      final isPlayingThisItem = manager.queueService.currentItem is AggregatedItem &&
+          (manager.queueService.currentItem as AggregatedItem).id == item.id;
+      final effectiveAudio = highlightedAudioIndex(
+        audioStreams: audioStreams,
+        seriesId: item.seriesId,
+        selectedIndex: _vm.selectedAudioIndex,
+        activePlaybackIndex: isPlayingThisItem ? manager.audioStreamIndex : null,
+      );
+      final effectiveSubtitle = highlightedSubtitleIndex(
+        subtitleStreams: subtitleStreams,
+        audioStreams: audioStreams,
+        seriesId: item.seriesId,
+        selectedIndex: _vm.selectedSubtitleIndex,
+        activePlaybackIndex: isPlayingThisItem
+            ? manager.subtitleStreamIndex
+            : null,
+        activeAudioIndex: effectiveAudio,
+      );
+
       final parsed = await fetchDetailPlaybackInfo(
         itemId: item.id,
         mediaSourceId: mediaSource?['Id']?.toString(),
-        audioStreamIndex: _vm.selectedAudioIndex,
-        subtitleStreamIndex: _vm.selectedSubtitleIndex,
+        audioStreamIndex: _vm.selectedAudioIndex ?? effectiveAudio,
+        subtitleStreamIndex: _vm.selectedSubtitleIndex ?? effectiveSubtitle,
       );
       if (mounted) {
         // Drop the result if the track selection changed mid-request.
         final stillCurrent = _loadedAudioIndex == _vm.selectedAudioIndex &&
-            _loadedSubtitleIndex == _vm.selectedSubtitleIndex;
+            _loadedSubtitleIndex == _vm.selectedSubtitleIndex &&
+            _loadedMediaSourceId == widget.selectedMediaSourceId;
         setState(() {
           _loadingPlaybackInfo = false;
           if (stillCurrent) _playbackInfo = parsed;
@@ -2943,7 +2975,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ],
 
         const SizedBox(height: 12),
-        _buildDirectPlaySection(context, item, textTheme),
+        _buildDirectPlaySection(
+          context,
+          item,
+          textTheme,
+          activeAudioIndex: activeAudioIndex,
+          activeSubtitleIndex: activeSubtitleIndex,
+        ),
       ],
     );
   }
@@ -2969,7 +3007,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  Widget _buildDirectPlaySection(BuildContext context, AggregatedItem item, TextTheme textTheme) {
+  Widget _buildDirectPlaySection(
+    BuildContext context,
+    AggregatedItem item,
+    TextTheme textTheme, {
+    int? activeAudioIndex,
+    int? activeSubtitleIndex,
+  }) {
     final l10n = AppLocalizations.of(context);
     if (_loadingPlaybackInfo) {
       return Row(
@@ -3040,8 +3084,46 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       orElse: () => _playbackInfo!.mediaSources.first,
     );
 
-    final canDirectPlay = source.supportsDirectPlay;
-    final reasons = source.transcodingReasons;
+    final manager = GetIt.instance.isRegistered<PlaybackManager>()
+        ? GetIt.instance<PlaybackManager>()
+        : null;
+    final profile = manager?.backend?.getDeviceProfile() ?? <String, dynamic>{};
+    final bitrate = profile['MaxStreamingBitrate'] as int?;
+
+    final selectedSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
+    final mediaStreams = source.mediaStreams.isNotEmpty
+        ? source.mediaStreams
+        : (selectedSource?['MediaStreams'] as List?)
+            ?.whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .toList() ??
+            const [];
+
+    final clientDvReason = checkClientDolbyVisionTranscodeReason(
+      mediaStreams,
+      widget.prefs,
+    );
+
+    final canDirectPlay = source.supportsDirectPlay && clientDvReason == null;
+
+    final mediaSourceMap = <String, dynamic>{
+      'Container': source.container ?? selectedSource?['Container'],
+      'Bitrate': source.bitrate ?? selectedSource?['Bitrate'],
+      'MediaStreams': mediaStreams,
+    };
+
+    final reasons = !canDirectPlay
+        ? buildDirectPlayReasonItems(
+            serverReasons: source.transcodingReasons,
+            mediaSource: mediaSourceMap,
+            deviceProfile: profile,
+            prefs: widget.prefs,
+            l10n: l10n,
+            selectedAudioIndex: _vm.selectedAudioIndex ?? activeAudioIndex,
+            selectedSubtitleIndex: _vm.selectedSubtitleIndex ?? activeSubtitleIndex,
+            maxStreamingBitrate: bitrate,
+          )
+        : const <DirectPlayReasonItem>[];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3065,20 +3147,36 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ],
         ),
         if (!canDirectPlay && reasons.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: reasons.map((r) {
-                final readable = transcodeReasonLabel(r, l10n);
+              children: reasons.map((reason) {
                 return Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    '• $readable',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: Colors.white70,
-                    ),
+                  padding: const EdgeInsets.only(top: 3),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '• ${reason.description}',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      if (reason.hint != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12, top: 2),
+                          child: Text(
+                            reason.hint!,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: AppColorScheme.accent,
+                              fontStyle: FontStyle.italic,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 );
               }).toList(),

@@ -299,4 +299,150 @@ void main() {
       expect(reasons, ['SubtitleCodecNotSupported']);
     });
   });
+
+  group('resolveDirectPlayFailureDetails', () {
+    test('preserves server reasons', () {
+      final details = resolveDirectPlayFailureDetails(
+        serverReasons: const ['VideoCodecNotSupported', 'DirectPlayError'],
+      );
+      expect(details.map((d) => d.reason), ['VideoCodecNotSupported', 'DirectPlayError']);
+    });
+
+    test('detects bitrate limit with exact bitrate values', () {
+      final details = resolveDirectPlayFailureDetails(
+        sourceBitrate: 25000000,
+        maxStreamingBitrate: 10000000,
+        container: 'mkv',
+        deviceProfile: _profile,
+      );
+      expect(details.first.reason, 'VideoBitrateExceedsLimit');
+      expect(details.first.sourceBitrate, 25000000);
+      expect(details.first.maxStreamingBitrate, 10000000);
+    });
+
+    test('detects unsupported container', () {
+      final details = resolveDirectPlayFailureDetails(
+        container: 'avi',
+        deviceProfile: _profile,
+      );
+      expect(details.any((d) => d.reason == 'ContainerNotSupported' && d.container == 'avi'), isTrue);
+    });
+
+    test('detects unsupported video and audio codecs with identifiers', () {
+      final details = resolveDirectPlayFailureDetails(
+        container: 'mkv',
+        mediaStreams: _streams(videoCodec: 'vp9', audioCodec: 'truehd'),
+        deviceProfile: _profile,
+      );
+      expect(details.any((d) => d.reason == 'VideoCodecNotSupported' && d.codec == 'vp9'), isTrue);
+      expect(details.any((d) => d.reason == 'AudioCodecNotSupported' && d.codec == 'truehd'), isTrue);
+    });
+
+    test('detects unsupported VideoRangeType from CodecProfiles', () {
+      final profileWithDoviVeto = <String, dynamic>{
+        'DirectPlayProfiles': _videoDirectPlay,
+        'CodecProfiles': [
+          {
+            'Type': 'Video',
+            'Codec': 'hevc',
+            'Conditions': [
+              {
+                'Property': 'VideoRangeType',
+                'Condition': 'NotEquals',
+                'Value': 'DOVI|DOVI_WITH_HDR10',
+              },
+            ],
+          },
+        ],
+      };
+
+      final streams = [
+        {'Type': 'Video', 'Index': 0, 'Codec': 'hevc', 'VideoRangeType': 'DOVI'},
+        {'Type': 'Audio', 'Index': 1, 'Codec': 'aac'},
+      ];
+
+      final details = resolveDirectPlayFailureDetails(
+        container: 'mkv',
+        mediaStreams: streams,
+        deviceProfile: profileWithDoviVeto,
+      );
+
+      expect(details.any((d) => d.reason == 'VideoRangeTypeNotSupported' && d.rangeType == 'DOVI'), isTrue);
+    });
+
+    test('detects unsupported VideoProfile from CodecProfiles', () {
+      final profileWithAvcHigh10Veto = <String, dynamic>{
+        'DirectPlayProfiles': _videoDirectPlay,
+        'CodecProfiles': [
+          {
+            'Type': 'Video',
+            'Codec': 'h264',
+            'Conditions': [
+              {
+                'Property': 'VideoProfile',
+                'Condition': 'EqualsAny',
+                'Value': 'high|main|baseline',
+              },
+            ],
+          },
+        ],
+      };
+
+      final streams = [
+        {'Type': 'Video', 'Index': 0, 'Codec': 'h264', 'Profile': 'High 10'},
+        {'Type': 'Audio', 'Index': 1, 'Codec': 'aac'},
+      ];
+
+      final details = resolveDirectPlayFailureDetails(
+        container: 'mkv',
+        mediaStreams: streams,
+        deviceProfile: profileWithAvcHigh10Veto,
+      );
+
+      expect(details.any((d) => d.reason == 'VideoProfileNotSupported' && d.videoProfile == 'high 10'), isTrue);
+    });
+
+    test('detects audio channels cap from CodecProfiles', () {
+      final profileWithStereoCap = <String, dynamic>{
+        'DirectPlayProfiles': _videoDirectPlay,
+        'CodecProfiles': [
+          {
+            'Type': 'VideoAudio',
+            'Codec': 'aac',
+            'Conditions': [
+              {
+                'Property': 'AudioChannels',
+                'Condition': 'LessThanEqual',
+                'Value': '2',
+              },
+            ],
+          },
+        ],
+      };
+
+      final streams = [
+        {'Type': 'Video', 'Index': 0, 'Codec': 'h264'},
+        {'Type': 'Audio', 'Index': 1, 'Codec': 'aac', 'Channels': 6},
+      ];
+
+      final details = resolveDirectPlayFailureDetails(
+        container: 'mkv',
+        mediaStreams: streams,
+        deviceProfile: profileWithStereoCap,
+      );
+
+      expect(details.any((d) => d.reason == 'AudioChannelsNotSupported' && d.audioChannels == 6), isTrue);
+    });
+
+    test('detects subtitle burn-in requirement with codec', () {
+      final details = resolveDirectPlayFailureDetails(
+        container: 'mkv',
+        mediaStreams: _streams(videoCodec: 'hevc', subtitleCodec: 'pgssub', subtitleIndex: 4),
+        subtitleStreamIndex: 4,
+        deviceProfile: _subtitleProfileEncodeOnly,
+      );
+
+      expect(details.any((d) => d.reason == 'SubtitleCodecNotSupported' && d.codec == 'pgssub'), isTrue);
+    });
+  });
 }

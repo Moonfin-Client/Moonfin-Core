@@ -200,3 +200,382 @@ const Set<String> _bitrateReasons = <String>{
   'containerbitratenotsupported',
   'audiobitratenotsupported',
 };
+
+/// Structured details describing why a media source cannot direct play,
+/// used to format helpful messages and actionable configuration hints.
+class DirectPlayFailureDetail {
+  final String reason;
+  final String? codec;
+  final String? container;
+  final int? sourceBitrate;
+  final int? maxStreamingBitrate;
+  final int? audioChannels;
+  final String? rangeType;
+  final String? videoProfile;
+
+  const DirectPlayFailureDetail({
+    required this.reason,
+    this.codec,
+    this.container,
+    this.sourceBitrate,
+    this.maxStreamingBitrate,
+    this.audioChannels,
+    this.rangeType,
+    this.videoProfile,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DirectPlayFailureDetail &&
+          runtimeType == other.runtimeType &&
+          reason == other.reason &&
+          codec == other.codec &&
+          container == other.container &&
+          sourceBitrate == other.sourceBitrate &&
+          maxStreamingBitrate == other.maxStreamingBitrate &&
+          audioChannels == other.audioChannels &&
+          rangeType == other.rangeType &&
+          videoProfile == other.videoProfile;
+
+  @override
+  int get hashCode => Object.hash(
+        reason,
+        codec,
+        container,
+        sourceBitrate,
+        maxStreamingBitrate,
+        audioChannels,
+        rangeType,
+        videoProfile,
+      );
+
+  @override
+  String toString() =>
+      'DirectPlayFailureDetail(reason: $reason, codec: $codec, container: $container)';
+}
+
+/// Identifies why a source cannot direct play against [deviceProfile].
+///
+/// Unlike [mergeTranscodeReasons] which requires [StreamPlayMethod.transcode],
+/// this evaluates direct play compatibility directly so the media details view
+/// can present rich descriptions and actionable tips even when the server omitted
+/// [transcodingReasons].
+List<DirectPlayFailureDetail> resolveDirectPlayFailureDetails({
+  List<String> serverReasons = const <String>[],
+  List<Map<String, dynamic>> mediaStreams = const <Map<String, dynamic>>[],
+  String? container,
+  int? sourceBitrate,
+  int? maxStreamingBitrate,
+  int? audioStreamIndex,
+  int? subtitleStreamIndex,
+  Map<String, dynamic>? deviceProfile,
+}) {
+  final details = <DirectPlayFailureDetail>[];
+  final seen = <String>{};
+
+  void add(DirectPlayFailureDetail detail, [Set<String> alsoCovers = const <String>{}]) {
+    final lower = detail.reason.toLowerCase();
+    if (seen.contains(lower) || alsoCovers.any(seen.contains)) return;
+    details.add(detail);
+    seen.add(lower);
+  }
+
+  final video = _streamsOfType(mediaStreams, 'video');
+  final isAudioOnly = video.isEmpty && _streamsOfType(mediaStreams, 'audio').isNotEmpty;
+  final directPlayType = isAudioOnly ? 'audio' : 'video';
+  final profiles = _directPlayProfiles(deviceProfile, directPlayType);
+  final normalizedContainer = container?.toLowerCase().trim();
+
+  final audioStream = _selectedStream(mediaStreams, 'audio', audioStreamIndex);
+  final audioCodec = _codecOf(audioStream);
+  final videoStream = video.firstOrNull;
+  final videoCodec = _codecOf(videoStream);
+  final subtitleStream = (subtitleStreamIndex != null && subtitleStreamIndex >= 0)
+      ? _selectedStream(mediaStreams, 'subtitle', subtitleStreamIndex)
+      : null;
+  final subtitleCodec = _codecOf(subtitleStream);
+
+  // 1. Preserve server reasons as primary, enriched with stream data when matching
+  for (final r in serverReasons) {
+    if (r.isEmpty) continue;
+    final rLower = r.toLowerCase();
+    if (rLower == 'audiocodecnotsupported') {
+      details.add(DirectPlayFailureDetail(reason: r, codec: audioCodec));
+    } else if (rLower == 'videocodecnotsupported') {
+      details.add(DirectPlayFailureDetail(reason: r, codec: videoCodec));
+    } else if (rLower == 'subtitlecodecnotsupported') {
+      details.add(DirectPlayFailureDetail(reason: r, codec: subtitleCodec));
+    } else if (rLower == 'containernotsupported') {
+      details.add(DirectPlayFailureDetail(reason: r, container: normalizedContainer));
+    } else if (_bitrateReasons.contains(rLower)) {
+      details.add(DirectPlayFailureDetail(
+        reason: r,
+        sourceBitrate: sourceBitrate,
+        maxStreamingBitrate: maxStreamingBitrate,
+      ));
+    } else if (rLower == 'audiochannelsnotsupported') {
+      final channels = audioStream != null
+          ? (audioStream['Channels'] as int? ??
+              int.tryParse(audioStream['Channels']?.toString() ?? ''))
+          : null;
+      details.add(DirectPlayFailureDetail(
+        reason: r,
+        codec: audioCodec,
+        audioChannels: channels,
+      ));
+    } else {
+      details.add(DirectPlayFailureDetail(reason: r));
+    }
+    seen.add(rLower);
+  }
+
+  // 2. Check bitrate limit
+  if (maxStreamingBitrate != null &&
+      sourceBitrate != null &&
+      sourceBitrate > maxStreamingBitrate) {
+    add(
+      DirectPlayFailureDetail(
+        reason: 'VideoBitrateExceedsLimit',
+        sourceBitrate: sourceBitrate,
+        maxStreamingBitrate: maxStreamingBitrate,
+      ),
+      _bitrateReasons,
+    );
+  }
+
+  // 3. Check container
+  if (normalizedContainer != null &&
+      normalizedContainer.isNotEmpty &&
+      profiles.isNotEmpty &&
+      _rejects(profiles, 'Container', normalizedContainer)) {
+    add(DirectPlayFailureDetail(
+      reason: 'ContainerNotSupported',
+      container: normalizedContainer,
+    ));
+  }
+
+  if (mediaStreams.isEmpty) return details;
+
+  // 4. Check video codec
+  if (videoCodec != null && profiles.isNotEmpty && _rejects(profiles, 'VideoCodec', videoCodec)) {
+    add(DirectPlayFailureDetail(
+      reason: 'VideoCodecNotSupported',
+      codec: videoCodec,
+    ));
+  }
+
+  // 5. Check video range / dynamic range from CodecProfiles
+  if (videoStream != null && videoCodec != null) {
+    final rangeType = videoStream['VideoRangeType']?.toString().trim();
+    if (rangeType != null && rangeType.isNotEmpty) {
+      final normalizedStreamRange = _normalizeRangeToken(rangeType);
+      final videoCodecProfiles = _codecProfiles(deviceProfile, 'Video', videoCodec);
+      for (final cp in videoCodecProfiles) {
+        final conditions = cp['Conditions'] as List<dynamic>? ?? const [];
+        for (final cond in conditions.whereType<Map>()) {
+          final prop = cond['Property']?.toString();
+          if (prop == 'VideoRangeType') {
+            final op = cond['Condition']?.toString();
+            final val = cond['Value']?.toString() ?? '';
+            final rejectedTokens = val
+                .split('|')
+                .map((t) => _normalizeRangeToken(t))
+                .where((t) => t.isNotEmpty)
+                .toSet();
+            if (op == 'NotEquals' && rejectedTokens.contains(normalizedStreamRange)) {
+              add(DirectPlayFailureDetail(
+                reason: 'VideoRangeTypeNotSupported',
+                codec: videoCodec,
+                rangeType: rangeType,
+              ));
+              break;
+            } else if (op == 'EqualsAny' && !rejectedTokens.contains(normalizedStreamRange)) {
+              add(DirectPlayFailureDetail(
+                reason: 'VideoRangeTypeNotSupported',
+                codec: videoCodec,
+                rangeType: rangeType,
+              ));
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // 6. Check video profile from CodecProfiles
+    final streamProfile = videoStream['Profile']?.toString().trim().toLowerCase();
+    if (streamProfile != null && streamProfile.isNotEmpty) {
+      final videoCodecProfiles = _codecProfiles(deviceProfile, 'Video', videoCodec);
+      for (final cp in videoCodecProfiles) {
+        final conditions = cp['Conditions'] as List<dynamic>? ?? const [];
+        for (final cond in conditions.whereType<Map>()) {
+          final prop = cond['Property']?.toString();
+          if (prop == 'VideoProfile') {
+            final op = cond['Condition']?.toString();
+            final val = cond['Value']?.toString().toLowerCase() ?? '';
+            final tokens = val.split('|').map((t) => t.trim()).toSet();
+            if (op == 'EqualsAny' && !tokens.contains(streamProfile)) {
+              add(DirectPlayFailureDetail(
+                reason: 'VideoProfileNotSupported',
+                codec: videoCodec,
+                videoProfile: streamProfile,
+              ));
+              break;
+            } else if (op == 'NotEquals' && tokens.contains(streamProfile)) {
+              add(DirectPlayFailureDetail(
+                reason: 'VideoProfileNotSupported',
+                codec: videoCodec,
+                videoProfile: streamProfile,
+              ));
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // 7. Check video bit depth
+    final bitDepth = videoStream['BitDepth'] as int? ??
+        int.tryParse(videoStream['BitDepth']?.toString() ?? '');
+    if (bitDepth != null) {
+      final videoCodecProfiles = _codecProfiles(deviceProfile, 'Video', videoCodec);
+      for (final cp in videoCodecProfiles) {
+        final conditions = cp['Conditions'] as List<dynamic>? ?? const [];
+        for (final cond in conditions.whereType<Map>()) {
+          if (cond['Property']?.toString() == 'VideoBitDepth') {
+            final maxDepth = int.tryParse(cond['Value']?.toString() ?? '');
+            if (cond['Condition']?.toString() == 'LessThanEqual' &&
+                maxDepth != null &&
+                bitDepth > maxDepth) {
+              add(DirectPlayFailureDetail(
+                reason: 'VideoBitDepthNotSupported',
+                codec: videoCodec,
+              ));
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 8. Check audio codec
+  if (audioCodec != null && profiles.isNotEmpty && _rejects(profiles, 'AudioCodec', audioCodec)) {
+    add(DirectPlayFailureDetail(
+      reason: 'AudioCodecNotSupported',
+      codec: audioCodec,
+    ));
+  }
+
+  // 9. Check audio channels cap
+  if (audioStream != null) {
+    final channels = audioStream['Channels'] as int? ??
+        int.tryParse(audioStream['Channels']?.toString() ?? '');
+    if (channels != null && audioCodec != null) {
+      final audioCodecProfiles = _codecProfiles(deviceProfile, 'VideoAudio', audioCodec);
+      for (final cp in audioCodecProfiles) {
+        final conditions = cp['Conditions'] as List<dynamic>? ?? const [];
+        for (final cond in conditions.whereType<Map>()) {
+          if (cond['Property']?.toString() == 'AudioChannels') {
+            final maxChannels = int.tryParse(cond['Value']?.toString() ?? '');
+            if (cond['Condition']?.toString() == 'LessThanEqual' &&
+                maxChannels != null &&
+                channels > maxChannels) {
+              add(DirectPlayFailureDetail(
+                reason: 'AudioChannelsNotSupported',
+                codec: audioCodec,
+                audioChannels: channels,
+              ));
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 10. Check subtitle burn-in
+  final subtitleProfiles = _subtitleProfiles(deviceProfile);
+  if (subtitleProfiles.isNotEmpty) {
+    int? targetSubtitleIndex = subtitleStreamIndex;
+    if (targetSubtitleIndex == null) {
+      for (final s in _streamsOfType(mediaStreams, 'subtitle')) {
+        if (s['IsDefault'] == true || s['IsForced'] == true) {
+          targetSubtitleIndex = s['Index'] as int? ??
+              int.tryParse(s['Index']?.toString() ?? '');
+          break;
+        }
+      }
+    }
+    if (targetSubtitleIndex != null && targetSubtitleIndex >= 0) {
+      final subtitleStream = _selectedStream(
+        mediaStreams,
+        'subtitle',
+        targetSubtitleIndex,
+      );
+      final subtitleCodec = _codecOf(subtitleStream);
+      if (subtitleCodec != null &&
+          _subtitleNeedsBurnIn(subtitleProfiles, subtitleCodec)) {
+        add(DirectPlayFailureDetail(
+          reason: 'SubtitleCodecNotSupported',
+          codec: subtitleCodec,
+        ));
+      }
+    }
+  }
+
+  // 11. Graceful fallback if no reasons identified but direct play is not possible
+  if (details.isEmpty && serverReasons.isEmpty) {
+    details.add(const DirectPlayFailureDetail(reason: 'DirectPlayError'));
+  }
+
+  return details;
+}
+
+/// Convenience method returning raw reason keys from [resolveDirectPlayFailureDetails].
+List<String> resolveDirectPlayFailureReasons({
+  List<String> serverReasons = const <String>[],
+  List<Map<String, dynamic>> mediaStreams = const <Map<String, dynamic>>[],
+  String? container,
+  int? sourceBitrate,
+  int? maxStreamingBitrate,
+  int? audioStreamIndex,
+  int? subtitleStreamIndex,
+  Map<String, dynamic>? deviceProfile,
+}) =>
+    resolveDirectPlayFailureDetails(
+      serverReasons: serverReasons,
+      mediaStreams: mediaStreams,
+      container: container,
+      sourceBitrate: sourceBitrate,
+      maxStreamingBitrate: maxStreamingBitrate,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+      deviceProfile: deviceProfile,
+    ).map((d) => d.reason).toList(growable: false);
+
+List<Map<String, dynamic>> _codecProfiles(
+  Map<String, dynamic>? deviceProfile,
+  String type,
+  String? codec,
+) {
+  final raw = deviceProfile?['CodecProfiles'];
+  if (raw is! List) return const <Map<String, dynamic>>[];
+  return raw
+      .whereType<Map>()
+      .map((e) => e.cast<String, dynamic>())
+      .where((e) {
+        final profileType = e['Type']?.toString().toLowerCase();
+        if (profileType != type.toLowerCase()) return false;
+        final profileCodec = e['Codec']?.toString().toLowerCase();
+        if (codec != null && profileCodec != null && profileCodec != codec.toLowerCase()) {
+          return false;
+        }
+        return true;
+      })
+      .toList(growable: false);
+}
+
+String _normalizeRangeToken(String token) =>
+    token.toLowerCase().replaceAll('_', '').trim();

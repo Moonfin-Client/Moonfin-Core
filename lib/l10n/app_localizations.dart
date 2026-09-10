@@ -20026,6 +20026,165 @@ abstract class AppLocalizations {
   /// **'Number of audio channels is not supported.'**
   String get transcodeAudioChannelsNotSupported;
 
+  /// No description provided for @transcodeAudioCodecWithCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio codec ({codec}) is not supported directly.'**
+  String transcodeAudioCodecWithCodec(String codec);
+
+  /// No description provided for @transcodeAudioCodecHintPassthrough.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: If your audio receiver or soundbar supports {codec}, enable Audio Passthrough in Audio settings.'**
+  String transcodeAudioCodecHintPassthrough(String codec);
+
+  /// No description provided for @transcodeAudioChannelsExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio channel count ({channels}ch) exceeds the player limit.'**
+  String transcodeAudioChannelsExceeded(int channels);
+
+  /// No description provided for @transcodeAudioChannelsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Adjust \'Max Audio Channels\' or multichannel downmixing in Audio settings.'**
+  String get transcodeAudioChannelsHint;
+
+  /// No description provided for @transcodeSubtitleBurnInAssDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'ASS/SSA subtitles require transcoding because direct play is turned off.'**
+  String get transcodeSubtitleBurnInAssDisabled;
+
+  /// No description provided for @transcodeSubtitleBurnInAssHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Enable \'ASS/SSA Direct Play\' in Playback settings to play directly without transcoding.'**
+  String get transcodeSubtitleBurnInAssHint;
+
+  /// No description provided for @transcodeSubtitleBurnInPgsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'PGS subtitles require transcoding because direct play is turned off.'**
+  String get transcodeSubtitleBurnInPgsDisabled;
+
+  /// No description provided for @transcodeSubtitleBurnInPgsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Enable \'PGS Direct Play\' in Playback settings to play directly without transcoding.'**
+  String get transcodeSubtitleBurnInPgsHint;
+
+  /// No description provided for @transcodeSubtitleNotSupportedWithCodec.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle format ({codec}) is not supported directly and must be burned in.'**
+  String transcodeSubtitleNotSupportedWithCodec(String codec);
+
+  /// No description provided for @transcodeBitrateExceededWithValues.
+  ///
+  /// In en, this message translates to:
+  /// **'File bitrate ({fileBitrate}) exceeds the configured streaming limit ({maxBitrate}).'**
+  String transcodeBitrateExceededWithValues(
+    String fileBitrate,
+    String maxBitrate,
+  );
+
+  /// No description provided for @transcodeBitrateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Increase \'Maximum Bitrate\' in Playback settings to allow direct streaming.'**
+  String get transcodeBitrateHint;
+
+  /// No description provided for @transcodeResolutionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Increase \'Maximum Resolution\' in Playback settings to allow direct streaming.'**
+  String get transcodeResolutionHint;
+
+  /// No description provided for @transcodeVideoRangeNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video dynamic range (e.g. Dolby Vision / HDR) is not supported by this display.'**
+  String get transcodeVideoRangeNotSupported;
+
+  /// No description provided for @transcodeDolbyVisionProfile7ElDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Dolby Vision Profile 7 enhancement layer direct play is disabled.'**
+  String get transcodeDolbyVisionProfile7ElDisabled;
+
+  /// No description provided for @transcodeDolbyVisionProfile7ElHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback settings if your display supports it.'**
+  String get transcodeDolbyVisionProfile7ElHint;
+
+  /// No description provided for @transcodeDolbyVisionFallbackPreferenceTranscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding is preferred for Dolby Vision fallback per user settings.'**
+  String get transcodeDolbyVisionFallbackPreferenceTranscode;
+
+  /// No description provided for @transcodeDolbyVisionFallbackHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Set \'Dolby Vision Fallback\' to \'Play as HDR10\' in Playback settings to avoid transcoding.'**
+  String get transcodeDolbyVisionFallbackHint;
+
+  /// No description provided for @transcodeDisplayReportsNoHdr.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected display does not report support for HDR or Dolby Vision.'**
+  String get transcodeDisplayReportsNoHdr;
+
+  /// No description provided for @transcodeDisplayLacksHdr10ForFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected display lacks HDR10 support needed for Dolby Vision fallback.'**
+  String get transcodeDisplayLacksHdr10ForFallback;
+
+  /// No description provided for @transcodeAudioSampleRateNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio sample rate is not supported.'**
+  String get transcodeAudioSampleRateNotSupported;
+
+  /// No description provided for @transcodeAudioBitDepthNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio bit depth is not supported.'**
+  String get transcodeAudioBitDepthNotSupported;
+
+  /// No description provided for @transcodeRefFramesNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video reference frames exceed player limits.'**
+  String get transcodeRefFramesNotSupported;
+
+  /// No description provided for @transcodeAnamorphicVideoNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Anamorphic video is not supported.'**
+  String get transcodeAnamorphicVideoNotSupported;
+
+  /// No description provided for @transcodeInterlacedVideoNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Interlaced video is not supported.'**
+  String get transcodeInterlacedVideoNotSupported;
+
+  /// No description provided for @transcodeSecondaryAudioNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary audio stream requires transcoding.'**
+  String get transcodeSecondaryAudioNotSupported;
+
+  /// No description provided for @transcodeDirectPlayError.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct play is not supported for this media format.'**
+  String get transcodeDirectPlayError;
+
   /// No description provided for @sortAlphabetical.
   ///
   /// In en, this message translates to:
