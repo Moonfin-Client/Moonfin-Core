@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import 'audiobook_glass.dart';
+import 'audiobook_pointer.dart';
 import 'chapter.dart';
 
 class AudiobookChapterContextStrip extends StatelessWidget {
@@ -87,23 +88,29 @@ class AudiobookChapterContextStrip extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: AppSpacing.spaceSm),
-          Icon(
-            apple ? CupertinoIcons.chevron_right : Icons.chevron_right,
-            size: apple ? 18 : 24,
-            color: onSurface.withValues(alpha: 0.5),
-          ),
+          // No chevron on TV: the strip is not in the focus order, so a
+          // remote cannot open it.
+          if (!PlatformDetection.isTV) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            Icon(
+              apple ? CupertinoIcons.chevron_right : Icons.chevron_right,
+              size: apple ? 18 : 24,
+              color: onSurface.withValues(alpha: 0.5),
+            ),
+          ],
         ],
       ),
     );
 
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: audiobookGlassOrSolid(
-        cornerRadius: 14,
-        fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
-        child: content,
+    return audiobookClickable(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: audiobookGlassOrSolid(
+          cornerRadius: 14,
+          fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
+          child: content,
+        ),
       ),
     );
   }

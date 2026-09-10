@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../util/platform_detection.dart';
 import 'audiobook_focus_ring.dart';
+import 'audiobook_pointer.dart';
 
 class AudiobookTransportRow extends StatelessWidget {
   const AudiobookTransportRow({
@@ -38,11 +39,13 @@ class AudiobookTransportRow extends StatelessWidget {
 
     Widget chapterButton(IconData icon, VoidCallback onTap) {
       if (apple) {
-        return CupertinoButton(
-          padding: EdgeInsets.zero,
-          minimumSize: const Size.square(44),
-          onPressed: onTap,
-          child: Icon(icon, size: 26, color: onSurface),
+        return audiobookClickable(
+          child: CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size.square(44),
+            onPressed: onTap,
+            child: Icon(icon, size: 26, color: onSurface),
+          ),
         );
       }
       return IconButton(icon: Icon(icon, size: 28), onPressed: onTap);
@@ -114,26 +117,29 @@ class AudiobookPlayButton extends StatelessWidget {
       final icon = isPlaying
           ? CupertinoIcons.pause_fill
           : CupertinoIcons.play_fill;
-      return GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: SizedBox(
-          width: _size,
-          height: _size,
-          child: ClipOval(
-            child: _withTransportBlur(
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColorScheme.accent.withValues(
-                    alpha: GlassSettings.blursBackdrop ? 0.32 : 0.55,
+      return audiobookClickable(
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: SizedBox(
+            width: _size,
+            height: _size,
+            child: ClipOval(
+              child: _withTransportBlur(
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColorScheme.accent.withValues(
+                      alpha: GlassSettings.blursBackdrop ? 0.32 : 0.55,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.30),
+                      width: 0.8,
+                    ),
                   ),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.30),
-                    width: 0.8,
-                  ),
+                  child:
+                      Center(child: Icon(icon, size: 30, color: Colors.white)),
                 ),
-                child: Center(child: Icon(icon, size: 30, color: Colors.white)),
               ),
             ),
           ),
@@ -148,6 +154,7 @@ class AudiobookPlayButton extends StatelessWidget {
         color: AppColorScheme.accent,
         shape: const CircleBorder(),
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           customBorder: const CircleBorder(),
           onTap: onTap,
           child: Icon(
@@ -199,17 +206,20 @@ class AudiobookSkipButton extends StatelessWidget {
     );
 
     if (apple) {
-      return CupertinoButton(
-        padding: const EdgeInsets.all(8),
-        minimumSize: const Size.square(44),
-        onPressed: onTap,
-        child: glyph,
+      return audiobookClickable(
+        child: CupertinoButton(
+          padding: const EdgeInsets.all(8),
+          minimumSize: const Size.square(44),
+          onPressed: onTap,
+          child: glyph,
+        ),
       );
     }
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: BorderRadius.circular(28),
         onTap: onTap,
         child: Padding(padding: const EdgeInsets.all(8), child: glyph),

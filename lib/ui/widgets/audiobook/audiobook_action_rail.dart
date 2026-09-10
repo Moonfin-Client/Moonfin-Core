@@ -6,6 +6,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import 'audiobook_focus_ring.dart';
 import 'audiobook_glass.dart';
+import 'audiobook_pointer.dart';
 import 'audiobook_time.dart';
 
 class AudiobookActionRail extends StatelessWidget {
@@ -78,14 +79,27 @@ class AudiobookActionRail extends StatelessWidget {
       ),
     ];
 
+    // On mobile each entry takes an equal slice so its caption can use the
+    // full width and wrap. Wrapped captions differ in height, so align on the
+    // icons.
+    final mobile = PlatformDetection.useMobileUi;
     final row = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         for (var i = 0; i < entries.length; i++)
-          entries[i].build(
-            apple: apple,
-            focused: tvFocusIndex == i,
-          ),
+          if (mobile)
+            Expanded(
+              child: entries[i].build(
+                apple: apple,
+                focused: tvFocusIndex == i,
+              ),
+            )
+          else
+            entries[i].build(
+              apple: apple,
+              focused: tvFocusIndex == i,
+            ),
       ],
     );
 
@@ -180,15 +194,16 @@ class _RailEntryWidgetState extends State<_RailEntryWidget> {
         ),
         if (caption != null) ...[
           const SizedBox(height: 6),
-          SizedBox(
-            width: 62,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Text(
               caption,
               textAlign: TextAlign.center,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 10,
+                height: 1.2,
                 fontWeight: FontWeight.w600,
                 color: captionColor,
               ),
@@ -199,13 +214,16 @@ class _RailEntryWidgetState extends State<_RailEntryWidget> {
     );
 
     if (widget.apple) {
-      return CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: widget.onTap,
-        child: content,
+      return audiobookClickable(
+        child: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: widget.onTap,
+          child: content,
+        ),
       );
     }
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       borderRadius: BorderRadius.circular(14),
       onTap: widget.onTap,
       child: Padding(
@@ -336,16 +354,22 @@ class _RailEntryWidgetState extends State<_RailEntryWidget> {
     );
 
     if (widget.apple) {
-      return CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: widget.onTap,
-        child: child,
+      return audiobookClickable(
+        // CupertinoButton has no onHover of its own, so the label needs this
+        // to show up on macOS.
+        onHover: (h) => setState(() => _isHovered = h),
+        child: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: widget.onTap,
+          child: child,
+        ),
       );
     }
 
     final inkWellRadius = BorderRadius.circular(20);
 
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       borderRadius: inkWellRadius,
       onTap: widget.onTap,
       onHover: (h) => setState(() => _isHovered = h),

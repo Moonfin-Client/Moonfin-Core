@@ -8,6 +8,7 @@ import '../../../data/services/cast/cast_target.dart';
 import '../../../util/platform_detection.dart';
 import 'audiobook_focus_ring.dart';
 import 'audiobook_glass.dart';
+import 'audiobook_pointer.dart';
 
 class AudiobookHeader extends StatelessWidget {
   const AudiobookHeader({
@@ -45,11 +46,13 @@ class AudiobookHeader extends StatelessWidget {
       double size = 24,
     }) {
       if (apple) {
-        return CupertinoButton(
-          padding: EdgeInsets.zero,
-          minimumSize: const Size.square(kAudiobookButtonSize),
-          onPressed: onPressed,
-          child: Icon(icon, size: size, color: color ?? onSurface),
+        return audiobookClickable(
+          child: CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size.square(kAudiobookButtonSize),
+            onPressed: onPressed,
+            child: Icon(icon, size: size, color: color ?? onSurface),
+          ),
         );
       }
       return IconButton(

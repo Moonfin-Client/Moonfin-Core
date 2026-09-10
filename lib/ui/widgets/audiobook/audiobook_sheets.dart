@@ -196,6 +196,7 @@ class _SheetChoiceState extends State<_SheetChoice> {
     }
 
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: widget.onTap,
       onFocusChange: (f) => setState(() => _isFocused = f),
       onHover: (h) => setState(() => _isHovered = h),
@@ -534,6 +535,7 @@ class _SleepSheet extends StatelessWidget {
                   children: [
                     Expanded(
                       child: InkWell(
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           if (controller.isPaused) {
                             controller.resumeTimer();
@@ -574,6 +576,7 @@ class _SleepSheet extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: InkWell(
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           onCancel();
                           Navigator.of(context).maybePop();
@@ -1009,6 +1012,7 @@ class _SheetActionButtonState extends State<_SheetActionButton> {
     }
 
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: widget.onPressed,
       onFocusChange: (f) => setState(() => _isFocused = f),
       onHover: (h) => setState(() => _isHovered = h),
