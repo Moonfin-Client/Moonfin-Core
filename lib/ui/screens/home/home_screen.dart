@@ -1191,6 +1191,9 @@ class _ContentRowsState extends State<_ContentRows>
     _invalidateStaticRowHeightCache();
     _updateOffsets();
     if (mounted) setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _checkAllRowsFillViewport();
+    });
   }
 
   void _onMediaBarStateChanged() {
@@ -2528,19 +2531,49 @@ class _ContentRowsState extends State<_ContentRows>
         initialScrollOffset: _rowHorizontalOffsetsById[rowId] ?? 0.0,
       );
       controller.addListener(() => _onRowScrolled(rowId, controller));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _maybeLoadMoreForRow(rowId, controller);
+      });
       return controller;
     });
   }
 
+  Timer? _resizeCheckDebounce;
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _resizeCheckDebounce?.cancel();
+    _resizeCheckDebounce = Timer(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _checkAllRowsFillViewport();
+      });
+    });
+  }
+  static double _loadMoreTriggerDistance = 600.0;
+
   void _onRowScrolled(String rowId, ScrollController controller) {
     if (!controller.hasClients) return;
     _rowHorizontalOffsetsById[rowId] = controller.offset;
-    const loadMoreTriggerDistance = 600.0;
-    final remaining =
-        controller.position.maxScrollExtent - controller.offset;
-    if (remaining <= loadMoreTriggerDistance) {
-      final index = widget.viewModel.rows.indexWhere((r) => r.id == rowId);
-      if (index >= 0) widget.viewModel.loadMoreForRow(index);
+    _maybeLoadMoreForRow(rowId, controller);
+  }
+
+  void _maybeLoadMoreForRow(String rowId, ScrollController controller) {
+    if (!controller.hasClients) return;
+    final rowIndex = widget.viewModel.rows.indexWhere((r) => r.id == rowId);
+    if (rowIndex < 0) return;
+    if (!widget.viewModel.rows[rowIndex].hasMore) return;
+    final remaining = controller.position.maxScrollExtent - controller.offset;
+    if (remaining <= _loadMoreTriggerDistance) {
+      widget.viewModel.loadMoreForRow(rowIndex);
+    }
+  }
+
+  void _checkAllRowsFillViewport() {
+    for (final entry in _rowHorizontalControllers.entries) {
+      final controller = entry.value;
+      if (!controller.hasClients) continue;
+      _maybeLoadMoreForRow(entry.key, controller);
     }
   }
 
