@@ -471,6 +471,7 @@ class SpotlightStudiosGridSection extends StatelessWidget {
               width: 160,
               height: 100,
               decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
                 borderRadius: AppRadius.circular(12),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.15),
