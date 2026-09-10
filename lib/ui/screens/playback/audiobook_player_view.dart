@@ -78,6 +78,11 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   String? _favoriteItemId;
 
   _AudiobookFocusArea _tvArea = _AudiobookFocusArea.transport;
+  // Which split column holds focus: drawer on the left, controls on the right.
+  bool _tvLeftColumn = false;
+  // True when the last build used the split layout. The d-pad code runs
+  // outside build and reads it from here.
+  bool _splitLayout = false;
   int _tvHeaderIndex = 0;
   int _tvTransportIndex = 2;
   int _tvRailIndex = 0;
@@ -643,6 +648,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     final layout = LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 760;
+        _splitLayout = isWide;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -709,33 +715,46 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           tvFocusIndex: _tvArea == _AudiobookFocusArea.header ? _tvHeaderIndex : -1,
         ),
         Expanded(
-          child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
-            child: Column(
-              children: [
-                const SizedBox(height: AppSpacing.spaceMd),
-                _CoverArt(
-                  coverUrl: coverUrl,
-                  localPosterPath: localPoster,
-                  size: 260,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Cover takes the space left by the title and chapter strip, so
+              // a short phone fits the whole player without scrolling. 190 is
+              // those two at their tallest, with the title over two lines,
+              // plus the gaps and a little slack.
+              final coverSize = (constraints.maxHeight - 190)
+                  .clamp(120.0, 260.0)
+                  .toDouble();
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.spaceLg,
                 ),
-                const SizedBox(height: AppSpacing.spaceLg),
-                _TitleBlock(item: item, centered: true),
-                const SizedBox(height: AppSpacing.spaceMd),
-                ValueListenableBuilder<Duration>(
-                  valueListenable: _positionNotifier,
-                  builder: (context, pos, _) => AudiobookChapterContextStrip(
-                    chapters: chapters,
-                    position: pos,
-                    onTap: () {
-                      _setDrawerTab(AudiobookDrawerTab.chapters);
-                      _openDrawerSheet(context, item, chapters);
-                    },
-                  ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: AppSpacing.spaceMd),
+                    _CoverArt(
+                      coverUrl: coverUrl,
+                      localPosterPath: localPoster,
+                      size: coverSize,
+                    ),
+                    const SizedBox(height: AppSpacing.spaceLg),
+                    _TitleBlock(item: item, centered: true),
+                    const SizedBox(height: AppSpacing.spaceMd),
+                    ValueListenableBuilder<Duration>(
+                      valueListenable: _positionNotifier,
+                      builder: (context, pos, _) =>
+                          AudiobookChapterContextStrip(
+                            chapters: chapters,
+                            position: pos,
+                            onTap: () {
+                              _setDrawerTab(AudiobookDrawerTab.chapters);
+                              _openDrawerSheet(context, item, chapters);
+                            },
+                          ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
         _buildBottomControls(context, item, chapters),
@@ -750,7 +769,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     String? localPoster,
     List<Chapter> chapters,
   ) {
-    final coverSize = PlatformDetection.isTV ? 240.0 : 200.0;
+    // Left column is the drawer alone. Everything else stays in the right
+    // column, always in the same order, so closing the drawer just drops a
+    // column.
     return Column(
       children: [
         AudiobookHeader(
@@ -765,6 +786,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
               _drawerOpen = !_drawerOpen;
               if (_dpadNav && !_drawerOpen) {
                 _drawerContentActive = false;
+                _tvLeftColumn = false;
                 _tvArea = _AudiobookFocusArea.header;
                 _tvHeaderIndex = 1;
               }
@@ -776,62 +798,97 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceXl),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.spaceLg),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _CoverArt(
-                          coverUrl: coverUrl,
-                          localPosterPath: localPoster,
-                          size: coverSize,
-                        ),
-                        const SizedBox(height: AppSpacing.spaceLg),
-                        _TitleBlock(item: item, centered: true),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.spaceXl),
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.spaceLg),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ValueListenableBuilder<Duration>(
-                          valueListenable: _positionNotifier,
-                          builder: (context, pos, _) =>
-                              AudiobookChapterContextStrip(
-                            chapters: chapters,
-                            position: pos,
-                            onTap: () => setState(() {
-                              _drawerOpen = true;
-                              _drawerTab = AudiobookDrawerTab.chapters;
-                            }),
+            child: LayoutBuilder(
+              builder: (context, columnConstraints) {
+                final columnHeight = columnConstraints.maxHeight;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_drawerOpen) ...[
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.spaceLg,
+                          ),
+                          // Keep it off both edges so it does not dwarf the
+                          // controls facing it, and centred against them.
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: columnHeight * 0.075,
+                            ),
+                            child: _buildDrawer(context, item, chapters),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.spaceMd),
-                        Expanded(
-                          child: _drawerOpen
-                              ? _buildDrawer(context, item, chapters)
-                              : const SizedBox.shrink(),
+                      ),
+                      const SizedBox(width: AppSpacing.spaceXl),
+                    ],
+                    Expanded(
+                      flex: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.spaceLg,
                         ),
-                        const SizedBox(height: AppSpacing.spaceMd),
-                        _buildBottomControls(context, item, chapters, splitLayout: true),
-                      ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Flexible so the cover gets the height the controls
+                            // leave: large on a desktop window, small on a TV,
+                            // dropped when there is no room. heightFactor stops
+                            // the Center from eating the spare space.
+                            Flexible(
+                              child: LayoutBuilder(
+                                builder: (context, coverConstraints) {
+                                  final size =
+                                      (coverConstraints.maxHeight -
+                                              AppSpacing.spaceMd)
+                                          .clamp(0.0, 220.0);
+                                  if (size < 96) return const SizedBox.shrink();
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.spaceMd,
+                                    ),
+                                    child: Center(
+                                      heightFactor: 1,
+                                      child: _CoverArt(
+                                        coverUrl: coverUrl,
+                                        localPosterPath: localPoster,
+                                        size: size,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            _TitleBlock(item: item, centered: true),
+                            const SizedBox(height: AppSpacing.spaceXl),
+                            ValueListenableBuilder<Duration>(
+                              valueListenable: _positionNotifier,
+                              builder: (context, pos, _) =>
+                                  AudiobookChapterContextStrip(
+                                    chapters: chapters,
+                                    position: pos,
+                                    onTap: () => setState(() {
+                                      _drawerOpen = true;
+                                      _drawerTab = AudiobookDrawerTab.chapters;
+                                    }),
+                                  ),
+                            ),
+                            const SizedBox(height: AppSpacing.spaceXl),
+                            _buildBottomControls(
+                              context,
+                              item,
+                              chapters,
+                              splitLayout: true,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -872,7 +929,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                       _tvArea == _AudiobookFocusArea.progress,
                   onSeek: (d) => _manager.seekTo(d),
                 ),
-                const SizedBox(height: AppSpacing.spaceXs),
+                const SizedBox(height: AppSpacing.spaceSm),
                 AudiobookBookOverview(
                   position: pos,
                   duration: _state.duration,
@@ -1222,26 +1279,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
   void _moveVertical(int delta) {
     if (_tvArea == _AudiobookFocusArea.drawerContent && _drawerContentActive) {
-      final item = _resolveItem();
-      final chapters = _chapters(item);
-      int count = 0;
-      switch (_drawerTab) {
-        case AudiobookDrawerTab.timeline:
-          count = _getTimelineEvents(chapters).length;
-          break;
-        case AudiobookDrawerTab.chapters:
-          count = chapters.length;
-          break;
-        case AudiobookDrawerTab.bookmarks:
-          count = _bookmarksList.length;
-          break;
-        case AudiobookDrawerTab.notes:
-          count = _notesList.length;
-          break;
-        case AudiobookDrawerTab.queue:
-          count = _queue.items.length;
-          break;
-      }
+      final count = _drawerItemCount();
       final hasExport = _tabHasExport(_drawerTab);
       final minIdx = hasExport ? -1 : 0;
       if (count > 0 || hasExport) {
@@ -1254,22 +1292,45 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           return;
         }
       }
+      // Off the top, focus goes back to the tabs. Off the bottom with the
+      // drawer in its own column there is nothing below, so hold the last row
+      // and let right cross to the controls. Stacked, keep going down.
+      if (_tvTwoColumns && delta > 0) return;
       setState(() => _drawerContentActive = false);
     }
 
+    // With two columns, up and down stay inside one. The header spans both,
+    // so it returns focus to the column the user came from.
+    if (!_tvTwoColumns) {
+      _tvLeftColumn = false;
+    } else if (_tvArea == _AudiobookFocusArea.drawerTabs ||
+        _tvArea == _AudiobookFocusArea.drawerContent) {
+      _tvLeftColumn = true;
+    } else if (_tvArea != _AudiobookFocusArea.header) {
+      _tvLeftColumn = false;
+    }
+
     final List<_AudiobookFocusArea> list;
-    if (_drawerOpen) {
+    if (_tvTwoColumns) {
       list = [
         _AudiobookFocusArea.header,
-        _AudiobookFocusArea.drawerTabs,
-        _AudiobookFocusArea.drawerContent,
-        _AudiobookFocusArea.progress,
-        _AudiobookFocusArea.transport,
-        _AudiobookFocusArea.actionRail,
+        if (_tvLeftColumn) ...[
+          _AudiobookFocusArea.drawerTabs,
+          _AudiobookFocusArea.drawerContent,
+        ] else ...[
+          _AudiobookFocusArea.progress,
+          _AudiobookFocusArea.transport,
+          _AudiobookFocusArea.actionRail,
+        ],
       ];
     } else {
+      // Stacked: one flat list top to bottom, the drawer included when open.
       list = [
         _AudiobookFocusArea.header,
+        if (_drawerOpen) ...[
+          _AudiobookFocusArea.drawerTabs,
+          _AudiobookFocusArea.drawerContent,
+        ],
         _AudiobookFocusArea.progress,
         _AudiobookFocusArea.transport,
         _AudiobookFocusArea.actionRail,
@@ -1303,6 +1364,49 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     }
 
     setState(() => _tvArea = candidate);
+  }
+
+  /// Whether the drawer has its own column to cross to. True in the split
+  /// layout. Stacked, the drawer is a sheet and up/down walks one flat list.
+  bool get _tvTwoColumns => _splitLayout && _drawerOpen;
+
+  /// How many rows the drawer's current tab shows.
+  int _drawerItemCount() {
+    final chapters = _chapters(_resolveItem());
+    switch (_drawerTab) {
+      case AudiobookDrawerTab.timeline:
+        return _getTimelineEvents(chapters).length;
+      case AudiobookDrawerTab.chapters:
+        return chapters.length;
+      case AudiobookDrawerTab.bookmarks:
+        return _bookmarksList.length;
+      case AudiobookDrawerTab.notes:
+        return _notesList.length;
+      case AudiobookDrawerTab.queue:
+        return _queue.items.length;
+    }
+  }
+
+  /// Crosses between the drawer on the left and the controls on the right.
+  void _focusColumn({required bool left}) {
+    if (!_tvTwoColumns) return;
+    _tvLeftColumn = left;
+    if (left) {
+      _tvArea = _AudiobookFocusArea.drawerContent;
+      _drawerContentActive = true;
+      final minIdx = _tabHasExport(_drawerTab) ? -1 : 0;
+      final lastIdx = _drawerItemCount() - 1;
+      _tvListIndex = _tvListIndex.clamp(
+        minIdx,
+        lastIdx < minIdx ? minIdx : lastIdx,
+      );
+      _tvSubIndex = 0;
+    } else {
+      _drawerContentActive = false;
+      _tvArea = _AudiobookFocusArea.transport;
+      // Land on the leftmost control so one press of left crosses back.
+      _tvTransportIndex = 0;
+    }
   }
 
   int _maxSubIndex() {
@@ -1342,27 +1446,47 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           _manager.seekTo(next < Duration.zero ? Duration.zero : next);
           break;
         case _AudiobookFocusArea.transport:
+          // Left from the first button crosses to the drawer.
+          if (delta < 0 && _tvTransportIndex == 0) {
+            _focusColumn(left: true);
+            break;
+          }
           _tvTransportIndex = (_tvTransportIndex + delta).clamp(0, 4);
           break;
         case _AudiobookFocusArea.actionRail:
+          if (delta < 0 && _tvRailIndex == 0) {
+            _focusColumn(left: true);
+            break;
+          }
           _tvRailIndex = (_tvRailIndex + delta).clamp(0, 4);
           break;
         case _AudiobookFocusArea.drawerTabs:
           final item = _resolveItem();
           final chapters = _chapters(item);
           final availableTabs = _getAvailableTabs(chapters);
-          _tvTabIndex =
-              (_tvTabIndex + delta).clamp(0, availableTabs.length - 1);
+          // Right from the last tab crosses to the controls.
+          if (delta > 0 && _tvTabIndex >= availableTabs.length - 1) {
+            _focusColumn(left: false);
+            break;
+          }
+          _tvTabIndex = (_tvTabIndex + delta).clamp(
+            0,
+            availableTabs.length - 1,
+          );
           _drawerTab = availableTabs[_tvTabIndex];
           unawaited(_prefs.set(
               UserPreferences.audiobookDrawerTab, _drawerTab.name));
           break;
         case _AudiobookFocusArea.drawerContent:
-          if (_drawerContentActive) {
-            final maxIdx = _maxSubIndex();
-            if (maxIdx > 0) {
-              _tvSubIndex = (_tvSubIndex + delta).clamp(0, maxIdx);
-            }
+          // Bookmarks and notes have per-row actions: right walks those
+          // first, then crosses to the controls.
+          final maxIdx = _drawerContentActive ? _maxSubIndex() : 0;
+          if (delta > 0 && _tvSubIndex >= maxIdx) {
+            _focusColumn(left: false);
+            break;
+          }
+          if (_drawerContentActive && maxIdx > 0) {
+            _tvSubIndex = (_tvSubIndex + delta).clamp(0, maxIdx);
           }
           break;
       }
@@ -1381,6 +1505,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             _drawerOpen = !_drawerOpen;
             if (!_drawerOpen) {
               _drawerContentActive = false;
+              _tvLeftColumn = false;
             }
           });
         }
