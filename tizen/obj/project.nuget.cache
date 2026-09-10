@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Y3tSbbVGCtU=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\leona\\Documents\\GitHub\\Moonfin-Core\\tizen\\Runner.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\leona\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "C:\\Users\\leona\\.nuget\\packages\\tizen.net\\9.0.0.16760\\tizen.net.9.0.0.16760.nupkg.sha512",
+    "C:\\Users\\leona\\.nuget\\packages\\tizen.net.api8\\8.0.0.15631\\tizen.net.api8.8.0.0.15631.nupkg.sha512"
+  ],
+  "logs": []
+}

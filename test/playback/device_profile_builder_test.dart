@@ -770,6 +770,53 @@ void main() {
     });
   });
 
+  group('DeviceProfileBuilder AV1 Dolby Vision range filtering', () {
+    test('an AV1 HDR10 client without an AV1 DoVi decoder direct plays '
+        'profile 10.1, including its HDR10+ variant, via the base layer', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: false,
+        supportsAv1DolbyVision: false,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10')));
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+    });
+
+    test('a client that renders neither AV1 DoVi nor AV1 HDR10 excludes both '
+        'profile 10 range types', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: false,
+        supportsAv1DolbyVision: false,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10'));
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+    });
+
+    test('an AV1 DoVi decoder keeps every profile 10 range type direct '
+        'playable', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1DolbyVision: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isEmpty);
+    });
+  });
+
   group('DeviceProfileBuilder HLS transcode video codec', () {
     test('transcodes only to h264 when the server was not probed as allowing '
         'HEVC encoding', () {

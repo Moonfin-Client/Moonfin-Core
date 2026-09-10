@@ -1369,8 +1369,6 @@ class DeviceProfileBuilder {
         // transcode when the client can't render AV1 HDR10, so gate it the
         // same way as DOVIWithHDR10 rather than always rejecting it.
         unsupportedRangeTypesAv1.add('DOVI_INVALID');
-      }
-      if (!supportsAv1Hdr10Plus) {
         unsupportedRangeTypesAv1.add('DOVI_WITH_HDR10_PLUS');
       }
     }
