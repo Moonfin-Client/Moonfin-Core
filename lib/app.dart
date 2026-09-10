@@ -624,10 +624,12 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   }
 
   bool _isPlayerRoute() {
-    final path = appRouter.routerDelegate.currentConfiguration.uri.path;
+    final matches = appRouter.routerDelegate.currentConfiguration.matches;
+    if (matches.isEmpty) return false;
+    final path = matches.last.matchedLocation;
     return path.startsWith('/player/') ||
-        path == '/live-tv/player' ||
-        path.startsWith('/game-player/');
+      path == '/live-tv/player' ||
+      path.startsWith('/game-player/');
   }
 
   bool _isHomeRoute() {
